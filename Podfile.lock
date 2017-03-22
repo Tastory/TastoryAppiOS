@@ -1,0 +1,18 @@
+PODS:
+  - Bolts/Tasks (1.8.4)
+  - FoursquareAPIClient (3.1.0)
+  - Parse (1.14.2):
+    - Bolts/Tasks (~> 1.8)
+
+DEPENDENCIES:
+  - FoursquareAPIClient
+  - Parse
+
+SPEC CHECKSUMS:
+  Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
+  FoursquareAPIClient: 2bb916176f560c0afb6838a28c1a0970467a0edc
+  Parse: 4335d65f40cb3d43190d723144bbe1afb9c38230
+
+PODFILE CHECKSUM: 0d6afcd609c86bfeacbadd24de51ae65dff5cea7
+
+COCOAPODS: 1.2.0
