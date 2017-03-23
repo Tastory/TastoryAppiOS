@@ -29,6 +29,7 @@
                                     <outletCollection property="gestureRecognizers" destination="mRO-al-sTI" appends="YES" id="7H2-5F-cTV"/>
                                     <outletCollection property="gestureRecognizers" destination="Ypu-Fg-bIb" appends="YES" id="1AT-MI-DM1"/>
                                     <outletCollection property="gestureRecognizers" destination="gtB-Zu-pZ4" appends="YES" id="Zn0-gE-12B"/>
+                                    <outletCollection property="gestureRecognizers" destination="huL-4O-wj6" appends="YES" id="7kU-O7-nOa"/>
                                 </connections>
                             </mapView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sNl-Tb-SAf">
@@ -44,22 +45,23 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Search Here"/>
                             </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="18" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
                                 <rect key="frame" x="16" y="28" width="343" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes"/>
                             </textField>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                     <connections>
+                        <outlet property="doubleTapGestureRecognizer" destination="gtB-Zu-pZ4" id="qyu-HN-IhQ"/>
                         <outlet property="locationField" destination="0wJ-kE-Bqf" id="udw-u7-LkJ"/>
                         <outlet property="mapView" destination="GEi-FU-KP9" id="mQw-t1-e04"/>
                         <outlet property="panGestureRecognizer" destination="mRO-al-sTI" id="9gt-Bc-s7F"/>
                         <outlet property="pinchGestureRecognizer" destination="Ypu-Fg-bIb" id="vsU-G9-HVH"/>
-                        <outlet property="tapGestureRecognizer" destination="gtB-Zu-pZ4" id="zju-Sq-JK1"/>
+                        <outlet property="singleTapGestureRecognizer" destination="huL-4O-wj6" id="NS9-RU-fct"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -76,6 +78,11 @@
                 <tapGestureRecognizer numberOfTapsRequired="2" id="gtB-Zu-pZ4">
                     <connections>
                         <action selector="mapGestureDetected:" destination="BYZ-38-t0r" id="fNs-wq-qxu"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="huL-4O-wj6">
+                    <connections>
+                        <action selector="singleTapGestureDetected:" destination="BYZ-38-t0r" id="SDT-G5-iZZ"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

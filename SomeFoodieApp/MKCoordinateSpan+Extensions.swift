@@ -17,16 +17,21 @@ extension MKCoordinateSpan: Comparable, Equatable {
   // Comparison of 2 MKCoordinateSpans instance would then just be the comparison of the greater
   // value on each of the instances
   
-  private var latitudeInKm: Double {
+  private var latitudeInKm: CLLocationDistance {
     return 110.574*latitudeDelta
   }
   
-  private var longitudeInKm: Double {
+  private var longitudeInKm: CLLocationDistance {
     return 111.320*cos(latitudeDelta)*longitudeDelta
   }
   
-  var greaterValue: Double {
+  var greaterValue: CLLocationDistance {
     return latitudeInKm > longitudeInKm ? latitudeInKm : longitudeInKm
+  }
+  
+  public init(heightKm: CLLocationDistance, widthKm: CLLocationDistance) {
+    latitudeDelta = heightKm/110.574
+    longitudeDelta = widthKm/111.320/cos(latitudeDelta)
   }
   
   public static func < (lhs: MKCoordinateSpan, rhs: MKCoordinateSpan) -> Bool {

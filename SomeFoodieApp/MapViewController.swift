@@ -36,12 +36,22 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   @IBOutlet weak var mapView: MKMapView?
   @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer?
   @IBOutlet weak var pinchGestureRecognizer: UIPinchGestureRecognizer?
-  @IBOutlet weak var tapGestureRecognizer: UITapGestureRecognizer?
+  @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer?
+  @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer?
   @IBOutlet weak var locationField: UITextField?
   
   
   // MARK: - IBActions
+  
+  @IBAction func singleTapGestureDetected(_ sender: UITapGestureRecognizer) {
+    // Dismiss keyboard if any gestures detected against Map
+    locationField?.resignFirstResponder()
+  }
+  
   @IBAction func mapGestureDetected(_ recognizer: UIGestureRecognizer) {
+    
+    // Dismiss keyboard if any gestures detected against Map
+    locationField?.resignFirstResponder()
     
     // Stop updating location if any gestures detected against Map
     switch recognizer.state {
@@ -54,6 +64,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   
   
   @IBAction func currentLocationReturn(_ sender: UIButton) {
+    
+    // Clear the text field while at it
+    locationField?.text = ""
     
     // Restrict to a certain range of zoom when returning map to current location
     // See MKCoordinateSpan+Extensions
@@ -75,7 +88,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     mapView?.delegate = self
     panGestureRecognizer?.delegate = self
     pinchGestureRecognizer?.delegate = self
-    tapGestureRecognizer?.delegate = self
+    doubleTapGestureRecognizer?.delegate = self
+    singleTapGestureRecognizer?.delegate = self
     locationField?.delegate = self
     
     // Provide a default Map Region incase Location Update is slow or user denies authorization
@@ -129,7 +143,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
       return
     }
     
-    print("CLError Code = \(errorCode.code.rawValue)")
+    print("DEBUG_ERROR: CLError Code = \(errorCode.code.rawValue)")
     switch errorCode.code {
     case .locationUnknown, .headingFailure:
       // Allow to just continue and hope for a better update later
@@ -143,7 +157,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
       break
     }
   }
-   
+  
   /*
   // MARK: - MKMapView Delegates
   func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
@@ -162,16 +176,91 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   
   
   // MARK: - UITextField Delegates
+  
+  // TODO: Make dynamic continuous query to provide Geocoding suggestions, and to not use CLGeocoder...
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     
     if let location = textField.text, let region = mapView?.region {
+      
+      print ("DEBUG_PRINT: CLRegion = \(region.toCLRegion())")
       let geocoder = CLGeocoder()
-      geocoder.geocodeAddressString(location, in: region.toCLRegion()) { (<#[CLPlacemark]?#>, <#Error?#>) in
-        <#code#>
+      geocoder.geocodeAddressString(location, in: region.toCLRegion()) { (placemarks, error) in
+        
+        if let error = error as? CLError {
+          switch error.code {
+          case .geocodeFoundNoResult:
+            textField.text = "No Results Found"
+            textField.textColor = UIColor.red
+          default:
+            print("DEBUG_ERROR: Geocode Error - \(error)") // TODO: Error Handling, which errors and how to handle?
+          }
+        }
+        
+        if let placemarks = placemarks {
+          
+          print ("DEBUG_PRINT: There are \(placemarks.count) Placemarks")
+          
+          var textArray = [String]() // TODO: Refactor Code
+          
+          if let text = placemarks[0].name {
+            textArray.append(text)
+          }
+          
+          if let text = placemarks[0].thoroughfare, placemarks[0].name == nil {
+            if !textArray.contains(text) { textArray.append(text) }
+          }
+          
+          if let text = placemarks[0].locality {
+            if !textArray.contains(text) { textArray.append(text) }
+          }
+          
+          if let text = placemarks[0].administrativeArea {
+            if !((text.lowercased() == location.lowercased()) && (text.characters.count == 2)){
+              if !textArray.contains(text) { textArray.append(text) }
+            }
+          }
+          
+          if let text = placemarks[0].country, !((placemarks[0].name != nil || placemarks[0].thoroughfare != nil) && placemarks[0].locality != nil && placemarks[0].administrativeArea != nil) {
+            if !textArray.contains(text) { textArray.append(text) }
+          }
+          
+          textField.text = textArray[0]
+          
+          var index = 1
+          
+          while index < textArray.count {
+            textField.text = textField.text! + ", " + textArray[index]
+            index = index + 1
+          }
+          
+          self.locationManager.stopUpdatingLocation()
+          
+          if let clRegion = placemarks[0].region as? CLCircularRegion {
+            print("DEBUG_PRINT: clRegion used")
+            let mkRegion = MKCoordinateRegion(region: clRegion)
+            self.mapView?.setRegion(mkRegion, animated: true)
+          } else {
+            if let coordinate = placemarks[0].location?.coordinate {
+              print("DEBUG_PRINT: clRegion not clCircularRegion")
+              let region = MKCoordinateRegion(center: coordinate, span: MapLocationConstants.defaultMaxMapSpan)
+              self.mapView?.setRegion(region, animated: true)
+            } else {
+              print("DEBUG_ERROR: Placemark contained no location")
+            }
+          
+          }
+        }
       }
-      textField.text
     }
+    
     textField.resignFirstResponder()
+    return true
+  }
+  
+  func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+    
+    // Set the text field color back to black once user starts editing. Might have been set to Red for errors.
+    textField.textColor = UIColor.black
     return true
   }
 }
