@@ -17,21 +17,17 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   private struct MapLocationConstants {
     static let defaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
                                                               longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
-    static let defaultMaxMapSpan = MKCoordinateSpan(latitudeDelta: CLLocationDegrees(0.05),
-                                                    longitudeDelta: CLLocationDegrees(0.05))
-    static let defaultMinMapSpan = MKCoordinateSpan(latitudeDelta: CLLocationDegrees(0.005),
-                                                    longitudeDelta: CLLocationDegrees(0.005))
-    
+    static let defaultMaxDelta: CLLocationDegrees = 0.05
+    static let defaultMinDelta: CLLocationDegrees = 0.005
     static let defaultDistanceFilter = 30.0  // meters, for LocationManager
-
   }
   
   
   // MARK: - Class Variables
   private var locationManager = CLLocationManager()
-  private var currentMapSpan: MKCoordinateSpan = MapLocationConstants.defaultMaxMapSpan
+  private var currentMapDelta = MapLocationConstants.defaultMaxDelta
   
-
+  
   // MARK: - IBOutlets
   @IBOutlet weak var mapView: MKMapView?
   @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer?
@@ -42,12 +38,13 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   
   
   // MARK: - IBActions
-  
   @IBAction func singleTapGestureDetected(_ sender: UITapGestureRecognizer) {
     // Dismiss keyboard if any gestures detected against Map
     locationField?.resignFirstResponder()
   }
   
+  
+  // Pan, Pinch, Double-Tap gestures all routed here
   @IBAction func mapGestureDetected(_ recognizer: UIGestureRecognizer) {
     
     // Dismiss keyboard if any gestures detected against Map
@@ -68,13 +65,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     // Clear the text field while at it
     locationField?.text = ""
     
-    // Restrict to a certain range of zoom when returning map to current location
-    // See MKCoordinateSpan+Extensions
-    if let mapView = mapView {
-      currentMapSpan = min(mapView.region.span, MapLocationConstants.defaultMaxMapSpan)
-      currentMapSpan = max(currentMapSpan, MapLocationConstants.defaultMinMapSpan)
-    }
-
+    // Take the lesser of current or default max latitude degrees
+    currentMapDelta = min(currentMapDelta, MapLocationConstants.defaultMaxDelta)
+    
+    // Take the greater of current or default min latitude degrees
+    currentMapDelta = max(currentMapDelta, MapLocationConstants.defaultMinDelta)
+    
     // Start updating location again
     locationManager.startUpdatingLocation()
   }
@@ -94,7 +90,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     // Provide a default Map Region incase Location Update is slow or user denies authorization
     let region = MKCoordinateRegion(center: MapLocationConstants.defaultCLCoordinate2D,
-                                    span: MapLocationConstants.defaultMinMapSpan)
+                                    span: MKCoordinateSpan(latitudeDelta: MapLocationConstants.defaultMaxDelta, longitudeDelta: MapLocationConstants.defaultMaxDelta))
     mapView?.setRegion(region, animated: false)
     
     // Setup Location Manager and Start Location Updates
@@ -130,44 +126,48 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   // MARK: - CLLocationManager Delegates
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 
-    let region = MKCoordinateRegion(center: locations[0].coordinate, span: currentMapSpan)
+    let region = MKCoordinateRegion(center: locations[0].coordinate, span: MKCoordinateSpan(latitudeDelta: currentMapDelta, longitudeDelta: currentMapDelta))
     mapView?.setRegion(region, animated: true)
   }
   
   
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-    print(error.localizedDescription)  // TODO: Log this error to internal log with a certain verbose level
+    print("DEBUG_ERROR: locationManager didFailWithError, error.localizedDescription = \(error.localizedDescription)")
     
     guard let errorCode = error as? CLError else {
       assertionFailure("Not getting CLError upon a Location Manager Error")
       return
     }
     
-    print("DEBUG_ERROR: CLError Code = \(errorCode.code.rawValue)")
+    print("DEBUG_ERROR: locationManager didFailWithError, CLError.code = \(errorCode.code.rawValue)")
+    
     switch errorCode.code {
-    case .locationUnknown, .headingFailure:
-      // Allow to just continue and hope for a better update later
-      break
+
     case .denied:
       // User denied authorization
       manager.stopUpdatingLocation()
-      // TODO: Do we need to do more here?
+
+      // Prompt user to authorize
+      // TODO: locationManager didFailWithError, factor out Alert Controller creation?
+      let alertController = UIAlertController(title: "Location Access Disabled", message: "To find you nearby Foodie Stories, please go to Settings > Privacy > Location Services and set this App's Location Access permission to 'While Using'", preferredStyle: .alert)
+      
+      let settingsAction = UIAlertAction(title: "Open Settings", style: .default) { (alertAction) in
+        if let url = URL(string: UIApplicationOpenSettingsURLString) {
+          UIApplication.shared.open(url)
+        }
+      }
+      
+      let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+      
+      alertController.addAction(settingsAction)
+      alertController.addAction(cancelAction)
+      
     default:
-      // Allow to just continue and hope for a better update later
+      // TODO: locationManager didFailWithError, any other cases to handle differently?
       break
     }
   }
   
-  /*
-  // MARK: - MKMapView Delegates
-  func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-    print("Region Will Change Called")
-  }
-  
-  func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-    print("Region Did Change Called")
-  }
- */
   
   // MARK: - UIGestureRecognizer Delegates
   func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -177,14 +177,15 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   
   // MARK: - UITextField Delegates
   
-  // TODO: Make dynamic continuous query to provide Geocoding suggestions, and to not use CLGeocoder...
+  // TODO: textFieldShouldReturn, implement Dynamic Filter Querying with another Geocoder
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     
     if let location = textField.text, let region = mapView?.region {
       
-      print ("DEBUG_PRINT: CLRegion = \(region.toCLRegion())")
+      let clRegion = CLCircularRegion(center: region.center, radius: region.span.height/1.78/2, identifier: "currentCLRegion")  // 1.78 for 16:9 aspect ratio
       let geocoder = CLGeocoder()
-      geocoder.geocodeAddressString(location, in: region.toCLRegion()) { (placemarks, error) in
+      
+      geocoder.geocodeAddressString(location, in: clRegion) { (placemarks, error) in
         
         if let error = error as? CLError {
           switch error.code {
@@ -192,20 +193,22 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             textField.text = "No Results Found"
             textField.textColor = UIColor.red
           default:
-            print("DEBUG_ERROR: Geocode Error - \(error)") // TODO: Error Handling, which errors and how to handle?
+            print("DEBUG_ERROR: geocodeAddressString Error Handle, CLError Code - \(error)")
+             // TODO: geocodeAddressString Error Handle, any other cases to handle differently?
           }
         }
         
         if let placemarks = placemarks {
-          
-          print ("DEBUG_PRINT: There are \(placemarks.count) Placemarks")
-          
-          var textArray = [String]() // TODO: Refactor Code
+
+          // Create String to be shown back to User in the locationField
+          var textArray = [String]()
           
           if let text = placemarks[0].name {
             textArray.append(text)
           }
           
+          // Remove 'thoroughfare' if there is already a 'name'
+          // eg. Don't need Grouse Mountain at Nancy Green Way. Just Grouse Mountain is enough.
           if let text = placemarks[0].thoroughfare, placemarks[0].name == nil {
             if !textArray.contains(text) { textArray.append(text) }
           }
@@ -215,17 +218,23 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
           }
           
           if let text = placemarks[0].administrativeArea {
+            
+            // If this is a province/state code, remove this. 'name' usually takes care of this.
             if !((text.lowercased() == location.lowercased()) && (text.characters.count == 2)){
               if !textArray.contains(text) { textArray.append(text) }
             }
           }
           
-          if let text = placemarks[0].country, !((placemarks[0].name != nil || placemarks[0].thoroughfare != nil) && placemarks[0].locality != nil && placemarks[0].administrativeArea != nil) {
+          // Don't show country if there is already a name/thoroughfare, and there is city and state information also
+          // Exception is if the name and the city is the same, beacause only 1 of the 2 will be shown
+          if let text = placemarks[0].country, !((placemarks[0].name != nil || placemarks[0].thoroughfare != nil) &&
+                                                 (placemarks[0].name != placemarks[0].locality) &&
+                                                placemarks[0].locality != nil && placemarks[0].administrativeArea != nil) {
             if !textArray.contains(text) { textArray.append(text) }
           }
           
+          // Place String into locationField formatted with commas
           textField.text = textArray[0]
-          
           var index = 1
           
           while index < textArray.count {
@@ -233,29 +242,40 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             index = index + 1
           }
           
+          // Move map to region as indicated by CLPlacemark
           self.locationManager.stopUpdatingLocation()
           
-          if let clRegion = placemarks[0].region as? CLCircularRegion {
-            print("DEBUG_PRINT: clRegion used")
-            let mkRegion = MKCoordinateRegion(region: clRegion)
-            self.mapView?.setRegion(mkRegion, animated: true)
-          } else {
-            if let coordinate = placemarks[0].location?.coordinate {
-              print("DEBUG_PRINT: clRegion not clCircularRegion")
-              let region = MKCoordinateRegion(center: coordinate, span: MapLocationConstants.defaultMaxMapSpan)
-              self.mapView?.setRegion(region, animated: true)
-            } else {
-              print("DEBUG_ERROR: Placemark contained no location")
-            }
+          var region: MKCoordinateRegion?
           
+          // The coordinate in the region is highly inaccurate. So use the location coordinate when possible.
+          if let coordinate = placemarks[0].location?.coordinate, let clRegion = placemarks[0].region as? CLCircularRegion {
+            
+            region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(height: clRegion.radius*2*1.39))  // 1.39 is between square and 16:9
+            
+          } else if let coordinate = placemarks[0].location?.coordinate {
+            
+            region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: MapLocationConstants.defaultMaxDelta, longitudeDelta: MapLocationConstants.defaultMaxDelta))
+            
+          } else if let clRegion = placemarks[0].region as? CLCircularRegion {
+            
+            region = MKCoordinateRegion(center: clRegion.center, span: MKCoordinateSpan(height: clRegion.radius*2))
+            
+          } else {
+            print("DEBUG_ERROR: Placemark contained no location")
+          }
+          
+          if let region = region {
+            self.mapView?.setRegion(region, animated: true)
           }
         }
       }
     }
     
+    // Get rid of the keybaord
     textField.resignFirstResponder()
     return true
   }
+  
   
   func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
     

@@ -9,40 +9,15 @@
 import MapKit
 
 // Extend the MKCoordinateSpan class so they are comparable
-extension MKCoordinateSpan: Comparable, Equatable {
-  
-  // What I am trying to do here is to get the actual length and width of the conveyed area in KM.
-  // In the case where the length and width differs greatly in magnitude, the larger value is of
-  // concern, as that seems to be how MapKit will always zoom out to make the longer span fit.
-  // Comparison of 2 MKCoordinateSpans instance would then just be the comparison of the greater
-  // value on each of the instances
-  
-  private var latitudeInKm: CLLocationDistance {
-    return 110.574*latitudeDelta
+extension MKCoordinateSpan {
+
+  var height: CLLocationDistance {
+    return latitudeDelta*111230
   }
-  
-  private var longitudeInKm: CLLocationDistance {
-    return 111.320*cos(latitudeDelta)*longitudeDelta
-  }
-  
-  var greaterValue: CLLocationDistance {
-    return latitudeInKm > longitudeInKm ? latitudeInKm : longitudeInKm
-  }
-  
-  public init(heightKm: CLLocationDistance, widthKm: CLLocationDistance) {
-    latitudeDelta = heightKm/110.574
-    longitudeDelta = widthKm/111.320/cos(latitudeDelta)
-  }
-  
-  public static func < (lhs: MKCoordinateSpan, rhs: MKCoordinateSpan) -> Bool {
-    return lhs.greaterValue < rhs.greaterValue
-  }
-  
-  public static func > (lhs: MKCoordinateSpan, rhs: MKCoordinateSpan) -> Bool {
-    return lhs.greaterValue > rhs.greaterValue
-  }
-  
-  public static func == (lhs: MKCoordinateSpan, rhs: MKCoordinateSpan) -> Bool {
-    return lhs.greaterValue == rhs.greaterValue
+ 
+  // This creates surface that has the same lat and long degree spans
+  init(height: CLLocationDistance) {
+    latitudeDelta = height/111230
+    longitudeDelta = latitudeDelta/1.78  // For 16:9 aspect ratio near the equator
   }
 }
