@@ -154,6 +154,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
       let settingsAction = UIAlertAction(title: "Open Settings", style: .default) { (alertAction) in
         if let url = URL(string: UIApplicationOpenSettingsURLString) {
           UIApplication.shared.open(url)
+        } else {
+          // TODO: Tell user about error opening Settings?
         }
       }
       
@@ -180,94 +182,102 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   // TODO: textFieldShouldReturn, implement Dynamic Filter Querying with another Geocoder
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     
-    if let location = textField.text, let region = mapView?.region {
+    guard let location = textField.text, let region = mapView?.region else {
+      // No text in location field, or no map view all together?
+      return true
+    }
+    
+    let clRegion = CLCircularRegion(center: region.center, radius: region.span.height/1.78/2, identifier: "currentCLRegion")  // 1.78 for 16:9 aspect ratio
+    let geocoder = CLGeocoder()
+    
+    geocoder.geocodeAddressString(location, in: clRegion) { (placemarks, error) in
       
-      let clRegion = CLCircularRegion(center: region.center, radius: region.span.height/1.78/2, identifier: "currentCLRegion")  // 1.78 for 16:9 aspect ratio
-      let geocoder = CLGeocoder()
+      if let error = error as? CLError {
+        switch error.code {
+        case .geocodeFoundNoResult:
+          textField.text = "No Results Found"
+          textField.textColor = UIColor.red
+          return
+          
+        default:
+          print("DEBUG_ERROR: geocodeAddressString Error Handle, CLError Code - \(error)")
+           // TODO: geocodeAddressString Error Handle, any other cases to handle differently?
+        }
+      }
       
-      geocoder.geocodeAddressString(location, in: clRegion) { (placemarks, error) in
+      guard let placemarks = placemarks else {
+        // No valid placemarks returned
+        textField.text = "No Results Found"
+        textField.textColor = UIColor.red
+        return
+      }
+      
+      // Create String to be shown back to User in the locationField
+      var textArray = [String]()
+      
+      if let text = placemarks[0].name {
+        textArray.append(text)
+      }
+      
+      // Remove 'thoroughfare' if there is already a 'name'
+      // eg. Don't need Grouse Mountain at Nancy Green Way. Just Grouse Mountain is enough.
+      if let text = placemarks[0].thoroughfare, placemarks[0].name == nil {
+        if !textArray.contains(text) { textArray.append(text) }
+      }
+      
+      if let text = placemarks[0].locality {
+        if !textArray.contains(text) { textArray.append(text) }
+      }
+      
+      if let text = placemarks[0].administrativeArea {
         
-        if let error = error as? CLError {
-          switch error.code {
-          case .geocodeFoundNoResult:
-            textField.text = "No Results Found"
-            textField.textColor = UIColor.red
-          default:
-            print("DEBUG_ERROR: geocodeAddressString Error Handle, CLError Code - \(error)")
-             // TODO: geocodeAddressString Error Handle, any other cases to handle differently?
-          }
+        // If this is a province/state code, remove this. 'name' usually takes care of this.
+        if !((text.lowercased() == location.lowercased()) && (text.characters.count == 2)){
+          if !textArray.contains(text) { textArray.append(text) }
         }
+      }
+      
+      // Don't show country if there is already a name/thoroughfare, and there is city and state information also
+      // Exception is if the name and the city is the same, beacause only 1 of the 2 will be shown
+      if let text = placemarks[0].country, !((placemarks[0].name != nil || placemarks[0].thoroughfare != nil) &&
+                                             (placemarks[0].name != placemarks[0].locality) &&
+                                            placemarks[0].locality != nil && placemarks[0].administrativeArea != nil) {
+        if !textArray.contains(text) { textArray.append(text) }
+      }
+      
+      // Place String into locationField formatted with commas
+      textField.text = textArray[0]
+      var index = 1
+      
+      while index < textArray.count {
+        textField.text = textField.text! + ", " + textArray[index]
+        index = index + 1
+      }
+      
+      // Move map to region as indicated by CLPlacemark
+      self.locationManager.stopUpdatingLocation()
+      
+      var region: MKCoordinateRegion?
+      
+      // The coordinate in the region is highly inaccurate. So use the location coordinate when possible.
+      if let coordinate = placemarks[0].location?.coordinate, let clRegion = placemarks[0].region as? CLCircularRegion {
         
-        if let placemarks = placemarks {
-
-          // Create String to be shown back to User in the locationField
-          var textArray = [String]()
-          
-          if let text = placemarks[0].name {
-            textArray.append(text)
-          }
-          
-          // Remove 'thoroughfare' if there is already a 'name'
-          // eg. Don't need Grouse Mountain at Nancy Green Way. Just Grouse Mountain is enough.
-          if let text = placemarks[0].thoroughfare, placemarks[0].name == nil {
-            if !textArray.contains(text) { textArray.append(text) }
-          }
-          
-          if let text = placemarks[0].locality {
-            if !textArray.contains(text) { textArray.append(text) }
-          }
-          
-          if let text = placemarks[0].administrativeArea {
-            
-            // If this is a province/state code, remove this. 'name' usually takes care of this.
-            if !((text.lowercased() == location.lowercased()) && (text.characters.count == 2)){
-              if !textArray.contains(text) { textArray.append(text) }
-            }
-          }
-          
-          // Don't show country if there is already a name/thoroughfare, and there is city and state information also
-          // Exception is if the name and the city is the same, beacause only 1 of the 2 will be shown
-          if let text = placemarks[0].country, !((placemarks[0].name != nil || placemarks[0].thoroughfare != nil) &&
-                                                 (placemarks[0].name != placemarks[0].locality) &&
-                                                placemarks[0].locality != nil && placemarks[0].administrativeArea != nil) {
-            if !textArray.contains(text) { textArray.append(text) }
-          }
-          
-          // Place String into locationField formatted with commas
-          textField.text = textArray[0]
-          var index = 1
-          
-          while index < textArray.count {
-            textField.text = textField.text! + ", " + textArray[index]
-            index = index + 1
-          }
-          
-          // Move map to region as indicated by CLPlacemark
-          self.locationManager.stopUpdatingLocation()
-          
-          var region: MKCoordinateRegion?
-          
-          // The coordinate in the region is highly inaccurate. So use the location coordinate when possible.
-          if let coordinate = placemarks[0].location?.coordinate, let clRegion = placemarks[0].region as? CLCircularRegion {
-            
-            region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(height: clRegion.radius*2*1.39))  // 1.39 is between square and 16:9
-            
-          } else if let coordinate = placemarks[0].location?.coordinate {
-            
-            region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: MapLocationConstants.defaultMaxDelta, longitudeDelta: MapLocationConstants.defaultMaxDelta))
-            
-          } else if let clRegion = placemarks[0].region as? CLCircularRegion {
-            
-            region = MKCoordinateRegion(center: clRegion.center, span: MKCoordinateSpan(height: clRegion.radius*2))
-            
-          } else {
-            print("DEBUG_ERROR: Placemark contained no location")
-          }
-          
-          if let region = region {
-            self.mapView?.setRegion(region, animated: true)
-          }
-        }
+        region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(height: clRegion.radius*2*1.39))  // 1.39 is between square and 16:9
+        
+      } else if let coordinate = placemarks[0].location?.coordinate {
+        
+        region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: MapLocationConstants.defaultMaxDelta, longitudeDelta: MapLocationConstants.defaultMaxDelta))
+        
+      } else if let clRegion = placemarks[0].region as? CLCircularRegion {
+        
+        region = MKCoordinateRegion(center: clRegion.center, span: MKCoordinateSpan(height: clRegion.radius*2))
+        
+      } else {
+        print("DEBUG_ERROR: Placemark contained no location")
+      }
+      
+      if let region = region {
+        self.mapView?.setRegion(region, animated: true)
       }
     }
     

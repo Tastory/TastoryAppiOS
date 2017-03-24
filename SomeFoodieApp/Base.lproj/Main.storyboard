@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Zombie Test View Controller-->
+        <!--Scrape View Controller-->
         <scene sceneID="YH6-S2-RAg">
             <objects>
-                <viewController id="CGb-4m-OBn" customClass="ZombieTestViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="CGb-4m-OBn" customClass="ScrapeViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="mco-kE-PtF"/>
                         <viewControllerLayoutGuide type="bottom" id="Cn8-bb-Dq3"/>
@@ -26,7 +26,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Scrape"/>
                                 <connections>
-                                    <action selector="startScraping:" destination="CGb-4m-OBn" eventType="touchUpInside" id="12G-Z3-Tsa"/>
+                                    <action selector="startScraping:" destination="CGb-4m-OBn" eventType="touchUpInside" id="mht-XH-for"/>
                                 </connections>
                             </button>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="6TA-d3-FwZ">
@@ -40,7 +40,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <connections>
-                        <outlet property="blogURLfield" destination="6TA-d3-FwZ" id="bDt-gO-gwS"/>
+                        <outlet property="blogURLfield" destination="6TA-d3-FwZ" id="tHp-FL-rc3"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nLf-Wv-bwR" userLabel="First Responder" sceneMemberID="firstResponder"/>
