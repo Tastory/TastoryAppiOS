@@ -273,7 +273,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         region = MKCoordinateRegion(center: clRegion.center, span: MKCoordinateSpan(height: clRegion.radius*2))
         
       } else {
-        print("DEBUG_ERROR: Placemark contained no location")
+        print("DEBUG_ERROR: textFieldShouldReturn - Placemark contained no location")
       }
       
       if let region = region {

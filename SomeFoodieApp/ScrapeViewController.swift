@@ -19,21 +19,38 @@ class ScrapeViewController: UIViewController {
     
     guard let urlText = blogURLfield?.text else {
       // TODO: Ask the user to input something
+      print("DEBUG_PRINT: startScraping - received empty URL input")
       return
     }
 
     guard let url = URL(string: urlText) else {
       // TODO: Tell user that the entered URL is not a valid URL
+      print("DEBUG_PRINT: startScraping - received invalid URL input")
       return
     }
     
-    let task = session.dataTask(with: url) { (data, urlResponse, error) in
+    let task = session.dataTask(with: url) { (data, response, error) in
           
       if let error = error {
         // TODO: Tell user about the error
-        print(error)
+        print("DEBUG_ERROR: startScraping - error = \(error)")
         return
       }
+      
+      if let response = response {
+        print("DEBUG_PRINT: startScraping - response = \(response)")
+      }
+      
+      guard let data = data else {
+        // TODO: Something wrong with the returned data. How to handle?
+        print("DEBUG_ERROR: startScraping - No valid data received")
+        return
+      }
+      
+      // Finally, lets play with the data
+      
+      
+      
     }
         
     task.resume()

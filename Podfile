@@ -8,6 +8,7 @@ target 'SomeFoodieApp' do
   # Pods for SomeFoodieApp
   pod 'Parse'
   pod 'FoursquareAPIClient'
+  pod 'Kanna'
   
   target 'SomeFoodieAppTests' do
     inherit! :search_paths
