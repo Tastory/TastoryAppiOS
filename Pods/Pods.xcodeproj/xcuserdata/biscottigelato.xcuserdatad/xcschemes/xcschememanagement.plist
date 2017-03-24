@@ -40,10 +40,25 @@
 			<key>orderHint</key>
 			<integer>3</integer>
 		</dict>
+		<key>WKZombie.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>8</integer>
+		</dict>
+		<key>hpple.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>7</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>1AE39BF99F07CDDFB7ABA096E3445946</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>3C7AFCE3258BC1D59D5A375DDB10FABC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -63,7 +78,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>753FF27995C55D2E99CB98BE476D6D33</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>78CBD0D9589DEF7719F6CCFF168D9A69</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A1960504EAE2A8DFE829CAA55BD41681</key>
 		<dict>
 			<key>primary</key>
 			<true/>
