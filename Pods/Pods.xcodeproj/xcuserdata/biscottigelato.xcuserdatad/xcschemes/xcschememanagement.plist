@@ -45,6 +45,11 @@
 			<key>orderHint</key>
 			<integer>3</integer>
 		</dict>
+		<key>SwiftyCam.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>10</integer>
+		</dict>
 		<key>WKZombie.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -59,6 +64,11 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>1AE39BF99F07CDDFB7ABA096E3445946</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1CCF88551DD59407691267C3FBFDD257</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -89,6 +99,11 @@
 			<true/>
 		</dict>
 		<key>753FF27995C55D2E99CB98BE476D6D33</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>788C8C084CBEB56F8BD2263148DF5392</key>
 		<dict>
 			<key>primary</key>
 			<true/>
