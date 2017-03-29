@@ -38,6 +38,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   
   
   // MARK: - IBActions
+  @IBAction func unwindToMap(segue: UIStoryboardSegue) {
+    // Nothing for now
+  }
+  
+  
   @IBAction func singleTapGestureDetected(_ sender: UITapGestureRecognizer) {
     // Dismiss keyboard if any gestures detected against Map
     locationField?.resignFirstResponder()

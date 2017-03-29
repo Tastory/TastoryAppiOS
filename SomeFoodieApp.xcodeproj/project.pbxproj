@@ -22,6 +22,7 @@
 		8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55B11E80C72200F4B1CD /* MapViewController.swift */; };
 		8CD328DC1E8B2C0400E5254F /* CameraButtonRingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD328DB1E8B2C0400E5254F /* CameraButtonRingLayer.swift */; };
 		8CD328DE1E8B2C1B00E5254F /* CameraButtonLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD328DD1E8B2C1B00E5254F /* CameraButtonLayer.swift */; };
+		8CD328E01E8C687100E5254F /* CameraCrossLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD328DF1E8C687100E5254F /* CameraCrossLayer.swift */; };
 		C5A7852B6648DF71C73BE203 /* Pods_SomeFoodieAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED09C3927B27479449C01250 /* Pods_SomeFoodieAppTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -66,6 +67,7 @@
 		8CBF55B11E80C72200F4B1CD /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		8CD328DB1E8B2C0400E5254F /* CameraButtonRingLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraButtonRingLayer.swift; sourceTree = "<group>"; };
 		8CD328DD1E8B2C1B00E5254F /* CameraButtonLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraButtonLayer.swift; sourceTree = "<group>"; };
+		8CD328DF1E8C687100E5254F /* CameraCrossLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCrossLayer.swift; sourceTree = "<group>"; };
 		D774075B6C8726908633E5B2 /* Pods-SomeFoodieAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SomeFoodieAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SomeFoodieAppTests/Pods-SomeFoodieAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED09C3927B27479449C01250 /* Pods_SomeFoodieAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SomeFoodieAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F73B070E1BA758725ED554B8 /* Pods-SomeFoodieApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SomeFoodieApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-SomeFoodieApp/Pods-SomeFoodieApp.release.xcconfig"; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 			children = (
 				8CD328DD1E8B2C1B00E5254F /* CameraButtonLayer.swift */,
 				8CD328DB1E8B2C0400E5254F /* CameraButtonRingLayer.swift */,
+				8CD328DF1E8C687100E5254F /* CameraCrossLayer.swift */,
 			);
 			name = Layers;
 			sourceTree = "<group>";
@@ -502,6 +505,7 @@
 			files = (
 				8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */,
 				8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */,
+				8CD328E01E8C687100E5254F /* CameraCrossLayer.swift in Sources */,
 				8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */,
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,
 				8CD328DE1E8B2C1B00E5254F /* CameraButtonLayer.swift in Sources */,

@@ -7,6 +7,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -174,17 +175,31 @@
                                     <action selector="capturePressed:" destination="ImI-Ed-QdP" eventType="touchDown" id="S9Z-pK-PVx"/>
                                 </connections>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kxo-zQ-usi">
+                                <rect key="frame" x="16" y="599" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="kxo-zQ-usi" secondAttribute="height" multiplier="1:1" id="HhG-Lw-YHk"/>
+                                    <constraint firstAttribute="width" constant="40" id="hAd-1m-3pU"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="xGt-ES-h6Z" kind="unwind" unwindAction="unwindToMapWithSegue:" id="1rC-dE-ElQ"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="30k-mM-bOe" firstAttribute="centerX" secondItem="oEc-gL-EdH" secondAttribute="centerX" id="b0a-4t-gdd"/>
+                            <constraint firstAttribute="leadingMargin" secondItem="kxo-zQ-usi" secondAttribute="leading" id="jHg-7x-M0c"/>
+                            <constraint firstItem="kxo-zQ-usi" firstAttribute="centerY" secondItem="30k-mM-bOe" secondAttribute="centerY" id="lWT-iL-82h"/>
                             <constraint firstItem="ld9-ET-76c" firstAttribute="top" secondItem="30k-mM-bOe" secondAttribute="bottom" constant="8" symbolic="YES" id="wcu-QE-Qme"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="captureButton" destination="30k-mM-bOe" id="xaS-ZF-RGb"/>
+                        <outlet property="exitButton" destination="kxo-zQ-usi" id="TLa-71-fEp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GQA-kR-YqI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="xGt-ES-h6Z" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="951.20000000000005" y="-235.23238380809596"/>
         </scene>

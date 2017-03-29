@@ -12,7 +12,7 @@ import SwiftyCam
 class CameraButton: SwiftyCamButton {
 
   private struct Defaults {
-    static let buttonRectScale: CGFloat = 0.6
+    static let buttonRectScale: CGFloat = 0.75
   }
   
   var ringLayer = CameraButtonRingLayer()
@@ -30,27 +30,38 @@ class CameraButton: SwiftyCamButton {
     createLayers()
   }
   
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+    buttonLayer.animateSmallToMedium()
+    ringLayer.animateStrokeSmallCircle()
+  }
+  
   func createLayers() {
     let scale = Defaults.buttonRectScale
     let buttonRect = bounds.insetBy(dx: bounds.width*(1-scale)/2, dy: bounds.height*(1-scale)/2)
     buttonLayer = CameraButtonLayer(frame: buttonRect)
+    ringLayer = CameraButtonRingLayer(frame: bounds)
     layer.addSublayer(buttonLayer)
-    buttonLayer.smallToMedium()
+    layer.addSublayer(ringLayer)
+    
   }
   
+  
   func buttonPressed() {
-    buttonLayer.mediumToLarge()
+    buttonLayer.animateMediumToLarge()
+    ringLayer.animateSmallToLarge()
   }
   
   func buttonReleased() {
-    buttonLayer.largeToMedium()
+    buttonLayer.animateLargeToMedium()
+    ringLayer.animateLargeToSmall()
   }
   
   func startRecording() {
-    // Kick off animation
+    ringLayer.animateLargeUnstroke()
   }
   
   func stopRecording() {
-    // Reverse animation
+    ringLayer.animatePauseAnimations()
   }
 }

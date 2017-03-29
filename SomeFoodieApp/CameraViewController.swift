@@ -11,23 +11,46 @@ import SwiftyCam
 
 class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDelegate {
 
-  @IBOutlet weak var captureButton: CameraButton!
-  
-  
-  @IBAction func capturePressed(_ sender: CameraButton) {
-    captureButton.buttonPressed()
+  struct Defaults {
+    static let animateInDuration: CFTimeInterval = 0.7
+    static let cameraButtonOnDuration: CFTimeInterval = 0.2
+    static let cameraButtonOffDuration: CFTimeInterval = 0.2
   }
   
+  private var crossLayer = CameraCrossLayer()
+  
+  @IBOutlet weak var captureButton: CameraButton?
+  @IBOutlet weak var exitButton: UIButton?
+  
+  @IBAction func capturePressed(_ sender: CameraButton) {
+    captureButton?.buttonPressed()
+  }
   
   override func viewDidLoad() {
 
     super.viewDidLoad()
-    self.view.bringSubview(toFront: captureButton)
-    captureButton.delegate = self
     cameraDelegate = self
+    
+    if let captureButton = captureButton {
+      view.bringSubview(toFront: captureButton)
+      #if !TARGET_INTERFACE_BUILDER
+        captureButton.delegate = self
+      #endif
+    }
+    
+    if let exitButton = exitButton {
+      crossLayer = CameraCrossLayer(frame: exitButton.bounds)
+      exitButton.layer.addSublayer(crossLayer)
+      view.bringSubview(toFront: exitButton)
+    }
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    if animated {
+      crossLayer.animateIn()
+    }
   }
 
-  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
@@ -47,23 +70,25 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake photo: UIImage) {
     // Called when takePhoto() is called or if a SwiftyCamButton initiates a tap gesture
     // Returns a UIImage captured from the current session
-    print("didTakePhoto")
-    captureButton.buttonReleased()
+    print("DEBUG_PRINT: didTakePhoto")
+    captureButton?.buttonReleased()
+    
+    
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didBeginRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
     // Called when startVideoRecording() is called
     // Called if a SwiftyCamButton begins a long press gesture
     print("didBeginRecordingVideo")
-    //self.captureButton.startRecording()
+    captureButton?.startRecording()
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
     // Called when stopVideoRecording() is called
     // Called if a SwiftyCamButton ends a long press gesture
     print("didFinishRecordingVideo")
-    //self.captureButton.stopRecording()
-    captureButton.buttonReleased()
+    captureButton?.stopRecording()
+    captureButton?.buttonReleased()
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishProcessVideoAt url: URL) {
