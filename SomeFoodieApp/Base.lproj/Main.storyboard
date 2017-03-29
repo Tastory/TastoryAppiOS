@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -162,28 +163,30 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kHL-NC-VLj" customClass="CameraButton" customModule="SomeFoodieApp" customModuleProvider="target">
-                                <rect key="frame" x="137" y="559" width="100" height="100"/>
+                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="30k-mM-bOe" customClass="CameraButton" customModule="SomeFoodieApp" customModuleProvider="target">
+                                <rect key="frame" x="147" y="579" width="80" height="80"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="100" id="H3i-F1-AWC"/>
-                                    <constraint firstAttribute="width" constant="100" id="vgr-V5-Tge"/>
+                                    <constraint firstAttribute="width" constant="80" id="JUN-TB-80Y"/>
+                                    <constraint firstAttribute="width" secondItem="30k-mM-bOe" secondAttribute="height" multiplier="1:1" id="PuI-wk-huY"/>
                                 </constraints>
-                                <state key="normal" title="Button"/>
-                            </button>
+                                <connections>
+                                    <action selector="capturePressed:" destination="ImI-Ed-QdP" eventType="touchDown" id="S9Z-pK-PVx"/>
+                                </connections>
+                            </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="kHL-NC-VLj" firstAttribute="centerX" secondItem="oEc-gL-EdH" secondAttribute="centerX" id="bww-74-RCF"/>
-                            <constraint firstItem="ld9-ET-76c" firstAttribute="top" secondItem="kHL-NC-VLj" secondAttribute="bottom" constant="8" symbolic="YES" id="fGn-wq-sJY"/>
+                            <constraint firstItem="30k-mM-bOe" firstAttribute="centerX" secondItem="oEc-gL-EdH" secondAttribute="centerX" id="b0a-4t-gdd"/>
+                            <constraint firstItem="ld9-ET-76c" firstAttribute="top" secondItem="30k-mM-bOe" secondAttribute="bottom" constant="8" symbolic="YES" id="wcu-QE-Qme"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="captureButton" destination="kHL-NC-VLj" id="R9H-7E-SWN"/>
+                        <outlet property="captureButton" destination="30k-mM-bOe" id="xaS-ZF-RGb"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GQA-kR-YqI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="952" y="-235"/>
+            <point key="canvasLocation" x="951.20000000000005" y="-235.23238380809596"/>
         </scene>
     </scenes>
 </document>

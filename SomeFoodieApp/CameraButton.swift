@@ -10,37 +10,47 @@ import UIKit
 import SwiftyCam
 
 class CameraButton: SwiftyCamButton {
-  
-  private struct CameraButtonConstants {
-    //static let buttonRadius = 25.0
+
+  private struct Defaults {
+    static let buttonRectScale: CGFloat = 0.6
   }
   
-  override func draw(_ rect: CGRect) {
-    
-    super.draw(rect)
-    
-    // Drawing code
-    let buttonRadius = min(bounds.size.width-5, bounds.size.height-5)/2
-    let buttonCenter = CGPoint(x: bounds.midX, y: bounds.midY)
-    let path = UIBezierPath(arcCenter: buttonCenter,
-                            radius: buttonRadius,
-                            startAngle: 0,
-                            endAngle: CGFloat(2*M_PI),
-                            clockwise: true)
-    
-    path.close()
-    UIColor.white.withAlphaComponent(0.0).setFill()
-    UIColor.white.setStroke()
-    path.lineWidth = 2.0
-    path.fill()
-    path.stroke()
-  }
+  var ringLayer = CameraButtonRingLayer()
+  var buttonLayer = CameraButtonLayer()
+  // TODO: Busy Indicator Layer
   
   override init(frame: CGRect) {
     super.init(frame: frame)
+    self.frame = frame
+    createLayers()
   }
   
   required init?(coder aDecoder: NSCoder) {
-    super.init(coder: aDecoder)!
+    super.init(coder: aDecoder)
+    createLayers()
+  }
+  
+  func createLayers() {
+    let scale = Defaults.buttonRectScale
+    let buttonRect = bounds.insetBy(dx: bounds.width*(1-scale)/2, dy: bounds.height*(1-scale)/2)
+    buttonLayer = CameraButtonLayer(frame: buttonRect)
+    layer.addSublayer(buttonLayer)
+    buttonLayer.smallToMedium()
+  }
+  
+  func buttonPressed() {
+    buttonLayer.mediumToLarge()
+  }
+  
+  func buttonReleased() {
+    buttonLayer.largeToMedium()
+  }
+  
+  func startRecording() {
+    // Kick off animation
+  }
+  
+  func stopRecording() {
+    // Reverse animation
   }
 }

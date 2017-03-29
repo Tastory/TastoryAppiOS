@@ -13,15 +13,21 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
 
   @IBOutlet weak var captureButton: CameraButton!
   
+  
+  @IBAction func capturePressed(_ sender: CameraButton) {
+    captureButton.buttonPressed()
+  }
+  
+  
   override func viewDidLoad() {
+
     super.viewDidLoad()
-    
     self.view.bringSubview(toFront: captureButton)
-    
     captureButton.delegate = self
     cameraDelegate = self
   }
 
+  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
@@ -42,18 +48,22 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
     // Called when takePhoto() is called or if a SwiftyCamButton initiates a tap gesture
     // Returns a UIImage captured from the current session
     print("didTakePhoto")
+    captureButton.buttonReleased()
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didBeginRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
     // Called when startVideoRecording() is called
     // Called if a SwiftyCamButton begins a long press gesture
     print("didBeginRecordingVideo")
+    //self.captureButton.startRecording()
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
     // Called when stopVideoRecording() is called
     // Called if a SwiftyCamButton ends a long press gesture
     print("didFinishRecordingVideo")
+    //self.captureButton.stopRecording()
+    captureButton.buttonReleased()
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishProcessVideoAt url: URL) {
