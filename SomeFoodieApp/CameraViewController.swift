@@ -20,7 +20,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   private var crossLayer = CameraCrossLayer()
   
   @IBOutlet weak var captureButton: CameraButton?
-  @IBOutlet weak var exitButton: UIButton?
+  @IBOutlet weak var exitButton: ExitButton?
   
   @IBAction func capturePressed(_ sender: CameraButton) {
     captureButton?.buttonPressed()
@@ -39,15 +39,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
     }
     
     if let exitButton = exitButton {
-      crossLayer = CameraCrossLayer(frame: exitButton.bounds)
-      exitButton.layer.addSublayer(crossLayer)
       view.bringSubview(toFront: exitButton)
-    }
-  }
-  
-  override func viewWillAppear(_ animated: Bool) {
-    if animated {
-      crossLayer.animateIn()
     }
   }
 

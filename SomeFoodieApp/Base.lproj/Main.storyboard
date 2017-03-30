@@ -175,7 +175,7 @@
                                     <action selector="capturePressed:" destination="ImI-Ed-QdP" eventType="touchDown" id="S9Z-pK-PVx"/>
                                 </connections>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kxo-zQ-usi">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kxo-zQ-usi" customClass="ExitButton" customModule="SomeFoodieApp" customModuleProvider="target">
                                 <rect key="frame" x="16" y="599" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="kxo-zQ-usi" secondAttribute="height" multiplier="1:1" id="HhG-Lw-YHk"/>
