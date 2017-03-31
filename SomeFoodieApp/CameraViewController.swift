@@ -150,7 +150,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake photo: UIImage) {
     // Called when takePhoto() is called or if a SwiftyCamButton initiates a tap gesture
     // Returns a UIImage captured from the current session
-    print("DEBUG_PRINT: didTakePhoto")
+    print("DEBUG_PRINT: didTakePhoto") // TODO: Make photos brighter too
     UIImageWriteToSavedPhotosAlbum(photo, nil, nil, nil)
     performSegue(withIdentifier: "toPhotoMarkup", sender: photo)
   }
