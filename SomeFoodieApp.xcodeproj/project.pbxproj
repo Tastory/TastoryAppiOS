@@ -13,6 +13,8 @@
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
 		8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */; };
 		8C5CAD251E8C8A8800C75D12 /* ExitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5CAD241E8C8A8800C75D12 /* ExitButton.swift */; };
+		8C5CAD451E8CC60F00C75D12 /* MarkupImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5CAD441E8CC60F00C75D12 /* MarkupImageViewController.swift */; };
+		8C5CAD651E8DCC1D00C75D12 /* MarkupVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5CAD641E8DCC1D00C75D12 /* MarkupVideoViewController.swift */; };
 		8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CADA1A91E85D9CE00BF6CF0 /* ScrapeViewController.swift */; };
 		8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */; };
 		8CBF55891E7F7EDF00F4B1CD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */; };
@@ -53,6 +55,8 @@
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButton.swift; path = SomeFoodieApp/CameraButton.swift; sourceTree = "<group>"; };
 		8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MKCoordinateSpan+Extensions.swift"; sourceTree = "<group>"; };
 		8C5CAD241E8C8A8800C75D12 /* ExitButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExitButton.swift; sourceTree = "<group>"; };
+		8C5CAD441E8CC60F00C75D12 /* MarkupImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MarkupImageViewController.swift; path = ../MarkupImageViewController.swift; sourceTree = "<group>"; };
+		8C5CAD641E8DCC1D00C75D12 /* MarkupVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkupVideoViewController.swift; sourceTree = "<group>"; };
 		8CADA1A91E85D9CE00BF6CF0 /* ScrapeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrapeViewController.swift; sourceTree = "<group>"; };
 		8CBF55801E7F7EDF00F4B1CD /* SomeFoodieApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SomeFoodieApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -171,10 +175,10 @@
 			isa = PBXGroup;
 			children = (
 				8CD328DA1E8B2BD600E5254F /* Layers */,
-				8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */,
-				8CBF558C1E7F7EDF00F4B1CD /* LaunchScreen.storyboard */,
 				8C1A0D7E1E88F711001DE075 /* CameraButton.swift */,
 				8C5CAD241E8C8A8800C75D12 /* ExitButton.swift */,
+				8CBF558C1E7F7EDF00F4B1CD /* LaunchScreen.storyboard */,
+				8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */,
 			);
 			name = Views;
 			path = ..;
@@ -194,6 +198,8 @@
 				8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */,
 				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
 				8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */,
+				8C5CAD441E8CC60F00C75D12 /* MarkupImageViewController.swift */,
+				8C5CAD641E8DCC1D00C75D12 /* MarkupVideoViewController.swift */,
 				8CADA1A91E85D9CE00BF6CF0 /* ScrapeViewController.swift */,
 			);
 			name = Controllers;
@@ -506,6 +512,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C5CAD651E8DCC1D00C75D12 /* MarkupVideoViewController.swift in Sources */,
 				8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */,
 				8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */,
 				8CD328E01E8C687100E5254F /* CameraCrossLayer.swift in Sources */,
@@ -513,6 +520,7 @@
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,
 				8C5CAD251E8C8A8800C75D12 /* ExitButton.swift in Sources */,
 				8CD328DE1E8B2C1B00E5254F /* CameraButtonLayer.swift in Sources */,
+				8C5CAD451E8CC60F00C75D12 /* MarkupImageViewController.swift in Sources */,
 				8CD328DC1E8B2C0400E5254F /* CameraButtonRingLayer.swift in Sources */,
 				8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */,
 				8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extensions.swift in Sources */,

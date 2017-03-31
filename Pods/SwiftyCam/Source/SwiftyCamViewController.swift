@@ -276,7 +276,7 @@ open class SwiftyCamViewController: UIViewController {
                     // Unknown Error
                     DispatchQueue.main.async(execute: { [unowned self] in
                         let message = NSLocalizedString("Unable to capture media", comment: "Alert message when something goes wrong during capture session configuration")
-                        let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
+                        let alertController = UIAlertController(title: "SomeFoodieApp", message: message, preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"), style: .cancel, handler: nil))
                         self.present(alertController, animated: true, completion: nil)
                 })
@@ -690,8 +690,8 @@ open class SwiftyCamViewController: UIViewController {
         // prompt User with UIAlertView
 
         DispatchQueue.main.async(execute: { [unowned self] in
-            let message = NSLocalizedString("AVCam doesn't have permission to use the camera, please change privacy settings", comment: "Alert message when the user has denied access to the camera")
-            let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
+            let message = NSLocalizedString("SomeFoodieApp doesn't have permission to use the camera, please change privacy settings", comment: "Alert message when the user has denied access to the camera")
+            let alertController = UIAlertController(title: "SomeFoodieApp", message: message, preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"), style: .cancel, handler: nil))
             alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"), style: .default, handler: { action in
                 if #available(iOS 10.0, *) {

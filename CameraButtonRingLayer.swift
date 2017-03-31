@@ -11,7 +11,7 @@ import UIKit
 class CameraButtonRingLayer: CAShapeLayer {
   
   private struct Defaults {
-    static let smallCircleScale: CGFloat = 0.85
+    static let smallCircleScale: CGFloat = 0.80
     static let smallAlpha: CGFloat = 0.7
     static let smallWidth: CGFloat = 3.0
 
@@ -58,6 +58,16 @@ class CameraButtonRingLayer: CAShapeLayer {
                         clockwise: true)
   }
   
+  private var dotCircle: UIBezierPath {
+    lineWidth = Defaults.largeWidth
+    strokeColor = largeColor.withAlphaComponent(Defaults.largeAlpha).cgColor
+    return UIBezierPath(arcCenter: CGPoint(x: bounds.midX, y: bounds.midY),
+                        radius: min(bounds.width/2, bounds.height/2),
+                        startAngle: CGFloat.pi*29/20,
+                        endAngle: CGFloat.pi*3/2,
+                        clockwise: true)
+  }
+  
   func animateStrokeSmallCircle() {
     let strokeAnimation = CABasicAnimation(keyPath: "strokeEnd")
     strokeAnimation.fromValue = 0.0
@@ -94,13 +104,20 @@ class CameraButtonRingLayer: CAShapeLayer {
     unstrokeAnimation.fromValue = 0.0
     unstrokeAnimation.toValue = 1.0
     unstrokeAnimation.duration = largeUnstrokeDuration
-    unstrokeAnimation.isRemovedOnCompletion = true
+    unstrokeAnimation.fillMode = kCAFillModeForwards
+    unstrokeAnimation.isRemovedOnCompletion = false
     add(unstrokeAnimation, forKey: "strokeStart")
   }
   
-  func animatePauseAnimations() {
+  func pauseAnimations() {
     let pauseTime = convertTime(CACurrentMediaTime(), from: nil)
     speed = 0.0
     timeOffset = pauseTime
+  }
+  
+  func resetAnimations() {
+    removeAllAnimations()
+    speed = 1.0
+    timeOffset = 0.0
   }
 }

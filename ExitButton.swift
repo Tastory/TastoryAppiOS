@@ -33,7 +33,7 @@ class ExitButton: UIButton {
     crossLayer.animateIn()
   }
   
-  func createLayers() {
+  private func createLayers() {
     let scale = Defaults.unpressedScale
     let smallerRect = bounds.insetBy(dx: bounds.width*(1-scale)/2,
                                      dy: bounds.width*(1-scale)/2)

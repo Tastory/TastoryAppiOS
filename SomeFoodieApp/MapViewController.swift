@@ -81,7 +81,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   }
   
   
-  // MARK: - View Controller Life Cycles
+  // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -140,8 +140,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     print("DEBUG_ERROR: locationManager didFailWithError, error.localizedDescription = \(error.localizedDescription)")
     
     guard let errorCode = error as? CLError else {
-      assertionFailure("Not getting CLError upon a Location Manager Error")
-      return
+      print("DEBUG_ERROR: locationManager didFailWithError - Not getting CLError upon a Location Manager Error")
+      fatalError("Not getting CLError upon a Location Manager Error")
     }
     
     print("DEBUG_ERROR: locationManager didFailWithError, CLError.code = \(errorCode.code.rawValue)")

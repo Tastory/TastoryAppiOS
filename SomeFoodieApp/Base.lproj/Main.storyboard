@@ -165,14 +165,16 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="30k-mM-bOe" customClass="CameraButton" customModule="SomeFoodieApp" customModuleProvider="target">
-                                <rect key="frame" x="147" y="579" width="80" height="80"/>
+                                <rect key="frame" x="147.5" y="579" width="80" height="80"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="80" id="JUN-TB-80Y"/>
                                     <constraint firstAttribute="width" secondItem="30k-mM-bOe" secondAttribute="height" multiplier="1:1" id="PuI-wk-huY"/>
                                 </constraints>
                                 <connections>
                                     <action selector="capturePressed:" destination="ImI-Ed-QdP" eventType="touchDown" id="S9Z-pK-PVx"/>
+                                    <outletCollection property="gestureRecognizers" destination="Hy8-pD-3IZ" appends="YES" id="UAK-Dg-gGw"/>
                                 </connections>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kxo-zQ-usi" customClass="ExitButton" customModule="SomeFoodieApp" customModuleProvider="target">
@@ -196,12 +198,100 @@
                     <connections>
                         <outlet property="captureButton" destination="30k-mM-bOe" id="xaS-ZF-RGb"/>
                         <outlet property="exitButton" destination="kxo-zQ-usi" id="TLa-71-fEp"/>
+                        <outlet property="tapRecognizer" destination="Hy8-pD-3IZ" id="yNt-QN-sHL"/>
+                        <segue destination="3Lz-hF-LGR" kind="show" identifier="toPhotoMarkup" id="d8c-LF-CWi"/>
+                        <segue destination="cNY-F3-Aua" kind="show" identifier="toVideoMarkup" id="agT-0q-BhG"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GQA-kR-YqI" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="xGt-ES-h6Z" userLabel="Exit" sceneMemberID="exit"/>
+                <tapGestureRecognizer id="Hy8-pD-3IZ">
+                    <connections>
+                        <action selector="captureTapped:" destination="ImI-Ed-QdP" id="8qJ-hw-vbS"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="951.20000000000005" y="-235.23238380809596"/>
+        </scene>
+        <!--Markup Video View Controller-->
+        <scene sceneID="WSP-Y4-yUt">
+            <objects>
+                <viewController id="cNY-F3-Aua" customClass="MarkupVideoViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="K58-fE-Vve"/>
+                        <viewControllerLayoutGuide type="bottom" id="d6H-6M-Pjl"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="jzo-JU-z4n">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oQC-GY-R1D">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="mQm-pz-a2K" appends="YES" id="fN8-qf-2yi"/>
+                                </connections>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="videoView" destination="oQC-GY-R1D" id="i0G-AP-tka"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QzY-aO-qdH" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="UvK-oV-tyZ" userLabel="Exit" sceneMemberID="exit"/>
+                <swipeGestureRecognizer direction="right" id="mQm-pz-a2K">
+                    <connections>
+                        <segue destination="UvK-oV-tyZ" kind="unwind" unwindAction="unwindToCameraWithSegue:" id="LxZ-Jo-OiC"/>
+                    </connections>
+                </swipeGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="1740" y="-954.87256371814101"/>
+        </scene>
+        <!--Markup Image View Controller-->
+        <scene sceneID="H9q-fk-uJF">
+            <objects>
+                <viewController id="3Lz-hF-LGR" customClass="MarkupImageViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Wru-2j-ls2"/>
+                        <viewControllerLayoutGuide type="bottom" id="NR8-oP-KZt"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="3hs-y9-2cP">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="W3N-xZ-ytW">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="wQ8-Du-o7Y" appends="YES" id="Keb-ki-j1c"/>
+                                </connections>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="W3N-xZ-ytW" firstAttribute="leading" secondItem="3hs-y9-2cP" secondAttribute="leading" id="9FJ-6S-3tj"/>
+                            <constraint firstAttribute="trailing" secondItem="W3N-xZ-ytW" secondAttribute="trailing" id="T8f-GI-OVb"/>
+                            <constraint firstItem="W3N-xZ-ytW" firstAttribute="top" secondItem="3hs-y9-2cP" secondAttribute="top" id="nMS-ot-JCe"/>
+                            <constraint firstItem="W3N-xZ-ytW" firstAttribute="bottom" secondItem="NR8-oP-KZt" secondAttribute="top" id="p2t-8K-lcW"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="photoView" destination="W3N-xZ-ytW" id="0wi-kO-oZC"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bya-bk-WIy" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="BNH-me-vRH" userLabel="Exit" sceneMemberID="exit"/>
+                <swipeGestureRecognizer direction="right" id="wQ8-Du-o7Y">
+                    <connections>
+                        <segue destination="BNH-me-vRH" kind="unwind" unwindAction="unwindToCameraWithSegue:" id="ehn-mG-IHE"/>
+                    </connections>
+                </swipeGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="1740" y="-235.23238380809596"/>
         </scene>
     </scenes>
 </document>
