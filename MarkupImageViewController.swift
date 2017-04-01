@@ -9,9 +9,8 @@
 import UIKit
 
 class MarkupImageViewController: UIViewController {
-
-  @IBOutlet weak var photoView: UIImageView?
   
+  var photoView: UIImageView?
   var previewPhoto: UIImage?
   
   override func viewDidLoad() {
@@ -23,6 +22,8 @@ class MarkupImageViewController: UIViewController {
       fatalError("Shouldn't be here without a valid previewPhoto")
     }
     
+    photoView = UIImageView(frame: view.bounds)
+    view.addSubview(photoView!)
     photoView?.image = photo
   }
 

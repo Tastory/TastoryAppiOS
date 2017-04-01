@@ -183,7 +183,6 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
     }
     
     performSegue(withIdentifier: "toVideoMarkup", sender: url)
-    
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFocusAtPoint point: CGPoint) {

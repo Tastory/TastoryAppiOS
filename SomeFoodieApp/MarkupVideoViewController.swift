@@ -15,8 +15,6 @@ class MarkupVideoViewController: UIViewController {
   var avPlayer = AVPlayer()
   var avPlayerLayer = AVPlayerLayer()
   
-  @IBOutlet weak var videoView: UIView?
-  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -26,10 +24,15 @@ class MarkupVideoViewController: UIViewController {
       fatalError("Shouldn't be here without a valid videoURL")
     }
     
+    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.avPlayer.currentItem, queue: .main) { (_) in
+      self.avPlayer.seek(to: kCMTimeZero)
+      self.avPlayer.play()
+    }
+    
     avPlayer = AVPlayer(url: videoGuardedURL)
     avPlayerLayer = AVPlayerLayer(player: avPlayer)
     avPlayerLayer.frame = self.view.bounds
-    videoView?.layer.addSublayer(avPlayerLayer)
+    view.layer.addSublayer(avPlayerLayer)
     avPlayer.play() // TODO: Make Videos Loop?
   }
 
