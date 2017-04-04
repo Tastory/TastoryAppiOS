@@ -29,6 +29,8 @@ class CameraCrossLayer: CAShapeLayer {
     path = normalCross.cgPath
   }
   
+  
+  // Cross shape to represent the exit button from the camera view
   private var normalCross: UIBezierPath {
     let inset: CGFloat = Defaults.crossInsetPx
     let newRect = bounds.insetBy(dx: inset, dy: inset)
@@ -40,6 +42,8 @@ class CameraCrossLayer: CAShapeLayer {
     return crossPath
   }
   
+  
+  // When the camera view loads, the cross is stroked to animate in
   func animateIn () {
     let animation = CABasicAnimation(keyPath: "strokeEnd")
     animation.fromValue = 0.0

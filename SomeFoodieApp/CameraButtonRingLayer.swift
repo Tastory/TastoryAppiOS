@@ -11,12 +11,12 @@ import UIKit
 class CameraButtonRingLayer: CAShapeLayer {
   
   private struct Defaults {
-    static let smallCircleScale: CGFloat = 0.80
+    static let smallCircleScale: CGFloat = 0.80  // Size of the ring when capture button is unpressed, as a percentage of the pressed larger ring
     static let smallAlpha: CGFloat = 0.7
-    static let smallWidth: CGFloat = 3.0
+    static let smallWidth: CGFloat = 3.0  // Stroke width of the ring when capture button is unpressed
 
     static let largeAlpha: CGFloat = 0.7
-    static let largeWidth: CGFloat = 10.0
+    static let largeWidth: CGFloat = 10.0  // Stroke width of the ring when capture button have been pressed
   }
   
   let smallColor = UIColor.white
@@ -27,6 +27,7 @@ class CameraButtonRingLayer: CAShapeLayer {
   let largeToSmallDuration: CFTimeInterval = CameraViewController.Defaults.cameraButtonOffDuration
   let largeUnstrokeDuration: CFTimeInterval = 10.0 // need to match recording max duration
   
+  
   convenience init (frame: CGRect) {
     self.init()
     self.frame = frame
@@ -36,6 +37,8 @@ class CameraButtonRingLayer: CAShapeLayer {
     path = smallCircle.cgPath
   }
   
+  
+  // Ring when the capture button is not pressed
   private var smallCircle: UIBezierPath {
     let scale = Defaults.smallCircleScale
     let newRect = bounds.insetBy(dx: bounds.width*(1-scale)/2, dy: bounds.height*(1-scale)/2)
@@ -48,6 +51,8 @@ class CameraButtonRingLayer: CAShapeLayer {
                         clockwise: true)
   }
   
+  
+  // Ring when the cpature button have been pressed
   private var largeCircle: UIBezierPath {
     lineWidth = Defaults.largeWidth
     strokeColor = largeColor.withAlphaComponent(Defaults.largeAlpha).cgColor
@@ -58,6 +63,8 @@ class CameraButtonRingLayer: CAShapeLayer {
                         clockwise: true)
   }
   
+  
+  // What's left of the ring at the end of the 10 seconds recording window - aka. Just a dot at the 12 o'clock position.
   private var dotCircle: UIBezierPath {
     lineWidth = Defaults.largeWidth
     strokeColor = largeColor.withAlphaComponent(Defaults.largeAlpha).cgColor
@@ -68,6 +75,8 @@ class CameraButtonRingLayer: CAShapeLayer {
                         clockwise: true)
   }
   
+  
+  // As the camera view is loading, the ring gets stroked clockwise
   func animateStrokeSmallCircle() {
     let strokeAnimation = CABasicAnimation(keyPath: "strokeEnd")
     strokeAnimation.fromValue = 0.0
@@ -77,6 +86,8 @@ class CameraButtonRingLayer: CAShapeLayer {
     add(strokeAnimation, forKey: "strokeEnd")
   }
   
+  
+  // As the capture button is pressed, the ring enlarges
   func animateSmallToLarge() {
     let pathAnimation = CABasicAnimation(keyPath: "path")
     pathAnimation.fromValue = smallCircle.cgPath
@@ -88,6 +99,8 @@ class CameraButtonRingLayer: CAShapeLayer {
     add(pathAnimation, forKey: "path")
   }
   
+  
+  // As the capture button is released, the ring becomes smaller again
   func animateLargeToSmall() {
     let pathAnimation = CABasicAnimation(keyPath: "path")
     pathAnimation.fromValue = largeCircle.cgPath
@@ -99,6 +112,8 @@ class CameraButtonRingLayer: CAShapeLayer {
     add(pathAnimation, forKey: "path")
   }
   
+  
+  // When video is recording, the large ring gets unstroked clockwise
   func animateLargeUnstroke() {
     let unstrokeAnimation = CABasicAnimation(keyPath: "strokeStart")
     unstrokeAnimation.fromValue = 0.0
@@ -109,12 +124,16 @@ class CameraButtonRingLayer: CAShapeLayer {
     add(unstrokeAnimation, forKey: "strokeStart")
   }
   
+  
+  // When recording stops, the stroking animation will pause in place
   func pauseAnimations() {
     let pauseTime = convertTime(CACurrentMediaTime(), from: nil)
     speed = 0.0
     timeOffset = pauseTime
   }
   
+  
+  // Animation needs to reset when a user discards a media from the markup view back to the camera view
   func resetAnimations() {
     removeAllAnimations()
     speed = 1.0

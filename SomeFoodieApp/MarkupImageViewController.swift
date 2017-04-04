@@ -18,8 +18,9 @@ class MarkupImageViewController: UIViewController {
   
   @IBAction func saveButtonAction(_ sender: UIButton) {
     
-    // let momentObj = PFObject(className: "FoodieMoment")
+    let momentObj = FoodieMoment()
     
+    momentObj.media = PFFile(data: UIImageJPEGRepresentation(photo, ), contentType: "photo") // TODO: Compresion on upload/download, + server side work?
     // momentObj["mediaURL"] // Can be photo or video
     // momentObj[["Markups"]] // Array of captions
     // momentObj["aspectRatio"]

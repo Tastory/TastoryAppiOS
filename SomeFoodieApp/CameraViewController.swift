@@ -14,9 +14,9 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
 
   // MARK: - Private Constants
   struct Defaults {
-    static let animateInDuration: CFTimeInterval = 0.7
-    static let cameraButtonOnDuration: CFTimeInterval = 0.2
-    static let cameraButtonOffDuration: CFTimeInterval = 0.2
+    static let animateInDuration: CFTimeInterval = 0.7  // Duration for things to animate in when the camera view initially loads
+    static let cameraButtonOnDuration: CFTimeInterval = 0.2  // Duration for animation when the capture button is pressed
+    static let cameraButtonOffDuration: CFTimeInterval = 0.2  // Duration for animation when the cpature button is depressed
   }
   
   

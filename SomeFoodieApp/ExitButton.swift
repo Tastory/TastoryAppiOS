@@ -11,7 +11,7 @@ import UIKit
 class ExitButton: UIButton {
 
   private struct Defaults {
-    static let unpressedScale: CGFloat = 0.9
+    static let unpressedScale: CGFloat = 0.9  // The X is smaller when unpressed compared to when depressed. This is the scale to apply
   }
   
   var crossLayer = CameraCrossLayer()
@@ -34,16 +34,20 @@ class ExitButton: UIButton {
   }
   
   private func createLayers() {
+    
+    // The Unpressed cross is made smaller than max size. Max size is reserved for the Pressed cross
     let scale = Defaults.unpressedScale
     let smallerRect = bounds.insetBy(dx: bounds.width*(1-scale)/2,
                                      dy: bounds.width*(1-scale)/2)
     crossLayer = CameraCrossLayer(frame: smallerRect)
     pressedCrossLayer = CameraCrossLayer(frame: bounds)
-    layer.addSublayer(pressedCrossLayer)
     layer.addSublayer(crossLayer)
-    pressedCrossLayer.isHidden = true
+    layer.addSublayer(pressedCrossLayer)
+    pressedCrossLayer.isHidden = true  // As seen above both the unpressed and pressed crosses are pre-made ahead of time. But the press crossed is initially hidden
   }
   
+  
+  // This is how the cross is 'animated' when pressed/depressed
   override var isHighlighted: Bool {
     didSet {
       if isHighlighted {

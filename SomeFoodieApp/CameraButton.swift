@@ -12,7 +12,7 @@ import SwiftyCam
 class CameraButton: SwiftyCamButton {
 
   private struct Defaults {
-    static let buttonRectScale: CGFloat = 0.75
+    static let buttonRectScale: CGFloat = 0.75  // There's a rounded rectangle in the middle of the button. This is the scale to apply
   }
   
   var ringLayer = CameraButtonRingLayer()
