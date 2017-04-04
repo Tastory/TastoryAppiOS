@@ -53,32 +53,25 @@ public protocol SwiftyCamButtonDelegate {
     /// Maximum duration variable
     
     fileprivate var timer : Timer?
+  
+    /// Delegate variable
     
+    public var delegate: SwiftyCamButtonDelegate?
+  
     /// Initialization Declaration
     
     override public init(frame: CGRect) {
         super.init(frame: frame)
-      #if !TARGET_INTERFACE_BUILDER
         createGestureRecognizers()
-      #endif
     }
     
     /// Initialization Declaration
 
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-      #if !TARGET_INTERFACE_BUILDER
         createGestureRecognizers()
-      #endif
     }
   
-  #if !TARGET_INTERFACE_BUILDER
-  
-    /// Delegate variable
-      
-    public var delegate: SwiftyCamButtonDelegate?
-  
-      
     /// UITapGestureRecognizer Function
     
     @objc fileprivate func Tap() {
@@ -130,7 +123,4 @@ public protocol SwiftyCamButtonDelegate {
         self.addGestureRecognizer(tapGesture)
         self.addGestureRecognizer(longGesture)
     }
-  
-  #endif
-  
 }

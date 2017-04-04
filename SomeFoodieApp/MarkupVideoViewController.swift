@@ -15,6 +15,8 @@ class MarkupVideoViewController: UIViewController {
   var avPlayer = AVPlayer()
   var avPlayerLayer = AVPlayerLayer()
   
+  
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -32,7 +34,7 @@ class MarkupVideoViewController: UIViewController {
     avPlayer = AVPlayer(url: videoGuardedURL)
     avPlayerLayer = AVPlayerLayer(player: avPlayer)
     avPlayerLayer.frame = self.view.bounds
-    view.layer.addSublayer(avPlayerLayer)
+    view.layer.addSublayer(avPlayerLayer) // TODO: Need to move this layer to the back
     avPlayer.play() // TODO: Make Videos Loop?
   }
 

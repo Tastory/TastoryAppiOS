@@ -7,11 +7,46 @@
 //
 
 import UIKit
+import Parse
 
 class MarkupImageViewController: UIViewController {
   
   var photoView: UIImageView?
   var previewPhoto: UIImage?
+  
+  @IBOutlet weak var saveButton: UIButton?
+  
+  @IBAction func saveButtonAction(_ sender: UIButton) {
+    
+    // let momentObj = PFObject(className: "FoodieMoment")
+    
+    // momentObj["mediaURL"] // Can be photo or video
+    // momentObj[["Markups"]] // Array of captions
+    // momentObj["aspectRatio"]
+    // momentObj["size"] // Is this necassary? Re-interpolate if this is not 'nativish' size?
+    // momentObj[["tag"]]
+    // momemtObj["category"]
+    // momentObj["describes"] // Dish vs Interior vs Exterior vs ...?
+    // momentObj["detailedDescription"] // Dish name, interior specifics, exterior specifics?
+    // momentObj["views"]
+    // momentObj["clickthroughs"]
+    //
+    //
+    
+//    testObject["foo"] = "bar"
+//    testObject.saveInBackground { (success, error) in
+//      if success {
+//        print("Object has been saved!")
+//      } else if let errorUnwrapped = error {
+//        print("Save failed - \(errorUnwrapped.localizedDescription)")
+//      } else {
+//        print("Save failed but no valid error description")
+//      }
+//    }
+    
+  }
+  
+  // MARK: - View Controller Lifecycle
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -22,8 +57,10 @@ class MarkupImageViewController: UIViewController {
       fatalError("Shouldn't be here without a valid previewPhoto")
     }
     
+    // Display the photo
     photoView = UIImageView(frame: view.bounds)
     view.addSubview(photoView!)
+    view.sendSubview(toBack: photoView!)
     photoView?.image = photo
   }
 
