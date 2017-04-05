@@ -10,20 +10,20 @@ import UIKit
 
 class CameraCrossLayer: CAShapeLayer {
   
-  private struct Defaults {
+  private struct Constants {
     static let crossInsetPx: CGFloat = 10.0
     static let alphaValue: CGFloat = 0.8
     static let strokeWidth: CGFloat = 3.0
   }
   
-  var animateInDuration: CFTimeInterval = CameraViewController.Defaults.animateInDuration
+  var animateInDuration: CFTimeInterval = CameraViewController.GlobalConstants.animateInDuration
   
   convenience init(frame: CGRect) {
     self.init()
     self.frame = frame
     
-    strokeColor = UIColor.white.withAlphaComponent(Defaults.alphaValue).cgColor
-    lineWidth = Defaults.strokeWidth
+    strokeColor = UIColor.white.withAlphaComponent(Constants.alphaValue).cgColor
+    lineWidth = Constants.strokeWidth
     lineCap = kCALineCapRound
     lineJoin = kCALineJoinRound
     path = normalCross.cgPath
@@ -32,7 +32,7 @@ class CameraCrossLayer: CAShapeLayer {
   
   // Cross shape to represent the exit button from the camera view
   private var normalCross: UIBezierPath {
-    let inset: CGFloat = Defaults.crossInsetPx
+    let inset: CGFloat = Constants.crossInsetPx
     let newRect = bounds.insetBy(dx: inset, dy: inset)
     let crossPath = UIBezierPath()
     crossPath.move(to: newRect.origin)

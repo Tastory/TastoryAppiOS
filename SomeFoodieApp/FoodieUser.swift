@@ -1,5 +1,5 @@
 //
-//  FoodeUser.swift
+//  FoodieUser.swift
 //  SomeFoodieApp
 //
 //  Created by Howard Lee on 2017-04-03.

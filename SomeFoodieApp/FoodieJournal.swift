@@ -11,6 +11,7 @@ import Parse
 
 class FoodieJournal: PFObject {
   
+  // MARK: - Parse PFObject keys
   @NSManaged var moments: Array<PFObject>? // A FoodieMoment Photo or Video
   @NSManaged var thumbnail: PFFile? // Thumbnail for the Journal
   @NSManaged var type: Int // Really enum for the thumbnail type. Allow videos in the future?
@@ -47,6 +48,35 @@ class FoodieJournal: PFObject {
   @NSManaged var clickthroughs: Int
   
   // Date created vs Date updated is given for free
+  
+  
+  // MARK: - Private Static Variable
+  private static var currentJournal: FoodieJournal?
+  
+  
+  // MARK: - Internal Static Functions
+  
+  // Return the current FoodieJournal that is under addition/edit
+  static func current() -> FoodieJournal? {
+    return currentJournal
+  }
+  
+  // Create a new FoodieJournal as the current Journal. Save or discard the previous current Journal
+  static func new(saveCurrent: Bool, errorCallback: ((Bool, Error?) -> Void)?)  -> FoodieJournal? {
+    if saveCurrent {
+      guard let callback = errorCallback else {
+        print("DEBUG_ERROR: Expected non-nil errorCallback function")
+        return nil
+      }
+      self.saveCurrent(errorCallback: callback)
+    }
+    return FoodieJournal()
+  }
+  
+  // Save the current Journal
+  static func saveCurrent(errorCallback: ((Bool, Error?) -> Void)?) {
+    currentJournal?.saveEventually(errorCallback)  // TODO: Is this the right call? Or should use saveInBackground
+  }
 }
 
 

@@ -20,32 +20,48 @@ class MarkupImageViewController: UIViewController {
     
     let momentObj = FoodieMoment()
     
-    momentObj.media = PFFile(data: UIImageJPEGRepresentation(photo, ), contentType: "photo") // TODO: Compresion on upload/download, + server side work?
-    // momentObj["mediaURL"] // Can be photo or video
-    // momentObj[["Markups"]] // Array of captions
-    // momentObj["aspectRatio"]
-    // momentObj["size"] // Is this necassary? Re-interpolate if this is not 'nativish' size?
-    // momentObj[["tag"]]
-    // momemtObj["category"]
-    // momentObj["describes"] // Dish vs Interior vs Exterior vs ...?
-    // momentObj["detailedDescription"] // Dish name, interior specifics, exterior specifics?
-    // momentObj["views"]
-    // momentObj["clickthroughs"]
-    //
-    //
+    guard let photo = previewPhoto else {
+      print("DEBUG_ERROR: MarkupImageViewController.saveButtonAction - previewPhoto = nil")
+      return
+    }
     
-//    testObject["foo"] = "bar"
-//    testObject.saveInBackground { (success, error) in
-//      if success {
-//        print("Object has been saved!")
-//      } else if let errorUnwrapped = error {
-//        print("Save failed - \(errorUnwrapped.localizedDescription)")
-//      } else {
-//        print("Save failed but no valid error description")
-//      }
-//    }
+    guard let imageData = UIImageJPEGRepresentation(photo, FoodieMoment.GlobalConstants.jpegCompressionQuality) else  {
+      print("DEBUG_ERROR: MarkupImageViewController.saveButtonAction - Cannot create JPEG representation")
+      return
+    }
     
+    momentObj.media = PFFile(data: imageData, contentType: "photo") // TODO: Compresion on upload/download, + server side work?
+    momentObj.mediaType = FoodieMoment.mediaType.photo.rawValue
+    momentObj.aspectRatio = Double(photo.size.width / photo.size.height)  // TODO: Are we just always gonna deal with full res?
+    momentObj.width = Int(Double(photo.size.width))
+    
+// TODO: Implement with Markup and Scrape features
+//    momentObj.markup
+//    momentObj.tags
+    
+// TODO: Implement along with User Login
+//    momentObj.author
+    
+// TODO: Implement along with Foursquare integration
+//    momentObj.eatery
+//    momentObj.categories
+//    momentObj.type
+//    momentObj.attribute
+    
+// TODO: Impelemnt with display views
+//    momentObj.views
+//    momentObj.clickthroughs
+
+    // Ask the user if they want to add this image to the current Journal or start a new Journal, or cancel
+    
+    // If new Journal, ask if user want to save the current, discard, or cancel the whole thing
+    
+    // If not cancelled, lets pass the object to the Journal Entry View
+    PFUser.current()
+    
+    // Lets jump to the Journal Entry View
   }
+  
   
   // MARK: - View Controller Lifecycle
   

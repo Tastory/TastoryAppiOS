@@ -10,7 +10,7 @@ import UIKit
 
 class CameraButtonRingLayer: CAShapeLayer {
   
-  private struct Defaults {
+  private struct Constants {
     static let smallCircleScale: CGFloat = 0.80  // Size of the ring when capture button is unpressed, as a percentage of the pressed larger ring
     static let smallAlpha: CGFloat = 0.7
     static let smallWidth: CGFloat = 3.0  // Stroke width of the ring when capture button is unpressed
@@ -22,9 +22,9 @@ class CameraButtonRingLayer: CAShapeLayer {
   let smallColor = UIColor.white
   let largeColor = UIColor.red
   
-  let smallStrokeDuration: CFTimeInterval = CameraViewController.Defaults.animateInDuration
-  let smallToLargeDuration: CFTimeInterval = CameraViewController.Defaults.cameraButtonOnDuration
-  let largeToSmallDuration: CFTimeInterval = CameraViewController.Defaults.cameraButtonOffDuration
+  let smallStrokeDuration: CFTimeInterval = CameraViewController.GlobalConstants.animateInDuration
+  let smallToLargeDuration: CFTimeInterval = CameraViewController.GlobalConstants.cameraButtonOnDuration
+  let largeToSmallDuration: CFTimeInterval = CameraViewController.GlobalConstants.cameraButtonOffDuration
   let largeUnstrokeDuration: CFTimeInterval = 10.0 // need to match recording max duration
   
   
@@ -40,10 +40,10 @@ class CameraButtonRingLayer: CAShapeLayer {
   
   // Ring when the capture button is not pressed
   private var smallCircle: UIBezierPath {
-    let scale = Defaults.smallCircleScale
+    let scale = Constants.smallCircleScale
     let newRect = bounds.insetBy(dx: bounds.width*(1-scale)/2, dy: bounds.height*(1-scale)/2)
-    lineWidth = Defaults.smallWidth
-    strokeColor = smallColor.withAlphaComponent(Defaults.smallAlpha).cgColor
+    lineWidth = Constants.smallWidth
+    strokeColor = smallColor.withAlphaComponent(Constants.smallAlpha).cgColor
     return UIBezierPath(arcCenter: CGPoint(x: newRect.midX, y: newRect.midY),
                         radius: min(newRect.width/2, newRect.height/2),
                         startAngle: CGFloat.pi*3/2,
@@ -54,8 +54,8 @@ class CameraButtonRingLayer: CAShapeLayer {
   
   // Ring when the cpature button have been pressed
   private var largeCircle: UIBezierPath {
-    lineWidth = Defaults.largeWidth
-    strokeColor = largeColor.withAlphaComponent(Defaults.largeAlpha).cgColor
+    lineWidth = Constants.largeWidth
+    strokeColor = largeColor.withAlphaComponent(Constants.largeAlpha).cgColor
     return UIBezierPath(arcCenter: CGPoint(x: bounds.midX, y: bounds.midY),
                         radius: min(bounds.width/2, bounds.height/2),
                         startAngle: CGFloat.pi*3/2,
@@ -66,8 +66,8 @@ class CameraButtonRingLayer: CAShapeLayer {
   
   // What's left of the ring at the end of the 10 seconds recording window - aka. Just a dot at the 12 o'clock position.
   private var dotCircle: UIBezierPath {
-    lineWidth = Defaults.largeWidth
-    strokeColor = largeColor.withAlphaComponent(Defaults.largeAlpha).cgColor
+    lineWidth = Constants.largeWidth
+    strokeColor = largeColor.withAlphaComponent(Constants.largeAlpha).cgColor
     return UIBezierPath(arcCenter: CGPoint(x: bounds.midX, y: bounds.midY),
                         radius: min(bounds.width/2, bounds.height/2),
                         startAngle: CGFloat.pi*29/20,

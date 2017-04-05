@@ -10,7 +10,7 @@ import UIKit
 
 class CameraButtonLayer: CAShapeLayer {
   
-  private struct Defaults {
+  private struct Constants {
     static let smallShapeScale: CGFloat = 0.1  // Size of the small circle as comapred to max size (size of the large red circle)
     static let mediumShapeScale: CGFloat = 0.55  // Size of the rounded rectange as compared to the max size (size of the large red cirlce)
     static let cornerRadiusPercent: CGFloat = 0.15
@@ -20,9 +20,9 @@ class CameraButtonLayer: CAShapeLayer {
   let smallColor = UIColor.white
   let mediumColor = UIColor.white
   let largeColor = UIColor.red
-  var sToMDuration: CFTimeInterval = CameraViewController.Defaults.animateInDuration
-  var mToLDuration: CFTimeInterval = CameraViewController.Defaults.cameraButtonOnDuration
-  var lToMDuration: CFTimeInterval = CameraViewController.Defaults.cameraButtonOffDuration
+  var sToMDuration: CFTimeInterval = CameraViewController.GlobalConstants.animateInDuration
+  var mToLDuration: CFTimeInterval = CameraViewController.GlobalConstants.cameraButtonOnDuration
+  var lToMDuration: CFTimeInterval = CameraViewController.GlobalConstants.cameraButtonOffDuration
   
   convenience init(frame: CGRect) {
     self.init()
@@ -33,26 +33,26 @@ class CameraButtonLayer: CAShapeLayer {
   
   // Small circle just before the camera screen loads
   private var smallCircle: UIBezierPath {
-    let scale = Defaults.smallShapeScale
+    let scale = Constants.smallShapeScale
     let newRect = bounds.insetBy(dx: bounds.width*(1-scale)/2, dy: bounds.height*(1-scale)/2) // Scaling by scaling factor
-    fillColor = smallColor.withAlphaComponent(Defaults.alphaValue).cgColor
+    fillColor = smallColor.withAlphaComponent(Constants.alphaValue).cgColor
     return UIBezierPath(roundedRect: newRect, cornerRadius: newRect.width/2) // This is essentially a circle
   }
   
   
   // Rounded rectangle as part of the unpressed button
   private var mediumRoundedRectangle: UIBezierPath {
-    let scale = Defaults.mediumShapeScale
-    let cornerRadius = min(bounds.width, bounds.height)*Defaults.cornerRadiusPercent
+    let scale = Constants.mediumShapeScale
+    let cornerRadius = min(bounds.width, bounds.height)*Constants.cornerRadiusPercent
     let newRect = bounds.insetBy(dx: bounds.width*(1-scale)/2, dy: bounds.height*(1-scale)/2) // Scaling by scaling factor
-    fillColor = mediumColor.withAlphaComponent(Defaults.alphaValue).cgColor
+    fillColor = mediumColor.withAlphaComponent(Constants.alphaValue).cgColor
     return UIBezierPath(roundedRect: newRect, cornerRadius: cornerRadius)
   }
   
   
   // Large red circle after the button is pressed (full size as recording is in progress)
   private var largeCircle: UIBezierPath {
-    fillColor = largeColor.withAlphaComponent(Defaults.alphaValue).cgColor
+    fillColor = largeColor.withAlphaComponent(Constants.alphaValue).cgColor
     return UIBezierPath(roundedRect: bounds, cornerRadius: bounds.width/2) // This is essentially a circle
   }
   
