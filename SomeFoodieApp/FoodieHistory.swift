@@ -11,7 +11,7 @@
 
 import Parse
 
-class FoodieHistory: PFObject {
+class FoodieHistory: FoodieObject {
   
   @NSManaged var journal: PFObject?
   @NSManaged var eatery: PFObject?

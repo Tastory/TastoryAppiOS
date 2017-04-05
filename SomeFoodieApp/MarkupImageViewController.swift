@@ -52,9 +52,13 @@ class MarkupImageViewController: UIViewController {
 //    momentObj.views
 //    momentObj.clickthroughs
 
-    // Ask the user if they want to add this image to the current Journal or start a new Journal, or cancel
-    
-    // If new Journal, ask if user want to save the current, discard, or cancel the whole thing
+    if FoodieJournal.current() != nil {
+      // Ask the user if they want to add this image to the current Journal or start a new Journal, or cancel
+      newOrAddAlert = UIAlertController
+      // If new Journal, ask if user want to save the current, discard, or cancel the whole thing
+    } else {
+      FoodieJournal.new(saveCurrent: false, errorCallback: <#T##((Bool, Error?) -> Void)?##((Bool, Error?) -> Void)?##(Bool, Error?) -> Void#>)
+    }
     
     // If not cancelled, lets pass the object to the Journal Entry View
     PFUser.current()
@@ -63,8 +67,18 @@ class MarkupImageViewController: UIViewController {
   }
   
   
-  // MARK: - View Controller Lifecycle
+  // MARK: - Public Function
+  func newJournalResultCallback(success: Bool, error: Error?) -> Void {
+    
+    if success {
+      print("DEBUG_LOG: MarkupImageViewController.newJournalResultCallback - Success")
+      return
+    } else {
+      
+    }
+  }
   
+  // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
 

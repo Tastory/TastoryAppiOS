@@ -9,7 +9,7 @@
 
 import Parse
 
-class FoodieCategory: PFObject {
+class FoodieCategory: FoodieObject {
 
 }
 

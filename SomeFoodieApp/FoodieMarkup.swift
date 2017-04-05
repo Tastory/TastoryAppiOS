@@ -11,7 +11,7 @@
 
 import Parse
 
-class FoodieMarkup: PFObject {
+class FoodieMarkup: FoodieObject {
   
 }
 

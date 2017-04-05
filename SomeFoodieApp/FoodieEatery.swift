@@ -9,7 +9,7 @@
 
 import Parse
 
-class FoodieEatery: PFObject {
+class FoodieEatery: FoodieObject {
   
   @NSManaged var name: String?
   @NSManaged var foursquareID: String?

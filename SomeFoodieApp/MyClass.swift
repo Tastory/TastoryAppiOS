@@ -13,6 +13,8 @@ class MyClass: PFObject {
   @NSManaged var image: PFFile?
 }
 
+
+// This is just example of PFObject Subclassing from Appcoda
 extension MyClass {
   
   static func fetchImage(identifier: String,

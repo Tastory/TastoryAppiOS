@@ -9,7 +9,7 @@
 
 import Parse
 
-class FoodieMoment: PFObject {
+class FoodieMoment: FoodieObject {
   
   @NSManaged var media: PFFile?  // A Photo or a Video
   @NSManaged var mediaType: Int  // Really an enum saying whether it's a Photo or Video

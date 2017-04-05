@@ -9,7 +9,7 @@
 
 import Parse
 
-class FoodieJournal: PFObject {
+class FoodieJournal: FoodieObject {
   
   // MARK: - Parse PFObject keys
   @NSManaged var moments: Array<PFObject>? // A FoodieMoment Photo or Video
@@ -75,7 +75,8 @@ class FoodieJournal: PFObject {
   
   // Save the current Journal
   static func saveCurrent(errorCallback: ((Bool, Error?) -> Void)?) {
-    currentJournal?.saveEventually(errorCallback)  // TODO: Is this the right call? Or should use saveInBackground
+    // TODO: Gotta save all related media/objects/files first, etc
+    currentJournal?.saveInBackground()  // Block the user from proceeding further in the app until all the saves comes back
   }
 }
 
