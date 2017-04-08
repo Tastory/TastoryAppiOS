@@ -18,6 +18,6 @@ class FoodieMarkup: FoodieObject {
 
 extension FoodieMarkup: PFSubclassing {
   static func parseClassName() -> String {
-    return "foodieMarkup"
+    return "FoodieMarkup"
   }
 }

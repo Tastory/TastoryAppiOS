@@ -25,6 +25,6 @@ class FoodieHistory: FoodieObject {
 
 extension FoodieHistory: PFSubclassing {
   static func parseClassName() -> String {
-    return "foodieHistory"
+    return "FoodieHistory"
   }
 }

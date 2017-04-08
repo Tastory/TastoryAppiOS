@@ -54,8 +54,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   // For Parse Subclassing
   func configureParse() {
+    
+    FoodieUser.registerSubclass()
+    
+    // FoodieObject is an Abstract! Don't Register!!
+    
+    FoodieCategory.registerSubclass()
+    FoodieEatery.registerSubclass()
+    FoodieJournal.registerSubclass()
     FoodieMoment.registerSubclass()
-    MyClass.registerSubclass()
+    FoodieMarkup.registerSubclass()
+    FoodieHistory.registerSubclass()
   }
 }
 

@@ -8,11 +8,16 @@
 
 import Parse
 
+/****************************************************************/
+/*                                                              */
+/*     Do not attempt to register this class against Parse!     */
+/*                                                              */
+/****************************************************************/
 
-// This is intended to never have an instance - aka Abstract. However there is no abstract class in Swift
-class FoodieObject: PFObject {
+class FoodieObject: PFObject {  // Abstract
   
   // The following tracks status of the FoodieObjects. All potential statuses are tentative
+  // Was considering bit-wise statuses, but probably too complicated for high level programming
   @NSManaged var statusInMemory: Bool
   @NSManaged var statusInLocal: Bool
   @NSManaged var statusInNetwork: Bool

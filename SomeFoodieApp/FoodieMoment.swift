@@ -11,8 +11,9 @@ import Parse
 
 class FoodieMoment: FoodieObject {
   
+  // MARK: - Database Schema
   @NSManaged var media: PFFile?  // A Photo or a Video
-  @NSManaged var mediaType: Int  // Really an enum saying whether it's a Photo or Video
+  @NSManaged var mediaType: String  // Really an enum saying whether it's a Photo or Video
   @NSManaged var aspectRatio: Double  // In decimal, width / height, like 16:9 = 16/9 = 1.777...
   @NSManaged var width: Int  // height = width / aspectRatio
   @NSManaged var markup: Array<PFObject>?  // Array of PFObjects as FoodieMarkup
@@ -24,22 +25,54 @@ class FoodieMoment: FoodieObject {
   @NSManaged var attribute: String?  // Attribute related to the type. Eg. Dish name, Optional
   @NSManaged var views: Int  // How many times have this Moment been viewed
   @NSManaged var clickthroughs: Int  // How many times have this been clicked through to the next
-  
   // Date created vs Date updated is given for free
   
-  struct GlobalConstants {
-    static let jpegCompressionQuality: CGFloat = 0.8
+  
+  enum MediaType: String {
+    case photo = "image/jpeg"
+    case video = "video/mp4"
   }
   
-  enum mediaType: Int {
-    case photo = 1
-    case video = 2
+  
+  // MARK: - Private Constants
+  private struct Constants {
+    static let jpegCompressionQuality: CGFloat = 0.8
+    static let imageName = "image.jpg"
   }
+  
+  
+  // MARK: - Public Functions
+  
+  // This only sets the media portion of the Moment. Doesn't do save
+  // Save should be done as the first things in the Journal Entry View, in the background
+  func setMedia(withPhoto photoImage: UIImage?) throws {
+    
+    guard let image = photoImage else {
+      throw FoodieError(error: FoodieError.Code.Moment.setMediaWithPhotoImageNil.rawValue, description: "Unexpected. photoImage = nil")
+    }
+    
+    guard let imageData = UIImageJPEGRepresentation(image, Constants.jpegCompressionQuality) else {
+      throw FoodieError(error: FoodieError.Code.Moment.setMediaWithPhotoJpegRepresentationFailed.rawValue, description: "Cannot create JPEG representation")
+    }
+    
+    media = PFFile(data: imageData, contentType: MediaType.photo.rawValue)
+    
+    // Set the other image related attributes
+    mediaType = MediaType.photo.rawValue  // Maybe this is removable if PFFile.contentType is easily queryable
+    aspectRatio = Double(image.size.width / image.size.height)  // TODO: Are we just always gonna deal with full res?
+    width = Int(Double(image.size.width))
+  }
+  
+//  TODO: Implement Video Support
+//  func setMedia(withVideo path: URL?) throws {
+//    
+//  }
+  
 }
 
  
 extension FoodieMoment: PFSubclassing {
   static func parseClassName() -> String {
-    return "foodieMoment"
+    return "FoodieMoment"
   }
 }

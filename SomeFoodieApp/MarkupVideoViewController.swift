@@ -22,8 +22,8 @@ class MarkupVideoViewController: UIViewController {
     
     // Do any additional setup after loading the view.
     guard let videoGuardedURL = videoURL else {
-      print("DEBUG_PRINT: MarkupVideoViewController.viewDidLoad - Shouldn't be here without a valid videoURL. Asserting")
-      fatalError("Shouldn't be here without a valid videoURL")
+      DebugPrint.assert("Shouldn't be here without a valid videoURL. Asserting")
+      return
     }
     
     NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.avPlayer.currentItem, queue: .main) { (_) in

@@ -65,7 +65,7 @@ class FoodieJournal: FoodieObject {
   static func new(saveCurrent: Bool, errorCallback: ((Bool, Error?) -> Void)?)  -> FoodieJournal? {
     if saveCurrent {
       guard let callback = errorCallback else {
-        print("DEBUG_ERROR: Expected non-nil errorCallback function")
+        DebugPrint.error("Expected non-nil errorCallback function")
         return nil
       }
       self.saveCurrent(errorCallback: callback)
@@ -75,7 +75,7 @@ class FoodieJournal: FoodieObject {
   
   // Save the current Journal
   static func saveCurrent(errorCallback: ((Bool, Error?) -> Void)?) {
-    // TODO: Gotta save all related media/objects/files first, etc
+    // TODO: Gotta make sure all related media/objects/files already saved first, etc
     currentJournal?.saveInBackground()  // Block the user from proceeding further in the app until all the saves comes back
   }
 }
@@ -83,6 +83,6 @@ class FoodieJournal: FoodieObject {
 
 extension FoodieJournal: PFSubclassing {
   static func parseClassName() -> String {
-    return "foodieJournal"
+    return "FoodieJournal"
   }
 }

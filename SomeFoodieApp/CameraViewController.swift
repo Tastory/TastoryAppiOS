@@ -23,7 +23,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   // MARK: - Private Variables
   private var crossLayer = CameraCrossLayer()
   
-  
+   
   // MARK: - IBOutlets
   @IBOutlet weak var captureButton: CameraButton?
   @IBOutlet weak var exitButton: ExitButton?
@@ -109,12 +109,12 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
     if segue.identifier == "toPhotoMarkup" {
       
       guard let photo = sender as? UIImage else {
-        print("DEBUG_ERROR: CameraViewController.prepare - Expected sender to be of type UIImage")
+        DebugPrint.error("Expected sender to be of type UIImage")
         return
       }
       
       guard let mIVC = segue.destination as? MarkupImageViewController else {
-        print("DEBUG_ERROR: CameraViewController.prepare - Expected segue.destiantion to be of type MarkupImageViewController")
+        DebugPrint.error("Expected segue.destination to be of type MarkupImageViewController")
         return
       }
       
@@ -123,12 +123,12 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
     } else if segue.identifier == "toVideoMarkup" {
       
       guard let video = sender as? URL else {
-        print("DEBUG_ERROR: CameraViewController.prepare - Expected sender to be of type URL")
+        DebugPrint.error("Expected sender to be of type URL")
         return
       }
       
       guard let mVVC = segue.destination as? MarkupVideoViewController else {
-        print("DEBUG_ERROR: CameraViewController.prepare - Expected segue.destination to be of type MarkupVideoViewController")
+        DebugPrint.error("Expected segue.destination to be of type MarkupVideoViewController")
         return
       }
       
@@ -140,8 +140,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
 //    }
 //      
 //    else {
-//      print("DEBUG_ERROR: CameraViewController.prepare - No matching segue identifier")
-//      fatalError("No matching segue identifier")
+//      DebugPrint.assert("ENo matching segue identifier")
 //    }
   }
   
@@ -150,7 +149,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake photo: UIImage) {
     // Called when takePhoto() is called or if a SwiftyCamButton initiates a tap gesture
     // Returns a UIImage captured from the current session
-    print("DEBUG_PRINT: didTakePhoto") // TODO: Make photos brighter too
+    DebugPrint.log("didTakePhoto") // TODO: Make photos brighter too
     UIImageWriteToSavedPhotosAlbum(photo, nil, nil, nil)
     performSegue(withIdentifier: "toPhotoMarkup", sender: photo)
   }
@@ -158,7 +157,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didBeginRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
     // Called when startVideoRecording() is called
     // Called if a SwiftyCamButton begins a long press gesture
-    print("DEBUG_PRINT: didBeginRecordingVideo")
+    DebugPrint.log("didBeginRecordingVideo")
     // TODO: Make Videos Brighter?
     captureButton?.startRecording()
   }
@@ -166,7 +165,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
     // Called when stopVideoRecording() is called
     // Called if a SwiftyCamButton ends a long press gesture
-    print("DEBUG_PRINT: didFinishRecordingVideo")
+    DebugPrint.log("didFinishRecordingVideo")
     captureButton?.stopRecording()
     captureButton?.buttonReleased()
   }
@@ -174,12 +173,12 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishProcessVideoAt url: URL) {
     // Called when stopVideoRecording() is called and the video is finished processing
     // Returns a URL in the temporary directory where video is stored
-    print("DEBUG_PRINT: didFinishProcessVideoAt")
+    DebugPrint.log("didFinishProcessVideoAt")
     
     if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(url.absoluteString) {
       UISaveVideoAtPathToSavedPhotosAlbum(url.absoluteString, nil, nil, nil)
     } else {
-      print("DEBUG_ERROR: CameraViewController.swiftyCam(didFinishProcesVideoAt) - received invalid URL for local filesystem")
+      DebugPrint.error("Received invalid URL for local filesystem")
     }
     
     performSegue(withIdentifier: "toVideoMarkup", sender: url)
@@ -189,20 +188,20 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
     // Called when a user initiates a tap gesture on the preview layer
     // Will only be called if tapToFocus = true
     // Returns a CGPoint of the tap location on the preview layer
-    print("DEBUG_PRINT: didFocusAtPoint")
+    DebugPrint.log("didFocusAtPoint")
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didChangeZoomLevel zoom: CGFloat) {
     // Called when a user initiates a pinch gesture on the preview layer
     // Will only be called if pinchToZoomn = true
     // Returns a CGFloat of the current zoom level
-    print("DEBUG_PRINT: didChangeZoomLevel")
+    DebugPrint.log("didChangeZoomLevel")
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didSwitchCameras camera: SwiftyCamViewController.CameraSelection) {
     // Called when user switches between cameras
     // Returns current camera selection
-    print("DEBUG_PRINT: didSwitchCameras")
+    DebugPrint.log("didSwitchCameras")
   }
   
   

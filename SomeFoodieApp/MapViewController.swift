@@ -137,14 +137,14 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   
   
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-    print("DEBUG_ERROR: locationManager didFailWithError, error.localizedDescription = \(error.localizedDescription)")
+    DebugPrint.error("error.localizedDescription = \(error.localizedDescription)")
     
     guard let errorCode = error as? CLError else {
-      print("DEBUG_ERROR: locationManager didFailWithError - Not getting CLError upon a Location Manager Error")
-      fatalError("Not getting CLError upon a Location Manager Error")
+      DebugPrint.assert("Not getting CLError upon a Location Manager Error")
+      return
     }
     
-    print("DEBUG_ERROR: locationManager didFailWithError, CLError.code = \(errorCode.code.rawValue)")
+    DebugPrint.error("CLError.code = \(errorCode.code.rawValue)")
     
     switch errorCode.code {
 
@@ -205,7 +205,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
           return
           
         default:
-          print("DEBUG_ERROR: geocodeAddressString Error Handle, CLError Code - \(error)")
+          DebugPrint.error("geocodeAddressString Error Handle, CLError Code - \(error)")
            // TODO: geocodeAddressString Error Handle, any other cases to handle differently?
         }
       }
@@ -278,7 +278,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         region = MKCoordinateRegion(center: clRegion.center, span: MKCoordinateSpan(height: clRegion.radius*2))
         
       } else {
-        print("DEBUG_ERROR: textFieldShouldReturn - Placemark contained no location")
+        DebugPrint.error("Placemark contained no location")  // TODO: Revisit
       }
       
       if let region = region {
