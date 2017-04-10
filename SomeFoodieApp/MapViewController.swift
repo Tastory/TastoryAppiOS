@@ -14,7 +14,7 @@ import CoreLocation
 class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, UIGestureRecognizerDelegate, UITextFieldDelegate {
 
   // MARK: - Class Constants
-  private struct MapLocationConstants {
+  private struct Constants {
     static let defaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
                                                               longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
     static let defaultMaxDelta: CLLocationDegrees = 0.05
@@ -25,7 +25,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   
   // MARK: - Class Variables
   private var locationManager = CLLocationManager()
-  private var currentMapDelta = MapLocationConstants.defaultMaxDelta
+  private var currentMapDelta = Constants.defaultMaxDelta
   
   
   // MARK: - IBOutlets
@@ -71,13 +71,26 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     locationField?.text = ""
     
     // Take the lesser of current or default max latitude degrees
-    currentMapDelta = min(currentMapDelta, MapLocationConstants.defaultMaxDelta)
+    currentMapDelta = min(currentMapDelta, Constants.defaultMaxDelta)
     
     // Take the greater of current or default min latitude degrees
-    currentMapDelta = max(currentMapDelta, MapLocationConstants.defaultMinDelta)
+    currentMapDelta = max(currentMapDelta, Constants.defaultMinDelta)
     
     // Start updating location again
     locationManager.startUpdatingLocation()
+  }
+  
+  
+  // MARK: - Class Private Functions
+  
+  // Generic error dialogue box to the user on internal errors
+  private func internalErrorDialog() {
+    let alertController = UIAlertController.errorOK(title: "SomeFoodieApp",
+                                                    titleComment: "Alert diaglogue title when a Map view internal error occured",
+                                                    message: "An internal error has occured. Please try again",
+                                                    messageComment: "Alert dialogue message when a Map view internal error occured")
+    
+    self.present(alertController, animated: true, completion: nil)
   }
   
   
@@ -94,15 +107,15 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     locationField?.delegate = self
     
     // Provide a default Map Region incase Location Update is slow or user denies authorization
-    let region = MKCoordinateRegion(center: MapLocationConstants.defaultCLCoordinate2D,
-                                    span: MKCoordinateSpan(latitudeDelta: MapLocationConstants.defaultMaxDelta, longitudeDelta: MapLocationConstants.defaultMaxDelta))
+    let region = MKCoordinateRegion(center: Constants.defaultCLCoordinate2D,
+                                    span: MKCoordinateSpan(latitudeDelta: Constants.defaultMaxDelta, longitudeDelta: Constants.defaultMaxDelta))
     mapView?.setRegion(region, animated: false)
     
     // Setup Location Manager and Start Location Updates
     locationManager.delegate = self
     locationManager.requestWhenInUseAuthorization()
     locationManager.desiredAccuracy = kCLLocationAccuracyBest //kCLLocationAccuracyHundredMeters
-    locationManager.distanceFilter = MapLocationConstants.defaultDistanceFilter
+    locationManager.distanceFilter = Constants.defaultDistanceFilter
     locationManager.activityType = CLActivityType.fitness  // Fitness Type includes Walking
     locationManager.allowsBackgroundLocationUpdates = false
     locationManager.pausesLocationUpdatesAutomatically = true
@@ -113,7 +126,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
 
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
+    // TODO: Dispose of any resources that can be recreated.
   }
   
   
@@ -141,6 +154,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     guard let errorCode = error as? CLError else {
       DebugPrint.assert("Not getting CLError upon a Location Manager Error")
+      internalErrorDialog()
       return
     }
     
@@ -153,25 +167,20 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
       manager.stopUpdatingLocation()
 
       // Prompt user to authorize
-      // TODO: locationManager didFailWithError, factor out Alert Controller creation?
-      let alertController = UIAlertController(title: "Location Access Disabled", message: "To find you nearby Foodie Stories, please go to Settings > Privacy > Location Services and set this App's Location Access permission to 'While Using'", preferredStyle: .alert)
-      
-      let settingsAction = UIAlertAction(title: "Open Settings", style: .default) { (alertAction) in
-        if let url = URL(string: UIApplicationOpenSettingsURLString) {
-          UIApplication.shared.open(url)
-        } else {
-          // TODO: Tell user about error opening Settings?
-        }
+      if let alertController = UIAlertController.errorOK(withURL: UIApplicationOpenSettingsURLString,
+                                                         buttonTitle: "Settings",
+                                                         buttonComment: "Alert diaglogue button to open Settings, hoping user will allow access to location services",
+                                                         title: "Location Services Disabled",
+                                                         titleComment: "Alert diaglogue title when user has denied access to location services",
+                                                         message: "Please go to Settings > Privacy > Location Services and set this App's Location Access permission to 'While Using'",
+                                                         messageComment: "Alert dialogue message when the user has denied access to location services") {
+        self.present(alertController, animated: true, completion: nil)
+      } else {
+        DebugPrint.error("Unable to create Alert ErrorOK+URL dialogue box")
       }
-      
-      let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-      
-      alertController.addAction(settingsAction)
-      alertController.addAction(cancelAction)
-      
+
     default:
-      // TODO: locationManager didFailWithError, any other cases to handle differently?
-      break
+      DebugPrint.assert("Unrecognized fallthrough for Location error codes")
     }
   }
   
@@ -192,7 +201,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
       return true
     }
     
-    let clRegion = CLCircularRegion(center: region.center, radius: region.span.height/1.78/2, identifier: "currentCLRegion")  // 1.78 for 16:9 aspect ratio
+    let clRegion = CLCircularRegion(center: region.center,
+                                    radius: region.span.height/1.78/2,
+                                    identifier: "currentCLRegion")  // 1.78 for 16:9 aspect ratio // TODO: 16:9 assumption is not good enough
     let geocoder = CLGeocoder()
     
     geocoder.geocodeAddressString(location, in: clRegion) { (placemarks, error) in
@@ -205,8 +216,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
           return
           
         default:
-          DebugPrint.error("geocodeAddressString Error Handle, CLError Code - \(error)")
-           // TODO: geocodeAddressString Error Handle, any other cases to handle differently?
+          DebugPrint.assert("geocodeAddressString Error Handle, CLError Code - \(error)")
         }
       }
       
@@ -264,21 +274,26 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
       
       var region: MKCoordinateRegion?
       
-      // The coordinate in the region is highly inaccurate. So use the location coordinate when possible.
+      // The coordinate in palcemarks.region is highly inaccurate. So use the location coordinate when possible.
       if let coordinate = placemarks[0].location?.coordinate, let clRegion = placemarks[0].region as? CLCircularRegion {
-        
-        region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(height: clRegion.radius*2*1.39))  // 1.39 is between square and 16:9
+        // Determine region via placemark.locaiton.coordinate if possible
+        region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(height: clRegion.radius*2*1.39))  // 1.39 is between square and 16:9 // TODO: 16:9 assumption is not good enough
         
       } else if let coordinate = placemarks[0].location?.coordinate {
-        
-        region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: MapLocationConstants.defaultMaxDelta, longitudeDelta: MapLocationConstants.defaultMaxDelta))
+        // Determine region via placemark.location.coordinate and default max delta if clRegion is not available
+        region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: Constants.defaultMaxDelta, longitudeDelta: Constants.defaultMaxDelta))
         
       } else if let clRegion = placemarks[0].region as? CLCircularRegion {
-        
+        // Determine region via placemarks.region as fall back
         region = MKCoordinateRegion(center: clRegion.center, span: MKCoordinateSpan(height: clRegion.radius*2))
         
       } else {
-        DebugPrint.error("Placemark contained no location")  // TODO: Revisit
+        DebugPrint.error("Placemark contained no location")
+        
+        // There actually isn't a valid location in the placemark...
+        textField.text = "No Results Found"
+        textField.textColor = UIColor.red
+        return
       }
       
       if let region = region {

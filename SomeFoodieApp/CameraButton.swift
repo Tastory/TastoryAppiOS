@@ -51,9 +51,18 @@ class CameraButton: SwiftyCamButton {
     ringLayer.animateSmallToLarge()
   }
   
+  
+  // This is for when the button's been released after a photo
   func buttonReleased() {
     buttonLayer.animateLargeToMedium()
     ringLayer.animateLargeToSmall()
+  }
+  
+  // This is for when the button's been released after a video, and failed
+  func buttonReset() {
+    buttonLayer.animateSmallToMedium()
+    ringLayer.resetAnimations()
+    ringLayer.animateStrokeSmallCircle()
   }
   
   func startRecording() {

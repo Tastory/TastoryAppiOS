@@ -10,7 +10,7 @@ import UIKit
 import Photos
 import SwiftyCam
 
-class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDelegate {
+class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDelegate {  // View needs to comply to certain protocols going forward?
 
   // MARK: - Global Constants
   struct GlobalConstants {
@@ -27,7 +27,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   // MARK: - IBOutlets
   @IBOutlet weak var captureButton: CameraButton?
   @IBOutlet weak var exitButton: ExitButton?
-  @IBOutlet weak var tapRecognizer: UITapGestureRecognizer?
+  @IBOutlet weak var tapRecognizer: UITapGestureRecognizer?  // This is workaround to detect capture button's been released after a photo
   
   
   // MARK: - IBActions
@@ -44,6 +44,24 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   }
 
   
+  // MARK: - Class Private Functions
+
+  // Generic error dialogue box to the user on internal errors
+  private func internalErrorDialog() {
+    let alertController = UIAlertController.errorOK(title: "SomeFoodieApp",
+                                                    titleComment: "Alert diaglogue title when a Camera view internal error occured",
+                                                    message: "An internal error has occured. Please try again",
+                                                    messageComment: "Alert dialogue message when a Camera view internal error occured")
+    
+    self.present(alertController, animated: true, completion: nil)
+  }
+  
+  
+  // MARK: - Reset the states of the Camera View
+  private func resetAllStates() {
+    
+  }
+  
   
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
@@ -53,9 +71,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
     
     if let captureButton = captureButton {
       view.bringSubview(toFront: captureButton)
-      #if !TARGET_INTERFACE_BUILDER
-        captureButton.delegate = self
-      #endif
+      captureButton.delegate = self
     }
     
     if let exitButton = exitButton {
@@ -66,29 +82,25 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
       tapRecognizer.delegate = self
     }
     
+    // Request permission from user to access the Photo Album up front
     PHPhotoLibrary.requestAuthorization { status in
-      
       switch status {
       case .authorized:
         break
       case .denied:
         fallthrough
       default:
-        let message = NSLocalizedString("SomeFoodieApp doesn't have permission to access your Photo Album",
-                                        comment: "Alert message when the user has denied access to the photo album")
-        let alertController = UIAlertController(title: "SomeFoodieApp", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
-                                                style: .cancel,
-                                                handler: nil))
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"),
-                                                style: .default) { action in
-          if #available(iOS 10.0, *) {
-            UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!, options: [:], completionHandler: nil)
-          } else if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
-            UIApplication.shared.openURL(appSettings)
-          }
-        })
-        self.present(alertController, animated: true, completion: nil)
+        if let alertController = UIAlertController.errorOK(withURL: UIApplicationOpenSettingsURLString,
+                                                           buttonTitle: "Settings",
+                                                           buttonComment: "Alert diaglogue button to open Settings, hoping user will allow access to photo album",
+                                                           title: "Photo Library Inaccessible",
+                                                           titleComment: "Alert diaglogue title when user has denied access to the photo album",
+                                                           message: "Please go to Settings > Privacy > Photos to allow SomeFoodieApp to save to your photos",
+                                                           messageComment: "Alert dialogue message when the user has denied access to the photo album") {
+          self.present(alertController, animated: true, completion: nil)
+        } else {
+          DebugPrint.error("Unable to create Alert ErrorOK+URL dialogue box")
+        }
       }
     }
   }
@@ -110,11 +122,15 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
       
       guard let photo = sender as? UIImage else {
         DebugPrint.error("Expected sender to be of type UIImage")
+        internalErrorDialog()
+        captureButton?.buttonReset()
         return
       }
       
       guard let mIVC = segue.destination as? MarkupImageViewController else {
         DebugPrint.error("Expected segue.destination to be of type MarkupImageViewController")
+        internalErrorDialog()
+        captureButton?.buttonReset()
         return
       }
       
@@ -124,11 +140,15 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
       
       guard let video = sender as? URL else {
         DebugPrint.error("Expected sender to be of type URL")
+        internalErrorDialog()
+        captureButton?.buttonReset()
         return
       }
       
       guard let mVVC = segue.destination as? MarkupVideoViewController else {
         DebugPrint.error("Expected segue.destination to be of type MarkupVideoViewController")
+        internalErrorDialog()
+        captureButton?.buttonReset()
         return
       }
       
@@ -179,6 +199,9 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
       UISaveVideoAtPathToSavedPhotosAlbum(url.absoluteString, nil, nil, nil)
     } else {
       DebugPrint.error("Received invalid URL for local filesystem")
+      internalErrorDialog()
+      captureButton?.buttonReset()
+      return
     }
     
     performSegue(withIdentifier: "toVideoMarkup", sender: url)

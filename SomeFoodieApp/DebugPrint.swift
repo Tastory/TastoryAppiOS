@@ -39,4 +39,13 @@ class DebugPrint {  // Abstract
     assertionFailure("\(description)  #file = \(file) #function = \(function) #line = \(line)")
   }
 
+  
+  static func fatal (_ description: String,
+                     function: String = #function,
+                     file: String = #file,
+                     line: Int = #line) -> Never
+  {
+    print("DEBUG_FATAL: \(description)  #file = \(file) #function = \(function) #line = \(line)")
+    fatalError("\(description)  #file = \(file) #function = \(function) #line = \(line)")
+  }
 }

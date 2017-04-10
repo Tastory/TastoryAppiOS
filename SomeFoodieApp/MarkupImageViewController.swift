@@ -20,8 +20,8 @@ class MarkupImageViewController: UIViewController {
     let momentObj = FoodieMoment()
     
     guard let photo = previewPhoto else {
-      // TODO: ErrorHandle - Inform user of error and offer chance to retry
       DebugPrint.error("Unexpected. previewPhoto is nil")
+      internalErrorDialog()
       return
     }
   
@@ -34,24 +34,24 @@ class MarkupImageViewController: UIViewController {
       switch thrown.error {
         
       case FoodieError.Code.Moment.setMediaWithPhotoImageNil.rawValue:
-        // TODO: ErrorHandle - Inform user of error and offer chance to retry
         DebugPrint.error("caught Moment.setMediaWithPhotoImageNil")
+        internalErrorDialog()
         return
         
       case FoodieError.Code.Moment.setMediaWithPhotoJpegRepresentationFailed.rawValue:
-        // TODO: ErrorHandle - Inform user of error and offer chance to retry
         DebugPrint.error("caught Moment.setMediaWithPhotoJpegRepresentationFailed")
+        internalErrorDialog()
         return
       
       default:
-        // TODO: ErrorHandle - Inform user of error and offer chance to retry
         DebugPrint.error("Unexpected Foodie Error: \(thrown.localizedDescription)")
+        internalErrorDialog()
         return
       }
       
     } catch let thrown {
-      // TODO: ErrorHandle - Inform user of error and offer chance to retry
       DebugPrint.error(thrown.localizedDescription)
+      internalErrorDialog()
       return
     }
     
@@ -96,6 +96,19 @@ class MarkupImageViewController: UIViewController {
   }
   
   
+  // MARK: - Class Private Functions
+  
+  // Generic error dialogue box to the user on internal errors
+  private func internalErrorDialog() {
+    let alertController = UIAlertController.errorOK(title: "SomeFoodieApp",
+                                                    titleComment: "Alert diaglogue title when a Markup Image view internal error occured",
+                                                    message: "An internal error has occured. Please try again",
+                                                    messageComment: "Alert dialogue message when a Markup Image view internal error occured")
+    
+    self.present(alertController, animated: true, completion: nil)
+  }
+  
+  
   // MARK: - Public Function
   func newJournalResultCallback(success: Bool, error: Error?) -> Void {
     
@@ -113,8 +126,8 @@ class MarkupImageViewController: UIViewController {
 
     // Do any additional setup after loading the view.
     guard let photo = previewPhoto else {
-      // TODO: ErrorHandle -Inform user of error and offer chance to retry?
       DebugPrint.assert("Shouldn't be here without a valid previewPhoto")
+      internalErrorDialog()
       return
     }
     
