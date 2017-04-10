@@ -65,7 +65,7 @@ class FoodieJournal: FoodieObject {
   static func new(saveCurrent: Bool, errorCallback: ((Bool, Error?) -> Void)?)  -> FoodieJournal? {
     if saveCurrent {
       guard let callback = errorCallback else {
-        DebugPrint.error("Expected non-nil errorCallback function")
+        DebugPrint.assert("Expected non-nil errorCallback function")
         return nil
       }
       self.saveCurrent(errorCallback: callback)

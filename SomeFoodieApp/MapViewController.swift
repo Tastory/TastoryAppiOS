@@ -85,10 +85,10 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   
   // Generic error dialogue box to the user on internal errors
   private func internalErrorDialog() {
-    let alertController = UIAlertController.errorOK(title: "SomeFoodieApp",
-                                                    titleComment: "Alert diaglogue title when a Map view internal error occured",
-                                                    message: "An internal error has occured. Please try again",
-                                                    messageComment: "Alert dialogue message when a Map view internal error occured")
+    let alertController = UIAlertController.alertWithOK(title: "SomeFoodieApp",
+                                                        titleComment: "Alert diaglogue title when a Map view internal error occured",
+                                                        message: "An internal error has occured. Please try again",
+                                                        messageComment: "Alert dialogue message when a Map view internal error occured")
     
     self.present(alertController, animated: true, completion: nil)
   }
@@ -150,7 +150,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   
   
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-    DebugPrint.error("error.localizedDescription = \(error.localizedDescription)")
     
     guard let errorCode = error as? CLError else {
       DebugPrint.assert("Not getting CLError upon a Location Manager Error")
@@ -167,20 +166,20 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
       manager.stopUpdatingLocation()
 
       // Prompt user to authorize
-      if let alertController = UIAlertController.errorOK(withURL: UIApplicationOpenSettingsURLString,
-                                                         buttonTitle: "Settings",
-                                                         buttonComment: "Alert diaglogue button to open Settings, hoping user will allow access to location services",
-                                                         title: "Location Services Disabled",
-                                                         titleComment: "Alert diaglogue title when user has denied access to location services",
-                                                         message: "Please go to Settings > Privacy > Location Services and set this App's Location Access permission to 'While Using'",
-                                                         messageComment: "Alert dialogue message when the user has denied access to location services") {
+      if let alertController = UIAlertController.alertWithOK(withURL: UIApplicationOpenSettingsURLString,
+                                                             buttonTitle: "Settings",
+                                                             buttonComment: "Alert diaglogue button to open Settings, hoping user will allow access to location services",
+                                                             title: "Location Services Disabled",
+                                                             titleComment: "Alert diaglogue title when user has denied access to location services",
+                                                             message: "Please go to Settings > Privacy > Location Services and set this App's Location Access permission to 'While Using'",
+                                                             messageComment: "Alert dialogue message when the user has denied access to location services") {
         self.present(alertController, animated: true, completion: nil)
       } else {
-        DebugPrint.error("Unable to create Alert ErrorOK+URL dialogue box")
+        DebugPrint.assert("Unable to create Alert ErrorOK+URL dialogue box")
       }
 
     default:
-      DebugPrint.assert("Unrecognized fallthrough for Location error codes")
+      DebugPrint.assert("Unrecognized fallthrough, error.localizedDescription = \(error.localizedDescription)")
     }
   }
   
@@ -221,6 +220,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
       }
       
       guard let placemarks = placemarks else {
+        
+        DebugPrint.userError("No Placemark found from location entered into text field by User")
+        
         // No valid placemarks returned
         textField.text = "No Results Found"
         textField.textColor = UIColor.red
@@ -288,7 +290,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         region = MKCoordinateRegion(center: clRegion.center, span: MKCoordinateSpan(height: clRegion.radius*2))
         
       } else {
-        DebugPrint.error("Placemark contained no location")
+        DebugPrint.assert("Placemark contained no location")
         
         // There actually isn't a valid location in the placemark...
         textField.text = "No Results Found"

@@ -48,10 +48,10 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
 
   // Generic error dialogue box to the user on internal errors
   private func internalErrorDialog() {
-    let alertController = UIAlertController.errorOK(title: "SomeFoodieApp",
-                                                    titleComment: "Alert diaglogue title when a Camera view internal error occured",
-                                                    message: "An internal error has occured. Please try again",
-                                                    messageComment: "Alert dialogue message when a Camera view internal error occured")
+    let alertController = UIAlertController.alertWithOK(title: "SomeFoodieApp",
+                                                        titleComment: "Alert diaglogue title when a Camera view internal error occured",
+                                                        message: "An internal error has occured. Please try again",
+                                                        messageComment: "Alert dialogue message when a Camera view internal error occured")
     
     self.present(alertController, animated: true, completion: nil)
   }
@@ -90,16 +90,16 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
       case .denied:
         fallthrough
       default:
-        if let alertController = UIAlertController.errorOK(withURL: UIApplicationOpenSettingsURLString,
-                                                           buttonTitle: "Settings",
-                                                           buttonComment: "Alert diaglogue button to open Settings, hoping user will allow access to photo album",
-                                                           title: "Photo Library Inaccessible",
-                                                           titleComment: "Alert diaglogue title when user has denied access to the photo album",
-                                                           message: "Please go to Settings > Privacy > Photos to allow SomeFoodieApp to save to your photos",
-                                                           messageComment: "Alert dialogue message when the user has denied access to the photo album") {
+        if let alertController = UIAlertController.alertWithOK(withURL: UIApplicationOpenSettingsURLString,
+                                                               buttonTitle: "Settings",
+                                                               buttonComment: "Alert diaglogue button to open Settings, hoping user will allow access to photo album",
+                                                               title: "Photo Library Inaccessible",
+                                                               titleComment: "Alert diaglogue title when user has denied access to the photo album",
+                                                               message: "Please go to Settings > Privacy > Photos to allow SomeFoodieApp to save to your photos",
+                                                               messageComment: "Alert dialogue message when the user has denied access to the photo album") {
           self.present(alertController, animated: true, completion: nil)
         } else {
-          DebugPrint.error("Unable to create Alert ErrorOK+URL dialogue box")
+          DebugPrint.assert("Unable to create Alert ErrorOK+URL dialogue box")
         }
       }
     }
@@ -121,14 +121,14 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
     if segue.identifier == "toPhotoMarkup" {
       
       guard let photo = sender as? UIImage else {
-        DebugPrint.error("Expected sender to be of type UIImage")
+        DebugPrint.assert("Expected sender to be of type UIImage")
         internalErrorDialog()
         captureButton?.buttonReset()
         return
       }
       
       guard let mIVC = segue.destination as? MarkupImageViewController else {
-        DebugPrint.error("Expected segue.destination to be of type MarkupImageViewController")
+        DebugPrint.assert("Expected segue.destination to be of type MarkupImageViewController")
         internalErrorDialog()
         captureButton?.buttonReset()
         return
@@ -139,14 +139,14 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
     } else if segue.identifier == "toVideoMarkup" {
       
       guard let video = sender as? URL else {
-        DebugPrint.error("Expected sender to be of type URL")
+        DebugPrint.assert("Expected sender to be of type URL")
         internalErrorDialog()
         captureButton?.buttonReset()
         return
       }
       
       guard let mVVC = segue.destination as? MarkupVideoViewController else {
-        DebugPrint.error("Expected segue.destination to be of type MarkupVideoViewController")
+        DebugPrint.assert("Expected segue.destination to be of type MarkupVideoViewController")
         internalErrorDialog()
         captureButton?.buttonReset()
         return
@@ -160,7 +160,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
 //    }
 //      
 //    else {
-//      DebugPrint.assert("ENo matching segue identifier")
+//      DebugPrint.assert("No matching segue identifier")
 //    }
   }
   
@@ -169,7 +169,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake photo: UIImage) {
     // Called when takePhoto() is called or if a SwiftyCamButton initiates a tap gesture
     // Returns a UIImage captured from the current session
-    DebugPrint.log("didTakePhoto") // TODO: Make photos brighter too
+    DebugPrint.userAction("didTakePhoto") // TODO: Make photos brighter too
     UIImageWriteToSavedPhotosAlbum(photo, nil, nil, nil)
     performSegue(withIdentifier: "toPhotoMarkup", sender: photo)
   }
@@ -177,7 +177,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didBeginRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
     // Called when startVideoRecording() is called
     // Called if a SwiftyCamButton begins a long press gesture
-    DebugPrint.log("didBeginRecordingVideo")
+    DebugPrint.userAction("didBeginRecordingVideo")
     // TODO: Make Videos Brighter?
     captureButton?.startRecording()
   }
@@ -185,7 +185,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
     // Called when stopVideoRecording() is called
     // Called if a SwiftyCamButton ends a long press gesture
-    DebugPrint.log("didFinishRecordingVideo")
+    DebugPrint.userAction("didFinishRecordingVideo")
     captureButton?.stopRecording()
     captureButton?.buttonReleased()
   }
@@ -198,7 +198,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
     if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(url.absoluteString) {
       UISaveVideoAtPathToSavedPhotosAlbum(url.absoluteString, nil, nil, nil)
     } else {
-      DebugPrint.error("Received invalid URL for local filesystem")
+      DebugPrint.assert("Received invalid URL for local filesystem")
       internalErrorDialog()
       captureButton?.buttonReset()
       return
@@ -211,20 +211,20 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
     // Called when a user initiates a tap gesture on the preview layer
     // Will only be called if tapToFocus = true
     // Returns a CGPoint of the tap location on the preview layer
-    DebugPrint.log("didFocusAtPoint")
+    DebugPrint.userAction("didFocusAtPoint")
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didChangeZoomLevel zoom: CGFloat) {
     // Called when a user initiates a pinch gesture on the preview layer
     // Will only be called if pinchToZoomn = true
     // Returns a CGFloat of the current zoom level
-    DebugPrint.log("didChangeZoomLevel")
+    DebugPrint.userAction("didChangeZoomLevel")
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didSwitchCameras camera: SwiftyCamViewController.CameraSelection) {
     // Called when user switches between cameras
     // Returns current camera selection
-    DebugPrint.log("didSwitchCameras")
+    DebugPrint.userAction("didSwitchCameras")
   }
   
   

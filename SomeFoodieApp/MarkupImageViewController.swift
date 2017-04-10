@@ -20,13 +20,13 @@ class MarkupImageViewController: UIViewController {
     let momentObj = FoodieMoment()
     
     guard let photo = previewPhoto else {
-      DebugPrint.error("Unexpected. previewPhoto is nil")
+      DebugPrint.assert("Unexpected. previewPhoto is nil")
       internalErrorDialog()
       return
     }
   
     do {
-      
+      // Save the image as the media of the Moment
       try momentObj.setMedia(withPhoto: photo)
       
     } catch let thrown as FoodieError {
@@ -34,52 +34,53 @@ class MarkupImageViewController: UIViewController {
       switch thrown.error {
         
       case FoodieError.Code.Moment.setMediaWithPhotoImageNil.rawValue:
-        DebugPrint.error("caught Moment.setMediaWithPhotoImageNil")
+        DebugPrint.assert("caught Moment.setMediaWithPhotoImageNil")
         internalErrorDialog()
         return
         
       case FoodieError.Code.Moment.setMediaWithPhotoJpegRepresentationFailed.rawValue:
-        DebugPrint.error("caught Moment.setMediaWithPhotoJpegRepresentationFailed")
+        DebugPrint.assert("caught Moment.setMediaWithPhotoJpegRepresentationFailed")
         internalErrorDialog()
         return
       
       default:
-        DebugPrint.error("Unexpected Foodie Error: \(thrown.localizedDescription)")
+        DebugPrint.assert("Unexpected Foodie Error: \(thrown.localizedDescription)")
         internalErrorDialog()
         return
       }
       
     } catch let thrown {
-      DebugPrint.error(thrown.localizedDescription)
+      DebugPrint.assert(thrown.localizedDescription)
       internalErrorDialog()
       return
     }
     
-    // TODO: Implement with Markup and Scrape features
-    //    momentObj.markup
-    //    momentObj.tags
-        
-    // TODO: Implement along with User Login
-    //    momentObj.author
-        
-    // TODO: Implement along with Foursquare integration
-    //    momentObj.eatery
-    //    momentObj.categories
-    //    momentObj.type
-    //    momentObj.attribute
-        
-    // TODO: Impelemnt with display views
-    //    momentObj.views
-    //    momentObj.clickthroughs
-
-    momentObj.saveInBackground { (success, error) in
-      if success {
-        DebugPrint.log("Save Test Success")
-      } else if let error = error {
-        DebugPrint.error("Save Test Error")
-        DebugPrint.error("Error.localizedDescription: \(error.localizedDescription)")
-      }
-    }
+// TODO: Implement with Markup and Scrape features
+//    momentObj.markup
+//    momentObj.tags
+//    
+// TODO: Implement along with User Login
+//    momentObj.author
+//    
+// TODO: Implement along with Foursquare integration
+//    momentObj.eatery
+//    momentObj.categories
+//    momentObj.type
+//    momentObj.attribute
+//    
+// TODO: Impelemnt with display views
+//    momentObj.views
+//    momentObj.clickthroughs
+//
+// TODO: Save Test. For reference and to be deleted
+//    momentObj.saveInBackground { (success, error) in
+//      if success {
+//        DebugPrint.log("Save Test Success")
+//      } else if let error = error {
+//        DebugPrint.error("Save Test Error")
+//        DebugPrint.error("Error.localizedDescription: \(error.localizedDescription)")
+//      }
+//    }
     
     if FoodieJournal.current() != nil {
       // Ask the user if they want to add this image to the current Journal or start a new Journal, or cancel
@@ -100,10 +101,10 @@ class MarkupImageViewController: UIViewController {
   
   // Generic error dialogue box to the user on internal errors
   private func internalErrorDialog() {
-    let alertController = UIAlertController.errorOK(title: "SomeFoodieApp",
-                                                    titleComment: "Alert diaglogue title when a Markup Image view internal error occured",
-                                                    message: "An internal error has occured. Please try again",
-                                                    messageComment: "Alert dialogue message when a Markup Image view internal error occured")
+    let alertController = UIAlertController.alertWithOK(title: "SomeFoodieApp",
+                                                        titleComment: "Alert diaglogue title when a Markup Image view internal error occured",
+                                                        message: "An internal error has occured. Please try again",
+                                                        messageComment: "Alert dialogue message when a Markup Image view internal error occured")
     
     self.present(alertController, animated: true, completion: nil)
   }

@@ -18,8 +18,27 @@ class DebugPrint {  // Abstract
     print("DEBUG_LOG: \(description)  #file = \(file) #function = \(function) #line = \(line)")
   }
 
+  // Log Entry for User Action
+  static func userAction (_ description: String,
+                          function: String = #function,
+                          file: String = #file,
+                          line: Int = #line)
+  {
+    print("DEBUG_USER_ACTION: \(description)  #file = \(file) #function = \(function) #line = \(line)")
+  }
+  
+  
+  // Log Entry for User Error
+  static func userError (_ description: String,
+                         function: String = #function,
+                         file: String = #file,
+                         line: Int = #line)
+  {
+    print("DEBUG_USER_ERROR: \(description)  #file = \(file) #function = \(function) #line = \(line)")
+  }
 
-  // This is just a different Log message on Error
+  
+  // Log Entry on real Error Paths
   static func error (_ description: String,
                      function: String = #function,
                      file: String = #file,
@@ -27,9 +46,9 @@ class DebugPrint {  // Abstract
   {
     print("DEBUG_ERROR: \(description)  #file = \(file) #function = \(function) #line = \(line)")
   }
-
-
-  // This will Log and then Assert if in development
+  
+  
+  // This will Log and then Assert if in Development
   static func assert (_ description: String,
                       function: String = #function,
                       file: String = #file,
@@ -40,6 +59,7 @@ class DebugPrint {  // Abstract
   }
 
   
+  // This is Fatal and will never return, Development or Production
   static func fatal (_ description: String,
                      function: String = #function,
                      file: String = #file,

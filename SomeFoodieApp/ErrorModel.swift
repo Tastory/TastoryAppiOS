@@ -25,6 +25,6 @@ class ErrorModel: Error, LocalizedError {
     // This is to fulfill the LocalizedError protocol so Error.localizedDescription will have value
     self.errorDescription = "\(function) - \(description) #file = \(file) #line = \(line)"
     self.privateError = error
-    DebugPrint.error(description, function: function, file: file, line: line)
+    DebugPrint.error(description, function: function, file: file, line: line)  // Is this really an error everytime this happens?
   }
 }
