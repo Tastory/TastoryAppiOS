@@ -85,11 +85,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   
   // Generic error dialogue box to the user on internal errors
   private func internalErrorDialog() {
-    let alertController = UIAlertController.alertWithOK(title: "SomeFoodieApp",
-                                                        titleComment: "Alert diaglogue title when a Map view internal error occured",
-                                                        message: "An internal error has occured. Please try again",
-                                                        messageComment: "Alert dialogue message when a Map view internal error occured")
-    
+    let alertController = UIAlertController(title: "SomeFoodieApp",
+                                            titleComment: "Alert diaglogue title when a Map view internal error occured",
+                                            message: "An internal error has occured. Please try again",
+                                            messageComment: "Alert dialogue message when a Map view internal error occured",
+                                            preferredStyle: .alert)
+    alertController.addAlertAction(title: "OK", comment: "Button in alert dialogue box for generic MapView errors", style: .cancel)
     self.present(alertController, animated: true, completion: nil)
   }
   
@@ -152,8 +153,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
     
     guard let errorCode = error as? CLError else {
-      DebugPrint.assert("Not getting CLError upon a Location Manager Error")
       internalErrorDialog()
+      DebugPrint.assert("Not getting CLError upon a Location Manager Error")
       return
     }
     
@@ -165,18 +166,23 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
       // User denied authorization
       manager.stopUpdatingLocation()
 
-      // Prompt user to authorize
-      if let alertController = UIAlertController.alertWithOK(withURL: UIApplicationOpenSettingsURLString,
-                                                             buttonTitle: "Settings",
-                                                             buttonComment: "Alert diaglogue button to open Settings, hoping user will allow access to location services",
-                                                             title: "Location Services Disabled",
-                                                             titleComment: "Alert diaglogue title when user has denied access to location services",
-                                                             message: "Please go to Settings > Privacy > Location Services and set this App's Location Access permission to 'While Using'",
-                                                             messageComment: "Alert dialogue message when the user has denied access to location services") {
-        self.present(alertController, animated: true, completion: nil)
-      } else {
-        DebugPrint.assert("Unable to create Alert ErrorOK+URL dialogue box")
+      // Permission was denied before. Ask for permission again
+      guard let url = URL(string: UIApplicationOpenSettingsURLString) else {
+        DebugPrint.assert("UIApplicationOPenSettignsURLString ia an invalid URL String???")
+        break
       }
+      
+      let alertController = UIAlertController(title: "Location Services Disabled",
+                                              titleComment: "Alert diaglogue title when user has denied access to location services",
+                                              message: "Please go to Settings > Privacy > Location Services and set this App's Location Access permission to 'While Using'",
+                                              messageComment: "Alert dialogue message when the user has denied access to location services",
+                                              preferredStyle: .alert)
+      
+      alertController.addAlertAction(title: "Settings",
+                                     comment: "Alert diaglogue button to open Settings, hoping user will enable access to Location Services",
+                                     style: .default) { action in UIApplication.shared.open(url, options: [:]) }
+      
+      self.present(alertController, animated: true, completion: nil)
 
     default:
       DebugPrint.assert("Unrecognized fallthrough, error.localizedDescription = \(error.localizedDescription)")
@@ -202,7 +208,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     let clRegion = CLCircularRegion(center: region.center,
                                     radius: region.span.height/1.78/2,
-                                    identifier: "currentCLRegion")  // 1.78 for 16:9 aspect ratio // TODO: 16:9 assumption is not good enough
+                                    identifier: "currentCLRegion")  // TODO: 16:9 assumption is not good enough
     let geocoder = CLGeocoder()
     
     geocoder.geocodeAddressString(location, in: clRegion) { (placemarks, error) in

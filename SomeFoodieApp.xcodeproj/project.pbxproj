@@ -31,6 +31,7 @@
 		8C9AD0641E8F615D005F337E /* CameraCrossLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD05F1E8F615D005F337E /* CameraCrossLayer.swift */; };
 		8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0601E8F615D005F337E /* ExitButton.swift */; };
 		8C9AD0661E8F615D005F337E /* MarkupImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0611E8F615D005F337E /* MarkupImageViewController.swift */; };
+		8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */; };
 		8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CADA1A91E85D9CE00BF6CF0 /* ScrapeViewController.swift */; };
 		8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */; };
 		8CBF55891E7F7EDF00F4B1CD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */; };
@@ -87,6 +88,7 @@
 		8C9AD05F1E8F615D005F337E /* CameraCrossLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraCrossLayer.swift; path = SomeFoodieApp/CameraCrossLayer.swift; sourceTree = "<group>"; };
 		8C9AD0601E8F615D005F337E /* ExitButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExitButton.swift; path = SomeFoodieApp/ExitButton.swift; sourceTree = "<group>"; };
 		8C9AD0611E8F615D005F337E /* MarkupImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkupImageViewController.swift; sourceTree = "<group>"; };
+		8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+Extension.swift"; sourceTree = "<group>"; };
 		8CADA1A91E85D9CE00BF6CF0 /* ScrapeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrapeViewController.swift; sourceTree = "<group>"; };
 		8CBF55801E7F7EDF00F4B1CD /* SomeFoodieApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SomeFoodieApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -237,6 +239,7 @@
 			children = (
 				8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */,
 				8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extensions.swift */,
+				8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -585,6 +588,7 @@
 				8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */,
 				8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extensions.swift in Sources */,
 				8C61BCDC1E985D1300DDF248 /* DebugPrint.swift in Sources */,
+				8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */,
 				8C9AD0641E8F615D005F337E /* CameraCrossLayer.swift in Sources */,
 				8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */,
 				8C9AD0621E8F615D005F337E /* CameraButtonLayer.swift in Sources */,

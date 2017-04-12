@@ -18,6 +18,6 @@ extension MKCoordinateSpan {
   // This creates surface that has the same lat and long degree spans
   init(height: CLLocationDistance) {
     latitudeDelta = height/111230
-    longitudeDelta = latitudeDelta/1.78  // For 16:9 aspect ratio near the equator
+    longitudeDelta = latitudeDelta/1.78  // TODO: 16:9 aspect ratio assumption is not good enough
   }
 }

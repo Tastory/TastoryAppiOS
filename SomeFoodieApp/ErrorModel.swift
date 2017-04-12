@@ -27,4 +27,16 @@ class ErrorModel: Error, LocalizedError {
     self.privateError = error
     DebugPrint.error(description, function: function, file: file, line: line)  // Is this really an error everytime this happens?
   }
+  
+  func splitErrorCode() -> (ErrorCode, Int) {
+    return ((~0xFFF & self.error), (0xFFF & self.error))
+  }
+  
+  func getFrameworkError() -> Int {
+    return 0xFFF & self.error
+  }
+  
+  func stripFrameworkError() -> ErrorCode {
+    return ~0xFFF & self.error
+  }
 }
