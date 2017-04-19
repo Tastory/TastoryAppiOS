@@ -11,10 +11,10 @@ import MapKit
 import CoreLocation
 
 
-class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, UIGestureRecognizerDelegate, UITextFieldDelegate {
+class MapViewController: UIViewController {
 
   // MARK: - Class Constants
-  private struct Constants {
+  fileprivate struct Constants {
     static let defaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
                                                               longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
     static let defaultMaxDelta: CLLocationDegrees = 0.05
@@ -24,8 +24,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   
   
   // MARK: - Class Variables
-  private var locationManager = CLLocationManager()
-  private var currentMapDelta = Constants.defaultMaxDelta
+  fileprivate var locationManager = CLLocationManager()
+  fileprivate var currentMapDelta = Constants.defaultMaxDelta
   
   
   // MARK: - IBOutlets
@@ -84,7 +84,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   // MARK: - Class Private Functions
   
   // Generic error dialogue box to the user on internal errors
-  private func internalErrorDialog() {
+  fileprivate func internalErrorDialog() {
     let alertController = UIAlertController(title: "SomeFoodieApp",
                                             titleComment: "Alert diaglogue title when a Map view internal error occured",
                                             message: "An internal error has occured. Please try again",
@@ -100,7 +100,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     super.viewDidLoad()
 
     // Do any additional setup after loading the view.
-    mapView?.delegate = self
+    //mapView?.delegate = self
     panGestureRecognizer?.delegate = self
     pinchGestureRecognizer?.delegate = self
     doubleTapGestureRecognizer?.delegate = self
@@ -141,8 +141,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
   }
   */
 
+}
+
+
+extension MapViewController: CLLocationManagerDelegate {
   
-  // MARK: - CLLocationManager Delegates
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 
     let region = MKCoordinateRegion(center: locations[0].coordinate, span: MKCoordinateSpan(latitudeDelta: currentMapDelta, longitudeDelta: currentMapDelta))
@@ -188,15 +191,18 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
       DebugPrint.assert("Unrecognized fallthrough, error.localizedDescription = \(error.localizedDescription)")
     }
   }
+}
+
+
+extension MapViewController: UIGestureRecognizerDelegate {
   
-  
-  // MARK: - UIGestureRecognizer Delegates
   func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
     return true
   }
-  
-  
-  // MARK: - UITextField Delegates
+}
+
+
+extension MapViewController: UITextFieldDelegate {
   
   // TODO: textFieldShouldReturn, implement Dynamic Filter Querying with another Geocoder
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {

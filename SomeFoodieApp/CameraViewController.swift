@@ -10,7 +10,7 @@ import UIKit
 import Photos
 import SwiftyCam
 
-class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDelegate {  // View needs to comply to certain protocols going forward?
+class CameraViewController: SwiftyCamViewController {  // View needs to comply to certain protocols going forward?
 
   // MARK: - Global Constants
   struct GlobalConstants {
@@ -47,7 +47,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
   // MARK: - Class Private Functions
 
   // Generic error dialogue box to the user on internal errors
-  private func internalErrorDialog() {
+  fileprivate func internalErrorDialog() {
     let alertController = UIAlertController(title: "SomeFoodieApp",
                                             titleComment: "Alert diaglogue title when a Camera view internal error occured",
                                             message: "An internal error has occured. Please try again",
@@ -170,9 +170,11 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
 //      DebugPrint.assert("No matching segue identifier")
 //    }
   }
-  
+} // CameraViewController class definision
 
-  // MARK: - Swiftycam Delagates
+
+extension CameraViewController: SwiftyCamViewControllerDelegate {
+  
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake photo: UIImage) {
     // Called when takePhoto() is called or if a SwiftyCamButton initiates a tap gesture
     // Returns a UIImage captured from the current session
@@ -206,7 +208,7 @@ class CameraViewController: SwiftyCamViewController, SwiftyCamViewControllerDele
       UISaveVideoAtPathToSavedPhotosAlbum(url.absoluteString, nil, nil, nil)
       performSegue(withIdentifier: "toVideoMarkup", sender: url)
     } else {
-      internalErrorDialog()
+      self.internalErrorDialog()
       DebugPrint.assert("Received invalid URL for local filesystem")
       captureButton?.buttonReset()
     }

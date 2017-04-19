@@ -302,49 +302,75 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="ahb-xR-b3F">
-                                <rect key="frame" x="16" y="269" width="343" height="151"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="ahb-xR-b3F">
+                                <rect key="frame" x="16" y="208" width="343" height="180"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="180" id="Aul-a8-jz1"/>
+                                </constraints>
                             </mapView>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ACY-9y-JHx">
-                                <rect key="frame" x="16" y="439" width="343" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="jCg-zq-d2j">
-                                <rect key="frame" x="16" y="488" width="343" height="159"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="7De-MJ-3Py">
+                                <rect key="frame" x="16" y="20" width="343" height="180"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="7De-MJ-3Py">
-                                <rect key="frame" x="16" y="20" width="343" height="157"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="wew-je-QM0">
-                                    <size key="itemSize" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="180" id="4eS-aD-4Ma"/>
+                                </constraints>
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="wew-je-QM0">
+                                    <size key="itemSize" width="180" height="180"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="qbD-k6-zNm">
-                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="180" height="180"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="180" height="180"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </view>
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Vvb-ek-7Tc">
+                                <rect key="frame" x="16" y="434" width="343" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ACY-9y-JHx">
+                                <rect key="frame" x="16" y="396" width="343" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="jCg-zq-d2j">
+                                <rect key="frame" x="16" y="472" width="343" height="175"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="7De-MJ-3Py" firstAttribute="top" secondItem="I3h-lK-Gqt" secondAttribute="bottom" id="03l-HT-N42"/>
+                            <constraint firstItem="jCg-zq-d2j" firstAttribute="top" secondItem="Vvb-ek-7Tc" secondAttribute="bottom" constant="8" symbolic="YES" id="0Ip-m1-rId"/>
+                            <constraint firstItem="jCg-zq-d2j" firstAttribute="trailing" secondItem="SY3-Rv-CII" secondAttribute="trailingMargin" id="9aq-2H-pv6"/>
+                            <constraint firstItem="ACY-9y-JHx" firstAttribute="trailing" secondItem="SY3-Rv-CII" secondAttribute="trailingMargin" id="Eba-5f-T2a"/>
+                            <constraint firstItem="ahb-xR-b3F" firstAttribute="leading" secondItem="SY3-Rv-CII" secondAttribute="leadingMargin" id="Eo2-bC-sEh"/>
+                            <constraint firstItem="ITX-s0-c9f" firstAttribute="top" secondItem="jCg-zq-d2j" secondAttribute="bottom" constant="20" id="Fw3-47-JMe"/>
+                            <constraint firstItem="Vvb-ek-7Tc" firstAttribute="top" secondItem="ACY-9y-JHx" secondAttribute="bottom" constant="8" symbolic="YES" id="HLo-A7-SxX"/>
+                            <constraint firstItem="7De-MJ-3Py" firstAttribute="leading" secondItem="SY3-Rv-CII" secondAttribute="leadingMargin" id="KXe-Ic-Pcr"/>
+                            <constraint firstItem="Vvb-ek-7Tc" firstAttribute="trailing" secondItem="SY3-Rv-CII" secondAttribute="trailingMargin" id="dl1-rJ-vBQ"/>
+                            <constraint firstItem="ahb-xR-b3F" firstAttribute="top" secondItem="7De-MJ-3Py" secondAttribute="bottom" constant="8" symbolic="YES" id="ds1-Wk-8Ha"/>
+                            <constraint firstItem="7De-MJ-3Py" firstAttribute="trailing" secondItem="SY3-Rv-CII" secondAttribute="trailingMargin" id="gDZ-Ym-Xg5"/>
+                            <constraint firstItem="ahb-xR-b3F" firstAttribute="trailing" secondItem="SY3-Rv-CII" secondAttribute="trailingMargin" id="hN7-Hj-1f9"/>
+                            <constraint firstItem="jCg-zq-d2j" firstAttribute="leading" secondItem="SY3-Rv-CII" secondAttribute="leadingMargin" id="haW-Xp-QnG"/>
+                            <constraint firstItem="ACY-9y-JHx" firstAttribute="leading" secondItem="SY3-Rv-CII" secondAttribute="leadingMargin" id="hth-5X-kdo"/>
+                            <constraint firstItem="Vvb-ek-7Tc" firstAttribute="leading" secondItem="SY3-Rv-CII" secondAttribute="leadingMargin" id="msr-fB-zNn"/>
+                            <constraint firstItem="ACY-9y-JHx" firstAttribute="top" secondItem="ahb-xR-b3F" secondAttribute="bottom" constant="8" symbolic="YES" id="xav-sn-UKY"/>
+                        </constraints>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="WX2-5X-LII" appends="YES" id="G2D-H4-we7"/>
                         </connections>
@@ -358,7 +384,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2526" y="-603"/>
+            <point key="canvasLocation" x="2525.5999999999999" y="-603.14842578710648"/>
         </scene>
     </scenes>
 </document>
