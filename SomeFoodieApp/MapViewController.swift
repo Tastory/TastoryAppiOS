@@ -327,4 +327,10 @@ extension MapViewController: UITextFieldDelegate {
     textField.textColor = UIColor.black
     return true
   }
+  
+//  let userInfo = notification.userInfo!
+//  let keyboardHeight = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue().height
+//  let duration = userInfo[UIKeyboardAnimationDurationUserInfoKey] as! Double
+//  let curve = userInfo[UIKeyboardAnimationCurveUserInfoKey] as! UInt
+//  let moveUp = (notification.name == UIKeyboardWillShowNotification)
 }

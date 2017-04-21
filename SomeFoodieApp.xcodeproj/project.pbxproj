@@ -24,7 +24,6 @@
 		8C8986781E91DC5800B62306 /* FoodieHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986771E91DC5800B62306 /* FoodieHistory.swift */; };
 		8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986791E933E2E00B62306 /* FoodieUser.swift */; };
 		8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89867D1E958B4300B62306 /* FoodieObject.swift */; };
-		8C9AD0591E8F43CD005F337E /* JournalEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0581E8F43CD005F337E /* JournalEntryViewController.swift */; };
 		8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */; };
 		8C9AD0621E8F615D005F337E /* CameraButtonLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD05D1E8F615D005F337E /* CameraButtonLayer.swift */; };
 		8C9AD0631E8F615D005F337E /* CameraButtonRingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD05E1E8F615D005F337E /* CameraButtonRingLayer.swift */; };
@@ -40,6 +39,7 @@
 		8CBF55991E7F7EDF00F4B1CD /* SomeFoodieAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55981E7F7EDF00F4B1CD /* SomeFoodieAppTests.swift */; };
 		8CBF55A41E7F7EDF00F4B1CD /* SomeFoodieAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55A31E7F7EDF00F4B1CD /* SomeFoodieAppUITests.swift */; };
 		8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55B11E80C72200F4B1CD /* MapViewController.swift */; };
+		8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */; };
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extensions.swift */; };
 		C5A7852B6648DF71C73BE203 /* Pods_SomeFoodieAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED09C3927B27479449C01250 /* Pods_SomeFoodieAppTests.framework */; };
 /* End PBXBuildFile section */
@@ -81,7 +81,6 @@
 		8C8986771E91DC5800B62306 /* FoodieHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieHistory.swift; sourceTree = "<group>"; };
 		8C8986791E933E2E00B62306 /* FoodieUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieUser.swift; sourceTree = "<group>"; };
 		8C89867D1E958B4300B62306 /* FoodieObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieObject.swift; sourceTree = "<group>"; };
-		8C9AD0581E8F43CD005F337E /* JournalEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JournalEntryViewController.swift; sourceTree = "<group>"; };
 		8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMoment.swift; sourceTree = "<group>"; };
 		8C9AD05D1E8F615D005F337E /* CameraButtonLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButtonLayer.swift; path = SomeFoodieApp/CameraButtonLayer.swift; sourceTree = "<group>"; };
 		8C9AD05E1E8F615D005F337E /* CameraButtonRingLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButtonRingLayer.swift; path = SomeFoodieApp/CameraButtonRingLayer.swift; sourceTree = "<group>"; };
@@ -103,6 +102,7 @@
 		8CBF55A31E7F7EDF00F4B1CD /* SomeFoodieAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SomeFoodieAppUITests.swift; sourceTree = "<group>"; };
 		8CBF55A51E7F7EDF00F4B1CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8CBF55B11E80C72200F4B1CD /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JournalEntryViewController.swift; sourceTree = "<group>"; };
 		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extensions.swift"; sourceTree = "<group>"; };
 		D774075B6C8726908633E5B2 /* Pods-SomeFoodieAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SomeFoodieAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SomeFoodieAppTests/Pods-SomeFoodieAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED09C3927B27479449C01250 /* Pods_SomeFoodieAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SomeFoodieAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -252,7 +252,7 @@
 				8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */,
 				8C9AD0611E8F615D005F337E /* MarkupImageViewController.swift */,
 				8C5CAD641E8DCC1D00C75D12 /* MarkupVideoViewController.swift */,
-				8C9AD0581E8F43CD005F337E /* JournalEntryViewController.swift */,
+				8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */,
 				8CADA1A91E85D9CE00BF6CF0 /* ScrapeViewController.swift */,
 			);
 			name = Controllers;
@@ -581,8 +581,8 @@
 				8C8986761E91A72D00B62306 /* FoodieCategory.swift in Sources */,
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extensions.swift in Sources */,
-				8C9AD0591E8F43CD005F337E /* JournalEntryViewController.swift in Sources */,
 				8C61BCDA1E9857F500DDF248 /* ErrorModel.swift in Sources */,
+				8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */,
 				8C6A96971E98435D00B8C309 /* FoodieError.swift in Sources */,
 				8C9AD0631E8F615D005F337E /* CameraButtonRingLayer.swift in Sources */,
 				8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */,
