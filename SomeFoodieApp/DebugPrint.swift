@@ -9,7 +9,7 @@
 
 class DebugPrint {  // Abstract
   
-  // A log entry. You get function, file and line for free
+  // A log entry. You get function, file and line for free  // TODO: Add Logging severity? Make Logs filterable?
   static func log (_ description: String,
                    function: String = #function,
                    file: String = #file,

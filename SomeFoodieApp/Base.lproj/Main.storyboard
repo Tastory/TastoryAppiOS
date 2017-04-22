@@ -375,11 +375,10 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="132.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" text="Tags" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ijC-Vt-3Fq">
+                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ijC-Vt-3Fq">
                                                     <rect key="frame" x="8" y="8" width="359" height="117"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <color key="textColor" red="0.78431372549019607" green="0.78431372549019607" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                 </textView>
@@ -396,14 +395,16 @@
                     </tableView>
                     <connections>
                         <outlet property="tagsTextView" destination="ijC-Vt-3Fq" id="2sl-gj-NL9"/>
+                        <segue destination="qAf-50-cP1" kind="unwind" identifier="unwindToCamera" unwindAction="unwindToCameraWithSegue:" id="8sA-C5-nva"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6pB-Nr-PsL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="qAf-50-cP1" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="2524" y="107.49625187406298"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="snc-d3-1up"/>
+        <segue reference="cJR-QP-ryn"/>
     </inferredMetricsTieBreakers>
 </document>

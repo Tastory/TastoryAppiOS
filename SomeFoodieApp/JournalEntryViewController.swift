@@ -11,31 +11,55 @@ import MapKit
 
 class JournalEntryViewController: UITableViewController {
 
-  @IBOutlet weak var tagsTextView: UITextView?
+  // MARK: - IBOutlets
+  @IBOutlet weak var tagsTextView: UITextView? {
+    didSet {
+      placeholderLabel = UILabel(frame: CGRect(x: 5, y: 7, width: 49, height: 19))
+      placeholderLabel.text = "Tags"
+      placeholderLabel.textColor = UIColor(red: 0xC8/0xFF, green: 0xC8/0xFF, blue: 0xC8/0xFF, alpha: 1.0)
+      placeholderLabel.font = UIFont.systemFont(ofSize: 14)
+      placeholderLabel.isHidden = !tagsTextView!.text.isEmpty
+      tagsTextView?.addSubview(placeholderLabel)
+    }
+  }
+
   
-  fileprivate let mapHeight: CGFloat = UIScreen.main.bounds.height/5
-  fileprivate let momentHeight: CGFloat = UIScreen.main.bounds.height/3
+  // MARK: - Private Class Constants
+  fileprivate struct Constants {
+    static let mapHeight: CGFloat = UIScreen.main.bounds.height/5
+    static let momentHeight: CGFloat = UIScreen.main.bounds.height/3
+  }
+  
+  
+  // MARK: - Private Instance Constants
   fileprivate let sectionOneView = UIView()
   fileprivate let sectionTwoView = UIView()
-  fileprivate let mapView = MKMapView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height/5))
-  fileprivate let momentView = UICollectionView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height/3), collectionViewLayout: UICollectionViewFlowLayout())
+  fileprivate let mapView = MKMapView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: Constants.mapHeight))
+  fileprivate let momentView = UICollectionView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: Constants.momentHeight), collectionViewLayout: UICollectionViewFlowLayout())
   
+  
+  // MARK: - Private Instance Variables
+  fileprivate var placeholderLabel = UILabel()
+  
+  
+  // MARK: - Controller View Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    tableView.autoresizingMask = UIViewAutoresizing.init(rawValue: 0) // Still Crashes
-    
     sectionOneView.addSubview(mapView)
     sectionTwoView.addSubview(momentView)
     
-    tagsTextView?.text = "Tags"
-    tagsTextView?.textColor = UIColor(red: 0xC8/0xFF, green: 0xC8/0xFF, blue: 0xC8/0xFF, alpha: 1.0)
+    tagsTextView?.delegate = self
     
-    // Uncomment the following line to preserve selection between presentations
-    // self.clearsSelectionOnViewWillAppear = false
-
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+    let keyboardDismissRecognizer = UITapGestureRecognizer(target: self, action: #selector(keyboardDismiss))
+    keyboardDismissRecognizer.numberOfTapsRequired = 1
+    keyboardDismissRecognizer.numberOfTouchesRequired = 1
+    tableView.addGestureRecognizer(keyboardDismissRecognizer)
+    
+    let previousSwipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(previousUnwind))
+    previousSwipeRecognizer.direction = .right
+    previousSwipeRecognizer.numberOfTouchesRequired = 1
+    tableView.addGestureRecognizer(previousSwipeRecognizer)
   }
 
   override func didReceiveMemoryWarning() {
@@ -59,9 +83,9 @@ class JournalEntryViewController: UITableViewController {
   override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
     switch section {
     case 0:
-      return mapHeight
+      return Constants.mapHeight
     case 1:
-      return momentHeight
+      return Constants.momentHeight
     default:
       return 0
     }
@@ -73,18 +97,39 @@ class JournalEntryViewController: UITableViewController {
   
   override func scrollViewDidScroll(_ scrollView: UIScrollView) {
     let currentOffset = scrollView.contentOffset.y
-    print("Content Offset: \(currentOffset)")
-
-    mapView.frame = CGRect(x: 0, y: currentOffset, width: self.view.bounds.width, height: mapHeight - currentOffset)
+    let height = ceil(Constants.mapHeight - currentOffset)
+    
+    if height == 0 {
+      DebugPrint.fatal("Height cannot be value of 0")
+    }
+    
+    // Need to take the ceiling as a 0 height with cause a crash
+    mapView.frame = CGRect(x: 0, y: currentOffset, width: self.view.bounds.width, height: height)
+  }
+  
+  func keyboardDismiss() {
+    self.view.endEditing(true)
+  }
+  
+  func previousUnwind() {
+    // Careful here, if we didn't arrive at this view from Camera View, we will not be able to exit (naturally)
+    self.performSegue(withIdentifier: "unwindToCamera", sender: self)
+    
+    // TODO: Should look through all VC in the stack to determine whichone to return to
   }
 }
 
 extension JournalEntryViewController: UITextViewDelegate {
   
-  func textViewDidBeginEditing(_ textView: UITextView) {
-    if textView.textColor == UIColor.lightGray {
-      textView.text = nil
-      textView.textColor = UIColor.black
-    }
+  func textViewDidChange(_ textView: UITextView) {
+    placeholderLabel.isHidden = !textView.text.isEmpty
+  }
+}
+
+
+extension JournalEntryViewController: UITextFieldDelegate {
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    textField.resignFirstResponder()
+    return true
   }
 }
