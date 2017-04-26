@@ -65,6 +65,13 @@ class MapViewController: UIViewController {
   }
   
   
+  // TODO: This is temporary and to be removed
+  @IBAction func newJournal(_ sender: UIButton) {
+    
+    FoodieJournal.editingJournal = FoodieJournal()
+  }
+  
+  
   @IBAction func currentLocationReturn(_ sender: UIButton) {
     
     // Clear the text field while at it

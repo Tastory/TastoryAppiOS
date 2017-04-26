@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		51268DA860D72C9FE7A611A0 /* Pods_SomeFoodieAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF1E4B0787933480F4DBC7A6 /* Pods_SomeFoodieAppUITests.framework */; };
 		721D47604D8BCFB5A9D29799 /* Pods_SomeFoodieApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 545869F88381BEB58C25B26D /* Pods_SomeFoodieApp.framework */; };
+		8C1089311EADC11B00457E66 /* MomentHeaderReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */; };
+		8C1089331EADC13700457E66 /* MomentFooterReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */; };
+		8C1089351EAFF18300457E66 /* AddMomentLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089341EAFF18300457E66 /* AddMomentLayer.swift */; };
+		8C1089371EB00E3E00457E66 /* MomentCollectionLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089361EB00E3E00457E66 /* MomentCollectionLayout.swift */; };
 		8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */; };
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
 		8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */; };
@@ -40,6 +44,7 @@
 		8CBF55A41E7F7EDF00F4B1CD /* SomeFoodieAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55A31E7F7EDF00F4B1CD /* SomeFoodieAppUITests.swift */; };
 		8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55B11E80C72200F4B1CD /* MapViewController.swift */; };
 		8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */; };
+		8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */; };
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extensions.swift */; };
 		C5A7852B6648DF71C73BE203 /* Pods_SomeFoodieAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED09C3927B27479449C01250 /* Pods_SomeFoodieAppTests.framework */; };
 /* End PBXBuildFile section */
@@ -66,6 +71,10 @@
 		05A890ED28E1DB26E7E9A040 /* Pods-SomeFoodieApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SomeFoodieApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SomeFoodieApp/Pods-SomeFoodieApp.debug.xcconfig"; sourceTree = "<group>"; };
 		545869F88381BEB58C25B26D /* Pods_SomeFoodieApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SomeFoodieApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		62F60AA88724A11053226C2C /* Pods-SomeFoodieAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SomeFoodieAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SomeFoodieAppUITests/Pods-SomeFoodieAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentHeaderReusableView.swift; path = SomeFoodieApp/MomentHeaderReusableView.swift; sourceTree = "<group>"; };
+		8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentFooterReusableView.swift; path = SomeFoodieApp/MomentFooterReusableView.swift; sourceTree = "<group>"; };
+		8C1089341EAFF18300457E66 /* AddMomentLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddMomentLayer.swift; path = SomeFoodieApp/AddMomentLayer.swift; sourceTree = "<group>"; };
+		8C1089361EB00E3E00457E66 /* MomentCollectionLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentCollectionLayout.swift; path = SomeFoodieApp/MomentCollectionLayout.swift; sourceTree = "<group>"; };
 		8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButton.swift; path = SomeFoodieApp/CameraButton.swift; sourceTree = "<group>"; };
 		8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MKCoordinateSpan+Extensions.swift"; sourceTree = "<group>"; };
@@ -103,6 +112,7 @@
 		8CBF55A51E7F7EDF00F4B1CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8CBF55B11E80C72200F4B1CD /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JournalEntryViewController.swift; sourceTree = "<group>"; };
+		8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentCollectionViewCell.swift; path = SomeFoodieApp/MomentCollectionViewCell.swift; sourceTree = "<group>"; };
 		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extensions.swift"; sourceTree = "<group>"; };
 		D774075B6C8726908633E5B2 /* Pods-SomeFoodieAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SomeFoodieAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SomeFoodieAppTests/Pods-SomeFoodieAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED09C3927B27479449C01250 /* Pods_SomeFoodieAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SomeFoodieAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -147,6 +157,14 @@
 				FF1E4B0787933480F4DBC7A6 /* Pods_SomeFoodieAppUITests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8C1089381EB00E4500457E66 /* Layouts */ = {
+			isa = PBXGroup;
+			children = (
+				8C1089361EB00E3E00457E66 /* MomentCollectionLayout.swift */,
+			);
+			name = Layouts;
 			sourceTree = "<group>";
 		};
 		8C9AD05A1E8F60E4005F337E /* Models */ = {
@@ -224,9 +242,13 @@
 		8CD328D71E8B2B4B00E5254F /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				8C1089381EB00E4500457E66 /* Layouts */,
 				8CD328DA1E8B2BD600E5254F /* Layers */,
 				8C1A0D7E1E88F711001DE075 /* CameraButton.swift */,
 				8C9AD0601E8F615D005F337E /* ExitButton.swift */,
+				8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */,
+				8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */,
+				8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */,
 				8CBF558C1E7F7EDF00F4B1CD /* LaunchScreen.storyboard */,
 				8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */,
 			);
@@ -264,6 +286,7 @@
 				8C9AD05D1E8F615D005F337E /* CameraButtonLayer.swift */,
 				8C9AD05E1E8F615D005F337E /* CameraButtonRingLayer.swift */,
 				8C9AD05F1E8F615D005F337E /* CameraCrossLayer.swift */,
+				8C1089341EAFF18300457E66 /* AddMomentLayer.swift */,
 			);
 			name = Layers;
 			sourceTree = "<group>";
@@ -565,6 +588,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C1089311EADC11B00457E66 /* MomentHeaderReusableView.swift in Sources */,
 				8C9AD0661E8F615D005F337E /* MarkupImageViewController.swift in Sources */,
 				8C5CAD651E8DCC1D00C75D12 /* MarkupVideoViewController.swift in Sources */,
 				8C89866E1E9189F500B62306 /* MyClass.swift in Sources */,
@@ -574,6 +598,7 @@
 				8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */,
 				8C8986701E91981C00B62306 /* FoodieMarkup.swift in Sources */,
 				8C8986781E91DC5800B62306 /* FoodieHistory.swift in Sources */,
+				8C1089331EADC13700457E66 /* MomentFooterReusableView.swift in Sources */,
 				8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */,
 				8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */,
 				8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */,
@@ -582,14 +607,17 @@
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extensions.swift in Sources */,
 				8C61BCDA1E9857F500DDF248 /* ErrorModel.swift in Sources */,
+				8C1089351EAFF18300457E66 /* AddMomentLayer.swift in Sources */,
 				8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */,
 				8C6A96971E98435D00B8C309 /* FoodieError.swift in Sources */,
 				8C9AD0631E8F615D005F337E /* CameraButtonRingLayer.swift in Sources */,
+				8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */,
 				8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */,
 				8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extensions.swift in Sources */,
 				8C61BCDC1E985D1300DDF248 /* DebugPrint.swift in Sources */,
 				8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */,
 				8C9AD0641E8F615D005F337E /* CameraCrossLayer.swift in Sources */,
+				8C1089371EB00E3E00457E66 /* MomentCollectionLayout.swift in Sources */,
 				8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */,
 				8C9AD0621E8F615D005F337E /* CameraButtonLayer.swift in Sources */,
 			);
