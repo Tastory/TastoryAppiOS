@@ -55,7 +55,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nLf-Wv-bwR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="948" y="505"/>
+            <point key="canvasLocation" x="3585" y="1522"/>
         </scene>
         <!--Map View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -220,7 +220,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="948" y="-221"/>
+            <point key="canvasLocation" x="937" y="-581"/>
         </scene>
         <!--Markup Video View Controller-->
         <scene sceneID="WSP-Y4-yUt">
@@ -255,7 +255,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1738" y="-911"/>
+            <point key="canvasLocation" x="1718" y="-913"/>
         </scene>
         <!--Markup Image View Controller-->
         <scene sceneID="H9q-fk-uJF">
@@ -297,7 +297,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1739" y="-221"/>
+            <point key="canvasLocation" x="1718" y="-216"/>
         </scene>
         <!--Journal Entry View Controller-->
         <scene sceneID="MEV-Xi-0JN">
@@ -405,10 +405,81 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6pB-Nr-PsL" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="qAf-50-cP1" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="2524" y="107.49625187406298"/>
+            <point key="canvasLocation" x="2506" y="108"/>
+        </scene>
+        <!--Moment Collection View Controller-->
+        <scene sceneID="Sf3-nA-ZH6">
+            <objects>
+                <collectionViewController storyboardIdentifier="MomentCollection" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="TGu-A1-lSP">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="180"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="OoU-Aa-vB2" customClass="MomentCollectionLayout" customModule="SomeFoodieApp" customModuleProvider="target">
+                            <size key="itemSize" width="97" height="180"/>
+                            <size key="headerReferenceSize" width="101" height="50"/>
+                            <size key="footerReferenceSize" width="102" height="50"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentCell" id="5yf-rk-zGg" customClass="MomentCollectionViewCell" customModule="SomeFoodieApp" customModuleProvider="target">
+                                <rect key="frame" x="101" y="0.0" width="97" height="180"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="97" height="180"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Cell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JFK-LB-YrR">
+                                            <rect key="frame" x="34" y="80" width="29" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </view>
+                            </collectionViewCell>
+                        </cells>
+                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentHeader" id="DfJ-30-c0L" customClass="MomentHeaderReusableView" customModule="SomeFoodieApp" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="0.0" width="101" height="180"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Hdr" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e6G-xc-prO">
+                                    <rect key="frame" x="36" y="80" width="29" height="21"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                        </collectionReusableView>
+                        <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentFooter" id="CkJ-Jk-m6B" customClass="MomentFooterReusableView" customModule="SomeFoodieApp" customModuleProvider="target">
+                            <rect key="frame" x="198" y="0.0" width="102" height="180"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Ftr" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BRh-JP-cjQ">
+                                    <rect key="frame" x="40" y="80" width="22" height="21"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                        </collectionReusableView>
+                        <connections>
+                            <outlet property="dataSource" destination="mqr-nw-IyY" id="eTY-oM-TWy"/>
+                            <outlet property="delegate" destination="mqr-nw-IyY" id="3cw-ym-o9Y"/>
+                        </connections>
+                    </collectionView>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="375" height="180"/>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="BGe-7r-hOK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3111" y="3"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="cJR-QP-ryn"/>
+        <segue reference="snc-d3-1up"/>
     </inferredMetricsTieBreakers>
 </document>

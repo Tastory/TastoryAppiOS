@@ -36,9 +36,7 @@ class MomentHeaderReusableView: UICollectionReusableView {
     layer.addSublayer(addMomentLayer)
   }
   
-  override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
-    super.apply(layoutAttributes)
-    
-    print("Applying Header Layouts")
-  }
+//  override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
+//    super.apply(layoutAttributes)
+//  }
 }
