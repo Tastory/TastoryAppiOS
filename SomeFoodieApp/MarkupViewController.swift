@@ -1,5 +1,5 @@
 //
-//  MarkupImageViewController.swift
+//  MarkupViewController.swift
 //  SomeFoodieApp
 //
 //  Created by Howard Lee on 2017-03-29.
@@ -8,10 +8,17 @@
 
 import UIKit
 
-class MarkupImageViewController: UIViewController {
+class MarkupViewController: UIViewController {
   
-  var photoView: UIImageView?
+  
+  // MARK: - Public Instance Variables
   var previewPhoto: UIImage?
+  var previewVideoURL: URL?  // TODO: - Video related implementations
+  
+  
+  // MARK: - Private Instance Variables
+  var photoView: UIImageView?
+  
   
   // MARK: - IBOutlets
   @IBOutlet weak var saveButton: UIButton?
@@ -241,18 +248,6 @@ class MarkupImageViewController: UIViewController {
                                    style: .default)
     
     self.present(alertController, animated: true, completion: nil)
-  }
-  
-  
-  // MARK: - Internal Functions
-  func newJournalResultCallback(success: Bool, error: Error?) -> Void {
-    
-    if success {
-      DebugPrint.log("MarkupImageViewController.newJournalResultCallback - Success")
-      return
-    } else {
-      
-    }
   }
   
   

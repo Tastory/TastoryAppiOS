@@ -257,10 +257,10 @@
             </objects>
             <point key="canvasLocation" x="1718" y="-913"/>
         </scene>
-        <!--Markup Image View Controller-->
+        <!--Markup View Controller-->
         <scene sceneID="H9q-fk-uJF">
             <objects>
-                <viewController id="3Lz-hF-LGR" customClass="MarkupImageViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="3Lz-hF-LGR" customClass="MarkupViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Wru-2j-ls2"/>
                         <viewControllerLayoutGuide type="bottom" id="NR8-oP-KZt"/>
@@ -411,7 +411,7 @@
         <scene sceneID="Sf3-nA-ZH6">
             <objects>
                 <collectionViewController storyboardIdentifier="MomentCollection" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="TGu-A1-lSP">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="TGu-A1-lSP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="180"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

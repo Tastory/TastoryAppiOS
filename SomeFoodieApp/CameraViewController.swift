@@ -134,9 +134,9 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
         return
       }
       
-      guard let mIVC = segue.destination as? MarkupImageViewController else {
+      guard let mIVC = segue.destination as? MarkupViewController else {
         internalErrorDialog()
-        DebugPrint.assert("Expected segue.destination to be of type MarkupImageViewController")
+        DebugPrint.assert("Expected segue.destination to be of type MarkupViewController")
         captureButton?.buttonReset()
         return
       }
