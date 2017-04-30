@@ -278,7 +278,7 @@ class MarkupViewController: UIViewController {
       avPlayerLayer = AVPlayerLayer(player: avPlayer)
       avPlayerLayer.frame = self.view.bounds
       view.layer.addSublayer(avPlayerLayer) // TODO: Need to move this layer to the back, it's covering the Save button
-      avPlayer.play()
+      avPlayer.play() // TODO: The video keeps playing even if one swipes right and exits the Markup View
     }
   }
 }
