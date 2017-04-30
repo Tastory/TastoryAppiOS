@@ -134,32 +134,32 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
         return
       }
       
-      guard let mIVC = segue.destination as? MarkupViewController else {
+      guard let mVC = segue.destination as? MarkupViewController else {
         internalErrorDialog()
         DebugPrint.assert("Expected segue.destination to be of type MarkupViewController")
         captureButton?.buttonReset()
         return
       }
       
-      mIVC.previewPhoto = photo
+      mVC.photoToMarkup = photo
       
     } else if segue.identifier == "toVideoMarkup" {
       
-      guard let video = sender as? URL else {
+      guard let videoURL = sender as? URL else {
         internalErrorDialog()
         DebugPrint.assert("Expected sender to be of type URL")
         captureButton?.buttonReset()
         return
       }
       
-      guard let mVVC = segue.destination as? MarkupVideoViewController else {
+      guard let mVC = segue.destination as? MarkupViewController else {
         internalErrorDialog()
-        DebugPrint.assert("Expected segue.destination to be of type MarkupVideoViewController")
+        DebugPrint.assert("Expected segue.destination to be of type MarkupViewController")
         captureButton?.buttonReset()
         return
       }
       
-      mVVC.videoURL = video
+      mVC.videoToMarkupURL = videoURL
     }
     
 //    else if segue.identifier == "unwindToMap" {
@@ -204,8 +204,8 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     // Returns a URL in the temporary directory where video is stored
     DebugPrint.log("didFinishProcessVideoAt")
     
-    if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(url.absoluteString) {
-      UISaveVideoAtPathToSavedPhotosAlbum(url.absoluteString, nil, nil, nil)
+    if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(url.path) {
+      UISaveVideoAtPathToSavedPhotosAlbum(url.path, nil, nil, nil)
       performSegue(withIdentifier: "toVideoMarkup", sender: url)
     } else {
       self.internalErrorDialog()

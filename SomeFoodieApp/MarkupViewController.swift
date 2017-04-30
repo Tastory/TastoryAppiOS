@@ -7,13 +7,17 @@
 //
 
 import UIKit
+import AVFoundation
 
 class MarkupViewController: UIViewController {
   
   
   // MARK: - Public Instance Variables
-  var previewPhoto: UIImage?
-  var previewVideoURL: URL?  // TODO: - Video related implementations
+  var photoToMarkup: UIImage?
+  var videoToMarkupURL: URL?  // TODO: Video related implementations
+  
+  var avPlayer = AVPlayer()
+  var avPlayerLayer = AVPlayerLayer()
   
   
   // MARK: - Private Instance Variables
@@ -22,6 +26,7 @@ class MarkupViewController: UIViewController {
   
   // MARK: - IBOutlets
   @IBOutlet weak var saveButton: UIButton?
+  
   
   // MARK: - IBActions
   @IBAction func unwindToMarkupImage(segue: UIStoryboardSegue) {
@@ -32,13 +37,13 @@ class MarkupViewController: UIViewController {
     
     let momentObj = FoodieMoment()
     
-    guard let photo = previewPhoto else {
+    guard let photo = photoToMarkup else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected. previewPhoto is nil")
+      DebugPrint.assert("Unexpected. photoToMarkup is nil")
       return
     }
   
-    do {
+    do {  // TODO: Video related implementations
       // Save the image as the media of the Moment
       try momentObj.setMedia(withPhoto: photo)
       
@@ -254,35 +259,26 @@ class MarkupViewController: UIViewController {
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
-
-    // Do any additional setup after loading the view.
-    guard let photo = previewPhoto else {
-      internalErrorDialog()
-      DebugPrint.assert("Shouldn't be here without a valid previewPhoto")
-      return
-    }
     
     // Display the photo
-    photoView = UIImageView(frame: view.bounds)
-    view.addSubview(photoView!)
-    view.sendSubview(toBack: photoView!)
-    photoView?.image = photo
+    if let photo = photoToMarkup {
+      photoView = UIImageView(frame: view.bounds)
+      view.addSubview(photoView!)
+      view.sendSubview(toBack: photoView!)
+      photoView?.image = photo
+      
+    // Loop the video
+    } else if let videoURL = videoToMarkupURL {
+      NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.avPlayer.currentItem, queue: .main) { (_) in
+        self.avPlayer.seek(to: kCMTimeZero)
+        self.avPlayer.play()
+      }
+      
+      avPlayer = AVPlayer(url: videoURL)
+      avPlayerLayer = AVPlayerLayer(player: avPlayer)
+      avPlayerLayer.frame = self.view.bounds
+      view.layer.addSublayer(avPlayerLayer) // TODO: Need to move this layer to the back, it's covering the Save button
+      avPlayer.play()
+    }
   }
-
-  override func didReceiveMemoryWarning() {
-      super.didReceiveMemoryWarning()
-      // Dispose of any resources that can be recreated.
-  }
-  
-
-  /*
-  // MARK: - Navigation
-
-  // In a storyboard-based application, you will often want to do a little preparation before navigation
-  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-      // Get the new view controller using segue.destinationViewController.
-      // Pass the selected object to the new view controller.
-  }
-  */
-
 }

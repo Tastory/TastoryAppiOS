@@ -209,7 +209,7 @@
                         <outlet property="exitButton" destination="kxo-zQ-usi" id="TLa-71-fEp"/>
                         <outlet property="tapRecognizer" destination="Hy8-pD-3IZ" id="yNt-QN-sHL"/>
                         <segue destination="3Lz-hF-LGR" kind="show" identifier="toPhotoMarkup" id="d8c-LF-CWi"/>
-                        <segue destination="cNY-F3-Aua" kind="show" identifier="toVideoMarkup" id="agT-0q-BhG"/>
+                        <segue destination="3Lz-hF-LGR" kind="show" identifier="toVideoMarkup" id="4jz-WG-HaN"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GQA-kR-YqI" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -221,41 +221,6 @@
                 </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="937" y="-581"/>
-        </scene>
-        <!--Markup Video View Controller-->
-        <scene sceneID="WSP-Y4-yUt">
-            <objects>
-                <viewController id="cNY-F3-Aua" customClass="MarkupVideoViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="K58-fE-Vve"/>
-                        <viewControllerLayoutGuide type="bottom" id="d6H-6M-Pjl"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="jzo-JU-z4n">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gq5-o0-eH3">
-                                <rect key="frame" x="319" y="617" width="34" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Save"/>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <gestureRecognizers/>
-                        <connections>
-                            <outletCollection property="gestureRecognizers" destination="clA-WS-gh9" appends="YES" id="rFl-gB-ge5"/>
-                        </connections>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="QzY-aO-qdH" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="UvK-oV-tyZ" userLabel="Exit" sceneMemberID="exit"/>
-                <swipeGestureRecognizer direction="right" id="clA-WS-gh9">
-                    <connections>
-                        <segue destination="UvK-oV-tyZ" kind="unwind" unwindAction="unwindToCameraWithSegue:" id="fl3-Mo-wxa"/>
-                    </connections>
-                </swipeGestureRecognizer>
-            </objects>
-            <point key="canvasLocation" x="1718" y="-913"/>
         </scene>
         <!--Markup View Controller-->
         <scene sceneID="H9q-fk-uJF">
@@ -481,5 +446,6 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="snc-d3-1up"/>
+        <segue reference="4jz-WG-HaN"/>
     </inferredMetricsTieBreakers>
 </document>
