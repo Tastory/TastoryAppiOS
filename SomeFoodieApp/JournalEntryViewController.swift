@@ -2,8 +2,13 @@
 //  JournalEntryViewController.swift
 //  SomeFoodieApp
 //
-//  Created by Howard Lee on 2017-04-20.
-//  Copyright © 2017 Howard's Creative Innovations. All rights reserved.
+//  Created by Howard Lee on 2017-03-26.
+//  Copyright © 2017 SomeFoodieCompany. All rights reserved.
+//
+//  This is a reusable Journal Entry View Controller
+//  Input  - journalUnderEdit: Journal that this View Controller should be working on
+//           newOrEdit: Is this a local Journal that's being drafted, or an existing Journal that's being edited?
+//  Output - Save or Discard will have different action depending on if this is Drafting or Editing mode
 //
 
 import UIKit

@@ -1,9 +1,13 @@
 //
 //  CameraViewController.swift
-//  
+//  SomeFoodieApp
 //
 //  Created by Howard Lee on 2017-03-26.
+//  Copyright © 2017 SomeFoodieCompany. All rights reserved.
 //
+//  This is a reusable Camera View Controller created based on the Swifty Cam - https://github.com/Awalz/SwiftyCam
+//  Input  - segueSource: Who pushed the CameraViewController ot the stack?
+//  Output - Will always export taken photo or video to MarkupViewController and push it to the top of the View Controller stack
 //
 
 import UIKit

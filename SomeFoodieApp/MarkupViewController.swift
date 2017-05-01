@@ -2,8 +2,16 @@
 //  MarkupViewController.swift
 //  SomeFoodieApp
 //
-//  Created by Howard Lee on 2017-03-29.
-//  Copyright © 2017 Howard's Creative Innovations. All rights reserved.
+//  Created by Howard Lee on 2017-03-26.
+//  Copyright © 2017 SomeFoodieCompany. All rights reserved.
+//
+//  This is a reusable (Image/Video) Markup View Controller created based on the Swifty Cam - https://github.com/Awalz/SwiftyCam
+//  Input  - photoToMarkup:    Photo to be Marked-up. Either this or videoToMarkupURL should be set, not both
+//         - videoToMarkupURL: URL of the video to be Marked-up. Either this or photoToMarkup shoudl be set, not both
+//         - segueSource:      Who pushed the MarkupViewController ot the stack?
+//  Output - Will save marked-up Moment to user selected Journal, set Current Journal if needed before popping itself and the 
+//           Camera View Controller from the View Controller stack. If JournalEntryViewController is not already what's remaining
+//           on the stack, will set relevant JournalEntryViewController inputs and push it onto the View Controller stack
 //
 
 import UIKit
@@ -260,6 +268,11 @@ class MarkupViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    // Only one of photoToMarkup or videoToMarkupURL should be set
+    if photoToMarkup != nil && videoToMarkupURL != nil {
+      DebugPrint.assert("Both photoToMarkup and videoToMarkupURL not-nil")
+    }
+    
     // Display the photo
     if let photo = photoToMarkup {
       photoView = UIImageView(frame: view.bounds)
@@ -279,6 +292,10 @@ class MarkupViewController: UIViewController {
       avPlayerLayer.frame = self.view.bounds
       view.layer.addSublayer(avPlayerLayer) // TODO: Need to move this layer to the back, it's covering the Save button
       avPlayer.play() // TODO: The video keeps playing even if one swipes right and exits the Markup View
+    
+    // No image nor video to work on, Fatal
+    } else {
+      DebugPrint.fatal("Both photoToMarkup and videoToMarkupURL are nil")
     }
   }
 }
