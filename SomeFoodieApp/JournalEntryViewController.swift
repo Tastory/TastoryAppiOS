@@ -57,7 +57,7 @@ class JournalEntryViewController: UITableViewController {
     sectionOneView.addSubview(mapView)
 
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollection") as! MomentCollectionViewController
+    momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
     
     titleTextField?.delegate = self
     venueTextField?.delegate = self

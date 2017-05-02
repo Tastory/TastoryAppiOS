@@ -60,7 +60,7 @@
         <!--Map View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="MapViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MapViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="BYZ-38-t0r" customClass="MapViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -93,15 +93,14 @@
                                         <rect key="frame" x="144.5" y="0.0" width="54" height="30"/>
                                         <state key="normal" title="Camera"/>
                                         <connections>
-                                            <segue destination="ImI-Ed-QdP" kind="show" id="eQt-lt-cbl"/>
+                                            <action selector="launchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="k45-JV-u3I"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jn6-GI-g5B">
-                                        <rect key="frame" x="135.5" y="38" width="72" height="30"/>
-                                        <state key="normal" title="New Story"/>
+                                        <rect key="frame" x="128.5" y="38" width="86" height="30"/>
+                                        <state key="normal" title="New Journal"/>
                                         <connections>
                                             <action selector="newJournal:" destination="BYZ-38-t0r" eventType="touchUpInside" id="VdO-Hd-zW1"/>
-                                            <segue destination="YxI-Mg-cNr" kind="show" id="snc-d3-1up"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sNl-Tb-SAf">
@@ -164,7 +163,7 @@
         <!--Camera View Controller-->
         <scene sceneID="wzA-2G-nOi">
             <objects>
-                <viewController id="ImI-Ed-QdP" customClass="CameraViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CameraViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="ImI-Ed-QdP" customClass="CameraViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="qt8-oB-J2w"/>
                         <viewControllerLayoutGuide type="bottom" id="ld9-ET-76c"/>
@@ -225,7 +224,7 @@
         <!--Markup View Controller-->
         <scene sceneID="H9q-fk-uJF">
             <objects>
-                <viewController id="3Lz-hF-LGR" customClass="MarkupViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MarkupViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="3Lz-hF-LGR" customClass="MarkupViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Wru-2j-ls2"/>
                         <viewControllerLayoutGuide type="bottom" id="NR8-oP-KZt"/>
@@ -267,7 +266,7 @@
         <!--Journal Entry View Controller-->
         <scene sceneID="MEV-Xi-0JN">
             <objects>
-                <tableViewController id="YxI-Mg-cNr" customClass="JournalEntryViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="JournalEntryViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="YxI-Mg-cNr" customClass="JournalEntryViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="KCt-sK-dka">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -375,8 +374,8 @@
         <!--Moment Collection View Controller-->
         <scene sceneID="Sf3-nA-ZH6">
             <objects>
-                <collectionViewController storyboardIdentifier="MomentCollection" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="TGu-A1-lSP">
+                <collectionViewController storyboardIdentifier="MomentCollectionViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="TGu-A1-lSP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="180"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -445,7 +444,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="snc-d3-1up"/>
         <segue reference="4jz-WG-HaN"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -65,7 +65,14 @@ class MapViewController: UIViewController {
   }
   
   
-  // TODO: This is temporary and to be removed
+  @IBAction func launchCamera(_ sender: UIButton) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController")
+    // Do we need to initialize any public input variable for the Camera View Controller before presenting?
+    show(cameraViewController, sender: self)
+  }
+
+  
   @IBAction func newJournal(_ sender: UIButton) {
     
     FoodieJournal.editingJournal = FoodieJournal()
@@ -102,6 +109,18 @@ class MapViewController: UIViewController {
   }
   
   
+  // Error dialogue box to the user on location errors
+  fileprivate func locationErrorDialog(message: String, comment: String) {
+    let alertController = UIAlertController(title: "SomeFoodieApp",
+                                            titleComment: "Alert diaglogue title when a Map view location error occured",
+                                            message: message,
+                                            messageComment: comment,
+                                            preferredStyle: .alert)
+    alertController.addAlertAction(title: "OK", comment: "Button in alert dialogue box for location related MapView errors", style: .cancel)
+    self.present(alertController, animated: true, completion: nil)
+  }
+  
+  
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -131,23 +150,6 @@ class MapViewController: UIViewController {
     locationManager.startUpdatingLocation()
 
   }
-
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // TODO: Dispose of any resources that can be recreated.
-  }
-  
-  
-  /*
-  // MARK: - Navigation
-
-  // In a storyboard-based application, you will often want to do a little preparation before navigation
-  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    // Get the new view controller using segue.destinationViewController.
-    // Pass the selected object to the new view controller.
-  }
-  */
-
 }
 
 
@@ -172,6 +174,10 @@ extension MapViewController: CLLocationManagerDelegate {
     
     switch errorCode.code {
 
+    case .locationUnknown:
+      locationErrorDialog(message: "Unable to obtain current location",
+                          comment: "Error message presented to user in error dialog of the Map View")
+      
     case .denied:
       // User denied authorization
       manager.stopUpdatingLocation()
