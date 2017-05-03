@@ -167,6 +167,13 @@ class FoodieJournal: FoodieObject {
   func add(moment: FoodieMoment,
            to position: Int? = nil) {
     
+    // Test Only - To be removed/modified
+    if self.moments != nil {
+      self.moments!.append(moment)
+    } else {
+      self.moments = [moment]
+    }
+    
     // Set all the approrpriate sync status bits for the Moment
     // Redetermine what sync should be performed against the Moments of the Journal
   }
