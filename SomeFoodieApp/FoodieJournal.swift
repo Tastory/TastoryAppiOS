@@ -52,7 +52,6 @@ class FoodieJournal: FoodieObject {
   
   // MARK: - Internal Static Variable
   static var currentJournal: FoodieJournal? { return currentJournalPrivate }
-  static var editingJournal: FoodieJournal?
   
   
   // MARK: - Private Static Variable

@@ -90,9 +90,6 @@ class MarkupViewController: UIViewController {
       print("\(error)")
     }
     
-    print("\(momentObj.objectId)")
-    print("\(momentObj.createdAt)")
-    print("\(momentObj.updatedAt)")
     
     // Query and see if there are existing FoodieJournals. If there are any, just get the first one and save everything
     // Otherwise create a new one and save everything
@@ -224,7 +221,7 @@ class MarkupViewController: UIViewController {
            
           // Just directly add to the current Journal
           currentJournal.add(moment: momentObj)
-          FoodieJournal.editingJournal = currentJournal
+          //Set JournalEntryVC's workingJournal to this Journal
           
           // Segue to the Journal Entry view
           if (weakSelf != nil) {
@@ -272,7 +269,7 @@ class MarkupViewController: UIViewController {
         
         // Just directly add to the current Journal
         currentJournal.add(moment: momentObj)
-        FoodieJournal.editingJournal = currentJournal
+        // Set the JournalEntryVC's workingJournal to this journal
         
         // Segue to the Journal Entry view
         if (weakSelf != nil) {
@@ -299,7 +296,7 @@ class MarkupViewController: UIViewController {
       // Just directly add to a new Journal
       let currentJournal = FoodieJournal.newCurrent()
       currentJournal.add(moment: momentObj)
-      FoodieJournal.editingJournal = currentJournal
+      // Set the JournalEntryVC's working Journal to this journal
       
       // Segue to the Journal Entry view
       performSegue(withIdentifier: "toJournalEntry", sender: currentJournal)

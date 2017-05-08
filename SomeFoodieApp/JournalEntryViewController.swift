@@ -32,6 +32,10 @@ class JournalEntryViewController: UITableViewController {
   }
   
   
+  // MARK: - Public Instance Variable
+  var workingJournal: FoodieJournal?
+  
+  
   // MARK: - Private Class Constants
   fileprivate struct Constants {
     static let mapHeight: CGFloat = floor(UIScreen.main.bounds.height/4)
@@ -47,7 +51,6 @@ class JournalEntryViewController: UITableViewController {
   // MARK: - Private Instance Variables
   fileprivate var placeholderLabel = UILabel()
   fileprivate var momentViewController = MomentCollectionViewController()
-  fileprivate let editingJournal: FoodieJournal = FoodieJournal.editingJournal!  // Let it crash if there is no editing Journal. Caller is responsible to setup
   
   
   // MARK: - View Controller Life Cycle
@@ -58,6 +61,16 @@ class JournalEntryViewController: UITableViewController {
 
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
+    
+    guard let journalUnwrapped = workingJournal else {
+      DebugPrint.fatal("workingJournal = nil")
+    }
+    
+    momentViewController.workingJournal = journalUnwrapped
+    momentViewController.momentHeight = Constants.momentHeight
+    
+    self.addChildViewController(momentViewController)
+    momentViewController.didMove(toParentViewController: self)
     
     titleTextField?.delegate = self
     venueTextField?.delegate = self
@@ -73,6 +86,8 @@ class JournalEntryViewController: UITableViewController {
     previousSwipeRecognizer.direction = .right
     previousSwipeRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(previousSwipeRecognizer)
+    
+    titleTextField?.text = journalUnwrapped.title
   }
 }
 
@@ -102,9 +117,6 @@ extension JournalEntryViewController {
     case 0:
       return sectionOneView
     case 1:
-      momentViewController.momentHeight = Constants.momentHeight
-      self.addChildViewController(momentViewController)
-      momentViewController.didMove(toParentViewController: self)
       return momentViewController.view
     default:
       return nil

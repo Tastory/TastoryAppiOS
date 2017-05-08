@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import Parse
 import CoreLocation
 
 
@@ -43,6 +44,33 @@ class MapViewController: UIViewController {
   }
   
   
+  // Test Only Button
+  @IBAction func testButtonAction(_ sender: UIButton) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let journalEntryViewController = storyboard.instantiateViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
+    
+    // Query and see if there are existing FoodieJournals. If there are any, just get the first one and work with it. Otherwise go belly up
+    let query = PFQuery(className: FoodieJournal.parseClassName())
+    var tempObj: PFObject?
+    var journalObj: FoodieJournal!
+    
+    do {
+      tempObj = try query.getFirstObject()
+    } catch {
+      print("\(error)")
+    }
+    
+    if let tempJournal = tempObj as? FoodieJournal {
+      journalObj = tempJournal
+    } else {
+      journalObj = FoodieJournal()
+    }
+    
+    journalEntryViewController.workingJournal = journalObj
+    show(journalEntryViewController, sender: self)
+  }
+  
+  
   @IBAction func singleTapGestureDetected(_ sender: UITapGestureRecognizer) {
     // Dismiss keyboard if any gestures detected against Map
     locationField?.resignFirstResponder()
@@ -70,12 +98,6 @@ class MapViewController: UIViewController {
     let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController")
     // Do we need to initialize any public input variable for the Camera View Controller before presenting?
     show(cameraViewController, sender: self)
-  }
-
-  
-  @IBAction func newJournal(_ sender: UIButton) {
-    
-    FoodieJournal.editingJournal = FoodieJournal()
   }
   
   

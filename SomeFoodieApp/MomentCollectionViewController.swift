@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Parse
 
 class MomentCollectionViewController: UICollectionViewController {
   
@@ -23,8 +24,11 @@ class MomentCollectionViewController: UICollectionViewController {
   }
   
   
+  // MARK: - Public Instance Variables
+  var workingJournal: FoodieJournal!
+  
+  
   // MARK: - Private Instance Variables
-  fileprivate let editingJournal: FoodieJournal = FoodieJournal.editingJournal!  // Let it crash if there is no editing Journal. Caller is responsible to setup
   fileprivate var momentWidthDefault: CGFloat!
   fileprivate var momentSizeDefault: CGSize!
   
@@ -44,13 +48,13 @@ class MomentCollectionViewController: UICollectionViewController {
     // self.clearsSelectionOnViewWillAppear = false
     
     // Register cell classes
-    collectionViewUnwrapped.register(MomentCollectionViewCell.self, forCellWithReuseIdentifier: Constants.momentCellReuseId)
-    collectionViewUnwrapped.register(MomentHeaderReusableView.self,
-                             forSupplementaryViewOfKind: UICollectionElementKindSectionHeader,
-                             withReuseIdentifier: Constants.headerElementReuseId)
-    collectionViewUnwrapped.register(MomentFooterReusableView.self,
-                             forSupplementaryViewOfKind: UICollectionElementKindSectionFooter,
-                             withReuseIdentifier: Constants.footerElementReuseId)
+//    collectionViewUnwrapped.register(MomentCollectionViewCell.self, forCellWithReuseIdentifier: Constants.momentCellReuseId)
+//    collectionViewUnwrapped.register(MomentHeaderReusableView.self,
+//                             forSupplementaryViewOfKind: UICollectionElementKindSectionHeader,
+//                             withReuseIdentifier: Constants.headerElementReuseId)
+//    collectionViewUnwrapped.register(MomentFooterReusableView.self,
+//                             forSupplementaryViewOfKind: UICollectionElementKindSectionFooter,
+//                             withReuseIdentifier: Constants.footerElementReuseId)
     collectionViewUnwrapped.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     
     // Setup Dimension Variables
@@ -82,7 +86,7 @@ extension MomentCollectionViewController {
   
   override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     
-    if let moments = editingJournal.moments {
+    if let moments = workingJournal.moments {
       return moments.count
     } else {
       return 10
@@ -91,8 +95,53 @@ extension MomentCollectionViewController {
   
   
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath)
-    cell.backgroundColor = UIColor.cyan
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath) as! MomentCollectionViewCell
+    
+    guard let momentArray = workingJournal.moments as? [FoodieMoment] else {
+      DebugPrint.assert("No moment for cell position")
+      return cell
+    }
+    
+    let moment = momentArray[indexPath.row]
+    
+    moment.fetchIfNeededInBackground { (object, error) in
+      
+      if let err = error {
+        DebugPrint.fatal("Error fetching moment: \(err)")
+      }
+      
+      guard let moment = object as? FoodieMoment else {
+        DebugPrint.fatal("fetched Object is not a FoodieMoment")
+      }
+      
+      guard let file = moment.media else {
+        DebugPrint.fatal("Moment Media is nil")
+      }
+      
+      file.getDataInBackground { (data, error) in
+        
+        if let err = error {
+          DebugPrint.fatal("Error getting media data: \(err)")
+        }
+        
+        guard let imageData = data else {
+          DebugPrint.fatal("nil data obtained from media file")
+        }
+        
+        if let image = UIImage(data: imageData) {
+          
+          if let currentCell = collectionView.cellForItem(at: indexPath) as? MomentCollectionViewCell {
+            currentCell.momentButton.setImage(image, for: .normal)
+          } else {
+            DebugPrint.fatal("Error getting MomentCollectionViewCell")
+          }
+          
+        } else {
+          DebugPrint.fatal("Error getting image from image data")
+        }
+      }
+    }
+    
     return cell
   }
   
