@@ -15,7 +15,6 @@
 		8C1089371EB00E3E00457E66 /* MomentCollectionLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089361EB00E3E00457E66 /* MomentCollectionLayout.swift */; };
 		8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */; };
 		8C10895A1EB72B9900457E66 /* ViewControllerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089591EB72B9900457E66 /* ViewControllerManager.swift */; };
-		8C1089861EBAC14A00457E66 /* image.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8C1089851EBAC14900457E66 /* image.jpg */; };
 		8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */; };
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
 		8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */; };
@@ -81,7 +80,6 @@
 		8C1089361EB00E3E00457E66 /* MomentCollectionLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentCollectionLayout.swift; path = SomeFoodieApp/MomentCollectionLayout.swift; sourceTree = "<group>"; };
 		8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentCollectionViewController.swift; sourceTree = "<group>"; };
 		8C1089591EB72B9900457E66 /* ViewControllerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerManager.swift; sourceTree = "<group>"; };
-		8C1089851EBAC14900457E66 /* image.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image.jpg; sourceTree = "<group>"; };
 		8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButton.swift; path = SomeFoodieApp/CameraButton.swift; sourceTree = "<group>"; };
 		8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MKCoordinateSpan+Extensions.swift"; sourceTree = "<group>"; };
@@ -227,7 +225,6 @@
 		8CBF55821E7F7EDF00F4B1CD /* SomeFoodieApp */ = {
 			isa = PBXGroup;
 			children = (
-				8C1089851EBAC14900457E66 /* image.jpg */,
 				8CBF558A1E7F7EDF00F4B1CD /* Assets.xcassets */,
 				8CBF558F1E7F7EDF00F4B1CD /* Info.plist */,
 				8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */,
@@ -445,7 +442,6 @@
 			files = (
 				8CBF558E1E7F7EDF00F4B1CD /* LaunchScreen.storyboard in Resources */,
 				8CBF558B1E7F7EDF00F4B1CD /* Assets.xcassets in Resources */,
-				8C1089861EBAC14A00457E66 /* image.jpg in Resources */,
 				8CBF55891E7F7EDF00F4B1CD /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

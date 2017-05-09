@@ -166,7 +166,7 @@ class FoodieJournal: FoodieObject {
   func add(moment: FoodieMoment,
            to position: Int? = nil) {
     
-    // Test Only - To be removed/modified
+    // Temporary Code?
     if self.moments != nil {
       self.moments!.append(moment)
     } else {

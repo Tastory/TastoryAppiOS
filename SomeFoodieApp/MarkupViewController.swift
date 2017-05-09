@@ -17,7 +17,6 @@
 import UIKit
 import AVFoundation
 
-import Parse // Test only
 
 class MarkupViewController: UIViewController {
   
@@ -42,87 +41,6 @@ class MarkupViewController: UIViewController {
   @IBAction func unwindToMarkupImage(segue: UIStoryboardSegue) {
     // Nothing for now
   }
-  
-  @IBAction func testButtonAction(_ sender: UIButton) {
-    let momentObj = FoodieMoment()
-    
-    guard let photo = photoToMarkup else {
-      internalErrorDialog()
-      DebugPrint.assert("Unexpected. photoToMarkup is nil")
-      return
-    }
-    
-    do {  // TODO: Video related implementations
-      // Save the image as the media of the Moment
-      try momentObj.setMedia(withPhoto: photo)
-      
-    } catch let thrown as FoodieError {
-      
-      switch thrown.error {
-        
-      case FoodieError.Code.Moment.setMediaWithPhotoImageNil.rawValue:
-        internalErrorDialog()
-        DebugPrint.assert("Caught Moment.setMediaWithPhotoImageNil")
-        return
-        
-      case FoodieError.Code.Moment.setMediaWithPhotoJpegRepresentationFailed.rawValue:
-        internalErrorDialog()
-        DebugPrint.assert("Caught Moment.setMediaWithPhotoJpegRepresentationFailed")
-        return
-        
-      default:
-        internalErrorDialog()
-        DebugPrint.assert("Caught unrecognized Error: \(thrown.localizedDescription)")
-        return
-      }
-      
-    } catch let thrown {
-      internalErrorDialog()
-      DebugPrint.assert(thrown.localizedDescription)
-      return
-    }
-    
-    
-    // Save the moment first
-    do {
-      try momentObj.save()
-    } catch {
-      print("\(error)")
-    }
-    
-    
-    // Query and see if there are existing FoodieJournals. If there are any, just get the first one and save everything
-    // Otherwise create a new one and save everything
-    let query = PFQuery(className: FoodieJournal.parseClassName())
-    var tempObj: PFObject?
-    var journalObj: FoodieJournal!
-    
-    do {
-      tempObj = try query.getFirstObject()
-    } catch {
-      print("\(error)")
-    }
-    
-    if let tempJournal = tempObj as? FoodieJournal {
-      journalObj = tempJournal
-    } else {
-      journalObj = FoodieJournal()
-    }
-    
-    // Fill in the FoodieJournal
-    journalObj.add(moment: momentObj)
-    journalObj.title = "Some FoodieJournal test object"
-    
-    // Save the FoodieJournal
-    do {
-      try journalObj.saveSync()
-    } catch {
-      print("\(error)")
-    }
-    
-    print("Save Completed!")
-  }
-  
   
   @IBAction func saveButtonAction(_ sender: UIButton) {
     
@@ -379,6 +297,15 @@ class MarkupViewController: UIViewController {
     // No image nor video to work on, Fatal
     } else {
       DebugPrint.fatal("Both photoToMarkup and videoToMarkupURL are nil")
+    }
+  }
+  
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if segue.identifier == "toJournalEntry" {
+      if let jEVC = segue.destination as? JournalEntryViewController {
+        jEVC.workingJournal = FoodieJournal.currentJournal  
+      }
     }
   }
 }
