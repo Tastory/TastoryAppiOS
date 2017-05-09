@@ -9,5 +9,5 @@
 import UIKit
 
 class MomentCollectionViewCell: UICollectionViewCell {
-  var momentThumbnail = UIImage()
+  @IBOutlet weak var momentButton: UIButton!
 }

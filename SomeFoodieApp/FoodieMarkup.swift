@@ -12,7 +12,14 @@
 import Parse
 
 class FoodieMarkup: FoodieObject {
-  
+  // @NSManaged var markupText: String  // Unicode, so Emoji allowed?
+  // @NSMnaaged var fontSize: Int
+  // @NSManaged var markupGif: PFFile?
+  // @NSManaged var frameX: Double
+  // @NSManaged var frameY: Double
+  // @NSManaged var frameWidth: Double
+  // @NSManaged var frameHeight: Double
+  // @NSManaged var frameAngle: Double
 }
 
 

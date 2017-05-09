@@ -52,7 +52,6 @@ class FoodieJournal: FoodieObject {
   
   // MARK: - Internal Static Variable
   static var currentJournal: FoodieJournal? { return currentJournalPrivate }
-  static var editingJournal: FoodieJournal?
   
   
   // MARK: - Private Static Variable
@@ -166,6 +165,13 @@ class FoodieJournal: FoodieObject {
   
   func add(moment: FoodieMoment,
            to position: Int? = nil) {
+    
+    // Temporary Code?
+    if self.moments != nil {
+      self.moments!.append(moment)
+    } else {
+      self.moments = [moment]
+    }
     
     // Set all the approrpriate sync status bits for the Moment
     // Redetermine what sync should be performed against the Moments of the Journal
