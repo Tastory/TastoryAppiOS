@@ -8,7 +8,6 @@
 //  This is a reusable (Image/Video) Markup View Controller created based on the Swifty Cam - https://github.com/Awalz/SwiftyCam
 //  Input  - photoToMarkup:    Photo to be Marked-up. Either this or videoToMarkupURL should be set, not both
 //         - videoToMarkupURL: URL of the video to be Marked-up. Either this or photoToMarkup shoudl be set, not both
-//         - segueSource:      Who pushed the MarkupViewController ot the stack?
 //  Output - Will save marked-up Moment to user selected Journal, set Current Journal if needed before popping itself and the 
 //           Camera View Controller from the View Controller stack. If JournalEntryViewController is not already what's remaining
 //           on the stack, will set relevant JournalEntryViewController inputs and push it onto the View Controller stack
@@ -38,9 +37,12 @@ class MarkupViewController: UIViewController {
   
   
   // MARK: - IBActions
-  @IBAction func unwindToMarkupImage(segue: UIStoryboardSegue) {
-    // Nothing for now
+  
+  @IBAction func exitSwiped(_ sender: UISwipeGestureRecognizer) {
+    // TODO: Data Passback through delegate?
+    dismiss(animated: true, completion: nil)
   }
+  
   
   @IBAction func saveButtonAction(_ sender: UIButton) {
     
@@ -141,9 +143,16 @@ class MarkupViewController: UIViewController {
           currentJournal.add(moment: momentObj)
           //Set JournalEntryVC's workingJournal to this Journal
           
-          // Segue to the Journal Entry view
+          // Present the Journal Entry view
           if (weakSelf != nil) {
-            weakSelf!.performSegue(withIdentifier: "toJournalEntry", sender: currentJournal)
+            
+            // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
+            viewController.restorationClass = nil
+            viewController.workingJournal = currentJournal
+            weakSelf!.present(viewController, animated: true)
+            
           } else {
             weakSelf?.internalErrorDialog()
             DebugPrint.assert("weakSelf became nil. Unable to proceed")
@@ -189,9 +198,16 @@ class MarkupViewController: UIViewController {
         currentJournal.add(moment: momentObj)
         // Set the JournalEntryVC's workingJournal to this journal
         
-        // Segue to the Journal Entry view
+        // Present the Journal Entry view
         if (weakSelf != nil) {
-          weakSelf!.performSegue(withIdentifier: "toJournalEntry", sender: currentJournal)
+
+          // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
+          let storyboard = UIStoryboard(name: "Main", bundle: nil)
+          let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
+          viewController.restorationClass = nil
+          viewController.workingJournal = currentJournal
+          weakSelf!.present(viewController, animated: true)
+          
         } else {
           DebugPrint.fatal("weakSelf became nil. Unable to proceed")
         }
@@ -216,8 +232,12 @@ class MarkupViewController: UIViewController {
       currentJournal.add(moment: momentObj)
       // Set the JournalEntryVC's working Journal to this journal
       
-      // Segue to the Journal Entry view
-      performSegue(withIdentifier: "toJournalEntry", sender: currentJournal)
+      // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
+      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
+      viewController.restorationClass = nil
+      viewController.workingJournal = currentJournal
+      present(viewController, animated: true)
     }
   }
   
@@ -297,15 +317,6 @@ class MarkupViewController: UIViewController {
     // No image nor video to work on, Fatal
     } else {
       DebugPrint.fatal("Both photoToMarkup and videoToMarkupURL are nil")
-    }
-  }
-  
-  
-  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if segue.identifier == "toJournalEntry" {
-      if let jEVC = segue.destination as? JournalEntryViewController {
-        jEVC.workingJournal = FoodieJournal.currentJournal  
-      }
     }
   }
 }

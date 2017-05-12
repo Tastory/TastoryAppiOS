@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="lzL-s9-fsY">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -55,12 +55,48 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nLf-Wv-bwR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3585" y="1522"/>
+            <point key="canvasLocation" x="-1890" y="349"/>
+        </scene>
+        <!--Root View Controller-->
+        <scene sceneID="bR0-Rz-nKe">
+            <objects>
+                <viewController storyboardIdentifier="RootViewController" id="lzL-s9-fsY" customClass="RootViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="pSI-Mf-ShR"/>
+                        <viewControllerLayoutGuide type="bottom" id="DNA-fn-3C1"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="73M-6N-NKo">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dqx-Qq-adh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1890" y="-1047"/>
+        </scene>
+        <!--Discover View Controller-->
+        <scene sceneID="rnU-Po-hAl">
+            <objects>
+                <viewController storyboardIdentifier="DiscoverViewController" id="rfP-Xi-Fc9" customClass="DiscoverViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="CzA-PB-le3"/>
+                        <viewControllerLayoutGuide type="bottom" id="DOH-8e-bbT"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="LBP-5m-fDI">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ngF-kL-ExG" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1162" y="-666"/>
         </scene>
         <!--Map View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController storyboardIdentifier="MapViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="BYZ-38-t0r" customClass="MapViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MapViewController" id="BYZ-38-t0r" customClass="MapViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -151,12 +187,12 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="155.07246376811597" y="108.42391304347827"/>
+            <point key="canvasLocation" x="-428" y="-666"/>
         </scene>
         <!--Camera View Controller-->
         <scene sceneID="wzA-2G-nOi">
             <objects>
-                <viewController storyboardIdentifier="CameraViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="ImI-Ed-QdP" customClass="CameraViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CameraViewController" id="ImI-Ed-QdP" customClass="CameraViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="qt8-oB-J2w"/>
                         <viewControllerLayoutGuide type="bottom" id="ld9-ET-76c"/>
@@ -185,7 +221,7 @@
                                     <constraint firstAttribute="width" constant="40" id="hAd-1m-3pU"/>
                                 </constraints>
                                 <connections>
-                                    <segue destination="xGt-ES-h6Z" kind="unwind" unwindAction="unwindToMapWithSegue:" id="1rC-dE-ElQ"/>
+                                    <action selector="exitPressed:" destination="ImI-Ed-QdP" eventType="touchUpInside" id="i5Y-3I-IEc"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -200,24 +236,21 @@
                         <outlet property="captureButton" destination="30k-mM-bOe" id="xaS-ZF-RGb"/>
                         <outlet property="exitButton" destination="kxo-zQ-usi" id="TLa-71-fEp"/>
                         <outlet property="tapRecognizer" destination="Hy8-pD-3IZ" id="yNt-QN-sHL"/>
-                        <segue destination="3Lz-hF-LGR" kind="show" identifier="toPhotoMarkup" id="d8c-LF-CWi"/>
-                        <segue destination="3Lz-hF-LGR" kind="show" identifier="toVideoMarkup" id="4jz-WG-HaN"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GQA-kR-YqI" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="xGt-ES-h6Z" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="Hy8-pD-3IZ">
                     <connections>
                         <action selector="captureTapped:" destination="ImI-Ed-QdP" id="8qJ-hw-vbS"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="937" y="-581"/>
+            <point key="canvasLocation" x="298" y="-666"/>
         </scene>
         <!--Markup View Controller-->
         <scene sceneID="H9q-fk-uJF">
             <objects>
-                <viewController storyboardIdentifier="MarkupViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="3Lz-hF-LGR" customClass="MarkupViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MarkupViewController" id="3Lz-hF-LGR" customClass="MarkupViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Wru-2j-ls2"/>
                         <viewControllerLayoutGuide type="bottom" id="NR8-oP-KZt"/>
@@ -243,23 +276,21 @@
                     </view>
                     <connections>
                         <outlet property="saveButton" destination="5Da-16-S86" id="Yd6-y9-sg5"/>
-                        <segue destination="YxI-Mg-cNr" kind="show" identifier="toJournalEntry" id="cJR-QP-ryn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bya-bk-WIy" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="BNH-me-vRH" userLabel="Exit" sceneMemberID="exit"/>
                 <swipeGestureRecognizer direction="right" id="YNa-YP-wSg">
                     <connections>
-                        <segue destination="BNH-me-vRH" kind="unwind" unwindAction="unwindToCameraWithSegue:" id="DWq-bp-aOU"/>
+                        <action selector="exitSwiped:" destination="3Lz-hF-LGR" id="YZ5-wl-4CS"/>
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1718" y="-216"/>
+            <point key="canvasLocation" x="1004" y="-666"/>
         </scene>
         <!--Journal Entry View Controller-->
         <scene sceneID="MEV-Xi-0JN">
             <objects>
-                <tableViewController storyboardIdentifier="JournalEntryViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="YxI-Mg-cNr" customClass="JournalEntryViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="JournalEntryViewController" id="YxI-Mg-cNr" customClass="JournalEntryViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="KCt-sK-dka">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -373,19 +404,17 @@
                         <outlet property="tagsTextView" destination="ijC-Vt-3Fq" id="2sl-gj-NL9"/>
                         <outlet property="titleTextField" destination="p0e-OO-Rl9" id="HKe-RT-VXu"/>
                         <outlet property="venueTextField" destination="hYW-ei-mLv" id="Dec-H8-WCT"/>
-                        <segue destination="qAf-50-cP1" kind="unwind" identifier="unwindToCamera" unwindAction="unwindToCameraWithSegue:" id="8sA-C5-nva"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6pB-Nr-PsL" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="qAf-50-cP1" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="2506" y="108"/>
+            <point key="canvasLocation" x="1738" y="-591"/>
         </scene>
         <!--Moment Collection View Controller-->
         <scene sceneID="Sf3-nA-ZH6">
             <objects>
-                <collectionViewController storyboardIdentifier="MomentCollectionViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="TGu-A1-lSP">
+                <collectionViewController storyboardIdentifier="MomentCollectionViewController" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="TGu-A1-lSP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="180"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -433,10 +462,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BGe-7r-hOK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3109.5999999999999" y="2.6986506746626691"/>
+            <point key="canvasLocation" x="2367" y="-693"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="4jz-WG-HaN"/>
-    </inferredMetricsTieBreakers>
 </document>

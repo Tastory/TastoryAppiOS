@@ -6,7 +6,7 @@
 //  Copyright © 2017 SomeFoodieCompany. All rights reserved.
 //
 //  This is a reusable Camera View Controller created based on the Swifty Cam - https://github.com/Awalz/SwiftyCam
-//  Input  - segueSource: Who pushed the CameraViewController ot the stack?
+//  Input  - 
 //  Output - Will always export taken photo or video to MarkupViewController and push it to the top of the View Controller stack
 //
 
@@ -35,9 +35,6 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
   
   
   // MARK: - IBActions
-  @IBAction func unwindToCamera(segue: UIStoryboardSegue) {
-    // Nothing for now
-  }
   
   @IBAction func capturePressed(_ sender: CameraButton) {
     captureButton?.buttonPressed()
@@ -47,6 +44,10 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
     captureButton?.buttonReleased()
   }
 
+  @IBAction func exitPressed(_ sender: UIButton) {
+    // TODO: Data Passback through delegate?
+    dismiss(animated: true, completion: nil)
+  }
   
   // MARK: - Class Private Functions
 
@@ -115,65 +116,6 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
       }
     }
   }
-
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
-  }
-    
-
-  // MARK: - Navigation
-
-  // In a storyboard-based application, you will often want to do a little preparation before navigation
-  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    // Get the new view controller using segue.destinationViewController.
-    // Pass the selected object to the new view controller.
-    
-    if segue.identifier == "toPhotoMarkup" {
-      
-      guard let photo = sender as? UIImage else {
-        internalErrorDialog()
-        DebugPrint.assert("Expected sender to be of type UIImage")
-        captureButton?.buttonReset()
-        return
-      }
-      
-      guard let mVC = segue.destination as? MarkupViewController else {
-        internalErrorDialog()
-        DebugPrint.assert("Expected segue.destination to be of type MarkupViewController")
-        captureButton?.buttonReset()
-        return
-      }
-      
-      mVC.photoToMarkup = photo
-      
-    } else if segue.identifier == "toVideoMarkup" {
-      
-      guard let videoURL = sender as? URL else {
-        internalErrorDialog()
-        DebugPrint.assert("Expected sender to be of type URL")
-        captureButton?.buttonReset()
-        return
-      }
-      
-      guard let mVC = segue.destination as? MarkupViewController else {
-        internalErrorDialog()
-        DebugPrint.assert("Expected segue.destination to be of type MarkupViewController")
-        captureButton?.buttonReset()
-        return
-      }
-      
-      mVC.videoToMarkupURL = videoURL
-    }
-    
-//    else if segue.identifier == "unwindToMap" {
-//      // Do nothing for now
-//    }
-//      
-//    else {
-//      DebugPrint.assert("No matching segue identifier")
-//    }
-  }
 } // CameraViewController class definision
 
 
@@ -184,8 +126,15 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     // Returns a UIImage captured from the current session
     DebugPrint.userAction("didTakePhoto") // TODO: Make photos brighter too
     UIImageWriteToSavedPhotosAlbum(photo, nil, nil, nil)
-    performSegue(withIdentifier: "toPhotoMarkup", sender: photo)
+
+    // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+    viewController.restorationClass = nil
+    viewController.photoToMarkup = photo
+    self.present(viewController, animated: true)
   }
+  
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didBeginRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
     // Called when startVideoRecording() is called
@@ -195,6 +144,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     captureButton?.startRecording()
   }
   
+  
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
     // Called when stopVideoRecording() is called
     // Called if a SwiftyCamButton ends a long press gesture
@@ -203,6 +153,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     captureButton?.buttonReleased()
   }
   
+  
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishProcessVideoAt url: URL) {
     // Called when stopVideoRecording() is called and the video is finished processing
     // Returns a URL in the temporary directory where video is stored
@@ -210,13 +161,21 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     
     if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(url.path) {
       UISaveVideoAtPathToSavedPhotosAlbum(url.path, nil, nil, nil)
-      performSegue(withIdentifier: "toVideoMarkup", sender: url)
+
+      // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
+      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+      viewController.restorationClass = nil
+      viewController.videoToMarkupURL = url
+      self.present(viewController, animated: true)
+      
     } else {
       self.internalErrorDialog()
       DebugPrint.assert("Received invalid URL for local filesystem")
       captureButton?.buttonReset()
     }
   }
+  
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFocusAtPoint point: CGPoint) {
     // Called when a user initiates a tap gesture on the preview layer

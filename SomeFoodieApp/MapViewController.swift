@@ -38,10 +38,6 @@ class MapViewController: UIViewController {
 
 
   // MARK: - IBActions
-  @IBAction func unwindToMap(segue: UIStoryboardSegue) {
-    // Nothing for now
-  }
-
 
   @IBAction func singleTapGestureDetected(_ sender: UITapGestureRecognizer) {
     // Dismiss keyboard if any gestures detected against Map
@@ -66,10 +62,11 @@ class MapViewController: UIViewController {
 
 
   @IBAction func launchCamera(_ sender: UIButton) {
+    // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController")
-    // Do we need to initialize any public input variable for the Camera View Controller before presenting?
-    show(cameraViewController, sender: self)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController")
+    viewController.restorationClass = nil
+    self.present(viewController, animated: true)
   }
 
 
