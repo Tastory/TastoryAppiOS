@@ -13,11 +13,8 @@ import Parse
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
-  var viewControllerMgr: ViewControllerManager?  //??
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-    // Override point for customization after application launch
-    viewControllerMgr = ViewControllerManager()
     
     // Initialize Parse.
     let configuration = ParseClientConfiguration {
@@ -57,13 +54,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   // For Parse Subclassing
   func configureParse() {
     
-    FoodieUser.registerSubclass()
-    
     // FoodieObject is an Abstract! Don't Register!!
     
-    FoodieCategory.registerSubclass()
-    FoodieEatery.registerSubclass()
+    FoodieUser.registerSubclass()
     FoodieJournal.registerSubclass()
+    FoodieEatery.registerSubclass()
+    FoodieCategory.registerSubclass()
     FoodieMoment.registerSubclass()
     FoodieMarkup.registerSubclass()
     FoodieHistory.registerSubclass()

@@ -82,7 +82,7 @@ class JournalEntryViewController: UITableViewController {
     keyboardDismissRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(keyboardDismissRecognizer)
     
-    let previousSwipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(previousUnwind))
+    let previousSwipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(vcDismiss))
     previousSwipeRecognizer.direction = .right
     previousSwipeRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(previousSwipeRecognizer)
@@ -99,12 +99,9 @@ extension JournalEntryViewController {
     self.view.endEditing(true)
   }
 
-
-  func previousUnwind() {
-    // Careful here, if we didn't arrive at this view from Camera View, we will not be able to exit (naturally)
-    self.performSegue(withIdentifier: "unwindToCamera", sender: self)
-    
-    // TODO: Should look through all VC in the stack to determine whichone to return to
+  func vcDismiss() {
+    // TODO: Data Passback through delegate?
+    dismiss(animated: true, completion: nil)
   }
 }
 
