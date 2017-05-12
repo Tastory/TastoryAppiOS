@@ -14,7 +14,7 @@
         <!--Scrape View Controller-->
         <scene sceneID="YH6-S2-RAg">
             <objects>
-                <viewController id="CGb-4m-OBn" customClass="ScrapeViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ScrapeViewController" id="CGb-4m-OBn" customClass="ScrapeViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="mco-kE-PtF"/>
                         <viewControllerLayoutGuide type="bottom" id="Cn8-bb-Dq3"/>
@@ -73,7 +73,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dqx-Qq-adh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1890" y="-1047"/>
+            <point key="canvasLocation" x="-1890" y="-1020"/>
         </scene>
         <!--Discover View Controller-->
         <scene sceneID="rnU-Po-hAl">
@@ -414,7 +414,7 @@
         <scene sceneID="Sf3-nA-ZH6">
             <objects>
                 <collectionViewController storyboardIdentifier="MomentCollectionViewController" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="TGu-A1-lSP">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="TGu-A1-lSP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="180"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
