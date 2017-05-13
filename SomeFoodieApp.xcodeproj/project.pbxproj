@@ -183,13 +183,13 @@
 				8C61BCD91E9857F500DDF248 /* ErrorModel.swift */,
 				8C6A96961E98435D00B8C309 /* FoodieError.swift */,
 				8C89867D1E958B4300B62306 /* FoodieObject.swift */,
-				8C8986791E933E2E00B62306 /* FoodieUser.swift */,
 				8C8986711E91982E00B62306 /* FoodieJournal.swift */,
 				8C8986731E91985700B62306 /* FoodieEatery.swift */,
 				8C8986751E91A72D00B62306 /* FoodieCategory.swift */,
 				8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */,
 				8C89866F1E91981C00B62306 /* FoodieMarkup.swift */,
 				8C8986771E91DC5800B62306 /* FoodieHistory.swift */,
+				8C8986791E933E2E00B62306 /* FoodieUser.swift */,
 				8C89866D1E9189F500B62306 /* MyClass.swift */,
 			);
 			name = Models;
