@@ -16,14 +16,45 @@ import Parse
 
 class FoodieObject: PFObject {  // Abstract
   
-  // The following tracks status of the FoodieObjects. All potential statuses are tentative
-  // Was considering bit-wise statuses, but probably too complicated for high level programming
-  @NSManaged var statusInMemory: Bool
-  @NSManaged var statusInLocal: Bool
-  @NSManaged var statusInNetwork: Bool
-  @NSManaged var statusPendingLoad: Bool  // This is referring to load from local disk
-  @NSManaged var statusPendingDownload: Bool  // This is referring to downloading from networked backend
-  @NSManaged var statusPendingDelete: Bool
-  @NSManaged var statusPendingSave: Bool  // This is referring save to local
-  @NSManaged var statusPendingSync: Bool  // This is referring to sync to networked backend
+  
+  // MARK: - Types & Enumerations
+  enum OperationStates: Int {
+    case objectModified
+    case savingToLocal
+    case savedToLocal
+    case savingToServer
+    case savedToServer
+    case pendingDelete
+    case deletingFromLocal
+    case deletedFromLocal
+    case deletingFromServer
+    case deletedFromServer
+  }
+  
+  
+  // MARK: - Public Variables
+  var state: OperationStates? { return operationState }
+  
+  
+  // MARK: - Private Variables
+  fileprivate var operationState: OperationStates?  // nil if Undetermined
+  
+  
+  // MARK: - Public Functions
+  
+  // Function to traverse EVERTYHING to determine the object's state
+  func determineStates() {
+    
+  }
+  
+  // Function to mark memory modified
+  
+  
+  // Function to save object, traversing all child object states, saving child objects if needed
+  
+  
+  // Function to delete object, traversing all child object states, managing child deletes if needed
+  
+  
+  // MARK: - Private Functions
 }
