@@ -124,7 +124,7 @@ extension MomentCollectionViewController {
     //       if let currentCell = collectionView.cellForItem(at: indexPath) as? MomentCollectionViewCell {
     //         currentCell.momentButton.setImage(image, for: .normal)
     //       } else {
-    //         DebugPrint.fatal("Error getting MomentCollectionViewCell")
+    //         DebugPrint.log("MomentCollectionViewCell not visible or indexPath is out of range")
     //       }
     //
     //     } else {
