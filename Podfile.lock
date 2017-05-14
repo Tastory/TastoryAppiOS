@@ -1,4 +1,9 @@
 PODS:
+  - AWSCognito (2.5.3):
+    - AWSCore (= 2.5.3)
+  - AWSCore (2.5.3)
+  - AWSS3 (2.5.3):
+    - AWSCore (= 2.5.3)
   - Bolts/Tasks (1.8.4)
   - FoursquareAPIClient (3.1.0)
   - Kanna (2.2.0)
@@ -7,18 +12,23 @@ PODS:
   - SwiftyCam (2.1.0)
 
 DEPENDENCIES:
+  - AWSCognito
+  - AWSS3
   - FoursquareAPIClient
   - Kanna
   - Parse
   - SwiftyCam
 
 SPEC CHECKSUMS:
+  AWSCognito: 74be06e52a2a063ab932a9d457a89e003d68631d
+  AWSCore: 344e21892790650cf902246d436402257a545bde
+  AWSS3: 88095d68f9d588eaa042d7f502f350234f98f606
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   FoursquareAPIClient: 2bb916176f560c0afb6838a28c1a0970467a0edc
   Kanna: b3b3368d673845f48c572c6746c2278deebe26b9
   Parse: 4335d65f40cb3d43190d723144bbe1afb9c38230
   SwiftyCam: 2f13473f67afa4658bff79453d7db6890e2fa84d
 
-PODFILE CHECKSUM: 0326baa256804ff625a7f54ab9e70f46a7a08331
+PODFILE CHECKSUM: 6998649e789368f0061e7d0aac2657dbaa67ac97
 
 COCOAPODS: 1.2.0

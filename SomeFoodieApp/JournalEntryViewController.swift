@@ -13,6 +13,7 @@
 
 import UIKit
 import MapKit
+import AWSS3
 
 class JournalEntryViewController: UITableViewController {
 
@@ -89,6 +90,25 @@ class JournalEntryViewController: UITableViewController {
     
     titleTextField?.text = journalUnwrapped.title
   }
+    
+    @IBAction func UploadS3(_ sender: Any) {
+        let media = FoodieMedia()
+        
+        //media.download(fileName: "IMG_4208.MOV")
+        media.deleteFileLocally(fileName: "IMG_4208.MOV")
+        
+        //media.upload()
+       //self.imageView.image = UIImage(contentsOfFile: downloadFileURL.path)
+       /*let moments =  editingJournal.moments
+       for moment in moments! {
+        do {
+                let image = try (moment as! FoodieMoment).media?.getData() as UIImage
+            }
+        catch {
+            print("Caught error")
+        }
+        }*/
+    }
 }
 
 

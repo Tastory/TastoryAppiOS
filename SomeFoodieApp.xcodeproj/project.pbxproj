@@ -51,6 +51,8 @@
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extensions.swift */; };
 		C24F69651EB85B0300A0DB7B /* ViewEntryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69641EB85B0300A0DB7B /* ViewEntryController.swift */; };
 		C24F69671EB85DF300A0DB7B /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69661EB85DF300A0DB7B /* PlayerView.swift */; };
+		C25746BF1EC0C79F0098A45C /* FoodieMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25746BE1EC0C79F0098A45C /* FoodieMedia.swift */; };
+		C25746C11EC2C6E30098A45C /* ElephantSeals.mov in Resources */ = {isa = PBXBuildFile; fileRef = C25746C01EC2C6E30098A45C /* ElephantSeals.mov */; };
 		C5A7852B6648DF71C73BE203 /* Pods_SomeFoodieAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED09C3927B27479449C01250 /* Pods_SomeFoodieAppTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -124,6 +126,8 @@
 		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extensions.swift"; sourceTree = "<group>"; };
 		C24F69641EB85B0300A0DB7B /* ViewEntryController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewEntryController.swift; sourceTree = "<group>"; };
 		C24F69661EB85DF300A0DB7B /* PlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PlayerView.swift; path = SomeFoodieApp/PlayerView.swift; sourceTree = "<group>"; };
+		C25746BE1EC0C79F0098A45C /* FoodieMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMedia.swift; sourceTree = "<group>"; };
+		C25746C01EC2C6E30098A45C /* ElephantSeals.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; name = ElephantSeals.mov; path = ../ElephantSeals.mov; sourceTree = "<group>"; };
 		D774075B6C8726908633E5B2 /* Pods-SomeFoodieAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SomeFoodieAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SomeFoodieAppTests/Pods-SomeFoodieAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED09C3927B27479449C01250 /* Pods_SomeFoodieAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SomeFoodieAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F73B070E1BA758725ED554B8 /* Pods-SomeFoodieApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SomeFoodieApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-SomeFoodieApp/Pods-SomeFoodieApp.release.xcconfig"; sourceTree = "<group>"; };
@@ -191,6 +195,7 @@
 				8C89866F1E91981C00B62306 /* FoodieMarkup.swift */,
 				8C8986771E91DC5800B62306 /* FoodieHistory.swift */,
 				8C89866D1E9189F500B62306 /* MyClass.swift */,
+				C25746BE1EC0C79F0098A45C /* FoodieMedia.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -198,6 +203,7 @@
 		8CBF55771E7F7EDF00F4B1CD = {
 			isa = PBXGroup;
 			children = (
+				C25746C21EC2C6F00098A45C /* Common */,
 				8CBF55821E7F7EDF00F4B1CD /* SomeFoodieApp */,
 				8CBF55971E7F7EDF00F4B1CD /* SomeFoodieAppTests */,
 				8CBF55A21E7F7EDF00F4B1CD /* SomeFoodieAppUITests */,
@@ -319,6 +325,14 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		C25746C21EC2C6F00098A45C /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				C25746C01EC2C6E30098A45C /* ElephantSeals.mov */,
+			);
+			name = Common;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -396,7 +410,7 @@
 				TargetAttributes = {
 					8CBF557F1E7F7EDF00F4B1CD = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = G37J442U66;
+						DevelopmentTeam = U6CK262SK9;
 						ProvisioningStyle = Automatic;
 					};
 					8CBF55931E7F7EDF00F4B1CD = {
@@ -440,6 +454,7 @@
 			files = (
 				8CBF558E1E7F7EDF00F4B1CD /* LaunchScreen.storyboard in Resources */,
 				8CBF558B1E7F7EDF00F4B1CD /* Assets.xcassets in Resources */,
+				C25746C11EC2C6E30098A45C /* ElephantSeals.mov in Resources */,
 				8CBF55891E7F7EDF00F4B1CD /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -611,6 +626,7 @@
 				8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */,
 				8C0590471EC653DF00027E91 /* DiscoverViewController.swift in Sources */,
 				8C8986721E91982E00B62306 /* FoodieJournal.swift in Sources */,
+				C25746BF1EC0C79F0098A45C /* FoodieMedia.swift in Sources */,
 				8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */,
 				8C8986701E91981C00B62306 /* FoodieMarkup.swift in Sources */,
 				C24F69651EB85B0300A0DB7B /* ViewEntryController.swift in Sources */,
@@ -792,10 +808,10 @@
 			baseConfigurationReference = 05A890ED28E1DB26E7E9A040 /* Pods-SomeFoodieApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = G37J442U66;
+				DEVELOPMENT_TEAM = U6CK262SK9;
 				INFOPLIST_FILE = SomeFoodieApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.sfc.SomeFoodieApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sfc.SomeFoodieAppvic1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -806,10 +822,10 @@
 			baseConfigurationReference = F73B070E1BA758725ED554B8 /* Pods-SomeFoodieApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = G37J442U66;
+				DEVELOPMENT_TEAM = U6CK262SK9;
 				INFOPLIST_FILE = SomeFoodieApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.sfc.SomeFoodieApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sfc.SomeFoodieAppvic1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
