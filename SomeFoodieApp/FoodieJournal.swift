@@ -12,17 +12,17 @@ import Parse
 class FoodieJournal: FoodieObject {
   
   // MARK: - Parse PFObject keys
-  @NSManaged var moments: Array<PFObject>? // A FoodieMoment Photo or Video
-  @NSManaged var thumbnail: PFFile? // Thumbnail for the Journal
+  @NSManaged var moments: Array<FoodieMoment>? // A FoodieMoment Photo or Video
+  @NSManaged var thumbnail: FoodieFile? // Thumbnail for the Journal
   @NSManaged var type: Int // Really enum for the thumbnail type. Allow videos in the future?
   @NSManaged var aspectRatio: Double
   @NSManaged var width: Int
-  @NSManaged var markup: Array<PFObject>? // Array of PFObjects as FoodieMarkup for the thumbnail
+  @NSManaged var markups: Array<FoodieMarkup>? // Array of PFObjects as FoodieMarkup for the thumbnail
   @NSManaged var title: String? // Title for the Journal
-  @NSManaged var author: PFUser? // Pointer to the user that authored this Moment
-  @NSManaged var eatery: PFObject? // Pointer to the Restaurant object
+  @NSManaged var author: FoodieUser? // Pointer to the user that authored this Moment
+  @NSManaged var eatery: FoodieEatery? // Pointer to the Restaurant object
   @NSManaged var eateryName: String? // Easy access to eatery name
-  @NSManaged var categories: Array<Int>? // Array of internal restaurant categoryIDs (all cateogires that applies, most accurate at index 0. Remove top levels if got sub already)
+  @NSManaged var categories: Array<FoodieCategory>? // Array of internal restaurant categoryIDs (all cateogires that applies, most accurate at index 0. Remove top levels if got sub already)
   @NSManaged var location: PFGeoPoint? // Geolocation of the Journal entry
   
   @NSManaged var mondayOpen: Int // Open time in seconds
@@ -134,7 +134,6 @@ class FoodieJournal: FoodieObject {
   // Functions managing the Journal itself
   
   // FUNCTION saveSync - Save Journal. Block until complete
-  
   func saveSync() throws {
     
     // TODO: Complex algorithm to ensure that all the attached Moments have been saved.
@@ -157,6 +156,51 @@ class FoodieJournal: FoodieObject {
     // TODO: Complex algorithm to ensure that all the attached Moments have been saved.
     self.saveInBackground(block: callback)
   }
+  
+  
+  func childSaveCallback(success: Bool, error: Error?) -> Void {
+    // Determine if all children are ready, if not, keep waiting.
+    
+    // Error handle. If there are child objects that needs saving but not in saving, kick the save. But log error
+    
+    // If children all ready, call caller's callback
+  }
+  
+  
+  override func saveRecursive(to location: FoodieObject.StorageLocation,
+                              withName name: String?,
+                              withBlock callback: (Bool, Error?) -> Void) -> Bool {
+    
+    // Is save even allowed? Return false here if illegal state transition
+    
+    // Need to make sure FoodieFile is saved before allowing to proceed
+    
+    // Need to make sure any FoodieFile under moments, markups, author, eatery and categories are saved before proceeding
+    if let haveMoments = moments {
+      for moment in haveMoments {
+        if !moment.saveRecursive(to: location, withBlock: childSaveCallback) {
+          return false  // Return false upon child reporting illegal state transition, only log for the original illegal detection
+        }
+      }
+    }
+    
+    if let haveMarkups = markups {
+      for markup in haveMarkups {
+        
+      }
+    }
+    
+    return true
+  }
+  
+  
+  
+  override func deleteRecursive(from location: FoodieObject.StorageLocation,
+                                withName name: String?,
+                                withBlock callback: (Bool, Error?) -> Void) -> Bool {
+    return false
+  }
+  
   
   
   // Functions for managing associated FoodieMoments

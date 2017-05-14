@@ -12,14 +12,14 @@ import Parse
 class FoodieMoment: FoodieObject {
   
   // MARK: - Database Schema
-  @NSManaged var media: PFFile?  // A Photo or a Video
+  @NSManaged var media: FoodieFile?  // A Photo or a Video
   @NSManaged var mediaType: String  // Really an enum saying whether it's a Photo or Video
   @NSManaged var aspectRatio: Double  // In decimal, width / height, like 16:9 = 16/9 = 1.777...
   @NSManaged var width: Int  // height = width / aspectRatio
-  @NSManaged var markup: Array<PFObject>?  // Array of PFObjects as FoodieMarkup
+  @NSManaged var markup: Array<FoodieMarkup>?  // Array of PFObjects as FoodieMarkup
   @NSManaged var tags: Array<String>?  // Array of Strings, unstructured
-  @NSManaged var author: PFUser?  // Pointer to the user that authored this Moment
-  @NSManaged var eatery: PFObject?  // Pointer to the FoodieEatery object
+  @NSManaged var author: FoodieUser?  // Pointer to the user that authored this Moment
+  @NSManaged var eatery: FoodieEatery?  // Pointer to the FoodieEatery object
   @NSManaged var categories: Array<Int>?  // Array of internal restaurant categoryIDs (all cateogires that applies, sub or primary)
   @NSManaged var type: Int  // Really an enum saying whether this describes the dish, interior, or exterior, Optional
   @NSManaged var attribute: String?  // Attribute related to the type. Eg. Dish name, Optional
@@ -55,10 +55,11 @@ class FoodieMoment: FoodieObject {
       throw FoodieError(error: FoodieError.Code.Moment.setMediaWithPhotoJpegRepresentationFailed.rawValue, description: "Cannot create JPEG representation")
     }
     
-    media = PFFile(data: imageData, contentType: MediaType.photo.rawValue)
+    //media = PFFile(data: imageData, contentType: MediaType.photo.rawValue)
+    media = "Some FoodieMediaURL"
     
     // Set the other image related attributes
-    mediaType = MediaType.photo.rawValue  // Maybe this is removable if PFFile.contentType is easily queryable
+    mediaType = MediaType.photo.rawValue
     aspectRatio = Double(image.size.width / image.size.height)  // TODO: Are we just always gonna deal with full res?
     width = Int(Double(image.size.width))
   }
