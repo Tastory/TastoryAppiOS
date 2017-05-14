@@ -274,8 +274,26 @@
                         <sections>
                             <tableViewSection headerTitle="Stretch Map Section Header" id="3jh-aS-0if">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="k4v-QV-gqg">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="c3n-Si-Sng">
                                         <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="c3n-Si-Sng" id="Upt-P5-dPk">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uxv-O5-rkh">
+                                                    <rect key="frame" x="151" y="6.5" width="72" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <state key="normal" title="Upload S3"/>
+                                                    <connections>
+                                                        <action selector="UploadS3:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="aJA-sy-sZ4"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="k4v-QV-gqg">
+                                        <rect key="frame" x="0.0" y="99.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="k4v-QV-gqg" id="Ttp-6L-HRV">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
@@ -296,7 +314,7 @@
                             <tableViewSection headerTitle="Moment Collection View Header" id="z8v-Ul-vTt">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="SCo-b3-SGy">
-                                        <rect key="frame" x="0.0" y="155.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="199.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SCo-b3-SGy" id="mrM-YN-vc8">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
@@ -313,7 +331,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="TDd-Lf-Gze">
-                                        <rect key="frame" x="0.0" y="199.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="243.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TDd-Lf-Gze" id="hbb-k4-rcy">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
@@ -334,7 +352,7 @@
                             <tableViewSection id="ixb-yl-Lax">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="133" id="qWC-Q9-gqR">
-                                        <rect key="frame" x="0.0" y="279.5" width="375" height="133"/>
+                                        <rect key="frame" x="0.0" y="323.5" width="375" height="133"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="qWC-Q9-gqR" id="QYD-OH-Fjz">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="132.5"/>
@@ -375,7 +393,7 @@
         <scene sceneID="Sf3-nA-ZH6">
             <objects>
                 <collectionViewController storyboardIdentifier="MomentCollectionViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="TGu-A1-lSP">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="TGu-A1-lSP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="180"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

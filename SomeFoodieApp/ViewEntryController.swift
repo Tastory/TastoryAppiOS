@@ -44,8 +44,6 @@ class ViewEntryController: UIViewController {
                 exporter?.outputFileType = types[0]
                 exporter?.exportAsynchronously(completionHandler: {
                     
-                    print(exporter?.status.rawValue)
-                    print(exporter?.error)
                 })
             })
         }

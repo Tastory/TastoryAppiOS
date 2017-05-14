@@ -10,6 +10,8 @@ target 'SomeFoodieApp' do
   pod 'FoursquareAPIClient'
   pod 'Kanna'
   pod 'SwiftyCam'
+  pod 'AWSS3'
+  pod 'AWSCognito'
   
   target 'SomeFoodieAppTests' do
     inherit! :search_paths
