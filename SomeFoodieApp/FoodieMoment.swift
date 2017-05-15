@@ -12,7 +12,7 @@ import Parse
 class FoodieMoment: FoodieObject {
   
   // MARK: - Database Schema
-  @NSManaged var media: FoodieFile?  // A Photo or a Video
+  @NSManaged var media: FoodieMedia?  // A Photo or a Video
   @NSManaged var mediaType: String  // Really an enum saying whether it's a Photo or Video
   @NSManaged var aspectRatio: Double  // In decimal, width / height, like 16:9 = 16/9 = 1.777...
   @NSManaged var width: Int  // height = width / aspectRatio

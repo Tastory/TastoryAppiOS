@@ -14,7 +14,7 @@ class FoodieJournal: FoodieObject {
   // MARK: - Parse PFObject keys
   // If new objects or external types are added here, check if save and delete algorithms needs updating
   @NSManaged var moments: Array<FoodieMoment>? // A FoodieMoment Photo or Video
-  @NSManaged var thumbnail: FoodieFile? // Thumbnail for the Journal
+  @NSManaged var thumbnail: FoodieMedia? // Thumbnail for the Journal
   @NSManaged var type: Int // Really enum for the thumbnail type. Allow videos in the future?
   @NSManaged var aspectRatio: Double
   @NSManaged var width: Int
@@ -199,40 +199,36 @@ class FoodieJournal: FoodieObject {
 
   // MARK: - Foodie Object Required Functions
 
-  override func childSaveCompletion(to location: FoodieObject.StorageLocation,
-                                    withName name: String?,
-                                    withBlock callback: (Bool, Error?) -> Void) -> Void {
+  override func saveCompletionFromChild(to location: FoodieObject.StorageLocation,
+                                        withName name: String?,
+                                        withBlock callback: BooleanErrorBlock?) {
     var keepWaiting = false
     
     // Determine if all children are ready, if not, keep waiting.
     if let hasMoments = moments {
       for moment in hasMoments {
-        if !didSaveComplete(for: moment, to: location) { keepWaiting = true; break }
+        if !moment.isSaveCompleted(to: location) { keepWaiting = true; break }
       }
     }
     
     if let hasMarkups = markups, !keepWaiting {
       for markup in hasMarkups {
-        if !didSaveComplete(for: markup, to: location) { keepWaiting = true; break }
+        if !markup.isSaveCompleted(to: location) { keepWaiting = true; break }
       }
     }
     
     if let eatery = eatery, !keepWaiting {
-      if !didSaveComplete(for: eatery, to: location) { keepWaiting = true }
+      if !eatery.isSaveCompleted(to: location) { keepWaiting = true }
     }
     
     if let hasCategory = categories, !keepWaiting {
       for category in hasCategory {
-        if !didSaveComplete(for: category, to: location) { keepWaiting = true; break }
+        if !category.isSaveCompleted(to: location) { keepWaiting = true; break }
       }
     }
     
     if !keepWaiting {
-      // If children all ready, Save yourself! Call state transition when completed
-    
-    
-      // If children all came back and there is error, unwind state and call callback
-      
+      savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
     }
   }
   
@@ -240,55 +236,47 @@ class FoodieJournal: FoodieObject {
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   override func saveRecursive(to location: FoodieObject.StorageLocation,
                               withName name: String?,
-                              withBlock callback: @escaping (Bool, Error?) -> Void) -> Bool {
+                              withBlock callback: BooleanErrorBlock?) {
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
-    if let earlyReturn = stateTransitionForSave(to: location, withBlock: callback) {
-      return earlyReturn
+    if let earlyReturnStatus = saveStateTransition(to: location) {
+      DispatchQueue.global(qos: .userInitiated).async { callback?(earlyReturnStatus, nil) }
     }
     
-    // Need to make sure FoodieFile is saved before allowing to proceed
-    
-    // Need to make sure any FoodieFile under moments, markups, eatery and categories are saved before proceeding
+    // Need to make sure all children FoodieRecursives saved before proceeding
     if let hasMoments = moments {
       for moment in hasMoments {
-        if !saveChild(moment, to: location, withName: name, withBlock: callback) {
-          return false
-        }
+        saveChild(moment, to: location, withName: name, withBlock: callback)
       }
+    }
+    
+    if let thumbnail = thumbnail {
+      saveChild(thumbnail, to: location, withName: name, withBlock: callback)
     }
     
     if let hasMarkups = markups {
       for markup in hasMarkups {
-        if !saveChild(markup, to: location, withName: name, withBlock: callback) {
-          return false
-        }
+        saveChild(markup, to: location, withName: name, withBlock: callback)
       }
     }
     
     // Do we need to save User? Is User considered modified?
     
     if let eatery = eatery {
-      if !saveChild(eatery, to: location, withName: name, withBlock: callback) {
-        return false
-      }
+      saveChild(eatery, to: location, withName: name, withBlock: callback)
     }
     
     if let hasCategories = categories {
       for category in hasCategories {
-        if !saveChild(category, to: location, withName: name, withBlock: callback) {
-          return false
-        }
+        saveChild(category, to: location, withName: name, withBlock: callback)
       }
     }
-    return true
   }
   
   
   override func deleteRecursive(from location: FoodieObject.StorageLocation,
                                 withName name: String?,
-                                withBlock callback: @escaping(Bool, Error?) -> Void) -> Bool {
-    return false
+                                withBlock callback: BooleanErrorBlock?) {
   }
 }
 
