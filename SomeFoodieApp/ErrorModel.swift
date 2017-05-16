@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 class ErrorModel: Error, LocalizedError {
   
   typealias ErrorCode = Int
