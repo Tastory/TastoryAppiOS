@@ -6,6 +6,7 @@
 //  Copyright © 2017 SomeFoodieCompany. All rights reserved.
 //
 
+import Foundation
 
 class FoodieError: ErrorModel {
   

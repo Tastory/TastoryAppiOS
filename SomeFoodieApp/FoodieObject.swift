@@ -6,18 +6,36 @@
 //  Copyright © 2017 SomeFoodieCompany. All rights reserved.
 //
 
-import Parse
+import Foundation
 
-/****************************************************************/
-/*                                                              */
-/*     Do not attempt to register this class against Parse!     */
-/*                                                              */
-/****************************************************************/
+protocol FoodieObjectDelegate: class {
+  
+  func saveCompletionFromChild(to location: FoodieObject.StorageLocation,
+                               withName name: String?,
+                               withBlock callback: FoodieObject.BooleanErrorBlock?)
+  
+  func saveRecursive(to location: FoodieObject.StorageLocation,
+                     withName name: String?,
+                     withBlock callback: FoodieObject.BooleanErrorBlock?)
+  
+  func saveToLocal(withName name: String?, withBlock callback: FoodieObject.BooleanErrorBlock?)
+  
+  func saveToServer(withBlock callback: FoodieObject.BooleanErrorBlock?)
+  
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       withName name: String?,
+                       withBlock callback: FoodieObject.BooleanErrorBlock?)
+  
+  func deleteFromLocal(withName name: String?, withBlock callback: FoodieObject.BooleanErrorBlock?)
+  
+  func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?)
+}
 
-class FoodieObject: PFObject {  // Abstract
+
+class FoodieObject {
   
   // MARK: - Types & Enumerations
-  typealias BooleanErrorBlock = PFBooleanResultBlock
+  typealias BooleanErrorBlock = (Bool, Error?) -> Void
   
   enum OperationStates: Int {
     case objectSynced       = 0
@@ -40,14 +58,9 @@ class FoodieObject: PFObject {  // Abstract
     case server
   }
   
-  struct FoodieOperation {
-    var location: StorageLocation
-    var name: String? = nil
-    var callback: BooleanErrorBlock? = nil
-  }
-  
   
   // MARK: - Public Variables
+  weak var delegate: FoodieObjectDelegate?
   var operationState: OperationStates? { return protectedOperationState }
   var operationError: Error? { return protectedOperationError }
   
@@ -59,9 +72,16 @@ class FoodieObject: PFObject {  // Abstract
   
   // MARK: - Public Functions
   
-  // Function to traverse EVERTYHING to determine the object's state
-  func determineStates() {
-
+  init() {
+    protectedOperationState = .objectModified
+    protectedOperationError = nil
+    delegate = nil
+  }
+  
+  init(delegateObject: FoodieObjectDelegate) {
+    protectedOperationState = .objectModified
+    protectedOperationError = nil
+    delegate = delegateObject
   }
   
   
@@ -78,26 +98,8 @@ class FoodieObject: PFObject {  // Abstract
     return true
   }
   
-  
-  // Each specific object to implement, for their each of their child's save completion
-  func saveCompletionFromChild(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
-    DebugPrint.fatal("saveCompletionFromChild must be implemented by each specific Foodie Object classes")
-  }
-  
-  
-  // Each specific object to implement, to determine what needs to be save before itself can be saved. Callback should handle state transition
-  func saveRecursive(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
-    DebugPrint.fatal("saveRecursive must be implemented by each specific Foodie Object classes")
-  }
-  
-  
-  // Each specific object to implement, to determine what needs to be done before itself can be deleted. Callback should handle state transition
-  func deleteRecursive(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
-    DebugPrint.fatal("deleteRecursive must be implemented by each specific Foodie Object classes")
-  }
-  
-  
-  // Factor out common code that perform state transition when save completes
+
+  // Function for state transition when all saves have completed
   func saveCompleteStateTransition(to location: StorageLocation) {
     
     guard let state = protectedOperationState else {
@@ -109,11 +111,11 @@ class FoodieObject: PFObject {  // Abstract
       
       if (location == .local) && (state == .savingToLocal) {
         // Dial back the state
-        self.protectedOperationState = .objectModified
+        protectedOperationState = .objectModified
         
       } else if (location == .server) && (state == .savingToServer) {
         // Dial back the state
-        self.protectedOperationState = .savedToLocal
+        protectedOperationState = .savedToLocal
         
       } else {
         // Unexpected state combination
@@ -126,11 +128,11 @@ class FoodieObject: PFObject {  // Abstract
       
       if (location == .local) && (state == .savingToLocal) {
         // Dial back the state
-        self.protectedOperationState = .savedToLocal
+        protectedOperationState = .savedToLocal
         
       } else if (location == .server) && (state == .savingToServer) {
         // Dial back the state
-        self.protectedOperationState = .savedToServer
+        protectedOperationState = .savedToServer
         
       } else {
         // Unexpected state combination
@@ -140,6 +142,7 @@ class FoodieObject: PFObject {  // Abstract
   }
   
   
+  // Function when all child saves have completed
   func savesCompletedFromAllChildren(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
     // If children all came back and there is error, unwind state and call callback
     if protectedOperationError != nil {
@@ -166,7 +169,7 @@ class FoodieObject: PFObject {  // Abstract
   }
   
   
-  // Factor out common code that evaluates operation states upon child's completion
+  // Function for parent to inquire if this object's own save have completed
   func isSaveCompleted(to location: StorageLocation) -> Bool {
     guard let state = protectedOperationState else {
       DebugPrint.fatal("Unable to proceed due to nil operationState. Location: \(location)")
@@ -192,7 +195,7 @@ class FoodieObject: PFObject {  // Abstract
   }
   
   
-  // Factor out common code that perform state transition for saves
+  // Function for state transition at the beginning of saveRecursive
   func saveStateTransition(to location: StorageLocation) -> Bool? {
     
     guard let state = protectedOperationState else {
@@ -231,14 +234,17 @@ class FoodieObject: PFObject {  // Abstract
   }
   
   
-  // Factor out common code that calls child's save recursive with block
-  func saveChild(_ object: FoodieObject,
+  // Function to call a child's saveRecursive
+  func saveChild(_ child: FoodieObjectDelegate,
                  to location: StorageLocation,
                  withName name: String? = nil,
                  withBlock callback: BooleanErrorBlock?) {
     
     // Save Recursive for each moment. Call saveCompletionFromChild when done and without errors
-    object.saveRecursive(to: location, withName: name) { [unowned self] (success, error) in
+    child.saveRecursive(to: location, withName: name) { [unowned self] (success, error) in
+      guard let delegateObj = self.delegate else {
+        DebugPrint.fatal("delegate not expected to be nil in saveChild()")
+      }
       if !success {
         if let hasError = error {
           self.protectedOperationError = hasError
@@ -246,53 +252,24 @@ class FoodieObject: PFObject {  // Abstract
           DebugPrint.assert("saveChild failed but block contained no Error")
         }
       }
-      self.saveCompletionFromChild(to: location, withName: name, withBlock: callback)
+      delegateObj.saveCompletionFromChild(to: location, withName: name, withBlock: callback)
     }
   }
   
   
-  // Function to save this and all child Parse objects
+  // Function to save this object
   func saveObject(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
+    guard let delegateObj = delegate else {
+      DebugPrint.fatal("delegate not expected to be nil in saveObject()")
+    }
     switch location {
     case .local:
-      saveToLocal(withName: name, withBlock: callback)
+      delegateObj.saveToLocal(withName: name, withBlock: callback)
     case .server:
-      saveToServer(withBlock: callback)
+      delegateObj.saveToServer(withBlock: callback)
     }
   }
   
-  
-  // Function to save this and all child Parse objects to local.
-  func saveToLocal(withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
-    if let hasName = name {
-      pinInBackground(withName: hasName, block: callback)
-    } else {
-      pinInBackground(block: callback)
-    }
-  }
-  
-  
-  // Function to save this and all child Parse objects to server
-  func saveToServer(withBlock callback: BooleanErrorBlock?) {
-    saveInBackground(block: callback)
-  }
-  
-  
-  // Function to delete this and all child Parse objects from local
-  func deleteFromLocal(withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
-    if let hasName = name {
-      unpinInBackground(withName: hasName, block: callback)
-    } else {
-      unpinInBackground(block: callback)
-    }
-  }
-  
-  
-  // Function to delete this and all child Parse objects from server
-  func deleteFromServer(withBlock callback: BooleanErrorBlock?) {
-    deleteInBackground(block: callback)
-  }
-  
-  
+
   // MARK: - Private Functions
 }

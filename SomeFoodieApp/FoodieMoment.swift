@@ -9,14 +9,14 @@
 
 import Parse
 
-class FoodieMoment: FoodieObject {
+class FoodieMoment: FoodiePFObject {
   
   // MARK: - Database Schema
-  @NSManaged var media: FoodieMedia?  // A Photo or a Video
-  @NSManaged var mediaType: String  // Really an enum saying whether it's a Photo or Video
+  @NSManaged var mediaURL: String?  // URL for the media photo or video. Needs to go with the media object.
+  @NSManaged var mediaType: String?  // Really an enum saying whether it's a Photo or Video
   @NSManaged var aspectRatio: Double  // In decimal, width / height, like 16:9 = 16/9 = 1.777...
   @NSManaged var width: Int  // height = width / aspectRatio
-  @NSManaged var markup: Array<FoodieMarkup>?  // Array of PFObjects as FoodieMarkup
+  @NSManaged var markups: Array<FoodieMarkup>?  // Array of PFObjects as FoodieMarkup
   @NSManaged var tags: Array<String>?  // Array of Strings, unstructured
   @NSManaged var author: FoodieUser?  // Pointer to the user that authored this Moment
   @NSManaged var eatery: FoodieEatery?  // Pointer to the FoodieEatery object
@@ -41,7 +41,19 @@ class FoodieMoment: FoodieObject {
   }
   
   
+  // MARK: - Public Instance Variable
+  var mediaObj: FoodieMedia?
+  
+  var foodieObject = FoodieObject()
+  
+  
   // MARK: - Public Functions
+  
+  override init() {
+    super.init()
+    foodieObject.delegate = self
+  }
+  
   
   // This only sets the media portion of the Moment. Doesn't do save
   // Save should be done as the first things in the Journal Entry View, in the background
@@ -55,8 +67,7 @@ class FoodieMoment: FoodieObject {
       throw FoodieError(error: FoodieError.Code.Moment.setMediaWithPhotoJpegRepresentationFailed.rawValue, description: "Cannot create JPEG representation")
     }
     
-    //media = PFFile(data: imageData, contentType: MediaType.photo.rawValue)
-    media = "Some FoodieMediaURL"
+    mediaURL = "Some FoodieMediaURL"
     
     // Set the other image related attributes
     mediaType = MediaType.photo.rawValue
@@ -69,6 +80,63 @@ class FoodieMoment: FoodieObject {
 //    
 //  }
   
+}
+
+
+// MARK: - Foodie Object Delegate Conformance
+extension FoodieMoment: FoodieObjectDelegate {
+  
+  // Function for processing a completion from a child save
+  func saveCompletionFromChild(to location: FoodieObject.StorageLocation,
+                               withName name: String?,
+                               withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    var keepWaiting = false
+    
+    // Determine if all children are ready, if not, keep waiting.
+    if let media = mediaObj {
+      if !media.foodieObject.isSaveCompleted(to: location) { keepWaiting = true }
+    }
+    
+    if let hasMarkups = markups, !keepWaiting {
+      for markup in hasMarkups {
+        if !markup.foodieObject.isSaveCompleted(to: location) { keepWaiting = true; break }
+      }
+    }
+    
+    if !keepWaiting {
+      foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
+    }
+  }
+  
+  
+  // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
+  func saveRecursive(to location: FoodieObject.StorageLocation,
+                     withName name: String?,
+                     withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    
+    // Do state transition for this save. Early return if no save needed, or if illegal state transition
+    if let earlyReturnStatus = foodieObject.saveStateTransition(to: location) {
+      DispatchQueue.global(qos: .userInitiated).async { callback?(earlyReturnStatus, nil) }
+    }
+    
+    // Need to make sure all children FoodieRecursives saved before proceeding
+    if let media = mediaObj {
+      foodieObject.saveChild(media, to: location, withName: name, withBlock: callback)
+    }
+    
+    if let hasMarkups = markups {
+      for markup in hasMarkups {
+        foodieObject.saveChild(markup, to: location, withName: name, withBlock: callback)
+      }
+    }
+  }
+  
+  
+  // Trigger recursive saves against all child objects.
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       withName name: String?,
+                       withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  }
 }
 
  
