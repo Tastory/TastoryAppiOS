@@ -17,10 +17,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     
     // Initialize Parse.
+    Parse.enableLocalDatastore()
+    
     let configuration = ParseClientConfiguration {
       $0.applicationId = "7dwZeNccj6qrvFjNoSXJvxQ7NaZ5mlmmrumZvO6S"
       $0.clientKey = "I2iecAGe8Db3XpGjYRH7qqEuOJ8IVVCfhkKDl5uV"
       $0.server = "https://parseapi.back4app.com"
+      $0.isLocalDatastoreEnabled = true
     }
     Parse.initialize(with: configuration)
 

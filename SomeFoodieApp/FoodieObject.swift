@@ -29,6 +29,8 @@ protocol FoodieObjectDelegate: class {
   func deleteFromLocal(withName name: String?, withBlock callback: FoodieObject.BooleanErrorBlock?)
   
   func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?)
+  
+  func foodieObjectType() -> String
 }
 
 
@@ -132,7 +134,7 @@ class FoodieObject {
         
       } else if (location == .server) && (state == .savingToServer) {
         // Dial back the state
-        protectedOperationState = .savedToServer
+        protectedOperationState = .objectSynced
         
       } else {
         // Unexpected state combination
@@ -144,6 +146,9 @@ class FoodieObject {
   
   // Function when all child saves have completed
   func savesCompletedFromAllChildren(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("to Location: \(location)")
+    
     // If children all came back and there is error, unwind state and call callback
     if protectedOperationError != nil {
       saveCompleteStateTransition(to: location)
@@ -163,7 +168,7 @@ class FoodieObject {
         
         // State transition accordingly and call callback
         self.saveCompleteStateTransition(to: location)
-        callback?(false, self.protectedOperationError)
+        callback?(self.protectedOperationError == nil, self.protectedOperationError)
       }
     }
   }
@@ -213,7 +218,7 @@ class FoodieObject {
       case .objectModified:
         protectedOperationState = .savingToLocal
       default:
-        DebugPrint.assert("Illegal State Transition. Save to Local attempt not from .objectModified state.")
+        DebugPrint.assert("Illegal State Transition. Save to Local attempt not from .objectModified state. Current State = \(state)")
         return false
       }
       
@@ -225,7 +230,7 @@ class FoodieObject {
       case .savedToLocal:
         protectedOperationState = .savingToServer
       default:
-        DebugPrint.assert("Illegal State Transition. Save to Sever attempt not from .savedToLocal state.")
+        DebugPrint.assert("Illegal State Transition. Save to Sever attempt not from .savedToLocal state. Current State = \(state)")
         return false
       }
     }
@@ -239,6 +244,8 @@ class FoodieObject {
                  to location: StorageLocation,
                  withName name: String? = nil,
                  withBlock callback: BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("of Type: \(child.foodieObjectType()) to Location: \(location)")
     
     // Save Recursive for each moment. Call saveCompletionFromChild when done and without errors
     child.saveRecursive(to: location, withName: name) { [unowned self] (success, error) in
@@ -259,6 +266,9 @@ class FoodieObject {
   
   // Function to save this object
   func saveObject(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("to Location: \(location)")
+    
     guard let delegateObj = delegate else {
       DebugPrint.fatal("delegate not expected to be nil in saveObject()")
     }

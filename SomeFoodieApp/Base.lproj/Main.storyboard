@@ -409,6 +409,27 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="50" id="3yk-tP-0Df">
+                                        <rect key="frame" x="0.0" y="457" width="375" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3yk-tP-0Df" id="qUP-ce-gSk">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cGu-Cc-dGg">
+                                                    <rect key="frame" x="127" y="10" width="121" height="30"/>
+                                                    <state key="normal" title="Test Save Journal"/>
+                                                    <connections>
+                                                        <action selector="testSaveJournal:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="c6x-PA-Y3x"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="cGu-Cc-dGg" firstAttribute="centerY" secondItem="qUP-ce-gSk" secondAttribute="centerY" id="1Zy-SZ-zQR"/>
+                                                <constraint firstItem="cGu-Cc-dGg" firstAttribute="centerX" secondItem="qUP-ce-gSk" secondAttribute="centerX" id="9y7-lc-HTj"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                         </sections>
@@ -426,7 +447,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6pB-Nr-PsL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1738" y="-591"/>
+            <point key="canvasLocation" x="1736.8" y="-591.45427286356824"/>
         </scene>
         <!--Moment Collection View Controller-->
         <scene sceneID="Sf3-nA-ZH6">
