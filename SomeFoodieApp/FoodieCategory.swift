@@ -52,6 +52,11 @@ extension FoodieCategory: FoodieObjectDelegate {
                        withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
   }
+  
+  
+  func foodieObjectType() -> String {
+    return "FoodieCategory"
+  }
 }
 
 

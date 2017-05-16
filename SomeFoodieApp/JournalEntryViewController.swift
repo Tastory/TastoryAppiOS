@@ -32,6 +32,31 @@ class JournalEntryViewController: UITableViewController {
   }
   
   
+  // MARK: - IBActions
+  @IBAction func testSaveJournal(_ sender: Any) {
+    workingJournal?.saveRecursive(to: .local) { [unowned self] (success, error) in
+      if success {
+        DebugPrint.verbose("Journal Save to Local Completed!")
+        
+        self.workingJournal?.saveRecursive(to: .server) { (success, error) in
+          if success {
+            DebugPrint.verbose("Journal Save to Server Completed!")
+          } else if let error = error {
+            DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
+          } else {
+            DebugPrint.fatal("Journal Save to Server Failed without Error")
+          }
+        }
+        
+      } else if let error = error {
+        DebugPrint.verbose("Journal Save to Local Failed with Error: \(error)")
+      } else {
+        DebugPrint.fatal("Journal Save to Local Failed without Error")
+      }
+    }
+  }
+  
+  
   // MARK: - Public Instance Variable
   var workingJournal: FoodieJournal?
   
@@ -142,10 +167,13 @@ extension JournalEntryViewController {
   
   override func scrollViewDidScroll(_ scrollView: UIScrollView) {
     let currentOffset = scrollView.contentOffset.y
-    let height = ceil(Constants.mapHeight - currentOffset)
+    var height = Constants.mapHeight - currentOffset
     
     if height == 0 {
-      DebugPrint.fatal("Height cannot be value of 0")
+      DebugPrint.error("Height tried to be 0")
+      height = 1
+    } else {
+      //DebugPrint.verbose("Height = \(height)")
     }
     
     // Need to take the ceiling as a 0 height with cause a crash

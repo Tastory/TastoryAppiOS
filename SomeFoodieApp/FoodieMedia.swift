@@ -67,4 +67,8 @@ extension FoodieMedia: FoodieObjectDelegate {
   func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
   }
+  
+  func foodieObjectType() -> String {
+    return "FoodieMedia"
+  }
 }
