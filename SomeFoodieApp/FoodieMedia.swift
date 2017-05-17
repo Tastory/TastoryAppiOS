@@ -32,7 +32,9 @@ class FoodieMedia {
     
     let s3Handler: AWSS3
     let BUCKET_KEY = "foodilicious"
-    let DOCUMENT_FOLDER = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
+    let DOCUMENT_FOLDER_URL = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
+    let fileManager: FileManager
+    
     
     let transferManager: AWSS3TransferManager
     
@@ -54,13 +56,35 @@ class FoodieMedia {
         }
         s3Handler = AWSS3.default()
         transferManager = AWSS3TransferManager.default()
+        fileManager = FileManager.default
     }
-  
+    
+    func saveFileLocally(moment: FoodieMoment)
+    {
+        DispatchQueue.global(qos: .utility).async {
+            
+            let mediaURL = URL.init(string: moment.media!)!
+            var destURL = self.DOCUMENT_FOLDER_URL
+            destURL.appendPathComponent(mediaURL.lastPathComponent)
+            
+            let checSTR = destURL.absoluteString
+            do{
+                try self.fileManager.moveItem(at: mediaURL, to: destURL)
+            }catch
+            {
+                DebugPrint.assert("Failed to save media file to local Documents folder")
+            }
+            
+            // update URL reference 
+            moment.setMedia(URL: destURL)
+            self.upload(fileURL: destURL)
+        }
+    }
+    
     func deleteFileLocally(fileName: String)
     {
-       let fileManager = FileManager.default
        do {
-            try fileManager.removeItem(atPath: "\(DOCUMENT_FOLDER.path)/\(fileName)")
+            try fileManager.removeItem(atPath: "\(DOCUMENT_FOLDER_URL.path)/\(fileName)")
         }
         catch {
             print("couln't remove ")
@@ -104,7 +128,7 @@ class FoodieMedia {
     
     func download(fileName: String)
     {
-        let downloadFileURL = DOCUMENT_FOLDER.appendingPathComponent(fileName)
+        let downloadFileURL = DOCUMENT_FOLDER_URL.appendingPathComponent(fileName)
 
         let downloadRequest = AWSS3TransferManagerDownloadRequest()
         downloadRequest?.bucket = BUCKET_KEY
@@ -161,8 +185,8 @@ class FoodieMedia {
                 }
                 return nil
             }
-            
-            _ = task.result
+            // TODO might be useful to store in parse for tracking the version
+            let versionId = task.result?.versionId
             print("Upload complete for: \(String(describing: uploadRequest?.key))")
             return nil
         })

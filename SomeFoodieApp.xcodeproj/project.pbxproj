@@ -415,13 +415,13 @@
 					};
 					8CBF55931E7F7EDF00F4B1CD = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = G37J442U66;
+						DevelopmentTeam = U6CK262SK9;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 8CBF557F1E7F7EDF00F4B1CD;
 					};
 					8CBF559E1E7F7EDF00F4B1CD = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = G37J442U66;
+						DevelopmentTeam = U6CK262SK9;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 8CBF557F1E7F7EDF00F4B1CD;
 					};
@@ -837,7 +837,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = G37J442U66;
+				DEVELOPMENT_TEAM = U6CK262SK9;
 				INFOPLIST_FILE = SomeFoodieAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hci.SomeFoodieAppTests;
@@ -853,7 +853,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = G37J442U66;
+				DEVELOPMENT_TEAM = U6CK262SK9;
 				INFOPLIST_FILE = SomeFoodieAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hci.SomeFoodieAppTests;
@@ -868,7 +868,7 @@
 			baseConfigurationReference = 62F60AA88724A11053226C2C /* Pods-SomeFoodieAppUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				DEVELOPMENT_TEAM = G37J442U66;
+				DEVELOPMENT_TEAM = U6CK262SK9;
 				INFOPLIST_FILE = SomeFoodieAppUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hci.SomeFoodieAppUITests;
@@ -883,7 +883,7 @@
 			baseConfigurationReference = 051E9F9183F7DA7F59C70872 /* Pods-SomeFoodieAppUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				DEVELOPMENT_TEAM = G37J442U66;
+				DEVELOPMENT_TEAM = U6CK262SK9;
 				INFOPLIST_FILE = SomeFoodieAppUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hci.SomeFoodieAppUITests;

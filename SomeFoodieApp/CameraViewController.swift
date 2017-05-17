@@ -26,8 +26,7 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
   
   // MARK: - Private Variables
   private var crossLayer = CameraCrossLayer()
-  
-   
+
   // MARK: - IBOutlets
   @IBOutlet weak var captureButton: CameraButton?
   @IBOutlet weak var exitButton: ExitButton?
@@ -121,18 +120,36 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
 
 extension CameraViewController: SwiftyCamViewControllerDelegate {
   
-  func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake photo: UIImage) {
+  func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake image: UIImage) {
     // Called when takePhoto() is called or if a SwiftyCamButton initiates a tap gesture
     // Returns a UIImage captured from the current session
     DebugPrint.userAction("didTakePhoto") // TODO: Make photos brighter too
-    UIImageWriteToSavedPhotosAlbum(photo, nil, nil, nil)
-
-    // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-    viewController.restorationClass = nil
-    viewController.photoToMarkup = photo
-    self.present(viewController, animated: true)
+    // UIImageWriteToSavedPhotosAlbum(photo, nil, nil, nil)
+    
+    //save photo to tmp folder 
+    let imageData = UIImageJPEGRepresentation(image, 1.0)
+    let pathStr = "\(NSTemporaryDirectory())\(UUID().uuidString).jpg"
+    let imageURL = URL(fileURLWithPath: pathStr)
+    
+    DispatchQueue.global(qos: .utility).async {
+        do {
+            try imageData?.write(to: imageURL)
+        }
+        catch {
+            self.internalErrorDialog()
+            DebugPrint.assert("Can't save image into temporary folder")
+            self.captureButton?.buttonReset()
+        }
+        
+         DispatchQueue.main.async {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+            viewController.restorationClass = nil
+            viewController.mediaURL = imageURL
+            viewController.mediaType = .photo
+            self.present(viewController, animated: true)
+        }
+    }
   }
   
   
@@ -166,7 +183,8 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
       let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
       viewController.restorationClass = nil
-      viewController.videoToMarkupURL = url
+      viewController.mediaURL = url
+      viewController.mediaType = .video
       self.present(viewController, animated: true)
       
     } else {

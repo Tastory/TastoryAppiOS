@@ -21,9 +21,9 @@ class MarkupViewController: UIViewController {
   
   
   // MARK: - Public Instance Variables
-  var photoToMarkup: UIImage?
-  var videoToMarkupURL: URL?  // TODO: Video related implementations
-  
+  var mediaURL: URL?  // TODO: Video related implementations
+  var mediaType: FoodieMoment.MediaType?
+    
   var avPlayer = AVPlayer()
   var avPlayerLayer = AVPlayerLayer()
   
@@ -48,41 +48,16 @@ class MarkupViewController: UIViewController {
     
     let momentObj = FoodieMoment()
     
-    guard let photo = photoToMarkup else {
-      internalErrorDialog()
-      DebugPrint.assert("Unexpected. photoToMarkup is nil")
-      return
+    guard (mediaURL != nil) else {
+        internalErrorDialog()
+        DebugPrint.assert("mediaURL is nil")
+        return
     }
-  
-    do {  // TODO: Video related implementations
-      // Save the image as the media of the Moment
-      try momentObj.setMedia(withPhoto: photo)
-      
-    } catch let thrown as FoodieError {
-      
-      switch thrown.error {
-        
-      case FoodieError.Code.Moment.setMediaWithPhotoImageNil.rawValue:
-        internalErrorDialog()
-        DebugPrint.assert("Caught Moment.setMediaWithPhotoImageNil")
-        return
-        
-      case FoodieError.Code.Moment.setMediaWithPhotoJpegRepresentationFailed.rawValue:
-        internalErrorDialog()
-        DebugPrint.assert("Caught Moment.setMediaWithPhotoJpegRepresentationFailed")
-        return
-      
-      default:
-        internalErrorDialog()
-        DebugPrint.assert("Caught unrecognized Error: \(thrown.localizedDescription)")
-        return
-      }
-      
-    } catch let thrown {
-      internalErrorDialog()
-      DebugPrint.assert(thrown.localizedDescription)
-      return
-    }
+    
+    momentObj.setMedia(URL: mediaURL!)
+    
+    // stop player
+    avPlayer.rate = 0.0
     
 // TODO: Implement with Markup and Scrape features
 //    momentObj.markup
@@ -288,27 +263,36 @@ class MarkupViewController: UIViewController {
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
-    
     // Only one of photoToMarkup or videoToMarkupURL should be set
-    if photoToMarkup != nil && videoToMarkupURL != nil {
-      DebugPrint.assert("Both photoToMarkup and videoToMarkupURL not-nil")
+    if mediaURL == nil {
+        DebugPrint.assert("Both photoToMarkup and videoToMarkupURL not-nil")
     }
-    
+ 
     // Display the photo
-    if let photo = photoToMarkup {
+    
+    if mediaType == .photo {
+        
       photoView = UIImageView(frame: view.bounds)
       view.addSubview(photoView!)
       view.sendSubview(toBack: photoView!)
-      photoView?.image = photo
-      
+        
+      do{
+        let imageData = try Data.init(contentsOf: mediaURL!)
+        photoView?.image =   UIImage(data: imageData)
+
+      }catch{
+        DebugPrint.assert("Failed to load image from tmp folder")
+    }
+        
+        
     // Loop the video
-    } else if let videoURL = videoToMarkupURL {
+    } else if mediaType == .video {
       NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.avPlayer.currentItem, queue: .main) { (_) in
         self.avPlayer.seek(to: kCMTimeZero)
         self.avPlayer.play()
       }
-      
-      avPlayer = AVPlayer(url: videoURL)
+
+      avPlayer = AVPlayer(url: mediaURL!)
       avPlayerLayer = AVPlayerLayer(player: avPlayer)
       avPlayerLayer.frame = self.view.bounds
       view.layer.addSublayer(avPlayerLayer) // TODO: Need to move this layer to the back, it's covering the Save button
@@ -318,5 +302,6 @@ class MarkupViewController: UIViewController {
     } else {
       DebugPrint.fatal("Both photoToMarkup and videoToMarkupURL are nil")
     }
+    
   }
 }
