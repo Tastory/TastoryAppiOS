@@ -153,10 +153,11 @@ extension JournalEntryViewController {
   
   override func scrollViewDidScroll(_ scrollView: UIScrollView) {
     let currentOffset = scrollView.contentOffset.y
-    let height = ceil(Constants.mapHeight - currentOffset)
+    var height = ceil(Constants.mapHeight - currentOffset)
     
     if height == 0 {
-      DebugPrint.fatal("Height cannot be value of 0")
+      DebugPrint.error("Height cannot be value of 0")
+      height = 1
     }
     
     // Need to take the ceiling as a 0 height with cause a crash

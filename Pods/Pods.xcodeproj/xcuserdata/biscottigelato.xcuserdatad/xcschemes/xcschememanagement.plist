@@ -4,6 +4,21 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>AWSCognito.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>11</integer>
+		</dict>
+		<key>AWSCore.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>12</integer>
+		</dict>
+		<key>AWSS3.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>13</integer>
+		</dict>
 		<key>Bolts.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -98,6 +113,16 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>53C6112213829CB147F47E473C93F271</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6152A7DAF308197E2D30F14EC1CECF74</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>753FF27995C55D2E99CB98BE476D6D33</key>
 		<dict>
 			<key>primary</key>
@@ -113,7 +138,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>9F7098779713B711F6C591B62A41F242</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>A1960504EAE2A8DFE829CAA55BD41681</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C83B0F8778708382BFD09745CBCD1CBA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E0E4C5262D73BED38BBBA47CAF4E8F83</key>
 		<dict>
 			<key>primary</key>
 			<true/>
