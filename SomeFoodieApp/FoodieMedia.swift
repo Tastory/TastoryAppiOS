@@ -227,8 +227,11 @@ extension FoodieMedia: FoodieObjectDelegate {
                      withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
-    if let earlyReturnStatus = foodieObject.saveStateTransition(to: location) {
-      DispatchQueue.global(qos: .userInitiated).async { callback?(earlyReturnStatus, nil) }
+    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
+    
+    if let earlySuccess = earlyReturnStatus.success {
+      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
+      return
     }
   }
   

@@ -19,7 +19,6 @@ import AVFoundation
 
 class MarkupViewController: UIViewController {
   
-  
   // MARK: - Public Instance Variables
   var mediaURL: URL?  // TODO: Video related implementations
   var mediaType: FoodieMoment.MediaType?
@@ -37,7 +36,6 @@ class MarkupViewController: UIViewController {
   
   
   // MARK: - IBActions
-  
   @IBAction func exitSwiped(_ sender: UISwipeGestureRecognizer) {
     // TODO: Data Passback through delegate?
     dismiss(animated: true, completion: nil)
@@ -49,32 +47,35 @@ class MarkupViewController: UIViewController {
     let momentObj = FoodieMoment()
     
     guard (mediaURL != nil) else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected. photoToMarkup is nil")
+      return
+    }
+  
+    do {  // TODO: Video related implementations
+      // Save the image as the media of the Moment
+      try momentObj.setMedia(withPhoto: photo)
+      
+    } catch let thrown as FoodieMoment.ErrorCode {
+      
+      switch thrown {
+        
+      case .setMediaWithPhotoImageNil:
         internalErrorDialog()
         DebugPrint.assert("mediaURL is nil")
         return
+        
+      case .setMediaWithPhotoJpegRepresentationFailed:
+        internalErrorDialog()
+        DebugPrint.assert("Caught Moment.setMediaWithPhotoJpegRepresentationFailed")
+        return
+      }
+      
+    } catch let thrown {
+      internalErrorDialog()
+      DebugPrint.assert("Caught unrecognized error: \(thrown.localizedDescription)")
+      return
     }
-    
-    momentObj.setMedia(URL: mediaURL!)
-    
-    // stop player
-    avPlayer.rate = 0.0
-    
-// TODO: Implement with Markup and Scrape features
-//    momentObj.markup
-//    momentObj.tags
-//    
-// TODO: Implement along with User Login
-//    momentObj.author
-//    
-// TODO: Implement along with Foursquare integration
-//    momentObj.eatery
-//    momentObj.categories
-//    momentObj.type
-//    momentObj.attribute
-//    
-// TODO: Impelemnt with display views
-//    momentObj.views
-//    momentObj.clickthroughs
     
     if FoodieJournal.currentJournal != nil {
       // Display Action Sheet to ask user if they want to add this Moment to current Journal, or a new one, or Cancel
@@ -103,9 +104,9 @@ class MarkupViewController: UIViewController {
               return
             }
           }
-          catch let thrown as FoodieError {
+          catch let thrown as FoodieJournal.ErrorCode {
             weakSelf?.internalErrorDialog()
-            DebugPrint.assert("Caught FoodieError.Journal from .newCurrentSync(): \(thrown.localizedDescription)")
+            DebugPrint.assert("Caught FoodieJournal.Error from .newCurrentSync(): \(thrown.localizedDescription)")
             return
           }
           catch let thrown {
@@ -217,7 +218,7 @@ class MarkupViewController: UIViewController {
   }
   
   
-  // MARK: - Class Private Functions
+  // MARK: - Private Instance Functions
   
   // Generic error dialogue box to the user on internal errors
   private func internalErrorDialog() {

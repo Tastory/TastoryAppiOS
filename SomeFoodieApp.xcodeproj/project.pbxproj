@@ -22,10 +22,7 @@
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
 		8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */; };
 		8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */; };
-		8C61BCDA1E9857F500DDF248 /* ErrorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCD91E9857F500DDF248 /* ErrorModel.swift */; };
 		8C61BCDC1E985D1300DDF248 /* DebugPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */; };
-		8C6A96971E98435D00B8C309 /* FoodieError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C6A96961E98435D00B8C309 /* FoodieError.swift */; };
-		8C89866E1E9189F500B62306 /* MyClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89866D1E9189F500B62306 /* MyClass.swift */; };
 		8C8986701E91981C00B62306 /* FoodieMarkup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89866F1E91981C00B62306 /* FoodieMarkup.swift */; };
 		8C8986721E91982E00B62306 /* FoodieJournal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986711E91982E00B62306 /* FoodieJournal.swift */; };
 		8C8986741E91985700B62306 /* FoodieEatery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986731E91985700B62306 /* FoodieEatery.swift */; };
@@ -92,10 +89,7 @@
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButton.swift; path = SomeFoodieApp/CameraButton.swift; sourceTree = "<group>"; };
 		8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MKCoordinateSpan+Extensions.swift"; sourceTree = "<group>"; };
 		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
-		8C61BCD91E9857F500DDF248 /* ErrorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorModel.swift; sourceTree = "<group>"; };
 		8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugPrint.swift; sourceTree = "<group>"; };
-		8C6A96961E98435D00B8C309 /* FoodieError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieError.swift; sourceTree = "<group>"; };
-		8C89866D1E9189F500B62306 /* MyClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyClass.swift; sourceTree = "<group>"; };
 		8C89866F1E91981C00B62306 /* FoodieMarkup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMarkup.swift; sourceTree = "<group>"; };
 		8C8986711E91982E00B62306 /* FoodieJournal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieJournal.swift; sourceTree = "<group>"; };
 		8C8986731E91985700B62306 /* FoodieEatery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieEatery.swift; sourceTree = "<group>"; };
@@ -186,8 +180,6 @@
 		8C9AD05A1E8F60E4005F337E /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				8C61BCD91E9857F500DDF248 /* ErrorModel.swift */,
-				8C6A96961E98435D00B8C309 /* FoodieError.swift */,
 				8C89867D1E958B4300B62306 /* FoodieObject.swift */,
 				8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */,
 				8C8986711E91982E00B62306 /* FoodieJournal.swift */,
@@ -198,7 +190,6 @@
 				8C0590501EC7E6A400027E91 /* FoodieMedia.swift */,
 				8C8986791E933E2E00B62306 /* FoodieUser.swift */,
 				8C8986771E91DC5800B62306 /* FoodieHistory.swift */,
-				8C89866D1E9189F500B62306 /* MyClass.swift */,
 				C25746BE1EC0C79F0098A45C /* FoodieMedia.swift */,
 			);
 			name = Models;
@@ -623,7 +614,6 @@
 				8C1089311EADC11B00457E66 /* MomentHeaderReusableView.swift in Sources */,
 				8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */,
 				8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */,
-				8C89866E1E9189F500B62306 /* MyClass.swift in Sources */,
 				8C8986741E91985700B62306 /* FoodieEatery.swift in Sources */,
 				8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */,
 				8C0590471EC653DF00027E91 /* DiscoverViewController.swift in Sources */,
@@ -643,12 +633,10 @@
 				8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */,
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extensions.swift in Sources */,
-				8C61BCDA1E9857F500DDF248 /* ErrorModel.swift in Sources */,
 				8C1089351EAFF18300457E66 /* AddMomentLayer.swift in Sources */,
 				C24F69671EB85DF300A0DB7B /* PlayerView.swift in Sources */,
 				8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */,
 				8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */,
-				8C6A96971E98435D00B8C309 /* FoodieError.swift in Sources */,
 				8C9AD0631E8F615D005F337E /* CameraButtonRingLayer.swift in Sources */,
 				8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */,
 				8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */,

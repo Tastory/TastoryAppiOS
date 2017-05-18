@@ -51,21 +51,45 @@ class FoodieJournal: FoodiePFObject {
   // Date created vs Date updated is given for free
   
   
-  // MARK: - Public Instance Variable
-  var thumbnailObj: FoodieMedia?
-
-  var foodieObject = FoodieObject()
+  // MARK: - Types & Enumerations
+  enum FoodieJournalError: LocalizedError {
+    case saveSyncParseRethrowGeneric
+  }
   
   
-  // MARK: - Internal Static Variable
+  // MARK: Error Types Definition
+  enum ErrorCode: LocalizedError {
+    
+    case saveSyncFailedWithNoError
+    
+    var errorDescription: String? {
+      switch self {
+      case .saveSyncFailedWithNoError:
+        return NSLocalizedString("saveSync Failed, but no Error was returned from saveRecursive", comment: "Error description for an exception error code")
+      }
+    }
+    
+    init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
+      self = errorCode
+      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+    }
+  }
+  
+  
+  // MARK: - Public Static Variables
   static var currentJournal: FoodieJournal? { return currentJournalPrivate }
   
   
-  // MARK: - Private Static Variable
+  // MARK: - Private Static Variables
   private static var currentJournalPrivate: FoodieJournal?
   
   
-  // MARK: - Internal Static Functions
+  // MARK: - Public Instance Variables
+  var thumbnailObj: FoodieMedia?
+  var foodieObject = FoodieObject()
+  
+
+  // MARK: - Public Static Functions
   
   // Function to create a new FoodieJournal as the current Journal. Will assert if there already is a current Journal
   static func newCurrent() -> FoodieJournal {
@@ -105,13 +129,11 @@ class FoodieJournal: FoodiePFObject {
   // Asynchronous version of creating a new Current Journal
   static func newCurrentAsync(saveCurrent: Bool, saveCallback: ((Bool, Error?) -> Void)?)  -> FoodieJournal? {
     if saveCurrent {
-      
       // If anything fails here report failure up to Controller layer and let Controller handle
       guard let callback = saveCallback else {
         DebugPrint.assert("nil errorCallback on Journal Save when trying to create a new current Journal")
         return nil
       }
-      
       guard let current = currentJournalPrivate else {
         DebugPrint.assert("nil currentJournalPrivate on Journal Save when trying ot create a new current Journal")
         return nil
@@ -121,47 +143,76 @@ class FoodieJournal: FoodiePFObject {
       current.saveAsync(callback: callback)
       
     } else if currentJournalPrivate != nil {
-      
       DebugPrint.log("Current Journal being overwritten without Save")
-      
     } else {
-      
       DebugPrint.assert("Use .newCurrent() without Save instead")  // Only barfs at development time. Continues on Production...
     }
-    
     currentJournalPrivate = FoodieJournal()
     return currentJournalPrivate
   }
   
   
-  // MARK: - Internal Instance Functions
-  
+  // MARK: - Public Instance Functions
   override init() {
     super.init()
     foodieObject.delegate = self
   }
   
+  
   // Function to save Journal. Block until complete
   func saveSync() throws {
     
-    // TODO: Complex algorithm to ensure that all the attached Moments have been saved.
-    do {
-      try self.save()
+    var block = true
+    var blockError: Error? = nil
+    var blockSuccess = false
+    var blockWait = 0
+    
+    saveRecursive(to: .local) { [unowned self] (success, error) in
+      if success {
+        self.saveRecursive(to: .server) { (success, error) in
+          if success {
+            block = false
+            blockSuccess = true
+            blockError = nil
+          } else {
+            block = false
+            blockSuccess = false
+            blockError = error
+          }
+        }
+      } else {
+        block = false
+        blockSuccess = false
+        blockError = error
+      }
     }
-    catch let thrown {
-      // TODO: This rethrow is ugly as sh_t...
-      let error = thrown as NSError
-      let foodieErrorCode = FoodieError.Code.Journal.saveSyncParseRethrowGeneric.rawValue | error.code
-      throw FoodieError(error: foodieErrorCode, description: error.localizedDescription)
+    
+    while block {
+      sleep(1)
+      blockWait = blockWait + 1
     }
+  
+    DebugPrint.verbose("saveSync Completed. Save took \(blockWait) seconds")
+  
+    if let error = blockError {
+      throw error
+    } else if blockSuccess != true {
+      throw ErrorCode(.saveSyncFailedWithNoError)
+    }
+    
+    return
   }
 
   
   // Function to save Journal in background
   func saveAsync(callback: ((Bool, Error?) -> Void)?) {
-    
-    // TODO: Complex algorithm to ensure that all the attached Moments have been saved.
-    self.saveInBackground(block: callback)
+    saveRecursive(to: .local) { [unowned self] (success, error) in
+      if success {
+        self.saveRecursive(to: .server, withBlock: callback)
+      } else {
+        callback?(false, error)
+      }
+    }
   }
   
 
@@ -252,8 +303,10 @@ extension FoodieJournal: FoodieObjectDelegate {
     DebugPrint.verbose("to Location: \(location)")
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
-    if let earlyReturnStatus = foodieObject.saveStateTransition(to: location) {
-      DispatchQueue.global(qos: .userInitiated).async { callback?(earlyReturnStatus, nil) }
+    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
+    
+    if let earlySuccess = earlyReturnStatus.success {
+      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
       return
     }
     

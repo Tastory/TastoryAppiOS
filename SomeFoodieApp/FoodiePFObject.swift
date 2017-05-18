@@ -9,8 +9,12 @@
 import Parse
 import Foundation
 
+
+// Abstract Class for Foodie Objects based on PFObject
 class FoodiePFObject: PFObject {
 
+  // MARK: - Public Instance Functions
+  
   // Function to save this and all child Parse objects to local.
   func saveToLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     DebugPrint.verbose("")
