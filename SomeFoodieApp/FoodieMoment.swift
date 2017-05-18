@@ -166,6 +166,86 @@ extension FoodieMoment: FoodieObjectDelegate {
   }
 }
 
+
+// MARK: - Foodie Object Delegate Conformance
+extension FoodieMoment: FoodieObjectDelegate {
+  
+  // Function for processing a completion from a child save
+  func saveCompletionFromChild(to location: FoodieObject.StorageLocation,
+                               withName name: String?,
+                               withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("to Location: \(location)")
+    
+    var keepWaiting = false
+    
+    // Determine if all children are ready, if not, keep waiting.
+    if let media = mediaObj {
+      if !media.foodieObject.isSaveCompleted(to: location) { keepWaiting = true }
+    }
+    
+    if let hasMarkups = markups, !keepWaiting {
+      for markup in hasMarkups {
+        if !markup.foodieObject.isSaveCompleted(to: location) { keepWaiting = true; break }
+      }
+    }
+    
+    if !keepWaiting {
+      foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
+    }
+  }
+  
+  
+  // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
+  func saveRecursive(to location: FoodieObject.StorageLocation,
+                     withName name: String? = nil,
+                     withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("to Location: \(location)")
+    
+    // Do state transition for this save. Early return if no save needed, or if illegal state transition
+    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
+    
+    if let earlySuccess = earlyReturnStatus.success {
+      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
+      return
+    }
+    
+    var childOperationPending = false
+    
+    // Need to make sure all children FoodieRecursives saved before proceeding
+    if let media = mediaObj {
+      foodieObject.saveChild(media, to: location, withName: name, withBlock: callback)
+      childOperationPending = true
+    }
+    
+    if let hasMarkups = markups {
+      for markup in hasMarkups {
+        foodieObject.saveChild(markup, to: location, withName: name, withBlock: callback)
+        childOperationPending = true
+      }
+    }
+    
+    if !childOperationPending {
+      DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+        self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
+      }
+    }
+  }
+  
+  
+  // Trigger recursive saves against all child objects.
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       withName name: String? = nil,
+                       withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  }
+  
+  
+  func foodieObjectType() -> String {
+    return "FoodieMoment"
+  }
+}
+
  
 extension FoodieMoment: PFSubclassing {
   static func parseClassName() -> String {
