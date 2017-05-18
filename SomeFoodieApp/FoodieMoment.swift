@@ -11,7 +11,8 @@ import Parse
 
 class FoodieMoment: FoodiePFObject {
   
-  // MARK: - Database Schema
+  // MARK: - Parse PFObject keys
+  // If new objects or external types are added here, check if save and delete algorithms needs updating
   @NSManaged var mediaURL: String?  // URL for the media photo or video. Needs to go with the media object.
   @NSManaged var mediaType: String?  // Really an enum saying whether it's a Photo or Video
   @NSManaged var aspectRatio: Double  // In decimal, width / height, like 16:9 = 16/9 = 1.777...
@@ -25,12 +26,36 @@ class FoodieMoment: FoodiePFObject {
   @NSManaged var attribute: String?  // Attribute related to the type. Eg. Dish name, Optional
   @NSManaged var views: Int  // How many times have this Moment been viewed
   @NSManaged var clickthroughs: Int  // How many times have this been clicked through to the next
+  
   // Date created vs Date updated is given for free
   
   
+  // MARK: - Types & Enums
   enum MediaType: String {
     case photo = "image/jpeg"
     case video = "video/mp4"
+  }
+  
+  
+  // MARK: Error Types Definition
+  enum ErrorCode: LocalizedError {
+    
+    case setMediaWithPhotoImageNil
+    case setMediaWithPhotoJpegRepresentationFailed
+    
+    var errorDescription: String? {
+      switch self {
+      case .setMediaWithPhotoImageNil:
+        return NSLocalizedString("setMedia failed, photoImage = nil", comment: "Error description for an exception error code")
+      case .setMediaWithPhotoJpegRepresentationFailed:
+        return NSLocalizedString("setMedia failed, cannot create JPEG representation", comment: "Error description for an exception error code")
+      }
+    }
+    
+    init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
+      self = errorCode
+      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+    }
   }
   
   
@@ -60,11 +85,11 @@ class FoodieMoment: FoodiePFObject {
   func setMedia(withPhoto photoImage: UIImage?) throws {
     
     guard let image = photoImage else {
-      throw FoodieError(error: FoodieError.Code.Moment.setMediaWithPhotoImageNil.rawValue, description: "Unexpected. photoImage = nil")
+      throw ErrorCode(.setMediaWithPhotoImageNil)
     }
     
     guard let imageData = UIImageJPEGRepresentation(image, Constants.jpegCompressionQuality) else {
-      throw FoodieError(error: FoodieError.Code.Moment.setMediaWithPhotoJpegRepresentationFailed.rawValue, description: "Cannot create JPEG representation")
+      throw ErrorCode(.setMediaWithPhotoJpegRepresentationFailed)
     }
     
     mediaURL = "Some FoodieMediaURL"
@@ -120,8 +145,11 @@ extension FoodieMoment: FoodieObjectDelegate {
     DebugPrint.verbose("to Location: \(location)")
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
-    if let earlyReturnStatus = foodieObject.saveStateTransition(to: location) {
-      DispatchQueue.global(qos: .userInitiated).async { callback?(earlyReturnStatus, nil) }
+    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
+    
+    if let earlySuccess = earlyReturnStatus.success {
+      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
+      return
     }
     
     var childOperationPending = false

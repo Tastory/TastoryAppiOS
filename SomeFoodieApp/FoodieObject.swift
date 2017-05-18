@@ -39,20 +39,20 @@ class FoodieObject {
   // MARK: - Types & Enumerations
   typealias BooleanErrorBlock = (Bool, Error?) -> Void
   
-  enum OperationStates: Int {
-    case objectSynced       = 0
-    case objectModified     = 1
-    case savingToLocal      = 2
-    case savedToLocal       = 3
-    case savingToServer     = 4
-    case savedToServer      = 5  // Goes back to Synced
-    case saveError          = 9  // Are we really going to use this?
-    case pendingDelete      = 11
-    case deletingFromLocal  = 12
-    case deletedFromLocal   = 13
-    case deletingFromServer = 14
-    case deletedFromServer  = 15  // Goes back to Synced
-    case deleteError        = 19  // Are we really going to use this?
+  enum OperationStates {
+    case objectSynced
+    case objectModified
+    case savingToLocal
+    case savedToLocal
+    case savingToServer
+    case savedToServer
+    case saveError
+    case pendingDelete
+    case deletingFromLocal
+    case deletedFromLocal
+    case deletingFromServer
+    case deletedFromServer
+    case deleteError
   }
   
   enum StorageLocation {
@@ -61,24 +61,49 @@ class FoodieObject {
   }
   
   
-  // MARK: - Public Variables
+  // MARK: Error Types Definition
+  enum ErrorCode: LocalizedError {
+    
+    case saveStateTransitionNoState
+    case saveStateTransitionSaveAlreadyInProgress
+    case saveStateTransitionIllegalStateTransition
+    
+    var errorDescription: String? {
+      switch self {
+      case .saveStateTransitionNoState:
+        return NSLocalizedString("Save error as Foodie Object has no state", comment: "Error description for an exception error code")
+      case .saveStateTransitionSaveAlreadyInProgress:
+        return NSLocalizedString("Save error as save already in progress for Foodie Object", comment: "Error description for an exception error code")
+      case .saveStateTransitionIllegalStateTransition:
+        return NSLocalizedString("Save error due to illegal state transition", comment: "Error description for an exception error code")
+      }
+    }
+  
+    init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
+      self = errorCode
+      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+    }
+  }
+  
+  
+  // MARK: - Public Instance Variables
   weak var delegate: FoodieObjectDelegate?
   var operationState: OperationStates? { return protectedOperationState }
   var operationError: Error? { return protectedOperationError }
   
   
-  // MARK: - Private Variables
+  // MARK: - Private Instance Variables
   fileprivate var protectedOperationState: OperationStates?  // nil if Undetermined
   fileprivate var protectedOperationError: Error?  // Need specific Error object class?
   
   
-  // MARK: - Public Functions
-  
+  // MARK: - Public Instance Functions
   init() {
     protectedOperationState = .objectModified
     protectedOperationError = nil
     delegate = nil
   }
+  
   
   init(delegateObject: FoodieObjectDelegate) {
     protectedOperationState = .objectModified
@@ -91,11 +116,11 @@ class FoodieObject {
   func markModified() -> Bool {
     
     // Allowed to modify as long as not from one of the delete states
-    if let currentState = protectedOperationState {
-      if currentState.rawValue > 10 {
-        return false
-      }
-    }
+//    if let currentState = protectedOperationState {
+//      if currentState.rawValue > 10 {
+//        return false
+//      }
+//    }
     protectedOperationState = .objectModified
     return true
   }
@@ -201,41 +226,50 @@ class FoodieObject {
   
   
   // Function for state transition at the beginning of saveRecursive
-  func saveStateTransition(to location: StorageLocation) -> Bool? {
+  func saveStateTransition(to location: StorageLocation) -> (success: Bool?, error: LocalizedError?) {
     
     guard let state = protectedOperationState else {
       DebugPrint.assert("Valid operationState expected to perform Save")
-      return false
+      return (false, ErrorCode(.saveStateTransitionNoState))
     }
     
     // Is save even allowed? Return false here if illegal state transition. Otherwise do state transition
+    switch state {
+    case .savingToLocal, .savingToServer:
+      // Save already occuring, another save not allowed
+      return (false, ErrorCode(.saveStateTransitionSaveAlreadyInProgress))
+    default:
+      break
+    }
+    
+    // Location dependent state transitions
     switch location {
     case .local:
       switch state {
       case .objectSynced:
         // No child object needs saving. Callback success in background
-        return true
+        return (true, nil)
       case .objectModified:
         protectedOperationState = .savingToLocal
       default:
         DebugPrint.assert("Illegal State Transition. Save to Local attempt not from .objectModified state. Current State = \(state)")
-        return false
+        return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
       }
       
     case .server:
       switch state {
       case .objectSynced:
         // No child object needs saving. Callback success in background
-        return true
+        return (true, nil)
       case .savedToLocal:
         protectedOperationState = .savingToServer
       default:
         DebugPrint.assert("Illegal State Transition. Save to Sever attempt not from .savedToLocal state. Current State = \(state)")
-        return false
+        return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
       }
     }
     
-    return nil
+    return (nil, nil)
   }
   
   
@@ -281,5 +315,4 @@ class FoodieObject {
   }
   
 
-  // MARK: - Private Functions
 }
