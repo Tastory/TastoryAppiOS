@@ -16,6 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     
+    // Create S3 Manager singleton
+    FoodieS3.manager = FoodieS3()
+    
     // Initialize Parse.
     Parse.enableLocalDatastore()
     

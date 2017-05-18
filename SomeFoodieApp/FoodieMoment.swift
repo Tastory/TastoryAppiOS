@@ -68,7 +68,6 @@ class FoodieMoment: FoodiePFObject {
   
   // MARK: - Public Instance Variable
   var mediaObj: FoodieMedia?
-  
   var foodieObject = FoodieObject()
   
   
@@ -83,6 +82,7 @@ class FoodieMoment: FoodiePFObject {
   // Save should be done as the first things in the Journal Entry View, in the background
   func setMedia(url: URL) {
     mediaURL = url.absoluteString
+    mediaObj = FoodieMedia(with: mediaURL!)
   }
 }
 

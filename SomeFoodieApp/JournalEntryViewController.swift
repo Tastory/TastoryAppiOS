@@ -58,11 +58,10 @@ class JournalEntryViewController: UITableViewController {
   
   
   @IBAction func UploadS3(_ sender: Any) {
-    let media = FoodieMedia()
     
     for moment in (workingJournal?.moments)!
     {
-      media.saveFileLocally(moment: moment)
+      FoodieS3.manager.saveFileLocally(moment: moment)
     }
   }
   
