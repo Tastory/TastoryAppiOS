@@ -46,15 +46,15 @@ class MarkupViewController: UIViewController {
     
     let momentObj = FoodieMoment()
     
-    guard (mediaURL != nil) else {
+    guard let url = mediaURL else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected. photoToMarkup is nil")
+      DebugPrint.assert("Unexpected. mediaURL is nil")
       return
     }
   
     do {  // TODO: Video related implementations
       // Save the image as the media of the Moment
-      try momentObj.setMedia(withPhoto: photo)
+      try momentObj.setMedia(url: url)
       
     } catch let thrown as FoodieMoment.ErrorCode {
       

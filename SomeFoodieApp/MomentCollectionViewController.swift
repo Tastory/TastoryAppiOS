@@ -88,7 +88,7 @@ extension MomentCollectionViewController {
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath) as! MomentCollectionViewCell
 
-    guard let momentArray = workingJournal.moments as? [FoodieMoment] else {
+    guard let momentArray = workingJournal.moments else {
       DebugPrint.assert("No moment for cell position")
       return cell
     }

@@ -13,10 +13,9 @@
 
 import UIKit
 import MapKit
-import AWSS3
 
 class JournalEntryViewController: UITableViewController {
-
+  
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var venueTextField: UITextField?
@@ -58,6 +57,16 @@ class JournalEntryViewController: UITableViewController {
   }
   
   
+  @IBAction func UploadS3(_ sender: Any) {
+    let media = FoodieMedia()
+    
+    for moment in (workingJournal?.moments)!
+    {
+      media.saveFileLocally(moment: moment)
+    }
+  }
+  
+  
   // MARK: - Public Instance Variable
   var workingJournal: FoodieJournal?
   
@@ -72,7 +81,7 @@ class JournalEntryViewController: UITableViewController {
   // MARK: - Private Instance Constants
   fileprivate let sectionOneView = UIView()
   fileprivate let mapView = MKMapView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: Constants.mapHeight))
-
+  
   
   // MARK: - Private Instance Variables
   fileprivate var placeholderLabel = UILabel()
@@ -84,7 +93,7 @@ class JournalEntryViewController: UITableViewController {
     super.viewDidLoad()
     
     sectionOneView.addSubview(mapView)
-
+    
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
     
@@ -115,16 +124,6 @@ class JournalEntryViewController: UITableViewController {
     
     titleTextField?.text = journalUnwrapped.title
   }
-    
-    @IBAction func UploadS3(_ sender: Any) {
-        let media = FoodieMedia()
-        
-        for moment in (workingJournal?.moments)!
-        {
-            let foodieMoment = moment as! FoodieMoment
-            media.saveFileLocally(moment: foodieMoment)
-        }
-     }
 }
 
 
@@ -134,7 +133,7 @@ extension JournalEntryViewController {
   func keyboardDismiss() {
     self.view.endEditing(true)
   }
-
+  
   func vcDismiss() {
     // TODO: Data Passback through delegate?
     dismiss(animated: true, completion: nil)
