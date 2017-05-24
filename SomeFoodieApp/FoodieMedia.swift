@@ -3,22 +3,36 @@
 //  SomeFoodieApp
 //
 //  Created by Victor Tsang on 2017-05-08.
-//  Copyright © 2017 Howard's Creative Innovations. All rights reserved.
+//  Copyright © 2017 SomeFoodieCompany. All rights reserved.
 //
 
 import Foundation
 
 
-class FoodieMedia {
- 
+class FoodieMedia: FoodieS3Object {
+  
   // MARK: - Public Instance Variable
   var foodieObject = FoodieObject()
-  var mediaUrlString: String?
+  var imageMemoryBuffer: Data?
+  var videoLocalBufferUrl: URL?
+  
+  
+  // MARK: - Private Instance Variable
+  var mediaFileName: String?
+  var mediaType: FoodieMediaType?
+
   
   // MARK: - Public Instance Function
-  init(with urlString: String) {
+  override init() {
+    super.init()
     foodieObject.delegate = self
-    mediaUrlString = urlString
+  }
+  
+  init(fileName: String, type: FoodieMediaType) {
+    super.init()
+    foodieObject.delegate = self
+    mediaFileName = fileName
+    mediaType = type
   }
 }
 
@@ -48,30 +62,18 @@ extension FoodieMedia: FoodieObjectDelegate {
       return
     }
     
-    
+    DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+      self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
+    }
   }
   
-  func saveToLocal(withName name: String?, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-  }
-  
-  func saveToServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    
-  }
-  
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
   }
-  
-  func deleteFromLocal(withName name: String?, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    
-  }
-  
-  func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    
-  }
+
   
   func foodieObjectType() -> String {
     return "FoodieMedia"

@@ -45,6 +45,7 @@ class MomentCollectionViewController: UICollectionViewController {
     }
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = false
+    self.automaticallyAdjustsScrollViewInsets = false
 
     collectionViewUnwrapped.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
@@ -54,7 +55,7 @@ class MomentCollectionViewController: UICollectionViewController {
 
     // Setup the Moment Colleciton Layout
     let layout = collectionViewLayout as! MomentCollectionLayout
-    layout.minimumLineSpacing = Constants.interitemSpacing
+    layout.minimumLineSpacing = 0 //Constants.interitemSpacing
     layout.minimumInteritemSpacing = Constants.interitemSpacing
     layout.headerReferenceSize = CGSize(width: 1, height: momentHeightUnwrapped)
     layout.footerReferenceSize = momentSizeDefault
@@ -63,6 +64,7 @@ class MomentCollectionViewController: UICollectionViewController {
     layout.sectionInset = UIEdgeInsets(top: 0, left: Constants.interitemSpacing,
                                        bottom: 0, right: Constants.interitemSpacing)
     layout.maximumHeaderStretchWidth = momentWidthDefault
+    
   }
 }
 
@@ -87,52 +89,64 @@ extension MomentCollectionViewController {
 
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath) as! MomentCollectionViewCell
-
+    
     guard let momentArray = workingJournal.moments else {
-      DebugPrint.assert("No moment for cell position")
+      DebugPrint.log("No Moments for workingJournal")
       return cell
     }
-
+    
+    if indexPath.row >= momentArray.count {
+      DebugPrint.assert("indexPath.row >= momentArray.count")
+      return cell
+    }
+    
     let moment = momentArray[indexPath.row]
-
-    // moment.fetchIfNeededInBackground { (object, error) in
-    //
-    //   if let err = error {
-    //     DebugPrint.fatal("Error fetching moment: \(err)")
-    //   }
-    //
-    //   guard let moment = object as? FoodieMoment else {
-    //     DebugPrint.fatal("fetched Object is not a FoodieMoment")
-    //   }
-    //
-    //   guard let file = moment.media else {
-    //     DebugPrint.fatal("Moment Media is nil")
-    //   }
-    //   
-    //   file.getDataInBackground { (data, error) in
-    //
-    //     if let err = error {
-    //       DebugPrint.fatal("Error getting media data: \(err)")
-    //     }
-    //
-    //     guard let imageData = data else {
-    //       DebugPrint.fatal("nil data obtained from media file")
-    //     }
-    //
-    //     if let image = UIImage(data: imageData) {
-    //
-    //       if let currentCell = collectionView.cellForItem(at: indexPath) as? MomentCollectionViewCell {
-    //         currentCell.momentButton.setImage(image, for: .normal)
-    //       } else {
-    //         DebugPrint.log("MomentCollectionViewCell not visible or indexPath is out of range")
-    //       }
-    //
-    //     } else {
-    //       DebugPrint.fatal("Error getting image from image data")
-    //     }
-    //   }
-    // }
-
+    
+    // TODO: Download the moment if not in memory
+//    moment.fetchIfNeededInBackground { (object, error) in
+//      
+//      if let err = error {
+//        DebugPrint.fatal("Error fetching moment: \(err)")
+//      }
+//      
+//      guard let moment = object as? FoodieMoment else {
+//        DebugPrint.fatal("fetched Object is not a FoodieMoment")
+//      }
+//      
+//      guard let file = moment.media else {
+//        DebugPrint.fatal("Moment Media is nil")
+//      }
+//      
+//      file.getDataInBackground { (data, error) in
+//        
+//        if let err = error {
+//          DebugPrint.fatal("Error getting media data: \(err)")
+//        }
+//        
+//        guard let imageData = data else {
+//          DebugPrint.fatal("nil data obtained from media file")
+//        }
+//        
+//        if let image = UIImage(data: imageData) {
+//          
+//          if let currentCell = collectionView.cellForItem(at: indexPath) as? MomentCollectionViewCell {
+//            currentCell.momentButton.setImage(image, for: .normal)
+//          } else {
+//            DebugPrint.log("MomentCollectionViewCell not visible or indexPath is out of range")
+//          }
+//          
+//        } else {
+//          DebugPrint.fatal("Error getting image from image data")
+//        }
+//      }
+//    }
+    
+    // TODO: Download the thumbnail if not in memory
+    
+    let thumbnail = UIImage(data: moment.thumbnailObject!.imageMemoryBuffer!)
+    
+    cell.momentButton.setImage(thumbnail, for: .normal)
+  
     return cell
   }
 
@@ -156,5 +170,39 @@ extension MomentCollectionViewController {
 
 // MARK: - Collection View Flow Layout Delegate
 extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    
+    guard let momentArray = workingJournal.moments else {
+      DebugPrint.log("No Moments for workingJournal")
+      return momentSizeDefault
+    }
+    
+    if indexPath.row >= momentArray.count {
+      DebugPrint.assert("indexPath.row >= momentArray.count")
+      return momentSizeDefault
+    }
+    
+    let moment = momentArray[indexPath.row]
+    
+//    guard let thumbnailObject = moment.thumbnailObject else {
+//      DebugPrint.assert("Unexpected, moment.thumbnailObject == nil")
+//      return momentSizeDefault
+//    }
+    
 
+    let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
+    
+    DebugPrint.verbose("Layout Section Inset: \(flowLayout.sectionInset)")
+    DebugPrint.verbose("Layout Minimum Line Spacing: \(flowLayout.minimumLineSpacing)")
+    DebugPrint.verbose("Layout Minimum Interitem Spacing: \(flowLayout.minimumInteritemSpacing)")
+    DebugPrint.verbose("CollectionView Content Size:\(collectionView.contentSize)")
+    DebugPrint.verbose("CollectionView Content Inset: \(collectionView.contentInset)")
+    
+    let height = min(momentHeight!, collectionView.contentSize.height)
+
+    DebugPrint.verbose("Returning height of sizeForItemAt row \(indexPath.row) to be \(height)")
+    
+    return CGSize(width: height-1/CGFloat(moment.aspectRatio), height: height-1)
+  }
 }

@@ -14,7 +14,7 @@ class FoodieJournal: FoodiePFObject {
   // MARK: - Parse PFObject keys
   // If new objects or external types are added here, check if save and delete algorithms needs updating
   @NSManaged var moments: Array<FoodieMoment>? // A FoodieMoment Photo or Video
-  @NSManaged var thumbnailURL: String? // URL for the thumbnail media. Needs to go with the thumbnail object.
+  @NSManaged var thumbnailFileName: String? // URL for the thumbnail media. Needs to go with the thumbnail object.
   @NSManaged var type: Int // Really enum for the thumbnail type. Allow videos in the future?
   @NSManaged var aspectRatio: Double
   @NSManaged var width: Int

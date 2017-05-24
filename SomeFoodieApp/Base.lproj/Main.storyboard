@@ -410,7 +410,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="50" id="3yk-tP-0Df">
-                                        <rect key="frame" x="0.0" y="457" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="500.5" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3yk-tP-0Df" id="qUP-ce-gSk">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
@@ -471,8 +471,8 @@
                                     <rect key="frame" x="0.0" y="0.0" width="100" height="180"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="znA-BN-xwr">
-                                            <rect key="frame" x="-145" y="0.0" width="377" height="240"/>
+                                        <button opaque="NO" contentMode="scaleAspectFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="znA-BN-xwr">
+                                            <rect key="frame" x="5" y="5" width="90" height="170"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <color key="tintColor" red="0.9169090741" green="0.0" blue="0.09406216178" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </button>
@@ -501,7 +501,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BGe-7r-hOK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2367" y="-693"/>
+            <point key="canvasLocation" x="2365.5999999999999" y="-693.55322338830592"/>
         </scene>
     </scenes>
 </document>

@@ -13,28 +13,50 @@ class FoodieMoment: FoodiePFObject {
   
   // MARK: - Parse PFObject keys
   // If new objects or external types are added here, check if save and delete algorithms needs updating
-  @NSManaged var mediaURL: String?  // URL for the media photo or video. Needs to go with the media object.
-  @NSManaged var mediaType: String?  // Really an enum saying whether it's a Photo or Video
+  @NSManaged var mediaFileName: String?  //{  // File name for the media photo or video. Needs to go with the media object.
+    
+    // Manual implementation of @NSManaged to link the associated FoodieMedia instance with this Parse property
+//    get {
+//      return self["mediaFileName"] as? String
+//    }
+//    
+//    set {
+//      mediaObject = setKvoMedia(fileNameKey: "mediaFileName", mediaTypeKey: "mediaType", newFileName: newValue, mediaObj: mediaObject)
+//    }
+//  }
+  
+  @NSManaged var mediaType: String? //{  // Really an enum saying whether it's a Photo or Video
+    
+    // Manual implementation of @NSManaged to link the associated FoodieMedia instance with this Parse property
+//    get {
+//      return self["mediaType"] as? String
+//    }
+//    
+//    set {
+//      mediaObject = setKvoMedia(mediaTypeKey: "mediaType", newMediaType: newValue, mediaObj: mediaObject)
+//    }
+//  }
+  
   @NSManaged var aspectRatio: Double  // In decimal, width / height, like 16:9 = 16/9 = 1.777...
   @NSManaged var width: Int  // height = width / aspectRatio
   @NSManaged var markups: Array<FoodieMarkup>?  // Array of PFObjects as FoodieMarkup
   @NSManaged var tags: Array<String>?  // Array of Strings, unstructured
+  @NSManaged var thumbnailFileName: String?  // Thumbnail for the moment
+  
+  // Query Pointers
   @NSManaged var author: FoodieUser?  // Pointer to the user that authored this Moment
   @NSManaged var eatery: FoodieEatery?  // Pointer to the FoodieEatery object
   @NSManaged var categories: Array<Int>?  // Array of internal restaurant categoryIDs (all cateogires that applies, sub or primary)
+  
+  // Optional
   @NSManaged var type: Int  // Really an enum saying whether this describes the dish, interior, or exterior, Optional
   @NSManaged var attribute: String?  // Attribute related to the type. Eg. Dish name, Optional
+  
+  // Analytics
   @NSManaged var views: Int  // How many times have this Moment been viewed
   @NSManaged var clickthroughs: Int  // How many times have this been clicked through to the next
   
   // Date created vs Date updated is given for free
-  
-  
-  // MARK: - Types & Enums
-  enum MediaType: String {
-    case photo = "image/jpeg"
-    case video = "video/mp4"
-  }
   
   
   // MARK: Error Types Definition
@@ -59,15 +81,20 @@ class FoodieMoment: FoodiePFObject {
   }
   
   
-  // MARK: - Private Constants
-  private struct Constants {
-    static let jpegCompressionQuality: CGFloat = 0.8
-    static let imageName = "image.jpg"
+  // MARK: - Public Instance Variable
+  var mediaObject: FoodieMedia! {
+    didSet {
+      mediaFileName = mediaObject.mediaFileName
+      mediaType = mediaObject.mediaType?.rawValue
+    }
   }
   
+  var thumbnailObject: FoodieMedia? {
+    didSet {
+      thumbnailFileName = thumbnailObject!.mediaFileName
+    }
+  }
   
-  // MARK: - Public Instance Variable
-  var mediaObj: FoodieMedia?
   var foodieObject = FoodieObject()
   
   
@@ -77,12 +104,10 @@ class FoodieMoment: FoodiePFObject {
     foodieObject.delegate = self
   }
   
-  
-  // This only sets the media portion of the Moment. Doesn't do save
-  // Save should be done as the first things in the Journal Entry View, in the background
-  func setMedia(url: URL) {
-    mediaURL = url.absoluteString
-    mediaObj = FoodieMedia(with: mediaURL!)
+  init(foodieMedia: FoodieMedia) {
+    super.init()
+    foodieObject.delegate = self
+    mediaObject = foodieMedia
   }
 }
 
@@ -100,7 +125,7 @@ extension FoodieMoment: FoodieObjectDelegate {
     var keepWaiting = false
     
     // Determine if all children are ready, if not, keep waiting.
-    if let media = mediaObj {
+    if let media = mediaObject {
       if !media.foodieObject.isSaveCompleted(to: location) { keepWaiting = true }
     }
     
@@ -134,7 +159,7 @@ extension FoodieMoment: FoodieObjectDelegate {
     var childOperationPending = false
     
     // Need to make sure all children FoodieRecursives saved before proceeding
-    if let media = mediaObj {
+    if let media = mediaObject {
       foodieObject.saveChild(media, to: location, withName: name, withBlock: callback)
       childOperationPending = true
     }

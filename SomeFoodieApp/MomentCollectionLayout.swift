@@ -8,6 +8,8 @@
 
 import UIKit
 
+
+// This implements stretchy header for the Moment Collection View
 class MomentCollectionLayout: UICollectionViewFlowLayout {
   
   var maximumHeaderStretchWidth: CGFloat = 0

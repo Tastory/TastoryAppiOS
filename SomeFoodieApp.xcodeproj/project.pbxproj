@@ -20,7 +20,8 @@
 		8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */; };
 		8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */; };
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
-		8C1C71F41ECD7A4B00D2E4F8 /* FoodieS3Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F31ECD7A4B00D2E4F8 /* FoodieS3Manager.swift */; };
+		8C1C71F41ECD7A4B00D2E4F8 /* FoodieFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */; };
+		8C1C71F61ED1602F00D2E4F8 /* FoodieGlobals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */; };
 		8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */; };
 		8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */; };
 		8C61BCDC1E985D1300DDF248 /* DebugPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */; };
@@ -87,7 +88,8 @@
 		8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentCollectionViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButton.swift; path = SomeFoodieApp/CameraButton.swift; sourceTree = "<group>"; };
-		8C1C71F31ECD7A4B00D2E4F8 /* FoodieS3Manager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieS3Manager.swift; sourceTree = "<group>"; };
+		8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFileManager.swift; sourceTree = "<group>"; };
+		8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieGlobals.swift; sourceTree = "<group>"; };
 		8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MKCoordinateSpan+Extensions.swift"; sourceTree = "<group>"; };
 		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
 		8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugPrint.swift; sourceTree = "<group>"; };
@@ -180,9 +182,10 @@
 		8C9AD05A1E8F60E4005F337E /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */,
 				8C89867D1E958B4300B62306 /* FoodieObject.swift */,
 				8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */,
-				8C1C71F31ECD7A4B00D2E4F8 /* FoodieS3Manager.swift */,
+				8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */,
 				8C8986711E91982E00B62306 /* FoodieJournal.swift */,
 				8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */,
 				8C89866F1E91981C00B62306 /* FoodieMarkup.swift */,
@@ -617,6 +620,7 @@
 				8C8986741E91985700B62306 /* FoodieEatery.swift in Sources */,
 				8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */,
 				8C0590471EC653DF00027E91 /* DiscoverViewController.swift in Sources */,
+				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobals.swift in Sources */,
 				8C0590511EC7E6A400027E91 /* FoodieMedia.swift in Sources */,
 				8C8986721E91982E00B62306 /* FoodieJournal.swift in Sources */,
 				8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */,
@@ -625,7 +629,7 @@
 				8C8986781E91DC5800B62306 /* FoodieHistory.swift in Sources */,
 				8C1089331EADC13700457E66 /* MomentFooterReusableView.swift in Sources */,
 				8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */,
-				8C1C71F41ECD7A4B00D2E4F8 /* FoodieS3Manager.swift in Sources */,
+				8C1C71F41ECD7A4B00D2E4F8 /* FoodieFileManager.swift in Sources */,
 				8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */,
 				8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */,
 				8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */,

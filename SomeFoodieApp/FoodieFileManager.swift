@@ -1,5 +1,5 @@
 //
-//  FoodieS3Manager.swift
+//  FoodieFileManager.swift
 //  SomeFoodieApp
 //
 //  Created by Howard Lee on 2017-05-17.
@@ -31,11 +31,11 @@ import Foundation
  }*/
 
 
-class FoodieS3 {
+class FoodieFile {
   
   // MARK: - Public Static Variables
-  static var manager: FoodieS3!
-  
+  static var manager: FoodieFile!
+  static var localBufferDirector: String!
   
   // MARK: - Public Instance Variables
   let s3Handler: AWSS3
@@ -43,6 +43,35 @@ class FoodieS3 {
   let DOCUMENT_FOLDER_URL = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
   let fileManager: FileManager
   let transferManager: AWSS3TransferManager
+  
+  
+  // MARK: - Public Static Functions
+  static func newPhotoFileName() -> String {
+    return "\(UUID().uuidString).jpg"
+  }
+  
+  
+  static func newVideoFileName() -> String {
+    return "\(UUID().uuidString).mov"
+  }
+  
+  
+  static func thumbnailFileName(originalFileName: String) -> String {
+    var fileNameComponents = originalFileName.components(separatedBy: ".")
+    fileNameComponents.removeLast()
+    
+    var newFileName = String()
+    
+    for fileNameComponent in fileNameComponents {
+      newFileName.append(fileNameComponent)
+      
+      if fileNameComponent != fileNameComponents.last {
+        newFileName.append(".")
+      }
+    }
+    
+    return newFileName.appending("-Thumbnail.jpg")
+  }
   
   
   // MARK: - Public Instance Functions
@@ -67,36 +96,36 @@ class FoodieS3 {
     fileManager = FileManager.default
   }
   
-  func saveFileLocally(moment: FoodieMoment)
+  
+  func moveFileFromTmpLocally(fileName: String)
   {
-    DispatchQueue.global(qos: .utility).async {
-      
-      let mediaURL = URL.init(string: moment.mediaURL!)!
-      var destURL = self.DOCUMENT_FOLDER_URL
-      destURL.appendPathComponent(mediaURL.lastPathComponent)
-      
-      let checSTR = destURL.absoluteString
-      do {
-        try self.fileManager.moveItem(at: mediaURL, to: destURL)
-      } catch {
-        DebugPrint.assert("Failed to save media file to local Documents folder \(error.localizedDescription)")
-      }
-      
-      // update URL reference
-      moment.setMedia(url: destURL)
-      self.upload(fileURL: destURL)
-    }
+//    DispatchQueue.global(qos: .utility).async {
+//      
+//      let tmpPath = "\(NSTemporaryDirectory())\(fileName)"
+//      let destPath = "\(self.DOCUMENT_FOLDER_URL.path)/\(fileName)"
+//      
+//      do {
+//        try self.fileManager.moveItem(atPath: tmpPath, toPath: destPath)
+//      } catch {
+//        DebugPrint.assert("Failed to move media file to local Documents folder \(error.localizedDescription)")
+//      }
+//      
+//      // update URL reference
+//      moment.setMedia(url: destURL)
+//      self.upload(fileURL: destURL)
+//    }
   }
+  
   
   func deleteFileLocally(fileName: String)
   {
     do {
       try fileManager.removeItem(atPath: "\(DOCUMENT_FOLDER_URL.path)/\(fileName)")
-    }
-    catch {
-      print("couln't remove ")
+    } catch {
+      print("Failed to delete media file from local Documents foler \(error.localizedDescription)")
     }
   }
+  
   
   func checkIfFileExistsS3(fileName : String){
     
@@ -115,7 +144,6 @@ class FoodieS3 {
       return nil
     })
   }
-  
   
   
   func deleteFromS3(fileName : String)
@@ -193,9 +221,38 @@ class FoodieS3 {
         return nil
       }
       // TODO: might be useful to store in parse for tracking the version
-      let versionId = task.result?.versionId
       print("Upload complete for: \(String(describing: uploadRequest?.key))")
       return nil
     })
   }
+}
+
+
+class FoodieS3Object {
+  
+  // MARK: - Public Instance Functions
+  
+  // Function to save this and all child Parse objects to local.
+  func saveToLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    DebugPrint.verbose("")
+  }
+  
+  
+  // Function to save this and all child Parse objects to server
+  func saveToServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    DebugPrint.verbose("")
+  }
+  
+  
+  // Function to delete this and all child Parse objects from local
+  func deleteFromLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    DebugPrint.verbose("")
+  }
+  
+  
+  // Function to delete this and all child Parse objects from server
+  func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    DebugPrint.verbose("")
+  }
+  
 }

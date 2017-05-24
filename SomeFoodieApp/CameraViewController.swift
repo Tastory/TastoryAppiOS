@@ -50,14 +50,14 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
   
   // MARK: - Class Private Functions
   
-  // Generic error dialogue box to the user on internal errors
+  // Generic error dialog box to the user on internal errors
   fileprivate func internalErrorDialog() {
     let alertController = UIAlertController(title: "SomeFoodieApp",
                                             titleComment: "Alert diaglogue title when a Camera view internal error occured",
                                             message: "An internal error has occured. Please try again",
-                                            messageComment: "Alert dialogue message when a Camera view internal error occured",
+                                            messageComment: "Alert dialog message when a Camera view internal error occured",
                                             preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK", comment: "Button in alert dialogue box for generic CameraView errors", style: .cancel)
+    alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for generic CameraView errors", style: .cancel)
     self.present(alertController, animated: true, completion: nil)
   }
   
@@ -104,7 +104,7 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
         let alertController = UIAlertController(title: "Photo Library Inaccessible",
                                                 titleComment: "Alert diaglogue title when user has denied access to the photo album",
                                                 message: "Please go to Settings > Privacy > Photos to allow SomeFoodieApp to save to your photos",
-                                                messageComment: "Alert dialogue message when the user has denied access to the photo album",
+                                                messageComment: "Alert dialog message when the user has denied access to the photo album",
                                                 preferredStyle: .alert)
         
         alertController.addAlertAction(title: "Settings",
@@ -125,32 +125,19 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     // Returns a UIImage captured from the current session
     DebugPrint.userAction("didTakePhoto") // TODO: Make photos brighter too
     
-    // UIImageWriteToSavedPhotosAlbum(photo, nil, nil, nil)
+    // Also save photo to Photo Album.
+    // TODO: Allow user to configure whether save to Photo Album also
+    // TODO: Create error alert dialog box if this save fails.
+    UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+
+    let mediaObject = FoodieMedia(fileName: FoodieFile.newPhotoFileName(), type: .photo)
+    mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieConstants.jpegCompressionQuality))
     
-    // Save photo to tmp folder
-    let imageData = UIImageJPEGRepresentation(image, 1.0)
-    let pathStr = "\(NSTemporaryDirectory())\(UUID().uuidString).jpg"
-    let imageURL = URL(fileURLWithPath: pathStr)
-    
-    DispatchQueue.global(qos: .userInitiated).async {
-      do {
-        try imageData?.write(to: imageURL)
-      }
-      catch {
-        self.internalErrorDialog()
-        DebugPrint.assert("Can't save image into temporary folder")
-        self.captureButton?.buttonReset()
-      }
-      
-      DispatchQueue.main.async {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-        viewController.restorationClass = nil
-        viewController.mediaURL = imageURL
-        viewController.mediaType = .photo
-        self.present(viewController, animated: true)
-      }
-    }
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+    viewController.restorationClass = nil
+    viewController.mediaObj = mediaObject
+    self.present(viewController, animated: true)
   }
   
   
@@ -178,14 +165,18 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     DebugPrint.log("didFinishProcessVideoAt")
     
     if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(url.path) {
+      // Also save video to Photo Album.
+      // TODO: Allow user to configure whether save to Photo Album also
+      // TODO: Create error alert dialog box if this save fails.
       UISaveVideoAtPathToSavedPhotosAlbum(url.path, nil, nil, nil)
       
-      // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
+      let mediaObject = FoodieMedia(fileName: FoodieFile.newVideoFileName(), type: .video)
+      mediaObject.videoLocalBufferUrl = url
+      
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
       let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
       viewController.restorationClass = nil
-      viewController.mediaURL = url
-      viewController.mediaType = .video
+      viewController.mediaObj = mediaObject
       self.present(viewController, animated: true)
       
     } else {
