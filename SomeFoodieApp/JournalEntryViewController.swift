@@ -134,7 +134,7 @@ class JournalEntryViewController: UITableViewController {
     
     self.addChildViewController(momentViewController)
     momentViewController.didMove(toParentViewController: self)
-    
+          
     titleTextField?.delegate = self
     venueTextField?.delegate = self
     linkTextField?.delegate = self
@@ -193,7 +193,7 @@ extension JournalEntryViewController {
     case 0:
       return sectionOneView
     case 1:
-      return momentViewController.view
+      return momentViewController.collectionView! as UIView
     default:
       return nil
     }
@@ -204,7 +204,6 @@ extension JournalEntryViewController {
     case 0:
       return Constants.mapHeight
     case 1:
-      DebugPrint.verbose("Section \(section) Moment height: \(Constants.momentHeight)")
       return Constants.momentHeight
     default:
       return 0

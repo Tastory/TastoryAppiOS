@@ -36,35 +36,27 @@ class MomentCollectionViewController: UICollectionViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    guard let collectionViewUnwrapped = collectionView else {
-      DebugPrint.fatal("nil collectionView in Moment Collection View Controller")
-    }
-
     guard let momentHeightUnwrapped = momentHeight else {
       DebugPrint.fatal("nil momentHeight in Moment Collection View Controller")
     }
-    // Uncomment the following line to preserve selection between presentations
-    // self.clearsSelectionOnViewWillAppear = false
-    self.automaticallyAdjustsScrollViewInsets = false
-
-    collectionViewUnwrapped.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+//    // Uncomment the following line to preserve selection between presentations
+//    self.clearsSelectionOnViewWillAppear = false
+//    self.automaticallyAdjustsScrollViewInsets = false  // Added in attempt to fix Undefined Layout issue. Not needed anymore
 
     // Setup Dimension Variables
     momentWidthDefault = momentHeightUnwrapped/(16/9)
     momentSizeDefault = CGSize(width: momentWidthDefault, height: momentHeightUnwrapped)
 
     // Setup the Moment Colleciton Layout
+    // Note: Setting either layout.itemSize or layout.estimatedItemSize will cause crashes
     let layout = collectionViewLayout as! MomentCollectionLayout
-    layout.minimumLineSpacing = 0 //Constants.interitemSpacing
+    layout.minimumLineSpacing = Constants.interitemSpacing
     layout.minimumInteritemSpacing = Constants.interitemSpacing
     layout.headerReferenceSize = CGSize(width: 1, height: momentHeightUnwrapped)
     layout.footerReferenceSize = momentSizeDefault
-    layout.itemSize = momentSizeDefault
-    layout.estimatedItemSize = momentSizeDefault
     layout.sectionInset = UIEdgeInsets(top: 0, left: Constants.interitemSpacing,
                                        bottom: 0, right: Constants.interitemSpacing)
     layout.maximumHeaderStretchWidth = momentWidthDefault
-    
   }
 }
 
@@ -172,37 +164,15 @@ extension MomentCollectionViewController {
 extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    
     guard let momentArray = workingJournal.moments else {
       DebugPrint.log("No Moments for workingJournal")
       return momentSizeDefault
     }
-    
     if indexPath.row >= momentArray.count {
       DebugPrint.assert("indexPath.row >= momentArray.count")
       return momentSizeDefault
     }
-    
     let moment = momentArray[indexPath.row]
-    
-//    guard let thumbnailObject = moment.thumbnailObject else {
-//      DebugPrint.assert("Unexpected, moment.thumbnailObject == nil")
-//      return momentSizeDefault
-//    }
-    
-
-    let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
-    
-    DebugPrint.verbose("Layout Section Inset: \(flowLayout.sectionInset)")
-    DebugPrint.verbose("Layout Minimum Line Spacing: \(flowLayout.minimumLineSpacing)")
-    DebugPrint.verbose("Layout Minimum Interitem Spacing: \(flowLayout.minimumInteritemSpacing)")
-    DebugPrint.verbose("CollectionView Content Size:\(collectionView.contentSize)")
-    DebugPrint.verbose("CollectionView Content Inset: \(collectionView.contentInset)")
-    
-    let height = min(momentHeight!, collectionView.contentSize.height)
-
-    DebugPrint.verbose("Returning height of sizeForItemAt row \(indexPath.row) to be \(height)")
-    
-    return CGSize(width: height-1/CGFloat(moment.aspectRatio), height: height-1)
+    return CGSize(width: momentHeight!/CGFloat(moment.aspectRatio), height: momentHeight!)
   }
 }
