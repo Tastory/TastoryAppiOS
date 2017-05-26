@@ -37,12 +37,15 @@ class FoodieFile {
   // MARK: - Error Types Definition
   enum ErrorCode: LocalizedError {
     
-    case fileManagerMoveItemFailed
+    case fileManagerMoveItemLocalFailed
+    case fileManagerSaveLocalFailed
     
     var errorDescription: String? {
       switch self {
-      case .fileManagerMoveItemFailed:
+      case .fileManagerMoveItemLocalFailed:
         return NSLocalizedString("FileManager.moveItem failed", comment: "Error description for an exception error code")
+      case .fileManagerSaveLocalFailed:
+        return NSLocalizedString("Data.write failed", comment: "Error description for an exception error code")
       }
     }
     
@@ -53,17 +56,22 @@ class FoodieFile {
   }
   
   
+  // MARK: - Private Constants
+  struct Constants {
+    static let S3BucketKey = "foodilicious"
+    static let DocumentFolderUrl = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
+  }
+  
+  
   // MARK: - Public Static Variables
   static var manager: FoodieFile!
   static var localBufferDirectory: String!
   
   
-  // MARK: - Public Instance Variables
-  let s3Handler: AWSS3
-  let BUCKET_KEY = "foodilicious"
-  let DOCUMENT_FOLDER_URL = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
-  let fileManager: FileManager
-  let transferManager: AWSS3TransferManager
+  // MARK: - Private Instance Variables
+  private let s3Handler: AWSS3
+  private let fileManager: FileManager
+  private let transferManager: AWSS3TransferManager
   
   
   // MARK: - Public Static Functions
@@ -119,32 +127,35 @@ class FoodieFile {
   
   
   func saveDataToLocal(buffer: Data, fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    // CONTINUE-HERE: Implement This Here. Data.Write(), blah blah blah
+    DispatchQueue.global(qos: .utility).async {
+      do {
+        try buffer.write(to: Constants.DocumentFolderUrl.appendingPathComponent("\(fileName)"))
+      } catch {
+        DebugPrint.assert("Failed to write media data to local Documents folder \(error.localizedDescription)")
+        callback?(false, ErrorCode.fileManagerSaveLocalFailed)
+      }
+    }
   }
   
   
   func moveFileFromUrlToLocal(url: URL, fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     DispatchQueue.global(qos: .utility).async {
       do {
-        try self.fileManager.moveItem(atPath: url.path, toPath: "\(self.DOCUMENT_FOLDER_URL.path)/\(fileName)")
+        try self.fileManager.moveItem(atPath: url.path, toPath: "\(Constants.DocumentFolderUrl.path)/\(fileName)")
       } catch {
         DebugPrint.assert("Failed to move media file to local Documents folder \(error.localizedDescription)")
-        callback?(false, ErrorCode.fileManagerMoveItemFailed)
+        callback?(false, ErrorCode.fileManagerMoveItemLocalFailed)
       }
     }
   }
   
   
   func saveLocalFileToS3(fileName: String) {
-    //let resourceName = "ElephantSeals.mov"
-    //let name = (resourceName as NSString).deletingPathExtension
-    //let type = (resourceName as NSString).pathExtension
-    //let mediaURL = Bundle.main.url(forResource: name, withExtension: type)!
     
     let uploadRequest = AWSS3TransferManagerUploadRequest()
-    uploadRequest?.bucket = "foodilicious"
-    uploadRequest?.key = fileURL.lastPathComponent
-    uploadRequest?.body = fileURL
+    uploadRequest?.bucket = Constants.S3BucketKey
+    uploadRequest?.key = fileName
+    //uploadRequest?.body = fileURL
     
     transferManager.upload((uploadRequest)!).continueWith(executor: AWSExecutor.mainThread(), block: { (task:AWSTask<AnyObject>) -> Any? in
       
@@ -170,7 +181,7 @@ class FoodieFile {
   
   func deleteFileFromLocal(fileName: String) {
     do {
-      try fileManager.removeItem(atPath: "\(DOCUMENT_FOLDER_URL.path)/\(fileName)")
+      try fileManager.removeItem(atPath: "\(Constants.DocumentFolderUrl.path)/\(fileName)")
     } catch {
       print("Failed to delete media file from local Documents foler \(error.localizedDescription)")
     }
@@ -180,16 +191,16 @@ class FoodieFile {
   func deleteFileFromS3(fileName: String) {
     let delRequest = AWSS3DeleteObjectRequest()!
     
-    delRequest.bucket = BUCKET_KEY
+    delRequest.bucket = Constants.S3BucketKey
     delRequest.key = fileName
     s3Handler.deleteObject(delRequest)
   }
 
   
-  func checkIfFileExistsS3(fileName : String){
+  func checkIfFileExistsS3(fileName: String){
     
     let objRequest = AWSS3HeadObjectRequest()!
-    objRequest.bucket = BUCKET_KEY
+    objRequest.bucket = Constants.S3BucketKey
     objRequest.key = fileName
     let task = s3Handler.headObject(objRequest)
     task.continueWith(block:{ (task:AWSTask<AWSS3HeadObjectOutput>) -> Any? in
@@ -213,10 +224,10 @@ class FoodieFile {
   
   func download(fileName: String)
   {
-    let downloadFileURL = DOCUMENT_FOLDER_URL.appendingPathComponent(fileName)
+    let downloadFileURL = Constants.DocumentFolderUrl.appendingPathComponent(fileName)
     
     let downloadRequest = AWSS3TransferManagerDownloadRequest()
-    downloadRequest?.bucket = BUCKET_KEY
+    downloadRequest?.bucket = Constants.S3BucketKey
     downloadRequest?.key = fileName
     downloadRequest?.downloadingFileURL = downloadFileURL
     
@@ -246,25 +257,6 @@ class FoodieFile {
 
 class FoodieS3Object {
 
-  // MARK: - Error Types Definition
-  enum ErrorCode: LocalizedError {
-    
-    case noFoodieFileName
-    
-    var errorDescription: String? {
-      switch self {
-      case .noFoodieFileName:
-        return NSLocalizedString("foodieFileName = nil", comment: "Error description for an exception error code")
-      }
-    }
-    
-    init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
-      self = errorCode
-      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
-    }
-  }
-  
-  
   // MARK: - Public Instance Variable
   var foodieFileName: String?
   
@@ -272,8 +264,7 @@ class FoodieS3Object {
   // MARK: - Public Instance Functions
   func saveDataBufferToLocal(buffer: Data, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     guard let fileName = foodieFileName else {
-      callback?(false, ErrorCode.noFoodieFileName)
-      return
+      DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
     }
     FoodieFile.manager.saveDataToLocal(buffer: buffer, fileName: fileName, withBlock: callback)
   }
@@ -281,8 +272,7 @@ class FoodieS3Object {
   
   func saveTmpUrlToLocal(url: URL, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     guard let fileName = foodieFileName else {
-      callback?(false, ErrorCode.noFoodieFileName)
-      return
+      DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
     }
     FoodieFile.manager.moveFileFromUrlToLocal(url: url, fileName: fileName, withBlock: callback)
   }
@@ -304,5 +294,4 @@ class FoodieS3Object {
   func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
     DebugPrint.verbose("")
   }
-  
 }
