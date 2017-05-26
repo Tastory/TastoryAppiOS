@@ -95,6 +95,7 @@ class FoodieObject {
   // MARK: - Private Instance Variables
   fileprivate var protectedOperationState: OperationStates?  // nil if Undetermined
   fileprivate var protectedOperationError: Error?  // Need specific Error object class?
+  fileprivate var criticalMutex = pthread_mutex_t()
   
   
   // MARK: - Public Instance Functions
@@ -172,12 +173,14 @@ class FoodieObject {
   // Function when all child saves have completed
   func savesCompletedFromAllChildren(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
     
-    DebugPrint.verbose("to Location: \(location)")
+    DebugPrint.verbose("\(delegate!.foodieObjectType()).Object.savesCompletedFromAllChildren to Location: \(location)")
     
     // If children all came back and there is error, unwind state and call callback
     if protectedOperationError != nil {
+      pthread_mutex_lock(&criticalMutex)
       saveCompleteStateTransition(to: location)
       callback?(false, operationError)
+      pthread_mutex_unlock(&criticalMutex)
     }
       
     // If children all came back and no error, Save yourself!
@@ -192,8 +195,10 @@ class FoodieObject {
         }
         
         // State transition accordingly and call callback
+        pthread_mutex_lock(&self.criticalMutex)
         self.saveCompleteStateTransition(to: location)
         callback?(self.protectedOperationError == nil, self.protectedOperationError)
+        pthread_mutex_unlock(&self.criticalMutex)
       }
     }
   }
@@ -279,7 +284,7 @@ class FoodieObject {
                  withName name: String? = nil,
                  withBlock callback: BooleanErrorBlock?) {
     
-    DebugPrint.verbose("of Type: \(child.foodieObjectType()) to Location: \(location)")
+    DebugPrint.verbose("\(delegate!.foodieObjectType()).Object.saveChild of Type: \(child.foodieObjectType()) to Location: \(location)")
     
     // Save Recursive for each moment. Call saveCompletionFromChild when done and without errors
     child.saveRecursive(to: location, withName: name) { [unowned self] (success, error) in
@@ -301,7 +306,7 @@ class FoodieObject {
   // Function to save this object
   func saveObject(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
     
-    DebugPrint.verbose("to Location: \(location)")
+    DebugPrint.verbose("\(delegate!.foodieObjectType()).Object.saveObject to Location: \(location)")
     
     guard let delegateObj = delegate else {
       DebugPrint.fatal("delegate not expected to be nil in saveObject()")

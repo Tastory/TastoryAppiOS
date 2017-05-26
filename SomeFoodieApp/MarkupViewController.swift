@@ -52,6 +52,8 @@ class MarkupViewController: UIViewController {
 
   @IBAction func saveButtonAction(_ sender: UIButton) {
     
+    // TODO: Don't let use click save (Gray it out until Thumbnail creation completed)
+    
     // Initializing with Media Object also initialize foodieFileName and mediaType
     let momentObj = FoodieMoment(foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
     
@@ -123,6 +125,7 @@ class MarkupViewController: UIViewController {
             viewController.workingJournal = currentJournal
             viewController.returnedMoment = momentObj
             weakSelf!.present(viewController, animated: true)
+            weakSelf!.avPlayer?.pause()
             
           } else {
             weakSelf?.internalErrorDialog()
@@ -177,6 +180,7 @@ class MarkupViewController: UIViewController {
           viewController.workingJournal = currentJournal
           viewController.returnedMoment = momentObj
           weakSelf!.present(viewController, animated: true)
+          weakSelf!.avPlayer?.pause()
           
         } else {
           DebugPrint.fatal("weakSelf became nil. Unable to proceed")
@@ -208,6 +212,7 @@ class MarkupViewController: UIViewController {
       viewController.workingJournal = currentJournal
       viewController.returnedMoment = momentObj
       present(viewController, animated: true)
+      avPlayer?.pause()
     }
   }
   
@@ -336,6 +341,7 @@ class MarkupViewController: UIViewController {
     }
   }
   
+  
   override func viewDidAppear(_ animated: Bool) {
 
     // Obtain thumbnail, width and aspect ratio ahead of time once view is already loaded
@@ -405,6 +411,7 @@ class MarkupViewController: UIViewController {
       let imgGenerator = AVAssetImageGenerator(asset: asset)
       
       imgGenerator.maximumSize = CGSize(width: FoodieConstants.thumbnailPixels, height: FoodieConstants.thumbnailPixels)  // Assuming either portrait or square
+      imgGenerator.appliesPreferredTrackTransform = true
       
       do {
         thumbnailCgImage = try imgGenerator.copyCGImage(at: CMTimeMake(0, 1), actualTime: nil)
@@ -425,6 +432,8 @@ class MarkupViewController: UIViewController {
       let videoSize = avTracks[0].naturalSize
       mediaWidth = Int(videoSize.width)
       mediaAspectRatio = Double(videoSize.width/videoSize.height)
+      
+      DebugPrint.verbose("Media width: \(videoSize.width) height: \(videoSize.height). Thumbnail width: \(thumbnailCgImage.width) height: \(thumbnailCgImage.height)")
     }
     
     // Create a Thumbnail Media with file name based on the original file name of the Media

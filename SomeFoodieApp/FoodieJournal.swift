@@ -192,7 +192,7 @@ class FoodieJournal: FoodiePFObject {
       blockWait = blockWait + 1
     }
   
-    DebugPrint.verbose("saveSync Completed. Save took \(blockWait) seconds")
+    DebugPrint.verbose("FoodieJournal.saveSync Completed. Save took \(blockWait) seconds")
   
     if let error = blockError {
       throw error
@@ -258,7 +258,7 @@ extension FoodieJournal: FoodieObjectDelegate {
                                withName name: String?,
                                withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("to Location: \(location)")
+    DebugPrint.verbose("FoodieJournal.saveCompletionFromChild to Location: \(location)")
     
     var keepWaiting = false
     
@@ -300,7 +300,7 @@ extension FoodieJournal: FoodieObjectDelegate {
                     withName name: String? = nil,
                     withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("to Location: \(location)")
+    DebugPrint.verbose("FoodieJournal.saveRecursive to Location: \(location)")
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
     let earlyReturnStatus = foodieObject.saveStateTransition(to: location)

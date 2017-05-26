@@ -81,14 +81,6 @@ class JournalEntryViewController: UITableViewController {
   }
   
   
-  @IBAction func UploadS3(_ sender: Any) {
-    for moment in (workingJournal?.moments)!
-    {
-      //FoodieFile.manager.saveFileLocally(moment: moment)
-    }
-  }
-  
-  
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()

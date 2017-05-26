@@ -13,30 +13,8 @@ class FoodieMoment: FoodiePFObject {
   
   // MARK: - Parse PFObject keys
   // If new objects or external types are added here, check if save and delete algorithms needs updating
-  @NSManaged var foodieFileName: String?  //{  // File name for the media photo or video. Needs to go with the media object.
-    
-    // Manual implementation of @NSManaged to link the associated FoodieMedia instance with this Parse property
-//    get {
-//      return self["foodieFileName"] as? String
-//    }
-//    
-//    set {
-//      mediaObject = setKvoMedia(fileNameKey: "foodieFileName", mediaTypeKey: "mediaType", newFileName: newValue, mediaObj: mediaObject)
-//    }
-//  }
-  
+  @NSManaged var mediaFileName: String?  //{  // File name for the media photo or video. Needs to go with the media object
   @NSManaged var mediaType: String? //{  // Really an enum saying whether it's a Photo or Video
-    
-    // Manual implementation of @NSManaged to link the associated FoodieMedia instance with this Parse property
-//    get {
-//      return self["mediaType"] as? String
-//    }
-//    
-//    set {
-//      mediaObject = setKvoMedia(mediaTypeKey: "mediaType", newMediaType: newValue, mediaObj: mediaObject)
-//    }
-//  }
-  
   @NSManaged var aspectRatio: Double  // In decimal, width / height, like 16:9 = 16/9 = 1.777...
   @NSManaged var width: Int  // height = width / aspectRatio
   @NSManaged var markups: Array<FoodieMarkup>?  // Array of PFObjects as FoodieMarkup
@@ -84,7 +62,7 @@ class FoodieMoment: FoodiePFObject {
   // MARK: - Public Instance Variable
   var mediaObject: FoodieMedia! {
     didSet {
-      foodieFileName = mediaObject.foodieFileName
+      mediaFileName = mediaObject.foodieFileName
       mediaType = mediaObject.mediaType?.rawValue
     }
   }
@@ -120,7 +98,7 @@ extension FoodieMoment: FoodieObjectDelegate {
                                withName name: String?,
                                withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("to Location: \(location)")
+    DebugPrint.verbose("FoodieMoment.saveCompletionFromChild to Location: \(location)")
     
     var keepWaiting = false
     
@@ -135,6 +113,10 @@ extension FoodieMoment: FoodieObjectDelegate {
       }
     }
     
+    if let thumbnail = thumbnailObject, !keepWaiting {
+      if !thumbnail.foodieObject.isSaveCompleted(to: location) { keepWaiting = true }
+    }
+    
     if !keepWaiting {
       foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
     }
@@ -146,7 +128,7 @@ extension FoodieMoment: FoodieObjectDelegate {
                      withName name: String? = nil,
                      withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("to Location: \(location)")
+    DebugPrint.verbose("FoodieMoment.saveRecursive to Location: \(location)")
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
     let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
@@ -169,6 +151,11 @@ extension FoodieMoment: FoodieObjectDelegate {
         foodieObject.saveChild(markup, to: location, withName: name, withBlock: callback)
         childOperationPending = true
       }
+    }
+    
+    if let thumbnail = thumbnailObject {
+      foodieObject.saveChild(thumbnail, to: location, withBlock: callback)
+      childOperationPending = true
     }
     
     if !childOperationPending {
