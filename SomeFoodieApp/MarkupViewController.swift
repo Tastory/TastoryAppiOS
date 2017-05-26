@@ -52,7 +52,7 @@ class MarkupViewController: UIViewController {
 
   @IBAction func saveButtonAction(_ sender: UIButton) {
     
-    // Initializing with Media Object also initialize mediaFileName and mediaType
+    // Initializing with Media Object also initialize foodieFileName and mediaType
     let momentObj = FoodieMoment(foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
     
     // Setting the Thumbnail Object also initializes the thumbnailFileName
@@ -428,13 +428,13 @@ class MarkupViewController: UIViewController {
     }
     
     // Create a Thumbnail Media with file name based on the original file name of the Media
-    guard let mediaFileName = mediaObject.mediaFileName else {
+    guard let foodieFileName = mediaObject.foodieFileName else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected. mediaObject.mediaFileName = nil")
+      DebugPrint.assert("Unexpected. mediaObject.foodieFileName = nil")
       return
     }
     
-    thumbnailObject = FoodieMedia(fileName: FoodieFile.thumbnailFileName(originalFileName: mediaFileName), type: .photo)
+    thumbnailObject = FoodieMedia(fileName: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), type: .photo)
     thumbnailObject!.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieConstants.jpegCompressionQuality))
     //CGImageRelease(thumbnailCgImage)
   }

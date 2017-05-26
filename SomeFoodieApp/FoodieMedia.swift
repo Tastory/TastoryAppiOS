@@ -11,6 +11,31 @@ import Foundation
 
 class FoodieMedia: FoodieS3Object {
   
+  // MARK: - Error Types Definition
+  enum ErrorCode: LocalizedError {
+    
+    case saveToLocalwithNilMediaType
+    case saveToLocalwithNilimageMemoryBuffer
+    case saveToLocalwithNilvideoLocalBufferUrl
+    
+    var errorDescription: String? {
+      switch self {
+      case .saveToLocalwithNilMediaType:
+        return NSLocalizedString("FoodieMedia.saveToLocal failed, medaiType = nil", comment: "Error description for an exception error code")
+      case .saveToLocalwithNilimageMemoryBuffer:
+        return NSLocalizedString("FoodieMedia.saveToLocal failed, imageMemoryBuffer = nil", comment: "Error description for an exception error code")
+      case .saveToLocalwithNilvideoLocalBufferUrl:
+        return NSLocalizedString("FoodieMedia.saveToLocal failed, videoLocalBufferUrl = nil", comment: "Error description for an exception error code")
+      }
+    }
+    
+    init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
+      self = errorCode
+      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+    }
+  }
+  
+  
   // MARK: - Public Instance Variable
   var foodieObject = FoodieObject()
   var imageMemoryBuffer: Data?
@@ -18,7 +43,6 @@ class FoodieMedia: FoodieS3Object {
   
   
   // MARK: - Private Instance Variable
-  var mediaFileName: String?
   var mediaType: FoodieMediaType?
 
   
@@ -31,7 +55,7 @@ class FoodieMedia: FoodieS3Object {
   init(fileName: String, type: FoodieMediaType) {
     super.init()
     foodieObject.delegate = self
-    mediaFileName = fileName
+    foodieFileName = fileName
     mediaType = type
   }
 }
@@ -61,7 +85,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
       return
     }
-    
+
     DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
       self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
     }
@@ -74,6 +98,30 @@ extension FoodieMedia: FoodieObjectDelegate {
     
   }
 
+  
+  // Function to save this media object to local.
+  func saveToLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    guard let type = mediaType else {
+      callback?(false, ErrorCode.saveToLocalwithNilMediaType)
+      return
+    }
+    switch type {
+    case .photo:
+      guard let memoryBuffer = imageMemoryBuffer else {
+        callback?(false, ErrorCode.saveToLocalwithNilimageMemoryBuffer)
+        return
+      }
+      saveDataBufferToLocal(buffer: memoryBuffer, withBlock: callback)
+      
+    case .video:
+      guard let videoUrl = videoLocalBufferUrl else {
+        callback?(false, ErrorCode.saveToLocalwithNilimageMemoryBuffer)
+        return
+      }
+      saveTmpUrlToLocal(url: videoUrl, withBlock: callback)
+    }
+  }
+  
   
   func foodieObjectType() -> String {
     return "FoodieMedia"

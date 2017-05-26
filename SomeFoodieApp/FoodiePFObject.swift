@@ -23,7 +23,7 @@ class FoodiePFObject: PFObject {
 //    self[fileNameKey] = newFileName
 //    
 //    if newFileName == nil && oldFileName != nil {
-//      // mediaFileName got cleared. Remove FoodieMedia instance and clear mediaType also
+//      // foodieFileName got cleared. Remove FoodieMedia instance and clear mediaType also
 //      if let typeKey = mediaTypeKey {
 //        self[typeKey] = nil
 //      }
@@ -31,22 +31,22 @@ class FoodiePFObject: PFObject {
 //    }
 //      
 //    else if oldFileName == nil {
-//      // mediaFileName just got set. Create FoodieMedia instance if not already done so and set the fileName
+//      // foodieFileName just got set. Create FoodieMedia instance if not already done so and set the fileName
 //      if mediaObj == nil {
 //        returnMedia = FoodieMedia()
 //      } else {
 //        returnMedia = mediaObj
 //      }
-//      returnMedia!.mediaFileName = newFileName
+//      returnMedia!.foodieFileName = newFileName
 //    }
 //      
 //    else if newFileName != oldFileName {
-//      // mediaFileName got modified. Modifiy the fileName in the FoodieMedia instance
+//      // foodieFileName got modified. Modifiy the fileName in the FoodieMedia instance
 //      guard mediaObj != nil else {
 //        DebugPrint.fatal("Media Object nil unexpected")
 //      }
 //      returnMedia = mediaObj
-//      returnMedia!.mediaFileName = newFileName
+//      returnMedia!.foodieFileName = newFileName
 //    }
 //    
 //    return returnMedia
@@ -84,7 +84,7 @@ class FoodiePFObject: PFObject {
 //    }
 //    
 //    else if newMediaType != oldMediaType {
-//      // mediaFileName got modified. Modifiy the fileName in the FoodieMedia instance
+//      // foodieFileName got modified. Modifiy the fileName in the FoodieMedia instance
 //      guard mediaObj != nil else {
 //        DebugPrint.fatal("Media Object nil unexpected")
 //      }

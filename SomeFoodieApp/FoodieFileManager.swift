@@ -13,29 +13,50 @@ import Foundation
 
 
 /*
- AWS Developer Identity class for authenticating with AWS Cognito
- 
+ // AWS Developer Identity class for authenticating with AWS Cognito
  
  class AWSDeveloperIdentity : AWSCognitoCredentialsProviderHelper {
- override func token() -> AWSTask<NSString> {
- //Write code to call your backend:
- //pass username/password to backend or some sort of token to authenticate user, if successful,
- //from backend call getOpenIdTokenForDeveloperIdentity with logins map containing "your.provider.name":"enduser.username"
- //return the identity id and token to client
- //You can use AWSTaskCompletionSource to do this asynchronously
- 
- // Set the identity id and return the token
- self.identityId = "us-west-2:dabdd18d-a121-47b8-9b0a-3fa5a0525e11"
- return AWSTask(result: "eyJraWQiOiJ1cy13ZXN0LTIxIiwidHlwIjoiSldTIiwiYWxnIjoiUlM1MTIifQ.eyJzdWIiOiJ1cy13ZXN0LTI6ZGFiZGQxOGQtYTEyMS00N2I4LTliMGEtM2ZhNWEwNTI1ZTExIiwiYXVkIjoidXMtd2VzdC0yOjE0MGZhYzIxLTYyY2ItNDdmMS1hNWMxLTYzYmE4ODZmYzIzNCIsImFtciI6WyJhdXRoZW50aWNhdGVkIiwic29tZWZvb2RpZS5zM3dyaXRlciIsInNvbWVmb29kaWUuczN3cml0ZXI6dXMtd2VzdC0yOjE0MGZhYzIxLTYyY2ItNDdmMS1hNWMxLTYzYmE4ODZmYzIzNDpzcGVjYyJdLCJpc3MiOiJodHRwczovL2NvZ25pdG8taWRlbnRpdHkuYW1hem9uYXdzLmNvbSIsImV4cCI6MTQ5NDcwMjA1OSwiaWF0IjoxNDk0NzAxMTU5fQ.fF6c3QdDxsHmdzz2dJyyI1bALjR5fhqkNJqBTFOnXDNQqLFAwJ-e17tjxdWO6crV3CLPyUBitjN1U8JGpdBANoOfsdpTRu7RAY12BdkxQ7Rt1bA7chNfoWWozjGDnUAMOczDAg2iC-kqdBaQJkBPCIBZmbbPWVs7dvvzThJAlRxoUMeQZ6TXr7jzpOihDOzakdKGeXv0iVonbbrBrYpP-LiJ6CwXv7rmyXI7iWgKmxUKvUtuMwZ2av9Csz07dCrFL2aYrtqLxA-zLbM3Lila7O21QGbpDjMdN8kFRKKcumuAwTHbevR2wh2q9XJ3p4NLjAGA3C1ZN1K3G0AIzDGMjg")
+   override func token() -> AWSTask<NSString> {
+   
+   // Write code to call your backend:
+   // pass username/password to backend or some sort of token to authenticate user, if successful,
+   // from backend call getOpenIdTokenForDeveloperIdentity with logins map containing "your.provider.name":"enduser.username"
+   // return the identity id and token to client
+   // You can use AWSTaskCompletionSource to do this asynchronously
+   
+   // Set the identity id and return the token
+   self.identityId = "us-west-2:dabdd18d-a121-47b8-9b0a-3fa5a0525e11"
+   return AWSTask(result: "eyJraWQiOiJ1cy13ZXN0LTIxIiwidHlwIjoiSldTIiwiYWxnIjoiUlM1MTIifQ.eyJzdWIiOiJ1cy13ZXN0LTI6ZGFiZGQxOGQtYTEyMS00N2I4LTliMGEtM2ZhNWEwNTI1ZTExIiwiYXVkIjoidXMtd2VzdC0yOjE0MGZhYzIxLTYyY2ItNDdmMS1hNWMxLTYzYmE4ODZmYzIzNCIsImFtciI6WyJhdXRoZW50aWNhdGVkIiwic29tZWZvb2RpZS5zM3dyaXRlciIsInNvbWVmb29kaWUuczN3cml0ZXI6dXMtd2VzdC0yOjE0MGZhYzIxLTYyY2ItNDdmMS1hNWMxLTYzYmE4ODZmYzIzNDpzcGVjYyJdLCJpc3MiOiJodHRwczovL2NvZ25pdG8taWRlbnRpdHkuYW1hem9uYXdzLmNvbSIsImV4cCI6MTQ5NDcwMjA1OSwiaWF0IjoxNDk0NzAxMTU5fQ.fF6c3QdDxsHmdzz2dJyyI1bALjR5fhqkNJqBTFOnXDNQqLFAwJ-e17tjxdWO6crV3CLPyUBitjN1U8JGpdBANoOfsdpTRu7RAY12BdkxQ7Rt1bA7chNfoWWozjGDnUAMOczDAg2iC-kqdBaQJkBPCIBZmbbPWVs7dvvzThJAlRxoUMeQZ6TXr7jzpOihDOzakdKGeXv0iVonbbrBrYpP-LiJ6CwXv7rmyXI7iWgKmxUKvUtuMwZ2av9Csz07dCrFL2aYrtqLxA-zLbM3Lila7O21QGbpDjMdN8kFRKKcumuAwTHbevR2wh2q9XJ3p4NLjAGA3C1ZN1K3G0AIzDGMjg")
+   }
  }
- }*/
+*/
 
 
 class FoodieFile {
   
+  // MARK: - Error Types Definition
+  enum ErrorCode: LocalizedError {
+    
+    case fileManagerMoveItemFailed
+    
+    var errorDescription: String? {
+      switch self {
+      case .fileManagerMoveItemFailed:
+        return NSLocalizedString("FileManager.moveItem failed", comment: "Error description for an exception error code")
+      }
+    }
+    
+    init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
+      self = errorCode
+      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+    }
+  }
+  
+  
   // MARK: - Public Static Variables
   static var manager: FoodieFile!
-  static var localBufferDirector: String!
+  static var localBufferDirectory: String!
+  
   
   // MARK: - Public Instance Variables
   let s3Handler: AWSS3
@@ -97,28 +118,57 @@ class FoodieFile {
   }
   
   
-  func moveFileFromTmpLocally(fileName: String)
-  {
-//    DispatchQueue.global(qos: .utility).async {
-//      
-//      let tmpPath = "\(NSTemporaryDirectory())\(fileName)"
-//      let destPath = "\(self.DOCUMENT_FOLDER_URL.path)/\(fileName)"
-//      
-//      do {
-//        try self.fileManager.moveItem(atPath: tmpPath, toPath: destPath)
-//      } catch {
-//        DebugPrint.assert("Failed to move media file to local Documents folder \(error.localizedDescription)")
-//      }
-//      
-//      // update URL reference
-//      moment.setMedia(url: destURL)
-//      self.upload(fileURL: destURL)
-//    }
+  func saveDataToLocal(buffer: Data, fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    // CONTINUE-HERE: Implement This Here. Data.Write(), blah blah blah
   }
   
   
-  func deleteFileLocally(fileName: String)
-  {
+  func moveFileFromUrlToLocal(url: URL, fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    DispatchQueue.global(qos: .utility).async {
+      do {
+        try self.fileManager.moveItem(atPath: url.path, toPath: "\(self.DOCUMENT_FOLDER_URL.path)/\(fileName)")
+      } catch {
+        DebugPrint.assert("Failed to move media file to local Documents folder \(error.localizedDescription)")
+        callback?(false, ErrorCode.fileManagerMoveItemFailed)
+      }
+    }
+  }
+  
+  
+  func saveLocalFileToS3(fileName: String) {
+    //let resourceName = "ElephantSeals.mov"
+    //let name = (resourceName as NSString).deletingPathExtension
+    //let type = (resourceName as NSString).pathExtension
+    //let mediaURL = Bundle.main.url(forResource: name, withExtension: type)!
+    
+    let uploadRequest = AWSS3TransferManagerUploadRequest()
+    uploadRequest?.bucket = "foodilicious"
+    uploadRequest?.key = fileURL.lastPathComponent
+    uploadRequest?.body = fileURL
+    
+    transferManager.upload((uploadRequest)!).continueWith(executor: AWSExecutor.mainThread(), block: { (task:AWSTask<AnyObject>) -> Any? in
+      
+      if let error = task.error as NSError? {
+        if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
+          switch code {
+          case .cancelled, .paused:
+            break
+          default:
+            print("Error uploading: \(String(describing: uploadRequest?.key)) Error: \(error)")
+          }
+        } else {
+          print("Error uploading: \(String(describing: uploadRequest?.key)) Error: \(error)")
+        }
+        return nil
+      }
+      // TODO: might be useful to store in parse for tracking the version
+      print("Upload complete for: \(String(describing: uploadRequest?.key))")
+      return nil
+    })
+  }
+  
+  
+  func deleteFileFromLocal(fileName: String) {
     do {
       try fileManager.removeItem(atPath: "\(DOCUMENT_FOLDER_URL.path)/\(fileName)")
     } catch {
@@ -126,6 +176,15 @@ class FoodieFile {
     }
   }
   
+  
+  func deleteFileFromS3(fileName: String) {
+    let delRequest = AWSS3DeleteObjectRequest()!
+    
+    delRequest.bucket = BUCKET_KEY
+    delRequest.key = fileName
+    s3Handler.deleteObject(delRequest)
+  }
+
   
   func checkIfFileExistsS3(fileName : String){
     
@@ -146,20 +205,11 @@ class FoodieFile {
   }
   
   
-  func deleteFromS3(fileName : String)
-  {
-    
-    let delRequest = AWSS3DeleteObjectRequest()!
-    
-    delRequest.bucket = BUCKET_KEY
-    delRequest.key = fileName
-    s3Handler.deleteObject(delRequest)
-  }
-  
   func cancelAllS3Transfer()
   {
     transferManager.cancelAll()
   }
+  
   
   func download(fileName: String)
   {
@@ -191,50 +241,50 @@ class FoodieFile {
       return nil
     })
   }
-  
-  
-  func upload(fileURL: URL){
-    
-    //let resourceName = "ElephantSeals.mov"
-    //let name = (resourceName as NSString).deletingPathExtension
-    //let type = (resourceName as NSString).pathExtension
-    //let mediaURL = Bundle.main.url(forResource: name, withExtension: type)!
-    
-    let uploadRequest = AWSS3TransferManagerUploadRequest()
-    uploadRequest?.bucket = "foodilicious"
-    uploadRequest?.key = fileURL.lastPathComponent
-    uploadRequest?.body = fileURL
-    
-    transferManager.upload((uploadRequest)!).continueWith(executor: AWSExecutor.mainThread(), block: { (task:AWSTask<AnyObject>) -> Any? in
-      
-      if let error = task.error as NSError? {
-        if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
-          switch code {
-          case .cancelled, .paused:
-            break
-          default:
-            print("Error uploading: \(String(describing: uploadRequest?.key)) Error: \(error)")
-          }
-        } else {
-          print("Error uploading: \(String(describing: uploadRequest?.key)) Error: \(error)")
-        }
-        return nil
-      }
-      // TODO: might be useful to store in parse for tracking the version
-      print("Upload complete for: \(String(describing: uploadRequest?.key))")
-      return nil
-    })
-  }
 }
 
 
 class FoodieS3Object {
+
+  // MARK: - Error Types Definition
+  enum ErrorCode: LocalizedError {
+    
+    case noFoodieFileName
+    
+    var errorDescription: String? {
+      switch self {
+      case .noFoodieFileName:
+        return NSLocalizedString("foodieFileName = nil", comment: "Error description for an exception error code")
+      }
+    }
+    
+    init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
+      self = errorCode
+      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+    }
+  }
+  
+  
+  // MARK: - Public Instance Variable
+  var foodieFileName: String?
+  
   
   // MARK: - Public Instance Functions
+  func saveDataBufferToLocal(buffer: Data, withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    guard let fileName = foodieFileName else {
+      callback?(false, ErrorCode.noFoodieFileName)
+      return
+    }
+    FoodieFile.manager.saveDataToLocal(buffer: buffer, fileName: fileName, withBlock: callback)
+  }
+
   
-  // Function to save this and all child Parse objects to local.
-  func saveToLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DebugPrint.verbose("")
+  func saveTmpUrlToLocal(url: URL, withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    guard let fileName = foodieFileName else {
+      callback?(false, ErrorCode.noFoodieFileName)
+      return
+    }
+    FoodieFile.manager.moveFileFromUrlToLocal(url: url, fileName: fileName, withBlock: callback)
   }
   
   

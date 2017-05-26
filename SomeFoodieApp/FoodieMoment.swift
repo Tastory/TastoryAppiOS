@@ -13,15 +13,15 @@ class FoodieMoment: FoodiePFObject {
   
   // MARK: - Parse PFObject keys
   // If new objects or external types are added here, check if save and delete algorithms needs updating
-  @NSManaged var mediaFileName: String?  //{  // File name for the media photo or video. Needs to go with the media object.
+  @NSManaged var foodieFileName: String?  //{  // File name for the media photo or video. Needs to go with the media object.
     
     // Manual implementation of @NSManaged to link the associated FoodieMedia instance with this Parse property
 //    get {
-//      return self["mediaFileName"] as? String
+//      return self["foodieFileName"] as? String
 //    }
 //    
 //    set {
-//      mediaObject = setKvoMedia(fileNameKey: "mediaFileName", mediaTypeKey: "mediaType", newFileName: newValue, mediaObj: mediaObject)
+//      mediaObject = setKvoMedia(fileNameKey: "foodieFileName", mediaTypeKey: "mediaType", newFileName: newValue, mediaObj: mediaObject)
 //    }
 //  }
   
@@ -59,7 +59,7 @@ class FoodieMoment: FoodiePFObject {
   // Date created vs Date updated is given for free
   
   
-  // MARK: Error Types Definition
+  // MARK: - Error Types Definition
   enum ErrorCode: LocalizedError {
     
     case setMediaWithPhotoImageNil
@@ -84,14 +84,14 @@ class FoodieMoment: FoodiePFObject {
   // MARK: - Public Instance Variable
   var mediaObject: FoodieMedia! {
     didSet {
-      mediaFileName = mediaObject.mediaFileName
+      foodieFileName = mediaObject.foodieFileName
       mediaType = mediaObject.mediaType?.rawValue
     }
   }
   
   var thumbnailObject: FoodieMedia? {
     didSet {
-      thumbnailFileName = thumbnailObject!.mediaFileName
+      thumbnailFileName = thumbnailObject!.foodieFileName
     }
   }
   
