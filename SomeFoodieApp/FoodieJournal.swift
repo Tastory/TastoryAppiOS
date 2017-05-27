@@ -279,10 +279,11 @@ extension FoodieJournal: FoodieObjectDelegate {
       }
     }
     
-    if let thumbnail = thumbnailObj {
-      foodieObject.saveChild(thumbnail, to: location, withName: name, withBlock: callback)
-      childOperationPending = true
-    }
+    // This is just a pointer to the existing thumbnail on the Moment, do we need to re-save? Or create a seperate Thumbnail?
+//    if let thumbnail = thumbnailObj {
+//      foodieObject.saveChild(thumbnail, to: location, withName: name, withBlock: callback)
+//      childOperationPending = true
+//    }
     
     if let hasMarkups = markups {
       for markup in hasMarkups {

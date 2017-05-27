@@ -22,6 +22,7 @@
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
 		8C1C71F41ECD7A4B00D2E4F8 /* FoodieFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */; };
 		8C1C71F61ED1602F00D2E4F8 /* FoodieGlobals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */; };
+		8C1D4E1E1ED9513800939B2C /* ThumbnailFrameLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E1D1ED9513800939B2C /* ThumbnailFrameLayer.swift */; };
 		8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */; };
 		8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */; };
 		8C61BCDC1E985D1300DDF248 /* DebugPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */; };
@@ -90,6 +91,7 @@
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButton.swift; path = SomeFoodieApp/CameraButton.swift; sourceTree = "<group>"; };
 		8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFileManager.swift; sourceTree = "<group>"; };
 		8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieGlobals.swift; sourceTree = "<group>"; };
+		8C1D4E1D1ED9513800939B2C /* ThumbnailFrameLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ThumbnailFrameLayer.swift; path = SomeFoodieApp/ThumbnailFrameLayer.swift; sourceTree = "<group>"; };
 		8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MKCoordinateSpan+Extension.swift"; sourceTree = "<group>"; };
 		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
 		8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugPrint.swift; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 				8C9AD05E1E8F615D005F337E /* CameraButtonRingLayer.swift */,
 				8C9AD05F1E8F615D005F337E /* CameraCrossLayer.swift */,
 				8C1089341EAFF18300457E66 /* AddMomentLayer.swift */,
+				8C1D4E1D1ED9513800939B2C /* ThumbnailFrameLayer.swift */,
 			);
 			name = Layers;
 			sourceTree = "<group>";
@@ -647,6 +650,7 @@
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */,
 				8C1089351EAFF18300457E66 /* AddMomentLayer.swift in Sources */,
 				C24F69671EB85DF300A0DB7B /* PlayerView.swift in Sources */,
+				8C1D4E1E1ED9513800939B2C /* ThumbnailFrameLayer.swift in Sources */,
 				8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */,
 				8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */,
 				8C9AD0631E8F615D005F337E /* CameraButtonRingLayer.swift in Sources */,
