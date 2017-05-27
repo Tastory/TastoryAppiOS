@@ -30,6 +30,8 @@ protocol FoodieObjectDelegate: class {
   
   func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?)
   
+  func getUniqueIdentifier() -> String
+  
   func foodieObjectType() -> String
 }
 
@@ -173,7 +175,7 @@ class FoodieObject {
   // Function when all child saves have completed
   func savesCompletedFromAllChildren(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
     
-    DebugPrint.verbose("\(delegate!.foodieObjectType()).Object.savesCompletedFromAllChildren to Location: \(location)")
+    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.savesCompletedFromAllChildren to Location: \(location)")
     
     // If children all came back and there is error, unwind state and call callback
     if protectedOperationError != nil {
@@ -284,7 +286,7 @@ class FoodieObject {
                  withName name: String? = nil,
                  withBlock callback: BooleanErrorBlock?) {
     
-    DebugPrint.verbose("\(delegate!.foodieObjectType()).Object.saveChild of Type: \(child.foodieObjectType()) to Location: \(location)")
+    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.saveChild of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location)")
     
     // Save Recursive for each moment. Call saveCompletionFromChild when done and without errors
     child.saveRecursive(to: location, withName: name) { [unowned self] (success, error) in
@@ -306,7 +308,7 @@ class FoodieObject {
   // Function to save this object
   func saveObject(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
     
-    DebugPrint.verbose("\(delegate!.foodieObjectType()).Object.saveObject to Location: \(location)")
+    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.saveObject to Location: \(location)")
     
     guard let delegateObj = delegate else {
       DebugPrint.fatal("delegate not expected to be nil in saveObject()")

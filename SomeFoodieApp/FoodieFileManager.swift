@@ -329,4 +329,8 @@ class FoodieS3Object {
   func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
     DebugPrint.verbose("")
   }
+  
+  func getUniqueIdentifier() -> String {
+    return foodieFileName!
+  }
 }

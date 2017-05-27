@@ -56,4 +56,8 @@ class FoodiePFObject: PFObject {
     deleteInBackground(block: callback)
   }
   
+  
+  func getUniqueIdentifier() -> String {
+    return String(describing: UnsafeRawPointer(Unmanaged.passUnretained(self).toOpaque()))
+  }
 }

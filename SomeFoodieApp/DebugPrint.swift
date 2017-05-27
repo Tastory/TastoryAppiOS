@@ -9,6 +9,8 @@
 
 class DebugPrint {  // Abstract
   
+  static var verboseFileFunctionLine = false
+  
   // A log entry. You get function, file and line for free  // TODO: Add Logging severity? Make Logs filterable?
   static func log (_ description: String,
                    function: String = #function,
@@ -26,7 +28,11 @@ class DebugPrint {  // Abstract
                    line: Int = #line)
   {
     #if DEBUG  // Only actually do the print if DEBUG / non-production code
-    print("DEBUG_VERBOSE: \(description)  #file = \(file) #function = \(function) #line = \(line)")
+      if verboseFileFunctionLine {
+        print("DEBUG_VERBOSE: \(description)  #file = \(file) #function = \(function) #line = \(line)")
+      } else {
+        print("DEBUG_VERBOSE: \(description)")
+      }
     #endif
   }
   

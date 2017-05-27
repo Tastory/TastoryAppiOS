@@ -13,8 +13,8 @@ class FoodieMoment: FoodiePFObject {
   
   // MARK: - Parse PFObject keys
   // If new objects or external types are added here, check if save and delete algorithms needs updating
-  @NSManaged var mediaFileName: String?  //{  // File name for the media photo or video. Needs to go with the media object
-  @NSManaged var mediaType: String? //{  // Really an enum saying whether it's a Photo or Video
+  @NSManaged var mediaFileName: String?  // File name for the media photo or video. Needs to go with the media object
+  @NSManaged var mediaType: String?  // Really an enum saying whether it's a Photo or Video
   @NSManaged var aspectRatio: Double  // In decimal, width / height, like 16:9 = 16/9 = 1.777...
   @NSManaged var width: Int  // height = width / aspectRatio
   @NSManaged var markups: Array<FoodieMarkup>?  // Array of PFObjects as FoodieMarkup
@@ -60,10 +60,10 @@ class FoodieMoment: FoodiePFObject {
   
   
   // MARK: - Public Instance Variable
-  var mediaObject: FoodieMedia! {
+  var mediaObject: FoodieMedia? {
     didSet {
-      mediaFileName = mediaObject.foodieFileName
-      mediaType = mediaObject.mediaType?.rawValue
+      mediaFileName = mediaObject!.foodieFileName
+      mediaType = mediaObject!.mediaType?.rawValue
     }
   }
   
@@ -86,6 +86,10 @@ class FoodieMoment: FoodiePFObject {
     super.init()
     foodieObject.delegate = self
     mediaObject = foodieMedia
+    
+    // didSet does not get called in initialization context...
+    mediaFileName = foodieMedia.foodieFileName
+    mediaType = foodieMedia.mediaType?.rawValue
   }
 }
 

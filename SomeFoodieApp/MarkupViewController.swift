@@ -433,7 +433,7 @@ class MarkupViewController: UIViewController {
       mediaWidth = Int(videoSize.width)
       mediaAspectRatio = Double(videoSize.width/videoSize.height)
       
-      DebugPrint.verbose("Media width: \(videoSize.width) height: \(videoSize.height). Thumbnail width: \(thumbnailCgImage.width) height: \(thumbnailCgImage.height)")
+      //DebugPrint.verbose("Media width: \(videoSize.width) height: \(videoSize.height). Thumbnail width: \(thumbnailCgImage.width) height: \(thumbnailCgImage.height)")
     }
     
     // Create a Thumbnail Media with file name based on the original file name of the Media
