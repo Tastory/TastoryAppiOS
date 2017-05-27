@@ -14,6 +14,12 @@ import UIKit
 import Photos
 import SwiftyCam
 
+
+protocol CameraReturnDelegate {
+  func captureComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?)
+}
+
+
 class CameraViewController: SwiftyCamViewController {  // View needs to comply to certain protocols going forward?
   
   // MARK: - Global Constants
@@ -22,6 +28,10 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
     static let cameraButtonOnDuration: CFTimeInterval = 0.2  // Duration for animation when the capture button is pressed
     static let cameraButtonOffDuration: CFTimeInterval = 0.2  // Duration for animation when the cpature button is depressed
   }
+  
+  
+  // MARK: Public Instance Variables
+  var cameraReturnDelegate: CameraReturnDelegate?
   
   
   // MARK: - Private Variables
@@ -137,6 +147,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
     viewController.restorationClass = nil
     viewController.mediaObj = mediaObject
+    viewController.markupReturnDelegate = self
     self.present(viewController, animated: true)
   }
   
@@ -177,6 +188,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
       viewController.restorationClass = nil
       viewController.mediaObj = mediaObject
+      viewController.markupReturnDelegate = self
       self.present(viewController, animated: true)
       
     } else {
@@ -211,5 +223,17 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
   // MARK: - UIGestureRecognizer Delegates
   func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
     return true
+  }
+}
+
+
+extension CameraViewController: MarkupReturnDelegate {
+  func markupComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
+    guard let delegate = cameraReturnDelegate else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, cameraReturnDelegate = nil")
+      return
+    }
+    delegate.captureComplete(markedupMoment: markedupMoment, suggestedJournal: suggestedJournal)
   }
 }

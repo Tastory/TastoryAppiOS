@@ -10,10 +10,6 @@ import Foundation
 
 protocol FoodieObjectDelegate: class {
   
-  func saveCompletionFromChild(to location: FoodieObject.StorageLocation,
-                               withName name: String?,
-                               withBlock callback: FoodieObject.BooleanErrorBlock?)
-  
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      withName name: String?,
                      withBlock callback: FoodieObject.BooleanErrorBlock?)
@@ -98,7 +94,7 @@ class FoodieObject {
   fileprivate var protectedOperationState: OperationStates?  // nil if Undetermined
   fileprivate var protectedOperationError: Error?  // Need specific Error object class?
   fileprivate var criticalMutex = pthread_mutex_t()
-  
+  fileprivate var outstandingChildOperations = 0
   
   // MARK: - Public Instance Functions
   init() {
@@ -179,10 +175,8 @@ class FoodieObject {
     
     // If children all came back and there is error, unwind state and call callback
     if protectedOperationError != nil {
-      pthread_mutex_lock(&criticalMutex)
       saveCompleteStateTransition(to: location)
       callback?(false, operationError)
-      pthread_mutex_unlock(&criticalMutex)
     }
       
     // If children all came back and no error, Save yourself!
@@ -197,10 +191,8 @@ class FoodieObject {
         }
         
         // State transition accordingly and call callback
-        pthread_mutex_lock(&self.criticalMutex)
         self.saveCompleteStateTransition(to: location)
         callback?(self.protectedOperationError == nil, self.protectedOperationError)
-        pthread_mutex_unlock(&self.criticalMutex)
       }
     }
   }
@@ -288,11 +280,10 @@ class FoodieObject {
     
     DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.saveChild of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location)")
     
+    outstandingChildOperations += 1
+    
     // Save Recursive for each moment. Call saveCompletionFromChild when done and without errors
     child.saveRecursive(to: location, withName: name) { [unowned self] (success, error) in
-      guard let delegateObj = self.delegate else {
-        DebugPrint.fatal("delegate not expected to be nil in saveChild()")
-      }
       if !success {
         if let hasError = error {
           self.protectedOperationError = hasError
@@ -300,7 +291,17 @@ class FoodieObject {
           DebugPrint.assert("saveChild failed but block contained no Error")
         }
       }
-      delegateObj.saveCompletionFromChild(to: location, withName: name, withBlock: callback)
+      
+      // This need sto be critical section or race condition between many childrens' completion can occur
+      var childOperationsPending = true
+      pthread_mutex_lock(&self.criticalMutex)
+      self.outstandingChildOperations -= 1
+      if self.outstandingChildOperations == 0 { childOperationsPending = false }
+      pthread_mutex_unlock(&self.criticalMutex)
+      
+      if !childOperationsPending {
+        self.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
+      }
     }
   }
   
