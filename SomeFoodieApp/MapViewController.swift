@@ -64,8 +64,9 @@ class MapViewController: UIViewController {
   @IBAction func launchCamera(_ sender: UIButton) {
     // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController")
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
     viewController.restorationClass = nil
+    viewController.cameraReturnDelegate = self
     self.present(viewController, animated: true)
   }
 
@@ -337,4 +338,30 @@ extension MapViewController: UITextFieldDelegate {
 //  let duration = userInfo[UIKeyboardAnimationDurationUserInfoKey] as! Double
 //  let curve = userInfo[UIKeyboardAnimationCurveUserInfoKey] as! UInt
 //  let moveUp = (notification.name == UIKeyboardWillShowNotification)
+}
+
+
+extension MapViewController: CameraReturnDelegate {
+  func captureComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
+    viewController.restorationClass = nil
+    
+    var workingJournal: FoodieJournal?
+    
+    if let journal = suggestedJournal {
+      workingJournal = journal
+    } else if let journal = FoodieJournal.currentJournal {
+      workingJournal = journal
+    } else {
+      workingJournal = FoodieJournal()
+    }
+    
+    viewController.workingJournal = workingJournal!
+    viewController.returnedMoment = markedupMoment
+    
+    dismiss(animated: true) { [unowned self] in
+      self.present(viewController, animated: true)
+    }
+  }
 }

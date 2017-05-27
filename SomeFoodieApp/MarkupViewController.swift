@@ -18,10 +18,16 @@ import ImageIO
 import AVFoundation
 
 
+protocol MarkupReturnDelegate {
+  func markupComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?)
+}
+
+
 class MarkupViewController: UIViewController {
   
   // MARK: - Public Instance Variables
   var mediaObj: FoodieMedia?
+  var markupReturnDelegate: MarkupReturnDelegate?
 
   
   // MARK: - Private Instance Variables
@@ -115,21 +121,20 @@ class MarkupViewController: UIViewController {
            
           // currentJournal.add(moment: momentObj)  // We don't add Moments here, we let the Journal Entry View decide what to do with it
           
-          // Present the Journal Entry view
+          // Returned Markedup-Moment back to Presenting View Controller
           if (weakSelf != nil) {
-            
-            // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
-            viewController.restorationClass = nil
-            viewController.workingJournal = currentJournal
-            viewController.returnedMoment = momentObj
-            weakSelf!.present(viewController, animated: true)
             weakSelf!.avPlayer?.pause()
+            
+            guard let delegate = weakSelf!.markupReturnDelegate else {
+              weakSelf?.internalErrorDialog()
+              DebugPrint.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
+              return
+            }
+            delegate.markupComplete(markedupMoment: momentObj, suggestedJournal: currentJournal)
             
           } else {
             weakSelf?.internalErrorDialog()
-            DebugPrint.assert("weakSelf became nil. Unable to proceed")
+            DebugPrint.assert("Unexpected. weakSelf became nil. Unable to proceed")
             return
           }
         }
@@ -172,15 +177,14 @@ class MarkupViewController: UIViewController {
         
         // Present the Journal Entry view
         if (weakSelf != nil) {
-
-          // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
-          let storyboard = UIStoryboard(name: "Main", bundle: nil)
-          let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
-          viewController.restorationClass = nil
-          viewController.workingJournal = currentJournal
-          viewController.returnedMoment = momentObj
-          weakSelf!.present(viewController, animated: true)
           weakSelf!.avPlayer?.pause()
+          
+          guard let delegate = weakSelf!.markupReturnDelegate else {
+            weakSelf?.internalErrorDialog()
+            DebugPrint.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
+            return
+          }
+          delegate.markupComplete(markedupMoment: momentObj, suggestedJournal: currentJournal)
           
         } else {
           DebugPrint.fatal("weakSelf became nil. Unable to proceed")
@@ -205,14 +209,14 @@ class MarkupViewController: UIViewController {
       let currentJournal = FoodieJournal.newCurrent()
       // currentJournal.add(moment: momentObj)  // We don't add Moments here, we let the Journal Entry View decide what to do with it
       
-      // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
-      let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
-      viewController.restorationClass = nil
-      viewController.workingJournal = currentJournal
-      viewController.returnedMoment = momentObj
-      present(viewController, animated: true)
       avPlayer?.pause()
+      
+      guard let delegate = markupReturnDelegate else {
+        internalErrorDialog()
+        DebugPrint.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
+        return
+      }
+      delegate.markupComplete(markedupMoment: momentObj, suggestedJournal: currentJournal)
     }
   }
   
@@ -332,7 +336,7 @@ class MarkupViewController: UIViewController {
       videoView!.layer.addSublayer(avPlayerLayer!)
       view.addSubview(videoView!)
       view.sendSubview(toBack: videoView!)
-      avPlayer!.play() // TODO: The video keeps playing even if one swipes right and exits the Markup View
+      avPlayer!.play() // TODO: There is some lag with a blank white screen before video starts playing...
       
     
     // No image nor video to work on, Fatal

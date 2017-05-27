@@ -25,16 +25,7 @@ class FoodieCategory: FoodiePFObject {
 
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieCategory: FoodieObjectDelegate {
-  
-  // Function for processing a completion from a child save
-  func saveCompletionFromChild(to location: FoodieObject.StorageLocation,
-                               withName name: String?,
-                               withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    
-    foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
-  }
-  
-  
+
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      withName name: String?,

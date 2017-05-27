@@ -97,36 +97,6 @@ class FoodieMoment: FoodiePFObject {
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieMoment: FoodieObjectDelegate {
   
-  // Function for processing a completion from a child save
-  func saveCompletionFromChild(to location: FoodieObject.StorageLocation,
-                               withName name: String?,
-                               withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    
-    DebugPrint.verbose("FoodieMoment.saveCompletionFromChild to Location: \(location)")
-    
-    var keepWaiting = false
-    
-    // Determine if all children are ready, if not, keep waiting.
-    if let media = mediaObject {
-      if !media.foodieObject.isSaveCompleted(to: location) { keepWaiting = true }
-    }
-    
-    if let hasMarkups = markups, !keepWaiting {
-      for markup in hasMarkups {
-        if !markup.foodieObject.isSaveCompleted(to: location) { keepWaiting = true; break }
-      }
-    }
-    
-    if let thumbnail = thumbnailObject, !keepWaiting {
-      if !thumbnail.foodieObject.isSaveCompleted(to: location) { keepWaiting = true }
-    }
-    
-    if !keepWaiting {
-      foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
-    }
-  }
-  
-  
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      withName name: String? = nil,
