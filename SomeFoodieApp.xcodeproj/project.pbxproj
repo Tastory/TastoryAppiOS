@@ -11,7 +11,8 @@
 		721D47604D8BCFB5A9D29799 /* Pods_SomeFoodieApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 545869F88381BEB58C25B26D /* Pods_SomeFoodieApp.framework */; };
 		8C0590471EC653DF00027E91 /* DiscoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590461EC653DF00027E91 /* DiscoverViewController.swift */; };
 		8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590481EC65B0000027E91 /* RootViewController.swift */; };
-		8C05904B1EC6671400027E91 /* UIStoryboard+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C05904A1EC6671400027E91 /* UIStoryboard+Extensions.swift */; };
+		8C05904B1EC6671400027E91 /* UIStoryboard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */; };
+		8C0590511EC7E6A400027E91 /* FoodieMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590501EC7E6A400027E91 /* FoodieMedia.swift */; };
 		8C1089311EADC11B00457E66 /* MomentHeaderReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */; };
 		8C1089331EADC13700457E66 /* MomentFooterReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */; };
 		8C1089351EAFF18300457E66 /* AddMomentLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089341EAFF18300457E66 /* AddMomentLayer.swift */; };
@@ -19,11 +20,11 @@
 		8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */; };
 		8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */; };
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
-		8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */; };
-		8C61BCDA1E9857F500DDF248 /* ErrorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCD91E9857F500DDF248 /* ErrorModel.swift */; };
+		8C1C71F41ECD7A4B00D2E4F8 /* FoodieFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */; };
+		8C1C71F61ED1602F00D2E4F8 /* FoodieGlobals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */; };
+		8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */; };
+		8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */; };
 		8C61BCDC1E985D1300DDF248 /* DebugPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */; };
-		8C6A96971E98435D00B8C309 /* FoodieError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C6A96961E98435D00B8C309 /* FoodieError.swift */; };
-		8C89866E1E9189F500B62306 /* MyClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89866D1E9189F500B62306 /* MyClass.swift */; };
 		8C8986701E91981C00B62306 /* FoodieMarkup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89866F1E91981C00B62306 /* FoodieMarkup.swift */; };
 		8C8986721E91982E00B62306 /* FoodieJournal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986711E91982E00B62306 /* FoodieJournal.swift */; };
 		8C8986741E91985700B62306 /* FoodieEatery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986731E91985700B62306 /* FoodieEatery.swift */; };
@@ -48,7 +49,7 @@
 		8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55B11E80C72200F4B1CD /* MapViewController.swift */; };
 		8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */; };
 		8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */; };
-		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extensions.swift */; };
+		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */; };
 		C24F69651EB85B0300A0DB7B /* ViewEntryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69641EB85B0300A0DB7B /* ViewEntryController.swift */; };
 		C24F69671EB85DF300A0DB7B /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69661EB85DF300A0DB7B /* PlayerView.swift */; };
 		C5A7852B6648DF71C73BE203 /* Pods_SomeFoodieAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED09C3927B27479449C01250 /* Pods_SomeFoodieAppTests.framework */; };
@@ -78,7 +79,8 @@
 		62F60AA88724A11053226C2C /* Pods-SomeFoodieAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SomeFoodieAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SomeFoodieAppUITests/Pods-SomeFoodieAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		8C0590461EC653DF00027E91 /* DiscoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverViewController.swift; sourceTree = "<group>"; };
 		8C0590481EC65B0000027E91 /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
-		8C05904A1EC6671400027E91 /* UIStoryboard+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+Extensions.swift"; sourceTree = "<group>"; };
+		8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+Extension.swift"; sourceTree = "<group>"; };
+		8C0590501EC7E6A400027E91 /* FoodieMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMedia.swift; sourceTree = "<group>"; };
 		8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentHeaderReusableView.swift; path = SomeFoodieApp/MomentHeaderReusableView.swift; sourceTree = "<group>"; };
 		8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentFooterReusableView.swift; path = SomeFoodieApp/MomentFooterReusableView.swift; sourceTree = "<group>"; };
 		8C1089341EAFF18300457E66 /* AddMomentLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddMomentLayer.swift; path = SomeFoodieApp/AddMomentLayer.swift; sourceTree = "<group>"; };
@@ -86,11 +88,11 @@
 		8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentCollectionViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButton.swift; path = SomeFoodieApp/CameraButton.swift; sourceTree = "<group>"; };
-		8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MKCoordinateSpan+Extensions.swift"; sourceTree = "<group>"; };
-		8C61BCD91E9857F500DDF248 /* ErrorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorModel.swift; sourceTree = "<group>"; };
+		8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFileManager.swift; sourceTree = "<group>"; };
+		8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieGlobals.swift; sourceTree = "<group>"; };
+		8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MKCoordinateSpan+Extension.swift"; sourceTree = "<group>"; };
+		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
 		8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugPrint.swift; sourceTree = "<group>"; };
-		8C6A96961E98435D00B8C309 /* FoodieError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieError.swift; sourceTree = "<group>"; };
-		8C89866D1E9189F500B62306 /* MyClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyClass.swift; sourceTree = "<group>"; };
 		8C89866F1E91981C00B62306 /* FoodieMarkup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMarkup.swift; sourceTree = "<group>"; };
 		8C8986711E91982E00B62306 /* FoodieJournal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieJournal.swift; sourceTree = "<group>"; };
 		8C8986731E91985700B62306 /* FoodieEatery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieEatery.swift; sourceTree = "<group>"; };
@@ -121,7 +123,7 @@
 		8CBF55B11E80C72200F4B1CD /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JournalEntryViewController.swift; sourceTree = "<group>"; };
 		8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentCollectionViewCell.swift; path = SomeFoodieApp/MomentCollectionViewCell.swift; sourceTree = "<group>"; };
-		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extensions.swift"; sourceTree = "<group>"; };
+		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		C24F69641EB85B0300A0DB7B /* ViewEntryController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewEntryController.swift; sourceTree = "<group>"; };
 		C24F69661EB85DF300A0DB7B /* PlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PlayerView.swift; path = SomeFoodieApp/PlayerView.swift; sourceTree = "<group>"; };
 		D774075B6C8726908633E5B2 /* Pods-SomeFoodieAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SomeFoodieAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SomeFoodieAppTests/Pods-SomeFoodieAppTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -177,20 +179,29 @@
 			name = Layouts;
 			sourceTree = "<group>";
 		};
+		8C1D4E181ED8DEFA00939B2C /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */,
+			);
+			name = Utilities;
+			sourceTree = "<group>";
+		};
 		8C9AD05A1E8F60E4005F337E /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				8C61BCD91E9857F500DDF248 /* ErrorModel.swift */,
-				8C6A96961E98435D00B8C309 /* FoodieError.swift */,
+				8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */,
 				8C89867D1E958B4300B62306 /* FoodieObject.swift */,
-				8C8986791E933E2E00B62306 /* FoodieUser.swift */,
+				8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */,
+				8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */,
 				8C8986711E91982E00B62306 /* FoodieJournal.swift */,
-				8C8986731E91985700B62306 /* FoodieEatery.swift */,
-				8C8986751E91A72D00B62306 /* FoodieCategory.swift */,
 				8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */,
 				8C89866F1E91981C00B62306 /* FoodieMarkup.swift */,
+				8C8986731E91985700B62306 /* FoodieEatery.swift */,
+				8C8986751E91A72D00B62306 /* FoodieCategory.swift */,
+				8C0590501EC7E6A400027E91 /* FoodieMedia.swift */,
+				8C8986791E933E2E00B62306 /* FoodieUser.swift */,
 				8C8986771E91DC5800B62306 /* FoodieHistory.swift */,
-				8C89866D1E9189F500B62306 /* MyClass.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -198,6 +209,7 @@
 		8CBF55771E7F7EDF00F4B1CD = {
 			isa = PBXGroup;
 			children = (
+				C25746C21EC2C6F00098A45C /* Common */,
 				8CBF55821E7F7EDF00F4B1CD /* SomeFoodieApp */,
 				8CBF55971E7F7EDF00F4B1CD /* SomeFoodieAppTests */,
 				8CBF55A21E7F7EDF00F4B1CD /* SomeFoodieAppUITests */,
@@ -222,7 +234,7 @@
 			children = (
 				8CBF558A1E7F7EDF00F4B1CD /* Assets.xcassets */,
 				8CBF558F1E7F7EDF00F4B1CD /* Info.plist */,
-				8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */,
+				8C1D4E181ED8DEFA00939B2C /* Utilities */,
 				8CD328D81E8B2B7900E5254F /* Extensions */,
 				8C9AD05A1E8F60E4005F337E /* Models */,
 				8CD328D71E8B2B4B00E5254F /* Views */,
@@ -270,9 +282,9 @@
 		8CD328D81E8B2B7900E5254F /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				8C05904A1EC6671400027E91 /* UIStoryboard+Extensions.swift */,
-				8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extensions.swift */,
-				8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extensions.swift */,
+				8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */,
+				8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */,
+				8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */,
 				8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */,
 			);
 			name = Extensions;
@@ -317,6 +329,13 @@
 				051E9F9183F7DA7F59C70872 /* Pods-SomeFoodieAppUITests.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		C25746C21EC2C6F00098A45C /* Common */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Common;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -401,13 +420,13 @@
 					};
 					8CBF55931E7F7EDF00F4B1CD = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = G37J442U66;
+						DevelopmentTeam = U6CK262SK9;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 8CBF557F1E7F7EDF00F4B1CD;
 					};
 					8CBF559E1E7F7EDF00F4B1CD = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = G37J442U66;
+						DevelopmentTeam = U6CK262SK9;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 8CBF557F1E7F7EDF00F4B1CD;
 					};
@@ -606,10 +625,11 @@
 				8C1089311EADC11B00457E66 /* MomentHeaderReusableView.swift in Sources */,
 				8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */,
 				8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */,
-				8C89866E1E9189F500B62306 /* MyClass.swift in Sources */,
 				8C8986741E91985700B62306 /* FoodieEatery.swift in Sources */,
 				8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */,
 				8C0590471EC653DF00027E91 /* DiscoverViewController.swift in Sources */,
+				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobals.swift in Sources */,
+				8C0590511EC7E6A400027E91 /* FoodieMedia.swift in Sources */,
 				8C8986721E91982E00B62306 /* FoodieJournal.swift in Sources */,
 				8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */,
 				8C8986701E91981C00B62306 /* FoodieMarkup.swift in Sources */,
@@ -617,28 +637,28 @@
 				8C8986781E91DC5800B62306 /* FoodieHistory.swift in Sources */,
 				8C1089331EADC13700457E66 /* MomentFooterReusableView.swift in Sources */,
 				8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */,
+				8C1C71F41ECD7A4B00D2E4F8 /* FoodieFileManager.swift in Sources */,
 				8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */,
 				8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */,
 				8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */,
 				8C8986761E91A72D00B62306 /* FoodieCategory.swift in Sources */,
 				8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */,
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,
-				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extensions.swift in Sources */,
-				8C61BCDA1E9857F500DDF248 /* ErrorModel.swift in Sources */,
+				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */,
 				8C1089351EAFF18300457E66 /* AddMomentLayer.swift in Sources */,
 				C24F69671EB85DF300A0DB7B /* PlayerView.swift in Sources */,
 				8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */,
-				8C6A96971E98435D00B8C309 /* FoodieError.swift in Sources */,
+				8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */,
 				8C9AD0631E8F615D005F337E /* CameraButtonRingLayer.swift in Sources */,
 				8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */,
 				8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */,
-				8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extensions.swift in Sources */,
+				8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */,
 				8C61BCDC1E985D1300DDF248 /* DebugPrint.swift in Sources */,
 				8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */,
 				8C9AD0641E8F615D005F337E /* CameraCrossLayer.swift in Sources */,
 				8C1089371EB00E3E00457E66 /* MomentCollectionLayout.swift in Sources */,
 				8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */,
-				8C05904B1EC6671400027E91 /* UIStoryboard+Extensions.swift in Sources */,
+				8C05904B1EC6671400027E91 /* UIStoryboard+Extension.swift in Sources */,
 				8C9AD0621E8F615D005F337E /* CameraButtonLayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -736,7 +756,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -779,7 +799,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -821,7 +841,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = G37J442U66;
+				DEVELOPMENT_TEAM = U6CK262SK9;
 				INFOPLIST_FILE = SomeFoodieAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hci.SomeFoodieAppTests;
@@ -837,7 +857,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = G37J442U66;
+				DEVELOPMENT_TEAM = U6CK262SK9;
 				INFOPLIST_FILE = SomeFoodieAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hci.SomeFoodieAppTests;
@@ -852,7 +872,7 @@
 			baseConfigurationReference = 62F60AA88724A11053226C2C /* Pods-SomeFoodieAppUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				DEVELOPMENT_TEAM = G37J442U66;
+				DEVELOPMENT_TEAM = U6CK262SK9;
 				INFOPLIST_FILE = SomeFoodieAppUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hci.SomeFoodieAppUITests;
@@ -867,7 +887,7 @@
 			baseConfigurationReference = 051E9F9183F7DA7F59C70872 /* Pods-SomeFoodieAppUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				DEVELOPMENT_TEAM = G37J442U66;
+				DEVELOPMENT_TEAM = U6CK262SK9;
 				INFOPLIST_FILE = SomeFoodieAppUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hci.SomeFoodieAppUITests;

@@ -14,8 +14,32 @@
 import UIKit
 import MapKit
 
-class JournalEntryViewController: UITableViewController {
 
+class JournalEntryViewController: UITableViewController {
+  
+  // MARK: - Private Static Constants
+  fileprivate struct Constants {
+    static let mapHeight: CGFloat = floor(UIScreen.main.bounds.height/4)
+    static let momentHeight: CGFloat = floor(UIScreen.main.bounds.height/3)
+  }
+  
+  
+  // MARK: - Private Instance Constants
+  fileprivate let sectionOneView = UIView()
+  fileprivate let mapView = MKMapView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: Constants.mapHeight))
+  
+  
+  // MARK: - Public Instance Variable
+  var workingJournal: FoodieJournal?
+  var returnedMoment: FoodieMoment?
+  
+  
+  // MARK: - Private Instance Variables
+  fileprivate var placeholderLabel = UILabel()
+  fileprivate var momentViewController = MomentCollectionViewController()
+  fileprivate var markupMoment: FoodieMoment? = nil
+  
+  
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var venueTextField: UITextField?
@@ -32,46 +56,77 @@ class JournalEntryViewController: UITableViewController {
   }
   
   
-  // MARK: - Public Instance Variable
-  var workingJournal: FoodieJournal?
-  
-  
-  // MARK: - Private Class Constants
-  fileprivate struct Constants {
-    static let mapHeight: CGFloat = floor(UIScreen.main.bounds.height/4)
-    static let momentHeight: CGFloat = floor(UIScreen.main.bounds.height/3)
+  // MARK: - IBActions
+  @IBAction func testSaveJournal(_ sender: Any) {
+    workingJournal?.saveRecursive(to: .local) { [unowned self] (success, error) in
+      if success {
+        DebugPrint.verbose("Journal Save to Local Completed!")
+        
+        self.workingJournal?.saveRecursive(to: .server) { (success, error) in
+          if success {
+            DebugPrint.verbose("Journal Save to Server Completed!")
+          } else if let error = error {
+            DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
+          } else {
+            DebugPrint.fatal("Journal Save to Server Failed without Error")
+          }
+        }
+        
+      } else if let error = error {
+        DebugPrint.verbose("Journal Save to Local Failed with Error: \(error)")
+      } else {
+        DebugPrint.fatal("Journal Save to Local Failed without Error")
+      }
+    }
   }
-  
-  
-  // MARK: - Private Instance Constants
-  fileprivate let sectionOneView = UIView()
-  fileprivate let mapView = MKMapView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: Constants.mapHeight))
-
-  
-  // MARK: - Private Instance Variables
-  fileprivate var placeholderLabel = UILabel()
-  fileprivate var momentViewController = MomentCollectionViewController()
   
   
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    sectionOneView.addSubview(mapView)
-
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
-    
     guard let journalUnwrapped = workingJournal else {
       DebugPrint.fatal("workingJournal = nil")
     }
     
+    // TODO: Do we need to download the Journal itself first? How can we tell?
+    
+    
+    // Let's figure out what to do with the returned Moment
+    if returnedMoment == nil {
+      // Nothing needs to be done. Assume no moment returned.
+      
+    } else if markupMoment != nil {
+      
+      // So there is a Moment under markup. The returned Moment should match this.
+      if returnedMoment === markupMoment {
+        
+        // TODO: Gotta do a Moment Replace operation. See Foodie Object Model
+        // Probably replace the Moment in Memory. Set the right flags so Pre-Upload will do the right things
+        
+      } else {
+        internalErrorDialog()
+        DebugPrint.assert("returnedMoment expected to match markupMoment")
+      }
+    } else {
+      
+      // This is a new Moment. Let's add it to the Journal!
+      journalUnwrapped.add(moment: returnedMoment!)
+    }
+    
+    // TODO: How to visually convey status of Moments to user??
+    
+    // Setup the View, Moment VC, Text Fields, Keyboards, etc.
+    sectionOneView.addSubview(mapView)
+    
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
     momentViewController.workingJournal = journalUnwrapped
     momentViewController.momentHeight = Constants.momentHeight
     
     self.addChildViewController(momentViewController)
     momentViewController.didMove(toParentViewController: self)
-    
+          
     titleTextField?.delegate = self
     venueTextField?.delegate = self
     linkTextField?.delegate = self
@@ -89,16 +144,32 @@ class JournalEntryViewController: UITableViewController {
     
     titleTextField?.text = journalUnwrapped.title
   }
-}
-
-
-// MARK: - Helper Functions
-extension JournalEntryViewController {
+  
+  
+  override func viewDidAppear(_ animated: Bool) {
+    // Start pre-upload operations, and other background trickeries
+  }
+  
+  
+  // MARK: - Private Instance Functions
+  
+  // Generic error dialog box to the user on internal errors
+  private func internalErrorDialog() {
+    let alertController = UIAlertController(title: "SomeFoodieApp",
+                                            titleComment: "Alert diaglogue title when a Journal Entry view internal error occured",
+                                            message: "An internal error has occured. Please try again",
+                                            messageComment: "Alert dialog message when a Journal Entry view internal error occured",
+                                            preferredStyle: .alert)
+    alertController.addAlertAction(title: "OK",
+                                   comment: "Button in alert dialog box for generic Journal Entry errors",
+                                   style: .default)
+    self.present(alertController, animated: true, completion: nil)
+  }
   
   func keyboardDismiss() {
     self.view.endEditing(true)
   }
-
+  
   func vcDismiss() {
     // TODO: Data Passback through delegate?
     dismiss(animated: true, completion: nil)
@@ -114,7 +185,7 @@ extension JournalEntryViewController {
     case 0:
       return sectionOneView
     case 1:
-      return momentViewController.view
+      return momentViewController.collectionView! as UIView
     default:
       return nil
     }
@@ -142,10 +213,13 @@ extension JournalEntryViewController {
   
   override func scrollViewDidScroll(_ scrollView: UIScrollView) {
     let currentOffset = scrollView.contentOffset.y
-    let height = ceil(Constants.mapHeight - currentOffset)
+    var height = Constants.mapHeight - currentOffset
     
     if height == 0 {
-      DebugPrint.fatal("Height cannot be value of 0")
+      DebugPrint.error("Height tried to be 0")
+      height = 1
+    } else {
+      //DebugPrint.verbose("Height = \(height)")
     }
     
     // Need to take the ceiling as a 0 height with cause a crash

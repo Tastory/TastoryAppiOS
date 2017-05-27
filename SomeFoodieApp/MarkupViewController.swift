@@ -14,22 +14,30 @@
 //
 
 import UIKit
+import ImageIO
 import AVFoundation
 
 
 class MarkupViewController: UIViewController {
   
-  
   // MARK: - Public Instance Variables
-  var photoToMarkup: UIImage?
-  var videoToMarkupURL: URL?  // TODO: Video related implementations
-  
-  var avPlayer = AVPlayer()
-  var avPlayerLayer = AVPlayerLayer()
-  
+  var mediaObj: FoodieMedia?
+
   
   // MARK: - Private Instance Variables
-  var photoView: UIImageView?
+  fileprivate var avPlayer: AVQueuePlayer?
+  fileprivate var avPlayerLayer: AVPlayerLayer?
+  fileprivate var avPlayerItem: AVPlayerItem?
+  fileprivate var avPlayerLooper: AVPlayerLooper?
+  
+  fileprivate var videoView: UIView?
+  fileprivate var photoView: UIImageView?
+  
+  fileprivate var thumbnailObject: FoodieMedia?
+  fileprivate var mediaObject: FoodieMedia!
+  
+  fileprivate var mediaWidth: Int?
+  fileprivate var mediaAspectRatio: Double?
   
   
   // MARK: - IBOutlets
@@ -37,69 +45,35 @@ class MarkupViewController: UIViewController {
   
   
   // MARK: - IBActions
-  
   @IBAction func exitSwiped(_ sender: UISwipeGestureRecognizer) {
     // TODO: Data Passback through delegate?
     dismiss(animated: true, completion: nil)
   }
-  
-  
+
   @IBAction func saveButtonAction(_ sender: UIButton) {
     
-    let momentObj = FoodieMoment()
+    // TODO: Don't let use click save (Gray it out until Thumbnail creation completed)
     
-    guard let photo = photoToMarkup else {
-      internalErrorDialog()
-      DebugPrint.assert("Unexpected. photoToMarkup is nil")
+    // Initializing with Media Object also initialize foodieFileName and mediaType
+    let momentObj = FoodieMoment(foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
+    
+    // Setting the Thumbnail Object also initializes the thumbnailFileName
+    momentObj.thumbnailObject = thumbnailObject
+    
+    // Fill in the width and aspect ratio
+    guard let width = mediaWidth else {
+      saveErrorDialog()
+      DebugPrint.assert("Unexpected. mediaWidth == nil")
       return
     }
-  
-    do {  // TODO: Video related implementations
-      // Save the image as the media of the Moment
-      try momentObj.setMedia(withPhoto: photo)
-      
-    } catch let thrown as FoodieError {
-      
-      switch thrown.error {
-        
-      case FoodieError.Code.Moment.setMediaWithPhotoImageNil.rawValue:
-        internalErrorDialog()
-        DebugPrint.assert("Caught Moment.setMediaWithPhotoImageNil")
-        return
-        
-      case FoodieError.Code.Moment.setMediaWithPhotoJpegRepresentationFailed.rawValue:
-        internalErrorDialog()
-        DebugPrint.assert("Caught Moment.setMediaWithPhotoJpegRepresentationFailed")
-        return
-      
-      default:
-        internalErrorDialog()
-        DebugPrint.assert("Caught unrecognized Error: \(thrown.localizedDescription)")
-        return
-      }
-      
-    } catch let thrown {
-      internalErrorDialog()
-      DebugPrint.assert(thrown.localizedDescription)
+    momentObj.width = width
+    
+    guard let aspectRatio = mediaAspectRatio else {
+      saveErrorDialog()
+      DebugPrint.assert("Unexpected. mediaAspectRatio == nil")
       return
     }
-    
-// TODO: Implement with Markup and Scrape features
-//    momentObj.markup
-//    momentObj.tags
-//    
-// TODO: Implement along with User Login
-//    momentObj.author
-//    
-// TODO: Implement along with Foursquare integration
-//    momentObj.eatery
-//    momentObj.categories
-//    momentObj.type
-//    momentObj.attribute
-//    
-// TODO: Impelemnt with display views
-//    momentObj.views
-//    momentObj.clickthroughs
+    momentObj.aspectRatio = aspectRatio
     
     if FoodieJournal.currentJournal != nil {
       // Display Action Sheet to ask user if they want to add this Moment to current Journal, or a new one, or Cancel
@@ -113,7 +87,7 @@ class MarkupViewController: UIViewController {
 
         // Create a button and associated Callback for discarding the previous current Journal and make a new one
         let discardButton = UIAlertAction(title: "Discard",
-                                          comment: "Button to discard current Journal in alert dialogue box to warn user",
+                                          comment: "Button to discard current Journal in alert dialog box to warn user",
                                           style: .destructive) { action in
           
           var currentJournal = FoodieJournal()
@@ -128,9 +102,9 @@ class MarkupViewController: UIViewController {
               return
             }
           }
-          catch let thrown as FoodieError {
+          catch let thrown as FoodieJournal.ErrorCode {
             weakSelf?.internalErrorDialog()
-            DebugPrint.assert("Caught FoodieError.Journal from .newCurrentSync(): \(thrown.localizedDescription)")
+            DebugPrint.assert("Caught FoodieJournal.Error from .newCurrentSync(): \(thrown.localizedDescription)")
             return
           }
           catch let thrown {
@@ -139,9 +113,7 @@ class MarkupViewController: UIViewController {
             return
           }
            
-          // Just directly add to the current Journal
-          currentJournal.add(moment: momentObj)
-          //Set JournalEntryVC's workingJournal to this Journal
+          // currentJournal.add(moment: momentObj)  // We don't add Moments here, we let the Journal Entry View decide what to do with it
           
           // Present the Journal Entry view
           if (weakSelf != nil) {
@@ -151,7 +123,9 @@ class MarkupViewController: UIViewController {
             let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
             viewController.restorationClass = nil
             viewController.workingJournal = currentJournal
+            viewController.returnedMoment = momentObj
             weakSelf!.present(viewController, animated: true)
+            weakSelf!.avPlayer?.pause()
             
           } else {
             weakSelf?.internalErrorDialog()
@@ -189,14 +163,12 @@ class MarkupViewController: UIViewController {
         
         weak var weakSelf = self  // Do we need weak self here? We do right?
         guard let currentJournal = FoodieJournal.currentJournal else {
-          weakSelf?.saveErrorDialogue()
+          weakSelf?.saveErrorDialog()
           DebugPrint.assert("nil FoodieJorunal.currentJournal when trying to Add a Moment to Current Journal")
           return
         }
         
-        // Just directly add to the current Journal
-        currentJournal.add(moment: momentObj)
-        // Set the JournalEntryVC's workingJournal to this journal
+        // currentJournal.add(moment: momentObj)  // We don't add Moments here, we let the Journal Entry View decide what to do with it
         
         // Present the Journal Entry view
         if (weakSelf != nil) {
@@ -206,7 +178,9 @@ class MarkupViewController: UIViewController {
           let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
           viewController.restorationClass = nil
           viewController.workingJournal = currentJournal
+          viewController.returnedMoment = momentObj
           weakSelf!.present(viewController, animated: true)
+          weakSelf!.avPlayer?.pause()
           
         } else {
           DebugPrint.fatal("weakSelf became nil. Unable to proceed")
@@ -227,58 +201,73 @@ class MarkupViewController: UIViewController {
       
     } else {
       
-      // Just directly add to a new Journal
+      // Create a new Current Journal
       let currentJournal = FoodieJournal.newCurrent()
-      currentJournal.add(moment: momentObj)
-      // Set the JournalEntryVC's working Journal to this journal
+      // currentJournal.add(moment: momentObj)  // We don't add Moments here, we let the Journal Entry View decide what to do with it
       
       // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
       let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
       viewController.restorationClass = nil
       viewController.workingJournal = currentJournal
+      viewController.returnedMoment = momentObj
       present(viewController, animated: true)
+      avPlayer?.pause()
     }
   }
   
   
-  // MARK: - Class Private Functions
+  // MARK: - Private Instance Functions
   
-  // Generic error dialogue box to the user on internal errors
-  private func internalErrorDialog() {
+  // Generic error dialog box to the user on internal errors
+  func internalErrorDialog() {
     let alertController = UIAlertController(title: "SomeFoodieApp",
                                             titleComment: "Alert diaglogue title when a Markup Image view internal error occured",
                                             message: "An internal error has occured. Please try again",
-                                            messageComment: "Alert dialogue message when a Markup Image view internal error occured",
+                                            messageComment: "Alert dialog message when a Markup Image view internal error occured",
                                             preferredStyle: .alert)
     alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialogue box for generic MarkupImageView errors",
+                                   comment: "Button in alert dialog box for generic MarkupImageView errors",
                                    style: .default)
     self.present(alertController, animated: true, completion: nil)
   }
   
-  // Generic error dialogue box to the user on save errors
-  private func saveErrorDialogue() {
+  // Generic error dialog box to the user when displaying photo or video
+  fileprivate func displayErrorDialog() {
+    let alertController = UIAlertController(title: "SomeFoodieApp",
+                                            titleComment: "Alert diaglogue title when Markup Image view has problem displaying photo or video",
+                                            message: "Error displaying media. Please try again",
+                                            messageComment: "Alert dialog message when Markup Image view has problem displaying photo or video",
+                                            preferredStyle: .alert)
+    alertController.addAlertAction(title: "OK",
+                                   comment: "Button in alert dialog box for error when displaying photo or video in MarkupImageView",
+                                   style: .default)
+    
+    self.present(alertController, animated: true, completion: nil)
+  }
+  
+  // Generic error dialog box to the user on save errors
+  fileprivate func saveErrorDialog() {
     let alertController = UIAlertController(title: "SomeFoodieApp",
                                             titleComment: "Alert diaglogue title when Markup Image view has problem saving",
                                             message: "Error saving Journal. Please try again",
-                                            messageComment: "Alert dialogue message when Markup Image view has problem saving",
+                                            messageComment: "Alert dialog message when Markup Image view has problem saving",
                                             preferredStyle: .alert)
     alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialogue box for MarkupImageView save errors",
+                                   comment: "Button in alert dialog box for MarkupImageView save errors",
                                    style: .default)
     self.present(alertController, animated: true, completion: nil)
   }
   
-  // Generic error dialogue box to the user when adding Moments
-  private func addErrorDialogue() {
+  // Generic error dialog box to the user when adding Moments
+  fileprivate func addErrorDialog() {
     let alertController = UIAlertController(title: "SomeFoodieApp",
                                             titleComment: "Alert diaglogue title when Markup Image view has problem adding a Moment",
                                             message: "Error adding Moment. Please try again",
-                                            messageComment: "Alert dialogue message when Markup Image view has problem adding a Moment",
+                                            messageComment: "Alert dialog message when Markup Image view has problem adding a Moment",
                                             preferredStyle: .alert)
     alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialogue box for error when adding Moments in MarkupImageView",
+                                   comment: "Button in alert dialog box for error when adding Moments in MarkupImageView",
                                    style: .default)
     
     self.present(alertController, animated: true, completion: nil)
@@ -289,34 +278,173 @@ class MarkupViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    // Only one of photoToMarkup or videoToMarkupURL should be set
-    if photoToMarkup != nil && videoToMarkupURL != nil {
-      DebugPrint.assert("Both photoToMarkup and videoToMarkupURL not-nil")
+    if mediaObj == nil {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, mediaObj == nil ")
+      return
+    } else {
+      mediaObject = mediaObj!
+    }
+    
+    guard let mediaType = mediaObject.mediaType else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, mediaType == nil")
+      return
     }
     
     // Display the photo
-    if let photo = photoToMarkup {
+    if mediaType == .photo {
+        
       photoView = UIImageView(frame: view.bounds)
-      view.addSubview(photoView!)
-      view.sendSubview(toBack: photoView!)
-      photoView?.image = photo
       
-    // Loop the video
-    } else if let videoURL = videoToMarkupURL {
-      NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.avPlayer.currentItem, queue: .main) { (_) in
-        self.avPlayer.seek(to: kCMTimeZero)
-        self.avPlayer.play()
+      guard let imageView = photoView else {
+        displayErrorDialog()
+        DebugPrint.assert("photoView = UIImageView(frame: _) failed")
+        return
       }
       
-      avPlayer = AVPlayer(url: videoURL)
+      guard let imageBuffer = mediaObject.imageMemoryBuffer else {
+        displayErrorDialog()
+        DebugPrint.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
+        return
+      }
+      
+      view.addSubview(imageView)
+      view.sendSubview(toBack: imageView)
+      imageView.image = UIImage(data: imageBuffer)
+      
+    // Loop the video
+    } else if mediaType == .video {
+      
+      guard let videoURL = mediaObject.videoLocalBufferUrl else {
+        displayErrorDialog()
+        DebugPrint.assert("Unexpected, mediaObject.videoLocalBufferUrl == nil")
+        return
+      }
+
+      avPlayer = AVQueuePlayer()
       avPlayerLayer = AVPlayerLayer(player: avPlayer)
-      avPlayerLayer.frame = self.view.bounds
-      view.layer.addSublayer(avPlayerLayer) // TODO: Need to move this layer to the back, it's covering the Save button
-      avPlayer.play() // TODO: The video keeps playing even if one swipes right and exits the Markup View
+      avPlayerLayer!.frame = self.view.bounds
+      avPlayerItem = AVPlayerItem(url: videoURL)
+      avPlayerLooper = AVPlayerLooper(player: avPlayer!, templateItem: avPlayerItem!)
+      
+      videoView = UIView(frame: self.view.bounds)
+      videoView!.layer.addSublayer(avPlayerLayer!)
+      view.addSubview(videoView!)
+      view.sendSubview(toBack: videoView!)
+      avPlayer!.play() // TODO: The video keeps playing even if one swipes right and exits the Markup View
+      
     
     // No image nor video to work on, Fatal
     } else {
       DebugPrint.fatal("Both photoToMarkup and videoToMarkupURL are nil")
     }
+  }
+  
+  
+  override func viewDidAppear(_ animated: Bool) {
+
+    // Obtain thumbnail, width and aspect ratio ahead of time once view is already loaded
+    let thumbnailCgImage: CGImage!
+    
+    // Need to decide what image to set as thumbnail
+    switch mediaObject.mediaType! {
+    case .photo:
+      guard let imageBuffer = mediaObject.imageMemoryBuffer else {
+        internalErrorDialog()
+        DebugPrint.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
+        return
+      }
+      
+      guard let imageSource = CGImageSourceCreateWithData(imageBuffer as CFData, nil) else {
+        internalErrorDialog()
+        DebugPrint.assert("CGImageSourceCreateWithData() failed")
+        return
+      }
+      
+      let options = [
+        kCGImageSourceThumbnailMaxPixelSize as String : FoodieConstants.thumbnailPixels as NSNumber,
+        kCGImageSourceCreateThumbnailFromImageAlways as String : true as NSNumber,
+        kCGImageSourceCreateThumbnailWithTransform as String: true as NSNumber
+      ]
+      thumbnailCgImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options as CFDictionary)  // Assuming either portrait or square
+      
+      // Get the width and aspect ratio while at it
+      let imageCount = CGImageSourceGetCount(imageSource)
+      
+      if imageCount != 1 {
+        internalErrorDialog()
+        DebugPrint.assert("Image Source Count not 1")
+        return
+      }
+      
+      guard let imageProperties = (CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [String : AnyObject]) else {
+        internalErrorDialog()
+        DebugPrint.assert("CGImageSourceCopyPropertiesAtIndex failed to get Dictionary of image properties")
+        return
+      }
+      
+      if let pixelWidth = imageProperties[kCGImagePropertyPixelWidth as String] as? Int {
+        mediaWidth = pixelWidth
+      } else {
+        internalErrorDialog()
+        DebugPrint.assert("Image property with index kCGImagePropertyPixelWidth did not return valid Integer value")
+        return
+      }
+      
+      if let pixelHeight = imageProperties[kCGImagePropertyPixelHeight as String] as? Int {
+        mediaAspectRatio = Double(mediaWidth!)/Double(pixelHeight)
+      } else {
+        internalErrorDialog()
+        DebugPrint.assert("Image property with index kCGImagePropertyPixelHeight did not return valid Integer value")
+        return
+      }
+      
+    case .video:      // TODO: Allow user to change timeframe in video to base Thumbnail on
+      guard let videoUrl = mediaObject.videoLocalBufferUrl else {
+        internalErrorDialog()
+        DebugPrint.assert("Unexpected, videoLocalBufferUrl == nil")
+        return
+      }
+      
+      let asset = AVURLAsset(url: videoUrl)
+      let imgGenerator = AVAssetImageGenerator(asset: asset)
+      
+      imgGenerator.maximumSize = CGSize(width: FoodieConstants.thumbnailPixels, height: FoodieConstants.thumbnailPixels)  // Assuming either portrait or square
+      imgGenerator.appliesPreferredTrackTransform = true
+      
+      do {
+        thumbnailCgImage = try imgGenerator.copyCGImage(at: CMTimeMake(0, 1), actualTime: nil)
+      } catch {
+        internalErrorDialog()
+        DebugPrint.assert("AVAssetImageGenerator.copyCGImage failed with error: \(error.localizedDescription)")
+        return
+      }
+      
+      let avTracks = asset.tracks(withMediaType: AVMediaTypeVideo)
+      
+      if avTracks.count != 1 {
+        internalErrorDialog()
+        DebugPrint.assert("There isn't exactly 1 video track for the AVURLAsset")
+        return
+      }
+      
+      let videoSize = avTracks[0].naturalSize
+      mediaWidth = Int(videoSize.width)
+      mediaAspectRatio = Double(videoSize.width/videoSize.height)
+      
+      //DebugPrint.verbose("Media width: \(videoSize.width) height: \(videoSize.height). Thumbnail width: \(thumbnailCgImage.width) height: \(thumbnailCgImage.height)")
+    }
+    
+    // Create a Thumbnail Media with file name based on the original file name of the Media
+    guard let foodieFileName = mediaObject.foodieFileName else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected. mediaObject.foodieFileName = nil")
+      return
+    }
+    
+    thumbnailObject = FoodieMedia(fileName: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), type: .photo)
+    thumbnailObject!.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieConstants.jpegCompressionQuality))
+    //CGImageRelease(thumbnailCgImage)
   }
 }

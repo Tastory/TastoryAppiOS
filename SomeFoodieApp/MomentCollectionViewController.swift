@@ -36,30 +36,24 @@ class MomentCollectionViewController: UICollectionViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    guard let collectionViewUnwrapped = collectionView else {
-      DebugPrint.fatal("nil collectionView in Moment Collection View Controller")
-    }
-
     guard let momentHeightUnwrapped = momentHeight else {
       DebugPrint.fatal("nil momentHeight in Moment Collection View Controller")
     }
-    // Uncomment the following line to preserve selection between presentations
-    // self.clearsSelectionOnViewWillAppear = false
-
-    collectionViewUnwrapped.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+//    // Uncomment the following line to preserve selection between presentations
+//    self.clearsSelectionOnViewWillAppear = false
+//    self.automaticallyAdjustsScrollViewInsets = false  // Added in attempt to fix Undefined Layout issue. Not needed anymore
 
     // Setup Dimension Variables
     momentWidthDefault = momentHeightUnwrapped/(16/9)
     momentSizeDefault = CGSize(width: momentWidthDefault, height: momentHeightUnwrapped)
 
     // Setup the Moment Colleciton Layout
+    // Note: Setting either layout.itemSize or layout.estimatedItemSize will cause crashes
     let layout = collectionViewLayout as! MomentCollectionLayout
     layout.minimumLineSpacing = Constants.interitemSpacing
     layout.minimumInteritemSpacing = Constants.interitemSpacing
     layout.headerReferenceSize = CGSize(width: 1, height: momentHeightUnwrapped)
     layout.footerReferenceSize = momentSizeDefault
-    layout.itemSize = momentSizeDefault
-    layout.estimatedItemSize = momentSizeDefault
     layout.sectionInset = UIEdgeInsets(top: 0, left: Constants.interitemSpacing,
                                        bottom: 0, right: Constants.interitemSpacing)
     layout.maximumHeaderStretchWidth = momentWidthDefault
@@ -87,52 +81,64 @@ extension MomentCollectionViewController {
 
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath) as! MomentCollectionViewCell
-
-    guard let momentArray = workingJournal.moments as? [FoodieMoment] else {
-      DebugPrint.assert("No moment for cell position")
+    
+    guard let momentArray = workingJournal.moments else {
+      DebugPrint.log("No Moments for workingJournal")
       return cell
     }
-
+    
+    if indexPath.row >= momentArray.count {
+      DebugPrint.assert("indexPath.row >= momentArray.count")
+      return cell
+    }
+    
     let moment = momentArray[indexPath.row]
-
-    // moment.fetchIfNeededInBackground { (object, error) in
-    //
-    //   if let err = error {
-    //     DebugPrint.fatal("Error fetching moment: \(err)")
-    //   }
-    //
-    //   guard let moment = object as? FoodieMoment else {
-    //     DebugPrint.fatal("fetched Object is not a FoodieMoment")
-    //   }
-    //
-    //   guard let file = moment.media else {
-    //     DebugPrint.fatal("Moment Media is nil")
-    //   }
-    //   
-    //   file.getDataInBackground { (data, error) in
-    //
-    //     if let err = error {
-    //       DebugPrint.fatal("Error getting media data: \(err)")
-    //     }
-    //
-    //     guard let imageData = data else {
-    //       DebugPrint.fatal("nil data obtained from media file")
-    //     }
-    //
-    //     if let image = UIImage(data: imageData) {
-    //
-    //       if let currentCell = collectionView.cellForItem(at: indexPath) as? MomentCollectionViewCell {
-    //         currentCell.momentButton.setImage(image, for: .normal)
-    //       } else {
-    //         DebugPrint.fatal("Error getting MomentCollectionViewCell")
-    //       }
-    //
-    //     } else {
-    //       DebugPrint.fatal("Error getting image from image data")
-    //     }
-    //   }
-    // }
-
+    
+    // TODO: Download the moment if not in memory
+//    moment.fetchIfNeededInBackground { (object, error) in
+//      
+//      if let err = error {
+//        DebugPrint.fatal("Error fetching moment: \(err)")
+//      }
+//      
+//      guard let moment = object as? FoodieMoment else {
+//        DebugPrint.fatal("fetched Object is not a FoodieMoment")
+//      }
+//      
+//      guard let file = moment.media else {
+//        DebugPrint.fatal("Moment Media is nil")
+//      }
+//      
+//      file.getDataInBackground { (data, error) in
+//        
+//        if let err = error {
+//          DebugPrint.fatal("Error getting media data: \(err)")
+//        }
+//        
+//        guard let imageData = data else {
+//          DebugPrint.fatal("nil data obtained from media file")
+//        }
+//        
+//        if let image = UIImage(data: imageData) {
+//          
+//          if let currentCell = collectionView.cellForItem(at: indexPath) as? MomentCollectionViewCell {
+//            currentCell.momentButton.setImage(image, for: .normal)
+//          } else {
+//            DebugPrint.log("MomentCollectionViewCell not visible or indexPath is out of range")
+//          }
+//          
+//        } else {
+//          DebugPrint.fatal("Error getting image from image data")
+//        }
+//      }
+//    }
+    
+    // TODO: Download the thumbnail if not in memory
+    
+    let thumbnail = UIImage(data: moment.thumbnailObject!.imageMemoryBuffer!)
+    
+    cell.momentButton.setImage(thumbnail, for: .normal)
+  
     return cell
   }
 
@@ -156,5 +162,17 @@ extension MomentCollectionViewController {
 
 // MARK: - Collection View Flow Layout Delegate
 extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
-
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    guard let momentArray = workingJournal.moments else {
+      DebugPrint.log("No Moments for workingJournal")
+      return momentSizeDefault
+    }
+    if indexPath.row >= momentArray.count {
+      DebugPrint.assert("indexPath.row >= momentArray.count")
+      return momentSizeDefault
+    }
+    let moment = momentArray[indexPath.row]
+    return CGSize(width: momentHeight!/CGFloat(moment.aspectRatio), height: momentHeight!)
+  }
 }

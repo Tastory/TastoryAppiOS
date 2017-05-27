@@ -9,20 +9,21 @@
 
 import Parse
 
-class FoodieJournal: FoodieObject {
+class FoodieJournal: FoodiePFObject {
   
   // MARK: - Parse PFObject keys
-  @NSManaged var moments: Array<PFObject>? // A FoodieMoment Photo or Video
-  @NSManaged var thumbnail: PFFile? // Thumbnail for the Journal
+  // If new objects or external types are added here, check if save and delete algorithms needs updating
+  @NSManaged var moments: Array<FoodieMoment>? // A FoodieMoment Photo or Video
+  @NSManaged var thumbnailFileName: String? // URL for the thumbnail media. Needs to go with the thumbnail object.
   @NSManaged var type: Int // Really enum for the thumbnail type. Allow videos in the future?
   @NSManaged var aspectRatio: Double
   @NSManaged var width: Int
-  @NSManaged var markup: Array<PFObject>? // Array of PFObjects as FoodieMarkup for the thumbnail
+  @NSManaged var markups: Array<FoodieMarkup>? // Array of PFObjects as FoodieMarkup for the thumbnail
   @NSManaged var title: String? // Title for the Journal
-  @NSManaged var author: PFUser? // Pointer to the user that authored this Moment
-  @NSManaged var eatery: PFObject? // Pointer to the Restaurant object
+  @NSManaged var author: FoodieUser? // Pointer to the user that authored this Moment
+  @NSManaged var eatery: FoodieEatery? // Pointer to the Restaurant object
   @NSManaged var eateryName: String? // Easy access to eatery name
-  @NSManaged var categories: Array<Int>? // Array of internal restaurant categoryIDs (all cateogires that applies, most accurate at index 0. Remove top levels if got sub already)
+  @NSManaged var categories: Array<FoodieCategory>? // Array of internal restaurant categoryIDs (all cateogires that applies, most accurate at index 0. Remove top levels if got sub already)
   @NSManaged var location: PFGeoPoint? // Geolocation of the Journal entry
   
   @NSManaged var mondayOpen: Int // Open time in seconds
@@ -50,18 +51,47 @@ class FoodieJournal: FoodieObject {
   // Date created vs Date updated is given for free
   
   
-  // MARK: - Internal Static Variable
+  // MARK: - Types & Enumerations
+  enum FoodieJournalError: LocalizedError {
+    case saveSyncParseRethrowGeneric
+  }
+  
+  
+  // MARK: Error Types Definition
+  enum ErrorCode: LocalizedError {
+    
+    case saveSyncFailedWithNoError
+    
+    var errorDescription: String? {
+      switch self {
+      case .saveSyncFailedWithNoError:
+        return NSLocalizedString("saveSync Failed, but no Error was returned from saveRecursive", comment: "Error description for an exception error code")
+      }
+    }
+    
+    init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
+      self = errorCode
+      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+    }
+  }
+  
+  
+  // MARK: - Public Static Variables
   static var currentJournal: FoodieJournal? { return currentJournalPrivate }
   
   
-  // MARK: - Private Static Variable
+  // MARK: - Private Static Variables
   private static var currentJournalPrivate: FoodieJournal?
   
   
-  // MARK: - Internal Static Functions
+  // MARK: - Public Instance Variables
+  var thumbnailObj: FoodieMedia?
+  var foodieObject = FoodieObject()
   
-  // FUNCTION newCurrent - Create a new FoodieJournal as the current Journal. Will assert if there already is a current Journal
+
+  // MARK: - Public Static Functions
   
+  // Function to create a new FoodieJournal as the current Journal. Will assert if there already is a current Journal
   static func newCurrent() -> FoodieJournal {
     if currentJournalPrivate != nil {
       DebugPrint.assert(".newCurrent() without Save attempted but currentJournal != nil")
@@ -74,12 +104,12 @@ class FoodieJournal: FoodieObject {
     return current
   }
   
-  // FUNCTION newCurrentSync - Create a new FoodieJournal as the current Journal. Save or discard the previous current Journal
   
+  // Function to create a new FoodieJournal as the current Journal. Save or discard the previous current Journal
   static func newCurrentSync(saveCurrent: Bool) throws -> FoodieJournal? {
     if saveCurrent {
       guard let current = currentJournalPrivate else {
-        DebugPrint.assert("nil currentJournalPrivate on Journal Save when trying ot create a new current Journal")
+        DebugPrint.assert("nil currentJournalPrivate on Journal Save when trying to create a new current Journal")
         return nil
       }
       
@@ -96,17 +126,14 @@ class FoodieJournal: FoodieObject {
   }
   
   
-  // FUNCTION newCurrentAsync - Asynchronouse version of creating a new Current Journal
-  
+  // Asynchronous version of creating a new Current Journal
   static func newCurrentAsync(saveCurrent: Bool, saveCallback: ((Bool, Error?) -> Void)?)  -> FoodieJournal? {
     if saveCurrent {
-      
       // If anything fails here report failure up to Controller layer and let Controller handle
       guard let callback = saveCallback else {
         DebugPrint.assert("nil errorCallback on Journal Save when trying to create a new current Journal")
         return nil
       }
-      
       guard let current = currentJournalPrivate else {
         DebugPrint.assert("nil currentJournalPrivate on Journal Save when trying ot create a new current Journal")
         return nil
@@ -116,53 +143,80 @@ class FoodieJournal: FoodieObject {
       current.saveAsync(callback: callback)
       
     } else if currentJournalPrivate != nil {
-      
       DebugPrint.log("Current Journal being overwritten without Save")
-      
     } else {
-      
       DebugPrint.assert("Use .newCurrent() without Save instead")  // Only barfs at development time. Continues on Production...
     }
-    
     currentJournalPrivate = FoodieJournal()
     return currentJournalPrivate
   }
   
   
-  // MARK: - Internal Instance Functions
+  // MARK: - Public Instance Functions
+  override init() {
+    super.init()
+    foodieObject.delegate = self
+  }
   
-  // Functions managing the Journal itself
   
-  // FUNCTION saveSync - Save Journal. Block until complete
-  
+  // Function to save Journal. Block until complete
   func saveSync() throws {
     
-    // TODO: Complex algorithm to ensure that all the attached Moments have been saved.
-    do {
-      try self.save()
+    var block = true
+    var blockError: Error? = nil
+    var blockSuccess = false
+    var blockWait = 0
+    
+    saveRecursive(to: .local) { [unowned self] (success, error) in
+      if success {
+        self.saveRecursive(to: .server) { (success, error) in
+          if success {
+            block = false
+            blockSuccess = true
+            blockError = nil
+          } else {
+            block = false
+            blockSuccess = false
+            blockError = error
+          }
+        }
+      } else {
+        block = false
+        blockSuccess = false
+        blockError = error
+      }
     }
-    catch let thrown {
-      // TODO: This rethrow is ugly as sh_t...
-      let error = thrown as NSError
-      let foodieErrorCode = FoodieError.Code.Journal.saveSyncParseRethrowGeneric.rawValue | error.code
-      throw FoodieError(error: foodieErrorCode, description: error.localizedDescription)
+    
+    while block {
+      sleep(1)
+      blockWait = blockWait + 1
     }
+  
+    DebugPrint.verbose("FoodieJournal.saveSync Completed. Save took \(blockWait) seconds")
+  
+    if let error = blockError {
+      throw error
+    } else if blockSuccess != true {
+      throw ErrorCode(.saveSyncFailedWithNoError)
+    }
+    
+    return
   }
 
   
-  // FUNCTION saveAsync - Save Journal in background
-  
+  // Function to save Journal in background
   func saveAsync(callback: ((Bool, Error?) -> Void)?) {
-    
-    // TODO: Complex algorithm to ensure that all the attached Moments have been saved.
-    self.saveInBackground(block: callback)
+    saveRecursive(to: .local) { [unowned self] (success, error) in
+      if success {
+        self.saveRecursive(to: .server, withBlock: callback)
+      } else {
+        callback?(false, error)
+      }
+    }
   }
   
-  
-  // Functions for managing associated FoodieMoments
-  
-  // FUNCTION add - Add Moment to Journal. If no position specified, add to end of array
-  
+
+  // Function to add Moment to Journal. If no position specified, add to end of array
   func add(moment: FoodieMoment,
            to position: Int? = nil) {
     
@@ -178,26 +232,143 @@ class FoodieJournal: FoodieObject {
   }
   
   
-  // FUNCTION move - Move Moment to specified position in Moment array. Return failure if moving past end of array
+  // Function to move Moment to specified position in Moment array. Return failure if moving past end of array
   // Other Moments in the array might have their position altered accordingly
   // Controller layer should query to confirm how other Moments might have their orders and positions changed
-  
   func move(moment: FoodieMoment,
             to position: Int) {
     
   }
   
   
-  // FUNCTION delete - Delete specified Moment
+  // Function to delete specified Moment
   // Other Moments in the array might have their position altered accordingly
   // Controller layer should query to confirm how other Moments might have their orders and positions changed
-  
   func delete(moment: FoodieMoment) {
     
   }
 }
 
 
+// MARK: - Foodie Object Delegate Conformance
+extension FoodieJournal: FoodieObjectDelegate {
+  
+  // Function for processing a completion from a child save
+  func saveCompletionFromChild(to location: FoodieObject.StorageLocation,
+                               withName name: String?,
+                               withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("FoodieJournal.saveCompletionFromChild to Location: \(location)")
+    
+    var keepWaiting = false
+    
+    // Determine if all children are ready, if not, keep waiting.
+    if let hasMoments = moments {
+      for moment in hasMoments {
+        if !moment.foodieObject.isSaveCompleted(to: location) { keepWaiting = true; break }
+      }
+    }
+    
+    if let thumbnail = thumbnailObj {
+      if !thumbnail.foodieObject.isSaveCompleted(to: location) { keepWaiting = true }
+    }
+    
+    if let hasMarkups = markups, !keepWaiting {
+      for markup in hasMarkups {
+        if !markup.foodieObject.isSaveCompleted(to: location) { keepWaiting = true; break }
+      }
+    }
+    
+    if let eatery = eatery, !keepWaiting {
+      if !eatery.foodieObject.isSaveCompleted(to: location) { keepWaiting = true }
+    }
+    
+    if let hasCategory = categories, !keepWaiting {
+      for category in hasCategory {
+        if !category.foodieObject.isSaveCompleted(to: location) { keepWaiting = true; break }
+      }
+    }
+    
+    if !keepWaiting {
+      foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
+    }
+  }
+  
+
+  // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
+  func saveRecursive(to location: FoodieObject.StorageLocation,
+                    withName name: String? = nil,
+                    withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("FoodieJournal.saveRecursive to Location: \(location)")
+    
+    // Do state transition for this save. Early return if no save needed, or if illegal state transition
+    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
+    
+    if let earlySuccess = earlyReturnStatus.success {
+      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
+      return
+    }
+    
+    var childOperationPending = false
+    
+    // Need to make sure all children FoodieRecursives saved before proceeding
+    if let hasMoments = moments {
+      for moment in hasMoments {
+        foodieObject.saveChild(moment, to: location, withName: name, withBlock: callback)
+        childOperationPending = true
+
+      }
+    }
+    
+    if let thumbnail = thumbnailObj {
+      foodieObject.saveChild(thumbnail, to: location, withName: name, withBlock: callback)
+      childOperationPending = true
+    }
+    
+    if let hasMarkups = markups {
+      for markup in hasMarkups {
+        foodieObject.saveChild(markup, to: location, withName: name, withBlock: callback)
+        childOperationPending = true
+      }
+    }
+    
+    // Do we need to save User? Is User considered modified?
+    
+    if let eatery = eatery {
+      foodieObject.saveChild(eatery, to: location, withName: name, withBlock: callback)
+      childOperationPending = true
+    }
+    
+    if let hasCategories = categories {
+      for category in hasCategories {
+        foodieObject.saveChild(category, to: location, withName: name, withBlock: callback)
+        childOperationPending = true
+      }
+    }
+    
+    if !childOperationPending {
+      DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+        self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
+      }
+    }
+  }
+  
+  
+  // Trigger recursive saves against all child objects.
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       withName name: String? = nil,
+                       withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  }
+  
+  
+  func foodieObjectType() -> String {
+    return "FoodieJournal"
+  }
+}
+
+
+// MARK: - Parse Subclass Conformance
 extension FoodieJournal: PFSubclassing {
   static func parseClassName() -> String {
     return "FoodieJournal"

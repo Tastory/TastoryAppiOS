@@ -88,26 +88,26 @@ class MapViewController: UIViewController {
 
   // MARK: - Class Private Functions
 
-  // Generic error dialogue box to the user on internal errors
+  // Generic error dialog box to the user on internal errors
   fileprivate func internalErrorDialog() {
     let alertController = UIAlertController(title: "SomeFoodieApp",
                                             titleComment: "Alert diaglogue title when a Map view internal error occured",
                                             message: "An internal error has occured. Please try again",
-                                            messageComment: "Alert dialogue message when a Map view internal error occured",
+                                            messageComment: "Alert dialog message when a Map view internal error occured",
                                             preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK", comment: "Button in alert dialogue box for generic MapView errors", style: .cancel)
+    alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for generic MapView errors", style: .cancel)
     self.present(alertController, animated: true, completion: nil)
   }
 
 
-  // Error dialogue box to the user on location errors
+  // Error dialog box to the user on location errors
   fileprivate func locationErrorDialog(message: String, comment: String) {
     let alertController = UIAlertController(title: "SomeFoodieApp",
                                             titleComment: "Alert diaglogue title when a Map view location error occured",
                                             message: message,
                                             messageComment: comment,
                                             preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK", comment: "Button in alert dialogue box for location related MapView errors", style: .cancel)
+    alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for location related MapView errors", style: .cancel)
     self.present(alertController, animated: true, completion: nil)
   }
 
@@ -182,7 +182,7 @@ extension MapViewController: CLLocationManagerDelegate {
       let alertController = UIAlertController(title: "Location Services Disabled",
                                               titleComment: "Alert diaglogue title when user has denied access to location services",
                                               message: "Please go to Settings > Privacy > Location Services and set this App's Location Access permission to 'While Using'",
-                                              messageComment: "Alert dialogue message when the user has denied access to location services",
+                                              messageComment: "Alert dialog message when the user has denied access to location services",
                                               preferredStyle: .alert)
 
       alertController.addAlertAction(title: "Settings",

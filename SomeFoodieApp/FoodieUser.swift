@@ -6,8 +6,8 @@
 //  Copyright © 2017 SomeFoodieCompany. All rights reserved.
 //
 
-import Parse
 
+import Parse
 
 class FoodieUser: PFUser {
 
@@ -18,4 +18,5 @@ class FoodieUser: PFUser {
   
   @NSManaged var journalsViewed: Int
   @NSManaged var momentsViewed: Int
+  
 }

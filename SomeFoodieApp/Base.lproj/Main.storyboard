@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="lzL-s9-fsY">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="lzL-s9-fsY">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -391,6 +391,27 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="50" id="3yk-tP-0Df">
+                                        <rect key="frame" x="0.0" y="456.5" width="375" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3yk-tP-0Df" id="qUP-ce-gSk">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cGu-Cc-dGg">
+                                                    <rect key="frame" x="127" y="10" width="121" height="30"/>
+                                                    <state key="normal" title="Test Save Journal"/>
+                                                    <connections>
+                                                        <action selector="testSaveJournal:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="c6x-PA-Y3x"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="cGu-Cc-dGg" firstAttribute="centerY" secondItem="qUP-ce-gSk" secondAttribute="centerY" id="1Zy-SZ-zQR"/>
+                                                <constraint firstItem="cGu-Cc-dGg" firstAttribute="centerX" secondItem="qUP-ce-gSk" secondAttribute="centerX" id="9y7-lc-HTj"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                         </sections>
@@ -408,48 +429,53 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6pB-Nr-PsL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1738" y="-591"/>
+            <point key="canvasLocation" x="1736.8" y="-591.45427286356824"/>
         </scene>
         <!--Moment Collection View Controller-->
         <scene sceneID="Sf3-nA-ZH6">
             <objects>
                 <collectionViewController storyboardIdentifier="MomentCollectionViewController" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="TGu-A1-lSP">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="180"/>
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceHorizontal="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="TGu-A1-lSP">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="222"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="OoU-Aa-vB2" customClass="MomentCollectionLayout" customModule="SomeFoodieApp" customModuleProvider="target">
-                            <size key="itemSize" width="100" height="180"/>
-                            <size key="headerReferenceSize" width="101" height="50"/>
-                            <size key="footerReferenceSize" width="102" height="50"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="OoU-Aa-vB2" customClass="MomentCollectionLayout" customModule="SomeFoodieApp" customModuleProvider="target">
+                            <size key="itemSize" width="100" height="222"/>
+                            <size key="headerReferenceSize" width="100" height="222"/>
+                            <size key="footerReferenceSize" width="100" height="222"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentCell" id="5yf-rk-zGg" customClass="MomentCollectionViewCell" customModule="SomeFoodieApp" customModuleProvider="target">
-                                <rect key="frame" x="101" y="0.0" width="100" height="180"/>
+                                <rect key="frame" x="100" y="0.0" width="100" height="222"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="100" height="180"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="100" height="222"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="znA-BN-xwr">
-                                            <rect key="frame" x="-145" y="0.0" width="377" height="240"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="znA-BN-xwr">
+                                            <rect key="frame" x="0.0" y="0.0" width="100" height="222"/>
                                             <color key="tintColor" red="0.9169090741" green="0.0" blue="0.09406216178" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </button>
                                     </subviews>
                                 </view>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="znA-BN-xwr" secondAttribute="bottom" id="6VQ-AG-CAJ"/>
+                                    <constraint firstItem="znA-BN-xwr" firstAttribute="leading" secondItem="5yf-rk-zGg" secondAttribute="leading" id="B2C-ae-bmk"/>
+                                    <constraint firstItem="znA-BN-xwr" firstAttribute="top" secondItem="5yf-rk-zGg" secondAttribute="top" id="UwF-zc-g6V"/>
+                                    <constraint firstAttribute="trailing" secondItem="znA-BN-xwr" secondAttribute="trailing" id="aTV-yd-wcF"/>
+                                </constraints>
                                 <connections>
                                     <outlet property="momentButton" destination="znA-BN-xwr" id="L6c-OB-ZbU"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
                         <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentHeader" id="DfJ-30-c0L" customClass="MomentHeaderReusableView" customModule="SomeFoodieApp" customModuleProvider="target">
-                            <rect key="frame" x="0.0" y="0.0" width="101" height="180"/>
+                            <rect key="frame" x="0.0" y="0.0" width="100" height="222"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </collectionReusableView>
                         <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentFooter" id="CkJ-Jk-m6B" customClass="MomentFooterReusableView" customModule="SomeFoodieApp" customModuleProvider="target">
-                            <rect key="frame" x="201" y="0.0" width="102" height="180"/>
+                            <rect key="frame" x="200" y="0.0" width="100" height="222"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </collectionReusableView>
                         <connections>
@@ -458,11 +484,11 @@
                         </connections>
                     </collectionView>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="375" height="180"/>
+                    <size key="freeformSize" width="375" height="222"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BGe-7r-hOK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2367" y="-693"/>
+            <point key="canvasLocation" x="2364" y="-694.45277361319347"/>
         </scene>
     </scenes>
 </document>

@@ -11,15 +11,16 @@
 
 import Parse
 
-class FoodieHistory: FoodieObject {
+class FoodieHistory: PFObject {
   
-  @NSManaged var journal: PFObject?
-  @NSManaged var eatery: PFObject?
-  @NSManaged var user: PFUser?
+  @NSManaged var journal: FoodieJournal?
+  @NSManaged var eatery: FoodieEatery?
+  @NSManaged var user: FoodieUser?
   @NSManaged var journalRating: Double // TODO: Placeholder for later rev
   @NSManaged var eateryRating: Double // TODO: Placeholder for later rev
   
   // Date created vs Date modified is given for free
+
 }
 
 
