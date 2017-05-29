@@ -6,7 +6,7 @@
 //  Copyright © 2017 Howard's Creative Innovations. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 // MARK: - Types & Enums
 enum FoodieMediaType: String {
@@ -18,4 +18,5 @@ enum FoodieMediaType: String {
 struct FoodieConstants {
   static let thumbnailPixels = 640.0
   static let jpegCompressionQuality: Double = 0.8
+  static let themeColor: UIColor = .orange
 }
