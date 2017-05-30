@@ -294,6 +294,19 @@ class FoodieS3Object {
   
   
   // MARK: - Public Instance Functions
+  func retrieve(forceAnyways: Bool = false, withBlock callback: @escaping FoodieObject.RetrievedObjectBlock) {
+    
+    // CONTINUE-HERE: Impement retrieve for S3 File Object
+    
+    // If this is in memory, just callback... What does this mean for videos?
+    
+    // If this is not in memory, retrieve from local... What does this mean for videos?
+    
+    // If this is not in local cache either, retrieve from server
+    
+  }
+  
+  
   func saveDataBufferToLocal(buffer: Data, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     guard let fileName = foodieFileName else {
       DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")

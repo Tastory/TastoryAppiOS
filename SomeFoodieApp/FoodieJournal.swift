@@ -152,6 +152,21 @@ class FoodieJournal: FoodiePFObject {
   }
   
   
+  // Querying function for All
+  static func queryAll(skip: Int = 0, limit: Int, block: @escaping FoodieObject.QueryResultBlock) { // Sorted by modified date in new to old order
+    let query = PFQuery(className: "FoodieJournal")
+    query.skip = skip
+    query.limit = limit
+    //query.order(byDescending: <#T##String#>)
+    query.findObjectsInBackground { pfObjectArray, error in
+      block(pfObjectArray, error)
+    }
+  }
+  
+  // More complex Query functionality TBD. Need a query structure? Query class? Hmm...
+  // Caching Queries
+  
+  
   // MARK: - Public Instance Functions
   override init() {
     super.init()

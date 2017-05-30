@@ -10,6 +10,9 @@ import Foundation
 
 protocol FoodieObjectDelegate: class {
   
+  func retrieve(forceAnyways: Bool, withBlock callback: @escaping FoodieObject.RetrievedObjectBlock)
+  // Automatically resolves everything. Already in memory or Local or Network? Automatically caches.
+  
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      withName name: String?,
                      withBlock callback: FoodieObject.BooleanErrorBlock?)
@@ -36,6 +39,9 @@ class FoodieObject {
   
   // MARK: - Types & Enumerations
   typealias BooleanErrorBlock = (Bool, Error?) -> Void
+  typealias QueryResultBlock = ([AnyObject]?, Error?) -> Void
+  typealias RetrievedObjectBlock = (AnyObject?, Error?) -> Void
+  
   
   enum OperationStates {
     case objectSynced

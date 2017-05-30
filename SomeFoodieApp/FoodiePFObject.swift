@@ -15,6 +15,37 @@ class FoodiePFObject: PFObject {
 
   // MARK: - Public Instance Functions
   
+  func retrieve(forceAnyways: Bool = false, withBlock callback: @escaping FoodieObject.RetrievedObjectBlock) {
+    
+    // See if this is already in memory, if so no need to do anything
+    if isDataAvailable {
+      callback(self, nil)
+      return
+    }
+    
+    // See if this is in local cache
+    fetchFromLocalDatastoreInBackground { [unowned self] localObject, localError in
+      
+      if localError == nil {
+        callback(localObject, nil)
+      } else {
+        DebugPrint.error("fetchFromLocalDatastore failed with error: \(localError!.localizedDescription)")
+        
+        // If not in Local Datastore, retrieved from Server
+        self.fetchInBackground { [unowned self] serverObject, serverError in
+          
+          // Error handle?
+          if let error = serverError {
+            DebugPrint.error("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
+          }
+          // Return if got what's wanted
+          callback(serverObject, serverError)
+        }
+      }
+    }
+  }
+  
+  
   // Function to save this and all child Parse objects to local.
   func saveToLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     DebugPrint.verbose("FoodiePFObject.saveToLocal")
