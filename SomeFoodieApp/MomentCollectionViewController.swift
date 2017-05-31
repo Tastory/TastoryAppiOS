@@ -59,7 +59,7 @@ class MomentCollectionViewController: UICollectionViewController {
       
       // Long Press detected on a Moment Thumbnail. Set that as the Journal Thumbnail
       workingJournal.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
-      workingJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObject
+      workingJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObj
       
       // Unhide the Thumbnail Frame to give feedback to user that this is the Journal Thumbnail
       cell.thumbFrameView.isHidden = false
@@ -172,7 +172,7 @@ extension MomentCollectionViewController {
 //    }
     
     // TODO: Download the thumbnail if not in memory
-    let thumbnail = UIImage(data: moment.thumbnailObject!.imageMemoryBuffer!)
+    let thumbnail = UIImage(data: moment.thumbnailObj!.imageMemoryBuffer!)
     cell.momentButton.setImage(thumbnail, for: .normal)
   
     // Should Thumbnail frame be hidden?

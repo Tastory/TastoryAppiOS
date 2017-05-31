@@ -9,7 +9,7 @@
 
 import Parse
 
-class FoodieMoment: FoodiePFObject {
+class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Parse PFObject keys
   // If new objects or external types are added here, check if save and delete algorithms needs updating
@@ -60,16 +60,16 @@ class FoodieMoment: FoodiePFObject {
   
   
   // MARK: - Public Instance Variable
-  var mediaObject: FoodieMedia? {
+  var mediaObj: FoodieMedia? {
     didSet {
-      mediaFileName = mediaObject!.foodieFileName
-      mediaType = mediaObject!.mediaType?.rawValue
+      mediaFileName = mediaObj!.foodieFileName
+      mediaType = mediaObj!.mediaType?.rawValue
     }
   }
   
-  var thumbnailObject: FoodieMedia? {
+  var thumbnailObj: FoodieMedia? {
     didSet {
-      thumbnailFileName = thumbnailObject!.foodieFileName
+      thumbnailFileName = thumbnailObj!.foodieFileName
     }
   }
   
@@ -85,17 +85,28 @@ class FoodieMoment: FoodiePFObject {
   init(foodieMedia: FoodieMedia) {
     super.init()
     foodieObject.delegate = self
-    mediaObject = foodieMedia
+    mediaObj = foodieMedia
     
     // didSet does not get called in initialization context...
     mediaFileName = foodieMedia.foodieFileName
     mediaType = foodieMedia.mediaType?.rawValue
   }
-}
 
 
-// MARK: - Foodie Object Delegate Conformance
-extension FoodieMoment: FoodieObjectDelegate {
+  // MARK: - Foodie Object Delegate Conformance
+
+  override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    super.retrieve(forceAnyways: forceAnyways, withBlock: callback)
+    
+    if let fileName = mediaFileName, let typeString = mediaType, let type = FoodieMediaType(rawValue: typeString) {
+      mediaObj = FoodieMedia(fileName: fileName, type: type)
+    }
+    
+    if let fileName = thumbnailFileName {
+      thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
+    }
+  }
+  
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
@@ -115,7 +126,7 @@ extension FoodieMoment: FoodieObjectDelegate {
     var childOperationPending = false
     
     // Need to make sure all children FoodieRecursives saved before proceeding
-    if let media = mediaObject {
+    if let media = mediaObj {
       foodieObject.saveChild(media, to: location, withName: name, withBlock: callback)
       childOperationPending = true
     }
@@ -127,7 +138,7 @@ extension FoodieMoment: FoodieObjectDelegate {
       }
     }
     
-    if let thumbnail = thumbnailObject {
+    if let thumbnail = thumbnailObj {
       foodieObject.saveChild(thumbnail, to: location, withBlock: callback)
       childOperationPending = true
     }

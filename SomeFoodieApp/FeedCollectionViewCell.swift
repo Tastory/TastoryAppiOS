@@ -9,6 +9,6 @@
 import UIKit
 
 class FeedCollectionViewCell: UICollectionViewCell {
-  @IBOutlet weak var journalButton: UIButton!
-  @IBOutlet weak var journalTitle: UILabel!
+  @IBOutlet weak var journalButton: UIButton?
+  @IBOutlet weak var journalTitle: UILabel?
 }

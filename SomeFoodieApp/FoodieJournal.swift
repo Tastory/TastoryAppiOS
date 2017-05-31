@@ -9,7 +9,7 @@
 
 import Parse
 
-class FoodieJournal: FoodiePFObject {
+class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Parse PFObject keys
   // If new objects or external types are added here, check if save and delete algorithms needs updating
@@ -153,13 +153,13 @@ class FoodieJournal: FoodiePFObject {
   
   
   // Querying function for All
-  static func queryAll(skip: Int = 0, limit: Int, block: @escaping FoodieObject.QueryResultBlock) { // Sorted by modified date in new to old order
+  static func queryAll(skip: Int = 0, limit: Int, block: FoodieObject.QueryResultBlock?) { // Sorted by modified date in new to old order
     let query = PFQuery(className: "FoodieJournal")
     query.skip = skip
     query.limit = limit
     //query.order(byDescending: <#T##String#>)
     query.findObjectsInBackground { pfObjectArray, error in
-      block(pfObjectArray, error)
+      block?(pfObjectArray, error)
     }
   }
   
@@ -262,11 +262,18 @@ class FoodieJournal: FoodiePFObject {
   func delete(moment: FoodieMoment) {
     
   }
-}
 
 
-// MARK: - Foodie Object Delegate Conformance
-extension FoodieJournal: FoodieObjectDelegate {
+  // MARK: - Foodie Object Delegate Conformance
+  
+  override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    super.retrieve(forceAnyways: forceAnyways, withBlock: callback)
+    
+    if let fileName = thumbnailFileName {
+      thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)  // TODO: This will cause double thumbnail. There's already a copy in the Moment
+    }
+  }
+  
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
@@ -335,6 +342,15 @@ extension FoodieJournal: FoodieObjectDelegate {
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
   }
   
+  
+  func verbose() {
+    DebugPrint.verbose("FoodieJournal - \(getUniqueIdentifier())")
+    DebugPrint.verbose("Contains \(moments!.count) Moments with ID as follows:")
+    for moment in moments! {
+      DebugPrint.verbose("\(moment.getUniqueIdentifier())")
+    }
+    DebugPrint.verbose("Thumbnail Filename: \(thumbnailFileName)")
+  }
   
   func foodieObjectType() -> String {
     return "FoodieJournal"

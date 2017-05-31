@@ -15,32 +15,49 @@ class FoodiePFObject: PFObject {
 
   // MARK: - Public Instance Functions
   
-  func retrieve(forceAnyways: Bool = false, withBlock callback: @escaping FoodieObject.RetrievedObjectBlock) {
+  func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     
     // See if this is already in memory, if so no need to do anything
-    if isDataAvailable {
-      callback(self, nil)
+    if isDataAvailable && !forceAnyways {
+      callback?(self, nil)
+      return
+      
+    } else if forceAnyways {
+      fetchInBackground() { serverObject, serverError in
+        
+        // Error handle?
+        if let error = serverError {
+          DebugPrint.error("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
+        }
+        // Return if got what's wanted
+        callback?(serverObject, serverError)
+      }
       return
     }
     
     // See if this is in local cache
     fetchFromLocalDatastoreInBackground { [unowned self] localObject, localError in
       
-      if localError == nil {
-        callback(localObject, nil)
-      } else {
-        DebugPrint.error("fetchFromLocalDatastore failed with error: \(localError!.localizedDescription)")
-        
-        // If not in Local Datastore, retrieved from Server
-        self.fetchInBackground { [unowned self] serverObject, serverError in
-          
-          // Error handle?
-          if let error = serverError {
-            DebugPrint.error("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
-          }
-          // Return if got what's wanted
-          callback(serverObject, serverError)
+      guard let err = localError else {
+        guard let object = localObject else {
+          DebugPrint.fatal("fetchFromLocalDatastoreInBackground completed with no error but nil object returned")
         }
+        
+        // This is actually success case here! localError is nil!
+        callback?(object, nil)
+        return
+      }
+      DebugPrint.error("fetchFromLocalDatastore failed with error: \(err.localizedDescription)")
+        
+      // If not in Local Datastore, retrieved from Server
+      self.fetchInBackground { serverObject, serverError in
+        
+        // Error handle?
+        if let error = serverError {
+          DebugPrint.error("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
+        }
+        // Return if got what's wanted
+        callback?(serverObject, serverError)
       }
     }
   }

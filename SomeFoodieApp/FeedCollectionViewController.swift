@@ -48,8 +48,6 @@ class FeedCollectionViewController: UICollectionViewController {
     for journal in journalArray {
       queriedJournalArray.append(journal)
     }
-    
-    collectionView!.reloadData()
   }
   
   
@@ -86,12 +84,27 @@ class FeedCollectionViewController: UICollectionViewController {
     // Configure the cell
     let journal = queriedJournalArray[indexPath.row]
     
+    // TODO: Hide all these in the Journal Model?
+    
     // Do we need to fetch the Journal?
-    
-    // Do we need to fetch the Thumbnail?
-    
-    cell.journalTitle?.text = queriedJournalArray[indexPath.row].title
-    cell.journalButton.setImage(UIImage(, for: <#T##UIControlState#>)
+    journal.retrieve { (_, journalError) in
+      
+      // TODO: Catch error
+      
+      if let thumbnail = journal.thumbnailObj {
+        // Do we need to fetch the Thumbnail?
+        thumbnail.retrieve(){ [unowned self] _, thumbnailError in
+        
+        // TODO: Catch error
+        // CONTINUE-HERE: This won't fucking work. Need to do something with the collection View on Async response
+          if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
+            cell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
+            cell.journalButton?.setImage(UIImage(data: thumbnail.imageMemoryBuffer!), for: .normal)
+            collectionView.reloadItems(at: [indexPath])
+          }
+        }
+      }
+    }
     return cell
   }
   
