@@ -52,7 +52,7 @@ class FoodieFile {
       case .fileManagerMoveItemLocalFailed:
         return NSLocalizedString("FileManager.moveItem failed", comment: "Error description for an exception error code")
       case .fileManagerReadLocalFailed:
-        return NSLocalizedString("Data.write failed", comment: "Error description for an exception error code")
+        return NSLocalizedString("Data(contentsOf:) failed", comment: "Error description for an exception error code")
       case .fileManagerSaveLocalFailed:
         return NSLocalizedString("Data.write failed", comment: "Error description for an exception error code")
       case .awsS3TransferManagerUploadRequestNil:
@@ -153,7 +153,7 @@ class FoodieFile {
       do {
         buffer = try Data(contentsOf: Constants.DocumentFolderUrl.appendingPathComponent("\(fileName)"))
       } catch {
-        DebugPrint.assert("Failed to read media data from local Documents folder \(error.localizedDescription)")
+        DebugPrint.error("Failed to read file \(fileName) from local Documents folder \(error.localizedDescription)")
         callback?(nil, ErrorCode.fileManagerReadLocalFailed)
         return
       }

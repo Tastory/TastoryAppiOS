@@ -9,60 +9,44 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SomeFoodieApp/FeedCollectionViewController.swift"
-            timestampString = "517886669.784981"
+            filePath = "SomeFoodieApp/FoodiePFObject.swift"
+            timestampString = "517904229.636151"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "87"
-            endingLineNumber = "87"
-            landmarkName = "collectionView(_:cellForItemAt:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SomeFoodieApp/FeedCollectionViewController.swift"
-            timestampString = "517886700.960092"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "96"
-            endingLineNumber = "96"
-            landmarkName = "collectionView(_:cellForItemAt:)"
+            startingLineNumber = "26"
+            endingLineNumber = "26"
+            landmarkName = "retrieve(forceAnyways:withBlock:)"
             landmarkType = "7">
             <Locations>
                <Location
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "SomeFoodieApp.FeedCollectionViewController.(collectionView (__ObjC.UICollectionView, cellForItemAt : Foundation.IndexPath) -&gt; __ObjC.UICollectionViewCell).(closure #1)"
+                  symbolName = "SomeFoodieApp.FoodiePFObject.retrieve (forceAnyways : Swift.Bool, withBlock : Swift.Optional&lt;(Swift.Optional&lt;Any&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()&gt;) -&gt; ()"
                   moduleName = "SomeFoodieApp"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FeedCollectionViewController.swift"
-                  timestampString = "517886700.96697"
+                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FoodiePFObject.swift"
+                  timestampString = "517905727.386568"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "96"
-                  endingLineNumber = "96"
-                  offsetFromSymbolStart = "132">
+                  startingLineNumber = "26"
+                  endingLineNumber = "26"
+                  offsetFromSymbolStart = "272">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "SomeFoodieApp.FeedCollectionViewController.(collectionView (__ObjC.UICollectionView, cellForItemAt : Foundation.IndexPath) -&gt; __ObjC.UICollectionViewCell).(closure #1)"
+                  symbolName = "SomeFoodieApp.FoodiePFObject.(retrieve (forceAnyways : Swift.Bool, withBlock : Swift.Optional&lt;(Swift.Optional&lt;Any&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()&gt;) -&gt; ()).(closure #1)"
                   moduleName = "SomeFoodieApp"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FeedCollectionViewController.swift"
-                  timestampString = "517886700.971195"
+                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FoodiePFObject.swift"
+                  timestampString = "517905727.388186"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "96"
-                  endingLineNumber = "96"
-                  offsetFromSymbolStart = "176">
+                  startingLineNumber = "29"
+                  endingLineNumber = "29"
+                  offsetFromSymbolStart = "32">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -73,44 +57,44 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SomeFoodieApp/FeedCollectionViewController.swift"
-            timestampString = "517886703.433331"
+            filePath = "SomeFoodieApp/FoodiePFObject.swift"
+            timestampString = "517904230.434373"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "102"
-            endingLineNumber = "102"
-            landmarkName = "collectionView(_:cellForItemAt:)"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "retrieve(forceAnyways:withBlock:)"
             landmarkType = "7">
             <Locations>
                <Location
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "SomeFoodieApp.FeedCollectionViewController.(collectionView (__ObjC.UICollectionView, cellForItemAt : Foundation.IndexPath) -&gt; __ObjC.UICollectionViewCell).(closure #1).(closure #1)"
+                  symbolName = "SomeFoodieApp.FoodiePFObject.(retrieve (forceAnyways : Swift.Bool, withBlock : Swift.Optional&lt;(Swift.Optional&lt;Any&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()&gt;) -&gt; ()).(closure #1)"
                   moduleName = "SomeFoodieApp"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FeedCollectionViewController.swift"
-                  timestampString = "517886703.445001"
+                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FoodiePFObject.swift"
+                  timestampString = "517905727.391983"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "102"
-                  endingLineNumber = "102"
-                  offsetFromSymbolStart = "132">
+                  startingLineNumber = "29"
+                  endingLineNumber = "29"
+                  offsetFromSymbolStart = "32">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "SomeFoodieApp.FeedCollectionViewController.(collectionView (__ObjC.UICollectionView, cellForItemAt : Foundation.IndexPath) -&gt; __ObjC.UICollectionViewCell).(closure #1).(closure #1)"
+                  symbolName = "SomeFoodieApp.FoodiePFObject.(retrieve (forceAnyways : Swift.Bool, withBlock : Swift.Optional&lt;(Swift.Optional&lt;Any&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()&gt;) -&gt; ()).(closure #1)"
                   moduleName = "SomeFoodieApp"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FeedCollectionViewController.swift"
-                  timestampString = "517886703.449971"
+                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FoodiePFObject.swift"
+                  timestampString = "517905727.393376"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "102"
-                  endingLineNumber = "102"
-                  offsetFromSymbolStart = "376">
+                  startingLineNumber = "29"
+                  endingLineNumber = "29"
+                  offsetFromSymbolStart = "80">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -121,13 +105,61 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SomeFoodieApp/FeedCollectionViewController.swift"
-            timestampString = "517886704.118048"
+            filePath = "SomeFoodieApp/FoodiePFObject.swift"
+            timestampString = "517904232.022835"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "103"
-            endingLineNumber = "103"
-            landmarkName = "collectionView(_:cellForItemAt:)"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
+            landmarkName = "retrieve(forceAnyways:withBlock:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SomeFoodieApp.FoodiePFObject.retrieve (forceAnyways : Swift.Bool, withBlock : Swift.Optional&lt;(Swift.Optional&lt;Any&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()&gt;) -&gt; ()"
+                  moduleName = "SomeFoodieApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FoodiePFObject.swift"
+                  timestampString = "517905727.396885"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "39"
+                  endingLineNumber = "39"
+                  offsetFromSymbolStart = "568">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SomeFoodieApp.FoodiePFObject.(retrieve (forceAnyways : Swift.Bool, withBlock : Swift.Optional&lt;(Swift.Optional&lt;Any&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()&gt;) -&gt; ()).(closure #2)"
+                  moduleName = "SomeFoodieApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FoodiePFObject.swift"
+                  timestampString = "517905727.398346"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "39"
+                  endingLineNumber = "39"
+                  offsetFromSymbolStart = "32">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SomeFoodieApp/FoodiePFObject.swift"
+            timestampString = "517904235.565305"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
+            landmarkName = "retrieve(forceAnyways:withBlock:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -137,44 +169,108 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SomeFoodieApp/FeedCollectionViewController.swift"
-            timestampString = "517886705.255283"
+            filePath = "SomeFoodieApp/FoodiePFObject.swift"
+            timestampString = "517904236.792425"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "98"
-            endingLineNumber = "98"
-            landmarkName = "collectionView(_:cellForItemAt:)"
+            startingLineNumber = "47"
+            endingLineNumber = "47"
+            landmarkName = "retrieve(forceAnyways:withBlock:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SomeFoodieApp/FoodiePFObject.swift"
+            timestampString = "517904240.437829"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "53"
+            endingLineNumber = "53"
+            landmarkName = "retrieve(forceAnyways:withBlock:)"
             landmarkType = "7">
             <Locations>
                <Location
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "SomeFoodieApp.FeedCollectionViewController.(collectionView (__ObjC.UICollectionView, cellForItemAt : Foundation.IndexPath) -&gt; __ObjC.UICollectionViewCell).(closure #1)"
+                  symbolName = "SomeFoodieApp.FoodiePFObject.(retrieve (forceAnyways : Swift.Bool, withBlock : Swift.Optional&lt;(Swift.Optional&lt;Any&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()&gt;) -&gt; ()).(closure #2)"
                   moduleName = "SomeFoodieApp"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FeedCollectionViewController.swift"
-                  timestampString = "517886705.26339"
+                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FoodiePFObject.swift"
+                  timestampString = "517905727.407727"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "98"
-                  endingLineNumber = "98"
-                  offsetFromSymbolStart = "228">
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "812">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "SomeFoodieApp.FeedCollectionViewController.(collectionView (__ObjC.UICollectionView, cellForItemAt : Foundation.IndexPath) -&gt; __ObjC.UICollectionViewCell).(closure #1).(closure #1)"
+                  symbolName = "SomeFoodieApp.FoodiePFObject.(retrieve (forceAnyways : Swift.Bool, withBlock : Swift.Optional&lt;(Swift.Optional&lt;Any&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()&gt;) -&gt; ()).(closure #2).(closure #1)"
                   moduleName = "SomeFoodieApp"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FeedCollectionViewController.swift"
-                  timestampString = "517886705.267379"
+                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FoodiePFObject.swift"
+                  timestampString = "517905727.409188"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "98"
-                  endingLineNumber = "98"
-                  offsetFromSymbolStart = "112">
+                  startingLineNumber = "56"
+                  endingLineNumber = "56"
+                  offsetFromSymbolStart = "32">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SomeFoodieApp/FoodiePFObject.swift"
+            timestampString = "517904246.79636"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
+            landmarkName = "retrieve(forceAnyways:withBlock:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SomeFoodieApp.FoodiePFObject.(retrieve (forceAnyways : Swift.Bool, withBlock : Swift.Optional&lt;(Swift.Optional&lt;Any&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()&gt;) -&gt; ()).(closure #2).(closure #1)"
+                  moduleName = "SomeFoodieApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FoodiePFObject.swift"
+                  timestampString = "517905727.412624"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "56"
+                  endingLineNumber = "56"
+                  offsetFromSymbolStart = "32">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SomeFoodieApp.FoodiePFObject.(retrieve (forceAnyways : Swift.Bool, withBlock : Swift.Optional&lt;(Swift.Optional&lt;Any&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()&gt;) -&gt; ()).(closure #2).(closure #1)"
+                  moduleName = "SomeFoodieApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/biscottigelato/Documents/Dev%20Space/SomeFoodieApp/SomeFoodieApp/FoodiePFObject.swift"
+                  timestampString = "517905727.414075"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "56"
+                  endingLineNumber = "56"
+                  offsetFromSymbolStart = "80">
                </Location>
             </Locations>
          </BreakpointContent>

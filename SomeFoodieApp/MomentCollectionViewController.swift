@@ -58,6 +58,7 @@ class MomentCollectionViewController: UICollectionViewController {
       }
       
       // Long Press detected on a Moment Thumbnail. Set that as the Journal Thumbnail
+      // TODO: Do we need to factor out thumbnail operations?
       workingJournal.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
       workingJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObj
       

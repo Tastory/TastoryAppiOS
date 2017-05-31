@@ -9,7 +9,7 @@
 
 import Parse
 
-class FoodieCategory: FoodiePFObject {
+class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
 
   // MARK: - Public Instance Variable
   var foodieObject = FoodieObject()
@@ -20,11 +20,9 @@ class FoodieCategory: FoodiePFObject {
     super.init()
     foodieObject.delegate = self
   }
-}
 
 
-// MARK: - Foodie Object Delegate Conformance
-extension FoodieCategory: FoodieObjectDelegate {
+  // MARK: - Foodie Object Delegate Conformance
 
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
@@ -45,6 +43,11 @@ extension FoodieCategory: FoodieObjectDelegate {
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  }
+  
+  
+  func verbose() {
+    
   }
   
   

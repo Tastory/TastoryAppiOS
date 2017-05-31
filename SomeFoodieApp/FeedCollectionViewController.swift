@@ -22,6 +22,12 @@ class FeedCollectionViewController: UICollectionViewController {
   var queriedJournalArray = [FoodieJournal]()
   
   
+  // MARK: - IBActions
+  @IBAction func rightSwipeAction(_ sender: UISwipeGestureRecognizer) {
+    dismiss(animated: true, completion: nil)
+  }
+  
+  
   // MARK: - View Controller Lifecycle Functions
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -48,6 +54,8 @@ class FeedCollectionViewController: UICollectionViewController {
     for journal in journalArray {
       queriedJournalArray.append(journal)
     }
+    
+    collectionView?.reloadData()
   }
   
   
@@ -57,8 +65,33 @@ class FeedCollectionViewController: UICollectionViewController {
   func queryErrorDialog() {
     let alertController = UIAlertController(title: "SomeFoodieApp",
                                             titleComment: "Alert diaglogue title when a Feed Collection View query error occurred",
-                                            message: "An query error has occured. Please try again",
+                                            message: "A query error has occured. Please try again",
                                             messageComment: "Alert dialog message when a Feed Collection View query error occurred",
+                                            preferredStyle: .alert)
+    alertController.addAlertAction(title: "OK",
+                                   comment: "Button in alert dialog box for generic Feed Collection View errors",
+                                   style: .default)
+    self.present(alertController, animated: true, completion: nil)
+  }
+  
+  
+  func fetchErrorDialog() {
+    let alertController = UIAlertController(title: "SomeFoodieApp",
+                                            titleComment: "Alert diaglogue title when a Feed Collection View fetch error occurred",
+                                            message: "A fetch error has occured. Please try again",
+                                            messageComment: "Alert dialog message when a Feed Collection View fetch error occurred",
+                                            preferredStyle: .alert)
+    alertController.addAlertAction(title: "OK",
+                                   comment: "Button in alert dialog box for generic Feed Collection View errors",
+                                   style: .default)
+    self.present(alertController, animated: true, completion: nil)
+  }
+  
+  func internalErrorDialog() {
+    let alertController = UIAlertController(title: "SomeFoodieApp",
+                                            titleComment: "Alert diaglogue title when a Feed Collection View internal error occured",
+                                            message: "An internal error has occured. Please try again",
+                                            messageComment: "Alert dialog message when a Feed Collection View internal error occured",
                                             preferredStyle: .alert)
     alertController.addAlertAction(title: "OK",
                                    comment: "Button in alert dialog box for generic Feed Collection View errors",
@@ -87,21 +120,44 @@ class FeedCollectionViewController: UICollectionViewController {
     // TODO: Hide all these in the Journal Model?
     
     // Do we need to fetch the Journal?
-    journal.retrieve { (_, journalError) in
+    journal.retrieve { [unowned self] _, journalError in
       
-      // TODO: Catch error
+      if let error = journalError {
+        self.fetchErrorDialog()
+        DebugPrint.error("Journal.retrieve() callback with error: \(error.localizedDescription)")
+        return
+      }
       
-      if let thumbnail = journal.thumbnailObj {
-        // Do we need to fetch the Thumbnail?
-        thumbnail.retrieve(){ [unowned self] _, thumbnailError in
+      journal.verbose()
+      
+      guard let thumbnailObject = journal.thumbnailObj else {
+        self.internalErrorDialog()
+        DebugPrint.error("Unexpected, thumbnailObject = nil")
+        return
+      }
+      
+      thumbnailObject.retrieve(){ [unowned self] _, thumbnailError in
+      
+        if let error = thumbnailError {
+          self.fetchErrorDialog()
+          DebugPrint.error("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
+          return
+        }
         
-        // TODO: Catch error
-        // CONTINUE-HERE: This won't fucking work. Need to do something with the collection View on Async response
-          if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
+        guard let thumbnailData = thumbnailObject.imageMemoryBuffer else {
+          self.internalErrorDialog()
+          DebugPrint.error("Unexpected, thumbnailObject.imageMemoryBuffer = nil")
+          return
+        }
+        
+        if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
+          DispatchQueue.main.async {
             cell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
-            cell.journalButton?.setImage(UIImage(data: thumbnail.imageMemoryBuffer!), for: .normal)
-            collectionView.reloadItems(at: [indexPath])
+            cell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+            //collectionView.reloadItems(at: [indexPath])
           }
+        } else {
+          DebugPrint.error("Feed Collection View CellForItemAt \(indexPath) did not return FeedCollectionViewCell type")
         }
       }
     }

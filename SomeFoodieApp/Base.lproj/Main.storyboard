@@ -200,10 +200,11 @@
         <scene sceneID="1WN-B5-zBj">
             <objects>
                 <collectionViewController storyboardIdentifier="FeedCollectionViewController" id="HNg-5k-U9d" customClass="FeedCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="Ut2-ec-XIU">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="Ut2-ec-XIU">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="yuW-7Q-ONX">
                             <size key="itemSize" width="182" height="284"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -218,7 +219,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="182" height="284"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ex6-Ee-5zY">
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ex6-Ee-5zY">
                                             <rect key="frame" x="0.0" y="0.0" width="182" height="284"/>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Placeholder text" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HVl-kq-EgA">
@@ -251,10 +252,16 @@
                         <connections>
                             <outlet property="dataSource" destination="HNg-5k-U9d" id="bFn-ma-Brt"/>
                             <outlet property="delegate" destination="HNg-5k-U9d" id="ay1-Bj-o4C"/>
+                            <outletCollection property="gestureRecognizers" destination="Fdk-6Y-6PU" appends="YES" id="Hn0-dA-xGs"/>
                         </connections>
                     </collectionView>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Cgs-s6-Dbf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="right" id="Fdk-6Y-6PU">
+                    <connections>
+                        <action selector="rightSwipeAction:" destination="HNg-5k-U9d" id="wUk-jX-heR"/>
+                    </connections>
+                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-429.60000000000002" y="86.806596701649184"/>
         </scene>

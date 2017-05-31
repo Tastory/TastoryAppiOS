@@ -96,14 +96,20 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Foodie Object Delegate Conformance
 
   override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
-    super.retrieve(forceAnyways: forceAnyways, withBlock: callback)
-    
-    if let fileName = mediaFileName, let typeString = mediaType, let type = FoodieMediaType(rawValue: typeString) {
-      mediaObj = FoodieMedia(fileName: fileName, type: type)
-    }
-    
-    if let fileName = thumbnailFileName {
-      thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
+    super.retrieve(forceAnyways: forceAnyways) { (someObject, error) in
+      
+      if let moment = someObject as? FoodieMoment {
+        
+        if moment.mediaObj == nil, let fileName = moment.mediaFileName,
+          let typeString = moment.mediaType, let type = FoodieMediaType(rawValue: typeString) {
+          moment.mediaObj = FoodieMedia(fileName: fileName, type: type)
+        }
+        
+        if moment.thumbnailObj == nil, let fileName = moment.thumbnailFileName {
+          moment.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
+        }
+      }
+      callback?(someObject, error)  // Callback regardless
     }
   }
   
@@ -155,6 +161,13 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  }
+  
+  
+  func verbose() {
+    DebugPrint.verbose("FoodieMoment ID: \(getUniqueIdentifier())")
+    DebugPrint.verbose("  Media Filename: \(mediaFileName)")
+    DebugPrint.verbose("  Media Type: \(mediaType)")
   }
   
   

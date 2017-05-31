@@ -267,10 +267,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Foodie Object Delegate Conformance
   
   override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
-    super.retrieve(forceAnyways: forceAnyways, withBlock: callback)
-    
-    if let fileName = thumbnailFileName {
-      thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)  // TODO: This will cause double thumbnail. There's already a copy in the Moment
+    super.retrieve(forceAnyways: forceAnyways) { (someObject, error) in
+      if let journal = someObject as? FoodieJournal, journal.thumbnailObj == nil, let fileName = journal.thumbnailFileName {
+        journal.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
+      }
+      callback?(someObject, error)  // Callback regardless
     }
   }
   
@@ -344,13 +345,16 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   func verbose() {
-    DebugPrint.verbose("FoodieJournal - \(getUniqueIdentifier())")
-    DebugPrint.verbose("Contains \(moments!.count) Moments with ID as follows:")
+    DebugPrint.verbose("FoodieJournal ID: \(getUniqueIdentifier())")
+    DebugPrint.verbose("  Title: \(title)")
+    DebugPrint.verbose("  Thumbnail Filename: \(thumbnailFileName)")
+    DebugPrint.verbose("  Contains \(moments!.count) Moments with ID as follows:")
+    
     for moment in moments! {
-      DebugPrint.verbose("\(moment.getUniqueIdentifier())")
+      DebugPrint.verbose("    \(moment.getUniqueIdentifier())")
     }
-    DebugPrint.verbose("Thumbnail Filename: \(thumbnailFileName)")
   }
+  
   
   func foodieObjectType() -> String {
     return "FoodieJournal"

@@ -78,19 +78,21 @@ extension FoodieMedia: FoodieObjectDelegate {
       
       switch type {
       case .photo:
-        retrieveFromServerToBuffer() { (buffer, error) in
+        retrieveFromServerToBuffer() { [unowned self] buffer, error in
           if let err = error {
             DebugPrint.error("retrieveFromServerToBuffer for photo failed with error \(err.localizedDescription)")
           }
+          if let imageBuffer = buffer as? Data { self.imageMemoryBuffer = imageBuffer }
           callback?(buffer, error)
         }
         
       case .video:
-        retrieveFromServerToLocal() { (urlString, error) in
+        retrieveFromServerToLocal() { (string, error) in
           if let err = error {
             DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
           }
-          callback?(urlString, error)
+          if let urlString = string as? String { self.videoLocalBufferUrl = URL(string: urlString) }
+          callback?(string, error)
         }
       }
       return
@@ -103,6 +105,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       retrieveFromLocalToBuffer() { [unowned self] localBuffer, localError in
         guard let err = localError else {
           // Error is nil. This is actually success case!
+          if let imageBuffer = localBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
           callback?(localBuffer, nil)
           return
         }
@@ -112,16 +115,18 @@ extension FoodieMedia: FoodieObjectDelegate {
           if let error = serverError {
             DebugPrint.error("retrieveFromServerToBuffer for photo failed with error \(error.localizedDescription)")
           }
+          if let imageBuffer = serverBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
           callback?(serverBuffer, serverError)
         }
       }
       
     case .video:
-      retrieveFromServerToLocal() { (urlString, error) in
+      retrieveFromServerToLocal() { (string, error) in
         if let err = error {
           DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
         }
-        callback?(urlString, error)
+        if let urlString = string as? String { self.videoLocalBufferUrl = URL(string: urlString) }
+        callback?(string, error)
       }
     }
   }
@@ -174,6 +179,11 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
       saveTmpUrlToLocal(url: videoUrl, withBlock: callback)
     }
+  }
+  
+  
+  func verbose() {
+    
   }
   
   
