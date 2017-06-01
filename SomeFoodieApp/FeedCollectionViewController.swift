@@ -37,6 +37,8 @@ class FeedCollectionViewController: UICollectionViewController {
     
     // Do any additional setup after loading the view
     FoodieJournal.queryAll(limit: 10, block: queryResultCallback)
+    
+    collectionView?.isPrefetchingEnabled = false 
   }
   
   
@@ -112,15 +114,19 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.reuseIdentifier, for: indexPath) as! FeedCollectionViewCell
+    let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.reuseIdentifier, for: indexPath) as! FeedCollectionViewCell
     
     // Configure the cell
     let journal = queriedJournalArray[indexPath.row]
+    
+    // DebugPrint.verbose("collectionView(cellForItemAt #\(indexPath.row)")
     
     // TODO: Hide all these in the Journal Model?
     
     // Do we need to fetch the Journal?
     journal.retrieve { [unowned self] _, journalError in
+      
+      // DebugPrint.verbose("journal.retrieve() callback for cell #\(indexPath.row)")
       
       if let error = journalError {
         self.fetchErrorDialog()
@@ -128,7 +134,7 @@ class FeedCollectionViewController: UICollectionViewController {
         return
       }
       
-      journal.verbose()
+      //journal.verbose()
       
       guard let thumbnailObject = journal.thumbnailObj else {
         self.internalErrorDialog()
@@ -138,6 +144,8 @@ class FeedCollectionViewController: UICollectionViewController {
       
       thumbnailObject.retrieve(){ [unowned self] _, thumbnailError in
       
+        // DebugPrint.verbose("thumbnailObject.retrieve() callback for cell #\(indexPath.row)")
+        
         if let error = thumbnailError {
           self.fetchErrorDialog()
           DebugPrint.error("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
@@ -150,18 +158,23 @@ class FeedCollectionViewController: UICollectionViewController {
           return
         }
         
-        if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
+        if Thread.isMainThread {
+          // None of the retrieve function actually did an async dispatch. So we are still in the collectionView.cellForItemAt context.
+          reusableCell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
+          reusableCell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+          
+        } else if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
           DispatchQueue.main.async {
+            // DebugPrint.verbose("cellForItem(at:) DispatchQueue.main for cell #\(indexPath.row)")
             cell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
             cell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
-            //collectionView.reloadItems(at: [indexPath])
           }
         } else {
           DebugPrint.error("Feed Collection View CellForItemAt \(indexPath) did not return FeedCollectionViewCell type")
         }
       }
     }
-    return cell
+    return reusableCell
   }
   
   
