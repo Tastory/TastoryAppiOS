@@ -64,6 +64,74 @@ class FoodieMedia: FoodieS3Object {
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieMedia: FoodieObjectDelegate {
 
+  func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    guard let type = mediaType else {
+      DebugPrint.fatal("Retrieve not allowed when Media has no MediaType")
+    }
+    
+    // If photo and in memory, or video and in local, just callback
+    if !forceAnyways && (imageMemoryBuffer != nil || videoLocalBufferUrl != nil) {
+      callback?(self, nil)
+      return
+      
+    } else if forceAnyways {
+      
+      switch type {
+      case .photo:
+        retrieveFromServerToBuffer() { [unowned self] buffer, error in
+          if let err = error {
+            DebugPrint.error("retrieveFromServerToBuffer for photo failed with error \(err.localizedDescription)")
+          }
+          if let imageBuffer = buffer as? Data { self.imageMemoryBuffer = imageBuffer }
+          callback?(buffer, error)
+        }
+        
+      case .video:
+        retrieveFromServerToLocal() { (string, error) in
+          if let err = error {
+            DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
+          }
+          if let urlString = string as? String { self.videoLocalBufferUrl = URL(string: urlString) }
+          callback?(string, error)
+        }
+      }
+      return
+    }
+    
+    // If this is photo and not in memory, retrieve from local...
+    switch type {
+      
+    case .photo:
+      retrieveFromLocalToBuffer() { [unowned self] localBuffer, localError in
+        guard let err = localError else {
+          // Error is nil. This is actually success case!
+          if let imageBuffer = localBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
+          callback?(localBuffer, nil)
+          return
+        }
+        DebugPrint.error("retrieveFromLocalToBuffer for photo failed with error \(err.localizedDescription)")
+        
+        self.retrieveFromServerToBuffer() { (serverBuffer, serverError) in
+          if let error = serverError {
+            DebugPrint.error("retrieveFromServerToBuffer for photo failed with error \(error.localizedDescription)")
+          }
+          if let imageBuffer = serverBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
+          callback?(serverBuffer, serverError)
+        }
+      }
+      
+    case .video:
+      retrieveFromServerToLocal() { (string, error) in
+        if let err = error {
+          DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
+        }
+        if let urlString = string as? String { self.videoLocalBufferUrl = URL(string: urlString) }
+        callback?(string, error)
+      }
+    }
+  }
+  
+  
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      withName name: String?,
@@ -111,6 +179,11 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
       saveTmpUrlToLocal(url: videoUrl, withBlock: callback)
     }
+  }
+  
+  
+  func verbose() {
+    
   }
   
   

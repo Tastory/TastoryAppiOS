@@ -58,6 +58,9 @@ class JournalEntryViewController: UITableViewController {
   
   // MARK: - IBActions
   @IBAction func testSaveJournal(_ sender: Any) {
+    
+    workingJournal?.title = titleTextField?.text
+    workingJournal?.journalURL = linkTextField?.text
     workingJournal?.saveRecursive(to: .local) { [unowned self] (success, error) in
       if success {
         DebugPrint.verbose("Journal Save to Local Completed!")
@@ -112,6 +115,14 @@ class JournalEntryViewController: UITableViewController {
       
       // This is a new Moment. Let's add it to the Journal!
       journalUnwrapped.add(moment: returnedMoment!)
+      
+      // If there wasn't any moments before, we got to make this the default thumbnail for the Journal
+      // Got to do this also when removing moments!!!
+      if journalUnwrapped.moments!.count == 1 {
+        // TODO: Do we need to factor out thumbnail operations?
+        journalUnwrapped.thumbnailFileName = returnedMoment!.thumbnailFileName
+        journalUnwrapped.thumbnailObj = returnedMoment!.thumbnailObj
+      }
     }
     
     // TODO: How to visually convey status of Moments to user??

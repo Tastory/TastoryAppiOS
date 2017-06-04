@@ -32,6 +32,45 @@ class MomentCollectionViewController: UICollectionViewController {
   fileprivate var momentSizeDefault: CGSize!
 
 
+  // MARK: - IBActions
+  @IBAction func longPressAction(_ lpgr: UILongPressGestureRecognizer) {
+    let point = lpgr.location(in: self.collectionView)
+
+    if let indexPath = collectionView!.indexPathForItem(at: point) {
+      let cell = collectionView!.cellForItem(at: indexPath) as! MomentCollectionViewCell
+
+      guard let momentArray = workingJournal.moments else {
+        DebugPrint.fatal("No Moments but Moment Thumbnail long pressed? What?")
+      }
+      
+      // Clear the last thumbnail selection if any
+      if workingJournal.thumbnailFileName != nil {
+        var momentArrayIndex = 0
+        for moment in momentArray {
+          if workingJournal.thumbnailFileName == moment.thumbnailFileName {
+            let oldIndexPath = IndexPath(row: momentArrayIndex, section: indexPath.section)
+            let oldCell = collectionView!.cellForItem(at: oldIndexPath) as! MomentCollectionViewCell
+            oldCell.thumbFrameView.isHidden = true
+            break
+          }
+          momentArrayIndex += 1
+        }
+      }
+      
+      // Long Press detected on a Moment Thumbnail. Set that as the Journal Thumbnail
+      // TODO: Do we need to factor out thumbnail operations?
+      workingJournal.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
+      workingJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObj
+      
+      // Unhide the Thumbnail Frame to give feedback to user that this is the Journal Thumbnail
+      cell.thumbFrameView.isHidden = false
+      
+    } else {
+      // Ignore, not long pressing on a valid Moment Thumbnail
+    }
+  }
+  
+  
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -134,11 +173,16 @@ extension MomentCollectionViewController {
 //    }
     
     // TODO: Download the thumbnail if not in memory
-    
-    let thumbnail = UIImage(data: moment.thumbnailObject!.imageMemoryBuffer!)
-    
+    let thumbnail = UIImage(data: moment.thumbnailObj!.imageMemoryBuffer!)
     cell.momentButton.setImage(thumbnail, for: .normal)
   
+    // Should Thumbnail frame be hidden?
+    cell.createFrameLayer()
+    if workingJournal.thumbnailFileName != nil, workingJournal.thumbnailFileName == moment.thumbnailFileName {
+      cell.thumbFrameView.isHidden = false
+    } else {
+      cell.thumbFrameView.isHidden = true
+    }
     return cell
   }
 

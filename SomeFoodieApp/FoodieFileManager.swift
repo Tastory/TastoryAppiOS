@@ -38,15 +38,21 @@ class FoodieFile {
   enum ErrorCode: LocalizedError {
     
     case fileManagerMoveItemLocalFailed
+    case fileManagerReadLocalFailed
     case fileManagerSaveLocalFailed
     case awsS3TransferManagerUploadRequestNil
     case awsS3TransferUploadCancelled
     case awsS3TransferUploadUnknownError
+    case awsS3TransferManagerDownloadRequestNil
+    case awsS3TransferDownloadCancelled
+    case awsS3TransferDownloadUnknownError
     
     var errorDescription: String? {
       switch self {
       case .fileManagerMoveItemLocalFailed:
         return NSLocalizedString("FileManager.moveItem failed", comment: "Error description for an exception error code")
+      case .fileManagerReadLocalFailed:
+        return NSLocalizedString("Data(contentsOf:) failed", comment: "Error description for an exception error code")
       case .fileManagerSaveLocalFailed:
         return NSLocalizedString("Data.write failed", comment: "Error description for an exception error code")
       case .awsS3TransferManagerUploadRequestNil:
@@ -54,9 +60,14 @@ class FoodieFile {
       case .awsS3TransferUploadCancelled:
         return NSLocalizedString("AWS S3 Transfer Upload cancelled", comment: "Error description for an exception error code")
       case .awsS3TransferUploadUnknownError:
-        return NSLocalizedString("AWS S3 Transfer Upload Unknown error", comment: "Error description for an exception error code")
+        return NSLocalizedString("AWS S3 Transfer Upload unknown error", comment: "Error description for an exception error code")
+      case .awsS3TransferManagerDownloadRequestNil:
+        return NSLocalizedString("AWSS3TransferManagerDownloadRequest returned nil", comment: "Error descipriton for an exception error code")
+      case .awsS3TransferDownloadCancelled:
+        return NSLocalizedString("AWS S3 Transfer Download cancelled", comment: "Error description for an exception error code")
+      case .awsS3TransferDownloadUnknownError:
+        return NSLocalizedString("AWS S3 Transfer Download unknonw error", comment: "Error description for an exception error code")
       }
-      
     }
     
     init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
@@ -136,6 +147,63 @@ class FoodieFile {
   }
   
   
+  func retrieveFromLocalToBufffer(fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    DispatchQueue.global(qos: .utility).async {
+      let buffer: Data?
+      do {
+        buffer = try Data(contentsOf: Constants.DocumentFolderUrl.appendingPathComponent("\(fileName)"))
+      } catch {
+        DebugPrint.error("Failed to read file \(fileName) from local Documents folder \(error.localizedDescription)")
+        callback?(nil, ErrorCode.fileManagerReadLocalFailed)
+        return
+      }
+      // Save to Local completed successfully!!
+      callback?(buffer!, nil)
+    }
+  }
+  
+  
+  func retrieveFromServerToLocal(fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?)
+  {
+    guard let downloadRequest = AWSS3TransferManagerDownloadRequest() else {
+      DebugPrint.assert("AWSS3TransferManagerDownloadRequest() returned nil")
+      callback?(nil, ErrorCode.awsS3TransferManagerDownloadRequestNil)
+      return
+    }
+    downloadRequest.bucket = Constants.S3BucketKey
+    downloadRequest.key = fileName
+    downloadRequest.downloadingFileURL = Constants.DocumentFolderUrl.appendingPathComponent(fileName)
+    
+    transferManager.download(downloadRequest).continueWith(executor: AWSExecutor.mainThread()) { (task:AWSTask<AnyObject>) -> Any? in
+      
+      if let error = task.error as NSError? {
+        if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
+          switch code {
+          case .cancelled:
+            DebugPrint.log("AWS Transfer Download with Key \(downloadRequest.key!)")
+            callback?(nil, ErrorCode.awsS3TransferDownloadCancelled)
+          case .paused:
+            // Victor to look into what is the right action for Pause
+            DebugPrint.fatal("Pause is not well understood and not currently supported. Pulling a Fatal condition for now")
+          default:
+            DebugPrint.error("AWS Transfer Download with Key \(String(describing: downloadRequest.key)) resulted in Error: \(error)")
+            callback?(nil, ErrorCode.awsS3TransferDownloadUnknownError)
+          }
+        } else {
+          DebugPrint.error("AWS Transfer Download with Key \(String(describing: downloadRequest.key)) resulted in Error: \(error)")
+          callback?(nil, ErrorCode.awsS3TransferDownloadUnknownError)
+        }
+        return nil
+      }
+      
+      // TODO: might be useful to store in parse for tracking the version: _ = task.result
+      DebugPrint.log("AWS Transfer Download completed for Key \(downloadRequest.key!)")
+      callback?(downloadRequest.downloadingFileURL!, nil)
+      return nil
+    }
+  }
+  
+  
   func saveDataToLocal(buffer: Data, fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     DispatchQueue.global(qos: .utility).async {
       do {
@@ -189,7 +257,6 @@ class FoodieFile {
           case .paused:
             // Victor, how is this supposed to work? If it's paused, then when does the resume come in? We need to do a callback once AWS SDK calls us back because there's a pending chain of FoodieObjects saves waiting on this callback. Unless AWS SDK will call us back again some time down the road when this resumes and completes? I am doubtful tho....?
             DebugPrint.fatal("Pause is not well understood and not currently supported. Pulling a Fatal condition for now")
-            break
           default:
             DebugPrint.error("AWS Transfer Upload with Key \(String(describing: uploadRequest.key)) resulted in Error: \(error)")
             callback?(false, ErrorCode.awsS3TransferUploadUnknownError)
@@ -252,38 +319,6 @@ class FoodieFile {
   {
     transferManager.cancelAll()
   }
-  
-  
-  func download(fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?)
-  {
-    let downloadFileURL = Constants.DocumentFolderUrl.appendingPathComponent(fileName)
-    
-    let downloadRequest = AWSS3TransferManagerDownloadRequest()
-    downloadRequest?.bucket = Constants.S3BucketKey
-    downloadRequest?.key = fileName
-    downloadRequest?.downloadingFileURL = downloadFileURL
-    
-    transferManager.download((downloadRequest)!).continueWith(executor: AWSExecutor.mainThread(), block: { (task:AWSTask<AnyObject>) -> Any? in
-      
-      if let error = task.error as NSError? {
-        if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
-          switch code {
-          case .cancelled, .paused:
-            break
-          default:
-            print("Error Downloading: \(String(describing: downloadRequest?.key)) Error: \(error)")
-          }
-        } else {
-          print("Error Downloading: \(String(describing: downloadRequest?.key)) Error: \(error)")
-        }
-        return nil
-      }
-      
-      _ = task.result
-      print("Download complete for: \(String(describing: downloadRequest?.key))")
-      return nil
-    })
-  }
 }
 
 
@@ -294,6 +329,37 @@ class FoodieS3Object {
   
   
   // MARK: - Public Instance Functions
+  func retrieveFromLocalToBuffer(withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    guard let fileName = foodieFileName else {
+      DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+    }
+    FoodieFile.manager.retrieveFromLocalToBufffer(fileName: fileName, withBlock: callback)
+  }
+  
+  
+  func retrieveFromServerToLocal(withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    guard let fileName = foodieFileName else {
+      DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+    }
+    FoodieFile.manager.retrieveFromServerToLocal(fileName: fileName, withBlock: callback)
+  }
+  
+  
+  func retrieveFromServerToBuffer(withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    guard let fileName = foodieFileName else {
+      DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+    }
+    FoodieFile.manager.retrieveFromServerToLocal(fileName: fileName) { (localURLString, error) in
+      if error == nil, localURLString != nil {
+        FoodieFile.manager.retrieveFromLocalToBufffer(fileName: fileName, withBlock: callback)
+      }
+      else {
+        callback?(localURLString, error)
+      }
+    }
+  }
+  
+  
   func saveDataBufferToLocal(buffer: Data, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     guard let fileName = foodieFileName else {
       DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")

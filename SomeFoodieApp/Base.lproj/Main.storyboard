@@ -123,7 +123,7 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes"/>
                             </textField>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="srX-2D-hwk">
-                                <rect key="frame" x="16" y="521" width="343" height="106"/>
+                                <rect key="frame" x="16" y="483" width="343" height="144"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
                                         <rect key="frame" x="144.5" y="0.0" width="54" height="30"/>
@@ -132,15 +132,22 @@
                                             <action selector="launchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="k45-JV-u3I"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aSA-Ws-aTZ">
+                                        <rect key="frame" x="154.5" y="38" width="34" height="30"/>
+                                        <state key="normal" title="Feed"/>
+                                        <connections>
+                                            <action selector="launchFeed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3gV-PV-lKz"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sNl-Tb-SAf">
-                                        <rect key="frame" x="116" y="38" width="111" height="30"/>
+                                        <rect key="frame" x="116" y="76" width="111" height="30"/>
                                         <state key="normal" title="Current Position"/>
                                         <connections>
                                             <action selector="currentLocationReturn:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eE7-yk-10G"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8yq-x6-CLY">
-                                        <rect key="frame" x="129" y="76" width="85" height="30"/>
+                                        <rect key="frame" x="129" y="114" width="85" height="30"/>
                                         <state key="normal" title="Search Here"/>
                                     </button>
                                 </subviews>
@@ -188,6 +195,75 @@
                 </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-428" y="-666"/>
+        </scene>
+        <!--Feed Collection View Controller-->
+        <scene sceneID="1WN-B5-zBj">
+            <objects>
+                <collectionViewController storyboardIdentifier="FeedCollectionViewController" id="HNg-5k-U9d" customClass="FeedCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="Ut2-ec-XIU">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="yuW-7Q-ONX">
+                            <size key="itemSize" width="187" height="333"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FeedCell" id="iOA-sb-ZC0" customClass="FeedCollectionViewCell" customModule="SomeFoodieApp" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="187" height="333"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="187" height="333"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ex6-Ee-5zY">
+                                            <rect key="frame" x="0.0" y="0.0" width="187" height="333"/>
+                                        </button>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HVl-kq-EgA">
+                                            <rect key="frame" x="0.0" y="273" width="187" height="60"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.20118498322147652" colorSpace="calibratedWhite"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="60" id="JH1-AX-ZkC"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </view>
+                                <constraints>
+                                    <constraint firstItem="HVl-kq-EgA" firstAttribute="leading" secondItem="iOA-sb-ZC0" secondAttribute="leading" id="1K8-6V-ZFp"/>
+                                    <constraint firstAttribute="trailing" secondItem="HVl-kq-EgA" secondAttribute="trailing" id="Mwm-H2-zlx"/>
+                                    <constraint firstAttribute="bottom" secondItem="HVl-kq-EgA" secondAttribute="bottom" id="UGJ-o4-GFv"/>
+                                    <constraint firstItem="Ex6-Ee-5zY" firstAttribute="leading" secondItem="iOA-sb-ZC0" secondAttribute="leading" id="VoH-U1-pJC"/>
+                                    <constraint firstAttribute="bottom" secondItem="Ex6-Ee-5zY" secondAttribute="bottom" id="Wky-2O-RiN"/>
+                                    <constraint firstAttribute="trailing" secondItem="Ex6-Ee-5zY" secondAttribute="trailing" id="qe4-PD-GNq"/>
+                                    <constraint firstItem="Ex6-Ee-5zY" firstAttribute="top" secondItem="iOA-sb-ZC0" secondAttribute="top" id="zXd-zd-Ql2"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="journalButton" destination="Ex6-Ee-5zY" id="73K-nw-Tn2"/>
+                                    <outlet property="journalTitle" destination="HVl-kq-EgA" id="9rt-Tp-Ej1"/>
+                                </connections>
+                            </collectionViewCell>
+                        </cells>
+                        <connections>
+                            <outlet property="dataSource" destination="HNg-5k-U9d" id="bFn-ma-Brt"/>
+                            <outlet property="delegate" destination="HNg-5k-U9d" id="ay1-Bj-o4C"/>
+                            <outletCollection property="gestureRecognizers" destination="Fdk-6Y-6PU" appends="YES" id="Hn0-dA-xGs"/>
+                        </connections>
+                    </collectionView>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Cgs-s6-Dbf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="right" id="Fdk-6Y-6PU">
+                    <connections>
+                        <action selector="rightSwipeAction:" destination="HNg-5k-U9d" id="wUk-jX-heR"/>
+                    </connections>
+                </swipeGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="-429.60000000000002" y="86.806596701649184"/>
         </scene>
         <!--Camera View Controller-->
         <scene sceneID="wzA-2G-nOi">
@@ -439,6 +515,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="222"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="OoU-Aa-vB2" customClass="MomentCollectionLayout" customModule="SomeFoodieApp" customModuleProvider="target">
                             <size key="itemSize" width="100" height="222"/>
                             <size key="headerReferenceSize" width="100" height="222"/>
@@ -457,16 +534,26 @@
                                             <rect key="frame" x="0.0" y="0.0" width="100" height="222"/>
                                             <color key="tintColor" red="0.9169090741" green="0.0" blue="0.09406216178" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </button>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cSh-jl-knJ">
+                                            <rect key="frame" x="0.0" y="0.0" width="100" height="222"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
                                     </subviews>
                                 </view>
+                                <gestureRecognizers/>
                                 <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="cSh-jl-knJ" secondAttribute="bottom" id="4Vf-eT-xnb"/>
                                     <constraint firstAttribute="bottom" secondItem="znA-BN-xwr" secondAttribute="bottom" id="6VQ-AG-CAJ"/>
                                     <constraint firstItem="znA-BN-xwr" firstAttribute="leading" secondItem="5yf-rk-zGg" secondAttribute="leading" id="B2C-ae-bmk"/>
                                     <constraint firstItem="znA-BN-xwr" firstAttribute="top" secondItem="5yf-rk-zGg" secondAttribute="top" id="UwF-zc-g6V"/>
+                                    <constraint firstAttribute="trailing" secondItem="cSh-jl-knJ" secondAttribute="trailing" id="W7m-QQ-hOR"/>
                                     <constraint firstAttribute="trailing" secondItem="znA-BN-xwr" secondAttribute="trailing" id="aTV-yd-wcF"/>
+                                    <constraint firstItem="cSh-jl-knJ" firstAttribute="top" secondItem="5yf-rk-zGg" secondAttribute="top" id="eQS-Jn-sxO"/>
+                                    <constraint firstItem="cSh-jl-knJ" firstAttribute="leading" secondItem="5yf-rk-zGg" secondAttribute="leading" id="vp1-1V-DA0"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="momentButton" destination="znA-BN-xwr" id="L6c-OB-ZbU"/>
+                                    <outlet property="thumbFrameView" destination="cSh-jl-knJ" id="DPu-5k-f0e"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
@@ -481,12 +568,18 @@
                         <connections>
                             <outlet property="dataSource" destination="mqr-nw-IyY" id="eTY-oM-TWy"/>
                             <outlet property="delegate" destination="mqr-nw-IyY" id="3cw-ym-o9Y"/>
+                            <outletCollection property="gestureRecognizers" destination="V4H-Gh-Xpw" appends="YES" id="Jmz-U7-QBT"/>
                         </connections>
                     </collectionView>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="375" height="222"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BGe-7r-hOK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="V4H-Gh-Xpw">
+                    <connections>
+                        <action selector="longPressAction:" destination="mqr-nw-IyY" id="EXW-KV-WbS"/>
+                    </connections>
+                </pongPressGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="2364" y="-694.45277361319347"/>
         </scene>

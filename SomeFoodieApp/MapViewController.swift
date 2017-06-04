@@ -62,7 +62,6 @@ class MapViewController: UIViewController {
 
 
   @IBAction func launchCamera(_ sender: UIButton) {
-    // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
     viewController.restorationClass = nil
@@ -71,6 +70,14 @@ class MapViewController: UIViewController {
   }
 
 
+  @IBAction func launchFeed(_ sender: UIButton) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FeedCollectionViewController") as! FeedCollectionViewController
+    viewController.restorationClass = nil
+    self.present(viewController, animated: true)
+  }
+  
+  
   @IBAction func currentLocationReturn(_ sender: UIButton) {
 
     // Clear the text field while at it

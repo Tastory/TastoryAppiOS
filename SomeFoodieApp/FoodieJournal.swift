@@ -9,7 +9,7 @@
 
 import Parse
 
-class FoodieJournal: FoodiePFObject {
+class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Parse PFObject keys
   // If new objects or external types are added here, check if save and delete algorithms needs updating
@@ -152,6 +152,21 @@ class FoodieJournal: FoodiePFObject {
   }
   
   
+  // Querying function for All
+  static func queryAll(skip: Int = 0, limit: Int, block: FoodieObject.QueryResultBlock?) { // Sorted by modified date in new to old order
+    let query = PFQuery(className: "FoodieJournal")
+    query.skip = skip
+    query.limit = limit
+    //query.order(byDescending: <#T##String#>)
+    query.findObjectsInBackground { pfObjectArray, error in
+      block?(pfObjectArray, error)
+    }
+  }
+  
+  // More complex Query functionality TBD. Need a query structure? Query class? Hmm...
+  // Caching Queries
+  
+  
   // MARK: - Public Instance Functions
   override init() {
     super.init()
@@ -247,11 +262,19 @@ class FoodieJournal: FoodiePFObject {
   func delete(moment: FoodieMoment) {
     
   }
-}
 
 
-// MARK: - Foodie Object Delegate Conformance
-extension FoodieJournal: FoodieObjectDelegate {
+  // MARK: - Foodie Object Delegate Conformance
+  
+  override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    super.retrieve(forceAnyways: forceAnyways) { (someObject, error) in
+      if let journal = someObject as? FoodieJournal, journal.thumbnailObj == nil, let fileName = journal.thumbnailFileName {
+        journal.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
+      }
+      callback?(someObject, error)  // Callback regardless
+    }
+  }
+  
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
@@ -279,10 +302,11 @@ extension FoodieJournal: FoodieObjectDelegate {
       }
     }
     
-    if let thumbnail = thumbnailObj {
-      foodieObject.saveChild(thumbnail, to: location, withName: name, withBlock: callback)
-      childOperationPending = true
-    }
+    // This is just a pointer to the existing thumbnail on the Moment, do we need to re-save? Or create a seperate Thumbnail?
+//    if let thumbnail = thumbnailObj {
+//      foodieObject.saveChild(thumbnail, to: location, withName: name, withBlock: callback)
+//      childOperationPending = true
+//    }
     
     if let hasMarkups = markups {
       for markup in hasMarkups {
@@ -317,6 +341,18 @@ extension FoodieJournal: FoodieObjectDelegate {
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  }
+  
+  
+  func verbose() {
+    DebugPrint.verbose("FoodieJournal ID: \(getUniqueIdentifier())")
+    DebugPrint.verbose("  Title: \(title)")
+    DebugPrint.verbose("  Thumbnail Filename: \(thumbnailFileName)")
+    DebugPrint.verbose("  Contains \(moments!.count) Moments with ID as follows:")
+    
+    for moment in moments! {
+      DebugPrint.verbose("    \(moment.getUniqueIdentifier())")
+    }
   }
   
   

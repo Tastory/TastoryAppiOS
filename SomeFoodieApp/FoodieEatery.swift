@@ -80,6 +80,11 @@ extension FoodieEatery: FoodieObjectDelegate {
   }
   
   
+  func verbose() {
+    
+  }
+  
+  
   func foodieObjectType() -> String {
     return "FoodieEatery"
   }

@@ -57,6 +57,11 @@ extension FoodieMarkup: FoodieObjectDelegate {
   }
   
   
+  func verbose() {
+    
+  }
+  
+  
   func foodieObjectType() -> String {
     return "FoodieMarkup"
   }

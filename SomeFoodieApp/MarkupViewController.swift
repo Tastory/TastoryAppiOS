@@ -64,7 +64,7 @@ class MarkupViewController: UIViewController {
     let momentObj = FoodieMoment(foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
     
     // Setting the Thumbnail Object also initializes the thumbnailFileName
-    momentObj.thumbnailObject = thumbnailObject
+    momentObj.thumbnailObj = thumbnailObject
     
     // Fill in the width and aspect ratio
     guard let width = mediaWidth else {

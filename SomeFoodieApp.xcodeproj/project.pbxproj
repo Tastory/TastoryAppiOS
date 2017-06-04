@@ -22,6 +22,10 @@
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
 		8C1C71F41ECD7A4B00D2E4F8 /* FoodieFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */; };
 		8C1C71F61ED1602F00D2E4F8 /* FoodieGlobals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */; };
+		8C1D4E1E1ED9513800939B2C /* ThumbnailFrameLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E1D1ED9513800939B2C /* ThumbnailFrameLayer.swift */; };
+		8C1D4E221EDCEC9A00939B2C /* FeedCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */; };
+		8C1D4E241EDCECCD00939B2C /* FeedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */; };
+		8C1D4E261EDCED0800939B2C /* FeedCollectionLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E251EDCED0800939B2C /* FeedCollectionLayout.swift */; };
 		8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */; };
 		8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */; };
 		8C61BCDC1E985D1300DDF248 /* DebugPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */; };
@@ -90,6 +94,10 @@
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButton.swift; path = SomeFoodieApp/CameraButton.swift; sourceTree = "<group>"; };
 		8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFileManager.swift; sourceTree = "<group>"; };
 		8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieGlobals.swift; sourceTree = "<group>"; };
+		8C1D4E1D1ED9513800939B2C /* ThumbnailFrameLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ThumbnailFrameLayer.swift; path = SomeFoodieApp/ThumbnailFrameLayer.swift; sourceTree = "<group>"; };
+		8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedCollectionViewController.swift; sourceTree = "<group>"; };
+		8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FeedCollectionViewCell.swift; path = SomeFoodieApp/FeedCollectionViewCell.swift; sourceTree = "<group>"; };
+		8C1D4E251EDCED0800939B2C /* FeedCollectionLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FeedCollectionLayout.swift; path = SomeFoodieApp/FeedCollectionLayout.swift; sourceTree = "<group>"; };
 		8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MKCoordinateSpan+Extension.swift"; sourceTree = "<group>"; };
 		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
 		8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugPrint.swift; sourceTree = "<group>"; };
@@ -174,6 +182,7 @@
 		8C1089381EB00E4500457E66 /* Layouts */ = {
 			isa = PBXGroup;
 			children = (
+				8C1D4E251EDCED0800939B2C /* FeedCollectionLayout.swift */,
 				8C1089361EB00E3E00457E66 /* MomentCollectionLayout.swift */,
 			);
 			name = Layouts;
@@ -269,6 +278,7 @@
 				8C1A0D7E1E88F711001DE075 /* CameraButton.swift */,
 				C24F69661EB85DF300A0DB7B /* PlayerView.swift */,
 				8C9AD0601E8F615D005F337E /* ExitButton.swift */,
+				8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */,
 				8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */,
 				8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */,
 				8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */,
@@ -297,6 +307,7 @@
 				8C0590481EC65B0000027E91 /* RootViewController.swift */,
 				8C0590461EC653DF00027E91 /* DiscoverViewController.swift */,
 				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
+				8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */,
 				C24F69641EB85B0300A0DB7B /* ViewEntryController.swift */,
 				8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */,
 				8C9AD0611E8F615D005F337E /* MarkupViewController.swift */,
@@ -314,6 +325,7 @@
 				8C9AD05E1E8F615D005F337E /* CameraButtonRingLayer.swift */,
 				8C9AD05F1E8F615D005F337E /* CameraCrossLayer.swift */,
 				8C1089341EAFF18300457E66 /* AddMomentLayer.swift */,
+				8C1D4E1D1ED9513800939B2C /* ThumbnailFrameLayer.swift */,
 			);
 			name = Layers;
 			sourceTree = "<group>";
@@ -638,6 +650,7 @@
 				8C1089331EADC13700457E66 /* MomentFooterReusableView.swift in Sources */,
 				8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */,
 				8C1C71F41ECD7A4B00D2E4F8 /* FoodieFileManager.swift in Sources */,
+				8C1D4E241EDCECCD00939B2C /* FeedCollectionViewCell.swift in Sources */,
 				8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */,
 				8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */,
 				8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */,
@@ -647,16 +660,19 @@
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */,
 				8C1089351EAFF18300457E66 /* AddMomentLayer.swift in Sources */,
 				C24F69671EB85DF300A0DB7B /* PlayerView.swift in Sources */,
+				8C1D4E1E1ED9513800939B2C /* ThumbnailFrameLayer.swift in Sources */,
 				8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */,
 				8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */,
 				8C9AD0631E8F615D005F337E /* CameraButtonRingLayer.swift in Sources */,
 				8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */,
 				8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */,
 				8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */,
+				8C1D4E261EDCED0800939B2C /* FeedCollectionLayout.swift in Sources */,
 				8C61BCDC1E985D1300DDF248 /* DebugPrint.swift in Sources */,
 				8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */,
 				8C9AD0641E8F615D005F337E /* CameraCrossLayer.swift in Sources */,
 				8C1089371EB00E3E00457E66 /* MomentCollectionLayout.swift in Sources */,
+				8C1D4E221EDCEC9A00939B2C /* FeedCollectionViewController.swift in Sources */,
 				8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */,
 				8C05904B1EC6671400027E91 /* UIStoryboard+Extension.swift in Sources */,
 				8C9AD0621E8F615D005F337E /* CameraButtonLayer.swift in Sources */,
