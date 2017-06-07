@@ -11,22 +11,22 @@ import AVFoundation
 
 /// A simple `UIView` subclass that is backed by an `AVPlayerLayer` layer.
 class PlayerView: UIView {
-    var player: AVPlayer? {
-        get {
-            return playerLayer.player
-        }
-        
-        set {
-            playerLayer.player = newValue
-        }
+  var player: AVPlayer? {
+    get {
+      return playerLayer.player
     }
     
-    var playerLayer: AVPlayerLayer {
-        return layer as! AVPlayerLayer
+    set {
+      playerLayer.player = newValue
     }
-    
-    override class var layerClass: AnyClass {
-        return AVPlayerLayer.self
-    }
+  }
+  
+  var playerLayer: AVPlayerLayer {
+    return layer as! AVPlayerLayer
+  }
+  
+  override class var layerClass: AnyClass {
+    return AVPlayerLayer.self
+  }
 }
 

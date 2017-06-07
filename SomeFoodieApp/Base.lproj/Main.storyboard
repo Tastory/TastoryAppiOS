@@ -152,6 +152,14 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PLd-J9-7IU">
+                                <rect key="frame" x="145" y="445" width="84" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Journal Test"/>
+                                <connections>
+                                    <segue destination="l2J-hP-Z7q" kind="show" id="1cm-1y-YyX"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -268,6 +276,39 @@
             </objects>
             <point key="canvasLocation" x="-429.60000000000002" y="86.806596701649184"/>
         </scene>
+        <!--Journal View Controller-->
+        <scene sceneID="ooy-sj-8sY">
+            <objects>
+                <viewController id="l2J-hP-Z7q" customClass="JournalViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Tof-66-bGy"/>
+                        <viewControllerLayoutGuide type="bottom" id="On6-b9-DFl"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="cgZ-7E-g3q">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6ZO-UI-qRd" customClass="PlayerView" customModule="SomeFoodieApp" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="6ZO-UI-qRd" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="REE-Qx-p97"/>
+                            <constraint firstItem="6ZO-UI-qRd" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="jri-7f-2Ue"/>
+                            <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="6ZO-UI-qRd" secondAttribute="bottom" id="uOu-4h-zig"/>
+                            <constraint firstAttribute="trailing" secondItem="6ZO-UI-qRd" secondAttribute="trailing" id="wRe-6w-Rob"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="playerView" destination="6ZO-UI-qRd" id="mvY-4Y-QP7"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7xz-9u-f6c" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-431.19999999999999" y="841.52923538230891"/>
+        </scene>
         <!--Camera View Controller-->
         <scene sceneID="wzA-2G-nOi">
             <objects>
@@ -364,7 +405,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1004" y="-666"/>
+            <point key="canvasLocation" x="1022" y="-666"/>
         </scene>
         <!--Journal Entry View Controller-->
         <scene sceneID="MEV-Xi-0JN">
