@@ -14,7 +14,7 @@ class JournalViewController: UIViewController {
   // MARK: - Public Instance Variables
   var viewingJournal: FoodieJournal?
   
-
+  
   // MARK: - Private Instance Variables
   fileprivate let player = AVQueuePlayer()
   
@@ -42,27 +42,23 @@ class JournalViewController: UIViewController {
   // MARK: - Private Instance Functions
   fileprivate func savePlayedAsset() {
     // cache the viewed video
-    let asset:AVURLAsset = player.currentItem?.asset as! AVURLAsset
-    let exporter = AVAssetExportSession(asset: asset, presetName:AVAssetExportPresetHighestQuality)
+    let asset: AVURLAsset = player.currentItem!.asset as! AVURLAsset
+    let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality)
     let fileName = asset.url.lastPathComponent
-    let filePath = USER_FILE_PATH
-    let outputURL = filePath.appendingPathComponent(fileName)
     
-    let manager = FileManager.default
-    if(!manager.fileExists(atPath: outputURL.absoluteString)){
-      exporter?.outputURL = outputURL
-      exporter?.determineCompatibleFileTypes(completionHandler: {(types:[String]) -> Void in
+    if !FoodieFile.manager.checkIfFileExistsLocally(fileName: fileName) {
+      exporter?.outputURL = FoodieFile.createLocalFileURL(fileName: fileName)
+      exporter?.determineCompatibleFileTypes() {(types:[String]) -> Void in
         exporter?.outputFileType = types[0]
-        exporter?.exportAsynchronously(completionHandler: {
+        exporter?.exportAsynchronously() {
           
-        })
-      })
+        }
+      }
     }
   }
   
   
   // MARK: - Public Instance Functions
-  
   func playerItemDidPlayToEndTime() {
     savePlayedAsset()
   }
@@ -84,29 +80,33 @@ class JournalViewController: UIViewController {
       
       // check if the asset exists in the current cache
       let fileName = videoAsset.url.lastPathComponent
-      var fullFilePath = USER_FILE_PATH
       
-      fullFilePath.appendPathComponent(fileName)
-      
-      let manager = FileManager.default
-      if(manager.fileExists(atPath: fullFilePath.absoluteString)){
-        let fileAsset = AVURLAsset(url:NSURL.fileURL(withPath:fullFilePath.absoluteString))
-        player.insert(AVPlayerItem(asset:fileAsset), after: nil)
+      if FoodieFile.manager.checkIfFileExistsLocally(fileName: fileName) {
+        
+        DebugPrint.verbose("Playing video from local")
+        
+        let fileAsset = AVURLAsset(url: FoodieFile.createLocalFileURL(fileName: fileName))
+        player.insert(AVPlayerItem(asset: fileAsset), after: nil)
         player.play()
-      }
-      else{
-        videoAsset.loadValuesAsynchronously(forKeys: ["playable"], completionHandler: {
+        
+      } else {
+        
+        DebugPrint.verbose("LoadingValuesAsynchornously for Video")
+        
+        videoAsset.loadValuesAsynchronously(forKeys: ["playable"]) {
           var error: NSError? = nil
           let status = videoAsset.statusOfValue(forKey: "playable", error: &error)
+          
           switch status {
           case .loaded:
             self.player.insert(AVPlayerItem(asset:videoAsset), after: nil)
             self.player.play()
           case .failed:
             _ = "log an error"
-          default: break
-            
-          }})
+          default:
+            break
+          }
+        }
       }
     }
     
