@@ -15,14 +15,14 @@ class FoodieMedia: FoodieS3Object {
   enum ErrorCode: LocalizedError {
     
     case saveToLocalwithNilMediaType
-    case saveToLocalwithNilimageMemoryBuffer
+    case saveToLocalwithNilImageMemoryBuffer
     case saveToLocalwithNilvideoLocalBufferUrl
     
     var errorDescription: String? {
       switch self {
       case .saveToLocalwithNilMediaType:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, medaiType = nil", comment: "Error description for an exception error code")
-      case .saveToLocalwithNilimageMemoryBuffer:
+      case .saveToLocalwithNilImageMemoryBuffer:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, imageMemoryBuffer = nil", comment: "Error description for an exception error code")
       case .saveToLocalwithNilvideoLocalBufferUrl:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, videoLocalBufferUrl = nil", comment: "Error description for an exception error code")
@@ -160,14 +160,14 @@ extension FoodieMedia: FoodieObjectDelegate {
     switch type {
     case .photo:
       guard let memoryBuffer = imageMemoryBuffer else {
-        callback?(false, ErrorCode.saveToLocalwithNilimageMemoryBuffer)
+        callback?(false, ErrorCode.saveToLocalwithNilImageMemoryBuffer)
         return
       }
       saveDataBufferToLocal(buffer: memoryBuffer, withBlock: callback)
       
     case .video:
       guard let videoUrl = videoLocalBufferUrl else {
-        callback?(false, ErrorCode.saveToLocalwithNilimageMemoryBuffer)
+        callback?(false, ErrorCode.saveToLocalwithNilImageMemoryBuffer)
         return
       }
       saveTmpUrlToLocal(url: videoUrl, withBlock: callback)

@@ -126,6 +126,11 @@ class FoodieFile {
   }
   
   
+  static func createLocalFileURL(fileName: String) -> URL {
+    return Constants.DocumentFolderUrl.appendingPathComponent(fileName)
+  }
+  
+  
   // MARK: - Public Instance Functions
   init(){
     
@@ -310,7 +315,14 @@ class FoodieFile {
     return fileManager.fileExists(atPath: "\(Constants.DocumentFolderUrl.path)/\(fileName)")
   }
   
-  func checkIfFileExistsS3(fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?){
+  
+  func checkIfFileExistsLocally(fileName: String) -> Bool {
+    let filePath = FoodieFile.createLocalFileURL(fileName: fileName).path
+    return fileManager.fileExists(atPath: filePath)
+  }
+  
+  
+  func checkIfFileExistsS3(fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     let objRequest = AWSS3HeadObjectRequest()!
     objRequest.bucket = Constants.S3BucketKey
