@@ -345,14 +345,14 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   func verbose() {
-    DebugPrint.verbose("FoodieJournal ID: \(getUniqueIdentifier())")
-    DebugPrint.verbose("  Title: \(title)")
-    DebugPrint.verbose("  Thumbnail Filename: \(thumbnailFileName)")
-    DebugPrint.verbose("  Contains \(moments!.count) Moments with ID as follows:")
-    
-    for moment in moments! {
-      DebugPrint.verbose("    \(moment.getUniqueIdentifier())")
-    }
+//    DebugPrint.verbose("FoodieJournal ID: \(getUniqueIdentifier())")
+//    DebugPrint.verbose("  Title: \(title)")
+//    DebugPrint.verbose("  Thumbnail Filename: \(thumbnailFileName)")
+//    DebugPrint.verbose("  Contains \(moments!.count) Moments with ID as follows:")
+//    
+//    for moment in moments! {
+//      DebugPrint.verbose("    \(moment.getUniqueIdentifier())")
+//    }
   }
   
   

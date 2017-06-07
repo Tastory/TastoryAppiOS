@@ -172,6 +172,12 @@ class FeedCollectionViewController: UICollectionViewController {
         } else {
           DebugPrint.error("Feed Collection View CellForItemAt \(indexPath) did not return FeedCollectionViewCell type")
         }
+        
+        // TODO: Kick off Moment prefetch (which the completion will trigger Media prefetches), here?
+        //       If we kick a prefetch here, where do we cancel?
+        //       Potentially we keep a list of what prefetches is being started here, and nix them all if one exits this view
+        //       This includes moving forward to the Journal View Controller, or going back to Discover view.
+        
       }
     }
     return reusableCell
@@ -203,6 +209,8 @@ class FeedCollectionViewController: UICollectionViewController {
    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
    return false
    }
+   
+   // TODO: Is the following the right function to use for performing action when a Thumbnail is selected?
    
    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
    

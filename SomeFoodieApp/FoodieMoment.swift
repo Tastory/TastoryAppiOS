@@ -165,9 +165,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   func verbose() {
-    DebugPrint.verbose("FoodieMoment ID: \(getUniqueIdentifier())")
-    DebugPrint.verbose("  Media Filename: \(mediaFileName)")
-    DebugPrint.verbose("  Media Type: \(mediaType)")
+//    DebugPrint.verbose("FoodieMoment ID: \(getUniqueIdentifier())")
+//    DebugPrint.verbose("  Media Filename: \(mediaFileName)")
+//    DebugPrint.verbose("  Media Type: \(mediaType)")
   }
   
   
