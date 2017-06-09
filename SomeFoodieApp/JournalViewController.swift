@@ -11,131 +11,151 @@ import AVFoundation
 
 class JournalViewController: UIViewController {
   
-  // MARK: - Public Instance Variables
-  var viewingJournal: FoodieJournal?
-  
-  
-  // MARK: - Private Instance Variables
-  fileprivate let player = AVQueuePlayer()
-  
-  fileprivate let USER_FILE_PATH = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
-  
-  fileprivate var playerLayer: AVPlayerLayer? {
-    return playerView.playerLayer
-  }
-  
-  
   // MARK: - IBOutlets
-  @IBOutlet weak var playerView: PlayerView!
+  
+  @IBOutlet weak var photoView: UIImageView!
+  @IBOutlet weak var videoView: UIView!
+  @IBOutlet weak var blurView: UIVisualEffectView!
+  @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
   
   
-  // MARK: - IBActions
-  @IBAction func playNextItem(_ sender: Any) {
-    player.advanceToNextItem()
-  }
-  
-  @IBAction func backToParent(_ sender: Any) {
-    self.dismiss(animated:true, completion:nil)
-  }
-  
-  
-  // MARK: - Private Instance Functions
-  fileprivate func savePlayedAsset() {
-    // cache the viewed video
-    let asset: AVURLAsset = player.currentItem!.asset as! AVURLAsset
-    let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality)
-    let fileName = asset.url.lastPathComponent
-    
-    if !FoodieFile.manager.checkIfFileExistsLocally(fileName: fileName) {
-      exporter?.outputURL = FoodieFile.createLocalFileURL(fileName: fileName)
-      exporter?.determineCompatibleFileTypes() {(types:[String]) -> Void in
-        exporter?.outputFileType = types[0]
-        exporter?.exportAsynchronously() {
-          
-        }
+  // MARK: - Public Instance Variables
+  var viewingJournal: FoodieJournal? {
+    didSet {
+      guard let journal = viewingJournal else {
+        // viewingJournal just being cleared. Do clean-up?
+        return
+      }
+      
+      guard let moments = journal.moments else {
+        internalErrorDialog()
+        DebugPrint.assert("Unexpected, empty Moment array")
+        return
+      }
+      
+      // Start pre-fetching if Moment array is not empty
+      if !moments.isEmpty {
+        journal.contentRetrievalKickoff(fromMoment: 0, forUpTo: 0)  // TODO: Don't hardcode these values. forUpTo 0 means all.
       }
     }
   }
   
   
-  // MARK: - Public Instance Functions
-  func playerItemDidPlayToEndTime() {
-    savePlayedAsset()
+  // MARK: - Private Instance Variables
+  fileprivate var avPlayer: AVPlayer?
+  fileprivate var avPlayerLayer: AVPlayerLayer?
+  fileprivate var avPlayerItem: AVPlayerItem?
+  
+  
+  // Generic error dialog box to the user on internal errors
+  func internalErrorDialog() {
+    let alertController = UIAlertController(title: "SomeFoodieApp",
+                                            titleComment: "Alert diaglogue title when a Journal View internal error occured",
+                                            message: "An internal error has occured. Please try again",
+                                            messageComment: "Alert dialog message when a Journal View internal error occured",
+                                            preferredStyle: .alert)
+    alertController.addAlertAction(title: "OK",
+                                   comment: "Button in alert dialog box for generic JournalView errors",
+                                   style: .default)
+    self.present(alertController, animated: true, completion: nil)
   }
+  
+  // Generic error dialog box to the user when displaying photo or video
+  fileprivate func displayErrorDialog() {
+    let alertController = UIAlertController(title: "SomeFoodieApp",
+                                            titleComment: "Alert diaglogue title when Journal View has problem displaying photo or video",
+                                            message: "Error displaying media. Please try again",
+                                            messageComment: "Alert dialog message when Journal View has problem displaying photo or video",
+                                            preferredStyle: .alert)
+    alertController.addAlertAction(title: "OK",
+                                   comment: "Button in alert dialog box for error when displaying photo or video in JournalView",
+                                   style: .default)
+    
+    self.present(alertController, animated: true, completion: nil)
+  }
+  
+  
+  // MARK: - IBOutlets
+
+  
+  
+  // MARK: - IBActions
+
+  
+  
+  // MARK: - Private Instance Functions
+  func displayMoment(_ moment: FoodieMoment) {
+    
+    guard let mediaObject = moment.mediaObj else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, moment.mediaObj == nil ")
+      return
+    }
+    
+    guard let mediaType = mediaObject.mediaType else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, mediaObject.mediaType == nil")
+      return
+    }
+    
+    if mediaType == .photo {
+
+      guard let imageBuffer = mediaObject.imageMemoryBuffer else {
+        displayErrorDialog()
+        DebugPrint.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
+        return
+      }
+      
+      photoView.image = UIImage(data: imageBuffer)
+      view.bringSubview(toFront: photoView)
+
+      // TODO: Create timer for advancing to the next media?
+      
+    } else if mediaType == .video {
+      
+      guard let videoURL = mediaObject.videoLocalBufferUrl else {
+        displayErrorDialog()
+        DebugPrint.assert("Unexpected, mediaObject.videoLocalBufferUrl == nil")
+        return
+      }
+      
+      avPlayerItem = AVPlayerItem(url: videoURL)
+      view.bringSubview(toFront: videoView)
+      avPlayer!.play()
+      
+      // No image nor video to work on, Fatal
+    } else {
+      DebugPrint.fatal("MediaType neither .photo nor .video")
+    }
+  }
+  
+  
+  func displayMomentIfLoaded() {
+    
+  }
+  
+  
+  // MARK: - Public Instance Functions
+
   
   
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    playerView.playerLayer.player = player
-    var videoAssets = [AVURLAsset]()
-    videoAssets.append(AVURLAsset(url: URL(string:"https://s3-us-west-1.amazonaws.com/foodilicious/0A5CC001-1CC0-45E0-A8EC-24F9434EE1CD.mov")!))
-    videoAssets.append(AVURLAsset(url: URL(string:"https://s3-us-west-1.amazonaws.com/foodilicious/0755EC5B-F309-4B9B-ACEC-605FC931252D.mov")!))
-    videoAssets.append(AVURLAsset(url: URL(string:"https://s3-us-west-1.amazonaws.com/foodilicious/6B683DAF-14EB-4AE8-9D4D-4BEDFDB0E779.mov")!))
-    
-    for videoAsset in videoAssets
-    {
-      videoAsset.resourceLoader.setDelegate(self, queue: DispatchQueue.main)
-      
-      // check if the asset exists in the current cache
-      let fileName = videoAsset.url.lastPathComponent
-      
-      if FoodieFile.manager.checkIfFileExistsLocally(fileName: fileName) {
-        
-        DebugPrint.verbose("Playing video from local")
-        
-        let fileAsset = AVURLAsset(url: FoodieFile.createLocalFileURL(fileName: fileName))
-        player.insert(AVPlayerItem(asset: fileAsset), after: nil)
-        player.play()
-        
-      } else {
-        
-        DebugPrint.verbose("LoadingValuesAsynchornously for Video")
-        
-        videoAsset.loadValuesAsynchronously(forKeys: ["playable"]) {
-          var error: NSError? = nil
-          let status = videoAsset.statusOfValue(forKey: "playable", error: &error)
-          
-          switch status {
-          case .loaded:
-            self.player.insert(AVPlayerItem(asset:videoAsset), after: nil)
-            self.player.play()
-          case .failed:
-            _ = "log an error"
-          default:
-            break
-          }
-        }
-      }
-    }
-    
-    NotificationCenter.default.addObserver(self, selector: #selector(playerItemDidPlayToEndTime), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-    
-    player.automaticallyWaitsToMinimizeStalling = true
-    
-    //FoodieJournal.current()
-    // Do any additional setup after loading the view.
+    avPlayer = AVPlayer()
+    avPlayerLayer = AVPlayerLayer(player: avPlayer)
+    avPlayerLayer!.frame = self.view.bounds
+    videoView!.layer.addSublayer(avPlayerLayer!)
+
+    // Always display activity indicator and blur layer up front
+    view.bringSubview(toFront: blurView)
+    view.bringSubview(toFront: activityIndicator)
+    activityIndicator.startAnimating()
   }
   
   
   override func viewDidDisappear(_ animated: Bool) {
-    super.viewDidDisappear(animated)
-    player.pause()
-    
-    NotificationCenter.default.removeObserver(self)
+
   }
 }
-
-
-// Delegate for saving videos
-extension UIViewController: AVAssetResourceLoaderDelegate{
-  
-}
-
-
-
-
-
-
-

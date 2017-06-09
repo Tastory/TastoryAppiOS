@@ -42,6 +42,7 @@
 		8C9AD0641E8F615D005F337E /* CameraCrossLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD05F1E8F615D005F337E /* CameraCrossLayer.swift */; };
 		8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0601E8F615D005F337E /* ExitButton.swift */; };
 		8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0611E8F615D005F337E /* MarkupViewController.swift */; };
+		8C9EC9761EE9E6C500A56849 /* ViewEntryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9EC9751EE9E6C500A56849 /* ViewEntryController.swift */; };
 		8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */; };
 		8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CADA1A91E85D9CE00BF6CF0 /* ScrapeViewController.swift */; };
 		8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */; };
@@ -114,6 +115,7 @@
 		8C9AD05F1E8F615D005F337E /* CameraCrossLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraCrossLayer.swift; path = SomeFoodieApp/CameraCrossLayer.swift; sourceTree = "<group>"; };
 		8C9AD0601E8F615D005F337E /* ExitButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExitButton.swift; path = SomeFoodieApp/ExitButton.swift; sourceTree = "<group>"; };
 		8C9AD0611E8F615D005F337E /* MarkupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkupViewController.swift; sourceTree = "<group>"; };
+		8C9EC9751EE9E6C500A56849 /* ViewEntryController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewEntryController.swift; sourceTree = "<group>"; };
 		8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+Extension.swift"; sourceTree = "<group>"; };
 		8CADA1A91E85D9CE00BF6CF0 /* ScrapeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrapeViewController.swift; sourceTree = "<group>"; };
 		8CBF55801E7F7EDF00F4B1CD /* SomeFoodieApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SomeFoodieApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -309,6 +311,7 @@
 				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
 				8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */,
 				C24F69641EB85B0300A0DB7B /* JournalViewController.swift */,
+				8C9EC9751EE9E6C500A56849 /* ViewEntryController.swift */,
 				8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */,
 				8C9AD0611E8F615D005F337E /* MarkupViewController.swift */,
 				8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */,
@@ -643,6 +646,7 @@
 				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobals.swift in Sources */,
 				8C0590511EC7E6A400027E91 /* FoodieMedia.swift in Sources */,
 				8C8986721E91982E00B62306 /* FoodieJournal.swift in Sources */,
+				8C9EC9761EE9E6C500A56849 /* ViewEntryController.swift in Sources */,
 				8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */,
 				8C8986701E91981C00B62306 /* FoodieMarkup.swift in Sources */,
 				C24F69651EB85B0300A0DB7B /* JournalViewController.swift in Sources */,

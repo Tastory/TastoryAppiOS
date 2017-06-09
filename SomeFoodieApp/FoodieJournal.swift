@@ -87,6 +87,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   var foodieObject = FoodieObject()
   
 
+  // MARK: - Private Instance Variables
+  fileprivate var contentRetrievalInProg = false
+  fileprivate var contentRetrievalPending = false
+  
+  
   // MARK: - Public Static Functions
   
   // Function to create a new FoodieJournal as the current Journal. Will assert if there already is a current Journal
@@ -256,6 +261,137 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   func deleteAsync(withBlock callback: FoodieObject.BooleanErrorBlock?){
     deleteRecursive(withBlock: callback)
+  }
+  
+
+  
+  // Function to mark Moments and Media to retrieve, and then kick off the retrieval state machine
+  func contentRetrievalKickoff(fromMoment startNumber: Int, forUpTo numberOfMoments: Int) {
+    
+    guard let momentArray = moments else {
+      DebugPrint.assert("Unexpected FoodieJournal.moments = nil")
+      return
+    }
+    
+    // Adjust number to retrieve based on how many Moments there are until the end
+    var index = startNumber
+    var numberToRetrieve = numberOfMoments
+    
+    if numberOfMoments == 0 {
+      numberToRetrieve = momentArray.count
+    }
+    
+    // Mark the Moment and Media to fetch as appropriate
+    while index < momentArray.count, numberToRetrieve > 0 {
+      
+      let moment = momentArray[index]
+      _ = moment.foodieObject.markRetrieval()
+      
+      numberToRetrieve -= 1
+      index += 1
+    }
+    
+    // Start the content retrieval state machine if it's not already started
+    // TODO: Do we neet a mutex lock here?
+    if contentRetrievalInProg {
+      DebugPrint.verbose("Content retrieval already in progress.")
+      contentRetrievalPending = true
+    } else {
+      DebugPrint.verbose("Content retrieval begins.")
+      contentRetrievalInProg = true
+      contentRetrievalStateMachine()
+    }
+  }
+  
+    
+  // The brain of the content retrieval process
+  func contentRetrievalStateMachine() {
+    
+    guard let momentArray = moments else {
+      DebugPrint.assert("Unexpected FoodieJournal.moments = nil")
+      return
+    }
+    
+    DebugPrint.verbose("contentRetrievalStateMachine called")
+    
+    for moment in momentArray {
+      
+      // Retrieve the Moment first. One step at a time...
+      if moment.foodieObject.retrieveIfPending(withBlock: { [unowned self] (retrieved, error) in
+        if let err = error {
+          // TODO: How do we signal a background task error?
+          DebugPrint.error("Moment.retrieve Error = \(err.localizedDescription)")
+        } else {
+          guard let retrievedMoment = retrieved as? FoodieMoment else {
+            DebugPrint.assert("Unexpected retrievedMoment = nil")
+            return
+          }
+          
+          DebugPrint.verbose("FoodieMoment \(retrievedMoment.objectId!) retrieved!")
+          
+          guard let media = retrievedMoment.mediaObj else {
+            DebugPrint.assert("Unexpected retrievedMomen.mediaObj = nil")
+            return
+          }
+          
+          // Mark all the Media and Markups as for retrieval
+          _ = media.foodieObject.markRetrieval()
+          
+          // There might not be any Markups
+          if let markups = retrievedMoment.markups {
+            for markup in markups {
+              _ = markup.foodieObject.markRetrieval()
+            }
+          }
+        }
+        self.contentRetrievalStateMachine()
+      }) { return }
+      
+      DebugPrint.verbose("Retrieving Media and Markup for FoodieMoment \(moment.objectId!)")
+      
+      guard let media = moment.mediaObj else {
+        // No Media. Nothing to do for this moment?
+        DebugPrint.verbose("Moment.mediaObj = nil")
+        continue
+      }
+      
+      // Retrieve the Media
+      if media.foodieObject.retrieveIfPending(withBlock: { [unowned self] (retrieved, error) in
+        if let err = error {
+          // TODO: How do we signal a background task error?
+          DebugPrint.error("Media.retrieve Error = \(err.localizedDescription)")
+        } else {
+          DebugPrint.verbose("FoodieMedia retrieved!")
+        }
+        self.contentRetrievalStateMachine()
+      }) { return }
+      
+      guard let markupArray = moment.markups else {
+        // No Markups. This moment is done
+        DebugPrint.verbose("Markups = nil")
+        continue
+      }
+      
+      // Retrieve the Markups
+      for markup in markupArray {
+        if markup.foodieObject.retrieveIfPending(withBlock: { [unowned self] retrieved, error in
+          if let err = error {
+            // TODO: How do we signal a background task error?
+            DebugPrint.error("Markup.retrieved Error = \(err.localizedDescription)")
+          }
+          self.contentRetrievalStateMachine()
+        }) { return }
+      }
+    }
+
+    // TODO: Do we need a mutex lock here
+    if contentRetrievalPending {
+      DebugPrint.verbose("Content retrieval was pending. Initiate another round of content retrieval")
+      contentRetrievalPending = false
+      contentRetrievalStateMachine()
+    } else {
+      DebugPrint.verbose("Content retrieval completes!")
+    }
   }
   
 

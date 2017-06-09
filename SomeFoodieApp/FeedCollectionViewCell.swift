@@ -13,6 +13,8 @@ class FeedCollectionViewCell: UICollectionViewCell {
   @IBOutlet weak var journalTitle: UILabel!
   
   override func prepareForReuse() {
-    journalButton.setImage(nil, for: .normal)
+    super.prepareForReuse()
+    journalButton?.setImage(nil, for: .normal)
+    journalButton?.removeTarget(nil, action: nil, for: .allEvents)
   }
 }
