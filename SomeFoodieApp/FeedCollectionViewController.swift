@@ -36,7 +36,7 @@ class FeedCollectionViewController: UICollectionViewController {
     // self.clearsSelectionOnViewWillAppear = false
     
     // Do any additional setup after loading the view
-    FoodieJournal.queryAll(limit: 10, block: queryResultCallback)
+    FoodieJournal.queryAll(limit: 20, block: queryResultCallback)  // TODO: Don't hardcode this limit
     
     collectionView?.isPrefetchingEnabled = false 
   }

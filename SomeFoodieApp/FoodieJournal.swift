@@ -159,7 +159,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   // Querying function for All
   static func queryAll(skip: Int = 0, limit: Int, block: FoodieObject.QueryResultBlock?) { // Sorted by modified date in new to old order
-    let query = PFQuery(className: "FoodieJournal")
+    let query = PFQuery(className: FoodieJournal.parseClassName())
     query.skip = skip
     query.limit = limit
     //query.order(byDescending: <#T##String#>)
@@ -502,6 +502,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
 // MARK: - Parse Subclass Conformance
 extension FoodieJournal: PFSubclassing {
   static func parseClassName() -> String {
-    return "FoodieJournal"
+    return "FoodieJournalDemo"
   }
 }
