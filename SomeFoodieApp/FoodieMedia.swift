@@ -87,12 +87,16 @@ extension FoodieMedia: FoodieObjectDelegate {
         }
         
       case .video:
-        retrieveFromServerToLocal() { (string, error) in
+        retrieveFromServerToLocal() { (stringObject, error) in
           if let err = error {
             DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
           }
-          if let urlString = string as? String { self.videoLocalBufferUrl = URL(string: urlString) }
-          callback?(string, error)
+          if let fileName = stringObject as? String {
+            self.videoLocalBufferUrl = FoodieFile.createLocalFileURL(fileName: fileName)
+          } else {
+            DebugPrint.fatal("Cannot convert returned stringObject to String")
+          }
+          callback?(stringObject, error)
         }
       }
       return
@@ -121,12 +125,16 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
       
     case .video:
-      retrieveFromServerToLocal() { (string, error) in
+      retrieveFromServerToLocal() { (stringObject, error) in
         if let err = error {
           DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
         }
-        if let urlString = string as? String { self.videoLocalBufferUrl = URL(string: urlString) }
-        callback?(string, error)
+        if let fileName = stringObject as? String {
+          self.videoLocalBufferUrl = FoodieFile.createLocalFileURL(fileName: fileName)
+        } else {
+          DebugPrint.fatal("Cannot convert returned stringObject to String")
+        }
+        callback?(stringObject, error)
       }
     }
   }
