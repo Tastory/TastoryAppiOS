@@ -136,6 +136,8 @@ class JournalViewController: UIViewController {
         return
       }
       
+      DebugPrint.verbose("Playing Video with URL: \(videoURL)")
+      
       avPlayerItem = AVPlayerItem(url: videoURL)
       
       // Put a hook in for what to do next after video completes playing
@@ -158,6 +160,10 @@ class JournalViewController: UIViewController {
   fileprivate func displayMomentIfLoaded(for moment: FoodieMoment) {
     if moment.checkContentRetrieved(ifFalseSetDelegate: self) {
       DispatchQueue.main.async { [unowned self] in self.displayMoment(moment) }
+    } else {
+      view.bringSubview(toFront: blurView)
+      view.bringSubview(toFront: activityIndicator)
+      activityIndicator.startAnimating()
     }
   }
   
@@ -265,12 +271,18 @@ class JournalViewController: UIViewController {
     avPlayerLayer = AVPlayerLayer(player: avPlayer)
     avPlayerLayer!.frame = self.view.bounds
     videoView!.layer.addSublayer(avPlayerLayer!)
-
+  }
+  
+  
+  override func viewWillAppear(_ animated: Bool) {
     // Always display activity indicator and blur layer up front
     view.bringSubview(toFront: blurView)
     view.bringSubview(toFront: activityIndicator)
     activityIndicator.startAnimating()
-    
+  }
+  
+  
+  override func viewDidAppear(_ animated: Bool) {
     guard let journal = viewingJournal else {
       internalErrorDialog()
       DebugPrint.assert("Unexpected viewingJournal = nil")

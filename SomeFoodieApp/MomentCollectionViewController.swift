@@ -49,8 +49,11 @@ class MomentCollectionViewController: UICollectionViewController {
         for moment in momentArray {
           if workingJournal.thumbnailFileName == moment.thumbnailFileName {
             let oldIndexPath = IndexPath(row: momentArrayIndex, section: indexPath.section)
-            let oldCell = collectionView!.cellForItem(at: oldIndexPath) as! MomentCollectionViewCell
-            oldCell.thumbFrameView.isHidden = true
+            if let oldCell = collectionView!.cellForItem(at: oldIndexPath) as? MomentCollectionViewCell {
+              oldCell.thumbFrameView.isHidden = true
+            } else {
+              collectionView!.reloadItems(at: [oldIndexPath])
+            }
             break
           }
           momentArrayIndex += 1

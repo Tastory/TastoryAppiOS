@@ -178,7 +178,12 @@ extension FoodieMedia: FoodieObjectDelegate {
         callback?(false, ErrorCode.saveToLocalwithNilImageMemoryBuffer)
         return
       }
-      saveTmpUrlToLocal(url: videoUrl, withBlock: callback)
+      saveTmpUrlToLocal(url: videoUrl) { [unowned self] success, error in
+        if success && error == nil {
+          self.videoLocalBufferUrl = FoodieFile.createLocalFileURL(fileName: self.foodieFileName!)
+        }
+        callback?(success, error)
+      }
     }
   }
   
