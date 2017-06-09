@@ -102,6 +102,15 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
+  func viewJournal(_ sender: UIButton) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalViewController") as! JournalViewController
+    viewController.restorationClass = nil
+    viewController.viewingJournal = queriedJournalArray[sender.tag]
+    self.present(viewController, animated: true)
+  }
+  
+  
   // MARK: - UICollectionViewDataSource
   
   override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -118,6 +127,8 @@ class FeedCollectionViewController: UICollectionViewController {
     
     // Configure the cell
     let journal = queriedJournalArray[indexPath.row]
+    reusableCell.journalButton.tag = indexPath.row
+    reusableCell.journalButton.addTarget(self, action: #selector(viewJournal(_:)), for: .touchUpInside)
     
     // DebugPrint.verbose("collectionView(cellForItemAt #\(indexPath.row)")
     

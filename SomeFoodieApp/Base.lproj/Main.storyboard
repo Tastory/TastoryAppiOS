@@ -152,14 +152,6 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PLd-J9-7IU">
-                                <rect key="frame" x="145" y="445" width="84" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Journal Test"/>
-                                <connections>
-                                    <segue destination="l2J-hP-Z7q" kind="show" id="1cm-1y-YyX"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -276,7 +268,7 @@
         <!--Journal View Controller-->
         <scene sceneID="ooy-sj-8sY">
             <objects>
-                <viewController id="l2J-hP-Z7q" customClass="JournalViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="JournalViewController" id="l2J-hP-Z7q" customClass="JournalViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Tof-66-bGy"/>
                         <viewControllerLayoutGuide type="bottom" id="On6-b9-DFl"/>
@@ -285,21 +277,48 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6ZO-UI-qRd" customClass="PlayerView" customModule="SomeFoodieApp" customModuleProvider="target">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3Gc-Ev-vmE">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nnO-KA-kth">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lU5-U1-CUM">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="pto-AP-chd">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                                <blurEffect style="light"/>
+                            </visualEffectView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="PSs-bH-oOZ">
+                                <rect key="frame" x="177" y="323" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="6ZO-UI-qRd" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="REE-Qx-p97"/>
-                            <constraint firstItem="6ZO-UI-qRd" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="jri-7f-2Ue"/>
-                            <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="6ZO-UI-qRd" secondAttribute="bottom" id="uOu-4h-zig"/>
-                            <constraint firstAttribute="trailing" secondItem="6ZO-UI-qRd" secondAttribute="trailing" id="wRe-6w-Rob"/>
+                            <constraint firstItem="nnO-KA-kth" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="Md4-SM-fkG"/>
+                            <constraint firstAttribute="trailing" secondItem="lU5-U1-CUM" secondAttribute="trailing" id="NbJ-hp-K34"/>
+                            <constraint firstItem="3Gc-Ev-vmE" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="OMv-jK-C3v"/>
+                            <constraint firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" id="P6T-e5-UJl"/>
+                            <constraint firstItem="lU5-U1-CUM" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="Tma-d8-UGM"/>
+                            <constraint firstItem="PSs-bH-oOZ" firstAttribute="centerY" secondItem="cgZ-7E-g3q" secondAttribute="centerY" id="Uam-5P-WS8"/>
+                            <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="3Gc-Ev-vmE" secondAttribute="bottom" id="Vmo-EH-HPg"/>
+                            <constraint firstItem="3Gc-Ev-vmE" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="aCi-cl-PK7"/>
+                            <constraint firstItem="PSs-bH-oOZ" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="cb5-so-Nwb"/>
+                            <constraint firstItem="nnO-KA-kth" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="efA-ND-dRG"/>
+                            <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="bottom" id="fNQ-Yf-4Lf"/>
+                            <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="lU5-U1-CUM" secondAttribute="bottom" id="mxL-h8-O4W"/>
+                            <constraint firstAttribute="trailing" secondItem="3Gc-Ev-vmE" secondAttribute="trailing" id="uPp-NK-myt"/>
+                            <constraint firstItem="lU5-U1-CUM" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="xRo-FU-ZbG"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="playerView" destination="6ZO-UI-qRd" id="mvY-4Y-QP7"/>
+                        <outlet property="activityIndicator" destination="PSs-bH-oOZ" id="ltb-9Q-KVm"/>
+                        <outlet property="blurView" destination="lU5-U1-CUM" id="URy-RV-r5L"/>
+                        <outlet property="photoView" destination="3Gc-Ev-vmE" id="tiQ-hZ-B0K"/>
+                        <outlet property="videoView" destination="nnO-KA-kth" id="Cmy-Ry-tDy"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7xz-9u-f6c" userLabel="First Responder" sceneMemberID="firstResponder"/>

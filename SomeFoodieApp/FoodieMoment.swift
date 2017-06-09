@@ -92,7 +92,33 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     mediaType = foodieMedia.mediaType?.rawValue
   }
 
-
+  // Function to retrieve all Markups, one at a time. Call callback when completed
+//  func retrieveMarkupsIfPending(withBlock callback: FoodieObject.BooleanErrorBlock?) {
+//    
+//    var retrieveError: Error? = nil
+//    
+//    guard let markupArray = markups else {
+//      DebugPrint.log("No Markups in Moment")
+//      return false
+//    }
+//    
+//    for markup in markupArray {
+//      if markup.foodieObject.retrieveIfPending(withBlock: { [unowned self] retrieved, error in
+//        
+//        if let err = error {
+//          DebugPrint.error("markup.retrieveIfPending returned error \(err)")
+//          retrieveError = err
+//        }
+//        self.retrieveMarkupsIfPending(withBlock: callback)
+//        
+//      }) { return }
+//    }
+//    
+//    callback?((retrieveError != nil) ? false : true, retrieveError)
+//  }
+  
+  
+  
   // MARK: - Foodie Object Delegate Conformance
 
   override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
