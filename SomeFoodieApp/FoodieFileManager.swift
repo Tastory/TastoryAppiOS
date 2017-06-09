@@ -207,7 +207,7 @@ class FoodieFile {
       
       // TODO: might be useful to store in parse for tracking the version: _ = task.result
       DebugPrint.log("AWS Transfer Download completed for Key \(downloadRequest.key!)")
-      callback?(downloadRequest.downloadingFileURL!, nil)
+      callback?(downloadRequest.key!, nil)
       return nil
     }
   }

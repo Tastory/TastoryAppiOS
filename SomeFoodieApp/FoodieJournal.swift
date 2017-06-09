@@ -85,7 +85,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Public Instance Variables
   var thumbnailObj: FoodieMedia?
   var foodieObject = FoodieObject()
-  
+
 
   // MARK: - Private Instance Variables
   fileprivate var contentRetrievalInProg = false
@@ -369,6 +369,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       guard let markupArray = moment.markups else {
         // No Markups. This moment is done
         DebugPrint.verbose("Markups = nil")
+        moment.setContentsRetrieved()
         continue
       }
       
@@ -382,6 +383,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
           self.contentRetrievalStateMachine()
         }) { return }
       }
+      moment.setContentsRetrieved()
     }
 
     // TODO: Do we need a mutex lock here

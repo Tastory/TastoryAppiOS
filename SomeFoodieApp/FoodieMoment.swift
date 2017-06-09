@@ -9,6 +9,11 @@
 
 import Parse
 
+protocol FoodieMomentWaitOnContentDelegate {
+  func momentContentRetrieved(for moment: FoodieMoment)
+}
+
+
 class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Parse PFObject keys
@@ -62,6 +67,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Public Instance Variable
+  var foodieObject = FoodieObject()
+  
   var mediaObj: FoodieMedia? {
     didSet {
       mediaFileName = mediaObj!.foodieFileName
@@ -75,7 +82,12 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  var foodieObject = FoodieObject()
+  var waitOnContentDelegate: FoodieMomentWaitOnContentDelegate?
+  
+  
+  // MARK: - Private Instance Variable
+  fileprivate var contentsRetrieved: Bool = false
+  fileprivate var contentRetrievedMutex = pthread_mutex_t()
   
   
   // MARK: - Public Functions
@@ -93,8 +105,36 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     mediaFileName = foodieMedia.foodieFileName
     mediaType = foodieMedia.mediaType?.rawValue
   }
+  
+  
+  // Funciton to set Content Retreived to True. Exectute delegate function if a delegate object is registered
+  func setContentsRetrieved() {
+    DebugPrint.verbose("contentsRetrieved set to true from \(contentsRetrieved)")
+    
+    pthread_mutex_lock(&self.contentRetrievedMutex)
+    if contentsRetrieved == false {
+      contentsRetrieved = true
+      waitOnContentDelegate?.momentContentRetrieved(for: self)
+    }
+    pthread_mutex_unlock(&self.contentRetrievedMutex)
+  }
+  
+  
+  // Funciton to check if Content Retrieved is set to True. Register deelgate object if False
+  func checkContentRetrieved(ifFalseSetDelegate delegate: FoodieMomentWaitOnContentDelegate) -> Bool {
+    
+    pthread_mutex_lock(&self.contentRetrievedMutex)
+    if contentsRetrieved == false {
+      waitOnContentDelegate = delegate
+    }
+    pthread_mutex_unlock(&self.contentRetrievedMutex)
+    return contentsRetrieved
 
-  // Function to retrieve all Markups, one at a time. Call callback when completed
+  }
+  
+  
+  
+//  // Function to retrieve all Markups, one at a time. Call callback when completed
 //  func retrieveMarkupsIfPending(withBlock callback: FoodieObject.BooleanErrorBlock?) {
 //    
 //    var retrieveError: Error? = nil
@@ -118,7 +158,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
 //    
 //    callback?((retrieveError != nil) ? false : true, retrieveError)
 //  }
-  
   
   
   // MARK: - Foodie Object Delegate Conformance

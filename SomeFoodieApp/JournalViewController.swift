@@ -45,6 +45,8 @@ class JournalViewController: UIViewController {
   fileprivate var avPlayer: AVPlayer?
   fileprivate var avPlayerLayer: AVPlayerLayer?
   fileprivate var avPlayerItem: AVPlayerItem?
+  fileprivate var photoTimer: Timer?
+  fileprivate var currentMoment: FoodieMoment?
   
   
   // Generic error dialog box to the user on internal errors
@@ -84,7 +86,7 @@ class JournalViewController: UIViewController {
   
   
   // MARK: - Private Instance Functions
-  func displayMoment(_ moment: FoodieMoment) {
+  fileprivate func displayMoment(_ moment: FoodieMoment) {
     
     guard let mediaObject = moment.mediaObj else {
       internalErrorDialog()
@@ -98,6 +100,18 @@ class JournalViewController: UIViewController {
       return
     }
     
+    // Keep track of what moment we are displaying
+    currentMoment = moment
+    
+    // We are no longer waiting for the moment's content at this point
+    moment.waitOnContentDelegate = nil
+    
+    // Remove Blue Layer and Activity Indicator
+    view.sendSubview(toBack: activityIndicator)
+    view.sendSubview(toBack: blurView)
+    activityIndicator.stopAnimating()
+    
+    // Try to display the media as by type
     if mediaType == .photo {
 
       guard let imageBuffer = mediaObject.imageMemoryBuffer else {
@@ -109,7 +123,10 @@ class JournalViewController: UIViewController {
       photoView.image = UIImage(data: imageBuffer)
       view.bringSubview(toFront: photoView)
 
-      // TODO: Create timer for advancing to the next media?
+      // Create timer for advancing to the next media? // TODO: Should not be a fixed time
+      photoTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [unowned self] timer in
+        self.displayNextMoment()
+      }
       
     } else if mediaType == .video {
       
@@ -120,6 +137,14 @@ class JournalViewController: UIViewController {
       }
       
       avPlayerItem = AVPlayerItem(url: videoURL)
+      
+      // Put a hook in for what to do next after video completes playing
+      NotificationCenter.default.addObserver(self,
+                                             selector: #selector(displayNextMoment),
+                                             name: .AVPlayerItemDidPlayToEndTime,
+                                             object: avPlayerItem)
+      
+      avPlayer!.replaceCurrentItem(with: avPlayerItem)
       view.bringSubview(toFront: videoView)
       avPlayer!.play()
       
@@ -130,13 +155,106 @@ class JournalViewController: UIViewController {
   }
   
   
-  func displayMomentIfLoaded() {
+  fileprivate func displayMomentIfLoaded(for moment: FoodieMoment) {
+    if moment.checkContentRetrieved(ifFalseSetDelegate: self) {
+      DispatchQueue.main.async { [unowned self] in self.displayMoment(moment) }
+    }
+  }
+  
+  
+  fileprivate func removeTimerAndObservers(for moment: FoodieMoment) {
+    photoTimer?.invalidate()
+    photoTimer = nil
+    NotificationCenter.default.removeObserver(self)
     
   }
   
   
+  fileprivate func cleanUpAndDismiss() {
+    // TODO: Clean-up before dismissing
+    if let moment = currentMoment {
+      removeTimerAndObservers(for: moment)
+    }
+    DispatchQueue.main.async { [unowned self] in self.dismiss(animated: true, completion: nil) }
+  }
+  
+  
   // MARK: - Public Instance Functions
-
+  
+  // Display the next Moment based on what the current Moment is
+  func displayNextMoment() {
+    
+    guard let journal = viewingJournal else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, viewingJournal = nil")
+      return
+    }
+    
+    guard let moments = journal.moments else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, viewingJournal.moments = nil")
+      return
+    }
+    
+    guard let moment = currentMoment else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, currentMoment = nil")
+      return
+    }
+    
+    removeTimerAndObservers(for: moment)
+    
+    // Figure out what is the next moment and display it
+    var index = 0
+    while index < moments.count {
+      if moments[index] === moment {
+        let nextIndex = index + 1
+        if nextIndex == moments.count {
+          cleanUpAndDismiss()
+        } else {
+          displayMomentIfLoaded(for: moments[nextIndex])
+        }
+      }
+      index += 1
+    }
+  }
+  
+  
+  // Display the previous Moment based on what the current Moment is
+  func displayPreviousMoment() {
+    
+    guard let journal = viewingJournal else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, viewingJournal = nil")
+      return
+    }
+    
+    guard let moments = journal.moments else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, viewingJournal.moments = nil")
+      return
+    }
+    
+    guard let moment = currentMoment else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, currentMoment = nil")
+      return
+    }
+    removeTimerAndObservers(for: moment)
+    
+    // Figure out what is the previous moment is and display it
+    var index = 0
+    while index < moments.count {
+      if moments[index] === moment {
+        if index == 0 {
+          cleanUpAndDismiss()
+        } else {
+          displayMomentIfLoaded(for: moments[index-1])
+        }
+      }
+      index += 1
+    }
+  }
   
   
   // MARK: - View Controller Lifecycle
@@ -152,10 +270,34 @@ class JournalViewController: UIViewController {
     view.bringSubview(toFront: blurView)
     view.bringSubview(toFront: activityIndicator)
     activityIndicator.startAnimating()
+    
+    guard let journal = viewingJournal else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected viewingJournal = nil")
+      return
+    }
+    
+    guard let moments = journal.moments, !moments.isEmpty else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected viewingJournal.moments = nil or empty")
+      return
+    }
+    
+    // Try to display the first Moment?
+    displayMomentIfLoaded(for: moments[0])
   }
   
   
   override func viewDidDisappear(_ animated: Bool) {
+  }
+}
 
+
+// MARK: - Foodie Moment Wait On Content Delegate Conformance
+
+extension JournalViewController: FoodieMomentWaitOnContentDelegate {
+  
+  func momentContentRetrieved(for moment: FoodieMoment) {
+    DispatchQueue.main.async { [unowned self] in self.displayMoment(moment) }
   }
 }
