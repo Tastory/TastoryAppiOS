@@ -88,6 +88,8 @@ class FoodieFile {
   static var manager: FoodieFile!
   static var localBufferDirectory: String!
   
+  // A queue used for storing Foodie Objects to be deleted 
+  static var deleteQueue: [FoodieObjectDelegate] = []
   
   // MARK: - Private Instance Variables
   private let s3Handler: AWSS3
@@ -387,13 +389,19 @@ class FoodieS3Object {
   
   // Function to delete this and all child Parse objects from local
   func deleteFromLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DebugPrint.verbose("")
+    guard let fileName = foodieFileName else {
+      DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+    }
+    FoodieFile.manager.deleteFileFromLocal(fileName: fileName, withBlock: callback)
   }
   
   
   // Function to delete this and all child Parse objects from server
   func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DebugPrint.verbose("")
+    guard let fileName = foodieFileName else {
+      DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+    }
+    FoodieFile.manager.deleteFileFromS3(fileName: fileName, withBlock: callback)
   }
   
   func getUniqueIdentifier() -> String {

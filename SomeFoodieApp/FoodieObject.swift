@@ -74,6 +74,10 @@ class FoodieObject {
     case saveStateTransitionSaveAlreadyInProgress
     case saveStateTransitionIllegalStateTransition
     
+    case deleteStateTransitionNoState
+    case deleteStateTransitionSaveAlreadyInProgress
+    case deleteStateTransitionIllegalStateTransition
+    
     var errorDescription: String? {
       switch self {
       case .saveStateTransitionNoState:
@@ -82,6 +86,14 @@ class FoodieObject {
         return NSLocalizedString("Save error as save already in progress for Foodie Object", comment: "Error description for an exception error code")
       case .saveStateTransitionIllegalStateTransition:
         return NSLocalizedString("Save error due to illegal state transition", comment: "Error description for an exception error code")
+     
+      case .deleteStateTransitionNoState:
+        return NSLocalizedString("Delete error as Foodie Object has no state", comment: "Error description for an exception error code")
+      case .deleteStateTransitionSaveAlreadyInProgress:
+        return NSLocalizedString("Delete error as save already in progress for Foodie Object", comment: "Error description for an exception error code")
+      case .deleteStateTransitionIllegalStateTransition:
+        return NSLocalizedString("Delete error due to illegal state transition", comment: "Error description for an exception error code")
+
       }
     }
   
@@ -99,7 +111,7 @@ class FoodieObject {
   
   
   // MARK: - Private Instance Variables
-  fileprivate var protectedOperationState: OperationStates?  // nil if Undetermined
+  var protectedOperationState: OperationStates?  // nil if Undetermined
   fileprivate var protectedOperationError: Error?  // Need specific Error object class?
   fileprivate var criticalMutex = pthread_mutex_t()
   fileprivate var outstandingChildOperations = 0
@@ -115,7 +127,14 @@ class FoodieObject {
   init(delegateObject: FoodieObjectDelegate) {
     protectedOperationState = .objectModified
     protectedOperationError = nil
+    
     delegate = delegateObject
+  }
+  
+  func markPendingDelete() -> Bool
+  {
+      protectedOperationState = .pendingDelete
+      return true
   }
   
   
@@ -161,11 +180,11 @@ class FoodieObject {
     else {
       
       if (location == .local) && (state == .savingToLocal) {
-        // Dial back the state
+        // Advance to next state
         protectedOperationState = .savedToLocal
         
       } else if (location == .server) && (state == .savingToServer) {
-        // Dial back the state
+        // Advance to next state
         protectedOperationState = .objectSynced
         
       } else {
@@ -300,7 +319,7 @@ class FoodieObject {
         }
       }
       
-      // This need sto be critical section or race condition between many childrens' completion can occur
+      // This needs to be critical section or race condition between many childrens' completion can occur
       var childOperationsPending = true
       pthread_mutex_lock(&self.criticalMutex)
       self.outstandingChildOperations -= 1
@@ -330,5 +349,92 @@ class FoodieObject {
     }
   }
   
+  // Function for state transition at the beginning of delete
+  func deleteStateTransition(to location: StorageLocation) -> (success: Bool?, error: LocalizedError?) {
+    
+    guard let state = protectedOperationState else {
+      DebugPrint.assert("Valid operationState expected to perform Delete")
+      return (false, ErrorCode(.deleteStateTransitionNoState))
+    }
+    
+    // Is delete even allowed? Return false here if illegal state transition. Otherwise do state transition
+    switch state {
+    case .deletingFromLocal, .deletingFromServer:
+      // Delete already occuring, another delete is not allowed
+      return (false, ErrorCode(.deleteStateTransitionSaveAlreadyInProgress))
+    default:
+      break
+    }
+    
+    // Location dependent state transitions
+    switch location {
+    case .local:
+      switch state {
+      case .objectSynced:
+        // No child object needs deleting. Callback success in background
+        return (true, nil)
+      case .pendingDelete:
+        protectedOperationState = .deletingFromLocal
+      default:
+        DebugPrint.assert("Illegal State Transition. Delete from Local attempt not from .objectSynced state. Current State = \(state)")
+        return (false, ErrorCode(.deleteStateTransitionIllegalStateTransition))
+      }
+      
+    case .server:
+      switch state {
+      case .objectSynced:
+        // No child object needs deleting. Callback success in background
+        return (true, nil)
+      case .deletedFromLocal:
+        protectedOperationState = .deletingFromServer
+      default:
+        DebugPrint.assert("Illegal State Transition. Save to Sever attempt not from .deletedFromLocal state. Current State = \(state)")
+        return (false, ErrorCode(.deleteStateTransitionIllegalStateTransition))
+      }
+    }
+    
+    return (nil, nil)
+  }
 
+  // Function for state transition at the end of delete
+  func deleteCompleteStateTransition(to location: StorageLocation) {
+    
+    guard let state = protectedOperationState else {
+      DebugPrint.fatal("Unable to proceed due to nil state from object. Location: \(location)")
+    }
+    
+    // State Transition for Save Error
+    if protectedOperationError != nil {
+      
+      if (location == .local) && (state == .deletingFromLocal) {
+        // Dial back the state
+        protectedOperationState = .pendingDelete
+        
+      } else if (location == .server) && (state == .deletingFromServer) {
+        // Dial back the state
+        protectedOperationState = .deletingFromLocal
+        
+      } else {
+        // Unexpected state combination
+        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(state)")
+      }
+    }
+      
+      // State Transition for Success
+    else {
+      
+      if (location == .local) && (state == .deletingFromLocal) {
+        // Advance to next state
+        protectedOperationState = .deletedFromLocal
+        
+      } else if (location == .server) && (state == .deletingFromServer) {
+        // Advance to next state
+        protectedOperationState = .objectSynced
+        
+      } else {
+        // Unexpected state combination
+        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(state)")
+      }
+    }
+  }
 }

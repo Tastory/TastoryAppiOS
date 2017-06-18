@@ -54,6 +54,40 @@ extension FoodieMarkup: FoodieObjectDelegate {
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    
+    switch foodieObject.operationState!
+    {
+    case .pendingDelete:
+      let earlyReturnStatus  = foodieObject.deleteStateTransition(to: .local)
+      
+      if let earlySuccess = earlyReturnStatus.success {
+        DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
+        return
+      }
+      
+      deleteFromLocal(withName: objectId, withBlock: {(Bool, Error) -> Void in
+          // deleted markup
+          self.foodieObject.deleteCompleteStateTransition(to: .local)
+      })
+      
+    case .deletedFromLocal:
+      let earlyReturnStatus  = foodieObject.deleteStateTransition(to: .server)
+      
+      if let earlySuccess = earlyReturnStatus.success {
+        DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
+        return
+      }
+      
+      deleteFromServer( withBlock: {(Bool, Error) -> Void in
+        self.foodieObject.deleteCompleteStateTransition(to: .server)
+        callback?(self.foodieObject.operationError == nil, self.foodieObject.operationError)
+      })
+      
+    default:
+      break
+      // TODO handle error
+    }
+
   }
   
   
