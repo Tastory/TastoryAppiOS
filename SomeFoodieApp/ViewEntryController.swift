@@ -60,7 +60,7 @@
 //        
 //        DebugPrint.verbose("Playing video from local")
 //        
-//        let fileAsset = AVURLAsset(url: FoodieFile.createLocalFileURL(fileName: fileName))
+//        let fileAsset = AVURLAsset(url: FoodieFile.getLocalFileURL(fileName: fileName))
 //        player.insert(AVPlayerItem(asset: fileAsset), after: nil)
 //        player.play()
 //        

@@ -356,15 +356,15 @@ class FoodieObject {
   // Function to retrieve if the Download status calls for
   func retrieveIfPending(withBlock callback: FoodieObject.RetrievedObjectBlock?) -> Bool {
     
-    var retrievingTrue = false
+    var needRetrieval = false
     
     // TODO: Need a mutex lock?
     if downloadState == .pendingRetrieval {
       downloadState = .retrieving
-      retrievingTrue = true
+      needRetrieval = true
     }
     
-    if retrievingTrue {
+    if needRetrieval {
       delegate!.retrieve(forceAnyways: false) { [unowned self] object, error in
         
         // Move forward state if success, backwards if failed

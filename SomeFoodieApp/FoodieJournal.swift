@@ -296,7 +296,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
     
     // Start the content retrieval state machine if it's not already started
-    // TODO: Do we neet a mutex lock here?
+    // TODO: Do we need a mutex lock here?
     if contentRetrievalInProg {
       DebugPrint.verbose("Content retrieval already in progress.")
       contentRetrievalPending = true
@@ -334,7 +334,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
           DebugPrint.verbose("FoodieMoment \(retrievedMoment.objectId!) retrieved!")
           
           guard let media = retrievedMoment.mediaObj else {
-            DebugPrint.assert("Unexpected retrievedMomen.mediaObj = nil")
+            DebugPrint.assert("Unexpected retrievedMoment.mediaObj = nil")
             return
           }
           
@@ -397,6 +397,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       contentRetrievalStateMachine()
     } else {
       DebugPrint.verbose("Content retrieval completes!")
+      contentRetrievalInProg = false
     }
   }
   
