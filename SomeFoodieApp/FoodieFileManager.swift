@@ -229,11 +229,11 @@ class FoodieFile {
     downloadRequest.downloadingFileURL = localFileUrl
   
     // Let's time the download!
-    let downloadStartTime = mach_absolute_time()
+    let downloadStartTime = PrecisionTime.now()
     
     transferManager.download(downloadRequest).continueWith(executor: AWSExecutor.mainThread()) { (task:AWSTask<AnyObject>) -> Any? in
       
-      let downloadEndTime = mach_absolute_time()
+      let downloadEndTime = PrecisionTime.now()
       
       if let error = task.error as NSError? {
         if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
@@ -288,11 +288,11 @@ class FoodieFile {
     DebugPrint.verbose("retrievingFrom \(serverFileURL.absoluteString)")
     
     // Let's time the download!
-    let downloadStartTime = mach_absolute_time()
+    let downloadStartTime = PrecisionTime.now()
     
     let downloadTask = downloadsSession.downloadTask(with: serverFileURL) { (url, response, error) in
       
-      let downloadEndTime = mach_absolute_time()
+      let downloadEndTime = PrecisionTime.now()
       
       if let downloadError = error {
         DebugPrint.assert("Download error: \(downloadError.localizedDescription)")
@@ -320,19 +320,14 @@ class FoodieFile {
 
       // We are in success-land!
       let timeDifference = downloadEndTime - downloadStartTime
-      var timeBaseInfo = mach_timebase_info_data_t()
-      mach_timebase_info(&timeBaseInfo)
-      let timeDifferenceNs = timeDifference * UInt64(timeBaseInfo.numer) / UInt64(timeBaseInfo.denom)
-      let timeDifferenceS = Float(timeDifferenceNs)/1000000000
-
       //try? self.fileManager.removeItem(at: localFileURL)  // TODO: If the file already exists, really shouldn't call this anyways.
       
       do {
         let fileAttribute = try self.fileManager.attributesOfItem(atPath: tempURL.path)
         let fileSizeKb = Float(fileAttribute[FileAttributeKey.size] as! Int)/1000.0
-        let avgDownloadSpeed = Float(fileSizeKb)/timeDifferenceS  // KB/s
+        let avgDownloadSpeed = Float(fileSizeKb)/timeDifference.seconds  // KB/s
         
-        DebugPrint.verbose("Download of \(fileName) of size \(fileSizeKb/1000.0) MB took \(timeDifferenceS*1000.0) ms at \(avgDownloadSpeed) kB/s")
+        DebugPrint.verbose("Download of \(fileName) of size \(fileSizeKb/1000.0) MB took \(timeDifference.milliSeconds) ms at \(avgDownloadSpeed) kB/s")
         
         try self.fileManager.copyItem(at: tempURL, to: localFileURL)
       } catch {
