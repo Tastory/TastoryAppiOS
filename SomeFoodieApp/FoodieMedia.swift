@@ -57,6 +57,11 @@ class FoodieMedia: FoodieS3Object {
     foodieObject.delegate = self
     foodieFileName = fileName
     mediaType = type
+    
+    // For videos, determine if the media file already exists in Local cache store
+    if type == .video {
+      videoLocalBufferUrl = FoodieFile.checkIfExistInLocal(for: fileName)
+    }
   }
 }
 
@@ -92,7 +97,7 @@ extension FoodieMedia: FoodieObjectDelegate {
             DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
           }
           if let fileName = stringObject as? String {
-            self.videoLocalBufferUrl = FoodieFile.createLocalFileURL(fileName: fileName)
+            self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: fileName)
           } else {
             DebugPrint.fatal("Cannot convert returned stringObject to String")
           }
@@ -107,13 +112,18 @@ extension FoodieMedia: FoodieObjectDelegate {
       
     case .photo:
       retrieveFromLocalToBuffer() { [unowned self] localBuffer, localError in
-        guard let err = localError else {
+        guard let err = localError as? FoodieFile.ErrorCode else {
           // Error is nil. This is actually success case!
           if let imageBuffer = localBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
           callback?(localBuffer, nil)
           return
         }
-        DebugPrint.error("retrieveFromLocalToBuffer for photo failed with error \(err.localizedDescription)")
+        
+        if err == FoodieFile.ErrorCode.fileManagerReadLocalNoFile {
+          // This is expected when file is not cached to local
+        } else {
+          DebugPrint.error("retrieveFromLocalToBuffer for photo failed with error \(err.localizedDescription)")
+        }
         
         self.retrieveFromServerToBuffer() { (serverBuffer, serverError) in
           if let error = serverError {
@@ -130,7 +140,7 @@ extension FoodieMedia: FoodieObjectDelegate {
           DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
         }
         if let fileName = stringObject as? String {
-          self.videoLocalBufferUrl = FoodieFile.createLocalFileURL(fileName: fileName)
+          self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: fileName)
         } else {
           DebugPrint.fatal("Cannot convert returned stringObject to String")
         }
@@ -180,7 +190,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
       saveTmpUrlToLocal(url: videoUrl) { [unowned self] success, error in
         if success && error == nil {
-          self.videoLocalBufferUrl = FoodieFile.createLocalFileURL(fileName: self.foodieFileName!)
+          self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: self.foodieFileName!)
         }
         callback?(success, error)
       }

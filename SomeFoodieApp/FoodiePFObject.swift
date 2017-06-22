@@ -42,13 +42,19 @@ class FoodiePFObject: PFObject {
         guard let object = localObject else {
           DebugPrint.fatal("fetchFromLocalDatastoreInBackground completed with no error but nil object returned")
         }
-        
         // This is actually success case here! localError is nil!
         callback?(object, nil)
         return
       }
-      DebugPrint.error("fetchFromLocalDatastore failed with error: \(err.localizedDescription)")
-        
+
+      let nsError = err as NSError
+      if nsError.domain == PFParseErrorDomain && nsError.code == PFErrorCode.errorCacheMiss.rawValue {
+        DebugPrint.log("fetchFromLocalDatastore Parse cache miss")
+      } else {
+        DebugPrint.assert("fetchFromLocalDatastore failed with error: \(err.localizedDescription)")
+        return
+      }
+
       // If not in Local Datastore, retrieved from Server
       self.fetchInBackground { serverObject, serverError in
         
