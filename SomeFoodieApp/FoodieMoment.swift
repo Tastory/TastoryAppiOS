@@ -162,47 +162,17 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                        withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    switch foodieObject.operationState!
-    {
-    case .pendingDelete:
-      let earlyReturnStatus  = foodieObject.deleteStateTransition(to: .local)
-      
-      if let earlySuccess = earlyReturnStatus.success {
-        DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-        return
-      }
-      
-        mediaObj?.deleteFromLocal(withBlock: {(Bool, Error) -> Void in
-          // delete the thumnail now that the media object is deleted
-          self.thumbnailObj?.deleteFromLocal(withBlock: {(Bool,Error)-> Void in
-          // deleted thumnail
-          self.foodieObject.deleteCompleteStateTransition(to: .local)
-        })
-      })
-      
-    case .deletedFromLocal:
-      let earlyReturnStatus  = foodieObject.deleteStateTransition(to: .server)
-      
-      if let earlySuccess = earlyReturnStatus.success {
-        DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-        return
-      }
-      
-      mediaObj?.deleteFromServer(withBlock: {(Bool, Error) -> Void in
-        // delete the thumnail now that the media object is deleted
-        self.thumbnailObj?.deleteFromServer(withBlock: {(Bool,Error)-> Void in
-          // deleted thumnail
-          self.foodieObject.deleteCompleteStateTransition(to: .server)
-          callback?(self.foodieObject.operationError == nil, self.foodieObject.operationError)
-        })
-      })
-      
-    default:
-      break
-      // TODO handle error
-    }
-
+    DebugPrint.verbose("FoodieMoment.deleteRecursive from \(objectId) Location: \(location)")
     
+    let earlyReturnStatus  = foodieObject.deleteStateTransition(to: location)
+    if let earlySuccess = earlyReturnStatus.success {
+      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
+      return
+    }
+    self.foodieObject.deleteObject(from: location, withBlock: {(success,error)-> Void in
+      self.foodieObject.deleteCompleteStateTransition(to: location)
+      callback?(self.foodieObject.operationError == nil, self.foodieObject.operationError)
+    })
   }
   
   

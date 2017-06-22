@@ -89,7 +89,7 @@ class FoodieFile {
   static var localBufferDirectory: String!
   
   // A queue used for storing Foodie Objects to be deleted 
-  static var deleteQueue: [FoodieObjectDelegate] = []
+  static var pendingDeleteList: [FoodieObjectDelegate] = []
   
   // MARK: - Private Instance Variables
   private let s3Handler: AWSS3
@@ -147,7 +147,6 @@ class FoodieFile {
     transferManager = AWSS3TransferManager.default()
     fileManager = FileManager.default
   }
-  
   
   func retrieveFromLocalToBufffer(fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     DispatchQueue.global(qos: .utility).async {
@@ -294,7 +293,15 @@ class FoodieFile {
     
     delRequest.bucket = Constants.S3BucketKey
     delRequest.key = fileName
-    s3Handler.deleteObject(delRequest)
+    let deleteTask = s3Handler.deleteObject(delRequest)
+    deleteTask.continueWith() { (task: AWSTask<AWSS3DeleteObjectOutput>) -> Any? in
+      if let error = task.error as NSError? {
+          callback?(false,error)
+      }
+      // found object
+      callback?(true, nil)
+      return nil
+    }
   }
 
   

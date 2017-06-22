@@ -255,49 +255,61 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
   }
   
+  func deleteAsync(callback: ((Bool, Error?) -> Void)?){
+    self.foodieObject.markPendingDelete()
+    FoodieFile.pendingDeleteList.append(self)
+    
+    // check if there is a thumbnail
+    if let hasThumbnail = thumbnailObj {
+      hasThumbnail.foodieObject.markPendingDelete()
+      FoodieFile.pendingDeleteList.append(hasThumbnail)
+    }
+    
+    // check to see if there are child to append
+    if let hasMoment = moments{
+      for moment in hasMoment {
+        moment.foodieObject.markPendingDelete()
+        FoodieFile.pendingDeleteList.append(moment)
+        
+        // TODO remove the following code for testing only
+        if moment.mediaObj == nil, let fileName = moment.mediaFileName,
+          let typeString = moment.mediaType, let type = FoodieMediaType(rawValue: typeString) {
+          moment.mediaObj = FoodieMedia(fileName: fileName, type: type)
+        }
+        
+        // TODO remove the following code for testing only
+        if moment.thumbnailObj == nil, let fileName = moment.thumbnailFileName {
+          moment.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
+        }
+        
+        if let hasMedia = moment.mediaObj {
+          FoodieFile.pendingDeleteList.append(hasMedia)
+        }
+        
+        if let hasMomentThumb = moment.thumbnailObj {
+          FoodieFile.pendingDeleteList.append(hasMomentThumb)
+        }
+        
+      }
+    }
+    
+    if let hasMarkup = markups {
+      for markup in hasMarkup {
+        markup.foodieObject.markPendingDelete()
+        FoodieFile.pendingDeleteList.append(markup)
+      }
+    }
+    
+    DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+        self.foodieObject.deleteFromPendingDelete(withBlock: callback)
+    }
+  }
   
   // Function to delete specified Moment
   // Other Moments in the array might have their position altered accordingly
   // Controller layer should query to confirm how other Moments might have their orders and positions changed
   func delete(moment: FoodieMoment) {
     
-    self.foodieObject.markPendingDelete()
-    FoodieFile.deleteQueue.append(self)
-   
-    // check to see if there are child to append
-    // TODO verify with Howard if optional array is actually needed it might be more simple to make it []
-    if(moments == nil)
-    {
-      moments = []
-    }
-    
-    if((moments?.count)! > 0)
-    {
-      for moment in (moments)! {
-          moment.foodieObject.markPendingDelete()
-          FoodieFile.deleteQueue.append(moment)
-      }
-    }
-    
-    if(markups == nil)
-    {
-      markups = []
-    }
-    
-    if((markups?.count)! > 0)
-    {
-      for markup in (markups)! {
-        markup.foodieObject.markPendingDelete()
-            FoodieFile.deleteQueue.append(markup)
-      }
-    }
-    
-    DispatchQueue.global(qos: .userInitiated).async {
-      while (FoodieFile.deleteQueue.count > 0)
-      {
-          FoodieFile.deleteQueue.first?.deleteRecursive(from: .local, withName: nil, withBlock: nil)
-      }
-     }
   }
 
   // MARK: - Foodie Object Delegate Conformance
@@ -372,52 +384,23 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  
   // Trigger recursive delete against all child objects.
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
+   
+    DebugPrint.verbose("FoodieJournal.deleteRecursive \(objectId) from Location: \(location)")
     
-    switch foodieObject.operationState!
-    {
-      case .pendingDelete:
-          let earlyReturnStatus  = foodieObject.deleteStateTransition(to: .local)
-          
-          if let earlySuccess = earlyReturnStatus.success {
-            DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-            return
-          }
-         
-          deleteFromLocal(withName: objectId, withBlock: {(Bool, Error) -> Void in
-            // delete the thumnail now that the journal is deleted
-            let thumnail = FoodieMedia(fileName: self.thumbnailFileName!, type: .photo)
-            thumnail.deleteFromLocal(withBlock: {(Bool,Error)-> Void in
-              // deleted thumnail
-              self.foodieObject.deleteCompleteStateTransition(to: .local)
-            })
-          })
-      
-      case .deletedFromLocal:
-        let earlyReturnStatus  = foodieObject.deleteStateTransition(to: .server)
-        
-        if let earlySuccess = earlyReturnStatus.success {
-          DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-          return
-        }
-        
-        deleteFromServer( withBlock: {(Bool, Error) -> Void in
-          // delete the thumnail now that the journal is deleted
-        self.thumbnailObj?.deleteFromServer(withBlock: {(Bool,Error)-> Void in
-            // deleted thumnail
-            self.foodieObject.deleteCompleteStateTransition(to: .server)
-            callback?(self.foodieObject.operationError == nil, self.foodieObject.operationError)
-          })
-        })
-  
-      default:
-        break
-        // TODO handle error
+    let earlyReturnStatus  = foodieObject.deleteStateTransition(to: location)
+    if let earlySuccess = earlyReturnStatus.success {
+      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
+      return
     }
+   
+    self.foodieObject.deleteObject(from: location, withBlock: {(success,error)-> Void in
+      self.foodieObject.deleteCompleteStateTransition(to: location)
+      callback?(self.foodieObject.operationError == nil, self.foodieObject.operationError)
+    })
   }
   
   

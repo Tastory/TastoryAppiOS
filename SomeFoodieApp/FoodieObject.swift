@@ -77,6 +77,7 @@ class FoodieObject {
     case deleteStateTransitionNoState
     case deleteStateTransitionSaveAlreadyInProgress
     case deleteStateTransitionIllegalStateTransition
+    case deleteRetryError
     
     var errorDescription: String? {
       switch self {
@@ -93,7 +94,9 @@ class FoodieObject {
         return NSLocalizedString("Delete error as save already in progress for Foodie Object", comment: "Error description for an exception error code")
       case .deleteStateTransitionIllegalStateTransition:
         return NSLocalizedString("Delete error due to illegal state transition", comment: "Error description for an exception error code")
-
+      case .deleteRetryError:
+        return NSLocalizedString("Delete Foodie Object failed with 2 attempts", comment: "Error description for an exception error code")
+        
       }
     }
   
@@ -116,6 +119,8 @@ class FoodieObject {
   fileprivate var criticalMutex = pthread_mutex_t()
   fileprivate var outstandingChildOperations = 0
   
+  var deleteRetryCount = 1
+  
   // MARK: - Public Instance Functions
   init() {
     protectedOperationState = .objectModified
@@ -131,12 +136,29 @@ class FoodieObject {
     delegate = delegateObject
   }
   
-  func markPendingDelete() -> Bool
-  {
+  func markPendingDelete() {
       protectedOperationState = .pendingDelete
-      return true
   }
   
+  // check if we should retry
+  func retryDelete(from location: StorageLocation, withBlock callback: BooleanErrorBlock?){
+    
+    if(deleteRetryCount <= 0 )
+    {
+      // no more attemps to retry return failure
+      callback?(false, ErrorCode.deleteRetryError)
+    }
+    else {
+      deleteRetryCount -= 1
+      // retry delete from local
+      switch location {
+        case .local:
+          self.tryDeleteFromLocal(withBlock: callback)
+        case .server:
+          self.tryDeleteFromServer(withBlock: callback)
+      }
+    }
+  }
   
   // Function to mark memory modified
   func markModified() -> Bool {
@@ -437,4 +459,59 @@ class FoodieObject {
       }
     }
   }
+  
+  // Function to delete this object
+  func deleteObject(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject to Location: \(location)")
+    
+    guard let delegateObj = delegate else {
+      DebugPrint.fatal("delegate not expected to be nil in saveObject()")
+    }
+    switch location {
+    case .local:
+      delegateObj.deleteFromLocal(withName: name, withBlock: callback)
+    case .server:
+      delegateObj.deleteFromServer(withBlock: callback)
+    }
+  }
+  
+  func tryDeleteFromServer(withBlock callback: BooleanErrorBlock?) {
+    // delete from server
+    FoodieFile.pendingDeleteList.first?.deleteRecursive(from: .server, withName: nil, withBlock: { (success, error) in
+      if(success) {
+        // remove this one from pendingDeleteList
+        FoodieFile.pendingDeleteList.remove(at: 0)
+        if(!FoodieFile.pendingDeleteList.isEmpty) {
+          self.deleteFromPendingDelete(withBlock: callback)
+        }
+        else {
+          callback?(true,nil)
+        }
+      }
+      else {
+        self.retryDelete(from: .server, withBlock: callback)
+      }
+    })
+  }
+  
+  func tryDeleteFromLocal(withBlock callback: BooleanErrorBlock?) {
+    // delete from local
+    FoodieFile.pendingDeleteList.first?.deleteRecursive(from: .local, withName: nil, withBlock: { (success, error) in
+      if(success) {
+        self.tryDeleteFromServer(withBlock: callback)
+      }
+      else {
+        self.retryDelete(from: .local, withBlock: callback)
+      }
+    })
+  }
+  
+  func deleteFromPendingDelete(withBlock callback: BooleanErrorBlock?)
+  {
+    if(!FoodieFile.pendingDeleteList.isEmpty) {
+      tryDeleteFromLocal(withBlock: callback)
+    }
+  }
+  
 }

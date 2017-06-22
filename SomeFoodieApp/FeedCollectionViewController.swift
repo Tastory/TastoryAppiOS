@@ -27,6 +27,16 @@ class FeedCollectionViewController: UICollectionViewController {
     dismiss(animated: true, completion: nil)
   }
   
+  @IBAction func DeleteTestBtn(_ sender: Any) {
+    queriedJournalArray[0].deleteAsync(callback: {(success, error)->Void in
+      if(success)
+      {
+        DebugPrint.userAction("Successfully Deleted Journal")
+      }
+ 
+      
+    })
+  }
   
   // MARK: - View Controller Lifecycle Functions
   override func viewDidLoad() {
