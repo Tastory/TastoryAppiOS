@@ -118,7 +118,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  // Funciton to check if Content Retrieved is set to True. Register deelgate object if False
+  // Funciton to check if Content Retrieved is set to True. Register delegate object if False
   func checkContentRetrieved(ifFalseSetDelegate delegate: FoodieMomentWaitOnContentDelegate) -> Bool {
     
     pthread_mutex_lock(&self.contentRetrievedMutex)

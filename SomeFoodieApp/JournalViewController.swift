@@ -161,6 +161,7 @@ class JournalViewController: UIViewController {
     if moment.checkContentRetrieved(ifFalseSetDelegate: self) {
       DispatchQueue.main.async { [unowned self] in self.displayMoment(moment) }
     } else {
+      DebugPrint.verbose("displayMomentIfLoaded: Not yet loaded")
       view.bringSubview(toFront: blurView)
       view.bringSubview(toFront: activityIndicator)
       activityIndicator.startAnimating()
