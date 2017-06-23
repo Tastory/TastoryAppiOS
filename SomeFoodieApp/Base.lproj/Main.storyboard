@@ -344,6 +344,10 @@
                             <constraint firstAttribute="trailing" secondItem="De9-KV-Mtr" secondAttribute="trailing" id="uHJ-7z-fEq"/>
                             <constraint firstAttribute="trailing" secondItem="3Gc-Ev-vmE" secondAttribute="trailing" id="uPp-NK-myt"/>
                         </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="17T-uz-Ki4" appends="YES" id="h5e-pI-kLG"/>
+                            <outletCollection property="gestureRecognizers" destination="Qe3-ah-fti" appends="YES" id="TYJ-Iw-hb1"/>
+                        </connections>
                     </view>
                     <connections>
                         <outlet property="activityIndicator" destination="PSs-bH-oOZ" id="ltb-9Q-KVm"/>
@@ -365,6 +369,16 @@
                         <action selector="tapBackward:" destination="l2J-hP-Z7q" id="dmU-VL-El7"/>
                     </connections>
                 </tapGestureRecognizer>
+                <swipeGestureRecognizer direction="down" id="17T-uz-Ki4" userLabel="Swipe Down Gesture Recognizer">
+                    <connections>
+                        <action selector="swipeDown:" destination="l2J-hP-Z7q" id="1W5-EY-8aK"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="up" id="Qe3-ah-fti" userLabel="Swipe Up Gesture Recognizer">
+                    <connections>
+                        <action selector="swipeUp:" destination="l2J-hP-Z7q" id="6A0-jU-Eyy"/>
+                    </connections>
+                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-431.19999999999999" y="841.52923538230891"/>
         </scene>
