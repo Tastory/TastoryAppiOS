@@ -12,11 +12,12 @@ import AVFoundation
 class JournalViewController: UIViewController {
   
   // MARK: - IBOutlets
-  
   @IBOutlet weak var photoView: UIImageView!
   @IBOutlet weak var videoView: UIView!
   @IBOutlet weak var blurView: UIVisualEffectView!
   @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+  @IBOutlet weak var tapGestureStackView: UIStackView!
+  @IBOutlet weak var tapBackwardsWidth: NSLayoutConstraint!
   
   
   // MARK: - Public Instance Variables
@@ -51,29 +52,33 @@ class JournalViewController: UIViewController {
   
   // Generic error dialog box to the user on internal errors
   func internalErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when a Journal View internal error occured",
-                                            message: "An internal error has occured. Please try again",
-                                            messageComment: "Alert dialog message when a Journal View internal error occured",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for generic JournalView errors",
-                                   style: .default)
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Journal View internal error occured",
+                                              message: "An internal error has occured. Please try again",
+                                              messageComment: "Alert dialog message when a Journal View internal error occured",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for generic JournalView errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   // Generic error dialog box to the user when displaying photo or video
   fileprivate func displayErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when Journal View has problem displaying photo or video",
-                                            message: "Error displaying media. Please try again",
-                                            messageComment: "Alert dialog message when Journal View has problem displaying photo or video",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for error when displaying photo or video in JournalView",
-                                   style: .default)
-    
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when Journal View has problem displaying photo or video",
+                                              message: "Error displaying media. Please try again",
+                                              messageComment: "Alert dialog message when Journal View has problem displaying photo or video",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for error when displaying photo or video in JournalView",
+                                     style: .default)
+      
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   
@@ -82,7 +87,13 @@ class JournalViewController: UIViewController {
   
   
   // MARK: - IBActions
+  @IBAction func tapForward(_ sender: UITapGestureRecognizer) {
+    displayNextMoment()
+  }
 
+  @IBAction func tapBackward(_ sender: UITapGestureRecognizer) {
+    displayPreviousMoment()
+  }
   
   
   // MARK: - Private Instance Functions
@@ -121,7 +132,7 @@ class JournalViewController: UIViewController {
       }
       
       photoView.image = UIImage(data: imageBuffer)
-      view.bringSubview(toFront: photoView)
+      view.insertSubview(photoView, belowSubview: tapGestureStackView)
 
       // Create timer for advancing to the next media? // TODO: Should not be a fixed time
       photoTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [unowned self] timer in
@@ -147,7 +158,7 @@ class JournalViewController: UIViewController {
                                              object: avPlayerItem)
       
       avPlayer!.replaceCurrentItem(with: avPlayerItem)
-      view.bringSubview(toFront: videoView)
+      view.insertSubview(videoView, belowSubview: tapGestureStackView)
       avPlayer!.play()
       
       // No image nor video to work on, Fatal
@@ -162,8 +173,8 @@ class JournalViewController: UIViewController {
       DispatchQueue.main.async { [unowned self] in self.displayMoment(moment) }
     } else {
       DebugPrint.verbose("displayMomentIfLoaded: Not yet loaded")
-      view.bringSubview(toFront: blurView)
-      view.bringSubview(toFront: activityIndicator)
+      view.insertSubview(blurView, belowSubview: tapGestureStackView)
+      view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
       activityIndicator.startAnimating()
     }
   }
@@ -272,13 +283,15 @@ class JournalViewController: UIViewController {
     avPlayerLayer = AVPlayerLayer(player: avPlayer)
     avPlayerLayer!.frame = self.view.bounds
     videoView!.layer.addSublayer(avPlayerLayer!)
+    
+    tapBackwardsWidth.constant = UIScreen.main.bounds.width/3.0  // Gotta test this on a different screen size to know if this works
   }
   
   
   override func viewWillAppear(_ animated: Bool) {
     // Always display activity indicator and blur layer up front
-    view.bringSubview(toFront: blurView)
-    view.bringSubview(toFront: activityIndicator)
+    view.insertSubview(blurView, belowSubview: tapGestureStackView)
+    view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
     activityIndicator.startAnimating()
   }
   

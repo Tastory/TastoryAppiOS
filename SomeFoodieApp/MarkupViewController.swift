@@ -225,56 +225,64 @@ class MarkupViewController: UIViewController {
   
   // Generic error dialog box to the user on internal errors
   func internalErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when a Markup Image view internal error occured",
-                                            message: "An internal error has occured. Please try again",
-                                            messageComment: "Alert dialog message when a Markup Image view internal error occured",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for generic MarkupImageView errors",
-                                   style: .default)
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Markup Image view internal error occured",
+                                              message: "An internal error has occured. Please try again",
+                                              messageComment: "Alert dialog message when a Markup Image view internal error occured",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for generic MarkupImageView errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   // Generic error dialog box to the user when displaying photo or video
   fileprivate func displayErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when Markup Image view has problem displaying photo or video",
-                                            message: "Error displaying media. Please try again",
-                                            messageComment: "Alert dialog message when Markup Image view has problem displaying photo or video",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for error when displaying photo or video in MarkupImageView",
-                                   style: .default)
-    
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when Markup Image view has problem displaying photo or video",
+                                              message: "Error displaying media. Please try again",
+                                              messageComment: "Alert dialog message when Markup Image view has problem displaying photo or video",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for error when displaying photo or video in MarkupImageView",
+                                     style: .default)
+      
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   // Generic error dialog box to the user on save errors
   fileprivate func saveErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when Markup Image view has problem saving",
-                                            message: "Error saving Journal. Please try again",
-                                            messageComment: "Alert dialog message when Markup Image view has problem saving",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for MarkupImageView save errors",
-                                   style: .default)
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when Markup Image view has problem saving",
+                                              message: "Error saving Journal. Please try again",
+                                              messageComment: "Alert dialog message when Markup Image view has problem saving",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for MarkupImageView save errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   // Generic error dialog box to the user when adding Moments
   fileprivate func addErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when Markup Image view has problem adding a Moment",
-                                            message: "Error adding Moment. Please try again",
-                                            messageComment: "Alert dialog message when Markup Image view has problem adding a Moment",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for error when adding Moments in MarkupImageView",
-                                   style: .default)
-    
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when Markup Image view has problem adding a Moment",
+                                              message: "Error adding Moment. Please try again",
+                                              messageComment: "Alert dialog message when Markup Image view has problem adding a Moment",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for error when adding Moments in MarkupImageView",
+                                     style: .default)
+      
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   
