@@ -8,17 +8,10 @@
 
 import UIKit
 import AVFoundation
+import SafariServices
+
 
 class JournalViewController: UIViewController {
-  
-  // MARK: - IBOutlets
-  @IBOutlet weak var photoView: UIImageView!
-  @IBOutlet weak var videoView: UIView!
-  @IBOutlet weak var blurView: UIVisualEffectView!
-  @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-  @IBOutlet weak var tapGestureStackView: UIStackView!
-  @IBOutlet weak var tapBackwardsWidth: NSLayoutConstraint!
-  
   
   // MARK: - Public Instance Variables
   var viewingJournal: FoodieJournal? {
@@ -83,7 +76,12 @@ class JournalViewController: UIViewController {
   
   
   // MARK: - IBOutlets
-
+  @IBOutlet weak var photoView: UIImageView!
+  @IBOutlet weak var videoView: UIView!
+  @IBOutlet weak var blurView: UIVisualEffectView!
+  @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+  @IBOutlet weak var tapGestureStackView: UIStackView!
+  @IBOutlet weak var tapBackwardsWidth: NSLayoutConstraint!
   
   
   // MARK: - IBActions
@@ -93,6 +91,43 @@ class JournalViewController: UIViewController {
 
   @IBAction func tapBackward(_ sender: UITapGestureRecognizer) {
     displayPreviousMoment()
+  }
+  
+  @IBAction func swipeDown(_ sender: UISwipeGestureRecognizer) {
+    cleanUpAndDismiss()
+  }
+  
+  @IBAction func swipeUp(_ sender: UISwipeGestureRecognizer) {
+    
+    guard let journal = viewingJournal else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, viewingJournal = nil")
+      return
+    }
+    
+    if let journalLinkString = journal.journalURL, let journalLinkUrl = URL(string: journalLinkString) {
+      
+      guard let moment = currentMoment else {
+        internalErrorDialog()
+        DebugPrint.assert("Unexpected currentMoment = nil")
+        return
+      }
+      
+      // Stop video if a video is playing. Remove Timers & Observers
+      avPlayer!.pause()
+      removeTimerAndObservers(for: moment)
+      
+      let safariViewController = SFSafariViewController(url: journalLinkUrl)
+      safariViewController.delegate = self
+      
+      let transition = CATransition()
+      transition.duration = 0.5
+      transition.type = kCATransitionPush
+      transition.subtype = kCATransitionFromTop
+      view.window!.layer.add(transition, forKey: kCATransition)
+      
+      self.present(safariViewController, animated: false, completion: nil)
+    }
   }
   
   
@@ -309,12 +344,17 @@ class JournalViewController: UIViewController {
       return
     }
     
-    // Try to display the first Moment?
-    displayMomentIfLoaded(for: moments[0])
+    // If a moment was already in play, just display that again. Otherwise try to display the first moment
+    if currentMoment == nil {
+      currentMoment = moments[0]
+    }
+    
+    displayMomentIfLoaded(for: currentMoment!)
   }
   
   
   override func viewDidDisappear(_ animated: Bool) {
+    DebugPrint.verbose("JournalViewController disappearing")
   }
 }
 
@@ -325,5 +365,19 @@ extension JournalViewController: FoodieMomentWaitOnContentDelegate {
   
   func momentContentRetrieved(for moment: FoodieMoment) {
     DispatchQueue.main.async { [unowned self] in self.displayMoment(moment) }
+  }
+}
+
+
+// MARK: - Safari View Controller Did Finish Delegate Conformance
+
+extension JournalViewController: SFSafariViewControllerDelegate {
+  
+  func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+    let transition = CATransition()
+    transition.duration = 0.5
+    transition.type = kCATransitionPush
+    transition.subtype = kCATransitionFromBottom
+    controller.view.window!.layer.add(transition, forKey: kCATransition)
   }
 }
