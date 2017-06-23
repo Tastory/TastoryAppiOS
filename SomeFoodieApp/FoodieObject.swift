@@ -136,6 +136,7 @@ class FoodieObject {
     delegate = delegateObject
   }
   
+  // mark object for delete
   func markPendingDelete() {
       protectedOperationState = .pendingDelete
   }
@@ -145,10 +146,12 @@ class FoodieObject {
     
     if(deleteRetryCount <= 0 )
     {
+      DebugPrint.verbose("Attempted to delete object twice")
       // no more attemps to retry return failure
       callback?(false, ErrorCode.deleteRetryError)
     }
     else {
+      DebugPrint.verbose("Failed to delete FoodieObject from: \(location)")
       deleteRetryCount -= 1
       // retry delete from local
       switch location {
@@ -463,10 +466,10 @@ class FoodieObject {
   // Function to delete this object
   func deleteObject(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
     
-    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject to Location: \(location)")
+    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject from Location: \(location)")
     
     guard let delegateObj = delegate else {
-      DebugPrint.fatal("delegate not expected to be nil in saveObject()")
+      DebugPrint.fatal("delegate not expected to be nil in deleteObject()")
     }
     switch location {
     case .local:
@@ -476,13 +479,17 @@ class FoodieObject {
     }
   }
   
+  // attempt to delete from server with retry logic to call this function recursively if failure occurs
   func tryDeleteFromServer(withBlock callback: BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject from Server")
+    
     // delete from server
-    FoodieFile.pendingDeleteList.first?.deleteRecursive(from: .server, withName: nil, withBlock: { (success, error) in
+    FoodieFile.getFirstObjFromPendingDelete()?.deleteRecursive(from: .server, withName: nil, withBlock: { (success, error) in
       if(success) {
         // remove this one from pendingDeleteList
-        FoodieFile.pendingDeleteList.remove(at: 0)
-        if(!FoodieFile.pendingDeleteList.isEmpty) {
+        FoodieFile.removeFirstObjFromPendingDelete()
+        if(!FoodieFile.isPendingDeleteEmpty()) {
           self.deleteFromPendingDelete(withBlock: callback)
         }
         else {
@@ -495,9 +502,12 @@ class FoodieObject {
     })
   }
   
+  // attempt to delete from local with retry logic to call this function recursively if failure occurs
   func tryDeleteFromLocal(withBlock callback: BooleanErrorBlock?) {
-    // delete from local
-    FoodieFile.pendingDeleteList.first?.deleteRecursive(from: .local, withName: nil, withBlock: { (success, error) in
+    
+    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject from Server")
+    
+    FoodieFile.getFirstObjFromPendingDelete()?.deleteRecursive(from: .local, withName: nil, withBlock: { (success, error) in
       if(success) {
         self.tryDeleteFromServer(withBlock: callback)
       }
@@ -509,7 +519,7 @@ class FoodieObject {
   
   func deleteFromPendingDelete(withBlock callback: BooleanErrorBlock?)
   {
-    if(!FoodieFile.pendingDeleteList.isEmpty) {
+    if(!FoodieFile.isPendingDeleteEmpty()) {
       tryDeleteFromLocal(withBlock: callback)
     }
   }

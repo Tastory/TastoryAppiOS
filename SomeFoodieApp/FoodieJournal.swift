@@ -257,46 +257,26 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   func deleteAsync(callback: ((Bool, Error?) -> Void)?){
     self.foodieObject.markPendingDelete()
-    FoodieFile.pendingDeleteList.append(self)
+    FoodieFile.appendToPendingDelete(self)
     
     // check if there is a thumbnail
     if let hasThumbnail = thumbnailObj {
       hasThumbnail.foodieObject.markPendingDelete()
-      FoodieFile.pendingDeleteList.append(hasThumbnail)
+      FoodieFile.appendToPendingDelete(hasThumbnail)
     }
     
-    // check to see if there are child to append
+    // check to see if there are moments to append
     if let hasMoment = moments{
       for moment in hasMoment {
         moment.foodieObject.markPendingDelete()
-        FoodieFile.pendingDeleteList.append(moment)
-        
-        // TODO remove the following code for testing only
-        if moment.mediaObj == nil, let fileName = moment.mediaFileName,
-          let typeString = moment.mediaType, let type = FoodieMediaType(rawValue: typeString) {
-          moment.mediaObj = FoodieMedia(fileName: fileName, type: type)
-        }
-        
-        // TODO remove the following code for testing only
-        if moment.thumbnailObj == nil, let fileName = moment.thumbnailFileName {
-          moment.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
-        }
-        
-        if let hasMedia = moment.mediaObj {
-          FoodieFile.pendingDeleteList.append(hasMedia)
-        }
-        
-        if let hasMomentThumb = moment.thumbnailObj {
-          FoodieFile.pendingDeleteList.append(hasMomentThumb)
-        }
-        
+        FoodieFile.appendToPendingDelete(moment)
       }
     }
     
     if let hasMarkup = markups {
       for markup in hasMarkup {
         markup.foodieObject.markPendingDelete()
-        FoodieFile.pendingDeleteList.append(markup)
+        FoodieFile.appendToPendingDelete(markup)
       }
     }
     
@@ -308,8 +288,13 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   // Function to delete specified Moment
   // Other Moments in the array might have their position altered accordingly
   // Controller layer should query to confirm how other Moments might have their orders and positions changed
+  // TODO need to add callback ?
   func delete(moment: FoodieMoment) {
-    
+    moment.foodieObject.markPendingDelete()
+    FoodieFile.appendToPendingDelete(moment)
+    DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+      self.foodieObject.deleteFromPendingDelete(withBlock: nil)
+    }
   }
 
   // MARK: - Foodie Object Delegate Conformance
@@ -402,7 +387,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       callback?(self.foodieObject.operationError == nil, self.foodieObject.operationError)
     })
   }
-  
   
   func verbose() {
     DebugPrint.verbose("FoodieJournal ID: \(getUniqueIdentifier())")

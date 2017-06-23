@@ -28,6 +28,14 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   @IBAction func DeleteTestBtn(_ sender: Any) {
+    
+    /*
+    if let hasMoments = queriedJournalArray[0].moments {
+      // delete delete moment from journal
+      queriedJournalArray[0].delete(moment: hasMoments[1])
+    }*/
+    
+    
     queriedJournalArray[0].deleteAsync(callback: {(success, error)->Void in
       if(success)
       {

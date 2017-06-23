@@ -46,6 +46,7 @@ class FoodieFile {
     case awsS3TransferManagerDownloadRequestNil
     case awsS3TransferDownloadCancelled
     case awsS3TransferDownloadUnknownError
+    case awsS3FileDoesntExistError
     
     var errorDescription: String? {
       switch self {
@@ -67,6 +68,8 @@ class FoodieFile {
         return NSLocalizedString("AWS S3 Transfer Download cancelled", comment: "Error description for an exception error code")
       case .awsS3TransferDownloadUnknownError:
         return NSLocalizedString("AWS S3 Transfer Download unknonw error", comment: "Error description for an exception error code")
+      case .awsS3FileDoesntExistError:
+        return NSLocalizedString("AWS S3 File doesn't exist on server", comment: "Error description for an exception error code")
       }
     }
     
@@ -90,6 +93,7 @@ class FoodieFile {
   
   // A queue used for storing Foodie Objects to be deleted 
   static var pendingDeleteList: [FoodieObjectDelegate] = []
+  static fileprivate var deleteListMutex = pthread_mutex_t()
   
   // MARK: - Private Instance Variables
   private let s3Handler: AWSS3
@@ -146,6 +150,44 @@ class FoodieFile {
     s3Handler = AWSS3.default()
     transferManager = AWSS3TransferManager.default()
     fileManager = FileManager.default
+  }
+  
+  
+  static func getFirstObjFromPendingDelete() -> FoodieObjectDelegate?
+  {
+    var foodieObj: FoodieObjectDelegate? = nil
+    pthread_mutex_lock(&FoodieFile.deleteListMutex)
+    if(!FoodieFile.pendingDeleteList.isEmpty) {
+      foodieObj = FoodieFile.pendingDeleteList.first
+    }
+    pthread_mutex_unlock(&FoodieFile.deleteListMutex)
+    return foodieObj
+  }
+  
+  static func removeFirstObjFromPendingDelete()
+  {
+    pthread_mutex_lock(&FoodieFile.deleteListMutex)
+    
+    if(!FoodieFile.pendingDeleteList.isEmpty)
+    {
+      FoodieFile.pendingDeleteList.remove(at: 0)
+    }
+    pthread_mutex_unlock(&FoodieFile.deleteListMutex)
+  }
+  
+  static func isPendingDeleteEmpty() ->Bool {
+    var result = false
+    pthread_mutex_lock(&FoodieFile.deleteListMutex)
+    result = FoodieFile.pendingDeleteList.isEmpty
+    pthread_mutex_unlock(&FoodieFile.deleteListMutex)
+    return result
+  }
+  
+  static func appendToPendingDelete(_ foodieObj: FoodieObjectDelegate)
+  {
+    pthread_mutex_lock(&FoodieFile.deleteListMutex)
+    FoodieFile.pendingDeleteList.append(foodieObj)
+    pthread_mutex_unlock(&FoodieFile.deleteListMutex)
   }
   
   func retrieveFromLocalToBufffer(fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
@@ -290,7 +332,6 @@ class FoodieFile {
 
   func deleteFileFromS3(fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     let delRequest = AWSS3DeleteObjectRequest()!
-    
     delRequest.bucket = Constants.S3BucketKey
     delRequest.key = fileName
     let deleteTask = s3Handler.deleteObject(delRequest)
@@ -298,12 +339,11 @@ class FoodieFile {
       if let error = task.error as NSError? {
           callback?(false,error)
       }
-      // found object
+      // successfully deleted
       callback?(true, nil)
       return nil
     }
   }
-
   
   func checkIfFileExistsS3(fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?){
     
@@ -315,14 +355,15 @@ class FoodieFile {
       if let error = task.error as NSError? {
         if error.domain == AWSS3ErrorDomain {
           // didnt find the object
+          callback?(false, ErrorCode.awsS3FileDoesntExistError)
           return nil
         }
       }
       // found object
+      callback?(true, nil)
       return nil
     }
   }
-  
   
   func cancelAllS3Transfer()
   {
@@ -384,7 +425,6 @@ class FoodieS3Object {
     FoodieFile.manager.moveFileFromUrlToLocal(url: url, fileName: fileName, withBlock: callback)
   }
   
-  
   // Function to save this and all child Parse objects to server
   func saveToServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
     guard let fileName = foodieFileName else {
@@ -408,7 +448,16 @@ class FoodieS3Object {
     guard let fileName = foodieFileName else {
       DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
     }
-    FoodieFile.manager.deleteFileFromS3(fileName: fileName, withBlock: callback)
+    
+    FoodieFile.manager.checkIfFileExistsS3(fileName: fileName) { (success, error) in
+      if(success) {
+        FoodieFile.manager.deleteFileFromS3(fileName: fileName, withBlock: callback)
+      }
+      else {
+        // file doesnt exists can let go of this error as if file was deleted successfully 
+        callback?(true, nil)
+      }
+    }
   }
   
   func getUniqueIdentifier() -> String {
