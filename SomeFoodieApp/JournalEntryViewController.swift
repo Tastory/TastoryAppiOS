@@ -167,28 +167,32 @@ class JournalEntryViewController: UITableViewController {
   
   // Generic error dialog box to the user on internal errors
   private func internalErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when a Journal Entry view internal error occured",
-                                            message: "An internal error has occured. Please try again",
-                                            messageComment: "Alert dialog message when a Journal Entry view internal error occured",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for generic Journal Entry errors",
-                                   style: .default)
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Journal Entry view internal error occured",
+                                              message: "An internal error has occured. Please try again",
+                                              messageComment: "Alert dialog message when a Journal Entry view internal error occured",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for generic Journal Entry errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   
   private func saveCompleteDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when a Journal Entry view completes test save",
-                                            message: "Journal Entry Save Completed!",
-                                            messageComment: "Alert dialog message when a Journal Entry view completes test save",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for completing a test save",
-                                   style: .default)
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Journal Entry view completes test save",
+                                              message: "Journal Entry Save Completed!",
+                                              messageComment: "Alert dialog message when a Journal Entry view completes test save",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for completing a test save",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   

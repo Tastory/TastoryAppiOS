@@ -65,40 +65,46 @@ class FeedCollectionViewController: UICollectionViewController {
   
   // Generic error dialog box to the user on internal errors
   func queryErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when a Feed Collection View query error occurred",
-                                            message: "A query error has occured. Please try again",
-                                            messageComment: "Alert dialog message when a Feed Collection View query error occurred",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for generic Feed Collection View errors",
-                                   style: .default)
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Feed Collection View query error occurred",
+                                              message: "A query error has occured. Please try again",
+                                              messageComment: "Alert dialog message when a Feed Collection View query error occurred",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for generic Feed Collection View errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   
   func fetchErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when a Feed Collection View fetch error occurred",
-                                            message: "A fetch error has occured. Please try again",
-                                            messageComment: "Alert dialog message when a Feed Collection View fetch error occurred",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for generic Feed Collection View errors",
-                                   style: .default)
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Feed Collection View fetch error occurred",
+                                              message: "A fetch error has occured. Please try again",
+                                              messageComment: "Alert dialog message when a Feed Collection View fetch error occurred",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for generic Feed Collection View errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   func internalErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when a Feed Collection View internal error occured",
-                                            message: "An internal error has occured. Please try again",
-                                            messageComment: "Alert dialog message when a Feed Collection View internal error occured",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for generic Feed Collection View errors",
-                                   style: .default)
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Feed Collection View internal error occured",
+                                              message: "An internal error has occured. Please try again",
+                                              messageComment: "Alert dialog message when a Feed Collection View internal error occured",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for generic Feed Collection View errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   
