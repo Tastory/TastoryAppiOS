@@ -43,6 +43,9 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("FoodieCategory.deleteRecursive from Location: \(location)")
+    self.foodieObject.deleteRecursiveBase(from: location, withBlock: callback)
   }
   
   

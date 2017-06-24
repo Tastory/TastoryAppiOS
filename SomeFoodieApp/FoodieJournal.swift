@@ -258,18 +258,38 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func deleteAsync(callback: ((Bool, Error?) -> Void)?){
     self.foodieObject.markPendingDelete()
     FoodieFile.appendToPendingDelete(self)
-    
-    // check if there is a thumbnail
-    if let hasThumbnail = thumbnailObj {
-      hasThumbnail.foodieObject.markPendingDelete()
-      FoodieFile.appendToPendingDelete(hasThumbnail)
-    }
-    
+
     // check to see if there are moments to append
     if let hasMoment = moments{
       for moment in hasMoment {
         moment.foodieObject.markPendingDelete()
         FoodieFile.appendToPendingDelete(moment)
+        
+        //TODO remove retrieve the moments for testing only
+        moment.retrieve(withBlock: {(success, error) in
+          
+          // TODO remove the following code for testing only
+          if moment.mediaObj == nil, let fileName = moment.mediaFileName,
+            let typeString = moment.mediaType, let type = FoodieMediaType(rawValue: typeString) {
+            moment.mediaObj = FoodieMedia(fileName: fileName, type: type)
+          }
+          
+          // TODO remove the following code for testing only
+          if moment.thumbnailObj == nil, let fileName = moment.thumbnailFileName {
+            moment.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
+          }
+          
+          if let hasMedia = moment.mediaObj {
+            hasMedia.foodieObject.markPendingDelete()
+            FoodieFile.appendToPendingDelete(hasMedia)
+          }
+          
+          if let hasMomentThumb = moment.thumbnailObj
+          {
+            hasMomentThumb.foodieObject.markPendingDelete()
+            FoodieFile.appendToPendingDelete(hasMomentThumb)
+          }
+        })
       }
     }
     
@@ -293,7 +313,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     moment.foodieObject.markPendingDelete()
     FoodieFile.appendToPendingDelete(moment)
     DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
-      self.foodieObject.deleteFromPendingDelete(withBlock: nil)
+      self.foodieObject.deleteFromPendingDelete(withBlock: { (success, error) in
+        if(success) {
+          self.moments?.remove(at: (self.moments?.index(of: moment))!)
+        }
+      })
     }
   }
 
@@ -375,17 +399,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
    
     DebugPrint.verbose("FoodieJournal.deleteRecursive \(objectId) from Location: \(location)")
-    
-    let earlyReturnStatus  = foodieObject.deleteStateTransition(to: location)
-    if let earlySuccess = earlyReturnStatus.success {
-      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-      return
-    }
-   
-    self.foodieObject.deleteObject(from: location, withBlock: {(success,error)-> Void in
-      self.foodieObject.deleteCompleteStateTransition(to: location)
-      callback?(self.foodieObject.operationError == nil, self.foodieObject.operationError)
-    })
+    foodieObject.deleteRecursiveBase(from: location, withBlock: callback)
   }
   
   func verbose() {

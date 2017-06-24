@@ -148,7 +148,16 @@ class FoodieObject {
     {
       DebugPrint.verbose("Attempted to delete object twice")
       // no more attemps to retry return failure
-      callback?(false, ErrorCode.deleteRetryError)
+      
+      if(delegate!.foodieObjectType() == "FoodieJournal")
+      {
+        // call back with error since journal can't be deleted
+        callback?(false, ErrorCode.deleteRetryError)
+      } else {
+        // dropping undeleted item 
+        DebugPrint.error("Can't delete \(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier()) from \(location) dropping this object from pendingDelete List")
+        FoodieFile.removeFirstObjFromPendingDelete()
+      }
     }
     else {
       DebugPrint.verbose("Failed to delete FoodieObject from: \(location)")
@@ -479,6 +488,24 @@ class FoodieObject {
     }
   }
   
+  func deleteRecursiveBase(from location: FoodieObject.StorageLocation,
+                           withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    
+    let earlyReturnStatus  = deleteStateTransition(to: location)
+    if let earlySuccess = earlyReturnStatus.success {
+      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
+      return
+    }
+   
+    deleteObject(from: location, withBlock: {(success,error)-> Void in
+      if let hasError = error {
+        self.protectedOperationError = hasError
+      }
+      self.deleteCompleteStateTransition(to: location)
+      callback?(self.protectedOperationError == nil, self.protectedOperationError)
+    })
+  }
+  
   // attempt to delete from server with retry logic to call this function recursively if failure occurs
   func tryDeleteFromServer(withBlock callback: BooleanErrorBlock?) {
     
@@ -523,5 +550,4 @@ class FoodieObject {
       tryDeleteFromLocal(withBlock: callback)
     }
   }
-  
 }

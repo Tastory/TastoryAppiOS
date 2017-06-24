@@ -163,43 +163,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     DebugPrint.verbose("FoodieMoment.deleteRecursive from \(objectId) Location: \(location)")
-    
-    let earlyReturnStatus  = foodieObject.deleteStateTransition(to: location)
-    if let earlySuccess = earlyReturnStatus.success {
-      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-      return
-    }
-    
-    //TODO remove retrieve the moments for testing only
-    self.retrieve(withBlock: {(success, error) in
-      
-      // TODO remove the following code for testing only
-      if self.mediaObj == nil, let fileName = self.mediaFileName,
-        let typeString = self.mediaType, let type = FoodieMediaType(rawValue: typeString) {
-        self.mediaObj = FoodieMedia(fileName: fileName, type: type)
-      }
-      
-      // TODO remove the following code for testing only
-      if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
-        self.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
-      }
-      
-      if let hasMedia = self.mediaObj {
-        hasMedia.foodieObject.markPendingDelete()
-        FoodieFile.appendToPendingDelete(hasMedia)
-      }
-      
-      if let hasMomentThumb = self.thumbnailObj
-      {
-        hasMomentThumb.foodieObject.markPendingDelete()
-        FoodieFile.appendToPendingDelete(hasMomentThumb)
-      }
-      
-      self.foodieObject.deleteObject(from: location, withBlock: {(success,error)-> Void in
-        self.foodieObject.deleteCompleteStateTransition(to: location)
-        callback?(self.foodieObject.operationError == nil, self.foodieObject.operationError)
-      })
-    })
+    self.foodieObject.deleteRecursiveBase(from: location, withBlock: callback)
   }
   
   
