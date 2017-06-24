@@ -36,6 +36,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // Date created vs Date updated is given for free
   
+  // this flag indicate if this moment has been retrieved from Parse
+  fileprivate var hasRetrieved = false
   
   // MARK: - Error Types Definition
   enum ErrorCode: LocalizedError {
@@ -156,16 +158,48 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  
   // Trigger recursive saves against all child objects.
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieMoment.deleteRecursive from \(objectId) Location: \(location)")
-    self.foodieObject.deleteRecursiveBase(from: location, withBlock: callback)
+    DebugPrint.verbose("FoodieMoment.deleteRecursive from \(self.objectId) Location: \(location)")
+    
+    if(!hasRetrieved)
+    {
+      hasRetrieved = true
+      //TODO remove retrieve the moments for testing only
+      self.retrieve(withBlock: {(success, error) in
+        
+        // TODO remove the following code for testing only
+        if self.mediaObj == nil, let fileName = self.mediaFileName,
+          let typeString = self.mediaType, let type = FoodieMediaType(rawValue: typeString) {
+          self.mediaObj = FoodieMedia(fileName: fileName, type: type)
+        }
+        
+        // TODO remove the following code for testing only
+        if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
+          self.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
+        }
+        
+        if let hasMedia = self.mediaObj {
+          hasMedia.foodieObject.markPendingDelete()
+          FoodieFile.appendToPendingDelete(hasMedia)
+        }
+        
+        if let hasMomentThumb = self.thumbnailObj
+        {
+          hasMomentThumb.foodieObject.markPendingDelete()
+          FoodieFile.appendToPendingDelete(hasMomentThumb)
+        }
+        
+        self.foodieObject.deleteRecursiveBase(from: location, withBlock: callback)
+      })
+    }
+    else {
+      self.foodieObject.deleteRecursiveBase(from: location, withBlock: callback)
+    }
   }
-  
   
   func verbose() {
     DebugPrint.verbose("FoodieMoment ID: \(getUniqueIdentifier())")

@@ -264,32 +264,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       for moment in hasMoment {
         moment.foodieObject.markPendingDelete()
         FoodieFile.appendToPendingDelete(moment)
-        
-        //TODO remove retrieve the moments for testing only
-        moment.retrieve(withBlock: {(success, error) in
-          
-          // TODO remove the following code for testing only
-          if moment.mediaObj == nil, let fileName = moment.mediaFileName,
-            let typeString = moment.mediaType, let type = FoodieMediaType(rawValue: typeString) {
-            moment.mediaObj = FoodieMedia(fileName: fileName, type: type)
-          }
-          
-          // TODO remove the following code for testing only
-          if moment.thumbnailObj == nil, let fileName = moment.thumbnailFileName {
-            moment.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
-          }
-          
-          if let hasMedia = moment.mediaObj {
-            hasMedia.foodieObject.markPendingDelete()
-            FoodieFile.appendToPendingDelete(hasMedia)
-          }
-          
-          if let hasMomentThumb = moment.thumbnailObj
-          {
-            hasMomentThumb.foodieObject.markPendingDelete()
-            FoodieFile.appendToPendingDelete(hasMomentThumb)
-          }
-        })
       }
     }
     

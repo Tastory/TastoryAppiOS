@@ -82,7 +82,7 @@ class FoodieFile {
   
   // MARK: - Private Constants
   struct Constants {
-    static let S3BucketKey = "foodilicious"
+    static let S3BucketKey = "foodilicioustest" //TODO fix to production bucket key when moving back to master
     static let DocumentFolderUrl = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
   }
   
