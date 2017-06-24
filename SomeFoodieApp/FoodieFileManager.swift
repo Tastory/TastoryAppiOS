@@ -345,6 +345,10 @@ class FoodieFile {
     }
   }
   
+  func checkIfFileExistsLocal(fileName: String) ->Bool {
+    return fileManager.fileExists(atPath: "\(Constants.DocumentFolderUrl.path)/\(fileName)")
+  }
+  
   func checkIfFileExistsS3(fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?){
     
     let objRequest = AWSS3HeadObjectRequest()!
@@ -439,7 +443,14 @@ class FoodieS3Object {
     guard let fileName = foodieFileName else {
       DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
     }
-    FoodieFile.manager.deleteFileFromLocal(fileName: fileName, withBlock: callback)
+    
+    if (FoodieFile.manager.checkIfFileExistsLocal(fileName: fileName))
+    {
+      FoodieFile.manager.deleteFileFromLocal(fileName: fileName, withBlock: callback)
+    } else {
+      // file doesnt exists can let go of this error as if file was deleted successfully
+      callback?(true, nil)
+    }
   }
   
   
