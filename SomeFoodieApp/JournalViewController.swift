@@ -2,8 +2,8 @@
 //  JournalViewController.swift
 //  SomeFoodieApp
 //
-//  Created by Victor Tsang on 2017-04-23.
-//  Copyright © 2017 Howard's Creative Innovations. All rights reserved.
+//  Created by Howard Lee on 2017-04-23.
+//  Copyright © 2017 SomeFoodieCompany. All rights reserved.
 //
 
 import UIKit
@@ -13,24 +13,16 @@ import SafariServices
 
 class JournalViewController: UIViewController {
   
+  // MARK: - Constants
+  struct Constants {
+    static let MomentsToBufferAtATime = FoodieConstants.momentsToBufferAtATime
+  }
+  
+  
   // MARK: - Public Instance Variables
   var viewingJournal: FoodieJournal? {
     didSet {
-      guard let journal = viewingJournal else {
-        // viewingJournal just being cleared. Do clean-up?
-        return
-      }
-      
-      guard let moments = journal.moments else {
-        internalErrorDialog()
-        DebugPrint.assert("Unexpected, empty Moment array")
-        return
-      }
-      
-      // Start pre-fetching if Moment array is not empty
-      if !moments.isEmpty {
-        journal.contentRetrievalKickoff(fromMoment: 0, forUpTo: 0)  // TODO: Don't hardcode these values. forUpTo 0 means all.
-      }
+      fetchSomeMoment(from: 0)
     }
   }
   
@@ -132,6 +124,49 @@ class JournalViewController: UIViewController {
   
   
   // MARK: - Private Instance Functions
+  fileprivate func getIndexOf(_ moment: FoodieMoment) -> Int {
+    
+    guard let journal = viewingJournal else {
+      DebugPrint.fatal("Unexpected, no Journal being viewed by Journal View Controller")
+    }
+    
+    guard let moments = journal.moments else {
+      internalErrorDialog()
+      DebugPrint.fatal("Unexpected, journalmoments = nil")
+    }
+    
+    var index = 0
+    while index < moments.count {
+      if moments[index] === moment {
+        return index
+      }
+      index += 1
+    }
+    
+    internalErrorDialog()
+    DebugPrint.assert("Unexpected, cannot find Moment from Moment Array")
+    return moments.count  // This is error case
+  }
+  
+  
+  fileprivate func fetchSomeMoment(from momentNumber: Int) {
+    guard let journal = viewingJournal else {
+      DebugPrint.fatal("Unexpected, no Journal being viewed by Journal View Controller")
+    }
+    
+    guard let moments = journal.moments else {
+      internalErrorDialog()
+      DebugPrint.assert("Unexpected, journalmoments = nil")
+      return
+    }
+    
+    // Start pre-fetching if Moment array is not empty
+    if !moments.isEmpty {
+      journal.contentRetrievalRequest(fromMoment: momentNumber, forUpTo: Constants.MomentsToBufferAtATime)
+    }
+  }
+  
+  
   fileprivate func displayMoment(_ moment: FoodieMoment) {
     
     guard let mediaObject = moment.mediaObj else {
@@ -208,6 +243,10 @@ class JournalViewController: UIViewController {
       DispatchQueue.main.async { [unowned self] in self.displayMoment(moment) }
     } else {
       DebugPrint.verbose("displayMomentIfLoaded: Not yet loaded")
+      
+      // Just make sure the moment will be fetched
+      fetchSomeMoment(from: getIndexOf(moment))
+      
       view.insertSubview(blurView, belowSubview: tapGestureStackView)
       view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
       activityIndicator.startAnimating()
@@ -219,7 +258,6 @@ class JournalViewController: UIViewController {
     photoTimer?.invalidate()
     photoTimer = nil
     NotificationCenter.default.removeObserver(self)
-    
   }
   
   
@@ -258,17 +296,12 @@ class JournalViewController: UIViewController {
     removeTimerAndObservers(for: moment)
     
     // Figure out what is the next moment and display it
-    var index = 0
-    while index < moments.count {
-      if moments[index] === moment {
-        let nextIndex = index + 1
-        if nextIndex == moments.count {
-          cleanUpAndDismiss()
-        } else {
-          displayMomentIfLoaded(for: moments[nextIndex])
-        }
-      }
-      index += 1
+    let nextIndex = getIndexOf(moment) + 1
+    
+    if nextIndex == moments.count {
+      cleanUpAndDismiss()
+    } else {
+      displayMomentIfLoaded(for: moments[nextIndex])
     }
   }
   
@@ -296,16 +329,12 @@ class JournalViewController: UIViewController {
     removeTimerAndObservers(for: moment)
     
     // Figure out what is the previous moment is and display it
-    var index = 0
-    while index < moments.count {
-      if moments[index] === moment {
-        if index == 0 {
-          cleanUpAndDismiss()
-        } else {
-          displayMomentIfLoaded(for: moments[index-1])
-        }
-      }
-      index += 1
+    let index = getIndexOf(moment)
+    
+    if index == 0 {
+      cleanUpAndDismiss()
+    } else {
+      displayMomentIfLoaded(for: moments[index-1])
     }
   }
   

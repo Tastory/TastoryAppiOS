@@ -51,21 +51,21 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   // Date created vs Date updated is given for free
   
   
-  // MARK: - Types & Enumerations
-  enum FoodieJournalError: LocalizedError {
-    case saveSyncParseRethrowGeneric
-  }
-  
-  
   // MARK: Error Types Definition
   enum ErrorCode: LocalizedError {
     
     case saveSyncFailedWithNoError
+    case selfRetrievalJournalNilThumbnail
+    case selfRetrievalThumbnailNilImage
     
     var errorDescription: String? {
       switch self {
       case .saveSyncFailedWithNoError:
-        return NSLocalizedString("saveSync Failed, but no Error was returned from saveRecursive", comment: "Error description for an exception error code")
+        return NSLocalizedString("saveSync() Failed, but no Error was returned from saveRecursive", comment: "Error description for an exception error code")
+      case .selfRetrievalJournalNilThumbnail:
+        return NSLocalizedString("selfRetrieval() Journal retrieved with thumbnailFileName = nil", comment: "Error description for an exception error code")
+      case .selfRetrievalThumbnailNilImage:
+        return NSLocalizedString("selfRetrieval() Thumbnail retrieved with imageMemoryBuffer = nil", comment: "Error description for an exception error code")
       }
     }
     
@@ -265,8 +265,38 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
 
   
+  func selfRetrieval(withBlock callback: FoodieObject.RetrievedObjectBlock? = nil) {
+    
+    // Do we need to fetch the Journal?
+    retrieve() { [unowned self] _, journalError in
+      if let error = journalError {
+        DebugPrint.assert("Journal.retrieve() callback with error: \(error.localizedDescription)")
+        callback?(self, error)
+        return
+      }
+      
+      guard let thumbnailObject = self.thumbnailObj else {
+        DebugPrint.assert("Unexpected, thumbnailObject = nil")
+        callback?(self, ErrorCode.selfRetrievalJournalNilThumbnail)
+        return
+      }
+      
+      thumbnailObject.retrieve() { [unowned self] _, thumbnailError in
+        if let error = thumbnailError {
+          DebugPrint.assert("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
+          callback?(self, error)
+          return
+        }
+        
+        // Both retrieved, we can now callback!
+        callback?(self, nil)
+      }
+    }
+  }
+  
+  
   // Function to mark Moments and Media to retrieve, and then kick off the retrieval state machine
-  func contentRetrievalKickoff(fromMoment startNumber: Int, forUpTo numberOfMoments: Int) {
+  func contentRetrievalRequest(fromMoment startNumber: Int, forUpTo numberOfMoments: Int) {
     
     guard let momentArray = moments else {
       DebugPrint.assert("Unexpected FoodieJournal.moments = nil")
@@ -294,10 +324,10 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     // Start the content retrieval state machine if it's not already started
     // TODO: Do we need a mutex lock here?
     if contentRetrievalInProg {
-      DebugPrint.verbose("Content retrieval already in progress.")
+      DebugPrint.verbose("Content retrieval already in progress")
       contentRetrievalPending = true
     } else {
-      DebugPrint.verbose("Content retrieval begins.")
+      DebugPrint.verbose("Content retrieval begins")
       contentRetrievalInProg = true
       contentRetrievalStateMachine()
     }
