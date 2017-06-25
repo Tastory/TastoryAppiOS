@@ -138,61 +138,42 @@ class FeedCollectionViewController: UICollectionViewController {
     
     // DebugPrint.verbose("collectionView(cellForItemAt #\(indexPath.row)")
     
-    // TODO: Hide all these in the Journal Model?
-    
-    // Do we need to fetch the Journal?
-    journal.retrieve { [unowned self] _, journalError in
-      
-      // DebugPrint.verbose("journal.retrieve() callback for cell #\(indexPath.row)")
+    journal.selfRetrieval { (_, journalError) in
       
       if let error = journalError {
         self.fetchErrorDialog()
-        DebugPrint.error("Journal.retrieve() callback with error: \(error.localizedDescription)")
+        DebugPrint.error("Journal.selfRetrieval() callback with error: \(error.localizedDescription)")
         return
       }
-      
-      //journal.verbose()
       
       guard let thumbnailObject = journal.thumbnailObj else {
-        self.internalErrorDialog()
-        DebugPrint.error("Unexpected, thumbnailObject = nil")
+        self.fetchErrorDialog()
+        DebugPrint.error("Journal.selfRetrieval callback with thumbnailObj = nil")
         return
       }
       
-      thumbnailObject.retrieve(){ [unowned self] _, thumbnailError in
-      
-        // DebugPrint.verbose("thumbnailObject.retrieve() callback for cell #\(indexPath.row)")
-        
-        if let error = thumbnailError {
-          self.fetchErrorDialog()
-          DebugPrint.error("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
-          return
-        }
-        
-        guard let thumbnailData = thumbnailObject.imageMemoryBuffer else {
-          self.internalErrorDialog()
-          DebugPrint.error("Unexpected, thumbnailObject.imageMemoryBuffer = nil")
-          return
-        }
-        
-        if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
-          DispatchQueue.main.async {
-            // DebugPrint.verbose("cellForItem(at:) DispatchQueue.main for cell #\(indexPath.row)")
-            cell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
-            cell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
-          }
-        } else {
-          // None of the retrieve function actually did an async dispatch. So we are still in the collectionView.cellForItemAt context.
-          reusableCell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
-          reusableCell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
-        }
-        
-        // TODO: Kick off Moment prefetch (which the completion will trigger Media prefetches), here?
-        //       If we kick a prefetch here, where do we cancel?
-        //       Potentially we keep a list of what prefetches is being started here, and nix them all if one exits this view
-        //       This includes moving forward to the Journal View Controller, or going back to Discover view.
-        
+      guard let thumbnailData = thumbnailObject.imageMemoryBuffer else {
+        self.internalErrorDialog()
+        DebugPrint.error("Unexpected, thumbnailObject.imageMemoryBuffer = nil")
+        return
       }
+        
+      if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
+        DispatchQueue.main.async {
+          // DebugPrint.verbose("cellForItem(at:) DispatchQueue.main for cell #\(indexPath.row)")
+          cell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
+          cell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+        }
+      } else {
+        // None of the retrieve function actually did an async dispatch. So we are still in the collectionView.cellForItemAt context.
+        reusableCell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
+        reusableCell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+      }
+      
+      // TODO: Kick off Moment prefetch (which the completion will trigger Media prefetches), here?
+      //       If we kick a prefetch here, where do we cancel?
+      //       Potentially we keep a list of what prefetches is being started here, and nix them all if one exits this view
+      //       This includes moving forward to the Journal View Controller, or going back to Discover view.
     }
     return reusableCell
   }

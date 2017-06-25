@@ -303,8 +303,8 @@ class FoodieFile {
       }
       
       if httpResponse.statusCode != 200 {
-        DebugPrint.assert("Download HTTPURLResponse.statusCode != 200. statusCode = \(httpResponse.statusCode)")
-        callback?(nil, ErrorCode.urlSessionDownloadHttpResponseFailed)
+        DebugPrint.error("Download HTTPURLResponse.statusCode != 200. statusCode = \(httpResponse.statusCode)")
+        callback?(nil, ErrorCode.urlSessionDownloadHttpResponseFailed)  // TODO: Should Implement Retry
         return
       }
       

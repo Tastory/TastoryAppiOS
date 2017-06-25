@@ -18,7 +18,7 @@ class FoodiePFObject: PFObject {
   func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     
     // See if this is already in memory, if so no need to do anything
-    if isDataAvailable && !forceAnyways {
+    if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
       callback?(self, nil)
       return
       
