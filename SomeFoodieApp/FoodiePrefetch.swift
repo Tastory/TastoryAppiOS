@@ -11,7 +11,7 @@ import Foundation
 
 protocol FoodiePrefetchDelegate {
   
-  func doPrefetch(on objectToFetch: AnyObject, for context: FoodiePrefetch.Context, withBlock callback: FoodiePrefetch.PrefetchCompletionBlock)
+  func doPrefetch(on objectToFetch: AnyObject, for context: FoodiePrefetch.Context, withBlock callback: FoodiePrefetch.PrefetchCompletionBlock?)
   
 }
 
@@ -47,6 +47,8 @@ class FoodiePrefetch {
   // MARK: - Public Instance Function
   func prefetchNextIfNoBlock() {
     
+    DebugPrint.verbose("prefetchNextIfNoBlock")
+    
     var letsFetch = false
     
     // Just sample the block to determine whether to fetch or not
@@ -55,6 +57,8 @@ class FoodiePrefetch {
     pthread_mutex_unlock(&blockCountMutex)
     
     if letsFetch {
+      
+      DebugPrint.verbose("prefetchNextIfNoBlock, letsFetch = true")
       
       var workingContext: Context!
       var delegate: FoodiePrefetchDelegate!
@@ -73,13 +77,15 @@ class FoodiePrefetch {
       
       pthread_mutex_unlock(&workQueueMutex)
 
-      delegate.doPrefetch(on: objectToFetch, for: workingContext){ (context) in
+      DebugPrint.verbose("prefetchNextIfNoBlock, doPrefetch")
+      
+      delegate.doPrefetch(on: objectToFetch, for: workingContext){ [unowned self] context in
         
         // Prefetch completes. Remove if not already removed
-        removePrefetchWork(for: context)
+        self.removePrefetchWork(for: context)
         
         // Do another prefetch if no block
-        prefetchNextIfNoBlock()
+        self.prefetchNextIfNoBlock()
       }
     }
   }
@@ -88,14 +94,20 @@ class FoodiePrefetch {
   func blockPrefetching() {
     pthread_mutex_lock(&blockCountMutex)
     blockCount += 1
+    let debugCount = blockCount
     pthread_mutex_unlock(&blockCountMutex)
+    
+    DebugPrint.verbose("blockPrefetching up to blockCount of \(debugCount)")
   }
   
   
   func unblockPrefetching() {
     pthread_mutex_lock(&blockCountMutex)
     blockCount -= 1
+    let debugCount = blockCount
     pthread_mutex_unlock(&blockCountMutex)
+    
+    DebugPrint.verbose("unblockPrefetching down to blockCount of \(debugCount)")
     
     prefetchNextIfNoBlock()
   }
@@ -103,6 +115,9 @@ class FoodiePrefetch {
   
   func addPrefetchWork(for delegate: FoodiePrefetchDelegate, on objectToFetch: AnyObject) -> Context {
     
+    DebugPrint.verbose("addPrefetchWork")
+    
+    var firstInQueue = false
     let newContext = Context()
     newContext.delegate = delegate
     newContext.objectToFetch = objectToFetch
@@ -117,20 +132,25 @@ class FoodiePrefetch {
       }
       headOfWorkQueue = newContext
       tailOfWorkQueue = newContext
+      firstInQueue = true
     } else {
       tailOfWorkQueue!.nextContext = newContext
       tailOfWorkQueue = newContext
     }
     pthread_mutex_unlock(&workQueueMutex)
     
-    // Kick off prefetch if no block
-    prefetchNextIfNoBlock()
+    // Kick off prefetch if first in queue and no block
+    if firstInQueue {
+      prefetchNextIfNoBlock()
+    }
     
     return newContext
   }
   
   
   func removePrefetchWork(for context: Context) {
+    
+    DebugPrint.verbose("removePrefetchWork")
     
     pthread_mutex_lock(&workQueueMutex)
     

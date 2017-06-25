@@ -57,6 +57,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     case saveSyncFailedWithNoError
     case selfRetrievalJournalNilThumbnail
     case selfRetrievalThumbnailNilImage
+    case contentRetrievalFailed
     
     var errorDescription: String? {
       switch self {
@@ -66,6 +67,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
         return NSLocalizedString("selfRetrieval() Journal retrieved with thumbnailFileName = nil", comment: "Error description for an exception error code")
       case .selfRetrievalThumbnailNilImage:
         return NSLocalizedString("selfRetrieval() Thumbnail retrieved with imageMemoryBuffer = nil", comment: "Error description for an exception error code")
+      case .contentRetrievalFailed:
+        return NSLocalizedString("contentRetrieval process Failed generic error...", comment: "Error description for an exception error code")  // TODO: More specific error code if the state machine business is even a good idea at all...
       }
     }
     
@@ -85,11 +88,15 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Public Instance Variables
   var thumbnailObj: FoodieMedia?
   var foodieObject = FoodieObject()
+  var selfPrefetchContext: FoodiePrefetch.Context?
+  var contentPrefetchContext: FoodiePrefetch.Context?
 
 
   // MARK: - Private Instance Variables
+  fileprivate var contentRetrievalMutex = pthread_mutex_t()
   fileprivate var contentRetrievalInProg = false
   fileprivate var contentRetrievalPending = false
+  fileprivate var contentPrefetchCallback: FoodieObject.RetrievedObjectBlock?
   
   
   // MARK: - Public Static Functions
@@ -296,10 +303,15 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   // Function to mark Moments and Media to retrieve, and then kick off the retrieval state machine
-  func contentRetrievalRequest(fromMoment startNumber: Int, forUpTo numberOfMoments: Int) {
+  func contentRetrievalRequest(fromMoment startNumber: Int, forUpTo numberOfMoments: Int, withBlock callback: FoodieObject.RetrievedObjectBlock? = nil) {
+    
+    if callback != nil {
+      contentPrefetchCallback = callback
+    }
     
     guard let momentArray = moments else {
       DebugPrint.assert("Unexpected FoodieJournal.moments = nil")
+      contentPrefetchCallback?(self, ErrorCode.contentRetrievalFailed)
       return
     }
     
@@ -322,13 +334,19 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
     
     // Start the content retrieval state machine if it's not already started
-    // TODO: Do we need a mutex lock here?
+    var executeStateMachine = false
+    pthread_mutex_lock(&contentRetrievalMutex)
     if contentRetrievalInProg {
       DebugPrint.verbose("Content retrieval already in progress")
       contentRetrievalPending = true
     } else {
       DebugPrint.verbose("Content retrieval begins")
       contentRetrievalInProg = true
+      executeStateMachine = true
+    }
+    pthread_mutex_unlock(&contentRetrievalMutex)
+    
+    if executeStateMachine {
       contentRetrievalStateMachine()
     }
   }
@@ -339,6 +357,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     guard let momentArray = moments else {
       DebugPrint.assert("Unexpected FoodieJournal.moments = nil")
+      contentPrefetchCallback?(self, ErrorCode.contentRetrievalFailed)
       return
     }
     
@@ -354,6 +373,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
         } else {
           guard let retrievedMoment = retrieved as? FoodieMoment else {
             DebugPrint.assert("Unexpected retrievedMoment = nil")
+            self.contentPrefetchCallback?(self, ErrorCode.contentRetrievalFailed)
             return
           }
           
@@ -361,6 +381,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
           
           guard let media = retrievedMoment.mediaObj else {
             DebugPrint.assert("Unexpected retrievedMoment.mediaObj = nil")
+            self.contentPrefetchCallback?(self, ErrorCode.contentRetrievalFailed)
             return
           }
           
@@ -416,14 +437,23 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       moment.setContentsRetrieved()
     }
 
+    contentPrefetchCallback?(self, nil)
+    
     // TODO: Do we need a mutex lock here
+    var executeStateMachine = false
+    pthread_mutex_lock(&contentRetrievalMutex)
     if contentRetrievalPending {
       DebugPrint.verbose("Content retrieval was pending. Initiate another round of content retrieval")
       contentRetrievalPending = false
-      contentRetrievalStateMachine()
+      executeStateMachine = true
     } else {
       DebugPrint.verbose("Content retrieval completes!")
       contentRetrievalInProg = false
+    }
+    pthread_mutex_unlock(&contentRetrievalMutex)
+    
+    if executeStateMachine {
+      contentRetrievalStateMachine()
     }
   }
   

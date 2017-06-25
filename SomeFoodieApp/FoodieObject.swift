@@ -123,7 +123,7 @@ class FoodieObject {
   var operationError: Error? { return protectedOperationError }
   var outstandingChildOperations = 0
   var isRetrieved: Bool { return downloadState == .retrieved }
-
+  
   
   // MARK: - Private Instance Variables
   fileprivate var downloadState: DownloadStates = .notAvailable

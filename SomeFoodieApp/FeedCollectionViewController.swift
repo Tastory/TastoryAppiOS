@@ -14,6 +14,7 @@ class FeedCollectionViewController: UICollectionViewController {
   // MARK: - Private Class Constants
   fileprivate struct Constants {
     static let reuseIdentifier = "FeedCell"
+    static let MomentsToBufferAtATime = 2
   }
   
   
@@ -61,7 +62,9 @@ class FeedCollectionViewController: UICollectionViewController {
     // Do any additional setup after loading the view
     FoodieJournal.queryAll(limit: 20, block: queryResultCallback)  // TODO: Don't hardcode this limit
     
-    collectionView?.isPrefetchingEnabled = false 
+    // Turn on CollectionView prefetching
+    collectionView?.prefetchDataSource = self
+    collectionView?.isPrefetchingEnabled = true
   }
   
   
@@ -161,78 +164,149 @@ class FeedCollectionViewController: UICollectionViewController {
     
     // DebugPrint.verbose("collectionView(cellForItemAt #\(indexPath.row)")
     
+    FoodiePrefetch.global.blockPrefetching()
+    
     journal.selfRetrieval { (_, journalError) in
+      
+      FoodiePrefetch.global.unblockPrefetching()
       
       if let error = journalError {
         self.fetchErrorDialog()
-        DebugPrint.error("Journal.selfRetrieval() callback with error: \(error.localizedDescription)")
+        DebugPrint.assert("Journal.selfRetrieval() callback with error: \(error.localizedDescription)")
         return
       }
       
       guard let thumbnailObject = journal.thumbnailObj else {
         self.fetchErrorDialog()
-        DebugPrint.error("Journal.selfRetrieval callback with thumbnailObj = nil")
+        DebugPrint.assert("Journal.selfRetrieval callback with thumbnailObj = nil")
         return
       }
       
       guard let thumbnailData = thumbnailObject.imageMemoryBuffer else {
         self.internalErrorDialog()
-        DebugPrint.error("Unexpected, thumbnailObject.imageMemoryBuffer = nil")
+        DebugPrint.assert("Unexpected, thumbnailObject.imageMemoryBuffer = nil")
         return
       }
+      
+      DispatchQueue.main.async {
+        var letsPrefetch = false
         
-      if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
-        DispatchQueue.main.async {
+        if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
           // DebugPrint.verbose("cellForItem(at:) DispatchQueue.main for cell #\(indexPath.row)")
           cell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
           cell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+          
+          pthread_mutex_lock(&cell.cellStatusMutex)
+          cell.cellLoaded = true
+          if cell.cellDisplayed {
+            letsPrefetch = true
+          }
+          pthread_mutex_unlock(&cell.cellStatusMutex)
+          
+        } else {
+          // None of the retrieve function actually did an async dispatch. So we are still in the collectionView.cellForItemAt context.
+          reusableCell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
+          reusableCell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+          
+          pthread_mutex_lock(&reusableCell.cellStatusMutex)
+          reusableCell.cellLoaded = true
+          if reusableCell.cellDisplayed {
+            letsPrefetch = true
+          }
+          pthread_mutex_unlock(&reusableCell.cellStatusMutex)
         }
-      } else {
-        // None of the retrieve function actually did an async dispatch. So we are still in the collectionView.cellForItemAt context.
-        reusableCell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
-        reusableCell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+        
+        if letsPrefetch {
+          let journal = self.queriedJournalArray[indexPath.row]
+          journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
+        }
       }
-      
-      // TODO: Kick off Moment prefetch (which the completion will trigger Media prefetches), here?
-      //       If we kick a prefetch here, where do we cancel?
-      //       Potentially we keep a list of what prefetches is being started here, and nix them all if one exits this view
-      //       This includes moving forward to the Journal View Controller, or going back to Discover view.
     }
     return reusableCell
   }
+
+  
+  // MARK: - UICollectionViewDataSource
+  
+  override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    
+    guard let feedCell = cell as? FeedCollectionViewCell else {
+      internalErrorDialog()
+      DebugPrint.assert("Cannot cast cell as FeedCollectionViewCell")
+      return
+    }
+    
+    var letsPrefetch = false
+    pthread_mutex_lock(&feedCell.cellStatusMutex)
+    feedCell.cellDisplayed = true
+    if feedCell.cellLoaded {
+      letsPrefetch = true
+    }
+    pthread_mutex_unlock(&feedCell.cellStatusMutex)
+    
+    if letsPrefetch {
+      let journal = self.queriedJournalArray[indexPath.row]
+      journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
+    }
+  }
+  
+  override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    DebugPrint.verbose("collectionView didEndDisplayingCell indexPath.row = \(indexPath.row)")
+    let journal = queriedJournalArray[indexPath.row]
+    if let context = journal.contentPrefetchContext {
+      FoodiePrefetch.global.removePrefetchWork(for: context)
+    }
+  }
+}
   
   
-  // MARK: - UICollectionViewDelegate
+extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
   
-  /*
-   // Uncomment this method to specify if the specified item should be highlighted during tracking
-   override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-   return true
-   }
-   */
+  func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+    for indexPath in indexPaths {
+      DebugPrint.verbose("collectionView prefetchItemsAt indexPath.row = \(indexPath.row)")
+      let journal = queriedJournalArray[indexPath.row]
+      journal.selfPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
+    }
+  }
   
-  /*
-   // Uncomment this method to specify if the specified item should be selected
-   override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-   return true
-   }
-   */
-  
-  /*
-   // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-   override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-   return false
-   }
-   
-   override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-   return false
-   }
-   
-   // TODO: Is the following the right function to use for performing action when a Thumbnail is selected?
-   
-   override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-   
-   }
-   */
-  
+  func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+    for indexPath in indexPaths {
+      DebugPrint.verbose("collectionView cancelPrefetchingForItemsAt indexPath.row = \(indexPath.row)")
+      let journal = queriedJournalArray[indexPath.row]
+      if let context = journal.selfPrefetchContext {
+        FoodiePrefetch.global.removePrefetchWork(for: context)
+      }
+    }
+  }
+}
+
+
+extension FeedCollectionViewController: FoodiePrefetchDelegate {
+  func doPrefetch(on objectToFetch: AnyObject, for context: FoodiePrefetch.Context, withBlock callback: FoodiePrefetch.PrefetchCompletionBlock? = nil) {
+    if let journal = objectToFetch as? FoodieJournal {
+      
+      if journal.thumbnailObj == nil {
+        // No Thumbnail Object, so assume the Journal itself needs to be retrieved
+        DebugPrint.verbose("doPrefetch journal.selfRetrieval")
+        journal.selfRetrieval() { [unowned self] (_, error) in
+          if let journalError = error {
+            self.fetchErrorDialog()
+            DebugPrint.assert("On prefetch, Journal.selfRetrieval() callback with error: \(journalError.localizedDescription)")
+          }
+          callback?(context)
+        }
+        
+      } else {
+        DebugPrint.verbose("doPrefetch journal.contentRetrieval")
+        journal.contentRetrievalRequest(fromMoment: 0, forUpTo: Constants.MomentsToBufferAtATime) { [unowned self] (_, error) in
+          if let journalError = error {
+            self.fetchErrorDialog()
+            DebugPrint.assert("On prefetch, Journal.contentRetrieval() callback with error: \(journalError.localizedDescription)")
+          }
+          callback?(context)
+        }
+      }
+    }
+  }
 }
