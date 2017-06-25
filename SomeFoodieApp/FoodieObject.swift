@@ -107,7 +107,7 @@ class FoodieObject {
   var uploadState: UploadStates? { return protectedUploadState }
   var operationError: Error? { return protectedOperationError }
   var isRetrieved: Bool { return downloadState == .retrieved }
-
+  
   
   // MARK: - Private Instance Variables
   fileprivate var downloadState: DownloadStates = .notAvailable

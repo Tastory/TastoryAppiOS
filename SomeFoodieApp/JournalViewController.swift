@@ -239,13 +239,14 @@ class JournalViewController: UIViewController {
   
   
   fileprivate func displayMomentIfLoaded(for moment: FoodieMoment) {
+    
+    // Fetch this and a few more moments regardless
+    fetchSomeMoment(from: getIndexOf(moment))
+    
     if moment.checkContentRetrieved(ifFalseSetDelegate: self) {
       DispatchQueue.main.async { [unowned self] in self.displayMoment(moment) }
     } else {
       DebugPrint.verbose("displayMomentIfLoaded: Not yet loaded")
-      
-      // Just make sure the moment will be fetched
-      fetchSomeMoment(from: getIndexOf(moment))
       
       view.insertSubview(blurView, belowSubview: tapGestureStackView)
       view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
