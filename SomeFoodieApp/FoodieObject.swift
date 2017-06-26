@@ -112,6 +112,12 @@ class FoodieObject {
   var operationState: OperationStates? { return protectedOperationState }
   var operationError: Error? { return protectedOperationError }
   
+  // MARK: - Public Static Variables
+  // A queue used for storing Foodie Objects to be deleted
+  static var pendingDeleteList: [FoodieObjectDelegate] = []
+
+  // MARK: - Private Static Variables
+  static fileprivate var deleteListMutex = pthread_mutex_t()
   
   // MARK: - Private Instance Variables
   var protectedOperationState: OperationStates?  // nil if Undetermined
@@ -141,6 +147,43 @@ class FoodieObject {
       protectedOperationState = .pendingDelete
   }
   
+  static func getFirstObjFromPendingDelete() -> FoodieObjectDelegate?
+  {
+    var foodieObj: FoodieObjectDelegate? = nil
+    pthread_mutex_lock(&deleteListMutex)
+    if(!pendingDeleteList.isEmpty) {
+      foodieObj = pendingDeleteList.first
+    }
+    pthread_mutex_unlock(&deleteListMutex)
+    return foodieObj
+  }
+  
+  static func removeFirstObjFromPendingDelete()
+  {
+    pthread_mutex_lock(&deleteListMutex)
+    
+    if(!pendingDeleteList.isEmpty)
+    {
+      pendingDeleteList.remove(at: 0)
+    }
+    pthread_mutex_unlock(&deleteListMutex)
+  }
+  
+  static func isPendingDeleteEmpty() ->Bool {
+    var result = false
+    pthread_mutex_lock(&deleteListMutex)
+    result = pendingDeleteList.isEmpty
+    pthread_mutex_unlock(&deleteListMutex)
+    return result
+  }
+  
+  static func appendToPendingDelete(_ foodieObj: FoodieObjectDelegate)
+  {
+    pthread_mutex_lock(&deleteListMutex)
+    pendingDeleteList.append(foodieObj)
+    pthread_mutex_unlock(&deleteListMutex)
+  }
+  
   // check if we should retry
   func retryDelete(from location: StorageLocation, withBlock callback: BooleanErrorBlock?){
     
@@ -156,7 +199,7 @@ class FoodieObject {
       } else {
         // dropping undeleted item 
         DebugPrint.error("Can't delete \(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier()) from \(location) dropping this object from pendingDelete List")
-        FoodieFile.removeFirstObjFromPendingDelete()
+        FoodieObject.removeFirstObjFromPendingDelete()
       }
     }
     else {
@@ -512,11 +555,11 @@ class FoodieObject {
     DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject from Server")
     
     // delete from server
-    FoodieFile.getFirstObjFromPendingDelete()?.deleteRecursive(from: .server, withName: nil, withBlock: { (success, error) in
+    FoodieObject.getFirstObjFromPendingDelete()?.deleteRecursive(from: .server, withName: nil, withBlock: { (success, error) in
       if(success) {
         // remove this one from pendingDeleteList
-        FoodieFile.removeFirstObjFromPendingDelete()
-        if(!FoodieFile.isPendingDeleteEmpty()) {
+        FoodieObject.removeFirstObjFromPendingDelete()
+        if(!FoodieObject.isPendingDeleteEmpty()) {
           self.deleteFromPendingDelete(withBlock: callback)
         }
         else {
@@ -534,7 +577,7 @@ class FoodieObject {
     
     DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject from Server")
     
-    FoodieFile.getFirstObjFromPendingDelete()?.deleteRecursive(from: .local, withName: nil, withBlock: { (success, error) in
+    FoodieObject.getFirstObjFromPendingDelete()?.deleteRecursive(from: .local, withName: nil, withBlock: { (success, error) in
       if(success) {
         self.tryDeleteFromServer(withBlock: callback)
       }
@@ -546,7 +589,7 @@ class FoodieObject {
   
   func deleteFromPendingDelete(withBlock callback: BooleanErrorBlock?)
   {
-    if(!FoodieFile.isPendingDeleteEmpty()) {
+    if(!FoodieObject.isPendingDeleteEmpty()) {
       tryDeleteFromLocal(withBlock: callback)
     }
   }

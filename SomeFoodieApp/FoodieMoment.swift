@@ -184,21 +184,19 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         
         if let hasMedia = self.mediaObj {
           hasMedia.foodieObject.markPendingDelete()
-          FoodieFile.appendToPendingDelete(hasMedia)
+          FoodieObject.appendToPendingDelete(hasMedia)
         }
         
         if let hasMomentThumb = self.thumbnailObj
         {
           hasMomentThumb.foodieObject.markPendingDelete()
-          FoodieFile.appendToPendingDelete(hasMomentThumb)
+          FoodieObject.appendToPendingDelete(hasMomentThumb)
         }
-        
-        self.foodieObject.deleteRecursiveBase(from: location, withBlock: callback)
       })
     }
-    else {
-      self.foodieObject.deleteRecursiveBase(from: location, withBlock: callback)
-    }
+    
+    self.foodieObject.deleteRecursiveBase(from: location, withBlock: callback)
+    
   }
   
   func verbose() {

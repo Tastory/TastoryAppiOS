@@ -91,10 +91,6 @@ class FoodieFile {
   static var manager: FoodieFile!
   static var localBufferDirectory: String!
   
-  // A queue used for storing Foodie Objects to be deleted 
-  static var pendingDeleteList: [FoodieObjectDelegate] = []
-  static fileprivate var deleteListMutex = pthread_mutex_t()
-  
   // MARK: - Private Instance Variables
   private let s3Handler: AWSS3
   private let fileManager: FileManager
@@ -153,42 +149,7 @@ class FoodieFile {
   }
   
   
-  static func getFirstObjFromPendingDelete() -> FoodieObjectDelegate?
-  {
-    var foodieObj: FoodieObjectDelegate? = nil
-    pthread_mutex_lock(&FoodieFile.deleteListMutex)
-    if(!FoodieFile.pendingDeleteList.isEmpty) {
-      foodieObj = FoodieFile.pendingDeleteList.first
-    }
-    pthread_mutex_unlock(&FoodieFile.deleteListMutex)
-    return foodieObj
-  }
   
-  static func removeFirstObjFromPendingDelete()
-  {
-    pthread_mutex_lock(&FoodieFile.deleteListMutex)
-    
-    if(!FoodieFile.pendingDeleteList.isEmpty)
-    {
-      FoodieFile.pendingDeleteList.remove(at: 0)
-    }
-    pthread_mutex_unlock(&FoodieFile.deleteListMutex)
-  }
-  
-  static func isPendingDeleteEmpty() ->Bool {
-    var result = false
-    pthread_mutex_lock(&FoodieFile.deleteListMutex)
-    result = FoodieFile.pendingDeleteList.isEmpty
-    pthread_mutex_unlock(&FoodieFile.deleteListMutex)
-    return result
-  }
-  
-  static func appendToPendingDelete(_ foodieObj: FoodieObjectDelegate)
-  {
-    pthread_mutex_lock(&FoodieFile.deleteListMutex)
-    FoodieFile.pendingDeleteList.append(foodieObj)
-    pthread_mutex_unlock(&FoodieFile.deleteListMutex)
-  }
   
   func retrieveFromLocalToBufffer(fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     DispatchQueue.global(qos: .utility).async {
