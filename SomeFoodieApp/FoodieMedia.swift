@@ -39,9 +39,6 @@ class FoodieMedia: FoodieS3Object {
   // MARK: - Public Instance Variable
   var imageMemoryBuffer: Data?
   var videoLocalBufferUrl: URL?
-  
-  
-  // MARK: - Private Instance Variable
   var mediaType: FoodieMediaType?
 
   

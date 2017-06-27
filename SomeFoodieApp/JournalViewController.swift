@@ -16,6 +16,7 @@ class JournalViewController: UIViewController {
   // MARK: - Constants
   struct Constants {
     static let MomentsToBufferAtATime = FoodieConstants.momentsToBufferAtATime
+    static let MomentsViewingTimeInterval = 3.0
   }
   
   
@@ -124,30 +125,6 @@ class JournalViewController: UIViewController {
   
   
   // MARK: - Private Instance Functions
-  fileprivate func getIndexOf(_ moment: FoodieMoment) -> Int {
-    
-    guard let journal = viewingJournal else {
-      DebugPrint.fatal("Unexpected, no Journal being viewed by Journal View Controller")
-    }
-    
-    guard let moments = journal.moments else {
-      internalErrorDialog()
-      DebugPrint.fatal("Unexpected, journalmoments = nil")
-    }
-    
-    var index = 0
-    while index < moments.count {
-      if moments[index] === moment {
-        return index
-      }
-      index += 1
-    }
-    
-    internalErrorDialog()
-    DebugPrint.assert("Unexpected, cannot find Moment from Moment Array")
-    return moments.count  // This is error case
-  }
-  
   
   fileprivate func fetchSomeMoment(from momentNumber: Int) {
     guard let journal = viewingJournal else {
@@ -202,7 +179,8 @@ class JournalViewController: UIViewController {
       view.insertSubview(photoView, belowSubview: tapGestureStackView)
 
       // Create timer for advancing to the next media? // TODO: Should not be a fixed time
-      photoTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [weak self] timer in
+      photoTimer = Timer.scheduledTimer(withTimeInterval: Constants.MomentsViewingTimeInterval,
+                                        repeats: false) { [weak self] timer in
         self?.displayNextMoment()
       }
       
@@ -237,7 +215,12 @@ class JournalViewController: UIViewController {
   
   fileprivate func displayMomentIfLoaded(for moment: FoodieMoment) {
     
-    let momentIndex = getIndexOf(moment)
+    guard let journal = viewingJournal else {
+      DebugPrint.fatal("Unexpected, no Journal being viewed by Journal View Controller")
+    }
+    
+    let momentIndex = journal.getIndexOf(moment)
+    
     // Fetch this and a few more moments regardless
     fetchSomeMoment(from: momentIndex)
     
@@ -302,7 +285,7 @@ class JournalViewController: UIViewController {
     removeTimerAndObservers(for: moment)
     
     // Figure out what is the next moment and display it
-    let nextIndex = getIndexOf(moment) + 1
+    let nextIndex = journal.getIndexOf(moment) + 1
     
     if nextIndex == moments.count {
       cleanUpAndDismiss()
@@ -335,7 +318,7 @@ class JournalViewController: UIViewController {
     removeTimerAndObservers(for: moment)
     
     // Figure out what is the previous moment is and display it
-    let index = getIndexOf(moment)
+    let index = journal.getIndexOf(moment)
     
     if index == 0 {
       cleanUpAndDismiss()
