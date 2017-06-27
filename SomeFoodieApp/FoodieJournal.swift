@@ -88,7 +88,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Public Instance Variables
-  var foodieObject: FoodieObject = FoodieObject()
   var thumbnailObj: FoodieMedia?
   var selfPrefetchContext: FoodiePrefetch.Context?
   var contentPrefetchContext: FoodiePrefetch.Context?
@@ -108,7 +107,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     if currentJournalPrivate != nil {
       DebugPrint.assert(".newCurrent() without Save attempted but currentJournal != nil")
     }
-    currentJournalPrivate = FoodieJournal()
+    currentJournalPrivate = FoodieJournal(withState: .objectModified)
     
     guard let current = currentJournalPrivate else {
       DebugPrint.fatal("Just created a new FoodieJournal() but currentJournalPrivate still nil")
@@ -133,7 +132,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     } else {
       DebugPrint.assert("Use .newCurrent() without Save instead")  // Only barfs at development time. Continues on Production...
     }
-    currentJournalPrivate = FoodieJournal()
+    currentJournalPrivate = FoodieJournal(withState: .objectModified)
     return currentJournalPrivate
   }
   
@@ -159,7 +158,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     } else {
       DebugPrint.assert("Use .newCurrent() without Save instead")  // Only barfs at development time. Continues on Production...
     }
-    currentJournalPrivate = FoodieJournal()
+    currentJournalPrivate = FoodieJournal(withState: .objectModified)
     return currentJournalPrivate
   }
   
@@ -180,8 +179,17 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Public Instance Functions
+  
+  // This is the Initilizer Parse will call upon Query or Retrieves
   override init() {
-    super.init()
+    super.init(withState: .notAvailable)
+    foodieObject.delegate = self
+  }
+  
+  
+  // This is the Initializer we will call internally
+  override init(withState operationState: FoodieObject.OperationStates) {
+    super.init(withState: operationState)
     foodieObject.delegate = self
   }
   
@@ -409,7 +417,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     super.retrieve(forceAnyways: forceAnyways) { (someObject, error) in
       if let journal = someObject as? FoodieJournal, journal.thumbnailObj == nil, let fileName = journal.thumbnailFileName {
-        journal.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
+        journal.thumbnailObj = FoodieMedia(withState: .notAvailable, fileName: fileName, type: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
       }
       callback?(someObject, error)  // Callback regardless
     }

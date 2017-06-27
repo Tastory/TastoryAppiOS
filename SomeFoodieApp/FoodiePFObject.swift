@@ -13,7 +13,23 @@ import Foundation
 // Abstract Class for Foodie Objects based on PFObject
 class FoodiePFObject: PFObject {
 
+  // MARK: - Public Instance Variable
+  var foodieObject: FoodieObject!
+  
+  
   // MARK: - Public Instance Functions
+  override init() {
+    super.init()
+    DebugPrint.log("FoodiePFObject.init() called with no initial state specified. Defaulting to .notAvailable")
+    foodieObject = FoodieObject(withState: .notAvailable)
+  }
+  
+  
+  init(withState operationState: FoodieObject.OperationStates) {
+    super.init()
+    foodieObject = FoodieObject(withState: operationState)
+  }
+  
   
   func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     

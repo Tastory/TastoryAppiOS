@@ -9,7 +9,7 @@
 import Foundation
 
 protocol FoodieObjectDelegate: class {
-  
+
   func retrieve(forceAnyways: Bool, withBlock callback: FoodieObject.RetrievedObjectBlock?)
   
   func retrieveRecursive(forceAnyways: Bool, withBlock callback: FoodieObject.RetrievedObjectBlock?)
@@ -46,7 +46,11 @@ class FoodieObject {
   typealias RetrievedObjectBlock = (Any?, Error?) -> Void
   
   
-  enum UploadStates {
+  enum OperationStates {
+    case notAvailable
+    case pendingRetrieval
+    case retrieving
+    
     case objectSynced
     case objectModified
     case savingToLocal
@@ -61,14 +65,6 @@ class FoodieObject {
     case deletingFromServer
     case deletedFromServer
     case deleteError
-  }
-  
-  
-  enum DownloadStates {
-    case notAvailable
-    case pendingRetrieval
-    case retrieving
-    case retrieved
   }
   
   
@@ -105,31 +101,22 @@ class FoodieObject {
   
   // MARK: - Public Instance Variables
   weak var delegate: FoodieObjectDelegate?
-  var uploadState: UploadStates? { return protectedUploadState }
+  var operationState: OperationStates { return protectedOperationState }
   var operationError: Error? { return protectedOperationError }
-  //var isRetrieved: Bool { return downloadState == .retrieved }
   
   
   // MARK: - Private Instance Variables
-  fileprivate var downloadState: DownloadStates = .notAvailable
-  fileprivate var protectedUploadState: UploadStates?  // nil if Undetermined
+  fileprivate var protectedOperationState: OperationStates = .notAvailable  // If this is not explicitly initiated, would be because it's from Parse, hence notAvailable.
   fileprivate var protectedOperationError: Error?  // Need specific Error object class?
-  fileprivate var criticalMutex = pthread_mutex_t()
+  fileprivate var outstandingChildOperationsMutex = pthread_mutex_t()
   fileprivate var outstandingChildOperations = 0
   
   
   // MARK: - Public Instance Functions
-  init() {
-    protectedUploadState = .objectModified
-    protectedOperationError = nil
-    delegate = nil
-  }
   
-  
-  init(delegateObject: FoodieObjectDelegate) {
-    protectedUploadState = .objectModified
+  init(withState operationState: OperationStates) {
+    protectedOperationState = operationState
     protectedOperationError = nil
-    delegate = delegateObject
   }
   
   
@@ -138,24 +125,17 @@ class FoodieObject {
   
   
   // Function to mark memory modified
-  func markModified() -> Bool {
-    
-    // Allowed to modify as long as not from one of the delete states
-//    if let currentState = protectedUploadState {
-//      if currentState.rawValue > 10 {
-//        return false
-//      }
-//    }
-    protectedUploadState = .objectModified
-    return true
+  func markModified() {
+    // TODO: State transition sanity checks?
+    protectedOperationState = .objectModified
   }
   
   
   // Function to mark pending retrieval
   func markPendingRetrieval() {
     // TODO: Need a mutex lock?
-    if downloadState == .notAvailable {
-      downloadState = .pendingRetrieval
+    if protectedOperationState == .notAvailable {
+      protectedOperationState = .pendingRetrieval
     }
   }
 
@@ -188,10 +168,10 @@ class FoodieObject {
       
       // This needs to be critical section or race condition between many childrens' completion can occur
       var childOperationsPending = true
-      pthread_mutex_lock(&self.criticalMutex)
+      pthread_mutex_lock(&self.outstandingChildOperationsMutex)
       self.outstandingChildOperations -= 1
       if self.outstandingChildOperations == 0 { childOperationsPending = false }
-      pthread_mutex_unlock(&self.criticalMutex)
+      pthread_mutex_unlock(&self.outstandingChildOperationsMutex)
       
       if !childOperationsPending {
         self.retrievesCompletedFromAllChildren(withBlock: callback)
@@ -203,41 +183,37 @@ class FoodieObject {
   // Function for state transition when all saves have completed
   func saveCompleteStateTransition(to location: StorageLocation) {
     
-    guard let state = protectedUploadState else {
-      DebugPrint.fatal("Unable to proceed due to nil state from object. Location: \(location)")
-    }
-    
     // State Transition for Save Error
     if protectedOperationError != nil {
       
-      if (location == .local) && (state == .savingToLocal) {
+      if (location == .local) && (operationState == .savingToLocal) {
         // Dial back the state
-        protectedUploadState = .objectModified
+        protectedOperationState = .objectModified
         
-      } else if (location == .server) && (state == .savingToServer) {
+      } else if (location == .server) && (operationState == .savingToServer) {
         // Dial back the state
-        protectedUploadState = .savedToLocal
+        protectedOperationState = .savedToLocal
         
       } else {
         // Unexpected state combination
-        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(state)")
+        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
       }
     }
       
     // State Transition for Success
     else {
       
-      if (location == .local) && (state == .savingToLocal) {
+      if (location == .local) && (operationState == .savingToLocal) {
         // Dial back the state
-        protectedUploadState = .savedToLocal
+        protectedOperationState = .savedToLocal
         
-      } else if (location == .server) && (state == .savingToServer) {
+      } else if (location == .server) && (operationState == .savingToServer) {
         // Dial back the state
-        protectedUploadState = .objectSynced
+        protectedOperationState = .objectSynced
         
       } else {
         // Unexpected state combination
-        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(state)")
+        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
       }
     }
   }
@@ -275,25 +251,22 @@ class FoodieObject {
   
   // Function for parent to inquire if this object's own save have completed
   func isSaveCompleted(to location: StorageLocation) -> Bool {
-    guard let state = protectedUploadState else {
-      DebugPrint.fatal("Unable to proceed due to nil uploadState. Location: \(location)")
-    }
     
-    if ((location == .local) && (state == .savingToLocal)) ||
-      ((location == .server) && (state == .savingToServer)) {
+    if ((location == .local) && (operationState == .savingToLocal)) ||
+      ((location == .server) && (operationState == .savingToServer)) {
       // Save still in progress
       return false
-    } else if ((location == .local) && (state == .savedToLocal)) ||
-      ((location == .server) && (state == .savedToServer)) {
+    } else if ((location == .local) && (operationState == .savedToLocal)) ||
+      ((location == .server) && (operationState == .savedToServer)) {
       // Saved!
-    } else if (state == .objectSynced) {
+    } else if (operationState == .objectSynced) {
       // Nothing needs to be done to begin with
-    } else if ((location == .local) && (state == .objectModified)) ||
-      ((location == .server) && (state == .savedToLocal)) {
+    } else if ((location == .local) && (operationState == .objectModified)) ||
+      ((location == .server) && (operationState == .savedToLocal)) {
       // There must have been an unwind in state due to error
     } else {
       // Unexpected state transition. Barf
-      DebugPrint.fatal("Unable to proceed due to unexpected state transition. Location: \(location), State: \(state)")
+      DebugPrint.fatal("Unable to proceed due to unexpected state transition. Location: \(location), State: \(operationState)")
     }
     return true
   }
@@ -301,14 +274,9 @@ class FoodieObject {
   
   // Function for state transition at the beginning of saveRecursive
   func saveStateTransition(to location: StorageLocation) -> (success: Bool?, error: LocalizedError?) {
-    
-    guard let state = protectedUploadState else {
-      DebugPrint.assert("Valid uploadState expected to perform Save")
-      return (false, ErrorCode(.saveStateTransitionNoState))
-    }
-    
+
     // Is save even allowed? Return false here if illegal state transition. Otherwise do state transition
-    switch state {
+    switch operationState {
     case .savingToLocal, .savingToServer:
       // Save already occuring, another save not allowed
       return (false, ErrorCode(.saveStateTransitionSaveAlreadyInProgress))
@@ -319,26 +287,26 @@ class FoodieObject {
     // Location dependent state transitions
     switch location {
     case .local:
-      switch state {
+      switch operationState {
       case .objectSynced:
         // No child object needs saving. Callback success in background
         return (true, nil)
       case .objectModified:
-        protectedUploadState = .savingToLocal
+        protectedOperationState = .savingToLocal
       default:
-        DebugPrint.assert("Illegal State Transition. Save to Local attempt not from .objectModified state. Current State = \(state)")
+        DebugPrint.assert("Illegal State Transition. Save to Local attempt not from .objectModified state. Current State = \(operationState)")
         return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
       }
       
     case .server:
-      switch state {
+      switch operationState {
       case .objectSynced:
         // No child object needs saving. Callback success in background
         return (true, nil)
       case .savedToLocal:
-        protectedUploadState = .savingToServer
+        protectedOperationState = .savingToServer
       default:
-        DebugPrint.assert("Illegal State Transition. Save to Sever attempt not from .savedToLocal state. Current State = \(state)")
+        DebugPrint.assert("Illegal State Transition. Save to Sever attempt not from .savedToLocal state. Current State = \(operationState)")
         return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
       }
     }
@@ -369,10 +337,10 @@ class FoodieObject {
       
       // This need sto be critical section or race condition between many childrens' completion can occur
       var childOperationsPending = true
-      pthread_mutex_lock(&self.criticalMutex)
+      pthread_mutex_lock(&self.outstandingChildOperationsMutex)
       self.outstandingChildOperations -= 1
       if self.outstandingChildOperations == 0 { childOperationsPending = false }
-      pthread_mutex_unlock(&self.criticalMutex)
+      pthread_mutex_unlock(&self.outstandingChildOperationsMutex)
       
       if !childOperationsPending {
         self.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
@@ -404,8 +372,8 @@ class FoodieObject {
     var needRetrieval = false
     
     // TODO: Need a mutex lock?
-    if downloadState == .pendingRetrieval {
-      downloadState = .retrieving
+    if operationState == .pendingRetrieval {
+      protectedOperationState = .retrieving
       needRetrieval = true
     }
     
@@ -415,9 +383,9 @@ class FoodieObject {
         // Move forward state if success, backwards if failed
         // TODO: Need a mutex lock?
         if object != nil, error == nil {
-          self.downloadState = .retrieved
+          self.protectedOperationState = .objectSynced
         } else {
-          self.downloadState = .notAvailable
+          self.protectedOperationState = .notAvailable
         }
         callback?(object, error)
       }

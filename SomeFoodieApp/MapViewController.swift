@@ -365,7 +365,7 @@ extension MapViewController: CameraReturnDelegate {
     } else if let journal = FoodieJournal.currentJournal {
       workingJournal = journal
     } else {
-      workingJournal = FoodieJournal()
+      workingJournal = FoodieJournal(withState: .objectModified)
     }
     
     viewController.workingJournal = workingJournal!

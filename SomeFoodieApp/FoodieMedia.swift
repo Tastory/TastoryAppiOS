@@ -37,7 +37,6 @@ class FoodieMedia: FoodieS3Object {
   
   
   // MARK: - Public Instance Variable
-  var foodieObject = FoodieObject()
   var imageMemoryBuffer: Data?
   var videoLocalBufferUrl: URL?
   
@@ -46,14 +45,18 @@ class FoodieMedia: FoodieS3Object {
   var mediaType: FoodieMediaType?
 
   
-  // MARK: - Public Instance Function
-  override init() {
-    super.init()
+  // MARK: - Public Instance Functions
+  
+  // This is the Initilizer Parse will call upon Query or Retrieves
+  init() {
+    super.init(withState: .notAvailable)
     foodieObject.delegate = self
   }
   
-  init(fileName: String, type: FoodieMediaType) {
-    super.init()
+  
+  // This is the Initializer we will call internally
+  init(withState operationState: FoodieObject.OperationStates, fileName: String, type: FoodieMediaType) {
+    super.init(withState: operationState)
     foodieObject.delegate = self
     foodieFileName = fileName
     mediaType = type
@@ -68,7 +71,7 @@ class FoodieMedia: FoodieS3Object {
 
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieMedia: FoodieObjectDelegate {
-
+  
   func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     guard let type = mediaType else {
       DebugPrint.fatal("Retrieve not allowed when Media has no MediaType")

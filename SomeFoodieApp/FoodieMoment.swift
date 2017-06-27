@@ -65,8 +65,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Public Instance Variable
-  var foodieObject = FoodieObject()
-  
   var mediaObj: FoodieMedia? {
     didSet {
       mediaFileName = mediaObj!.foodieFileName
@@ -88,14 +86,19 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   fileprivate var contentRetrievedMutex = pthread_mutex_t()
   
   
-  // MARK: - Public Functions
+  // MARK: - Public Instance Functions
+  
+  // This is the Initilizer Parse will call upon Query or Retrieves
   override init() {
-    super.init()
+    super.init(withState: .notAvailable)
     foodieObject.delegate = self
+    // mediaObj = FoodieMedia()  // retrieve() will take care of this. Don't set this here.
   }
   
-  init(foodieMedia: FoodieMedia) {
-    super.init()
+  
+  // This is the Initializer we will call internally
+  init(withState operationState: FoodieObject.OperationStates, foodieMedia: FoodieMedia) {
+    super.init(withState: operationState)
     foodieObject.delegate = self
     mediaObj = foodieMedia
     
@@ -141,11 +144,11 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         
         if moment.mediaObj == nil, let fileName = moment.mediaFileName,
           let typeString = moment.mediaType, let type = FoodieMediaType(rawValue: typeString) {
-          moment.mediaObj = FoodieMedia(fileName: fileName, type: type)
+          moment.mediaObj = FoodieMedia(withState: .notAvailable, fileName: fileName, type: type)
         }
         
         if moment.thumbnailObj == nil, let fileName = moment.thumbnailFileName {
-          moment.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
+          moment.thumbnailObj = FoodieMedia(withState: .notAvailable, fileName: fileName, type: .photo)
         }
       }
       callback?(object, error)  // Callback regardless

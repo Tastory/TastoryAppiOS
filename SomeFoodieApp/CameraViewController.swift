@@ -142,7 +142,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     // TODO: Create error alert dialog box if this save fails.
     UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
 
-    let mediaObject = FoodieMedia(fileName: FoodieFile.newPhotoFileName(), type: .photo)
+    let mediaObject = FoodieMedia(withState: .objectModified, fileName: FoodieFile.newPhotoFileName(), type: .photo)
     mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieConstants.jpegCompressionQuality))
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -183,7 +183,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       // TODO: Create error alert dialog box if this save fails.
       UISaveVideoAtPathToSavedPhotosAlbum(url.path, nil, nil, nil)
       
-      let mediaObject = FoodieMedia(fileName: FoodieFile.newVideoFileName(), type: .video)
+      let mediaObject = FoodieMedia(withState: .objectModified, fileName: FoodieFile.newVideoFileName(), type: .video)
       mediaObject.videoLocalBufferUrl = url
       
       let storyboard = UIStoryboard(name: "Main", bundle: nil)

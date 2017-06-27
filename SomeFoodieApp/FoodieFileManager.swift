@@ -466,10 +466,15 @@ class FoodieFile {
 class FoodieS3Object {
 
   // MARK: - Public Instance Variable
+  var foodieObject: FoodieObject!
   var foodieFileName: String?
   
   
-  // MARK: - Public Instance Functions
+  // MARK: - Public Instance Functions  
+  init(withState operationState: FoodieObject.OperationStates) {
+    foodieObject = FoodieObject(withState: operationState)
+  }
+
   func retrieveFromLocalToBuffer(withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     guard let fileName = foodieFileName else {
       DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
