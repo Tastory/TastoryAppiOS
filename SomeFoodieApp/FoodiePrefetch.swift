@@ -11,8 +11,8 @@ import Foundation
 
 protocol FoodiePrefetchDelegate {
   
+  func removePrefetchContexts()
   func doPrefetch(on objectToFetch: AnyObject, for context: FoodiePrefetch.Context, withBlock callback: FoodiePrefetch.PrefetchCompletionBlock?)
-  
 }
 
 
@@ -48,7 +48,6 @@ class FoodiePrefetch {
   func prefetchNextIfNoBlock() {
     
     DebugPrint.verbose("prefetchNextIfNoBlock")
-    
     var letsFetch = false
     
     // Just sample the block to determine whether to fetch or not
@@ -76,10 +75,8 @@ class FoodiePrefetch {
       }
       
       pthread_mutex_unlock(&workQueueMutex)
-
       DebugPrint.verbose("prefetchNextIfNoBlock, doPrefetch")
-      
-      delegate.doPrefetch(on: objectToFetch, for: workingContext){ /*[unowned self]*/ context in
+      delegate.doPrefetch(on: objectToFetch, for: workingContext){ context in
         
         // Prefetch completes. Remove if not already removed
         self.removePrefetchWork(for: context)
@@ -108,13 +105,11 @@ class FoodiePrefetch {
     pthread_mutex_unlock(&blockCountMutex)
     
     DebugPrint.verbose("unblockPrefetching down to blockCount of \(debugCount)")
-    
     prefetchNextIfNoBlock()
   }
   
   
   func addPrefetchWork(for delegate: FoodiePrefetchDelegate, on objectToFetch: AnyObject) -> Context {
-    
     DebugPrint.verbose("addPrefetchWork")
     
     var firstInQueue = false
@@ -143,15 +138,12 @@ class FoodiePrefetch {
     if firstInQueue {
       prefetchNextIfNoBlock()
     }
-    
     return newContext
   }
   
   
   func removePrefetchWork(for context: Context) {
-    
     DebugPrint.verbose("removePrefetchWork")
-    
     pthread_mutex_lock(&workQueueMutex)
     
     if context.objectToFetch == nil {
@@ -159,6 +151,9 @@ class FoodiePrefetch {
       pthread_mutex_unlock(&workQueueMutex)
       return
     }
+    
+    // Remove context pointer the delegate holds
+    context.delegate.removePrefetchContexts()
     
     if context.prevContext != nil {
       // Context is not at head
@@ -186,13 +181,37 @@ class FoodiePrefetch {
   }
   
   
-  
-  
-  
-  
-  
-  
-  
-  
+  func removeAllPrefetchWork() {
+    DebugPrint.verbose("removeAllPrefetchWork")
+    pthread_mutex_lock(&workQueueMutex)
+    
+    while headOfWorkQueue != nil {
+      if let context = headOfWorkQueue {
+        if context.objectToFetch != nil {
+          
+          // Remove context pointer the delegate holds
+          context.delegate.removePrefetchContexts()
+          
+          // Context is at head
+          headOfWorkQueue = context.nextContext
+          
+          if context.nextContext != nil {
+            // Context is not at tail
+            context.nextContext!.prevContext = context.prevContext
+          } else {
+            // Context is at tail
+            tailOfWorkQueue = context.prevContext
+          }
+          
+          // Nobody should be pointing at this context by now
+          context.prevContext = nil
+          context.nextContext = nil
+          context.delegate = nil
+          context.objectToFetch = nil
+        }
+      }
+    }
+    pthread_mutex_unlock(&workQueueMutex)
+  }
   
 }
