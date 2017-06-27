@@ -371,7 +371,7 @@ extension MapViewController: CameraReturnDelegate {
     viewController.workingJournal = workingJournal!
     viewController.returnedMoment = markedupMoment
     
-    dismiss(animated: true) { [unowned self] in
+    dismiss(animated: true) { /*[unowned self] in*/
       self.present(viewController, animated: true)
     }
   }

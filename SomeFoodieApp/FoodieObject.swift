@@ -11,7 +11,8 @@ import Foundation
 protocol FoodieObjectDelegate: class {
   
   func retrieve(forceAnyways: Bool, withBlock callback: FoodieObject.RetrievedObjectBlock?)
-  // Automatically resolves everything. Already in memory or Local or Network? Automatically caches.
+  
+  func retrieveRecursive(forceAnyways: Bool, withBlock callback: FoodieObject.RetrievedObjectBlock?)
   
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      withName name: String?,
@@ -151,6 +152,10 @@ class FoodieObject {
       protectedOperationState = .pendingDelete
   }*/
   
+  // Reset outstandingChildOperations
+  func resetOutstandingChildOperations() { outstandingChildOperations = 0 }
+  
+  
   // Function to mark memory modified
   func markModified() -> Bool {
     
@@ -166,13 +171,53 @@ class FoodieObject {
   
   
   // Function to mark pending retrieval
-  func markRetrieval() {
+  func markPendingRetrieval() {
     // TODO: Need a mutex lock?
     if downloadState == .notAvailable {
       downloadState = .pendingRetrieval
     }
   }
 
+  
+  // Function when all child retrieves have completed
+  func retrievesCompletedFromAllChildren(withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    
+    // If children all came back and there is error, unwind state and call callback
+    if protectedOperationError != nil {
+      callback?(nil, operationError)
+    }
+      
+    // If children all came back and no error, just call the callback
+    else {
+      callback?(self, nil)
+    }
+  }
+  
+  
+  // Function to call a child's retrieveRecursive()
+  func retrieveChild(_ child: FoodieObjectDelegate, forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    
+    outstandingChildOperations += 1
+    
+    child.retrieveRecursive(forceAnyways: forceAnyways) { /*[unowned self]*/ (object, error) in
+      
+      if let childError = error {
+        self.protectedOperationError = childError
+      }
+      
+      // This needs to be critical section or race condition between many childrens' completion can occur
+      var childOperationsPending = true
+      pthread_mutex_lock(&self.criticalMutex)
+      self.outstandingChildOperations -= 1
+      if self.outstandingChildOperations == 0 { childOperationsPending = false }
+      pthread_mutex_unlock(&self.criticalMutex)
+      
+      if !childOperationsPending {
+        self.retrievesCompletedFromAllChildren(withBlock: callback)
+      }
+    }
+  }
+  
   
   // Function for state transition when all saves have completed
   func saveCompleteStateTransition(to location: StorageLocation) {
@@ -230,7 +275,7 @@ class FoodieObject {
       
     // If children all came back and no error, Save yourself!
     else {
-      saveObject(to: location) { [unowned self] (success, error) in
+      saveObject(to: location) { /*[unowned self]*/ (success, error) in
         if !success {
           if let hasError = error {
             self.protectedOperationError = hasError
@@ -334,7 +379,7 @@ class FoodieObject {
     outstandingChildOperations += 1
     
     // Save Recursive for each moment. Call saveCompletionFromChild when done and without errors
-    child.saveRecursive(to: location, withName: name) { [unowned self] (success, error) in
+    child.saveRecursive(to: location, withName: name) { /*[unowned self]*/ (success, error) in
       if !success {
         if let hasError = error {
           self.protectedOperationError = hasError
@@ -453,7 +498,7 @@ class FoodieObject {
     }
     
     if needRetrieval {
-      delegate!.retrieve(forceAnyways: false) { [unowned self] object, error in
+      delegate!.retrieveRecursive(forceAnyways: false) { object, error in
         
         // Move forward state if success, backwards if failed
         // TODO: Need a mutex lock?

@@ -205,8 +205,8 @@ class JournalViewController: UIViewController {
       view.insertSubview(photoView, belowSubview: tapGestureStackView)
 
       // Create timer for advancing to the next media? // TODO: Should not be a fixed time
-      photoTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [unowned self] timer in
-        self.displayNextMoment()
+      photoTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [weak self] timer in
+        self?.displayNextMoment()
       }
       
     } else if mediaType == .video {
@@ -244,7 +244,7 @@ class JournalViewController: UIViewController {
     fetchSomeMoment(from: getIndexOf(moment))
     
     if moment.checkContentRetrieved(ifFalseSetDelegate: self) {
-      DispatchQueue.main.async { [unowned self] in self.displayMoment(moment) }
+      DispatchQueue.main.async { [weak self] in self?.displayMoment(moment) }
     } else {
       DebugPrint.verbose("displayMomentIfLoaded: Not yet loaded")
       
@@ -267,7 +267,7 @@ class JournalViewController: UIViewController {
     if let moment = currentMoment {
       removeTimerAndObservers(for: moment)
     }
-    DispatchQueue.main.async { [unowned self] in self.dismiss(animated: true, completion: nil) }
+    DispatchQueue.main.async { [weak self] in self?.dismiss(animated: true, completion: nil) }
   }
   
   
@@ -394,7 +394,7 @@ class JournalViewController: UIViewController {
 extension JournalViewController: FoodieMomentWaitOnContentDelegate {
   
   func momentContentRetrieved(for moment: FoodieMoment) {
-    DispatchQueue.main.async { [unowned self] in self.displayMoment(moment) }
+    DispatchQueue.main.async { [weak self] in self?.displayMoment(moment) }
   }
 }
 

@@ -83,7 +83,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       
       switch type {
       case .photo:
-        retrieveFromServerToBuffer() { [unowned self] buffer, error in
+        retrieveFromServerToBuffer() { /*[unowned self]*/ buffer, error in
           if let err = error {
             DebugPrint.error("retrieveFromServerToBuffer for photo failed with error \(err.localizedDescription)")
           }
@@ -111,7 +111,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     switch type {
       
     case .photo:
-      retrieveFromLocalToBuffer() { [unowned self] localBuffer, localError in
+      retrieveFromLocalToBuffer() { /*[unowned self]*/ localBuffer, localError in
         guard let err = localError as? FoodieFile.ErrorCode else {
           // Error is nil. This is actually success case!
           if let imageBuffer = localBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
@@ -150,6 +150,14 @@ extension FoodieMedia: FoodieObjectDelegate {
   }
   
   
+  // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
+  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    
+    // Retrieve self. This object have no children
+    retrieve(forceAnyways: forceAnyways, withBlock: callback)
+  }
+  
+  
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      withName name: String?,
@@ -163,7 +171,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       return
     }
 
-    DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+    DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
       self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
     }
   }
@@ -188,7 +196,7 @@ extension FoodieMedia: FoodieObjectDelegate {
         callback?(false, ErrorCode.saveToLocalwithNilImageMemoryBuffer)
         return
       }
-      saveTmpUrlToLocal(url: videoUrl) { [unowned self] success, error in
+      saveTmpUrlToLocal(url: videoUrl) { /*[unowned self]*/ success, error in
         if success && error == nil {
           self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: self.foodieFileName!)
         }

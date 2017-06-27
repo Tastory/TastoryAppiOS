@@ -111,61 +111,35 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   func setContentsRetrieved() {
     DebugPrint.verbose("contentsRetrieved set to true from \(contentsRetrieved)")
     
-    pthread_mutex_lock(&self.contentRetrievedMutex)
+    pthread_mutex_lock(&contentRetrievedMutex)
     if contentsRetrieved == false {
       contentsRetrieved = true
       waitOnContentDelegate?.momentContentRetrieved(for: self)
     }
-    pthread_mutex_unlock(&self.contentRetrievedMutex)
+    pthread_mutex_unlock(&contentRetrievedMutex)
   }
   
   
   // Funciton to check if Content Retrieved is set to True. Register delegate object if False
   func checkContentRetrieved(ifFalseSetDelegate delegate: FoodieMomentWaitOnContentDelegate) -> Bool {
     
-    pthread_mutex_lock(&self.contentRetrievedMutex)
+    pthread_mutex_lock(&contentRetrievedMutex)
     if contentsRetrieved == false {
       waitOnContentDelegate = delegate
     }
-    pthread_mutex_unlock(&self.contentRetrievedMutex)
+    pthread_mutex_unlock(&contentRetrievedMutex)
     return contentsRetrieved
 
   }
   
   
-  
-//  // Function to retrieve all Markups, one at a time. Call callback when completed
-//  func retrieveMarkupsIfPending(withBlock callback: FoodieObject.BooleanErrorBlock?) {
-//    
-//    var retrieveError: Error? = nil
-//    
-//    guard let markupArray = markups else {
-//      DebugPrint.log("No Markups in Moment")
-//      return false
-//    }
-//    
-//    for markup in markupArray {
-//      if markup.foodieObject.retrieveIfPending(withBlock: { [unowned self] retrieved, error in
-//        
-//        if let err = error {
-//          DebugPrint.error("markup.retrieveIfPending returned error \(err)")
-//          retrieveError = err
-//        }
-//        self.retrieveMarkupsIfPending(withBlock: callback)
-//        
-//      }) { return }
-//    }
-//    
-//    callback?((retrieveError != nil) ? false : true, retrieveError)
-//  }
-  
-  
   // MARK: - Foodie Object Delegate Conformance
 
+  // Retrieves just the moment itself
   override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
-    super.retrieve(forceAnyways: forceAnyways) { (someObject, error) in
+    super.retrieve(forceAnyways: forceAnyways) { (object, error) in
       
-      if let moment = someObject as? FoodieMoment {
+      if let moment = object as? FoodieMoment {
         
         if moment.mediaObj == nil, let fileName = moment.mediaFileName,
           let typeString = moment.mediaType, let type = FoodieMediaType(rawValue: typeString) {
@@ -176,7 +150,45 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           moment.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
         }
       }
-      callback?(someObject, error)  // Callback regardless
+      callback?(object, error)  // Callback regardless
+    }
+  }
+  
+  
+  // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
+  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    
+    // Retrieve self first, then retrieve children afterwards
+    retrieve(forceAnyways: forceAnyways) { (object, error) in
+      
+      if let momentError = error {
+        DebugPrint.assert("Moment.retrieve() resulted in error: \(momentError.localizedDescription)")
+        callback?(object, error)
+        return
+      }
+      
+      guard let moment = object as? FoodieMoment else {
+        DebugPrint.assert("Unexpected Moment.retrieve() resulted in object = nil")
+        callback?(object, error)
+        return
+      }
+      
+      guard let media = moment.mediaObj else {
+        DebugPrint.assert("Unexpected Moment.retrieve() resulted in moment.mediaObj = nil")
+        callback?(object, error)
+        return
+      }
+      
+      moment.foodieObject.resetOutstandingChildOperations()
+      
+      // Got through all sanity check, calling children's retrieveRecursive
+      moment.foodieObject.retrieveChild(media, withBlock: callback)
+      
+      if let hasMarkups = moment.markups {
+        for markup in hasMarkups {
+          moment.foodieObject.retrieveChild(markup, withBlock: callback)
+        }
+      }
     }
   }
   
@@ -195,6 +207,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
       return
     }
+    
+    foodieObject.resetOutstandingChildOperations()
     
     var childOperationPending = false
     
@@ -217,7 +231,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
     
     if !childOperationPending {
-      DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+      DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
         self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
       }
     }
