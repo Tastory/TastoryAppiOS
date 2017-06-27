@@ -81,6 +81,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
+  static let MomentsToBufferAtATime = 2
   
   // MARK: - Public Static Variables
   static var currentJournal: FoodieJournal? { return currentJournalPrivate }
@@ -100,7 +101,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   fileprivate var contentRetrievalMutex = pthread_mutex_t()
   fileprivate var contentRetrievalInProg = false
   fileprivate var contentRetrievalPending = false
-  fileprivate var contentRetrievalPendingCallback: FoodieObject.BooleanErrorBlock?
+  fileprivate var contentRetrievalPendingCallback: FoodieObject.SimpleErrorBlock?
   
   
   // MARK: - Public Static Functions
@@ -341,11 +342,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   // Function to mark Moments and Media to retrieve, and then kick off the retrieval state machine
-  func contentRetrievalRequest(fromMoment startNumber: Int, forUpTo numberOfMoments: Int, withBlock callback: FoodieObject.BooleanErrorBlock? = nil) {
+  func contentRetrievalRequest(fromMoment startNumber: Int, forUpTo numberOfMoments: Int, withBlock callback: FoodieObject.SimpleErrorBlock? = nil) {
     
     guard let momentArray = moments else {
       DebugPrint.assert("journal.contentRetrieve momentArray = nil. Journal with 0 moment is invalid")
-      callback?(false, ErrorCode.contentRetrieveMomentArrayNil)
+      callback?(ErrorCode.contentRetrieveMomentArrayNil)
       return
     }
     
@@ -391,11 +392,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
     
   // The brain of the content retrieval process
-  func contentRetrievalStateMachine(momentIndex: Int, withError firstError: Error?, withBlock callback: FoodieObject.BooleanErrorBlock? = nil) {
+  func contentRetrievalStateMachine(momentIndex: Int, withError firstError: Error?, withBlock callback: FoodieObject.SimpleErrorBlock? = nil) {
     
     guard let momentArray = moments else {
       DebugPrint.assert("journal.contentRetrieve momentArray = nil unexpected")
-      callback?(false, ErrorCode.contentRetrieveMomentArrayNil)
+      callback?(ErrorCode.contentRetrieveMomentArrayNil)
       return
     }
     
@@ -427,9 +428,9 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     // Do callback if there is one since we went through the entire momentArray
     if firstError == nil {
-      callback?(true, nil)
+      callback?(nil)
     } else {
-      callback?(false, firstError)
+      callback?(firstError)
     }
 
     // If there was a pending retrieval operation, go for another round
@@ -606,5 +607,38 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
 extension FoodieJournal: PFSubclassing {
   static func parseClassName() -> String {
     return "FoodieJournalDemo"
+  }
+}
+
+
+extension FoodieJournal: FoodiePrefetchDelegate {
+  
+  func removePrefetchContexts() {
+    selfPrefetchContext = nil
+    contentPrefetchContext = nil
+  }
+  
+  func doPrefetch(on objectToFetch: AnyObject, for context: FoodiePrefetch.Context, withBlock callback: FoodiePrefetch.PrefetchCompletionBlock? = nil) {
+    if let journal = objectToFetch as? FoodieJournal {
+      
+      if journal.thumbnailObj == nil {
+        // No Thumbnail Object, so assume the Journal itself needs to be retrieved
+        DebugPrint.verbose("doPrefetch journal.selfRetrieval")
+        journal.selfRetrieval() { error in
+          if let journalError = error {
+            DebugPrint.assert("On prefetch, Journal.selfRetrieval() callback with error: \(journalError.localizedDescription)")
+          }
+          callback?(context)
+        }
+        
+      } else {
+        journal.contentRetrievalRequest(fromMoment: 0, forUpTo: Constants.MomentsToBufferAtATime) { error in
+          if let journalError = error {
+            DebugPrint.assert("On prefetch, Journal.contentRetrieval() callback with error: \(journalError.localizedDescription)")
+          }
+          callback?(context)
+        }
+      }
+    }
   }
 }

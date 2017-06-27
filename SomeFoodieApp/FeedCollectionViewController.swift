@@ -14,7 +14,6 @@ class FeedCollectionViewController: UICollectionViewController {
   // MARK: - Private Class Constants
   fileprivate struct Constants {
     static let reuseIdentifier = "FeedCell"
-    static let MomentsToBufferAtATime = 2
   }
   
   
@@ -25,6 +24,8 @@ class FeedCollectionViewController: UICollectionViewController {
   
   // MARK: - IBActions
   @IBAction func rightSwipeAction(_ sender: UISwipeGestureRecognizer) {
+    // Stop all prefetches
+    FoodiePrefetch.global.removeAllPrefetchWork()
     dismiss(animated: true, completion: nil)
   }
   
@@ -112,6 +113,9 @@ class FeedCollectionViewController: UICollectionViewController {
   
   
   func viewJournal(_ sender: UIButton) {
+    // Stop all prefetches
+    FoodiePrefetch.global.removeAllPrefetchWork()
+    
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalViewController") as! JournalViewController
     viewController.restorationClass = nil
@@ -185,18 +189,18 @@ class FeedCollectionViewController: UICollectionViewController {
           reusableCell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
           reusableCell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
           
-//          pthread_mutex_lock(&reusableCell.cellStatusMutex)
-//          reusableCell.cellLoaded = true
-//          if reusableCell.cellDisplayed {
-//            letsPrefetch = true
-//          }
-//          pthread_mutex_unlock(&reusableCell.cellStatusMutex)
+          pthread_mutex_lock(&reusableCell.cellStatusMutex)
+          reusableCell.cellLoaded = true
+          if reusableCell.cellDisplayed {
+            letsPrefetch = true
+          }
+          pthread_mutex_unlock(&reusableCell.cellStatusMutex)
         }
-//        
-//        if letsPrefetch {
-//          let journal = self.queriedJournalArray[indexPath.row]
-//          journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
-//        }
+        
+        if letsPrefetch {
+          let journal = self.queriedJournalArray[indexPath.row]
+          journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
+        }
       }
     }
     return reusableCell
@@ -205,27 +209,27 @@ class FeedCollectionViewController: UICollectionViewController {
   
   // MARK: - UICollectionViewDataSource
   
-//  override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-//    
-//    guard let feedCell = cell as? FeedCollectionViewCell else {
-//      internalErrorDialog()
-//      DebugPrint.assert("Cannot cast cell as FeedCollectionViewCell")
-//      return
-//    }
-//    
-//    var letsPrefetch = false
-//    pthread_mutex_lock(&feedCell.cellStatusMutex)
-//    feedCell.cellDisplayed = true
-//    if feedCell.cellLoaded {
-//      letsPrefetch = true
-//    }
-//    pthread_mutex_unlock(&feedCell.cellStatusMutex)
-//    
-//    if letsPrefetch {
-//      let journal = self.queriedJournalArray[indexPath.row]
-//      journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
-//    }
-//  }
+  override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    
+    guard let feedCell = cell as? FeedCollectionViewCell else {
+      internalErrorDialog()
+      DebugPrint.assert("Cannot cast cell as FeedCollectionViewCell")
+      return
+    }
+    
+    var letsPrefetch = false
+    pthread_mutex_lock(&feedCell.cellStatusMutex)
+    feedCell.cellDisplayed = true
+    if feedCell.cellLoaded {
+      letsPrefetch = true
+    }
+    pthread_mutex_unlock(&feedCell.cellStatusMutex)
+    
+    if letsPrefetch {
+      let journal = self.queriedJournalArray[indexPath.row]
+      journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
+    }
+  }
   
   override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
     DebugPrint.verbose("collectionView didEndDisplayingCell indexPath.row = \(indexPath.row)")
@@ -253,36 +257,6 @@ extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
       let journal = queriedJournalArray[indexPath.row]
       if let context = journal.selfPrefetchContext {
         FoodiePrefetch.global.removePrefetchWork(for: context)
-      }
-    }
-  }
-}
-
-
-extension FeedCollectionViewController: FoodiePrefetchDelegate {
-  func doPrefetch(on objectToFetch: AnyObject, for context: FoodiePrefetch.Context, withBlock callback: FoodiePrefetch.PrefetchCompletionBlock? = nil) {
-    if let journal = objectToFetch as? FoodieJournal {
-      
-      if journal.thumbnailObj == nil {
-        // No Thumbnail Object, so assume the Journal itself needs to be retrieved
-        DebugPrint.verbose("doPrefetch journal.selfRetrieval")
-        journal.selfRetrieval() { [weak self] (error) in
-          if let journalError = error {
-            self?.fetchErrorDialog()
-            DebugPrint.assert("On prefetch, Journal.selfRetrieval() callback with error: \(journalError.localizedDescription)")
-          }
-          callback?(context)
-        }
-        
-      } else {
-        DebugPrint.verbose("doPrefetch journal.contentRetrieval")
-        journal.contentRetrievalRequest(fromMoment: 0, forUpTo: Constants.MomentsToBufferAtATime) { [weak self] (_, error) in
-          if let journalError = error {
-            self?.fetchErrorDialog()
-            DebugPrint.assert("On prefetch, Journal.contentRetrieval() callback with error: \(journalError.localizedDescription)")
-          }
-          callback?(context)
-        }
       }
     }
   }
