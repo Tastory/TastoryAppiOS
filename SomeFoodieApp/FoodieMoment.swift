@@ -9,11 +9,6 @@
 
 import Parse
 
-protocol FoodieMomentWaitOnContentDelegate {
-  func momentContentRetrieved(for moment: FoodieMoment)
-}
-
-
 class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Parse PFObject keys
@@ -78,13 +73,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  var waitOnContentDelegate: FoodieMomentWaitOnContentDelegate?
-  
-  
-  // MARK: - Private Instance Variable
-  fileprivate var contentsRetrieved: Bool = false
-  fileprivate var contentRetrievedMutex = pthread_mutex_t()
-  
   
   // MARK: - Public Instance Functions
   
@@ -108,86 +96,50 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  // Funciton to set Content Retreived to True. Exectute delegate function if a delegate object is registered
-  func setContentsRetrieved() {
-    DebugPrint.verbose("contentsRetrieved set to true from \(contentsRetrieved)")
-    
-    pthread_mutex_lock(&contentRetrievedMutex)
-    if contentsRetrieved == false {
-      contentsRetrieved = true
-      waitOnContentDelegate?.momentContentRetrieved(for: self)
-    }
-    pthread_mutex_unlock(&contentRetrievedMutex)
-  }
-  
-  
-  // Funciton to check if Content Retrieved is set to True. Register delegate object if False
-  func checkContentRetrieved(ifFalseSetDelegate delegate: FoodieMomentWaitOnContentDelegate) -> Bool {
-    
-    pthread_mutex_lock(&contentRetrievedMutex)
-    if contentsRetrieved == false {
-      waitOnContentDelegate = delegate
-    }
-    pthread_mutex_unlock(&contentRetrievedMutex)
-    return contentsRetrieved
-
-  }
-  
-  
   // MARK: - Foodie Object Delegate Conformance
 
   // Retrieves just the moment itself
-  override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
-    super.retrieve(forceAnyways: forceAnyways) { (object, error) in
-      
-      if let moment = object as? FoodieMoment {
-        
-        if moment.mediaObj == nil, let fileName = moment.mediaFileName,
-          let typeString = moment.mediaType, let type = FoodieMediaType(rawValue: typeString) {
-          moment.mediaObj = FoodieMedia(withState: .notAvailable, fileName: fileName, type: type)
-        }
-        
-        if moment.thumbnailObj == nil, let fileName = moment.thumbnailFileName {
-          moment.thumbnailObj = FoodieMedia(withState: .notAvailable, fileName: fileName, type: .photo)
-        }
+  override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    super.retrieve(forceAnyways: forceAnyways) { error in
+      if self.mediaObj == nil, let fileName = self.mediaFileName,
+        let typeString = self.mediaType, let type = FoodieMediaType(rawValue: typeString) {
+        self.mediaObj = FoodieMedia(withState: .notAvailable, fileName: fileName, type: type)
       }
-      callback?(object, error)  // Callback regardless
+      
+      if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
+        self.thumbnailObj = FoodieMedia(withState: .notAvailable, fileName: fileName, type: .photo)
+      }
+      callback?(error)  // Callback regardless
     }
   }
   
   
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
-  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Retrieve self first, then retrieve children afterwards
-    retrieve(forceAnyways: forceAnyways) { (object, error) in
+    retrieve(forceAnyways: forceAnyways) { (error) in
       
       if let momentError = error {
         DebugPrint.assert("Moment.retrieve() resulted in error: \(momentError.localizedDescription)")
-        callback?(object, error)
+        callback?(error)
         return
       }
-      
-      guard let moment = object as? FoodieMoment else {
-        DebugPrint.assert("Unexpected Moment.retrieve() resulted in object = nil")
-        callback?(object, error)
-        return
-      }
-      
-      guard let media = moment.mediaObj else {
+
+      guard let media = self.mediaObj else {
         DebugPrint.assert("Unexpected Moment.retrieve() resulted in moment.mediaObj = nil")
-        callback?(object, error)
+        callback?(error)
         return
       }
       
-      moment.foodieObject.resetOutstandingChildOperations()
+      self.foodieObject.resetOutstandingChildOperations()
       
       // Got through all sanity check, calling children's retrieveRecursive
-      moment.foodieObject.retrieveChild(media, withBlock: callback)
+      self.foodieObject.retrieveChild(media, withBlock: callback)
       
-      if let hasMarkups = moment.markups {
+      if let hasMarkups = self.markups {
         for markup in hasMarkups {
-          moment.foodieObject.retrieveChild(markup, withBlock: callback)
+          self.foodieObject.retrieveChild(markup, withBlock: callback)
         }
       }
     }

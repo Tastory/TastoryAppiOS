@@ -72,39 +72,39 @@ class FoodieMedia: FoodieS3Object {
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieMedia: FoodieObjectDelegate {
   
-  func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let type = mediaType else {
       DebugPrint.fatal("Retrieve not allowed when Media has no MediaType")
     }
     
     // If photo and in memory, or video and in local, just callback
     if !forceAnyways && (imageMemoryBuffer != nil || videoLocalBufferUrl != nil) {
-      callback?(self, nil)
+      callback?(nil)
       return
       
     } else if forceAnyways {
       
       switch type {
       case .photo:
-        retrieveFromServerToBuffer() { /*[unowned self]*/ buffer, error in
+        retrieveFromServerToBuffer() { buffer, error in
           if let err = error {
             DebugPrint.error("retrieveFromServerToBuffer for photo failed with error \(err.localizedDescription)")
           }
           if let imageBuffer = buffer as? Data { self.imageMemoryBuffer = imageBuffer }
-          callback?(buffer, error)
+          callback?(error)
         }
         
       case .video:
-        retrieveFromServerToLocal() { (stringObject, error) in
+        retrieveFromServerToLocal() { (error) in
           if let err = error {
             DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
           }
-          if let fileName = stringObject as? String {
+          if let fileName = self.foodieFileName {
             self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: fileName)
           } else {
-            DebugPrint.fatal("Cannot convert returned stringObject to String")
+            DebugPrint.fatal("FoodieMedia.retrieve() resulted in foodieFileName = nil")
           }
-          callback?(stringObject, error)
+          callback?(error)
         }
       }
       return
@@ -114,11 +114,11 @@ extension FoodieMedia: FoodieObjectDelegate {
     switch type {
       
     case .photo:
-      retrieveFromLocalToBuffer() { /*[unowned self]*/ localBuffer, localError in
+      retrieveFromLocalToBuffer() { localBuffer, localError in
         guard let err = localError as? FoodieFile.ErrorCode else {
           // Error is nil. This is actually success case!
           if let imageBuffer = localBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
-          callback?(localBuffer, nil)
+          callback?(nil)
           return
         }
         
@@ -133,28 +133,28 @@ extension FoodieMedia: FoodieObjectDelegate {
             DebugPrint.error("retrieveFromServerToBuffer for photo failed with error \(error.localizedDescription)")
           }
           if let imageBuffer = serverBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
-          callback?(serverBuffer, serverError)
+          callback?(serverError)
         }
       }
       
     case .video:
-      retrieveFromServerToLocal() { (stringObject, error) in
+      retrieveFromServerToLocal() { error in
         if let err = error {
           DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
         }
-        if let fileName = stringObject as? String {
+        if let fileName = self.foodieFileName {
           self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: fileName)
         } else {
-          DebugPrint.fatal("Cannot convert returned stringObject to String")
+          DebugPrint.fatal("FoodieMedia.retrieve() resulted in foodieFileName = nil")
         }
-        callback?(stringObject, error)
+        callback?(error)
       }
     }
   }
   
   
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
-  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Retrieve self. This object have no children
     retrieve(forceAnyways: forceAnyways, withBlock: callback)
