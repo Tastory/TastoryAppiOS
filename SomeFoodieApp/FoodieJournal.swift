@@ -277,11 +277,38 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
+  // Function to delete specified Moment
+  // Other Moments in the array might have their position altered accordingly
+  // Controller layer should query to confirm how other Moments might have their orders and positions changed
+  func remove(moment: FoodieMoment) {
+  }
+  
+  
   func deleteAsync(withBlock callback: FoodieObject.BooleanErrorBlock?){
     deleteRecursive(withBlock: callback)
   }
   
 
+  
+  // Function to get index of specified Moment in Moment Array
+  func getIndexOf(_ moment: FoodieMoment) -> Int {
+
+    guard let momentArray = moments else {
+      DebugPrint.fatal("journal.getIndexOf() has moments = nil. Invalid")
+    }
+    
+    var index = 0
+    while index < momentArray.count {
+      if momentArray[index] === moment {
+        return index
+      }
+      index += 1
+    }
+    
+    DebugPrint.assert("journal.getIndexOf() cannot find Moment from Moment Array")
+    return momentArray.count  // This is error case
+  }
+  
   
   // MARK: - Journal specific Retrieval algorithms
   
