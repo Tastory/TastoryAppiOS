@@ -31,11 +31,11 @@ class FoodiePFObject: PFObject {
   }
   
   
-  func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // See if this is already in memory, if so no need to do anything
     if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
-      callback?(self, nil)
+      callback?(nil)
       return
       
     } else if forceAnyways {
@@ -46,20 +46,17 @@ class FoodiePFObject: PFObject {
           DebugPrint.error("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
         }
         // Return if got what's wanted
-        callback?(serverObject, serverError)
+        callback?(serverError)
       }
       return
     }
     
     // See if this is in local cache
-    fetchFromLocalDatastoreInBackground { /*[unowned self]*/ localObject, localError in
+    fetchFromLocalDatastoreInBackground { localObject, localError in
       
       guard let err = localError else {
-        guard let object = localObject else {
-          DebugPrint.fatal("fetchFromLocalDatastoreInBackground completed with no error but nil object returned")
-        }
         // This is actually success case here! localError is nil!
-        callback?(object, nil)
+        callback?(nil)
         return
       }
 
@@ -79,7 +76,7 @@ class FoodiePFObject: PFObject {
           DebugPrint.error("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
         }
         // Return if got what's wanted
-        callback?(serverObject, serverError)
+        callback?(serverError)
       }
     }
   }

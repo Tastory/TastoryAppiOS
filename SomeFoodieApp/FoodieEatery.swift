@@ -64,7 +64,7 @@ class FoodieEatery: FoodiePFObject  {
 extension FoodieEatery: FoodieObjectDelegate {
   
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
-  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Retrieve self. This object have no children
     retrieve(forceAnyways: forceAnyways, withBlock: callback)

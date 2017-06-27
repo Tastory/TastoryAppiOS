@@ -214,7 +214,7 @@ class FoodieFile {
   
   #if false
   // S3 Transfer Manager based implementation
-  func retrieveFromServerToLocal(fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?)
+  func retrieveFromServerToLocal(fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?)
   {
     guard let downloadRequest = AWSS3TransferManagerDownloadRequest() else {
       DebugPrint.assert("AWSS3TransferManagerDownloadRequest() returned nil")
@@ -280,7 +280,7 @@ class FoodieFile {
   }
   #else
   // Cloudfront based implementation
-  func retrieveFromServerToLocal(fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  func retrieveFromServerToLocal(fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     let localFileURL = Constants.DocumentFolderUrl.appendingPathComponent(fileName)
     let serverFileURL = Constants.CloudFrontUrl.appendingPathComponent(fileName)
@@ -296,25 +296,25 @@ class FoodieFile {
       
       if let downloadError = error {
         DebugPrint.assert("Download error: \(downloadError.localizedDescription)")
-        callback?(nil, ErrorCode.urlSessionDownloadError)
+        callback?(ErrorCode.urlSessionDownloadError)
         return
       }
       
       guard let httpResponse = response as? HTTPURLResponse else {
         DebugPrint.assert("Unexpected. Did not receipve HTTPURLResponse type or response = nil")
-        callback?(nil, ErrorCode.urlSessionDownloadHttpResponseNil)
+        callback?(ErrorCode.urlSessionDownloadHttpResponseNil)
         return
       }
       
       if httpResponse.statusCode != 200 {
         DebugPrint.error("Download HTTPURLResponse.statusCode != 200. statusCode = \(httpResponse.statusCode)")
-        callback?(nil, ErrorCode.urlSessionDownloadHttpResponseFailed)  // TODO: Should Implement Retry
+        callback?(ErrorCode.urlSessionDownloadHttpResponseFailed)  // TODO: Should Implement Retry
         return
       }
       
       guard let tempURL = url else {
         DebugPrint.assert("Unexpected. Local url = nil")
-        callback?(nil, ErrorCode.urlSessionDownloadTempUrlNil)
+        callback?(ErrorCode.urlSessionDownloadTempUrlNil)
         return
       }
 
@@ -332,10 +332,10 @@ class FoodieFile {
         try self.fileManager.copyItem(at: tempURL, to: localFileURL)
       } catch {
         DebugPrint.assert("Failed to move file from URLSessionDownload temp to local Documents folder. Erorr = \(error.localizedDescription)")
-        callback?(nil, ErrorCode.fileManagerMoveItemFromDownloadToLocalFailed)
+        callback?(ErrorCode.fileManagerMoveItemFromDownloadToLocalFailed)
         return
       }
-      callback?(fileName, nil)
+      callback?(nil)
     }
     
     downloadTask.resume()
@@ -499,7 +499,7 @@ class FoodieS3Object {
   }
   
   
-  func retrieveFromServerToLocal(withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  func retrieveFromServerToLocal(withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let fileName = foodieFileName else {
       DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
     }
@@ -511,12 +511,12 @@ class FoodieS3Object {
     guard let fileName = foodieFileName else {
       DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
     }
-    FoodieFile.manager.retrieveFromServerToLocal(fileName: fileName) { (localURLString, error) in
-      if error == nil, localURLString != nil {
+    FoodieFile.manager.retrieveFromServerToLocal(fileName: fileName) { (error) in
+      if error == nil {
         FoodieFile.manager.retrieveFromLocalToBufffer(fileName: fileName, withBlock: callback)
       }
       else {
-        callback?(localURLString, error)
+        callback?(nil, error)
       }
     }
   }

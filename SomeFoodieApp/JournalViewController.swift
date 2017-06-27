@@ -184,9 +184,6 @@ class JournalViewController: UIViewController {
     // Keep track of what moment we are displaying
     currentMoment = moment
     
-    // We are no longer waiting for the moment's content at this point
-    moment.waitOnContentDelegate = nil
-    
     // Remove Blue Layer and Activity Indicator
     view.sendSubview(toBack: activityIndicator)
     view.sendSubview(toBack: blurView)
@@ -240,11 +237,19 @@ class JournalViewController: UIViewController {
   
   fileprivate func displayMomentIfLoaded(for moment: FoodieMoment) {
     
+    let momentIndex = getIndexOf(moment)
     // Fetch this and a few more moments regardless
-    fetchSomeMoment(from: getIndexOf(moment))
+    fetchSomeMoment(from: momentIndex)
     
-    if moment.checkContentRetrieved(ifFalseSetDelegate: self) {
-      DispatchQueue.main.async { [weak self] in self?.displayMoment(moment) }
+    if moment.foodieObject.checkRetrieved(ifFalseSetDelegate: self) {
+      if moment.foodieObject.operationState == .objectSynced {
+        DispatchQueue.main.async { [weak self] in self?.displayMoment(moment) }
+      } else {
+        // Seems moment is not available. Move on to the next one
+        DebugPrint.error("displayMomentIfLoaded moment.checkRetrieved returned operationState != .objectSynced. Skipping moment index = \(momentIndex)")
+        currentMoment = moment
+        displayNextMoment()
+      }
     } else {
       DebugPrint.verbose("displayMomentIfLoaded: Not yet loaded")
       
@@ -391,9 +396,14 @@ class JournalViewController: UIViewController {
 
 // MARK: - Foodie Moment Wait On Content Delegate Conformance
 
-extension JournalViewController: FoodieMomentWaitOnContentDelegate {
+extension JournalViewController: FoodieObjectWaitOnRetrieveDelegate {
   
-  func momentContentRetrieved(for moment: FoodieMoment) {
+  func retrieved(for object: FoodieObjectDelegate) {
+    guard let moment = object as? FoodieMoment else {
+      internalErrorDialog()
+      DebugPrint.assert("JouranlViewController retrieved() for object is not FoodieMoment")
+      return
+    }
     DispatchQueue.main.async { [weak self] in self?.displayMoment(moment) }
   }
 }

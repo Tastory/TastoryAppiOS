@@ -166,7 +166,7 @@ class FeedCollectionViewController: UICollectionViewController {
     
     FoodiePrefetch.global.blockPrefetching()
     
-    journal.selfRetrieval { (_, journalError) in
+    journal.selfRetrieval { journalError in
       
       FoodiePrefetch.global.unblockPrefetching()
       
@@ -289,7 +289,7 @@ extension FeedCollectionViewController: FoodiePrefetchDelegate {
       if journal.thumbnailObj == nil {
         // No Thumbnail Object, so assume the Journal itself needs to be retrieved
         DebugPrint.verbose("doPrefetch journal.selfRetrieval")
-        journal.selfRetrieval() { [weak self] (_, error) in
+        journal.selfRetrieval() { [weak self] (error) in
           if let journalError = error {
             self?.fetchErrorDialog()
             DebugPrint.assert("On prefetch, Journal.selfRetrieval() callback with error: \(journalError.localizedDescription)")

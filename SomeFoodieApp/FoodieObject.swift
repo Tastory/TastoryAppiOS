@@ -10,9 +10,9 @@ import Foundation
 
 protocol FoodieObjectDelegate: class {
 
-  func retrieve(forceAnyways: Bool, withBlock callback: FoodieObject.RetrievedObjectBlock?)
+  func retrieve(forceAnyways: Bool, withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func retrieveRecursive(forceAnyways: Bool, withBlock callback: FoodieObject.RetrievedObjectBlock?)
+  func retrieveRecursive(forceAnyways: Bool, withBlock callback: FoodieObject.SimpleErrorBlock?)
   
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      withName name: String?,
@@ -37,33 +37,40 @@ protocol FoodieObjectDelegate: class {
 }
 
 
+protocol FoodieObjectWaitOnRetrieveDelegate: class {
+  
+  func retrieved(for object: FoodieObjectDelegate)
+}
+
+
 class FoodieObject {
   
   // MARK: - Types & Enumerations
   typealias BooleanErrorBlock = (Bool, Error?) -> Void
   typealias QueryResultBlock = ([AnyObject]?, Error?) -> Void
   typealias RetrievedObjectBlock = (Any?, Error?) -> Void
+  typealias SimpleErrorBlock = (Error?) -> Void
   
   
-  enum OperationStates {
-    case notAvailable
-    case pendingRetrieval
-    case retrieving
+  enum OperationStates: String {
+    case notAvailable       = "notAvailable"
+    case pendingRetrieval   = "pendingRetrieval"
+    case retrieving         = "retrieving"
     
-    case objectSynced
-    case objectModified
-    case savingToLocal
-    case savedToLocal
-    case savingToServer
-    case savedToServer
-    case saveError
+    case objectSynced       = "objectSynced"
+    case objectModified     = "objectModified"
+    case savingToLocal      = "savingToLocal"
+    case savedToLocal       = "savedToLocal"
+    case savingToServer     = "savingToServer"
+    case savedToServer      = "savedToServer"
+    case saveError          = "saveError"
     
-    case pendingDelete
-    case deletingFromLocal
-    case deletedFromLocal
-    case deletingFromServer
-    case deletedFromServer
-    case deleteError
+    case pendingDelete      = "pendingDelete"
+    case deletingFromLocal  = "deletingFromLocal"
+    case deletedFromLocal   = "deletedFromLocal"
+    case deletingFromServer = "deletingFromServer"
+    case deletedFromServer  = "deletedFromServer"
+    case deleteError        = "deleteError"
   }
   
   
@@ -116,6 +123,7 @@ class FoodieObject {
   
   // MARK: - Public Instance Variables
   weak var delegate: FoodieObjectDelegate?
+  weak var waitOnRetrieveDelegate: FoodieObjectWaitOnRetrieveDelegate?
   var operationState: OperationStates { return protectedOperationState }
   var operationError: Error? { return protectedOperationError }
   var outstandingChildOperations = 0
@@ -123,6 +131,7 @@ class FoodieObject {
   
   
   // MARK: - Private Instance Variables
+  fileprivate var operationStateMutex = pthread_mutex_t()
   fileprivate var protectedOperationState: OperationStates = .notAvailable  // If this is not explicitly initiated, would be because it's from Parse, hence notAvailable.
   fileprivate var protectedOperationError: Error?  // Need specific Error object class?
   fileprivate var outstandingChildOperationsMutex = pthread_mutex_t()
@@ -148,41 +157,56 @@ class FoodieObject {
   
   // Function to mark memory modified
   func markModified() {
+    pthread_mutex_lock(&operationStateMutex)
     // TODO: State transition sanity checks?
     protectedOperationState = .objectModified
+    pthread_mutex_unlock(&operationStateMutex)
   }
   
   
   // Function to mark pending retrieval
   func markPendingRetrieval() {
-    // TODO: Need a mutex lock?
-    if protectedOperationState == .notAvailable {
+    
+    pthread_mutex_lock(&operationStateMutex)
+    
+    switch protectedOperationState {
+    case .notAvailable:
       protectedOperationState = .pendingRetrieval
+      
+    case .objectSynced, .pendingRetrieval, .retrieving:
+      // Expected states to do nothing on
+      break
+      
+    default:
+      DebugPrint.verbose("FoodieObject.markPendingRetrieval() attempted from operationState = \(protectedOperationState.rawValue)")
+      //DebugPrint.assert("FoodieObject.markPendingRetrieval. Invalid state transition")
     }
+    
+    pthread_mutex_unlock(&operationStateMutex)
   }
 
   
   // Function when all child retrieves have completed
-  func retrievesCompletedFromAllChildren(withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  func retrievesCompletedFromAllChildren(withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // If children all came back and there is error, unwind state and call callback
     if protectedOperationError != nil {
-      callback?(nil, operationError)
+      callback?(operationError)
     }
       
     // If children all came back and no error, just call the callback
     else {
-      callback?(self, nil)
+      callback?(nil)
     }
   }
   
   
   // Function to call a child's retrieveRecursive()
-  func retrieveChild(_ child: FoodieObjectDelegate, forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  func retrieveChild(_ child: FoodieObjectDelegate, forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     outstandingChildOperations += 1
     
-    child.retrieveRecursive(forceAnyways: forceAnyways) { /*[unowned self]*/ (object, error) in
+    child.retrieveRecursive(forceAnyways: forceAnyways) { (error) in
       
       if let childError = error {
         self.protectedOperationError = childError
@@ -224,7 +248,6 @@ class FoodieObject {
       
     // State Transition for Success
     else {
-      
       if (location == .local) && (operationState == .savingToLocal) {
         // Dial back the state
         protectedOperationState = .savedToLocal
@@ -458,33 +481,56 @@ class FoodieObject {
   
   
   // Function to retrieve if the Download status calls for
-  func retrieveIfPending(withBlock callback: FoodieObject.RetrievedObjectBlock?) -> Bool {
+  func retrieveIfPending(withBlock callback: FoodieObject.SimpleErrorBlock?) -> Bool {
     
     var needRetrieval = false
     
-    // TODO: Need a mutex lock?
     if operationState == .pendingRetrieval {
       protectedOperationState = .retrieving
       needRetrieval = true
+    } else {
+      return false  // Nothing pending, just return false
     }
     
     if needRetrieval {
-      delegate!.retrieveRecursive(forceAnyways: false) { object, error in
+      guard let delegateObj = delegate else {
+        DebugPrint.fatal("delegate not expected to be nil in retrieveIfPending()")
+      }
+      delegateObj.retrieveRecursive(forceAnyways: false) { error in
         
         // Move forward state if success, backwards if failed
-        // TODO: Need a mutex lock?
-        if object != nil, error == nil {
+        if error == nil {
           self.protectedOperationState = .objectSynced
         } else {
           self.protectedOperationState = .notAvailable
         }
-        callback?(object, error)
+        callback?(error)
+        self.waitOnRetrieveDelegate?.retrieved(for: delegateObj)
+        self.waitOnRetrieveDelegate = nil
       }
-      
-      return true
-    } else {
-      // callback?(delegate!, nil)
-      return false
+      return true  // Pending retrieval issued as retrieval, return true
     }
   }
+  
+  
+  // Funciton to check if Content Retrieved is set to True. Register delegate object if False
+  func checkRetrieved(ifFalseSetDelegate delegate: FoodieObjectWaitOnRetrieveDelegate) -> Bool {
+    
+    var retrieved = false
+    pthread_mutex_lock(&operationStateMutex)
+    
+    switch operationState {
+    case .pendingRetrieval, .retrieving:
+      waitOnRetrieveDelegate = delegate
+      retrieved = false
+    case .notAvailable, .objectSynced:
+      retrieved = true
+    default:
+      DebugPrint.error("FoodieObject.checkRetrieved() state unexpected")
+    }
+    
+    pthread_mutex_unlock(&operationStateMutex)
+    return retrieved
+  }
+  
 }
