@@ -61,7 +61,7 @@ class MarkupViewController: UIViewController {
     // TODO: Don't let use click save (Gray it out until Thumbnail creation completed)
     
     // Initializing with Media Object also initialize foodieFileName and mediaType
-    let momentObj = FoodieMoment(foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
+    let momentObj = FoodieMoment(withState: .objectModified, foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
     
     // Setting the Thumbnail Object also initializes the thumbnailFileName
     momentObj.thumbnailObj = thumbnailObject
@@ -96,7 +96,7 @@ class MarkupViewController: UIViewController {
                                           comment: "Button to discard current Journal in alert dialog box to warn user",
                                           style: .destructive) { action in
           
-          var currentJournal = FoodieJournal()
+          var currentJournal: FoodieJournal!
           
           // Try to make a new Current Journal without saving the previous
           do {
@@ -455,7 +455,7 @@ class MarkupViewController: UIViewController {
       return
     }
     
-    thumbnailObject = FoodieMedia(fileName: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), type: .photo)
+    thumbnailObject = FoodieMedia(withState: .objectModified, fileName: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), type: .photo)
     thumbnailObject!.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieConstants.jpegCompressionQuality))
     //CGImageRelease(thumbnailCgImage)
   }

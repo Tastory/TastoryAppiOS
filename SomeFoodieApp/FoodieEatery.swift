@@ -43,13 +43,18 @@ class FoodieEatery: FoodiePFObject  {
   @NSManaged var eateryRating: Double // TODO: Placeholder for later rev
   
   
-  // MARK: - Public Instance Variable
-  var foodieObject = FoodieObject()
-  
-  
   // MARK: - Public Instance Functions
+  
+  // This is the Initilizer Parse will call upon Query or Retrieves
   override init() {
-    super.init()
+    super.init(withState: .notAvailable)
+    foodieObject.delegate = self
+  }
+  
+  
+  // This is the Initializer we will call internally
+  override init(withState operationState: FoodieObject.OperationStates) {
+    super.init(withState: operationState)
     foodieObject.delegate = self
   }
 }
