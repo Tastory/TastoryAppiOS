@@ -61,11 +61,11 @@ class JournalEntryViewController: UITableViewController {
     
     workingJournal?.title = titleTextField?.text
     workingJournal?.journalURL = linkTextField?.text
-    workingJournal?.saveRecursive(to: .local) { [unowned self] (success, error) in
+    workingJournal?.saveRecursive(to: .local) { /*[unowned self]*/ (success, error) in
       if success {
         DebugPrint.verbose("Journal Save to Local Completed!")
         
-        self.workingJournal?.saveRecursive(to: .server) { [unowned self] (success, error) in
+        self.workingJournal?.saveRecursive(to: .server) { /*[unowned self]*/ (success, error) in
           if success {
             DebugPrint.verbose("Journal Save to Server Completed!")
             self.saveCompleteDialog()

@@ -36,7 +36,7 @@ class FoodiePFObject: PFObject {
     }
     
     // See if this is in local cache
-    fetchFromLocalDatastoreInBackground { [unowned self] localObject, localError in
+    fetchFromLocalDatastoreInBackground { /*[unowned self]*/ localObject, localError in
       
       guard let err = localError else {
         guard let object = localObject else {

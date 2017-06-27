@@ -88,8 +88,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Public Instance Variables
+  var foodieObject: FoodieObject = FoodieObject()
   var thumbnailObj: FoodieMedia?
-  var foodieObject = FoodieObject()
   var selfPrefetchContext: FoodiePrefetch.Context?
   var contentPrefetchContext: FoodiePrefetch.Context?
 
@@ -194,7 +194,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     var blockSuccess = false
     var blockWait = 0
     
-    saveRecursive(to: .local) { [unowned self] (success, error) in
+    saveRecursive(to: .local) { /*[unowned self]*/ (success, error) in
       if success {
         self.saveRecursive(to: .server) { (success, error) in
           if success {
@@ -233,7 +233,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   // Function to save Journal in background
   func saveAsync(callback: ((Bool, Error?) -> Void)?) {
-    saveRecursive(to: .local) { [unowned self] (success, error) in
+    saveRecursive(to: .local) { /*[unowned self]*/ (success, error) in
       if success {
         self.saveRecursive(to: .server, withBlock: callback)
       } else {
@@ -276,10 +276,13 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   }
 
   
+  // MARK: - Journal specific Retrieval algorithms
+  
+  // Function to retrieve the Journal minus the Moments
   func selfRetrieval(withBlock callback: FoodieObject.RetrievedObjectBlock? = nil) {
     
-    // Do we need to fetch the Journal?
-    retrieve() { [unowned self] _, journalError in
+    // Do we still need to fetch the Journal?
+    retrieve() { _, journalError in
       if let error = journalError {
         DebugPrint.assert("Journal.retrieve() callback with error: \(error.localizedDescription)")
         callback?(self, error)
@@ -292,7 +295,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      thumbnailObject.retrieve() { [unowned self] _, thumbnailError in
+      thumbnailObject.retrieve() { _, thumbnailError in
         if let error = thumbnailError {
           DebugPrint.assert("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
           callback?(self, error)
@@ -331,7 +334,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     while index < momentArray.count, numberToRetrieve > 0 {
       
       let moment = momentArray[index]
-      _ = moment.foodieObject.markRetrieval()
+      _ = moment.foodieObject.markPendingRetrieval()
       
       numberToRetrieve -= 1
       index += 1
@@ -370,75 +373,14 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     for moment in momentArray {
       
       // Retrieve the Moment first. One step at a time...
-      if moment.foodieObject.retrieveIfPending(withBlock: { [unowned self] (retrieved, error) in
+      if moment.foodieObject.retrieveIfPending(withBlock: { /*[unowned self]*/ (retrieved, error) in
         if let err = error {
           // TODO: How do we signal a background task error?
           DebugPrint.error("Moment.retrieve Error = \(err.localizedDescription)")
-        } else {
-          guard let retrievedMoment = retrieved as? FoodieMoment else {
-            DebugPrint.assert("Unexpected retrievedMoment = nil")
-            self.contentPrefetchCallback?(self, ErrorCode.contentRetrievalFailed)
-            return
-          }
-          
-          DebugPrint.verbose("FoodieMoment \(retrievedMoment.objectId!) retrieved!")
-          
-          guard let media = retrievedMoment.mediaObj else {
-            DebugPrint.assert("Unexpected retrievedMoment.mediaObj = nil")
-            self.contentPrefetchCallback?(self, ErrorCode.contentRetrievalFailed)
-            return
-          }
-          
-          // Mark all the Media and Markups as for retrieval
-          _ = media.foodieObject.markRetrieval()
-          
-          // There might not be any Markups
-          if let markups = retrievedMoment.markups {
-            for markup in markups {
-              _ = markup.foodieObject.markRetrieval()
-            }
-          }
         }
-        self.contentRetrievalStateMachine()
-      }) { return }
-      
-      DebugPrint.verbose("Retrieving Media and Markup for FoodieMoment \(moment.objectId!)")
-      
-      guard let media = moment.mediaObj else {
-        // No Media. Nothing to do for this moment?
-        DebugPrint.verbose("Moment.mediaObj = nil")
-        continue
-      }
-      
-      // Retrieve the Media
-      if media.foodieObject.retrieveIfPending(withBlock: { [unowned self] (retrieved, error) in
-        if let err = error {
-          // TODO: How do we signal a background task error?
-          DebugPrint.error("Media.retrieve Error = \(err.localizedDescription)")
-        } else {
-          DebugPrint.verbose("FoodieMedia retrieved!")
-        }
-        self.contentRetrievalStateMachine()
-      }) { return }
-      
-      guard let markupArray = moment.markups else {
-        // No Markups. This moment is done
-        DebugPrint.verbose("Markups = nil")
         moment.setContentsRetrieved()
-        continue
-      }
-      
-      // Retrieve the Markups
-      for markup in markupArray {
-        if markup.foodieObject.retrieveIfPending(withBlock: { [unowned self] retrieved, error in
-          if let err = error {
-            // TODO: How do we signal a background task error?
-            DebugPrint.error("Markup.retrieved Error = \(err.localizedDescription)")
-          }
-          self.contentRetrievalStateMachine()
-        }) { return }
-      }
-      moment.setContentsRetrieved()
+        self.contentRetrievalStateMachine()
+      }) { return }
     }
 
     contentPrefetchCallback?(self, nil)
@@ -470,6 +412,62 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
         journal.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
       }
       callback?(someObject, error)  // Callback regardless
+    }
+  }
+  
+  
+  // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
+  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    
+    // Retrieve self first, then retrieve children afterwards
+    retrieve(forceAnyways: forceAnyways) { (object, error) in
+      
+      if let journalError = error {
+        DebugPrint.assert("Journal.retrieve() resulted in error: \(journalError.localizedDescription)")
+        callback?(object, error)
+        return
+      }
+      
+      guard let journal = object as? FoodieJournal else {
+        DebugPrint.assert("Unexpected Journal.retrieve() resulted in object = nil")
+        callback?(object, error)
+        return
+      }
+      
+      guard let thumbnail = journal.thumbnailObj else {
+        DebugPrint.assert("Unexpected Journal.retrieve() resulted in journal.thumbnailObj = nil")
+        callback?(object, error)
+        return
+      }
+      
+      journal.foodieObject.resetOutstandingChildOperations()
+      
+      // Got through all sanity check, calling children's retrieveRecursive
+      journal.foodieObject.retrieveChild(thumbnail, forceAnyways: forceAnyways, withBlock: callback)
+      
+      if let hasMoments = journal.moments {
+        for moment in hasMoments {
+          journal.foodieObject.retrieveChild(moment, forceAnyways: forceAnyways, withBlock: callback)
+        }
+      }
+      
+      if let hasMarkups = journal.markups {
+        for markup in hasMarkups {
+          journal.foodieObject.retrieveChild(markup, forceAnyways: forceAnyways, withBlock: callback)
+        }
+      }
+      
+      // Do we need to retrieve User?
+      
+      if let eatery = journal.eatery {
+        journal.foodieObject.retrieveChild(eatery, forceAnyways: forceAnyways, withBlock: callback)
+      }
+      
+      if let hasCategories = journal.categories {
+        for category in hasCategories {
+          journal.foodieObject.retrieveChild(category, forceAnyways: forceAnyways, withBlock: callback)
+        }
+      }
     }
   }
   
@@ -528,7 +526,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
     
     if !childOperationPending {
-      DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+      DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
         self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
       }
     }

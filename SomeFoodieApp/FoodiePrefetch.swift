@@ -79,7 +79,7 @@ class FoodiePrefetch {
 
       DebugPrint.verbose("prefetchNextIfNoBlock, doPrefetch")
       
-      delegate.doPrefetch(on: objectToFetch, for: workingContext){ [unowned self] context in
+      delegate.doPrefetch(on: objectToFetch, for: workingContext){ /*[unowned self]*/ context in
         
         // Prefetch completes. Remove if not already removed
         self.removePrefetchWork(for: context)

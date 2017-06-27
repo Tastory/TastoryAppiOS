@@ -58,6 +58,14 @@ class FoodieEatery: FoodiePFObject  {
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieEatery: FoodieObjectDelegate {
   
+  // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
+  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    
+    // Retrieve self. This object have no children
+    retrieve(forceAnyways: forceAnyways, withBlock: callback)
+  }
+  
+  
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      withName name: String?,

@@ -40,8 +40,8 @@ class FeedCollectionViewController: UICollectionViewController {
     FoodieJournal.queryAll(limit: 20, block: queryResultCallback)  // TODO: Don't hardcode this limit
     
     // Turn on CollectionView prefetching
-    collectionView?.prefetchDataSource = self
-    collectionView?.isPrefetchingEnabled = true
+    //collectionView?.prefetchDataSource = self
+    //collectionView?.isPrefetchingEnabled = true
   }
   
   
@@ -185,18 +185,18 @@ class FeedCollectionViewController: UICollectionViewController {
           reusableCell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
           reusableCell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
           
-          pthread_mutex_lock(&reusableCell.cellStatusMutex)
-          reusableCell.cellLoaded = true
-          if reusableCell.cellDisplayed {
-            letsPrefetch = true
-          }
-          pthread_mutex_unlock(&reusableCell.cellStatusMutex)
+//          pthread_mutex_lock(&reusableCell.cellStatusMutex)
+//          reusableCell.cellLoaded = true
+//          if reusableCell.cellDisplayed {
+//            letsPrefetch = true
+//          }
+//          pthread_mutex_unlock(&reusableCell.cellStatusMutex)
         }
-        
-        if letsPrefetch {
-          let journal = self.queriedJournalArray[indexPath.row]
-          journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
-        }
+//        
+//        if letsPrefetch {
+//          let journal = self.queriedJournalArray[indexPath.row]
+//          journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
+//        }
       }
     }
     return reusableCell
@@ -205,27 +205,27 @@ class FeedCollectionViewController: UICollectionViewController {
   
   // MARK: - UICollectionViewDataSource
   
-  override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-    
-    guard let feedCell = cell as? FeedCollectionViewCell else {
-      internalErrorDialog()
-      DebugPrint.assert("Cannot cast cell as FeedCollectionViewCell")
-      return
-    }
-    
-    var letsPrefetch = false
-    pthread_mutex_lock(&feedCell.cellStatusMutex)
-    feedCell.cellDisplayed = true
-    if feedCell.cellLoaded {
-      letsPrefetch = true
-    }
-    pthread_mutex_unlock(&feedCell.cellStatusMutex)
-    
-    if letsPrefetch {
-      let journal = self.queriedJournalArray[indexPath.row]
-      journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
-    }
-  }
+//  override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+//    
+//    guard let feedCell = cell as? FeedCollectionViewCell else {
+//      internalErrorDialog()
+//      DebugPrint.assert("Cannot cast cell as FeedCollectionViewCell")
+//      return
+//    }
+//    
+//    var letsPrefetch = false
+//    pthread_mutex_lock(&feedCell.cellStatusMutex)
+//    feedCell.cellDisplayed = true
+//    if feedCell.cellLoaded {
+//      letsPrefetch = true
+//    }
+//    pthread_mutex_unlock(&feedCell.cellStatusMutex)
+//    
+//    if letsPrefetch {
+//      let journal = self.queriedJournalArray[indexPath.row]
+//      journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
+//    }
+//  }
   
   override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
     DebugPrint.verbose("collectionView didEndDisplayingCell indexPath.row = \(indexPath.row)")
@@ -266,9 +266,9 @@ extension FeedCollectionViewController: FoodiePrefetchDelegate {
       if journal.thumbnailObj == nil {
         // No Thumbnail Object, so assume the Journal itself needs to be retrieved
         DebugPrint.verbose("doPrefetch journal.selfRetrieval")
-        journal.selfRetrieval() { [unowned self] (_, error) in
+        journal.selfRetrieval() { [weak self] (_, error) in
           if let journalError = error {
-            self.fetchErrorDialog()
+            self?.fetchErrorDialog()
             DebugPrint.assert("On prefetch, Journal.selfRetrieval() callback with error: \(journalError.localizedDescription)")
           }
           callback?(context)
@@ -276,9 +276,9 @@ extension FeedCollectionViewController: FoodiePrefetchDelegate {
         
       } else {
         DebugPrint.verbose("doPrefetch journal.contentRetrieval")
-        journal.contentRetrievalRequest(fromMoment: 0, forUpTo: Constants.MomentsToBufferAtATime) { [unowned self] (_, error) in
+        journal.contentRetrievalRequest(fromMoment: 0, forUpTo: Constants.MomentsToBufferAtATime) { [weak self] (_, error) in
           if let journalError = error {
-            self.fetchErrorDialog()
+            self?.fetchErrorDialog()
             DebugPrint.assert("On prefetch, Journal.contentRetrieval() callback with error: \(journalError.localizedDescription)")
           }
           callback?(context)
