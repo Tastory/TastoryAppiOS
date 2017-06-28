@@ -165,39 +165,76 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     DebugPrint.verbose("FoodieMoment.deleteRecursive from \(self.objectId) Location: \(location)")
     
-    if(!hasRetrieved)
-    {
-      hasRetrieved = true
-      //TODO remove retrieve the moments for testing only
-      self.retrieve(withBlock: {(success, error) in
-        
-        // TODO remove the following code for testing only
-        if self.mediaObj == nil, let fileName = self.mediaFileName,
-          let typeString = self.mediaType, let type = FoodieMediaType(rawValue: typeString) {
-          self.mediaObj = FoodieMedia(fileName: fileName, type: type)
-        }
-        
-        // TODO remove the following code for testing only
-        if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
-          self.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
-        }
-        
-        if let hasMedia = self.mediaObj {
-          hasMedia.foodieObject.markPendingDelete()
-          FoodieObject.appendToPendingDelete(hasMedia)
-        }
-        
-        if let hasMomentThumb = self.thumbnailObj
-        {
-          hasMomentThumb.foodieObject.markPendingDelete()
-          FoodieObject.appendToPendingDelete(hasMomentThumb)
-        }
-      })
-    }
+    // retrieve moment first
     
-    self.foodieObject.deleteRecursiveBase(from: location, withBlock: callback)
-    
+    self.retrieve(withBlock: {(success, error) in
+      
+      
+      switch location {
+        
+      case .local,
+           .server:
+        // delete from local only
+        self.foodieObject.performDelete(from: location, withBlock: { (success, error) in
+          callback?(success,error)
+        })
+      case .both:
+        // delete from local first
+        self.foodieObject.markPendingDelete()
+        self.foodieObject.performDelete(from: .local, withBlock: { (success, error) in
+          if(success) {
+            self.foodieObject.performDelete(from: .server, withBlock: { (success, error) in
+              
+              // deleted journal form both local and server
+              // check to see if there are moments to append
+              var lastDeleteObj:FoodieObjectDelegate = self
+              
+              // iterate to the last delete object with nextDeleteObject = nil
+              while(lastDeleteObj.getNextDeleteObject() != nil) {
+                lastDeleteObj = lastDeleteObj.getNextDeleteObject()!
+              }
+              
+              if let hasMedia = self.mediaObj {
+                hasMedia.foodieObject.markPendingDelete()
+                if(lastDeleteObj.getNextDeleteObject() == nil)
+                {
+                  lastDeleteObj.setNextDeleteObject(hasMedia)
+                }
+                lastDeleteObj = hasMedia
+              }
+              
+              if let hasMomentThumb = self.thumbnailObj
+              {
+                hasMomentThumb.foodieObject.markPendingDelete()
+                if(lastDeleteObj.getNextDeleteObject() == nil)
+                {
+                  lastDeleteObj.setNextDeleteObject(hasMomentThumb)
+                }
+                lastDeleteObj = hasMomentThumb
+              }
+              
+              if(self.foodieObject.nextDeleteObject != nil) {
+                self.foodieObject.nextDeleteObject?.deleteRecursive(from: location, withName: nil, withBlock: callback)
+              }
+              else {
+                // no more stuff to delete call the call back
+                callback?(success, error)
+              }
+            })
+          }
+        })
+      }
+    })
   }
+  
+  func getNextDeleteObject() -> FoodieObjectDelegate? {
+    return foodieObject.getNextDeleteObject()
+  }
+  
+  func setNextDeleteObject(_ deleteObj: FoodieObjectDelegate) {
+    foodieObject.setNextDeleteObject(deleteObj)
+  }
+
   
   func verbose() {
     DebugPrint.verbose("FoodieMoment ID: \(getUniqueIdentifier())")

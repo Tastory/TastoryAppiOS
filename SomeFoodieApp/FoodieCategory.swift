@@ -45,9 +45,16 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     DebugPrint.verbose("FoodieCategory.deleteRecursive from Location: \(location)")
-    self.foodieObject.deleteRecursiveBase(from: location, withBlock: callback)
+    foodieObject.deleteRecursiveBasicBehavior(from: location, withBlock: callback)
   }
   
+  func getNextDeleteObject() -> FoodieObjectDelegate? {
+    return foodieObject.getNextDeleteObject()
+  }
+  
+  func setNextDeleteObject(_ deleteObj: FoodieObjectDelegate) {
+    foodieObject.setNextDeleteObject(deleteObj)
+  }
   
   func verbose() {
     

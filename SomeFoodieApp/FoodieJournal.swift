@@ -79,12 +79,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Public Static Variables
   static var currentJournal: FoodieJournal? { return currentJournalPrivate }
   
-  
   // MARK: - Private Static Variables
   private static var currentJournalPrivate: FoodieJournal?
-  
-  // MARK: - Private Variables
-  private var hasMarkedChildForDelete = false
   
   // MARK: - Public Instance Variables
   var thumbnailObj: FoodieMedia?
@@ -258,43 +254,9 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   }
   
   func deleteAsync(callback: ((Bool, Error?) -> Void)?){
-    self.foodieObject.markPendingDelete()
-    FoodieObject.appendToPendingDelete(self)
-    
-    DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
-        self.foodieObject.deleteFromPendingDelete(withBlock: callback)
-    }
+    deleteRecursive(from: .both, withBlock: callback)
   }
-  
-  // Function to delete specified Moment
-  // Other Moments in the array might have their position altered accordingly
-  // Controller layer should query to confirm how other Moments might have their orders and positions changed
-  // TODO need to add callback ?
-  func delete(moment: FoodieMoment) {
-    moment.foodieObject.markPendingDelete()
-    FoodieObject.appendToPendingDelete(moment)
-    DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
-      self.foodieObject.deleteFromPendingDelete(withBlock: { (success, error) in
-        if(success) {
-          self.moments?.remove(at: (self.moments?.index(of: moment))!)
-        }
-      })
-    }
-  }
-  
-  // Funciton to delete a specified Markup
-  func delete(markup: FoodieMarkup) {
-    markup.foodieObject.markPendingDelete()
-    FoodieObject.appendToPendingDelete(markup)
-    DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
-      self.foodieObject.deleteFromPendingDelete(withBlock: { (success, error) in
-        if(success) {
-          self.markups?.remove(at: (self.markups?.index(of: markup))!)
-        }
-      })
-    }
-  }
-  
+
   // MARK: - Foodie Object Delegate Conformance
   
   override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
@@ -367,6 +329,39 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
+  func deleteJournalCommon() {
+    // deleted journal form both local and server
+    // check to see if there are moments to append
+    var lastDeleteObj:FoodieObjectDelegate = self
+    
+    // iterate to the last delete object with nextDeleteObject = nil
+    while(lastDeleteObj.getNextDeleteObject() != nil) {
+      lastDeleteObj = lastDeleteObj.getNextDeleteObject()!
+    }
+    
+    if let hasMoment = self.moments {
+      for moment in hasMoment {
+        moment.foodieObject.markPendingDelete()
+        if(lastDeleteObj.getNextDeleteObject() == nil)
+        {
+          lastDeleteObj.setNextDeleteObject(moment)
+        }
+        lastDeleteObj = moment
+      }
+    }
+    
+    if let hasMarkup = self.markups {
+      for markup in hasMarkup {
+        markup.foodieObject.markPendingDelete()
+        if(lastDeleteObj.getNextDeleteObject() == nil)
+        {
+          lastDeleteObj.setNextDeleteObject(markup)
+        }
+        lastDeleteObj = markup
+      }
+    }
+  }
+
   // Trigger recursive delete against all child objects.
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        withName name: String? = nil,
@@ -374,26 +369,63 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     DebugPrint.verbose("FoodieJournal.deleteRecursive \(objectId) from Location: \(location)")
     
-    if(!hasMarkedChildForDelete)
-    {
-      // check to see if there are moments to append
-      if let hasMoment = moments{
-        for moment in hasMoment {
-          moment.foodieObject.markPendingDelete()
-          FoodieObject.appendToPendingDelete(moment)
+    switch location {
+    
+    case .local,
+         .server:
+      // delete from local only
+      foodieObject.performDelete(from: location, withBlock: { (success, error) in
+        if(success) {
+          self.deleteJournalCommon()
+          if(self.foodieObject.nextDeleteObject != nil) {
+            self.foodieObject.nextDeleteObject?.deleteRecursive(from: location, withName: nil, withBlock: callback)
+          }
+          else {
+            // no more item to delete
+            callback?(success, error)
+          }
+        } else {
+          // error when deleting from location
+          callback?(success,error)
         }
-      }
-      
-      if let hasMarkup = markups {
-        for markup in hasMarkup {
-          markup.foodieObject.markPendingDelete()
-          FoodieObject.appendToPendingDelete(markup)
+      })
+    case .both:
+      // delete from local first 
+      self.foodieObject.markPendingDelete()
+      foodieObject.performDelete(from: .local, withBlock: { (success, error) in
+        if(success) {
+          self.foodieObject.performDelete(from: .server, withBlock: { (success, error) in
+            
+            if(success) {
+              self.deleteJournalCommon()
+              if(self.foodieObject.nextDeleteObject != nil) {
+                self.foodieObject.nextDeleteObject?.deleteRecursive(from: location, withName: nil, withBlock: callback)
+              }
+              else {
+                // no more item to delete
+                callback?(success, error)
+              }
+            } else {
+              // error when deleting journal from server
+              callback?(success, error)
+            }
+          })
+        } else {
+          // error when deleting journal from local
+          callback?(success, error)
         }
-      }
-      hasMarkedChildForDelete = true
+      })
     }
-    foodieObject.deleteRecursiveBase(from: location, withBlock: callback)
   }
+  
+  func getNextDeleteObject() -> FoodieObjectDelegate? {
+    return foodieObject.getNextDeleteObject()
+  }
+  
+  func setNextDeleteObject(_ deleteObj: FoodieObjectDelegate) {
+    foodieObject.setNextDeleteObject(deleteObj)
+  }
+  
   
   func verbose() {
     DebugPrint.verbose("FoodieJournal ID: \(getUniqueIdentifier())")
