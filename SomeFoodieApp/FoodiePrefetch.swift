@@ -100,7 +100,9 @@ class FoodiePrefetch {
   
   func unblockPrefetching() {
     pthread_mutex_lock(&blockCountMutex)
-    blockCount -= 1
+    if blockCount >= 1 {
+      blockCount -= 1
+    }
     let debugCount = blockCount
     pthread_mutex_unlock(&blockCountMutex)
     
