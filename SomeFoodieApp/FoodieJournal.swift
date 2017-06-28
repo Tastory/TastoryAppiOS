@@ -81,7 +81,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  static let MomentsToBufferAtATime = 2
+  
+  struct Constants {
+    static let MomentsToBufferAtATime = 2
+  }
+  
   
   // MARK: - Public Static Variables
   static var currentJournal: FoodieJournal? { return currentJournalPrivate }

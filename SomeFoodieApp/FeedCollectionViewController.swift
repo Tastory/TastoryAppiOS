@@ -64,8 +64,13 @@ class FeedCollectionViewController: UICollectionViewController {
     FoodieJournal.queryAll(limit: 20, block: queryResultCallback)  // TODO: Don't hardcode this limit
     
     // Turn on CollectionView prefetching
-    //collectionView?.prefetchDataSource = self
-    //collectionView?.isPrefetchingEnabled = true
+    collectionView?.prefetchDataSource = self
+    collectionView?.isPrefetchingEnabled = true
+  }
+  
+  
+  override func viewDidAppear(_ animated: Bool) {
+    FoodiePrefetch.global.unblockPrefetching()
   }
   
   
@@ -137,7 +142,7 @@ class FeedCollectionViewController: UICollectionViewController {
   
   func viewJournal(_ sender: UIButton) {
     // Stop all prefetches
-    FoodiePrefetch.global.removeAllPrefetchWork()
+    FoodiePrefetch.global.blockPrefetching()
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalViewController") as! JournalViewController
@@ -222,7 +227,7 @@ class FeedCollectionViewController: UICollectionViewController {
         
         if letsPrefetch {
           let journal = self.queriedJournalArray[indexPath.row]
-          journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
+          journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
         }
       }
     }
@@ -250,7 +255,7 @@ class FeedCollectionViewController: UICollectionViewController {
     
     if letsPrefetch {
       let journal = self.queriedJournalArray[indexPath.row]
-      journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
+      journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
     }
   }
   
@@ -270,7 +275,7 @@ extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
     for indexPath in indexPaths {
       DebugPrint.verbose("collectionView prefetchItemsAt indexPath.row = \(indexPath.row)")
       let journal = queriedJournalArray[indexPath.row]
-      journal.selfPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: self, on: journal)
+      journal.selfPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
     }
   }
   
