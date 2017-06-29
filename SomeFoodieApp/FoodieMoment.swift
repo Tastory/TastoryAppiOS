@@ -158,81 +158,49 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  // Trigger recursive saves against all child objects.
-  func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String? = nil,
+  
+  func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieMoment.deleteRecursive from \(self.objectId) Location: \(location)")
+    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
     
-    // retrieve moment first
-    
-    self.retrieve(withBlock: {(success, error) in
+    // Object might not be retrieved, retrieve first to have access to children
+    retrieve { (_, error) in
       
-      
-      switch location {
-        
-      case .local,
-           .server:
-        // delete from local only
-        self.foodieObject.performDelete(from: location, withBlock: { (success, error) in
-          callback?(success,error)
-        })
-      case .both:
-        // delete from local first
-        self.foodieObject.markPendingDelete()
-        self.foodieObject.performDelete(from: .local, withBlock: { (success, error) in
-          if(success) {
-            self.foodieObject.performDelete(from: .server, withBlock: { (success, error) in
-              
-              // deleted journal form both local and server
-              // check to see if there are moments to append
-              var lastDeleteObj:FoodieObjectDelegate = self
-              
-              // iterate to the last delete object with nextDeleteObject = nil
-              while(lastDeleteObj.getNextDeleteObject() != nil) {
-                lastDeleteObj = lastDeleteObj.getNextDeleteObject()!
-              }
-              
-              if let hasMedia = self.mediaObj {
-                hasMedia.foodieObject.markPendingDelete()
-                if(lastDeleteObj.getNextDeleteObject() == nil)
-                {
-                  lastDeleteObj.setNextDeleteObject(hasMedia)
-                }
-                lastDeleteObj = hasMedia
-              }
-              
-              if let hasMomentThumb = self.thumbnailObj
-              {
-                hasMomentThumb.foodieObject.markPendingDelete()
-                if(lastDeleteObj.getNextDeleteObject() == nil)
-                {
-                  lastDeleteObj.setNextDeleteObject(hasMomentThumb)
-                }
-                lastDeleteObj = hasMomentThumb
-              }
-              
-              if(self.foodieObject.nextDeleteObject != nil) {
-                self.foodieObject.nextDeleteObject?.deleteRecursive(from: location, withName: nil, withBlock: callback)
-              }
-              else {
-                // no more stuff to delete call the call back
-                callback?(success, error)
-              }
-            })
-          }
-        })
+      if let hasError = error {
+        callback?(false, error)
       }
-    })
-  }
-  
-  func getNextDeleteObject() -> FoodieObjectDelegate? {
-    return foodieObject.getNextDeleteObject()
-  }
-  
-  func setNextDeleteObject(_ deleteObj: FoodieObjectDelegate) {
-    foodieObject.setNextDeleteObject(deleteObj)
+      
+      // Delete itself first
+      self.foodieObject.deleteObject() { (success, error) in
+        
+        // Reset pending/outstanding
+        var childOperationPending = false
+        self.foodieObject.outstandingChildOperations = 0
+        
+        // Look for child to delete
+        if let media = self.mediaObj {
+          self.foodieObject.deleteChild(media, withName: name, withBlock: callback)
+        }
+        
+        if let hasMarkup = self.markups {
+          for markup in hasMarkup {
+            self.foodieObject.deleteChild(markup, withName: name, withBlock: callback)
+            childOperationPending = true
+          }
+        }
+        
+        if let thumbnail = self.thumbnailObj {
+          self.foodieObject.deleteChild(thumbnail, withName: name, withBlock: callback)
+        }
+        
+        if !childOperationPending {
+          DispatchQueue.global(qos: .userInitiated).async { _ in
+            callback?(success, error)
+          }
+        }
+      }
+    }
   }
 
   

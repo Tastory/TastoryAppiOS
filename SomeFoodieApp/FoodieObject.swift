@@ -21,8 +21,7 @@ protocol FoodieObjectDelegate: class {
   
   func saveToServer(withBlock callback: FoodieObject.BooleanErrorBlock?)
   
-  func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String?,
+  func deleteRecursive(withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?)
   
   func deleteFromLocal(withName name: String?, withBlock callback: FoodieObject.BooleanErrorBlock?)
@@ -34,10 +33,6 @@ protocol FoodieObjectDelegate: class {
   func getUniqueIdentifier() -> String
   
   func foodieObjectType() -> String
-  
-  func getNextDeleteObject() -> FoodieObjectDelegate?
-  
-  func setNextDeleteObject(_ deleteObj: FoodieObjectDelegate)
   
 }
 
@@ -130,7 +125,7 @@ class FoodieObject {
   var protectedOperationState: OperationStates?  // nil if Undetermined
   fileprivate var protectedOperationError: Error?  // Need specific Error object class?
   fileprivate var criticalMutex = pthread_mutex_t()
-  fileprivate var outstandingChildOperations = 0
+  var outstandingChildOperations = 0
   
   var deleteRetryCount = 1
   
@@ -148,48 +143,6 @@ class FoodieObject {
     delegate = delegateObject
   }
   
-  // mark object for delete
-  func markPendingDelete() {
-      protectedOperationState = .pendingDelete
-  }
-  
-  /*
-  static func getFirstObjFromPendingDelete() -> FoodieObjectDelegate?
-  {
-    var foodieObj: FoodieObjectDelegate? = nil
-    pthread_mutex_lock(&deleteListMutex)
-    if(!pendingDeleteList.isEmpty) {
-      foodieObj = pendingDeleteList.first
-    }
-    pthread_mutex_unlock(&deleteListMutex)
-    return foodieObj
-  }
-  
-  static func removeFirstObjFromPendingDelete()
-  {
-    pthread_mutex_lock(&deleteListMutex)
-    
-    if(!pendingDeleteList.isEmpty)
-    {
-      pendingDeleteList.remove(at: 0)
-    }
-    pthread_mutex_unlock(&deleteListMutex)
-  }
-  
-  static func isPendingDeleteEmpty() -> Bool {
-    var result = false
-    pthread_mutex_lock(&deleteListMutex)
-    result = pendingDeleteList.isEmpty
-    pthread_mutex_unlock(&deleteListMutex)
-    return result
-  }
-  
-
-  */
-  
-  func appendToNextDeleteObj(_ foodieObj: FoodieObjectDelegate) {
-    nextDeleteObject = foodieObj
-  }
   
   // Function to mark memory modified
   func markModified() -> Bool {
@@ -406,268 +359,59 @@ class FoodieObject {
     }
   }
   
-  // Function for state transition at the beginning of delete
-  func deleteStateTransition(to location: StorageLocation) -> (success: Bool?, error: LocalizedError?) {
-    
-    guard let state = protectedOperationState else {
-      DebugPrint.assert("Valid operationState expected to perform Delete")
-      return (false, ErrorCode(.deleteStateTransitionNoState))
-    }
-    
-    // Is delete even allowed? Return false here if illegal state transition. Otherwise do state transition
-    switch state {
-    case .deletingFromLocal, .deletingFromServer:
-      // Delete already occuring, another delete is not allowed
-      return (false, ErrorCode(.deleteStateTransitionSaveAlreadyInProgress))
-    default:
-      break
-    }
-    
-    // Location dependent state transitions
-    switch location {
-    case .local:
-      switch state {
-      case .objectSynced:
-        // No child object needs deleting. Callback success in background
-        return (true, nil)
-      case .pendingDelete:
-        protectedOperationState = .deletingFromLocal
-      default:
-        DebugPrint.assert("Illegal State Transition. Delete from Local attempt not from .objectSynced state. Current State = \(state)")
-        return (false, ErrorCode(.deleteStateTransitionIllegalStateTransition))
-      }
-      
-    case .server:
-      switch state {
-      case .objectSynced:
-        // No child object needs deleting. Callback success in background
-        return (true, nil)
-      case .deletedFromLocal:
-        protectedOperationState = .deletingFromServer
-      default:
-        DebugPrint.assert("Illegal State Transition. Save to Sever attempt not from .deletedFromLocal state. Current State = \(state)")
-        return (false, ErrorCode(.deleteStateTransitionIllegalStateTransition))
-      }
-    default:
-    break
-    }
-    
-    return (nil, nil)
-  }
-
-  // Function for state transition at the end of delete
-  func deleteCompleteStateTransition(to location: StorageLocation) {
-    
-    guard let state = protectedOperationState else {
-      DebugPrint.fatal("Unable to proceed due to nil state from object. Location: \(location)")
-    }
-    
-    // State Transition for Save Error
-    if protectedOperationError != nil {
-      
-      if (location == .local) && (state == .deletingFromLocal) {
-        // Dial back the state
-        protectedOperationState = .pendingDelete
-        
-      } else if (location == .server) && (state == .deletingFromServer) {
-        // Dial back the state
-        protectedOperationState = .deletingFromLocal
-        
-      } else {
-        // Unexpected state combination
-        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(state)")
-      }
-    }
-      
-      // State Transition for Success
-    else {
-      
-      if (location == .local) && (state == .deletingFromLocal) {
-        // Advance to next state
-        protectedOperationState = .deletedFromLocal
-        
-      } else if (location == .server) && (state == .deletingFromServer) {
-        // Advance to next state
-        protectedOperationState = .objectSynced
-        
-      } else {
-        // Unexpected state combination
-        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(state)")
-      }
-    }
-  }
   
   // Function to delete this object
-  func deleteObject(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
+  func deleteObject(withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
     
-    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject from Location: \(location)")
+    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject")
     
     guard let delegateObj = delegate else {
       DebugPrint.fatal("delegate not expected to be nil in deleteObject()")
     }
-    switch location {
-    case .local:
-      delegateObj.deleteFromLocal(withName: name, withBlock: callback)
-    case .server:
-      delegateObj.deleteFromServer(withBlock: callback)
-    default:
-      break
-    }
-  }
-  
-  func deleteRecursiveBasicBehavior(from location: FoodieObject.StorageLocation,
-                                    withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    switch location {
-      
-    case .local,
-         .server:
-      // delete from local only
-      performDelete(from: location, withBlock: { (success, error) in
-        if(success) {
-          if(self.nextDeleteObject != nil) {
-            self.nextDeleteObject?.deleteRecursive(from: location, withName: nil, withBlock: callback)
-          }
-          else {
-            // no more stuff to delete call the call back
-            callback?(success, error)
-          }
-        }
-        else {
-          // error when deleting journal from location
-          callback?(success, error)
-        }
-      })
-    case .both:
-      // delete from local first
-      markPendingDelete()
-      performDelete(from: .local, withBlock: { (success, error) in
-        if(success) {
-          self.performDelete(from: .server, withBlock: { (success, error) in
-            if(success) {
-              if(self.nextDeleteObject != nil) {
-                self.nextDeleteObject?.deleteRecursive(from: location, withName: nil, withBlock: callback)
-              }
-              else {
-                // no more stuff to delete call the call back
-                callback?(success, error)
-              }
-            }
-            else {
-              // error when deleting journal from server
-              callback?(success, error)
-            }
-          })
-        } else {
-          // error when deleting journal from local
-          callback?(success, error)
-        }
-      })
-    }
-  }
-  
-  func performDelete(from location: FoodieObject.StorageLocation,
-                           withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    let earlyReturnStatus  = deleteStateTransition(to: location)
-    if let earlySuccess = earlyReturnStatus.success {
-      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-      return
-    }
-   
-    deleteObject(from: location, withBlock: {(success,error)-> Void in
-      if let hasError = error {
-        self.protectedOperationError = hasError
-      }
-      self.deleteCompleteStateTransition(to: location)
-      callback?(self.protectedOperationError == nil, self.protectedOperationError)
-    })
-  }
-  
-  func getNextDeleteObject() -> FoodieObjectDelegate? {
-    return nextDeleteObject
-  }
-  
-  func setNextDeleteObject(_ deleteObj: FoodieObjectDelegate) {
-    nextDeleteObject = deleteObj
-  }
-  
-  
-  
-  // attempt to delete from server with retry logic to call this function recursively if failure occurs
-  /*
-  func tryDeleteFromServer(withBlock callback: BooleanErrorBlock?) {
-    
-    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject from Server")
-    
-    // delete from server
-    FoodieObject.getFirstObjFromPendingDelete()?.deleteRecursive(from: .server, withName: nil, withBlock: { (success, error) in
-      if(success) {
-        // remove this one from pendingDeleteList
-        FoodieObject.removeFirstObjFromPendingDelete()
-        if(!FoodieObject.isPendingDeleteEmpty()) {
-          self.deleteFromPendingDelete(withBlock: callback)
-        }
-        else {
-          callback?(true,nil)
-        }
-      }
-      else {
-        self.retryDelete(from: .server, withBlock: callback)
-      }
-    })
-  }
-  
-  // attempt to delete from local with retry logic to call this function recursively if failure occurs
-  func tryDeleteFromLocal(withBlock callback: BooleanErrorBlock?) {
-    
-    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject from Server")
-    
-    FoodieObject.getFirstObjFromPendingDelete()?.deleteRecursive(from: .local, withName: nil, withBlock: { (success, error) in
-      if(success) {
-        self.tryDeleteFromServer(withBlock: callback)
-      }
-      else {
-        self.retryDelete(from: .local, withBlock: callback)
-      }
-    })
-  }
-  
-  // check if we should retry
-  func retryDelete(from location: StorageLocation, withBlock callback: BooleanErrorBlock?){
-    
-    if(deleteRetryCount <= 0 )
-    {
-      DebugPrint.verbose("Attempted to delete object twice")
-      // no more attemps to retry return failure
-      
-      if(delegate!.foodieObjectType() == "FoodieJournal")
-      {
-        // call back with error since journal can't be deleted
-        callback?(false, ErrorCode.deleteRetryError)
+    // Always deletes both back to back, due to retrieval requirement on parent object, which will litter the data in both local and server always
+    delegateObj.deleteFromLocal(withName: name) { success, error in
+      if success {
+        delegateObj.deleteFromServer(withBlock: callback)
       } else {
-        // dropping undeleted item
-        DebugPrint.error("Can't delete \(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier()) from \(location) dropping this object from pendingDelete List")
-        FoodieObject.removeFirstObjFromPendingDelete()
-      }
-    }
-    else {
-      DebugPrint.verbose("Failed to delete FoodieObject from: \(location)")
-      deleteRetryCount -= 1
-      // retry delete from local
-      switch location {
-      case .local:
-        self.tryDeleteFromLocal(withBlock: callback)
-      case .server:
-        self.tryDeleteFromServer(withBlock: callback)
+        callback?(false, error)
       }
     }
   }
   
   
-  func deleteFromPendingDelete(withBlock callback: BooleanErrorBlock?)
-  {
-      tryDeleteFromLocal(withBlock: callback)
+  // Function to call a child's saveRecursive
+  func deleteChild(_ child: FoodieObjectDelegate,
+                  withName name: String? = nil,
+                  withBlock callback: BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteChild of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier()))")
+    
+    pthread_mutex_lock(&self.criticalMutex)
+    outstandingChildOperations += 1
+    pthread_mutex_unlock(&self.criticalMutex)
+    
+    // Save Recursive for each moment. Call saveCompletionFromChild when done and without errors
+    child.deleteRecursive(withName: name) { (success, error) in
+      if !success {
+        if let hasError = error {
+          self.protectedOperationError = hasError
+        } else {
+          DebugPrint.assert("deleteChild failed but block contained no Error")
+        }
+      }
+      
+      // This needs to be critical section or race condition between many childrens' completion can occur
+      var childOperationsPending = true
+      pthread_mutex_lock(&self.criticalMutex)
+      self.outstandingChildOperations -= 1
+      if self.outstandingChildOperations == 0 { childOperationsPending = false }
+      pthread_mutex_unlock(&self.criticalMutex)
+      
+      if !childOperationsPending {
+        callback?(self.protectedOperationError == nil, self.protectedOperationError)
+      }
+    }
   }
-  */
   
 }

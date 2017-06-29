@@ -50,22 +50,23 @@ extension FoodieMarkup: FoodieObjectDelegate {
   }
   
   
-  // Trigger recursive saves against all child objects.
-  func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String?,
+  func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieMarkUp.deleteRecursive from \(objectId) Location: \(location)")
-    foodieObject.deleteRecursiveBasicBehavior(from: location, withBlock: callback)
+    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
+    
+    // Object might not be retrieved, retrieve first to have access to children
+    retrieve { (_, error) in
+      
+      if let hasError = error {
+        callback?(false, error)
+      }
+      
+      // Delete itself first
+      self.foodieObject.deleteObject(withName: name, withBlock: callback)
+    }
   }
   
-  func getNextDeleteObject() -> FoodieObjectDelegate? {
-    return foodieObject.getNextDeleteObject()
-  }
-  
-  func setNextDeleteObject(_ deleteObj: FoodieObjectDelegate) {
-    foodieObject.setNextDeleteObject(deleteObj)
-  }
   
   func verbose() {
     

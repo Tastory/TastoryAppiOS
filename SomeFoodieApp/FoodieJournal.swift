@@ -253,9 +253,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
   }
   
-  func deleteAsync(callback: ((Bool, Error?) -> Void)?){
-    deleteRecursive(from: .both, withBlock: callback)
+  
+  func deleteAsync(withBlock callback: FoodieObject.BooleanErrorBlock?){
+    deleteRecursive(withBlock: callback)
   }
+  
 
   // MARK: - Foodie Object Delegate Conformance
   
@@ -328,102 +330,62 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       }
     }
   }
-  
-  func deleteJournalCommon() {
-    // deleted journal form both local and server
-    // check to see if there are moments to append
-    var lastDeleteObj:FoodieObjectDelegate = self
-    
-    // iterate to the last delete object with nextDeleteObject = nil
-    while(lastDeleteObj.getNextDeleteObject() != nil) {
-      lastDeleteObj = lastDeleteObj.getNextDeleteObject()!
-    }
-    
-    if let hasMoment = self.moments {
-      for moment in hasMoment {
-        moment.foodieObject.markPendingDelete()
-        if(lastDeleteObj.getNextDeleteObject() == nil)
-        {
-          lastDeleteObj.setNextDeleteObject(moment)
-        }
-        lastDeleteObj = moment
-      }
-    }
-    
-    if let hasMarkup = self.markups {
-      for markup in hasMarkup {
-        markup.foodieObject.markPendingDelete()
-        if(lastDeleteObj.getNextDeleteObject() == nil)
-        {
-          lastDeleteObj.setNextDeleteObject(markup)
-        }
-        lastDeleteObj = markup
-      }
-    }
-  }
+
 
   // Trigger recursive delete against all child objects.
-  func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String? = nil,
+  func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieJournal.deleteRecursive \(objectId) from Location: \(location)")
+    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier()) from Location: \(location)")
     
-    switch location {
+    // Object might not be retrieved, retrieve first to have access to children
+    retrieve { (_, error) in
     
-    case .local,
-         .server:
-      // delete from local only
-      foodieObject.performDelete(from: location, withBlock: { (success, error) in
-        if(success) {
-          self.deleteJournalCommon()
-          if(self.foodieObject.nextDeleteObject != nil) {
-            self.foodieObject.nextDeleteObject?.deleteRecursive(from: location, withName: nil, withBlock: callback)
+      if let hasError = error {
+        callback?(false, error)
+      }
+      
+      // Then delete yourself first before going after childrens
+      self.foodieObject.deleteObject() { (success, error) in
+        
+        // Reset pending/outstanding
+        var childOperationPending = false
+        self.foodieObject.outstandingChildOperations = 0
+        
+        // Look for child to delete
+        if let hasMoment = self.moments {
+          for moment in hasMoment {
+            self.foodieObject.deleteChild(moment, withName: name, withBlock: callback)
+             childOperationPending = true
           }
-          else {
-            // no more item to delete
+        }
+        
+        if let hasMarkup = self.markups {
+          for markup in hasMarkup {
+            self.foodieObject.deleteChild(markup, withName: name, withBlock: callback)
+            childOperationPending = true
+          }
+        }
+        
+        if let eatery = self.eatery {
+          self.foodieObject.deleteChild(eatery, withName: name, withBlock: callback)
+          childOperationPending = true
+        }
+        
+        if let hasCategories = self.categories {
+          for category in hasCategories {
+            self.foodieObject.deleteChild(category, withName: name, withBlock: callback)
+            childOperationPending = true
+          }
+        }
+        
+        if !childOperationPending {
+          DispatchQueue.global(qos: .userInitiated).async { _ in
             callback?(success, error)
           }
-        } else {
-          // error when deleting from location
-          callback?(success,error)
         }
-      })
-    case .both:
-      // delete from local first 
-      self.foodieObject.markPendingDelete()
-      foodieObject.performDelete(from: .local, withBlock: { (success, error) in
-        if(success) {
-          self.foodieObject.performDelete(from: .server, withBlock: { (success, error) in
-            
-            if(success) {
-              self.deleteJournalCommon()
-              if(self.foodieObject.nextDeleteObject != nil) {
-                self.foodieObject.nextDeleteObject?.deleteRecursive(from: location, withName: nil, withBlock: callback)
-              }
-              else {
-                // no more item to delete
-                callback?(success, error)
-              }
-            } else {
-              // error when deleting journal from server
-              callback?(success, error)
-            }
-          })
-        } else {
-          // error when deleting journal from local
-          callback?(success, error)
-        }
-      })
+      }
     }
-  }
-  
-  func getNextDeleteObject() -> FoodieObjectDelegate? {
-    return foodieObject.getNextDeleteObject()
-  }
-  
-  func setNextDeleteObject(_ deleteObj: FoodieObjectDelegate) {
-    foodieObject.setNextDeleteObject(deleteObj)
   }
   
   
