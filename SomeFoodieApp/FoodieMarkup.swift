@@ -59,14 +59,6 @@ extension FoodieMarkup: FoodieObjectDelegate {
     foodieObject.deleteRecursiveBasicBehavior(from: location, withBlock: callback)
   }
   
-  func getNextDeleteObject() -> FoodieObjectDelegate? {
-    return foodieObject.getNextDeleteObject()
-  }
-  
-  func setNextDeleteObject(_ deleteObj: FoodieObjectDelegate) {
-    foodieObject.setNextDeleteObject(deleteObj)
-  }
-  
   func verbose() {
     
   }

@@ -34,11 +34,6 @@ protocol FoodieObjectDelegate: class {
   func getUniqueIdentifier() -> String
   
   func foodieObjectType() -> String
-  
-  func getNextDeleteObject() -> FoodieObjectDelegate?
-  
-  func setNextDeleteObject(_ deleteObj: FoodieObjectDelegate)
-  
 }
 
 
@@ -117,14 +112,6 @@ class FoodieObject {
   weak var delegate: FoodieObjectDelegate?
   var operationState: OperationStates? { return protectedOperationState }
   var operationError: Error? { return protectedOperationError }
-  var nextDeleteObject: FoodieObjectDelegate?
-    
-  // MARK: - Public Static Variables
-  // A queue used for storing Foodie Objects to be deleted
-  //static var pendingDeleteList: Array<FoodieObjectDelegate> = []
-
-  // MARK: - Private Static Variables
-  //static fileprivate var deleteListMutex = pthread_mutex_t()
   
   // MARK: - Private Instance Variables
   var protectedOperationState: OperationStates?  // nil if Undetermined
@@ -151,44 +138,6 @@ class FoodieObject {
   // mark object for delete
   func markPendingDelete() {
       protectedOperationState = .pendingDelete
-  }
-  
-  /*
-  static func getFirstObjFromPendingDelete() -> FoodieObjectDelegate?
-  {
-    var foodieObj: FoodieObjectDelegate? = nil
-    pthread_mutex_lock(&deleteListMutex)
-    if(!pendingDeleteList.isEmpty) {
-      foodieObj = pendingDeleteList.first
-    }
-    pthread_mutex_unlock(&deleteListMutex)
-    return foodieObj
-  }
-  
-  static func removeFirstObjFromPendingDelete()
-  {
-    pthread_mutex_lock(&deleteListMutex)
-    
-    if(!pendingDeleteList.isEmpty)
-    {
-      pendingDeleteList.remove(at: 0)
-    }
-    pthread_mutex_unlock(&deleteListMutex)
-  }
-  
-  static func isPendingDeleteEmpty() -> Bool {
-    var result = false
-    pthread_mutex_lock(&deleteListMutex)
-    result = pendingDeleteList.isEmpty
-    pthread_mutex_unlock(&deleteListMutex)
-    return result
-  }
-  
-
-  */
-  
-  func appendToNextDeleteObj(_ foodieObj: FoodieObjectDelegate) {
-    nextDeleteObject = foodieObj
   }
   
   // Function to mark memory modified
@@ -522,47 +471,47 @@ class FoodieObject {
     case .local,
          .server:
       // delete from local only
-      performDelete(from: location, withBlock: { (success, error) in
-        if(success) {
-          if(self.nextDeleteObject != nil) {
-            self.nextDeleteObject?.deleteRecursive(from: location, withName: nil, withBlock: callback)
-          }
-          else {
-            // no more stuff to delete call the call back
-            callback?(success, error)
-          }
-        }
-        else {
-          // error when deleting journal from location
-          callback?(success, error)
-        }
-      })
+      performDelete(from: location, withBlock: callback)
     case .both:
       // delete from local first
       markPendingDelete()
       performDelete(from: .local, withBlock: { (success, error) in
         if(success) {
-          self.performDelete(from: .server, withBlock: { (success, error) in
-            if(success) {
-              if(self.nextDeleteObject != nil) {
-                self.nextDeleteObject?.deleteRecursive(from: location, withName: nil, withBlock: callback)
-              }
-              else {
-                // no more stuff to delete call the call back
-                callback?(success, error)
-              }
-            }
-            else {
-              // error when deleting journal from server
-              callback?(success, error)
-            }
-          })
+          self.performDelete(from: .server, withBlock: callback)
         } else {
           // error when deleting journal from local
           callback?(success, error)
         }
       })
     }
+  }
+  
+  func deleteChild(_ child: FoodieObjectDelegate,
+                   from location: FoodieObject.StorageLocation,
+                   withBlock callback: FoodieObject.BooleanErrorBlock?) {
+
+    self.outstandingChildOperations += 1
+    var childOperationsPending = true
+    
+    child.deleteRecursive(from: location, withName: nil, withBlock: {(success, error) -> Void in
+      
+      if !success {
+        if let hasError = error {
+          self.protectedOperationError = hasError
+        } else {
+          DebugPrint.assert("deleteChild failed but block contained no Error")
+        }
+      }
+      
+      pthread_mutex_lock(&self.criticalMutex)
+      self.outstandingChildOperations -= 1
+      if self.outstandingChildOperations == 0 { childOperationsPending = false }
+      pthread_mutex_unlock(&self.criticalMutex)
+      
+      if !childOperationsPending {
+        callback?(self.protectedOperationError == nil, self.protectedOperationError)
+      }
+    })
   }
   
   func performDelete(from location: FoodieObject.StorageLocation,
@@ -582,16 +531,6 @@ class FoodieObject {
       callback?(self.protectedOperationError == nil, self.protectedOperationError)
     })
   }
-  
-  func getNextDeleteObject() -> FoodieObjectDelegate? {
-    return nextDeleteObject
-  }
-  
-  func setNextDeleteObject(_ deleteObj: FoodieObjectDelegate) {
-    nextDeleteObject = deleteObj
-  }
-  
-  
   
   // attempt to delete from server with retry logic to call this function recursively if failure occurs
   /*
