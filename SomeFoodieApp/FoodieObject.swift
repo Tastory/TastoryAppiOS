@@ -112,22 +112,15 @@ class FoodieObject {
   weak var delegate: FoodieObjectDelegate?
   var operationState: OperationStates? { return protectedOperationState }
   var operationError: Error? { return protectedOperationError }
-  var nextDeleteObject: FoodieObjectDelegate?
-    
-  // MARK: - Public Static Variables
-  // A queue used for storing Foodie Objects to be deleted
-  //static var pendingDeleteList: Array<FoodieObjectDelegate> = []
-
-  // MARK: - Private Static Variables
-  //static fileprivate var deleteListMutex = pthread_mutex_t()
+  var outstandingChildOperations = 0
+  // var deleteRetryCount = 1
+  
   
   // MARK: - Private Instance Variables
-  var protectedOperationState: OperationStates?  // nil if Undetermined
+  fileprivate var protectedOperationState: OperationStates?  // nil if Undetermined
   fileprivate var protectedOperationError: Error?  // Need specific Error object class?
   fileprivate var criticalMutex = pthread_mutex_t()
-  var outstandingChildOperations = 0
   
-  var deleteRetryCount = 1
   
   // MARK: - Public Instance Functions
   init() {
@@ -360,26 +353,6 @@ class FoodieObject {
   }
   
   
-  // Function to delete this object
-  func deleteObject(withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
-    
-    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject")
-    
-    guard let delegateObj = delegate else {
-      DebugPrint.fatal("delegate not expected to be nil in deleteObject()")
-    }
-    
-    // Always deletes both back to back, due to retrieval requirement on parent object, which will litter the data in both local and server always
-    delegateObj.deleteFromLocal(withName: name) { success, error in
-      if success {
-        delegateObj.deleteFromServer(withBlock: callback)
-      } else {
-        callback?(false, error)
-      }
-    }
-  }
-  
-  
   // Function to call a child's saveRecursive
   func deleteChild(_ child: FoodieObjectDelegate,
                   withName name: String? = nil,
@@ -413,5 +386,24 @@ class FoodieObject {
       }
     }
   }
+ 
   
+  // Function to delete this object
+  func deleteObject(withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject")
+    
+    guard let delegateObj = delegate else {
+      DebugPrint.fatal("delegate not expected to be nil in deleteObject()")
+    }
+    
+    // Always deletes both back to back, due to retrieval requirement on parent object, which will litter the data in both local and server always
+    delegateObj.deleteFromLocal(withName: name) { success, error in
+      if success {
+        delegateObj.deleteFromServer(withBlock: callback)
+      } else {
+        callback?(false, error)
+      }
+    }
+  }
 }
