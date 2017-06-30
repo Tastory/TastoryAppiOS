@@ -42,13 +42,13 @@ class FeedCollectionViewController: UICollectionViewController {
     }*/
     
     
-    queriedJournalArray[0].deleteAsync(callback: {(success, error)->Void in
-      if(success)
-      {
+    queriedJournalArray[0].deleteAsync() { success, error in
+      if success {
         DebugPrint.userAction("Successfully Deleted Journal")
+      } else {
+        DebugPrint.userAction("Delete Journal Failed")
       }
-     })
-    
+    }
   }
   
   // MARK: - View Controller Lifecycle Functions

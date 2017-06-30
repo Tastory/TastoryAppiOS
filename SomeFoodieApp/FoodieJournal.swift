@@ -253,9 +253,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
   }
   
-  func deleteAsync(callback: ((Bool, Error?) -> Void)?){
-    deleteRecursive(from: .both, withBlock: callback)
+  
+  func deleteAsync(withBlock callback: FoodieObject.BooleanErrorBlock?){
+    deleteRecursive(withBlock: callback)
   }
+  
 
   // MARK: - Foodie Object Delegate Conformance
   
@@ -346,14 +348,15 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
   }
 
+
   // Trigger recursive delete against all child objects.
-  func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String? = nil,
+  func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieJournal.deleteRecursive \(objectId) from Location: \(location)")
+    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier()) from Location: \(location)")
     
-    switch location {
+    // Object might not be retrieved, retrieve first to have access to children
+    retrieve { (_, error) in
     
     case .local,
          .server:
@@ -382,7 +385,20 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
           // error when deleting journal from local
           callback?(success, error)
         }
-      })
+        
+        if let hasCategories = self.categories {
+          for category in hasCategories {
+            self.foodieObject.deleteChild(category, withName: name, withBlock: callback)
+            childOperationPending = true
+          }
+        }
+        
+        if !childOperationPending {
+          DispatchQueue.global(qos: .userInitiated).async { _ in
+            callback?(success, error)
+          }
+        }
+      }
     }
   }
   

@@ -149,16 +149,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
     }
   }
-  
-    
-  func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String?,
-                       withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    
-    DebugPrint.verbose("FoodieMedia.deleteRecursive from Location: \(location)")
-    foodieObject.deleteRecursiveBasicBehavior(from: location, withBlock: callback)
-  }
- 
+
   
   // Function to save this media object to local.
   func saveToLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
