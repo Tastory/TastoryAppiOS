@@ -328,6 +328,23 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       }
     }
   }
+  
+  func deleteJournalCommon(from location: FoodieObject.StorageLocation,
+                      withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    
+    // check to see if there are more items such as moments, markups to delete
+    if let hasMoment = self.moments {
+      for moment in hasMoment {
+        self.foodieObject.deleteChild(moment, from: location, withBlock: callback)
+      }
+    }
+    
+    if let hasMarkup = self.markups {
+      for markup in hasMarkup {
+        self.foodieObject.deleteChild(markup, from: location, withBlock: callback)
+      }
+    }
+  }
 
   // Trigger recursive delete against all child objects.
   func deleteRecursive(from location: FoodieObject.StorageLocation,
@@ -343,14 +360,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       // delete from local only
       foodieObject.performDelete(from: location, withBlock: { (success, error) in
         if(success) {
-          //self.deleteJournalCommon()
-          /*if(self.foodieObject.nextDeleteObject != nil) {
-            self.foodieObject.nextDeleteObject?.deleteRecursive(from: location, withName: nil, withBlock: callback)
-          }
-          else {
-            // no more item to delete
-            callback?(success, error)
-          }*/
+          self.deleteJournalCommon(from:location, withBlock: callback)
         } else {
           // error when deleting from location
           callback?(success,error)
@@ -358,26 +368,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       })
     case .both:
       // delete from local first 
-      self.foodieObject.markPendingDelete()
       foodieObject.performDelete(from: .local, withBlock: { (success, error) in
         if(success) {
           self.foodieObject.performDelete(from: .server, withBlock: { (success, error) in
-            
             if(success) {
-              
-              if let hasMoment = self.moments {
-                for moment in hasMoment {
-                  moment.foodieObject.markPendingDelete()
-                  moment.foodieObject.deleteChild(moment, from: location, withBlock: callback)
-                }
-              }
-              
-              if let hasMarkup = self.markups {
-                for markup in hasMarkup {
-                  markup.foodieObject.markPendingDelete()
-                  markup.foodieObject.deleteChild(markup, from: location, withBlock: callback)
-                }
-              }
+              self.deleteJournalCommon(from:location, withBlock: callback)
             } else {
               // error when deleting journal from server
               callback?(success, error)

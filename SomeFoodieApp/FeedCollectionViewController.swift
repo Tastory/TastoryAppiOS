@@ -29,10 +29,16 @@ class FeedCollectionViewController: UICollectionViewController {
   
   @IBAction func DeleteTestBtn(_ sender: Any) {
     
+    // test delete one moment
     /*
     if let hasMoments = queriedJournalArray[0].moments {
       // delete delete moment from journal
-      queriedJournalArray[0].delete(moment: hasMoments[1])
+      hasMoments[1].deleteRecursive(from: .server, withName: nil, withBlock: { (success,error)->Void in
+        if(success)
+        {
+          DebugPrint.userAction("Successfully Deleted Journal")
+        }
+      })
     }*/
     
     
@@ -41,9 +47,8 @@ class FeedCollectionViewController: UICollectionViewController {
       {
         DebugPrint.userAction("Successfully Deleted Journal")
       }
- 
-      
-    })
+     })
+    
   }
   
   // MARK: - View Controller Lifecycle Functions

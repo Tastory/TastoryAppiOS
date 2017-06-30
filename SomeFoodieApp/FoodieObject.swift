@@ -119,8 +119,6 @@ class FoodieObject {
   fileprivate var criticalMutex = pthread_mutex_t()
   fileprivate var outstandingChildOperations = 0
   
-  var deleteRetryCount = 1
-  
   // MARK: - Public Instance Functions
   init() {
     protectedOperationState = .objectModified
@@ -136,9 +134,9 @@ class FoodieObject {
   }
   
   // mark object for delete
-  func markPendingDelete() {
+  /*func markPendingDelete() {
       protectedOperationState = .pendingDelete
-  }
+  }*/
   
   // Function to mark memory modified
   func markModified() -> Bool {
@@ -356,7 +354,7 @@ class FoodieObject {
   }
   
   // Function for state transition at the beginning of delete
-  func deleteStateTransition(to location: StorageLocation) -> (success: Bool?, error: LocalizedError?) {
+  /*func deleteStateTransition(to location: StorageLocation) -> (success: Bool?, error: LocalizedError?) {
     
     guard let state = protectedOperationState else {
       DebugPrint.assert("Valid operationState expected to perform Delete")
@@ -402,10 +400,10 @@ class FoodieObject {
     }
     
     return (nil, nil)
-  }
+  }*/
 
   // Function for state transition at the end of delete
-  func deleteCompleteStateTransition(to location: StorageLocation) {
+  /*func deleteCompleteStateTransition(to location: StorageLocation) {
     
     guard let state = protectedOperationState else {
       DebugPrint.fatal("Unable to proceed due to nil state from object. Location: \(location)")
@@ -444,7 +442,7 @@ class FoodieObject {
         DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(state)")
       }
     }
-  }
+  }*/
   
   // Function to delete this object
   func deleteObject(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
@@ -474,7 +472,6 @@ class FoodieObject {
       performDelete(from: location, withBlock: callback)
     case .both:
       // delete from local first
-      markPendingDelete()
       performDelete(from: .local, withBlock: { (success, error) in
         if(success) {
           self.performDelete(from: .server, withBlock: callback)
@@ -505,7 +502,9 @@ class FoodieObject {
       
       pthread_mutex_lock(&self.criticalMutex)
       self.outstandingChildOperations -= 1
-      if self.outstandingChildOperations == 0 { childOperationsPending = false }
+      if self.outstandingChildOperations == 0 {
+        childOperationsPending = false
+      }
       pthread_mutex_unlock(&self.criticalMutex)
       
       if !childOperationsPending {
@@ -517,96 +516,17 @@ class FoodieObject {
   func performDelete(from location: FoodieObject.StorageLocation,
                            withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    let earlyReturnStatus  = deleteStateTransition(to: location)
+    /*let earlyReturnStatus  = deleteStateTransition(to: location)
     if let earlySuccess = earlyReturnStatus.success {
       DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
       return
-    }
-   
+    }*/
     deleteObject(from: location, withBlock: {(success,error)-> Void in
       if let hasError = error {
         self.protectedOperationError = hasError
       }
-      self.deleteCompleteStateTransition(to: location)
+      //self.deleteCompleteStateTransition(to: location)
       callback?(self.protectedOperationError == nil, self.protectedOperationError)
     })
   }
-  
-  // attempt to delete from server with retry logic to call this function recursively if failure occurs
-  /*
-  func tryDeleteFromServer(withBlock callback: BooleanErrorBlock?) {
-    
-    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject from Server")
-    
-    // delete from server
-    FoodieObject.getFirstObjFromPendingDelete()?.deleteRecursive(from: .server, withName: nil, withBlock: { (success, error) in
-      if(success) {
-        // remove this one from pendingDeleteList
-        FoodieObject.removeFirstObjFromPendingDelete()
-        if(!FoodieObject.isPendingDeleteEmpty()) {
-          self.deleteFromPendingDelete(withBlock: callback)
-        }
-        else {
-          callback?(true,nil)
-        }
-      }
-      else {
-        self.retryDelete(from: .server, withBlock: callback)
-      }
-    })
-  }
-  
-  // attempt to delete from local with retry logic to call this function recursively if failure occurs
-  func tryDeleteFromLocal(withBlock callback: BooleanErrorBlock?) {
-    
-    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject from Server")
-    
-    FoodieObject.getFirstObjFromPendingDelete()?.deleteRecursive(from: .local, withName: nil, withBlock: { (success, error) in
-      if(success) {
-        self.tryDeleteFromServer(withBlock: callback)
-      }
-      else {
-        self.retryDelete(from: .local, withBlock: callback)
-      }
-    })
-  }
-  
-  // check if we should retry
-  func retryDelete(from location: StorageLocation, withBlock callback: BooleanErrorBlock?){
-    
-    if(deleteRetryCount <= 0 )
-    {
-      DebugPrint.verbose("Attempted to delete object twice")
-      // no more attemps to retry return failure
-      
-      if(delegate!.foodieObjectType() == "FoodieJournal")
-      {
-        // call back with error since journal can't be deleted
-        callback?(false, ErrorCode.deleteRetryError)
-      } else {
-        // dropping undeleted item
-        DebugPrint.error("Can't delete \(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier()) from \(location) dropping this object from pendingDelete List")
-        FoodieObject.removeFirstObjFromPendingDelete()
-      }
-    }
-    else {
-      DebugPrint.verbose("Failed to delete FoodieObject from: \(location)")
-      deleteRetryCount -= 1
-      // retry delete from local
-      switch location {
-      case .local:
-        self.tryDeleteFromLocal(withBlock: callback)
-      case .server:
-        self.tryDeleteFromServer(withBlock: callback)
-      }
-    }
-  }
-  
-  
-  func deleteFromPendingDelete(withBlock callback: BooleanErrorBlock?)
-  {
-      tryDeleteFromLocal(withBlock: callback)
-  }
-  */
-  
 }
