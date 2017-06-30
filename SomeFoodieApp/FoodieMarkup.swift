@@ -50,7 +50,8 @@ extension FoodieMarkup: FoodieObjectDelegate {
   }
   
   
-  func deleteRecursive(withName name: String? = nil,
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
@@ -59,11 +60,11 @@ extension FoodieMarkup: FoodieObjectDelegate {
     retrieve { (_, error) in
       
       if let hasError = error {
-        callback?(false, error)
+        callback?(false, hasError)
       }
       
       // Delete itself first
-      self.foodieObject.deleteObject(withName: name, withBlock: callback)
+      self.foodieObject.deleteRecursiveBasicBehavior(from: location, withBlock: callback)
     }
   }
   

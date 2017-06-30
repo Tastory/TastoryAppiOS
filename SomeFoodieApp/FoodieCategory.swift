@@ -38,15 +38,15 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  
-  // Trigger recursive saves against all child objects.
-  func deleteRecursive(withName name: String? = nil,
+  // Trigger recursive delete against all child objects.
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
+    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier()) from Location: \(location)")
     
     // Delete itself first
-    foodieObject.deleteObject(withName: name, withBlock: callback)
+    foodieObject.deleteRecursiveBasicBehavior(from: location, withBlock: callback)
   }
   
   func verbose() {

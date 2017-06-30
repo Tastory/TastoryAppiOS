@@ -21,7 +21,8 @@ protocol FoodieObjectDelegate: class {
   
   func saveToServer(withBlock callback: FoodieObject.BooleanErrorBlock?)
   
-  func deleteRecursive(withName name: String?,
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?)
   
   func deleteFromLocal(withName name: String?, withBlock callback: FoodieObject.BooleanErrorBlock?)
@@ -424,7 +425,7 @@ class FoodieObject {
   }*/
   
   // Function to delete this object
-  func deleteObject(withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
+  func deleteObject(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
     
     DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject")
     

@@ -255,7 +255,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   func deleteAsync(withBlock callback: FoodieObject.BooleanErrorBlock?){
-    deleteRecursive(withBlock: callback)
+    deleteRecursive(from: .both, withBlock: callback)
   }
   
 
@@ -337,29 +337,27 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     // check to see if there are more items such as moments, markups to delete
     if let hasMoment = self.moments {
       for moment in hasMoment {
-        self.foodieObject.deleteChild(moment, from: location, withBlock: callback)
+        foodieObject.deleteChild(moment, from: location, withBlock: callback)
       }
     }
     
     if let hasMarkup = self.markups {
       for markup in hasMarkup {
-        self.foodieObject.deleteChild(markup, from: location, withBlock: callback)
+        foodieObject.deleteChild(markup, from: location, withBlock: callback)
       }
     }
   }
 
 
   // Trigger recursive delete against all child objects.
-  func deleteRecursive(withName name: String? = nil,
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier()) from Location: \(location)")
-    
-    // Object might not be retrieved, retrieve first to have access to children
-    retrieve { (_, error) in
-    
+    DebugPrint.verbose("FoodieJournal.deleteRecursive \(objectId) from Location: \(location)")
+    switch location {
     case .local,
-         .server:
+          .server:
       // delete from local only
       foodieObject.performDelete(from: location, withBlock: { (success, error) in
         if(success) {
@@ -370,7 +368,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
         }
       })
     case .both:
-      // delete from local first 
+      // delete from local first
       foodieObject.performDelete(from: .local, withBlock: { (success, error) in
         if(success) {
           self.foodieObject.performDelete(from: .server, withBlock: { (success, error) in
@@ -385,20 +383,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
           // error when deleting journal from local
           callback?(success, error)
         }
-        
-        if let hasCategories = self.categories {
-          for category in hasCategories {
-            self.foodieObject.deleteChild(category, withName: name, withBlock: callback)
-            childOperationPending = true
-          }
-        }
-        
-        if !childOperationPending {
-          DispatchQueue.global(qos: .userInitiated).async { _ in
-            callback?(success, error)
-          }
-        }
-      }
+      })
     }
   }
   

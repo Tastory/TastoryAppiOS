@@ -175,21 +175,13 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    DebugPrint.verbose("FoodieMoment.deleteRecursive from \(self.objectId) Location: \(location)")
     
-    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
-    
-    // Object might not be retrieved, retrieve first to have access to children
-    retrieve { (_, error) in
-      
-      if let hasError = error {
-        callback?(false, error)
-      }
-      
-      // Delete itself first
-      self.foodieObject.deleteObject() { (success, error) in
-        
+    // retrieve moment first
+    self.retrieve(withBlock: {(success, error) in
+      switch location {
       case .local,
-           .server:
+            .server:
         // delete from local only
         self.foodieObject.performDelete(from: location, withBlock: { (success, error) in
           if(success) {
@@ -204,7 +196,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         self.foodieObject.performDelete(from: .local, withBlock: { (success, error) in
           if(success) {
             self.foodieObject.performDelete(from: .server, withBlock: { (success, error) in
-            
               if(success) {
                 self.deleteMomentCommon(from: location, withBlock: callback)
               } else {
@@ -213,22 +204,12 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
               }
             })
           } else {
-            // error when deleting journal from client 
+            // error when deleting journal from client
             callback?(success, error)
           }
-        }
-        
-        if let thumbnail = self.thumbnailObj {
-          self.foodieObject.deleteChild(thumbnail, withName: name, withBlock: callback)
-        }
-        
-        if !childOperationPending {
-          DispatchQueue.global(qos: .userInitiated).async { _ in
-            callback?(success, error)
-          }
-        }
+        })
       }
-    }
+    })
   }
   
   func verbose() {
