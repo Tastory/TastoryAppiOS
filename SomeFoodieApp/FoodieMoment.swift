@@ -158,46 +158,28 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  func deleteMomentCommon(from location: FoodieObject.StorageLocation,
-                          withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    
-    // check for media and thumb nails to be deleted from this object
-    if let hasMedia = self.mediaObj {
-      foodieObject.deleteChild(hasMedia, from: location, withBlock: callback)
-    }
-    
-    if let hasMomentThumb = self.thumbnailObj {
-      foodieObject.deleteChild(hasMomentThumb, from: location, withBlock: callback)
-    }
-  }
+  
   
   // Trigger recursive saves against all child objects.
-  func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String? = nil,
+  func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DebugPrint.verbose("FoodieMoment.deleteRecursive from \(self.objectId) Location: \(location)")
+    DebugPrint.verbose("FoodieMoment.deleteRecursive from \(self.objectId)")
     
     // retrieve moment first
     self.retrieve(withBlock: {(success, error) in
-      switch location {
-      case .local,
-            .server:
-        // delete from local only
-        self.foodieObject.performDelete(from: location, withBlock: { (success, error) in
+              // delete from local first
+        self.foodieObject.deleteObject(from: .local, withBlock: { (success, error) in
           if(success) {
-            self.deleteMomentCommon(from:location, withBlock: callback)
-          } else {
-            // error when deleting from location
-            callback?(success,error)
-          }
-        })
-      case .both:
-        // delete from local first
-        self.foodieObject.performDelete(from: .local, withBlock: { (success, error) in
-          if(success) {
-            self.foodieObject.performDelete(from: .server, withBlock: { (success, error) in
+            self.foodieObject.deleteObject(from: .server, withBlock: { (success, error) in
               if(success) {
-                self.deleteMomentCommon(from: location, withBlock: callback)
+                // check for media and thumb nails to be deleted from this object
+                if let hasMedia = self.mediaObj {
+                  self.foodieObject.deleteChild(hasMedia, withBlock: callback)
+                }
+                
+                if let hasMomentThumb = self.thumbnailObj {
+                  self.foodieObject.deleteChild(hasMomentThumb, withBlock: callback)
+                }
               } else {
                 // error when deleting journal from server
                 callback?(success, error)
@@ -208,7 +190,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
             callback?(success, error)
           }
         })
-      }
     })
   }
   

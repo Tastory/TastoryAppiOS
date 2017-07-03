@@ -39,14 +39,13 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   }
   
   // Trigger recursive delete against all child objects.
-  func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String? = nil,
+  func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier()) from Location: \(location)")
+    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
     
     // Delete itself first
-    foodieObject.deleteRecursiveBasicBehavior(from: location, withBlock: callback)
+    foodieObject.deleteRecursiveBasicBehavior(withBlock: callback)
   }
   
   func verbose() {
