@@ -540,6 +540,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
     
     var childOperationPending = false
+    self.foodieObject.resetOutstandingChildOperations()
     
     // Need to make sure all children FoodieRecursives saved before proceeding
     if let hasMoments = moments {
@@ -588,14 +589,15 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieJournal.deleteRecursive \(objectId)")
-    self.retrieve() { (success, error) in
+    retrieve() { error in
       
       // TOOD: Victor, what happens if retrieve fails?
       
       self.foodieObject.deleteObjectLocalNServer(withName: name) { (success, error) in
         
         if (success) {
+          self.foodieObject.resetOutstandingChildOperations()
+          
           // check to see if there are more items such as moments, markups to delete
           if let hasMoment = self.moments {
             for moment in hasMoment {

@@ -69,7 +69,7 @@ extension FoodieMarkup: FoodieObjectDelegate {
     DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
     
     // Object might not be retrieved, retrieve first to have access to children
-    retrieve { (_, error) in
+    retrieve { error in
       
       if let hasError = error {
         callback?(false, hasError)

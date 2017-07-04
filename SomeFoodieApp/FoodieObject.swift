@@ -126,9 +126,8 @@ class FoodieObject {
   weak var waitOnRetrieveDelegate: FoodieObjectWaitOnRetrieveDelegate?
   var operationState: OperationStates { return protectedOperationState }
   var operationError: Error? { return protectedOperationError }
-  var outstandingChildOperations = 0
-  var isRetrieved: Bool { return downloadState == .retrieved }
   
+
   
   // MARK: - Private Instance Variables
   fileprivate var operationStateMutex = pthread_mutex_t()
@@ -204,7 +203,9 @@ class FoodieObject {
   // Function to call a child's retrieveRecursive()
   func retrieveChild(_ child: FoodieObjectDelegate, forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
+    pthread_mutex_lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
+    pthread_mutex_unlock(&self.outstandingChildOperationsMutex)
     
     child.retrieveRecursive(forceAnyways: forceAnyways) { (error) in
       
@@ -370,7 +371,9 @@ class FoodieObject {
     
     DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.saveChild of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location)")
     
+    pthread_mutex_lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
+    pthread_mutex_unlock(&self.outstandingChildOperationsMutex)
     
     // Save Recursive for each moment. Call saveCompletionFromChild when done and without errors
     child.saveRecursive(to: location, withName: name) { /*[unowned self]*/ (success, error) in

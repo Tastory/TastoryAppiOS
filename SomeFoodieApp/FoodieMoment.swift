@@ -197,18 +197,19 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // Trigger recursive saves against all child objects.
   func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DebugPrint.verbose("FoodieMoment.deleteRecursive from \(self.objectId)")
     
     // retrieve moment first
-    self.retrieve() { (success, error) in
+    self.retrieve() { error in
       
       // TOOD: Victor, what happens if retrieve fails?
       
-      // delete from local first
+      // Delete self from both local and server first
       self.foodieObject.deleteObjectLocalNServer(withName: name) { (success, error) in
         
         if(success) {
-          // check for media and thumb nails to be deleted from this object
+          self.foodieObject.resetOutstandingChildOperations()
+          
+          // check for media and thumbnails to be deleted from this object
           if let hasMedia = self.mediaObj {
             self.foodieObject.deleteChild(hasMedia, withBlock: callback)
           }
