@@ -29,29 +29,6 @@ class FeedCollectionViewController: UICollectionViewController {
     dismiss(animated: true, completion: nil)
   }
   
-  @IBAction func DeleteTestBtn(_ sender: Any) {
-    
-    // test delete one moment
-    /*
-    if let hasMoments = queriedJournalArray[0].moments {
-      // delete delete moment from journal
-      hasMoments[1].deleteRecursive(from: .server, withName: nil, withBlock: { (success,error)->Void in
-        if(success)
-        {
-          DebugPrint.userAction("Successfully Deleted Journal")
-        }
-      })
-    }*/
-    
-    
-    queriedJournalArray[0].deleteAsync() { success, error in
-      if success {
-        DebugPrint.userAction("Successfully Deleted Journal")
-      } else {
-        DebugPrint.userAction("Delete Journal Failed")
-      }
-    }
-  }
   
   // MARK: - View Controller Lifecycle Functions
   override func viewDidLoad() {

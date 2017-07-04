@@ -548,7 +548,7 @@ class FoodieS3Object {
       DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
     }
     
-    if (FoodieFile.manager.checkIfFileExistsLocal(fileName: fileName))
+    if (FoodieFile.manager.checkIfFileExistsLocally(fileName: fileName))
     {
       FoodieFile.manager.deleteFileFromLocal(fileName: fileName, withBlock: callback)
     } else {

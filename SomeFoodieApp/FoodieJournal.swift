@@ -643,7 +643,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
 // MARK: - Parse Subclass Conformance
 extension FoodieJournal: PFSubclassing {
   static func parseClassName() -> String {
-    return "FoodieJournalDemo"
+    return "FoodieJournal"
   }
 }
 

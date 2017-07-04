@@ -245,6 +245,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
  
 extension FoodieMoment: PFSubclassing {
   static func parseClassName() -> String {
-    return "FoodieMomentDemo"
+    return "FoodieMoment"
   }
 }
