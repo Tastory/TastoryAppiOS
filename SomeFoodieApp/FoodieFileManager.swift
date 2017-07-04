@@ -441,10 +441,6 @@ class FoodieFile {
     }
   }
   
-  func checkIfFileExistsLocal(fileName: String) ->Bool {
-    return fileManager.fileExists(atPath: "\(Constants.DocumentFolderUrl.path)/\(fileName)")
-  }
-  
   
   func checkIfFileExistsLocally(fileName: String) -> Bool {
     let filePath = FoodieFile.getLocalFileURL(from: fileName).path
