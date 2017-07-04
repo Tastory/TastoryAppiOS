@@ -353,6 +353,7 @@ class FoodieObject {
     }
   }
   
+  
   // Function to delete this object
   func deleteObject(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
     
@@ -371,23 +372,27 @@ class FoodieObject {
     }
   }
   
-  func deleteRecursiveBasicBehavior(withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  
+  func deleteObjectLocalNServer(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     // delete from local first
-    deleteObject(from: .local, withBlock: { (success, error) in
+    deleteObject(from: .local, withName: name) { (success, error) in
       if(success) {
-        self.deleteObject(from: .server, withBlock: callback)
+        self.deleteObject(from: .server, withName: name, withBlock: callback)
       } else {
         // error when deleting journal from local
         callback?(success, error)
       }
-    })
+    }
   }
+  
   
   func deleteChild(_ child: FoodieObjectDelegate,
                    withBlock callback: FoodieObject.BooleanErrorBlock?) {
 
+    // Lock here is in case that if the first operation competes and calls back before even the 2nd op's deleteChild goes out
+    pthread_mutex_lock(&self.criticalMutex)
     self.outstandingChildOperations += 1
-    var childOperationsPending = true
+    pthread_mutex_unlock(&self.criticalMutex)
     
     child.deleteRecursive(withName: nil, withBlock: {(success, error) -> Void in
       
@@ -399,6 +404,7 @@ class FoodieObject {
         }
       }
       
+      var childOperationsPending = true
       pthread_mutex_lock(&self.criticalMutex)
       self.outstandingChildOperations -= 1
       if self.outstandingChildOperations == 0 {

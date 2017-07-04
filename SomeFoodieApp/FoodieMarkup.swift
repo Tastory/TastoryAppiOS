@@ -63,7 +63,7 @@ extension FoodieMarkup: FoodieObjectDelegate {
       }
       
       // Delete itself first
-      self.foodieObject.deleteRecursiveBasicBehavior(withBlock: callback)
+      self.foodieObject.deleteObjectLocalNServer(withName: name, withBlock: callback)
     }
   }
   

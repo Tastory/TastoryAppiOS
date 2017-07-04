@@ -77,10 +77,10 @@ extension FoodieEatery: FoodieObjectDelegate {
   func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier()) from Location: \(location)")
+    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
     
     // Delete itself first
-    foodieObject.deleteRecursiveBasicBehavior(withBlock: callback)
+    foodieObject.deleteObjectLocalNServer(withName: name, withBlock: callback)
   }
   
   func verbose() {

@@ -166,32 +166,34 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     DebugPrint.verbose("FoodieMoment.deleteRecursive from \(self.objectId)")
     
     // retrieve moment first
-    self.retrieve(withBlock: {(success, error) in
-              // delete from local first
-        self.foodieObject.deleteObject(from: .local, withBlock: { (success, error) in
-          if(success) {
-            self.foodieObject.deleteObject(from: .server, withBlock: { (success, error) in
-              if(success) {
-                // check for media and thumb nails to be deleted from this object
-                if let hasMedia = self.mediaObj {
-                  self.foodieObject.deleteChild(hasMedia, withBlock: callback)
-                }
-                
-                if let hasMomentThumb = self.thumbnailObj {
-                  self.foodieObject.deleteChild(hasMomentThumb, withBlock: callback)
-                }
-              } else {
-                // error when deleting journal from server
-                callback?(success, error)
-              }
-            })
-          } else {
-            // error when deleting journal from client
-            callback?(success, error)
+    self.retrieve() { (success, error) in
+      
+      // TOOD: Victor, what happens if retrieve fails?
+      
+      // delete from local first
+      self.foodieObject.deleteObjectLocalNServer(withName: name) { (success, error) in
+        
+        if(success) {
+          // check for media and thumb nails to be deleted from this object
+          if let hasMedia = self.mediaObj {
+            self.foodieObject.deleteChild(hasMedia, withBlock: callback)
           }
-        })
-    })
+              
+          if let hasMomentThumb = self.thumbnailObj {
+            self.foodieObject.deleteChild(hasMomentThumb, withBlock: callback)
+          }
+          
+          // TODO: Victor, what happens if there is neither Moments nor Markup in this Journal? I know it's hypothetical.
+          // But it will mean the whole recursive operation hangs because there will never be a callback
+          
+        } else {
+          // error when deleting journal from server
+          callback?(success, error)
+        }
+      }
+    }
   }
+  
   
   func verbose() {
     DebugPrint.verbose("FoodieMoment ID: \(getUniqueIdentifier())")

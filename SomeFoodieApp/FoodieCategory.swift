@@ -45,7 +45,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
     DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
     
     // Delete itself first
-    foodieObject.deleteRecursiveBasicBehavior(withBlock: callback)
+    foodieObject.deleteObjectLocalNServer(withName: name, withBlock: callback)
   }
   
   func verbose() {

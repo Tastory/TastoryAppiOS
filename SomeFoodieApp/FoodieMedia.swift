@@ -174,6 +174,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     }
   }
   
+  
   // Trigger recursive delete against all child objects.
   func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
@@ -181,7 +182,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
     
     // Delete itself first
-    foodieObject.deleteRecursiveBasicBehavior(withBlock: callback)
+    foodieObject.deleteObjectLocalNServer(withName: name, withBlock: callback)
   }
   
   func verbose() {
