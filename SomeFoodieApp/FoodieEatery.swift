@@ -73,12 +73,15 @@ extension FoodieEatery: FoodieObjectDelegate {
   }
   
   
-  // Trigger recursive saves against all child objects.
-  func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String?,
+  // Trigger recursive delete against all child objects.
+  func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier()) from Location: \(location)")
+    
+    // Delete itself first
+    foodieObject.deleteRecursiveBasicBehavior(withBlock: callback)
   }
-  
   
   func verbose() {
     

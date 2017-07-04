@@ -36,6 +36,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // Date created vs Date updated is given for free
   
+  // this flag indicate if this moment has been retrieved from Parse
+  fileprivate var hasRetrieved = false
   
   // MARK: - Error Types Definition
   enum ErrorCode: LocalizedError {
@@ -157,12 +159,39 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  // Trigger recursive saves against all child objects.
-  func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String? = nil,
-                       withBlock callback: FoodieObject.BooleanErrorBlock?) {
-  }
   
+  // Trigger recursive saves against all child objects.
+  func deleteRecursive(withName name: String? = nil,
+                       withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    DebugPrint.verbose("FoodieMoment.deleteRecursive from \(self.objectId)")
+    
+    // retrieve moment first
+    self.retrieve(withBlock: {(success, error) in
+              // delete from local first
+        self.foodieObject.deleteObject(from: .local, withBlock: { (success, error) in
+          if(success) {
+            self.foodieObject.deleteObject(from: .server, withBlock: { (success, error) in
+              if(success) {
+                // check for media and thumb nails to be deleted from this object
+                if let hasMedia = self.mediaObj {
+                  self.foodieObject.deleteChild(hasMedia, withBlock: callback)
+                }
+                
+                if let hasMomentThumb = self.thumbnailObj {
+                  self.foodieObject.deleteChild(hasMomentThumb, withBlock: callback)
+                }
+              } else {
+                // error when deleting journal from server
+                callback?(success, error)
+              }
+            })
+          } else {
+            // error when deleting journal from client
+            callback?(success, error)
+          }
+        })
+    })
+  }
   
   func verbose() {
     DebugPrint.verbose("FoodieMoment ID: \(getUniqueIdentifier())")

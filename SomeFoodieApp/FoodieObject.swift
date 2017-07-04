@@ -1,4 +1,4 @@
-//
+ //
 //  FoodieObject.swift
 //  SomeFoodieApp
 //
@@ -21,8 +21,7 @@ protocol FoodieObjectDelegate: class {
   
   func saveToServer(withBlock callback: FoodieObject.BooleanErrorBlock?)
   
-  func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String?,
+  func deleteRecursive(withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?)
   
   func deleteFromLocal(withName name: String?, withBlock callback: FoodieObject.BooleanErrorBlock?)
@@ -64,6 +63,7 @@ class FoodieObject {
   enum StorageLocation {
     case local
     case server
+    case both
   }
   
   
@@ -74,6 +74,11 @@ class FoodieObject {
     case saveStateTransitionSaveAlreadyInProgress
     case saveStateTransitionIllegalStateTransition
     
+    case deleteStateTransitionNoState
+    case deleteStateTransitionSaveAlreadyInProgress
+    case deleteStateTransitionIllegalStateTransition
+    case deleteRetryError
+    
     var errorDescription: String? {
       switch self {
       case .saveStateTransitionNoState:
@@ -82,6 +87,16 @@ class FoodieObject {
         return NSLocalizedString("Save error as save already in progress for Foodie Object", comment: "Error description for an exception error code")
       case .saveStateTransitionIllegalStateTransition:
         return NSLocalizedString("Save error due to illegal state transition", comment: "Error description for an exception error code")
+     
+      case .deleteStateTransitionNoState:
+        return NSLocalizedString("Delete error as Foodie Object has no state", comment: "Error description for an exception error code")
+      case .deleteStateTransitionSaveAlreadyInProgress:
+        return NSLocalizedString("Delete error as save already in progress for Foodie Object", comment: "Error description for an exception error code")
+      case .deleteStateTransitionIllegalStateTransition:
+        return NSLocalizedString("Delete error due to illegal state transition", comment: "Error description for an exception error code")
+      case .deleteRetryError:
+        return NSLocalizedString("Delete Foodie Object failed with 2 attempts", comment: "Error description for an exception error code")
+        
       }
     }
   
@@ -96,13 +111,13 @@ class FoodieObject {
   weak var delegate: FoodieObjectDelegate?
   var operationState: OperationStates? { return protectedOperationState }
   var operationError: Error? { return protectedOperationError }
+  var outstandingChildOperations = 0
   
   
   // MARK: - Private Instance Variables
   fileprivate var protectedOperationState: OperationStates?  // nil if Undetermined
   fileprivate var protectedOperationError: Error?  // Need specific Error object class?
   fileprivate var criticalMutex = pthread_mutex_t()
-  fileprivate var outstandingChildOperations = 0
   
   // MARK: - Public Instance Functions
   init() {
@@ -118,6 +133,10 @@ class FoodieObject {
     delegate = delegateObject
   }
   
+  // mark object for delete
+  /*func markPendingDelete() {
+      protectedOperationState = .pendingDelete
+  }*/
   
   // Function to mark memory modified
   func markModified() -> Bool {
@@ -161,11 +180,11 @@ class FoodieObject {
     else {
       
       if (location == .local) && (state == .savingToLocal) {
-        // Dial back the state
+        // Advance to next state
         protectedOperationState = .savedToLocal
         
       } else if (location == .server) && (state == .savingToServer) {
-        // Dial back the state
+        // Advance to next state
         protectedOperationState = .objectSynced
         
       } else {
@@ -274,6 +293,8 @@ class FoodieObject {
         DebugPrint.assert("Illegal State Transition. Save to Sever attempt not from .savedToLocal state. Current State = \(state)")
         return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
       }
+    default:
+    break
     }
     
     return (nil, nil)
@@ -300,7 +321,7 @@ class FoodieObject {
         }
       }
       
-      // This need sto be critical section or race condition between many childrens' completion can occur
+      // This needs to be critical section or race condition between many childrens' completion can occur
       var childOperationsPending = true
       pthread_mutex_lock(&self.criticalMutex)
       self.outstandingChildOperations -= 1
@@ -327,8 +348,67 @@ class FoodieObject {
       delegateObj.saveToLocal(withName: name, withBlock: callback)
     case .server:
       delegateObj.saveToServer(withBlock: callback)
+    default:
+      break
     }
   }
   
+  // Function to delete this object
+  func deleteObject(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject")
+    
+    guard let delegateObj = delegate else {
+      DebugPrint.fatal("delegate not expected to be nil in deleteObject()")
+    }
+    switch location {
+    case .local:
+      delegateObj.deleteFromLocal(withName: name, withBlock: callback)
+    case .server:
+      delegateObj.deleteFromServer(withBlock: callback)
+    default:
+      break
+    }
+  }
+  
+  func deleteRecursiveBasicBehavior(withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    // delete from local first
+    deleteObject(from: .local, withBlock: { (success, error) in
+      if(success) {
+        self.deleteObject(from: .server, withBlock: callback)
+      } else {
+        // error when deleting journal from local
+        callback?(success, error)
+      }
+    })
+  }
+  
+  func deleteChild(_ child: FoodieObjectDelegate,
+                   withBlock callback: FoodieObject.BooleanErrorBlock?) {
 
+    self.outstandingChildOperations += 1
+    var childOperationsPending = true
+    
+    child.deleteRecursive(withName: nil, withBlock: {(success, error) -> Void in
+      
+      if !success {
+        if let hasError = error {
+          self.protectedOperationError = hasError
+        } else {
+          DebugPrint.assert("deleteChild failed but block contained no Error")
+        }
+      }
+      
+      pthread_mutex_lock(&self.criticalMutex)
+      self.outstandingChildOperations -= 1
+      if self.outstandingChildOperations == 0 {
+        childOperationsPending = false
+      }
+      pthread_mutex_unlock(&self.criticalMutex)
+      
+      if !childOperationsPending {
+        callback?(self.protectedOperationError == nil, self.protectedOperationError)
+      }
+    })
+  }
 }

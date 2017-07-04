@@ -46,6 +46,7 @@ class FoodieFile {
     case awsS3TransferManagerDownloadRequestNil
     case awsS3TransferDownloadCancelled
     case awsS3TransferDownloadUnknownError
+    case awsS3FileDoesntExistError
     
     var errorDescription: String? {
       switch self {
@@ -67,6 +68,8 @@ class FoodieFile {
         return NSLocalizedString("AWS S3 Transfer Download cancelled", comment: "Error description for an exception error code")
       case .awsS3TransferDownloadUnknownError:
         return NSLocalizedString("AWS S3 Transfer Download unknonw error", comment: "Error description for an exception error code")
+      case .awsS3FileDoesntExistError:
+        return NSLocalizedString("AWS S3 File doesn't exist on server", comment: "Error description for an exception error code")
       }
     }
     
@@ -79,7 +82,7 @@ class FoodieFile {
   
   // MARK: - Private Constants
   struct Constants {
-    static let S3BucketKey = "foodilicious"
+    static let S3BucketKey = "foodilicioustest" //TODO fix to production bucket key when moving back to master
     static let DocumentFolderUrl = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
   }
   
@@ -87,7 +90,6 @@ class FoodieFile {
   // MARK: - Public Static Variables
   static var manager: FoodieFile!
   static var localBufferDirectory: String!
-  
   
   // MARK: - Private Instance Variables
   private let s3Handler: AWSS3
@@ -145,6 +147,8 @@ class FoodieFile {
     transferManager = AWSS3TransferManager.default()
     fileManager = FileManager.default
   }
+  
+  
   
   
   func retrieveFromLocalToBufffer(fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
@@ -289,12 +293,22 @@ class FoodieFile {
 
   func deleteFileFromS3(fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
     let delRequest = AWSS3DeleteObjectRequest()!
-    
     delRequest.bucket = Constants.S3BucketKey
     delRequest.key = fileName
-    s3Handler.deleteObject(delRequest)
+    let deleteTask = s3Handler.deleteObject(delRequest)
+    deleteTask.continueWith() { (task: AWSTask<AWSS3DeleteObjectOutput>) -> Any? in
+      if let error = task.error as NSError? {
+          callback?(false,error)
+      }
+      // successfully deleted
+      callback?(true, nil)
+      return nil
+    }
   }
-
+  
+  func checkIfFileExistsLocal(fileName: String) ->Bool {
+    return fileManager.fileExists(atPath: "\(Constants.DocumentFolderUrl.path)/\(fileName)")
+  }
   
   func checkIfFileExistsS3(fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?){
     
@@ -306,14 +320,15 @@ class FoodieFile {
       if let error = task.error as NSError? {
         if error.domain == AWSS3ErrorDomain {
           // didnt find the object
+          callback?(false, ErrorCode.awsS3FileDoesntExistError)
           return nil
         }
       }
       // found object
+      callback?(true, nil)
       return nil
     }
   }
-  
   
   func cancelAllS3Transfer()
   {
@@ -375,7 +390,6 @@ class FoodieS3Object {
     FoodieFile.manager.moveFileFromUrlToLocal(url: url, fileName: fileName, withBlock: callback)
   }
   
-  
   // Function to save this and all child Parse objects to server
   func saveToServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
     guard let fileName = foodieFileName else {
@@ -387,13 +401,35 @@ class FoodieS3Object {
   
   // Function to delete this and all child Parse objects from local
   func deleteFromLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DebugPrint.verbose("")
+    guard let fileName = foodieFileName else {
+      DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+    }
+    
+    if (FoodieFile.manager.checkIfFileExistsLocal(fileName: fileName))
+    {
+      FoodieFile.manager.deleteFileFromLocal(fileName: fileName, withBlock: callback)
+    } else {
+      // file doesnt exists can let go of this error as if file was deleted successfully
+      callback?(true, nil)
+    }
   }
   
   
   // Function to delete this and all child Parse objects from server
   func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DebugPrint.verbose("")
+    guard let fileName = foodieFileName else {
+      DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+    }
+    
+    FoodieFile.manager.checkIfFileExistsS3(fileName: fileName) { (success, error) in
+      if(success) {
+        FoodieFile.manager.deleteFileFromS3(fileName: fileName, withBlock: callback)
+      }
+      else {
+        // file doesnt exists can let go of this error as if file was deleted successfully 
+        callback?(true, nil)
+      }
+    }
   }
   
   func getUniqueIdentifier() -> String {

@@ -79,10 +79,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Public Static Variables
   static var currentJournal: FoodieJournal? { return currentJournalPrivate }
   
-  
   // MARK: - Private Static Variables
   private static var currentJournalPrivate: FoodieJournal?
-  
   
   // MARK: - Public Instance Variables
   var thumbnailObj: FoodieMedia?
@@ -256,13 +254,10 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  // Function to delete specified Moment
-  // Other Moments in the array might have their position altered accordingly
-  // Controller layer should query to confirm how other Moments might have their orders and positions changed
-  func delete(moment: FoodieMoment) {
-    
+  func deleteAsync(withBlock callback: FoodieObject.BooleanErrorBlock?){
+    deleteRecursive(withBlock: callback)
   }
-
+  
 
   // MARK: - Foodie Object Delegate Conformance
   
@@ -335,14 +330,43 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       }
     }
   }
-  
-  
-  // Trigger recursive saves against all child objects.
-  func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String? = nil,
+ 
+  // Trigger recursive delete against all child objects.
+  func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    
+    DebugPrint.verbose("FoodieJournal.deleteRecursive \(objectId) from Location: \(location)")
+    self.retrieve(withBlock: {(success, error) in
+      // delete from local first
+      self.foodieObject.deleteObject(from: .local, withBlock: { (success, error) in
+        if(success) {
+          self.foodieObject.deleteObject(from: .server, withBlock: { (success, error) in
+            if(success) {
+              // check to see if there are more items such as moments, markups to delete
+              if let hasMoment = self.moments {
+                for moment in hasMoment {
+                  self.foodieObject.deleteChild(moment, withBlock: callback)
+                }
+              }
+              
+              if let hasMarkup = self.markups {
+                for markup in hasMarkup {
+                  self.foodieObject.deleteChild(markup, withBlock: callback)
+                }
+              }
+              
+            } else {
+              // error when deleting journal from server
+              callback?(success, error)
+            }
+          })
+        } else {
+          // error when deleting journal from local
+          callback?(success, error)
+        }
+      })
+    })
   }
-  
   
   func verbose() {
     DebugPrint.verbose("FoodieJournal ID: \(getUniqueIdentifier())")
