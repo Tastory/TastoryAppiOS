@@ -61,13 +61,14 @@ class JournalEntryViewController: UITableViewController {
     
     workingJournal?.title = titleTextField?.text
     workingJournal?.journalURL = linkTextField?.text
-    workingJournal?.saveRecursive(to: .local) { [unowned self] (success, error) in
+    workingJournal?.saveRecursive(to: .local) { (success, error) in
       if success {
         DebugPrint.verbose("Journal Save to Local Completed!")
         
-        self.workingJournal?.saveRecursive(to: .server) { (success, error) in
+        self.workingJournal?.saveRecursive(to: .server) { [weak self] (success, error) in
           if success {
             DebugPrint.verbose("Journal Save to Server Completed!")
+            self?.saveCompleteDialog()
           } else if let error = error {
             DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
           } else {
@@ -166,16 +167,34 @@ class JournalEntryViewController: UITableViewController {
   
   // Generic error dialog box to the user on internal errors
   private func internalErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when a Journal Entry view internal error occured",
-                                            message: "An internal error has occured. Please try again",
-                                            messageComment: "Alert dialog message when a Journal Entry view internal error occured",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for generic Journal Entry errors",
-                                   style: .default)
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Journal Entry view internal error occured",
+                                              message: "An internal error has occured. Please try again",
+                                              messageComment: "Alert dialog message when a Journal Entry view internal error occured",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for generic Journal Entry errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
+  
+  
+  private func saveCompleteDialog() {
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Journal Entry view completes test save",
+                                              message: "Journal Entry Save Completed!",
+                                              messageComment: "Alert dialog message when a Journal Entry view completes test save",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for completing a test save",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
+  }
+  
   
   func keyboardDismiss() {
     self.view.endEditing(true)

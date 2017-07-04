@@ -19,6 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Create S3 Manager singleton
     FoodieFile.manager = FoodieFile()
     
+    // Create Prefetch Manager singleton
+    FoodiePrefetch.global = FoodiePrefetch()
+    
     // Initialize Parse.
     Parse.enableLocalDatastore()
     

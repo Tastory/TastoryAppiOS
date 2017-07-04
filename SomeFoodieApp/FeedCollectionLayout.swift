@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol FeedCollectionLayoutDelegate {
+protocol FeedCollectionLayoutDelegate: AnyObject {
   
   func collectionView(_ collectionView: UICollectionView, heightForImageAtIndexPath indexPath: IndexPath, withWidth width: CGFloat) -> CGFloat
   
@@ -39,7 +39,7 @@ class FeedCollectionLayoutAttributes: UICollectionViewLayoutAttributes {
 
 class FeedCollectionLayout: UICollectionViewLayout {
   
-  var delegate: FeedCollectionLayoutDelegate!
+  weak var delegate: FeedCollectionLayoutDelegate?
   var numberOfColumns = 0
   var cellPadding: CGFloat = 0
   
@@ -61,6 +61,11 @@ class FeedCollectionLayout: UICollectionViewLayout {
   }
   
   override func prepare() {
+    
+    guard let delegate = delegate else {
+      return
+    }
+    
     if cache.isEmpty {
       let columnWidth = width / CGFloat(numberOfColumns)
       

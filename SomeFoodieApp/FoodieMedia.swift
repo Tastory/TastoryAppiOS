@@ -15,14 +15,14 @@ class FoodieMedia: FoodieS3Object {
   enum ErrorCode: LocalizedError {
     
     case saveToLocalwithNilMediaType
-    case saveToLocalwithNilimageMemoryBuffer
+    case saveToLocalwithNilImageMemoryBuffer
     case saveToLocalwithNilvideoLocalBufferUrl
     
     var errorDescription: String? {
       switch self {
       case .saveToLocalwithNilMediaType:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, medaiType = nil", comment: "Error description for an exception error code")
-      case .saveToLocalwithNilimageMemoryBuffer:
+      case .saveToLocalwithNilImageMemoryBuffer:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, imageMemoryBuffer = nil", comment: "Error description for an exception error code")
       case .saveToLocalwithNilvideoLocalBufferUrl:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, videoLocalBufferUrl = nil", comment: "Error description for an exception error code")
@@ -37,62 +37,71 @@ class FoodieMedia: FoodieS3Object {
   
   
   // MARK: - Public Instance Variable
-  var foodieObject = FoodieObject()
   var imageMemoryBuffer: Data?
   var videoLocalBufferUrl: URL?
-  
-  
-  // MARK: - Private Instance Variable
   var mediaType: FoodieMediaType?
 
   
-  // MARK: - Public Instance Function
-  override init() {
-    super.init()
+  // MARK: - Public Instance Functions
+  
+  // This is the Initilizer Parse will call upon Query or Retrieves
+  init() {
+    super.init(withState: .notAvailable)
     foodieObject.delegate = self
   }
   
-  init(fileName: String, type: FoodieMediaType) {
-    super.init()
+  
+  // This is the Initializer we will call internally
+  init(withState operationState: FoodieObject.OperationStates, fileName: String, type: FoodieMediaType) {
+    super.init(withState: operationState)
     foodieObject.delegate = self
     foodieFileName = fileName
     mediaType = type
+    
+    // For videos, determine if the media file already exists in Local cache store
+    if type == .video {
+      videoLocalBufferUrl = FoodieFile.checkIfExistInLocal(for: fileName)
+    }
   }
 }
 
 
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieMedia: FoodieObjectDelegate {
-
-  func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  
+  func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let type = mediaType else {
       DebugPrint.fatal("Retrieve not allowed when Media has no MediaType")
     }
     
     // If photo and in memory, or video and in local, just callback
     if !forceAnyways && (imageMemoryBuffer != nil || videoLocalBufferUrl != nil) {
-      callback?(self, nil)
+      callback?(nil)
       return
       
     } else if forceAnyways {
       
       switch type {
       case .photo:
-        retrieveFromServerToBuffer() { [unowned self] buffer, error in
+        retrieveFromServerToBuffer() { buffer, error in
           if let err = error {
             DebugPrint.error("retrieveFromServerToBuffer for photo failed with error \(err.localizedDescription)")
           }
           if let imageBuffer = buffer as? Data { self.imageMemoryBuffer = imageBuffer }
-          callback?(buffer, error)
+          callback?(error)
         }
         
       case .video:
-        retrieveFromServerToLocal() { (string, error) in
+        retrieveFromServerToLocal() { (error) in
           if let err = error {
             DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
           }
-          if let urlString = string as? String { self.videoLocalBufferUrl = URL(string: urlString) }
-          callback?(string, error)
+          if let fileName = self.foodieFileName {
+            self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: fileName)
+          } else {
+            DebugPrint.fatal("FoodieMedia.retrieve() resulted in foodieFileName = nil")
+          }
+          callback?(error)
         }
       }
       return
@@ -102,33 +111,50 @@ extension FoodieMedia: FoodieObjectDelegate {
     switch type {
       
     case .photo:
-      retrieveFromLocalToBuffer() { [unowned self] localBuffer, localError in
-        guard let err = localError else {
+      retrieveFromLocalToBuffer() { localBuffer, localError in
+        guard let err = localError as? FoodieFile.ErrorCode else {
           // Error is nil. This is actually success case!
           if let imageBuffer = localBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
-          callback?(localBuffer, nil)
+          callback?(nil)
           return
         }
-        DebugPrint.error("retrieveFromLocalToBuffer for photo failed with error \(err.localizedDescription)")
+        
+        if err == FoodieFile.ErrorCode.fileManagerReadLocalNoFile {
+          // This is expected when file is not cached to local
+        } else {
+          DebugPrint.error("retrieveFromLocalToBuffer for photo failed with error \(err.localizedDescription)")
+        }
         
         self.retrieveFromServerToBuffer() { (serverBuffer, serverError) in
           if let error = serverError {
             DebugPrint.error("retrieveFromServerToBuffer for photo failed with error \(error.localizedDescription)")
           }
           if let imageBuffer = serverBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
-          callback?(serverBuffer, serverError)
+          callback?(serverError)
         }
       }
       
     case .video:
-      retrieveFromServerToLocal() { (string, error) in
+      retrieveFromServerToLocal() { error in
         if let err = error {
           DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
         }
-        if let urlString = string as? String { self.videoLocalBufferUrl = URL(string: urlString) }
-        callback?(string, error)
+        if let fileName = self.foodieFileName {
+          self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: fileName)
+        } else {
+          DebugPrint.fatal("FoodieMedia.retrieve() resulted in foodieFileName = nil")
+        }
+        callback?(error)
       }
     }
+  }
+  
+  
+  // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
+  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    // Retrieve self. This object have no children
+    retrieve(forceAnyways: forceAnyways, withBlock: callback)
   }
   
   
@@ -145,7 +171,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       return
     }
 
-    DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+    DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
       self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
     }
   }
@@ -160,17 +186,22 @@ extension FoodieMedia: FoodieObjectDelegate {
     switch type {
     case .photo:
       guard let memoryBuffer = imageMemoryBuffer else {
-        callback?(false, ErrorCode.saveToLocalwithNilimageMemoryBuffer)
+        callback?(false, ErrorCode.saveToLocalwithNilImageMemoryBuffer)
         return
       }
       saveDataBufferToLocal(buffer: memoryBuffer, withBlock: callback)
       
     case .video:
       guard let videoUrl = videoLocalBufferUrl else {
-        callback?(false, ErrorCode.saveToLocalwithNilimageMemoryBuffer)
+        callback?(false, ErrorCode.saveToLocalwithNilImageMemoryBuffer)
         return
       }
-      saveTmpUrlToLocal(url: videoUrl, withBlock: callback)
+      saveTmpUrlToLocal(url: videoUrl) { /*[unowned self]*/ success, error in
+        if success && error == nil {
+          self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: self.foodieFileName!)
+        }
+        callback?(success, error)
+      }
     }
   }
   

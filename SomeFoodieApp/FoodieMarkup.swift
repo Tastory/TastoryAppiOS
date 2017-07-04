@@ -20,13 +20,18 @@ class FoodieMarkup: FoodiePFObject {
   // @NSManaged var frameAngle: Double
   
   
-  // MARK: - Public Instance Variable
-  var foodieObject = FoodieObject()
-  
-  
   // MARK: - Public Instance Functions
+  
+  // This is the Initilizer Parse will call upon Query or Retrieves
   override init() {
-    super.init()
+    super.init(withState: .notAvailable)
+    foodieObject.delegate = self
+  }
+  
+  
+  // This is the Initializer we will call internally
+  override init(withState operationState: FoodieObject.OperationStates) {
+    super.init(withState: operationState)
     foodieObject.delegate = self
   }
 }
@@ -34,6 +39,14 @@ class FoodieMarkup: FoodiePFObject {
 
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieMarkup: FoodieObjectDelegate {
+  
+  // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
+  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    // Retrieve self. This object have no children
+    retrieve(forceAnyways: forceAnyways, withBlock: callback)
+  }
+  
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
@@ -56,7 +69,7 @@ extension FoodieMarkup: FoodieObjectDelegate {
     DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
     
     // Object might not be retrieved, retrieve first to have access to children
-    retrieve { (_, error) in
+    retrieve { error in
       
       if let hasError = error {
         callback?(false, hasError)

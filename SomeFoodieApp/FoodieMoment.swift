@@ -75,17 +75,20 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  var foodieObject = FoodieObject()
   
+  // MARK: - Public Instance Functions
   
-  // MARK: - Public Functions
+  // This is the Initilizer Parse will call upon Query or Retrieves
   override init() {
-    super.init()
+    super.init(withState: .notAvailable)
     foodieObject.delegate = self
+    // mediaObj = FoodieMedia()  // retrieve() will take care of this. Don't set this here.
   }
   
-  init(foodieMedia: FoodieMedia) {
-    super.init()
+  
+  // This is the Initializer we will call internally
+  init(withState operationState: FoodieObject.OperationStates, foodieMedia: FoodieMedia) {
+    super.init(withState: operationState)
     foodieObject.delegate = self
     mediaObj = foodieMedia
     
@@ -93,25 +96,54 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     mediaFileName = foodieMedia.foodieFileName
     mediaType = foodieMedia.mediaType?.rawValue
   }
-
-
+  
+  
   // MARK: - Foodie Object Delegate Conformance
 
-  override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
-    super.retrieve(forceAnyways: forceAnyways) { (someObject, error) in
+  // Retrieves just the moment itself
+  override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    super.retrieve(forceAnyways: forceAnyways) { error in
+      if self.mediaObj == nil, let fileName = self.mediaFileName,
+        let typeString = self.mediaType, let type = FoodieMediaType(rawValue: typeString) {
+        self.mediaObj = FoodieMedia(withState: .notAvailable, fileName: fileName, type: type)
+      }
       
-      if let moment = someObject as? FoodieMoment {
-        
-        if moment.mediaObj == nil, let fileName = moment.mediaFileName,
-          let typeString = moment.mediaType, let type = FoodieMediaType(rawValue: typeString) {
-          moment.mediaObj = FoodieMedia(fileName: fileName, type: type)
-        }
-        
-        if moment.thumbnailObj == nil, let fileName = moment.thumbnailFileName {
-          moment.thumbnailObj = FoodieMedia(fileName: fileName, type: .photo)
+      if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
+        self.thumbnailObj = FoodieMedia(withState: .notAvailable, fileName: fileName, type: .photo)
+      }
+      callback?(error)  // Callback regardless
+    }
+  }
+  
+  
+  // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
+  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    // Retrieve self first, then retrieve children afterwards
+    retrieve(forceAnyways: forceAnyways) { (error) in
+      
+      if let momentError = error {
+        DebugPrint.assert("Moment.retrieve() resulted in error: \(momentError.localizedDescription)")
+        callback?(error)
+        return
+      }
+
+      guard let media = self.mediaObj else {
+        DebugPrint.assert("Unexpected Moment.retrieve() resulted in moment.mediaObj = nil")
+        callback?(error)
+        return
+      }
+      
+      self.foodieObject.resetOutstandingChildOperations()
+      
+      // Got through all sanity check, calling children's retrieveRecursive
+      self.foodieObject.retrieveChild(media, withBlock: callback)
+      
+      if let hasMarkups = self.markups {
+        for markup in hasMarkups {
+          self.foodieObject.retrieveChild(markup, withBlock: callback)
         }
       }
-      callback?(someObject, error)  // Callback regardless
     }
   }
   
@@ -130,6 +162,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
       return
     }
+    
+    foodieObject.resetOutstandingChildOperations()
     
     var childOperationPending = false
     
@@ -152,7 +186,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
     
     if !childOperationPending {
-      DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+      DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
         self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
       }
     }
@@ -163,18 +197,19 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // Trigger recursive saves against all child objects.
   func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DebugPrint.verbose("FoodieMoment.deleteRecursive from \(self.objectId)")
     
     // retrieve moment first
-    self.retrieve() { (success, error) in
+    self.retrieve() { error in
       
       // TOOD: Victor, what happens if retrieve fails?
       
-      // delete from local first
+      // Delete self from both local and server first
       self.foodieObject.deleteObjectLocalNServer(withName: name) { (success, error) in
         
         if(success) {
-          // check for media and thumb nails to be deleted from this object
+          self.foodieObject.resetOutstandingChildOperations()
+          
+          // check for media and thumbnails to be deleted from this object
           if let hasMedia = self.mediaObj {
             self.foodieObject.deleteChild(hasMedia, withBlock: callback)
           }
@@ -196,9 +231,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   func verbose() {
-    DebugPrint.verbose("FoodieMoment ID: \(getUniqueIdentifier())")
-    DebugPrint.verbose("  Media Filename: \(mediaFileName)")
-    DebugPrint.verbose("  Media Type: \(mediaType)")
+//    DebugPrint.verbose("FoodieMoment ID: \(getUniqueIdentifier())")
+//    DebugPrint.verbose("  Media Filename: \(mediaFileName)")
+//    DebugPrint.verbose("  Media Type: \(mediaType)")
   }
   
   

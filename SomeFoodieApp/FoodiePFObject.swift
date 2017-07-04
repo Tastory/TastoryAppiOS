@@ -13,13 +13,29 @@ import Foundation
 // Abstract Class for Foodie Objects based on PFObject
 class FoodiePFObject: PFObject {
 
-  // MARK: - Public Instance Functions
+  // MARK: - Public Instance Variable
+  var foodieObject: FoodieObject!
   
-  func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  
+  // MARK: - Public Instance Functions
+  override init() {
+    super.init()
+    DebugPrint.log("FoodiePFObject.init() called with no initial state specified. Defaulting to .notAvailable")
+    foodieObject = FoodieObject(withState: .notAvailable)
+  }
+  
+  
+  init(withState operationState: FoodieObject.OperationStates) {
+    super.init()
+    foodieObject = FoodieObject(withState: operationState)
+  }
+  
+  
+  func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // See if this is already in memory, if so no need to do anything
-    if isDataAvailable && !forceAnyways {
-      callback?(self, nil)
+    if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
+      callback?(nil)
       return
       
     } else if forceAnyways {
@@ -30,25 +46,28 @@ class FoodiePFObject: PFObject {
           DebugPrint.error("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
         }
         // Return if got what's wanted
-        callback?(serverObject, serverError)
+        callback?(serverError)
       }
       return
     }
     
     // See if this is in local cache
-    fetchFromLocalDatastoreInBackground { [unowned self] localObject, localError in
+    fetchFromLocalDatastoreInBackground { localObject, localError in
       
       guard let err = localError else {
-        guard let object = localObject else {
-          DebugPrint.fatal("fetchFromLocalDatastoreInBackground completed with no error but nil object returned")
-        }
-        
         // This is actually success case here! localError is nil!
-        callback?(object, nil)
+        callback?(nil)
         return
       }
-      DebugPrint.error("fetchFromLocalDatastore failed with error: \(err.localizedDescription)")
-        
+
+      let nsError = err as NSError
+      if nsError.domain == PFParseErrorDomain && nsError.code == PFErrorCode.errorCacheMiss.rawValue {
+        DebugPrint.log("fetchFromLocalDatastore Parse cache miss")
+      } else {
+        DebugPrint.assert("fetchFromLocalDatastore failed with error: \(err.localizedDescription)")
+        return
+      }
+
       // If not in Local Datastore, retrieved from Server
       self.fetchInBackground { serverObject, serverError in
         
@@ -57,7 +76,7 @@ class FoodiePFObject: PFObject {
           DebugPrint.error("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
         }
         // Return if got what's wanted
-        callback?(serverObject, serverError)
+        callback?(serverError)
       }
     }
   }

@@ -12,7 +12,13 @@ class FeedCollectionViewCell: UICollectionViewCell {
   @IBOutlet weak var journalButton: UIButton!
   @IBOutlet weak var journalTitle: UILabel!
   
+  var cellStatusMutex = pthread_mutex_t()
+  var cellLoaded = false
+  var cellDisplayed = false
+  
   override func prepareForReuse() {
-    journalButton.setImage(nil, for: .normal)
+    super.prepareForReuse()
+    journalButton?.setImage(nil, for: .normal)
+    journalButton?.removeTarget(nil, action: nil, for: .allEvents)
   }
 }

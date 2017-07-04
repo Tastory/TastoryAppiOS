@@ -24,32 +24,11 @@ class FeedCollectionViewController: UICollectionViewController {
   
   // MARK: - IBActions
   @IBAction func rightSwipeAction(_ sender: UISwipeGestureRecognizer) {
+    // Stop all prefetches
+    FoodiePrefetch.global.removeAllPrefetchWork()
     dismiss(animated: true, completion: nil)
   }
   
-  @IBAction func DeleteTestBtn(_ sender: Any) {
-    
-    // test delete one moment
-    /*
-    if let hasMoments = queriedJournalArray[0].moments {
-      // delete delete moment from journal
-      hasMoments[1].deleteRecursive(from: .server, withName: nil, withBlock: { (success,error)->Void in
-        if(success)
-        {
-          DebugPrint.userAction("Successfully Deleted Journal")
-        }
-      })
-    }*/
-    
-    
-    queriedJournalArray[0].deleteAsync() { success, error in
-      if success {
-        DebugPrint.userAction("Successfully Deleted Journal")
-      } else {
-        DebugPrint.userAction("Delete Journal Failed")
-      }
-    }
-  }
   
   // MARK: - View Controller Lifecycle Functions
   override func viewDidLoad() {
@@ -59,9 +38,16 @@ class FeedCollectionViewController: UICollectionViewController {
     // self.clearsSelectionOnViewWillAppear = false
     
     // Do any additional setup after loading the view
-    FoodieJournal.queryAll(limit: 10, block: queryResultCallback)
+    FoodieJournal.queryAll(limit: 20, block: queryResultCallback)  // TODO: Don't hardcode this limit
     
-    collectionView?.isPrefetchingEnabled = false 
+    // Turn on CollectionView prefetching
+    collectionView?.prefetchDataSource = self
+    collectionView?.isPrefetchingEnabled = true
+  }
+  
+  
+  override func viewDidAppear(_ animated: Bool) {
+    FoodiePrefetch.global.unblockPrefetching()
   }
   
   
@@ -88,40 +74,58 @@ class FeedCollectionViewController: UICollectionViewController {
   
   // Generic error dialog box to the user on internal errors
   func queryErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when a Feed Collection View query error occurred",
-                                            message: "A query error has occured. Please try again",
-                                            messageComment: "Alert dialog message when a Feed Collection View query error occurred",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for generic Feed Collection View errors",
-                                   style: .default)
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Feed Collection View query error occurred",
+                                              message: "A query error has occured. Please try again",
+                                              messageComment: "Alert dialog message when a Feed Collection View query error occurred",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for generic Feed Collection View errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   
   func fetchErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when a Feed Collection View fetch error occurred",
-                                            message: "A fetch error has occured. Please try again",
-                                            messageComment: "Alert dialog message when a Feed Collection View fetch error occurred",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for generic Feed Collection View errors",
-                                   style: .default)
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Feed Collection View fetch error occurred",
+                                              message: "A fetch error has occured. Please try again",
+                                              messageComment: "Alert dialog message when a Feed Collection View fetch error occurred",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for generic Feed Collection View errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   func internalErrorDialog() {
-    let alertController = UIAlertController(title: "SomeFoodieApp",
-                                            titleComment: "Alert diaglogue title when a Feed Collection View internal error occured",
-                                            message: "An internal error has occured. Please try again",
-                                            messageComment: "Alert dialog message when a Feed Collection View internal error occured",
-                                            preferredStyle: .alert)
-    alertController.addAlertAction(title: "OK",
-                                   comment: "Button in alert dialog box for generic Feed Collection View errors",
-                                   style: .default)
-    self.present(alertController, animated: true, completion: nil)
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Feed Collection View internal error occured",
+                                              message: "An internal error has occured. Please try again",
+                                              messageComment: "Alert dialog message when a Feed Collection View internal error occured",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for generic Feed Collection View errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
+  }
+  
+  
+  func viewJournal(_ sender: UIButton) {
+    // Stop all prefetches
+    FoodiePrefetch.global.blockPrefetching()
+    
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalViewController") as! JournalViewController
+    viewController.restorationClass = nil
+    viewController.viewingJournal = queriedJournalArray[sender.tag]
+    self.present(viewController, animated: true)
   }
   
   
@@ -141,95 +145,124 @@ class FeedCollectionViewController: UICollectionViewController {
     
     // Configure the cell
     let journal = queriedJournalArray[indexPath.row]
+    reusableCell.journalButton.tag = indexPath.row
+    reusableCell.journalButton.addTarget(self, action: #selector(viewJournal(_:)), for: .touchUpInside)
     
     // DebugPrint.verbose("collectionView(cellForItemAt #\(indexPath.row)")
     
-    // TODO: Hide all these in the Journal Model?
+    FoodiePrefetch.global.blockPrefetching()
     
-    // Do we need to fetch the Journal?
-    journal.retrieve { [unowned self] _, journalError in
+    journal.selfRetrieval { journalError in
       
-      // DebugPrint.verbose("journal.retrieve() callback for cell #\(indexPath.row)")
+      FoodiePrefetch.global.unblockPrefetching()
       
       if let error = journalError {
         self.fetchErrorDialog()
-        DebugPrint.error("Journal.retrieve() callback with error: \(error.localizedDescription)")
+        DebugPrint.assert("Journal.selfRetrieval() callback with error: \(error.localizedDescription)")
         return
       }
-      
-      //journal.verbose()
       
       guard let thumbnailObject = journal.thumbnailObj else {
-        self.internalErrorDialog()
-        DebugPrint.error("Unexpected, thumbnailObject = nil")
+        self.fetchErrorDialog()
+        DebugPrint.assert("Journal.selfRetrieval callback with thumbnailObj = nil")
         return
       }
       
-      thumbnailObject.retrieve(){ [unowned self] _, thumbnailError in
+      guard let thumbnailData = thumbnailObject.imageMemoryBuffer else {
+        self.internalErrorDialog()
+        DebugPrint.assert("Unexpected, thumbnailObject.imageMemoryBuffer = nil")
+        return
+      }
       
-        // DebugPrint.verbose("thumbnailObject.retrieve() callback for cell #\(indexPath.row)")
+      DispatchQueue.main.async {
+        var letsPrefetch = false
         
-        if let error = thumbnailError {
-          self.fetchErrorDialog()
-          DebugPrint.error("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
-          return
-        }
-        
-        guard let thumbnailData = thumbnailObject.imageMemoryBuffer else {
-          self.internalErrorDialog()
-          DebugPrint.error("Unexpected, thumbnailObject.imageMemoryBuffer = nil")
-          return
-        }
-        
-        if Thread.isMainThread {
+        if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
+          // DebugPrint.verbose("cellForItem(at:) DispatchQueue.main for cell #\(indexPath.row)")
+          cell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
+          cell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+          
+          pthread_mutex_lock(&cell.cellStatusMutex)
+          cell.cellLoaded = true
+          if cell.cellDisplayed {
+            letsPrefetch = true
+          }
+          pthread_mutex_unlock(&cell.cellStatusMutex)
+          
+        } else {
           // None of the retrieve function actually did an async dispatch. So we are still in the collectionView.cellForItemAt context.
           reusableCell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
           reusableCell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
           
-        } else if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
-          DispatchQueue.main.async {
-            // DebugPrint.verbose("cellForItem(at:) DispatchQueue.main for cell #\(indexPath.row)")
-            cell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
-            cell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+          pthread_mutex_lock(&reusableCell.cellStatusMutex)
+          reusableCell.cellLoaded = true
+          if reusableCell.cellDisplayed {
+            letsPrefetch = true
           }
-        } else {
-          DebugPrint.error("Feed Collection View CellForItemAt \(indexPath) did not return FeedCollectionViewCell type")
+          pthread_mutex_unlock(&reusableCell.cellStatusMutex)
+        }
+        
+        if letsPrefetch {
+          let journal = self.queriedJournalArray[indexPath.row]
+          journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
         }
       }
     }
     return reusableCell
   }
+
+  
+  // MARK: - UICollectionViewDataSource
+  
+  override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    
+    guard let feedCell = cell as? FeedCollectionViewCell else {
+      internalErrorDialog()
+      DebugPrint.assert("Cannot cast cell as FeedCollectionViewCell")
+      return
+    }
+    
+    var letsPrefetch = false
+    pthread_mutex_lock(&feedCell.cellStatusMutex)
+    feedCell.cellDisplayed = true
+    if feedCell.cellLoaded {
+      letsPrefetch = true
+    }
+    pthread_mutex_unlock(&feedCell.cellStatusMutex)
+    
+    if letsPrefetch {
+      let journal = self.queriedJournalArray[indexPath.row]
+      journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
+    }
+  }
+  
+  override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    DebugPrint.verbose("collectionView didEndDisplayingCell indexPath.row = \(indexPath.row)")
+    let journal = queriedJournalArray[indexPath.row]
+    if let context = journal.contentPrefetchContext {
+      FoodiePrefetch.global.removePrefetchWork(for: context)
+    }
+  }
+}
   
   
-  // MARK: - UICollectionViewDelegate
+extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
   
-  /*
-   // Uncomment this method to specify if the specified item should be highlighted during tracking
-   override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-   return true
-   }
-   */
+  func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+    for indexPath in indexPaths {
+      DebugPrint.verbose("collectionView prefetchItemsAt indexPath.row = \(indexPath.row)")
+      let journal = queriedJournalArray[indexPath.row]
+      journal.selfPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
+    }
+  }
   
-  /*
-   // Uncomment this method to specify if the specified item should be selected
-   override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-   return true
-   }
-   */
-  
-  /*
-   // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-   override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-   return false
-   }
-   
-   override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-   return false
-   }
-   
-   override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-   
-   }
-   */
-  
+  func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+    for indexPath in indexPaths {
+      DebugPrint.verbose("collectionView cancelPrefetchingForItemsAt indexPath.row = \(indexPath.row)")
+      let journal = queriedJournalArray[indexPath.row]
+      if let context = journal.selfPrefetchContext {
+        FoodiePrefetch.global.removePrefetchWork(for: context)
+      }
+    }
+  }
 }
