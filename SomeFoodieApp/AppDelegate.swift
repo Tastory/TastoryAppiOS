@@ -26,8 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     Parse.enableLocalDatastore()
     
     let configuration = ParseClientConfiguration {
-      $0.applicationId = "7dwZeNccj6qrvFjNoSXJvxQ7NaZ5mlmmrumZvO6S"
-      $0.clientKey = "I2iecAGe8Db3XpGjYRH7qqEuOJ8IVVCfhkKDl5uV"
+      $0.applicationId = "rmMLCbP4QhgKSHQ0uiOtjlBfF6I0pLhv1dv82DbX"
+      $0.clientKey = "x8Meoctrj7MYk1GQ4cFrmPPVmLd9K4i7f8FGNhCY"
       $0.server = "https://parseapi.back4app.com"
       $0.isLocalDatastoreEnabled = true
     }
