@@ -57,7 +57,6 @@
 		8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */; };
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */; };
 		C24F69651EB85B0300A0DB7B /* JournalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69641EB85B0300A0DB7B /* JournalViewController.swift */; };
-		C24F69671EB85DF300A0DB7B /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69661EB85DF300A0DB7B /* PlayerView.swift */; };
 		C5A7852B6648DF71C73BE203 /* Pods_SomeFoodieAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED09C3927B27479449C01250 /* Pods_SomeFoodieAppTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -137,7 +136,6 @@
 		8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentCollectionViewCell.swift; path = SomeFoodieApp/MomentCollectionViewCell.swift; sourceTree = "<group>"; };
 		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		C24F69641EB85B0300A0DB7B /* JournalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JournalViewController.swift; sourceTree = "<group>"; };
-		C24F69661EB85DF300A0DB7B /* PlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PlayerView.swift; path = SomeFoodieApp/PlayerView.swift; sourceTree = "<group>"; };
 		D774075B6C8726908633E5B2 /* Pods-SomeFoodieAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SomeFoodieAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SomeFoodieAppTests/Pods-SomeFoodieAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED09C3927B27479449C01250 /* Pods_SomeFoodieAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SomeFoodieAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F73B070E1BA758725ED554B8 /* Pods-SomeFoodieApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SomeFoodieApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-SomeFoodieApp/Pods-SomeFoodieApp.release.xcconfig"; sourceTree = "<group>"; };
@@ -282,7 +280,6 @@
 				8C1089381EB00E4500457E66 /* Layouts */,
 				8CD328DA1E8B2BD600E5254F /* Layers */,
 				8C1A0D7E1E88F711001DE075 /* CameraButton.swift */,
-				C24F69661EB85DF300A0DB7B /* PlayerView.swift */,
 				8C9AD0601E8F615D005F337E /* ExitButton.swift */,
 				8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */,
 				8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */,
@@ -665,7 +662,6 @@
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */,
 				8C1089351EAFF18300457E66 /* AddMomentLayer.swift in Sources */,
-				C24F69671EB85DF300A0DB7B /* PlayerView.swift in Sources */,
 				8C1D4E1E1ED9513800939B2C /* ThumbnailFrameLayer.swift in Sources */,
 				8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */,
 				8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */,

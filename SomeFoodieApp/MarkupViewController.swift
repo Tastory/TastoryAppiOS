@@ -335,6 +335,7 @@ class MarkupViewController: UIViewController {
       }
 
       avPlayer = AVQueuePlayer()
+      avPlayer?.allowsExternalPlayback = false
       avPlayerLayer = AVPlayerLayer(player: avPlayer)
       avPlayerLayer!.frame = self.view.bounds
       avPlayerItem = AVPlayerItem(url: videoURL)

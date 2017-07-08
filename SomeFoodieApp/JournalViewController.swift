@@ -333,6 +333,7 @@ class JournalViewController: UIViewController {
     super.viewDidLoad()
     
     avPlayer = AVPlayer()
+    avPlayer?.allowsExternalPlayback = false
     avPlayerLayer = AVPlayerLayer(player: avPlayer)
     avPlayerLayer!.frame = self.view.bounds
     videoView!.layer.addSublayer(avPlayerLayer!)
