@@ -61,29 +61,19 @@ class JournalEntryViewController: UITableViewController {
     
     workingJournal?.title = titleTextField?.text
     workingJournal?.journalURL = linkTextField?.text
-    workingJournal?.saveRecursive(to: .local) { (success, error) in
+
+    // journal is already saved to local
+    self.workingJournal?.saveRecursive(to: .server) { [weak self] (success, error) in
       if success {
-        DebugPrint.verbose("Journal Save to Local Completed!")
-        
-        self.workingJournal?.saveRecursive(to: .server) { [weak self] (success, error) in
-          if success {
-            DebugPrint.verbose("Journal Save to Server Completed!")
-            self?.saveCompleteDialog()
-          } else if let error = error {
-            DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
-          } else {
-            DebugPrint.fatal("Journal Save to Server Failed without Error")
-          }
-        }
-        
+        DebugPrint.verbose("Journal Save to Server Completed!")
+        self?.saveCompleteDialog()
       } else if let error = error {
-        DebugPrint.verbose("Journal Save to Local Failed with Error: \(error)")
+        DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
       } else {
-        DebugPrint.fatal("Journal Save to Local Failed without Error")
+        DebugPrint.fatal("Journal Save to Server Failed without Error")
       }
     }
   }
-  
   
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
@@ -124,6 +114,35 @@ class JournalEntryViewController: UITableViewController {
         journalUnwrapped.thumbnailFileName = returnedMoment!.thumbnailFileName
         journalUnwrapped.thumbnailObj = returnedMoment!.thumbnailObj
       }
+      
+      // only save to local when the journal is modified
+      if(journalUnwrapped.foodieObject.operationState == .objectModified) {
+        // save journal to local
+        journalUnwrapped.saveRecursive(to: .local, withBlock: { (success,error)-> Void in
+          if(success) {
+            DebugPrint.verbose("Completed saving journal to local")
+            // save recursive from journal already saved moment to .local
+            // need to save to server for the moments
+            self.returnedMoment!.saveRecursive(to: .server, withBlock: { (success, error) -> Void in
+              if(success)
+              {
+                DebugPrint.verbose("Completed uploading to server")
+              }
+            })
+          }
+        })
+      }
+      else {
+        // temporarily save to moments to server
+        returnedMoment!.saveRecursive(to: .local, withBlock: {(success, error) -> Void in
+          self.returnedMoment!.saveRecursive(to: .server, withBlock: { (success, error) -> Void in
+            if(success)
+            {
+              DebugPrint.verbose("Completed uploading to server")
+            }
+          })
+        })
+      }
     }
     
     // TODO: How to visually convey status of Moments to user??
@@ -155,6 +174,8 @@ class JournalEntryViewController: UITableViewController {
     tableView.addGestureRecognizer(previousSwipeRecognizer)
     
     titleTextField?.text = journalUnwrapped.title
+    
+    
   }
   
   

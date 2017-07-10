@@ -134,6 +134,17 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       try current.saveSync()
 
     } else if currentJournalPrivate != nil {
+      
+      // make sure that this journal has never been saved to server before deleting otherwise you want to preserve it
+      if(currentJournalPrivate?.foodieObject.operationState == .savedToLocal)
+      {
+        currentJournalPrivate?.deleteRecursive(withBlock: {(success,error)-> Void in
+          if(success) {
+            DebugPrint.verbose("Removed local copy from discared journal")
+          }
+        })
+      }
+      
       DebugPrint.log("Current Journal being overwritten without Save")
     } else {
       DebugPrint.assert("Use .newCurrent() without Save instead")  // Only barfs at development time. Continues on Production...
@@ -530,7 +541,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                     withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     DebugPrint.verbose("FoodieJournal.saveRecursive to Location: \(location)")
-    
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
     let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
     
@@ -545,9 +555,12 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     // Need to make sure all children FoodieRecursives saved before proceeding
     if let hasMoments = moments {
       for moment in hasMoments {
-        foodieObject.saveChild(moment, to: location, withName: name, withBlock: callback)
-        childOperationPending = true
-
+        // omit saving of moment if they are marked modified to prevent double saving of moments to server
+        if(moment.foodieObject.operationState == .objectModified)
+        {
+          foodieObject.saveChild(moment, to: location, withName: name, withBlock: callback)
+          childOperationPending = true
+        }
       }
     }
     
