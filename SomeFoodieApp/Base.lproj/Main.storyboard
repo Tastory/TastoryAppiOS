@@ -461,6 +461,9 @@
                                 <rect key="frame" x="315" y="591" width="44" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Sound"/>
+                                <connections>
+                                    <action selector="soundButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="dkQ-EQ-R1s"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KrM-3z-Z5X" customClass="ExitButton" customModule="SomeFoodieApp" customModuleProvider="target">
                                 <rect key="frame" x="16" y="8" width="40" height="40"/>
@@ -496,11 +499,6 @@
                                     <action selector="drawButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="l8o-q3-L1i"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CKF-go-XiM">
-                                <rect key="frame" x="285" y="46" width="38" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Undo"/>
-                            </button>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="eZh-sa-B78">
                                 <rect key="frame" x="217" y="167" width="254" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -508,6 +506,22 @@
                                     <action selector="colorSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="j3f-dm-ZYb"/>
                                 </connections>
                             </slider>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CKF-go-XiM">
+                                <rect key="frame" x="285" y="46" width="38" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Undo"/>
+                                <connections>
+                                    <action selector="undoButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="1WG-ao-Czh"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rbc-ru-Sbr">
+                                <rect key="frame" x="282" y="46" width="45" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Delete"/>
+                                <connections>
+                                    <action selector="deleteButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hLO-Li-p13"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
@@ -519,12 +533,14 @@
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
                         <outlet property="colorSlider" destination="eZh-sa-B78" id="BSi-1v-y6r"/>
+                        <outlet property="deleteButton" destination="rbc-ru-Sbr" id="O9F-DD-yX6"/>
                         <outlet property="drawButton" destination="ti7-uM-Tfb" id="q0A-uU-x0k"/>
                         <outlet property="exitButton" destination="KrM-3z-Z5X" id="m5z-DF-hS2"/>
                         <outlet property="foodButton" destination="Xf3-yP-YWE" id="aJ7-SR-Oxo"/>
                         <outlet property="saveButton" destination="5Da-16-S86" id="Yd6-y9-sg5"/>
                         <outlet property="soundButton" destination="jIA-aA-ex6" id="avY-Fm-oRe"/>
                         <outlet property="textButton" destination="NrF-32-VrF" id="hHX-SI-gF3"/>
+                        <outlet property="undoButton" destination="CKF-go-XiM" id="ep2-Fd-5Fw"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bya-bk-WIy" userLabel="First Responder" sceneMemberID="firstResponder"/>

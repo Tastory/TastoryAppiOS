@@ -20,6 +20,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var markups: Array<FoodieMarkup>?  // Array of PFObjects as FoodieMarkup
   @NSManaged var tags: Array<String>?  // Array of Strings, unstructured
   @NSManaged var thumbnailFileName: String?  // Thumbnail for the moment
+  @NSManaged var playSound: Bool
   
   // Query Pointers
   @NSManaged var author: FoodieUser?  // Pointer to the user that authored this Moment

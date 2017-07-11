@@ -46,6 +46,8 @@ class MarkupViewController: UIViewController {
   fileprivate var mediaWidth: Int?
   fileprivate var mediaAspectRatio: Double?
   
+  fileprivate var soundOn = true
+  
   fileprivate let jotViewController = JotViewController()
   
   
@@ -55,6 +57,8 @@ class MarkupViewController: UIViewController {
   @IBOutlet weak var textButton: UIButton!
   @IBOutlet weak var drawButton: UIButton!
   @IBOutlet weak var foodButton: UIButton!
+  @IBOutlet weak var deleteButton: UIButton!
+  @IBOutlet weak var undoButton: UIButton!
   @IBOutlet weak var soundButton: UIButton!
   @IBOutlet weak var colorSlider: UISlider!
   
@@ -65,45 +69,32 @@ class MarkupViewController: UIViewController {
   }
   
   @IBAction func textButtonAction(_ sender: UIButton) {
-    
-//    if jotViewController.state == JotViewState.drawing {
-//      if jotViewController.textString.lengthOfBytes(using: .unicode) == 0 {
-        jotViewController.state = JotViewState.editingText
-//      }
-//      else {
-//        jotViewController.state = JotViewState.text
-//      }
-//    }
+    jotViewController.state = JotViewState.editingText
+    undoButton.isHidden = true
   }
 
   
   @IBAction func drawButtonAction(_ sender: UIButton) {
     if jotViewController.state == JotViewState.text {
       jotViewController.state = JotViewState.drawing
-//      jotViewController.drawingColor = UIColor(red: CGFloat((Double(arc4random()) / Double(UINT32_MAX))),
-//                                               green: CGFloat((Double(arc4random()) / Double(UINT32_MAX))),
-//                                               blue: CGFloat((Double(arc4random()) / Double(UINT32_MAX))),
-//                                               alpha: CGFloat(1.0))
+      deleteButton.isHidden = true
+      undoButton.isHidden = false
+      
     }
   }
   
   
   @IBAction func foodButtonAction(_ sender: UIButton) {
-    
-//    if jotViewController.state == JotViewState.drawing {
-//      if jotViewController.textString.lengthOfBytes(using: .unicode) == 0 {
-        jotViewController.state = JotViewState.editingText
-//      }
-//      else {
-//        jotViewController.state = JotViewState.text
-//      }
-//    }
+    jotViewController.state = JotViewState.editingText
+    undoButton.isHidden = true
   }
   
   
   @IBAction func colorSliderChanged(_ sender: UISlider) {
     
     let sliderValue = Double(sender.value)
+    let solidPct = 0.005
+    let rsvdPct = 0.1
     var hueValue = 0.0
     var satValue = 0.0
     var valValue = 0.0
@@ -111,23 +102,39 @@ class MarkupViewController: UIViewController {
     
     // We are gonna cut up the slider. First 5% fades from white. Last 5% fades to black.
     // Gonna only allow 90% of the Hue pie, so it doesn't loop back to Red
-    if sliderValue < 0.05 {
-      valValue = (fabs(sliderValue - 0.025) + 0.025) / 0.05
-      satValue = (sliderValue - 0.025) / 0.025 // We are gonna double up so the Redness fades doubly fast
+    
+    // Case so it's forced to Full White when slider is less than 0.5%
+    if sliderValue < solidPct {
+      valValue = 1.0
+      satValue = 0.0
       hueValue = 0.0
       
-    } else if sliderValue > 0.95 {
-      valValue = 1.0 - ((sliderValue - 0.95) / 0.05)
-      satValue = 1.0 - ((sliderValue - 0.95) / 0.025)
-      hueValue = 0.90
+    // Case for transition from White to Grey to Red
+    } else if sliderValue < rsvdPct {
+      valValue = (fabs(sliderValue - (rsvdPct/2)) + (rsvdPct/2)) / rsvdPct
+      satValue = (sliderValue - (rsvdPct/2)) / (rsvdPct/2) // We are gonna double up so the Redness fades doubly fast
+      hueValue = 0.0
       
+    // Case for transition from Purple to Grey to Black
+    } else if sliderValue > (1.0 - rsvdPct) {
+      valValue = 1.0 - ((sliderValue - (1.0 - rsvdPct)) / rsvdPct)
+      satValue = 1.0 - ((sliderValue - (1.0 - rsvdPct)) / (rsvdPct/2)) // Saturation decreases double speed
+      hueValue = 1.0 - (2*rsvdPct)
+      
+    // Case for forcing Full Black when slider is more than 99.5%
+    } else if sliderValue > (1.0 - solidPct) {
+      valValue = 0.0
+      satValue = 0.0
+      hueValue = 1.0 - (2*rsvdPct)
+      
+    // Case for middle 90% of the slider
     } else {
-      hueValue = sliderValue - 0.05
+      hueValue = sliderValue - rsvdPct
       satValue = 1.0
       valValue = 1.0
     }
     
-    print("Current Color - Slider = \(sliderValue) Hue = \(hueValue), Saturation = \(satValue), Value = \(valValue)")
+    print("Current Color - Slider = \(sliderValue) Hue = \(hueValue) Saturation = \(satValue) Value = \(valValue)")
     currentColor = UIColor(hue: CGFloat(hueValue), saturation: CGFloat(satValue), brightness: CGFloat(valValue), alpha: 1.0)
     
     jotViewController.drawingColor = currentColor
@@ -135,12 +142,36 @@ class MarkupViewController: UIViewController {
   }
   
   
+  @IBAction func undoButtonAction(_ sender: UIButton) {
+    jotViewController.undoDrawing()
+  }
+  
+  
+  @IBAction func deleteButtonAction(_ sender: UIButton) {
+    jotViewController.deleteSelectedLabel()
+  }
+  
+  
+  @IBAction func soundButtonAction(_ sender: UIButton) {
+    
+    if soundOn {
+      avPlayer?.volume = 0.0
+      soundOn = false
+    } else {
+      avPlayer?.volume = 1.0
+      soundOn = true
+    }
+  }
+  
+  
   @IBAction func saveButtonAction(_ sender: UIButton) {
     
-    // TODO: Don't let use click save (Gray it out until Thumbnail creation completed)
+    // TODO: Don't let user click save (Gray it out until Thumbnail creation completed)
     
     // Initializing with Media Object also initialize foodieFileName and mediaType
     let momentObj = FoodieMoment(withState: .objectModified, foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
+    
+    momentObj.playSound = soundOn
     
     // Setting the Thumbnail Object also initializes the thumbnailFileName
     momentObj.thumbnailObj = thumbnailObject
@@ -369,7 +400,9 @@ class MarkupViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    // Setup the UI first
+    // Setup the UI first - Assume text mode to start
+    undoButton.isHidden = true
+    deleteButton.isHidden = false
     colorSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
     
     // This section setups the JotViewController with default initial values
@@ -408,7 +441,10 @@ class MarkupViewController: UIViewController {
     
     // Display the photo
     if mediaType == .photo {
-        
+      
+      // Hide the Sound button
+      soundButton.isHidden = true
+      
       photoView = UIImageView(frame: view.bounds)
       
       guard let imageView = photoView else {
@@ -430,6 +466,9 @@ class MarkupViewController: UIViewController {
     // Loop the video
     } else if mediaType == .video {
       
+      // Make sure the Sound button is shown
+      soundButton.isHidden = true
+      
       guard let videoURL = mediaObject.videoLocalBufferUrl else {
         displayErrorDialog()
         DebugPrint.assert("Unexpected, mediaObject.videoLocalBufferUrl == nil")
@@ -437,6 +476,8 @@ class MarkupViewController: UIViewController {
       }
 
       avPlayer = AVQueuePlayer()
+      avPlayer?.volume = 1.0
+      soundOn = true
       avPlayer?.allowsExternalPlayback = false
       avPlayerLayer = AVPlayerLayer(player: avPlayer)
       avPlayerLayer!.frame = self.view.bounds
@@ -448,7 +489,6 @@ class MarkupViewController: UIViewController {
       view.addSubview(videoView!)
       view.sendSubview(toBack: videoView!)
       avPlayer!.play() // TODO: There is some lag with a blank white screen before video starts playing...
-      
     
     // No image nor video to work on, Fatal
     } else {
@@ -573,8 +613,12 @@ class MarkupViewController: UIViewController {
 extension MarkupViewController: JotViewControllerDelegate {
   
   func jotViewController(_ jotViewController: JotViewController, isEditingText isEditing: Bool) {
-//    clearButton.isHidden = isEditing
-//    saveButton.isHidden = isEditing
-//    toggleDrawingButton.isHidden = isEditing
+    deleteButton.isHidden = false
+  }
+  
+  func jotViewController(_ jotViewController: JotViewController!, didSelectLabel labelInfo: [AnyHashable : Any]!) {
+    if jotViewController.state == .text || jotViewController.state == .editingText {
+      deleteButton.isHidden = false
+    }
   }
 }
