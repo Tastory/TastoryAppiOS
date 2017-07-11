@@ -16,6 +16,7 @@
 import UIKit
 import ImageIO
 import AVFoundation
+import Jot
 
 
 protocol MarkupReturnDelegate {
@@ -45,17 +46,95 @@ class MarkupViewController: UIViewController {
   fileprivate var mediaWidth: Int?
   fileprivate var mediaAspectRatio: Double?
   
+  fileprivate let jotViewController = JotViewController()
+  
   
   // MARK: - IBOutlets
   @IBOutlet weak var saveButton: UIButton?
+  @IBOutlet weak var exitButton: ExitButton?
+  @IBOutlet weak var textButton: UIButton!
+  @IBOutlet weak var drawButton: UIButton!
+  @IBOutlet weak var foodButton: UIButton!
+  @IBOutlet weak var soundButton: UIButton!
+  @IBOutlet weak var colorSlider: UISlider!
   
   
   // MARK: - IBActions
-  @IBAction func exitSwiped(_ sender: UISwipeGestureRecognizer) {
-    // TODO: Data Passback through delegate?
+  @IBAction func exitButtonAction(_ sender: UIButton) {
     dismiss(animated: true, completion: nil)
   }
+  
+  @IBAction func textButtonAction(_ sender: UIButton) {
+    
+//    if jotViewController.state == JotViewState.drawing {
+//      if jotViewController.textString.lengthOfBytes(using: .unicode) == 0 {
+        jotViewController.state = JotViewState.editingText
+//      }
+//      else {
+//        jotViewController.state = JotViewState.text
+//      }
+//    }
+  }
 
+  
+  @IBAction func drawButtonAction(_ sender: UIButton) {
+    if jotViewController.state == JotViewState.text {
+      jotViewController.state = JotViewState.drawing
+//      jotViewController.drawingColor = UIColor(red: CGFloat((Double(arc4random()) / Double(UINT32_MAX))),
+//                                               green: CGFloat((Double(arc4random()) / Double(UINT32_MAX))),
+//                                               blue: CGFloat((Double(arc4random()) / Double(UINT32_MAX))),
+//                                               alpha: CGFloat(1.0))
+    }
+  }
+  
+  
+  @IBAction func foodButtonAction(_ sender: UIButton) {
+    
+//    if jotViewController.state == JotViewState.drawing {
+//      if jotViewController.textString.lengthOfBytes(using: .unicode) == 0 {
+        jotViewController.state = JotViewState.editingText
+//      }
+//      else {
+//        jotViewController.state = JotViewState.text
+//      }
+//    }
+  }
+  
+  
+  @IBAction func colorSliderChanged(_ sender: UISlider) {
+    
+    let sliderValue = Double(sender.value)
+    var hueValue = 0.0
+    var satValue = 0.0
+    var valValue = 0.0
+    var currentColor: UIColor!
+    
+    // We are gonna cut up the slider. First 5% fades from white. Last 5% fades to black.
+    // Gonna only allow 90% of the Hue pie, so it doesn't loop back to Red
+    if sliderValue < 0.05 {
+      valValue = (fabs(sliderValue - 0.025) + 0.025) / 0.05
+      satValue = (sliderValue - 0.025) / 0.025 // We are gonna double up so the Redness fades doubly fast
+      hueValue = 0.0
+      
+    } else if sliderValue > 0.95 {
+      valValue = 1.0 - ((sliderValue - 0.95) / 0.05)
+      satValue = 1.0 - ((sliderValue - 0.95) / 0.025)
+      hueValue = 0.90
+      
+    } else {
+      hueValue = sliderValue - 0.05
+      satValue = 1.0
+      valValue = 1.0
+    }
+    
+    print("Current Color - Slider = \(sliderValue) Hue = \(hueValue), Saturation = \(satValue), Value = \(valValue)")
+    currentColor = UIColor(hue: CGFloat(hueValue), saturation: CGFloat(satValue), brightness: CGFloat(valValue), alpha: 1.0)
+    
+    jotViewController.drawingColor = currentColor
+    jotViewController.textColor = currentColor
+  }
+  
+  
   @IBAction func saveButtonAction(_ sender: UIButton) {
     
     // TODO: Don't let use click save (Gray it out until Thumbnail creation completed)
@@ -290,6 +369,29 @@ class MarkupViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    // Setup the UI first
+    colorSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
+    
+    // This section setups the JotViewController with default initial values
+    jotViewController.delegate = self
+    jotViewController.state = JotViewState.text
+    jotViewController.textColor = UIColor.black
+    jotViewController.font = UIFont.boldSystemFont(ofSize: 64.0)
+    jotViewController.fontSize = 64.0
+    jotViewController.textEditingInsets = UIEdgeInsetsMake(12.0, 6.0, 0.0, 6.0)
+    jotViewController.initialTextInsets = UIEdgeInsetsMake(6.0, 6.0, 6.0, 6.0)
+    jotViewController.fitOriginalFontSizeToViewWidth = true
+    jotViewController.textAlignment = .left
+    jotViewController.drawingColor = UIColor.cyan
+    
+    addChildViewController(jotViewController)
+    view.addSubview(jotViewController.view)
+    view.sendSubview(toBack: jotViewController.view)
+    jotViewController.didMove(toParentViewController: self)
+    jotViewController.view.frame = view.bounds
+    
+    
+    // This section is for initiating the background Image or Video
     if mediaObj == nil {
       internalErrorDialog()
       DebugPrint.assert("Unexpected, mediaObj == nil ")
@@ -459,5 +561,20 @@ class MarkupViewController: UIViewController {
     thumbnailObject = FoodieMedia(withState: .objectModified, fileName: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), type: .photo)
     thumbnailObject!.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieConstants.jpegCompressionQuality))
     //CGImageRelease(thumbnailCgImage)
+  }
+  
+  
+  override var prefersStatusBarHidden: Bool {
+    return true
+  }
+}
+
+
+extension MarkupViewController: JotViewControllerDelegate {
+  
+  func jotViewController(_ jotViewController: JotViewController, isEditingText isEditing: Bool) {
+//    clearButton.isHidden = isEditing
+//    saveButton.isHidden = isEditing
+//    toggleDrawingButton.isHidden = isEditing
   }
 }

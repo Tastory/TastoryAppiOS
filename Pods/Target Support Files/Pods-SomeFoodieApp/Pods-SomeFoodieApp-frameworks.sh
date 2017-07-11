@@ -94,7 +94,9 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/AWSS3/AWSS3.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Bolts/Bolts.framework"
   install_framework "$BUILT_PRODUCTS_DIR/FoursquareAPIClient/FoursquareAPIClient.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/Jot/Jot.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Kanna/Kanna.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/Masonry/Masonry.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Parse/Parse.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SwiftyCam/SwiftyCam.framework"
 fi
@@ -104,7 +106,9 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/AWSS3/AWSS3.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Bolts/Bolts.framework"
   install_framework "$BUILT_PRODUCTS_DIR/FoursquareAPIClient/FoursquareAPIClient.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/Jot/Jot.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Kanna/Kanna.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/Masonry/Masonry.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Parse/Parse.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SwiftyCam/SwiftyCam.framework"
 fi

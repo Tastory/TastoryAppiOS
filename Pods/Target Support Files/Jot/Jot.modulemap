@@ -1,0 +1,6 @@
+framework module Jot {
+  umbrella header "Jot-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -12,6 +12,7 @@ target 'SomeFoodieApp' do
   pod 'SwiftyCam'
   pod 'AWSS3'
   pod 'AWSCognito'
+  pod 'Jot', :git => 'https://github.com/biscottigelato/Jot.git'
   
   target 'SomeFoodieAppTests' do
     inherit! :search_paths

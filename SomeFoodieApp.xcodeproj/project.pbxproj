@@ -100,6 +100,7 @@
 		8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FeedCollectionViewCell.swift; path = SomeFoodieApp/FeedCollectionViewCell.swift; sourceTree = "<group>"; };
 		8C1D4E251EDCED0800939B2C /* FeedCollectionLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FeedCollectionLayout.swift; path = SomeFoodieApp/FeedCollectionLayout.swift; sourceTree = "<group>"; };
 		8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MKCoordinateSpan+Extension.swift"; sourceTree = "<group>"; };
+		8C40B20B1F1466D40030B5B5 /* Jot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jot-Bridging-Header.h"; sourceTree = "<group>"; };
 		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
 		8C5C4DDD1EFEEDEC008C83EC /* FoodiePrefetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePrefetch.swift; sourceTree = "<group>"; };
 		8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugPrint.swift; sourceTree = "<group>"; };
@@ -199,6 +200,17 @@
 			name = Utilities;
 			sourceTree = "<group>";
 		};
+		8C40B20A1F1466A10030B5B5 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				8CBF558A1E7F7EDF00F4B1CD /* Assets.xcassets */,
+				8CBF558F1E7F7EDF00F4B1CD /* Info.plist */,
+				8C40B20B1F1466D40030B5B5 /* Jot-Bridging-Header.h */,
+				8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		8C9AD05A1E8F60E4005F337E /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -245,8 +257,7 @@
 		8CBF55821E7F7EDF00F4B1CD /* SomeFoodieApp */ = {
 			isa = PBXGroup;
 			children = (
-				8CBF558A1E7F7EDF00F4B1CD /* Assets.xcassets */,
-				8CBF558F1E7F7EDF00F4B1CD /* Info.plist */,
+				8C40B20A1F1466A10030B5B5 /* Supporting Files */,
 				8C1D4E181ED8DEFA00939B2C /* Utilities */,
 				8CD328D81E8B2B7900E5254F /* Extensions */,
 				8C9AD05A1E8F60E4005F337E /* Models */,
@@ -306,7 +317,6 @@
 		8CD328D91E8B2B8C00E5254F /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */,
 				8C0590481EC65B0000027E91 /* RootViewController.swift */,
 				8C0590461EC653DF00027E91 /* DiscoverViewController.swift */,
 				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
