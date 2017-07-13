@@ -60,17 +60,24 @@
 
 - (NSMutableDictionary*)serialize {
 	NSMutableDictionary *dic = [super serialize];
-	dic[kPoint] = [NSValue valueWithCGPoint:self.point];
+	dic[kPoint] = @{ kPointX: @(self.point.x), kPointY: @(self.point.y) };
 	dic[kStrokeWidth] = @(self.strokeWidth);
-    dic[kOutputScaleFactor] = @(self.outputScaleFactor);
+  dic[kOutputScaleFactor] = @(self.outputScaleFactor);
 	return dic;
 }
 
 - (void)unserialize:(NSDictionary*)dictionary {
 	[super unserialize:dictionary];
-	NSValue *pointValue = dictionary[kPoint];
-	if (pointValue) {
-		self.point = [pointValue CGPointValue];
+
+	if (dictionary[kPoint]) {
+    NSDictionary *center = dictionary[kPoint];
+    NSNumber *numberX = center[kPointX];
+    NSNumber *numberY = center[kPointY];
+    CGPoint tempPoint;
+    tempPoint.x = numberX.doubleValue;
+    tempPoint.y = numberY.doubleValue;
+    
+    self.point = tempPoint;
 	}
 	if (dictionary[kStrokeWidth]) {
 		self.strokeWidth = [dictionary[kStrokeWidth] floatValue];

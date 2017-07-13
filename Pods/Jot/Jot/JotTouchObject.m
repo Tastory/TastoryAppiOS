@@ -20,6 +20,12 @@ NSString *const kStrokeStartWidth = @"StrokeStartWidth";
 NSString *const kStrokeEndWidth = @"StrokeEndWidth";
 NSString *const kIsDashed = @"IsDashed";
 NSString *const kOutputScaleFactor = @"OutputScaleFactor";
+NSString *const kColorRed = @"kColorRed";
+NSString *const kColorGreen = @"kColorGreen";
+NSString *const kColorBlue = @"kColorBlue";
+NSString *const kColorAlpha = @"kColorAlpha";
+NSString *const kPointX = @"kPointX";
+NSString *const kPointY = @"kPointY";
 
 
 @implementation JotTouchObject
@@ -54,12 +60,31 @@ NSString *const kOutputScaleFactor = @"OutputScaleFactor";
 - (NSMutableDictionary*)serialize {
 	NSMutableDictionary *dic = [NSMutableDictionary new];
 	dic[kType] = NSStringFromClass(self.class);
-	dic[kColor] = self.strokeColor;
+  
+  CGFloat colorRed;
+  CGFloat colorGreen;
+  CGFloat colorBlue;
+  CGFloat colorAlpha;
+  [self.strokeColor getRed: &colorRed green: &colorGreen blue: &colorBlue alpha: &colorAlpha];
+  dic[kColor] = @{ kColorRed: @(colorRed), kColorGreen: @(colorGreen), kColorBlue: @(colorBlue), kColorAlpha: @(colorAlpha) };
+  
 	return dic;
 }
 
 - (void)unserialize:(NSDictionary*)dictionary {
-	self.strokeColor = dictionary[kColor];
+  
+  if (dictionary[kColor]) {
+    NSDictionary *color = dictionary[kColor];
+    NSNumber *numberRed = color[kColorRed];
+    NSNumber *numberGreen = color[kColorGreen];
+    NSNumber *numberBlue = color[kColorBlue];
+    NSNumber *numberAlpha = color[kColorAlpha];
+    
+    self.strokeColor = [UIColor colorWithRed:[numberRed floatValue]
+                                     green:[numberGreen floatValue]
+                                      blue:[numberBlue floatValue]
+                                     alpha:[numberAlpha floatValue]];
+  }
 }
 
 @end

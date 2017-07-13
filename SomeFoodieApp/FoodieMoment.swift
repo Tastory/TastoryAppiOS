@@ -27,10 +27,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var eatery: FoodieEatery?  // Pointer to the FoodieEatery object
   @NSManaged var categories: Array<Int>?  // Array of internal restaurant categoryIDs (all cateogires that applies, sub or primary)
   
-  // Optional
-  @NSManaged var type: Int  // Really an enum saying whether this describes the dish, interior, or exterior, Optional
-  @NSManaged var attribute: String?  // Attribute related to the type. Eg. Dish name, Optional
-  
   // Analytics
   @NSManaged var views: Int  // How many times have this Moment been viewed
   @NSManaged var clickthroughs: Int  // How many times have this been clicked through to the next
@@ -96,6 +92,22 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     // didSet does not get called in initialization context...
     mediaFileName = foodieMedia.foodieFileName
     mediaType = foodieMedia.mediaType?.rawValue
+  }
+  
+  
+  // Function to add Markups
+  func add(markup: FoodieMarkup,
+           to position: Int? = nil) {
+    
+    if position != nil {
+      DebugPrint.assert("FoodieJournal.add(to position:) not yet implemented. Adding to 'end' position")
+    }
+    
+    if self.markups != nil {
+      self.markups!.append(markup)
+    } else {
+      self.markups = [markup]
+    }
   }
   
   
@@ -188,7 +200,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     if !childOperationPending {
       DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
-        self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
+        self.foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
       }
     }
   }

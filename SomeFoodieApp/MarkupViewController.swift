@@ -176,6 +176,44 @@ class MarkupViewController: UIViewController {
     // Setting the Thumbnail Object also initializes the thumbnailFileName
     momentObj.thumbnailObj = thumbnailObject
     
+    // Serialize the Jot Markup into Foodie Markups
+    if let jotDictionary = jotViewController.serialize() {
+
+      if let jotLabels = jotDictionary[kLabels] as? [NSDictionary] {
+        var index = 1
+        for jotLabel in jotLabels {
+          DebugPrint.verbose("Jot Label #\(index) serialized")
+          
+          let markup = FoodieMarkup(withState: .objectModified)
+          markup.data = jotLabel
+          markup.dataType = FoodieMarkup.dataTypes.jotLabel.rawValue
+          if let jotLabelText = jotLabel[kText] as? String {
+            markup.keyword = jotLabelText
+          }
+          
+          momentObj.add(markup: markup)
+          index += 1
+        }
+      } else {
+        DebugPrint.verbose("No Labels in jotDictionary")
+      }
+      
+      if let drawViewDictionary = jotDictionary[kDrawView] as? NSDictionary {
+        DebugPrint.verbose("Jot DrawView serialized")
+        
+        let markup = FoodieMarkup(withState: .objectModified)
+        markup.data = drawViewDictionary
+        markup.dataType = FoodieMarkup.dataTypes.jotDrawView.rawValue
+        markup.keyword = nil
+        momentObj.add(markup: markup)
+        
+      } else {
+        print("No DrawView in jotDictionary")
+      }
+    } else {
+      DebugPrint.log("No dictionary returned by jotViewController to serialize into Markup")
+    }
+    
     // Fill in the width and aspect ratio
     guard let width = mediaWidth else {
       saveErrorDialog()
@@ -467,7 +505,7 @@ class MarkupViewController: UIViewController {
     } else if mediaType == .video {
       
       // Make sure the Sound button is shown
-      soundButton.isHidden = true
+      soundButton.isHidden = false
       
       guard let videoURL = mediaObject.videoLocalBufferUrl else {
         displayErrorDialog()

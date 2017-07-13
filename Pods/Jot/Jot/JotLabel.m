@@ -17,6 +17,13 @@ NSString *const kCenter = @"Center";
 NSString *const kRotation = @"kRotation";
 NSString *const kScale = @"Scale";
 NSString *const kFitWidth = @"FitWidth";
+NSString *const kLabelColorRed = @"LabelColorRed";
+NSString *const kLabelColorGreen = @"LabelColorGreen";
+NSString *const kLabelColorBlue = @"LabelColorBlue";
+NSString *const kLabelColorAlpha = @"LabelColorAlpha";
+NSString *const kLabelPointX = @"LabelPointX";
+NSString *const kLabelPointY = @"LabelPointY";
+
 
 @interface JotLabel ()
 
@@ -138,15 +145,23 @@ NSString *const kFitWidth = @"FitWidth";
 
 - (NSMutableDictionary*)serialize {
 	NSMutableDictionary *dic = [NSMutableDictionary new];
-	dic[kText] = self.text;
-	dic[kFontName] = self.font.fontName;
-	dic[kFontSize] = @(self.unscaledFontSize);
-	dic[kTextColor] = self.textColor;
-	dic[kAlignment] = @(self.textAlignment);
-	dic[kCenter] = [NSValue valueWithCGPoint:self.center];
-	dic[kRotation] = @(atan2f(self.transform.b, self.transform.a));
-	dic[kScale] = @(self.scale);
-	dic[kFitWidth] = @(self.fitOriginalFontSizeToViewWidth);
+	dic[kText] = self.text;  // NSString
+	dic[kFontName] = self.font.fontName;  // NSString
+	dic[kFontSize] = @(self.unscaledFontSize);  // CGFloat
+  
+  CGFloat colorRed;
+  CGFloat colorGreen;
+  CGFloat colorBlue;
+  CGFloat colorAlpha;
+
+  [self.textColor getRed: &colorRed green: &colorGreen blue: &colorBlue alpha: &colorAlpha];
+  
+  dic[kTextColor] = @{ kLabelColorRed: @(colorRed), kLabelColorGreen: @(colorGreen), kLabelColorBlue: @(colorBlue), kLabelColorAlpha: @(colorAlpha) };
+	dic[kAlignment] = @(self.textAlignment);  // NSTextAlignment enum raw Int
+  dic[kCenter] = @{ kLabelPointX: @(self.center.x), kLabelPointY: @(self.center.y) };
+	dic[kRotation] = @(atan2f(self.transform.b, self.transform.a)); // Tan 2 Float?
+	dic[kScale] = @(self.scale);  // CGFloat
+	dic[kFitWidth] = @(self.fitOriginalFontSizeToViewWidth);  // Bool
 	return dic;
 }
 
@@ -162,13 +177,29 @@ NSString *const kFitWidth = @"FitWidth";
 		self.unscaledFontSize = [dictionary[kFontSize] floatValue];
 	}
 	if (dictionary[kTextColor]) {
-		self.textColor = dictionary[kTextColor];
+    NSDictionary *color = dictionary[kTextColor];
+    NSNumber *numberRed = color[kLabelColorRed];
+    NSNumber *numberGreen = color[kLabelColorGreen];
+    NSNumber *numberBlue = color[kLabelColorBlue];
+    NSNumber *numberAlpha = color[kLabelColorAlpha];
+
+    self.textColor = [UIColor colorWithRed:[numberRed floatValue]
+                                     green:[numberGreen floatValue]
+                                      blue:[numberBlue floatValue]
+                                     alpha:[numberAlpha floatValue]];
 	}
 	if (dictionary[kAlignment]) {
 		self.textAlignment = [dictionary[kAlignment] integerValue];
 	}
 	if (dictionary[kCenter]) {
-		self.center = [dictionary[kCenter] CGPointValue];
+    NSDictionary *center = dictionary[kCenter];
+    NSNumber *numberX = center[kLabelPointX];
+    NSNumber *numberY = center[kLabelPointY];
+    CGPoint centerPoint;
+    centerPoint.x = numberX.doubleValue;
+    centerPoint.y = numberY.doubleValue;
+    
+    self.center = centerPoint;
 	}
 	if (dictionary[kRotation]) {
 		self.transform = CGAffineTransformMakeRotation([dictionary[kRotation] floatValue]);

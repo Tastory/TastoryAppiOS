@@ -21,6 +21,13 @@ extern NSString *const kStrokeStartWidth;
 extern NSString *const kStrokeEndWidth;
 extern NSString *const kIsDashed;
 extern NSString *const kOutputScaleFactor;
+extern NSString *const kColorRed;
+extern NSString *const kColorGreen;
+extern NSString *const kColorBlue;
+extern NSString *const kColorAlpha;
+extern NSString *const kPointX;
+extern NSString *const kPointY;
+
 
 @interface JotTouchObject : NSObject
 

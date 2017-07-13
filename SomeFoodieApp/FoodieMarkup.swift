@@ -10,14 +10,18 @@
 import Parse
 
 class FoodieMarkup: FoodiePFObject {
-  // @NSManaged var markupText: String  // Unicode, so Emoji allowed?
-  // @NSMnaaged var fontSize: Int
-  // @NSManaged var markupGif: String?
-  // @NSManaged var frameX: Double
-  // @NSManaged var frameY: Double
-  // @NSManaged var frameWidth: Double
-  // @NSManaged var frameHeight: Double
-  // @NSManaged var frameAngle: Double
+  
+  // MARK: - Parse PFObject keys
+  @NSManaged var data: NSDictionary?
+  @NSManaged var dataType: String?
+  @NSManaged var keyword: String?
+  
+  
+  // MARK: - Types & Enumerations
+  enum dataTypes: String {
+    case jotLabel = "JotLabel"
+    case jotDrawView = "JotDrawView"
+  }
   
   
   // MARK: - Public Instance Functions
@@ -59,6 +63,10 @@ extension FoodieMarkup: FoodieObjectDelegate {
     if let earlySuccess = earlyReturnStatus.success {
       DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
       return
+    }
+    
+    DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
+      self.foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
     }
   }
   

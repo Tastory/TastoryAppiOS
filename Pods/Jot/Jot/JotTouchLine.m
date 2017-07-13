@@ -51,8 +51,8 @@
 
 - (NSMutableDictionary*)serialize {
 	NSMutableDictionary *dic = [super serialize];
-	dic[kPointA] = [NSValue valueWithCGPoint:self.pointA];
-	dic[kPointB] = [NSValue valueWithCGPoint:self.pointB];
+	dic[kPointA] = @{ kPointX: @(self.pointA.x), kPointY: @(self.pointA.y) };
+	dic[kPointB] = @{ kPointX: @(self.pointB.x), kPointY: @(self.pointB.y) };
 	dic[kStrokeWidth] = @(self.strokeWidth);
 	dic[kIsDashed] = @(self.dashed);
 	return dic;
@@ -61,10 +61,24 @@
 - (void)unserialize:(NSDictionary*)dictionary {
 	[super unserialize:dictionary];
 	if (dictionary[kPointA]) {
-		self.pointA = [dictionary[kPointA] CGPointValue];
+    NSDictionary *center = dictionary[kPointA];
+    NSNumber *numberX = center[kPointX];
+    NSNumber *numberY = center[kPointY];
+    CGPoint tempPoint;
+    tempPoint.x = numberX.doubleValue;
+    tempPoint.y = numberY.doubleValue;
+    
+    self.pointA = tempPoint;
 	}
 	if (dictionary[kPointB]) {
-		self.pointB = [dictionary[kPointB] CGPointValue];
+    NSDictionary *center = dictionary[kPointB];
+    NSNumber *numberX = center[kPointX];
+    NSNumber *numberY = center[kPointY];
+    CGPoint tempPoint;
+    tempPoint.x = numberX.doubleValue;
+    tempPoint.y = numberY.doubleValue;
+    
+    self.pointB = tempPoint;
 	}
 	if (dictionary[kStrokeWidth]) {
 		self.strokeWidth = [dictionary[kStrokeWidth] floatValue];

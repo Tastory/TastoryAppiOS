@@ -21,7 +21,7 @@ typedef NS_ENUM(NSUInteger, JotViewState){
      *  The default state, which does not allow
      *  any touch interactions.
      */
-    JotViewStateDefault,
+    JotViewStateDisabled,
     /**
      *  The free drawing state, where drawing with touch
      *  gestures will create colored free hand draw in the view.

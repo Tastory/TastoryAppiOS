@@ -27,35 +27,44 @@
 
 - (instancetype)init
 {
-    if ((self = [super init])) {
-        
-        self.backgroundColor = [UIColor clearColor];
-        
-        _initialTextInsets = UIEdgeInsetsMake(0.f, 0.f, 0.f, 0.f);
-        
-        CGFloat fontSize = 60.f;
-        _scale = 1.f;
-        _font = [UIFont systemFontOfSize:fontSize];
-        _textAlignment = NSTextAlignmentCenter;
-        _textColor = [UIColor blackColor];
-		
-		_labels = [NSMutableArray new];
-		
-		self.referenceCenter = CGPointZero;
-        
-        self.userInteractionEnabled = NO;
-    }
+  if ((self = [super init])) {
     
-    return self;
+    self.backgroundColor = [UIColor clearColor];
+    
+    _initialTextInsets = UIEdgeInsetsMake(0.f, 0.f, 0.f, 0.f);
+    
+    CGFloat fontSize = 60.f;
+    _scale = 1.f;
+    _font = [UIFont systemFontOfSize:fontSize];
+    _textAlignment = NSTextAlignmentCenter;
+    _textColor = [UIColor blackColor];
+    
+    _labels = [NSMutableArray new];
+    
+    self.referenceCenter = CGPointZero;
+    
+    self.userInteractionEnabled = NO;
+  }
+  
+  return self;
 }
 
 #pragma mark - Undo
 
 - (void)clearAll
 {
-	while (_selectedLabel) {
-		[self deleteSelectedLabel];
-	}
+  while (_selectedLabel) {
+    [self deleteSelectedLabel];
+  }
+  
+  NSMutableArray *toDelete = [NSMutableArray array];
+  
+  for (JotLabel *currentLabel in _labels) {
+    [toDelete addObject:currentLabel];
+    [currentLabel removeFromSuperview];
+  }
+  
+  [_labels removeObjectsInArray:toDelete];
 }
 
 #pragma mark - Properties

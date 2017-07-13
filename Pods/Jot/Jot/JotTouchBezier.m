@@ -138,13 +138,13 @@ NSUInteger const kJotDrawStepsPerBezier = 30;
 
 - (NSMutableDictionary*)serialize {
 	NSMutableDictionary *dic = [super serialize];
-	dic[kPointA] = [NSValue valueWithCGPoint:self.startPoint];
-	dic[kPointB] = [NSValue valueWithCGPoint:self.endPoint];
-	dic[kPointAControl] = [NSValue valueWithCGPoint:self.controlPoint1];
-	dic[kPointBControl] = [NSValue valueWithCGPoint:self.controlPoint2];
+  dic[kPointA] = @{ kPointX: @(self.startPoint.x), kPointY: @(self.startPoint.y) };
+  dic[kPointB] = @{ kPointX: @(self.endPoint.x), kPointY: @(self.endPoint.y) };
+	dic[kPointAControl] = @{ kPointX: @(self.controlPoint1.x), kPointY: @(self.controlPoint1.y) };
+	dic[kPointBControl] = @{ kPointX: @(self.controlPoint2.x), kPointY: @(self.controlPoint2.y) };
 	dic[kStrokeStartWidth]	= @(self.startWidth);
 	dic[kStrokeEndWidth]	= self.constantWidth?@(self.startWidth):@(self.endWidth);
-    dic[kOutputScaleFactor]	= @(self.outputScaleFactor);
+  dic[kOutputScaleFactor]	= @(self.outputScaleFactor);
 	
 	return dic;
 }
@@ -152,16 +152,44 @@ NSUInteger const kJotDrawStepsPerBezier = 30;
 - (void)unserialize:(NSDictionary*)dictionary {
 	[super unserialize:dictionary];
 	if (dictionary[kPointA]) {
-		self.startPoint = [dictionary[kPointA] CGPointValue];
+    NSDictionary *center = dictionary[kPointA];
+    NSNumber *numberX = center[kPointX];
+    NSNumber *numberY = center[kPointY];
+    CGPoint tempPoint;
+    tempPoint.x = numberX.doubleValue;
+    tempPoint.y = numberY.doubleValue;
+    
+    self.startPoint = tempPoint;
 	}
 	if (dictionary[kPointB]) {
-		self.endPoint = [dictionary[kPointB] CGPointValue];
+    NSDictionary *center = dictionary[kPointB];
+    NSNumber *numberX = center[kPointX];
+    NSNumber *numberY = center[kPointY];
+    CGPoint tempPoint;
+    tempPoint.x = numberX.doubleValue;
+    tempPoint.y = numberY.doubleValue;
+    
+    self.endPoint = tempPoint;
 	}
 	if (dictionary[kPointAControl]) {
-		self.controlPoint1 = [dictionary[kPointAControl] CGPointValue];
+    NSDictionary *center = dictionary[kPointAControl];
+    NSNumber *numberX = center[kPointX];
+    NSNumber *numberY = center[kPointY];
+    CGPoint tempPoint;
+    tempPoint.x = numberX.doubleValue;
+    tempPoint.y = numberY.doubleValue;
+    
+    self.controlPoint1 = tempPoint;
 	}
 	if (dictionary[kPointBControl]) {
-		self.controlPoint2 = [dictionary[kPointBControl] CGPointValue];
+    NSDictionary *center = dictionary[kPointBControl];
+    NSNumber *numberX = center[kPointX];
+    NSNumber *numberY = center[kPointY];
+    CGPoint tempPoint;
+    tempPoint.x = numberX.doubleValue;
+    tempPoint.y = numberY.doubleValue;
+    
+    self.controlPoint2 = tempPoint;
 	}
 	[self generatePath];
 	

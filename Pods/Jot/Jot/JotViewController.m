@@ -59,7 +59,7 @@ NSString const* kDate = @"Date";
         _drawingStrokeWidth = self.drawView.strokeWidth;
         _textEditingInsets = self.textEditView.textEditingInsets;
         _initialTextInsets = self.textView.initialTextInsets;
-        _state = JotViewStateDefault;
+        _state = JotViewStateDisabled;
         
         self.textEditView.textAlignment = NSTextAlignmentLeft;
         
@@ -333,50 +333,58 @@ NSString const* kDate = @"Date";
 
 - (void)handleTapGesture:(UIGestureRecognizer *)recognizer
 {
+  if (self.state != JotViewStateDisabled) {
     if (self.state == JotViewStateText) {
-		// a tap during text
-		CGPoint touch = [recognizer locationOfTouch:0 inView:self.textView];
-        self.lastTapPoint = touch;
-		JotLabel *label = [self.textView labelAtPosition:touch];
-		if (label) {
-			// a tap on a label
-			if (label.selected) {
-				// a tap on a label already selected
-				self.state = JotViewStateEditingText;
-			}
-			else {
-				// a tap on a label not selected
-				[self.textView selectLabelAtPosition:touch];
-			
-				if ([self.delegate respondsToSelector:@selector(jotViewController:didSelectLabel:)]) {
-					[self.delegate jotViewController:self didSelectLabel:[label serialize]];
-				}
-			}
-			self.textEditView.textString = label.text;
-            self.textEditView.font = label.font;
-            self.textEditView.textColor = label.textColor;
-		}
-		else {
-			// a tap on a blank space
-            self.textEditView.textString = @"";
-			self.state = JotViewStateEditingText;
-		}
+      // a tap during text
+      CGPoint touch = [recognizer locationOfTouch:0 inView:self.textView];
+      self.lastTapPoint = touch;
+      JotLabel *label = [self.textView labelAtPosition:touch];
+      if (label) {
+        // a tap on a label
+        if (label.selected) {
+          // a tap on a label already selected
+          self.state = JotViewStateEditingText;
+        }
+        else {
+          // a tap on a label not selected
+          [self.textView selectLabelAtPosition:touch];
+          
+          if ([self.delegate respondsToSelector:@selector(jotViewController:didSelectLabel:)]) {
+            [self.delegate jotViewController:self didSelectLabel:[label serialize]];
+          }
+        }
+        self.textEditView.textString = label.text;
+        self.textEditView.font = label.font;
+        self.textEditView.textColor = label.textColor;
+      }
+      else {
+        // a tap on a blank space
+        self.textEditView.textString = @"";
+        self.state = JotViewStateEditingText;
+      }
     }
+  }
 }
 
 - (void)handlePanGesture:(UIGestureRecognizer *)recognizer
 {
+  if (self.state != JotViewStateDisabled) {
     [self.textView handlePanGesture:recognizer];
+  }
 }
 
 - (void)handlePinchGesture:(UIGestureRecognizer *)recognizer
 {
+  if (self.state != JotViewStateDisabled) {
     [self.textView handlePinchOrRotateGesture:recognizer];
+  }
 }
 
 - (void)handleRotateGesture:(UIGestureRecognizer *)recognizer
 {
-	[self.textView handlePinchOrRotateGesture:recognizer];
+  if (self.state != JotViewStateDisabled) {
+    [self.textView handlePinchOrRotateGesture:recognizer];
+  }
 }
 
 #pragma mark - JotDrawingContainer Delegate
