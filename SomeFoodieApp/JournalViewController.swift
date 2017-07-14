@@ -259,9 +259,7 @@ class JournalViewController: UIViewController {
       
       jotDictionary[kLabels] = labelDictionary
       jotViewController.unserialize(jotDictionary)
-      
     }
-
   }
   
   

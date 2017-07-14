@@ -134,7 +134,7 @@ class MarkupViewController: UIViewController {
       valValue = 1.0
     }
     
-    print("Current Color - Slider = \(sliderValue) Hue = \(hueValue) Saturation = \(satValue) Value = \(valValue)")
+    //print("Current Color - Slider = \(sliderValue) Hue = \(hueValue) Saturation = \(satValue) Value = \(valValue)")
     currentColor = UIColor(hue: CGFloat(hueValue), saturation: CGFloat(satValue), brightness: CGFloat(valValue), alpha: 1.0)
     
     jotViewController.drawingColor = currentColor
