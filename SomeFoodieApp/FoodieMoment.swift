@@ -116,6 +116,19 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
+  static func query(withName name: String, withBlock: ([AnyObject]?, Error?) -> Void) {
+    let query = PFQuery(className: FoodieMoment.parseClassName())
+    query.fromPin(withName: name)
+    do {
+      var moments: [AnyObject]?
+      try moments = query.findObjects()
+      withBlock(moments, nil)
+    } catch {
+      withBlock(nil, FoodieObject.ErrorCode.retrievePinnedObjectError)
+    }
+  }
+  
+  
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
   func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
@@ -187,7 +200,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     if !childOperationPending {
       DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
-        self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
+        self.foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
       }
     }
   }

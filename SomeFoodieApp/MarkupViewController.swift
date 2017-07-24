@@ -206,21 +206,20 @@ class MarkupViewController: UIViewController {
     } else {
       
       // Create a new Current Journal
-      let currentJournal = FoodieJournal.newCurrent()
+      FoodieJournal.newCurrent(retrieveCallback: {(journal, error)-> Void in
+        avPlayer?.pause()
+        
+        guard let delegate = markupReturnDelegate else {
+          internalErrorDialog()
+          DebugPrint.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
+          return
+        }
+        delegate.markupComplete(markedupMoment: momentObj, suggestedJournal: journal)
+      })
       // currentJournal.add(moment: momentObj)  // We don't add Moments here, we let the Journal Entry View decide what to do with it
-      
-      avPlayer?.pause()
-      
-      guard let delegate = markupReturnDelegate else {
-        internalErrorDialog()
-        DebugPrint.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
-        return
-      }
-      delegate.markupComplete(markedupMoment: momentObj, suggestedJournal: currentJournal)
     }
   }
-  
-  
+   
   // MARK: - Private Instance Functions
   
   // Generic error dialog box to the user on internal errors

@@ -176,7 +176,12 @@ extension MomentCollectionViewController {
 //    }
     
     // TODO: Download the thumbnail if not in memory
-    let thumbnail = UIImage(data: moment.thumbnailObj!.imageMemoryBuffer!)
+    var thumbnail: UIImage?
+    if moment.thumbnailObj?.imageMemoryBuffer == nil
+    {
+      moment.thumbnailObj?.imageMemoryBuffer = NSData.dataWithContentsOfMappedFile(FoodieFile.Constants.DocumentFolderUrl.appendingPathComponent("\(moment.thumbnailFileName!)").path) as! Data
+    }
+    thumbnail = UIImage(data: moment.thumbnailObj!.imageMemoryBuffer!)
     cell.momentButton.setImage(thumbnail, for: .normal)
   
     // Should Thumbnail frame be hidden?

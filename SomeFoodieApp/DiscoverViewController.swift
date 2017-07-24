@@ -21,7 +21,6 @@ class DiscoverViewController: UIViewController {
     // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")
-    viewController.restorationClass = nil
     self.present(viewController, animated: true)
   }
   
