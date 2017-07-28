@@ -39,6 +39,8 @@ class JournalEntryViewController: UITableViewController {
   fileprivate var momentViewController = MomentCollectionViewController()
   fileprivate var markupMoment: FoodieMoment? = nil
   
+  fileprivate var isSaveInProgress = false
+  fileprivate var saveStateMutex = pthread_mutex_t()
   
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
@@ -58,22 +60,42 @@ class JournalEntryViewController: UITableViewController {
   
   // MARK: - IBActions
   @IBAction func testSaveJournal(_ sender: Any) {
-    
+
     workingJournal?.title = titleTextField?.text
     workingJournal?.journalURL = linkTextField?.text
-
+    
+    DebugPrint.verbose("\(self.workingJournal?.foodieObject.operationState)")
+    
+    if(self.workingJournal?.foodieObject.operationState != .objectModified)
+    {
+      
+      
+      // save in progress let the callback of the save to trigger the save to server
+      pthread_mutex_lock(&self.saveStateMutex)
+      isSaveInProgress = true
+      pthread_mutex_unlock(&self.saveStateMutex)
+    } else
+    {
+        saveJournalToServer()
+    }
+  }
+  
+  func saveJournalToServer(){
     // journal is already saved to local
     self.workingJournal?.saveRecursive(to: .server) { [weak self] (success, error) in
       if success {
         DebugPrint.verbose("Journal Save to Server Completed!")
         self?.saveCompleteDialog()
+        self?.isSaveInProgress = false
       } else if let error = error {
         DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
       } else {
         DebugPrint.fatal("Journal Save to Server Failed without Error")
       }
     }
+
   }
+  
   
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
@@ -123,7 +145,15 @@ class JournalEntryViewController: UITableViewController {
               self.returnedMoment!.saveRecursive(to: .server, withBlock: { (success, error) -> Void in
                 if(success)
                 {
-                  DebugPrint.verbose("Completed uploading to server")
+                  var isSaveToServer = false
+                  pthread_mutex_lock(&self.saveStateMutex)
+                  isSaveToServer = self.isSaveInProgress
+                  pthread_mutex_unlock(&self.saveStateMutex)
+
+                  if(isSaveToServer)
+                  {
+                    self.saveJournalToServer()
+                  }
                 }
               })
             }
@@ -135,7 +165,15 @@ class JournalEntryViewController: UITableViewController {
             self.returnedMoment!.saveRecursive(to: .server, withBlock: { (success, error) -> Void in
               if(success)
               {
-                DebugPrint.verbose("Completed uploading to server")
+                var isSaveToServer = false
+                pthread_mutex_lock(&self.saveStateMutex)
+                isSaveToServer = self.isSaveInProgress
+                pthread_mutex_unlock(&self.saveStateMutex)
+                
+                if(isSaveToServer)
+                {
+                  self.saveJournalToServer()
+                }
               }
             })
           })

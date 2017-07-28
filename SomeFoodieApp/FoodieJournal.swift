@@ -142,20 +142,22 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
               foodieMoment.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.thumbnailFileName!, type: FoodieMediaType.photo)
               currentJournal.moments?.append(foodieMoment)
             }
+            currentJournal.foodieObject.markModified()
+            currentJournalPrivate = currentJournal
             retrieveCallback(currentJournal,nil)
           })
         }
       } else {
         DebugPrint.verbose("Failed to retrieve workingJournal from local data store")
         currentJournalPrivate = FoodieJournal(withState: .objectModified)
-        retrieveCallback(currentJournalPrivate!,nil)
+        retrieveCallback(currentJournalPrivate!, FoodieObject.ErrorCode.retrievePinnedObjectError)
       }
     }
     catch {
       DebugPrint.verbose("Failed to retrieve workingJournal from local data store")
       // Create a new Current Journal
       currentJournalPrivate = FoodieJournal(withState: .objectModified)
-      retrieveCallback(currentJournalPrivate!,nil)
+      retrieveCallback(currentJournalPrivate!, FoodieObject.ErrorCode.retrievePinnedObjectError)
     }
   }
   

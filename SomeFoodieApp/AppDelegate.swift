@@ -66,14 +66,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func applicationWillTerminate(_ application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    // discard all previous journal as a mechanism to prevent endless looping of the old journal when you want a new one
-    // tried unpinAllObject in background doesnt really unpin not sure why 
-    do {
-      try FoodiePFObject.unpinAllObjects(withName: "workingJournal")
-    } catch {
-      
-    }
-    
   }
   
   // For Parse Subclassing

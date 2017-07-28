@@ -100,8 +100,8 @@ class FoodieFile {
   
   // MARK: - Private Constants
   struct Constants {
-    static let S3BucketKey = "foodilicioustest"
-    static let CloudFrontUrl = URL(string: "https://d2raud47awtnzu.cloudfront.net/")!
+    static let S3BucketKey = "foodilicious-testing2"
+    static let CloudFrontUrl = URL(string: "https://ddlhjufkblgu0i.cloudfront.net/")!
     static let DocumentFolderUrl = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
   }
   
@@ -175,7 +175,7 @@ class FoodieFile {
     
     if(!(AWSServiceManager.default().defaultServiceConfiguration != nil))
     {
-      let credentialsProvider = AWSStaticCredentialsProvider(accessKey: "AKIAIAFK5EC3O6535MDQ", secretKey: "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")
+      let credentialsProvider = AWSStaticCredentialsProvider(accessKey: "AKIAIA5BRBK55UQTJ4VA", secretKey: "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")
       let configuration = AWSServiceConfiguration(region: AWSRegionType.USWest1, credentialsProvider:credentialsProvider)
       AWSServiceManager.default().defaultServiceConfiguration = configuration
     }
