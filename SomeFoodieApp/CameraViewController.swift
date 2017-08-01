@@ -127,6 +127,12 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
       }
     }
   }
+  
+  
+  override var prefersStatusBarHidden: Bool {
+    return true
+  }
+  
 } // CameraViewController class definision
 
 

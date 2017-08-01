@@ -6,7 +6,10 @@ PODS:
     - AWSCore (= 2.5.3)
   - Bolts/Tasks (1.8.4)
   - FoursquareAPIClient (3.1.0)
+  - Jot (0.2.0):
+    - Masonry (~> 1.0.2)
   - Kanna (2.2.0)
+  - Masonry (1.0.2)
   - Parse (1.14.2):
     - Bolts/Tasks (~> 1.8)
   - SwiftyCam (2.1.0)
@@ -15,9 +18,19 @@ DEPENDENCIES:
   - AWSCognito
   - AWSS3
   - FoursquareAPIClient
+  - Jot (from `https://github.com/biscottigelato/Jot.git`)
   - Kanna
   - Parse
   - SwiftyCam
+
+EXTERNAL SOURCES:
+  Jot:
+    :git: https://github.com/biscottigelato/Jot.git
+
+CHECKOUT OPTIONS:
+  Jot:
+    :commit: 5ff226b2efc70fbf249a2558f117ef5e8e10d3fc
+    :git: https://github.com/biscottigelato/Jot.git
 
 SPEC CHECKSUMS:
   AWSCognito: 74be06e52a2a063ab932a9d457a89e003d68631d
@@ -25,10 +38,12 @@ SPEC CHECKSUMS:
   AWSS3: 88095d68f9d588eaa042d7f502f350234f98f606
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   FoursquareAPIClient: 2bb916176f560c0afb6838a28c1a0970467a0edc
+  Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
   Kanna: b3b3368d673845f48c572c6746c2278deebe26b9
+  Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   Parse: 4335d65f40cb3d43190d723144bbe1afb9c38230
   SwiftyCam: 2f13473f67afa4658bff79453d7db6890e2fa84d
 
-PODFILE CHECKSUM: 6998649e789368f0061e7d0aac2657dbaa67ac97
+PODFILE CHECKSUM: e2c85f58a881b6a4f325da0ee5602d0e56384b1f
 
 COCOAPODS: 1.2.0

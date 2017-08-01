@@ -9,7 +9,7 @@
 import UIKit
 import AVFoundation
 import SafariServices
-
+import Jot
 
 class JournalViewController: UIViewController {
   
@@ -29,6 +29,7 @@ class JournalViewController: UIViewController {
   
   
   // MARK: - Private Instance Variables
+  fileprivate let jotViewController = JotViewController()
   fileprivate var avPlayer: AVPlayer?
   fileprivate var avPlayerLayer: AVPlayerLayer?
   fileprivate var avPlayerItem: AVPlayerItem?
@@ -176,7 +177,7 @@ class JournalViewController: UIViewController {
       }
       
       photoView.image = UIImage(data: imageBuffer)
-      view.insertSubview(photoView, belowSubview: tapGestureStackView)
+      view.insertSubview(photoView, belowSubview: jotViewController.view)
 
       // Create timer for advancing to the next media? // TODO: Should not be a fixed time
       photoTimer = Timer.scheduledTimer(withTimeInterval: Constants.MomentsViewingTimeInterval,
@@ -203,12 +204,61 @@ class JournalViewController: UIViewController {
                                              object: avPlayerItem)
       
       avPlayer!.replaceCurrentItem(with: avPlayerItem)
-      view.insertSubview(videoView, belowSubview: tapGestureStackView)
+      view.insertSubview(videoView, belowSubview: jotViewController.view)
       avPlayer!.play()
       
       // No image nor video to work on, Fatal
     } else {
       DebugPrint.fatal("MediaType neither .photo nor .video")
+    }
+    
+    // See if there are any Markups to Unserialize
+    if let markups = moment.markups {
+      var jotDictionary = [AnyHashable: Any]()
+      var labelDictionary: [NSDictionary]?
+      
+      for markup in markups {
+        
+        guard let dataType = markup.dataType else {
+          displayErrorDialog()
+          DebugPrint.assert("Unexpected markup.dataType = nil")
+          return
+        }
+        
+        guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
+          displayErrorDialog()
+          DebugPrint.assert("markup.dataType did not actually translate into valid type")
+          return
+        }
+        
+        switch markupType {
+          
+        case .jotLabel:
+          guard let labelData = markup.data else {
+            displayErrorDialog()
+            DebugPrint.assert("Unexpected markup.data = nil when dataType == .jotLabel")
+            return
+          }
+          
+          if labelDictionary == nil {
+            labelDictionary = [labelData]
+          } else {
+            labelDictionary!.append(labelData)
+          }
+          
+        case .jotDrawView:
+          guard let drawViewDictionary = markup.data else {
+            displayErrorDialog()
+            DebugPrint.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
+            return
+          }
+          
+          jotDictionary[kDrawView] = drawViewDictionary
+        }
+      }
+      
+      jotDictionary[kLabels] = labelDictionary
+      jotViewController.unserialize(jotDictionary)
     }
   }
   
@@ -255,6 +305,7 @@ class JournalViewController: UIViewController {
     if let moment = currentMoment {
       removeTimerAndObservers(for: moment)
     }
+    jotViewController.clearAll()
     DispatchQueue.main.async { [weak self] in self?.dismiss(animated: true, completion: nil) }
   }
   
@@ -282,6 +333,7 @@ class JournalViewController: UIViewController {
       return
     }
     
+    jotViewController.clearAll()
     removeTimerAndObservers(for: moment)
     
     // Figure out what is the next moment and display it
@@ -315,6 +367,8 @@ class JournalViewController: UIViewController {
       DebugPrint.assert("Unexpected, currentMoment = nil")
       return
     }
+    
+    jotViewController.clearAll()
     removeTimerAndObservers(for: moment)
     
     // Figure out what is the previous moment is and display it
@@ -333,9 +387,28 @@ class JournalViewController: UIViewController {
     super.viewDidLoad()
     
     avPlayer = AVPlayer()
+    avPlayer?.allowsExternalPlayback = false
     avPlayerLayer = AVPlayerLayer(player: avPlayer)
     avPlayerLayer!.frame = self.view.bounds
     videoView!.layer.addSublayer(avPlayerLayer!)
+    
+    // This section setups the JotViewController with default initial values
+    jotViewController.state = JotViewState.disabled
+//    jotViewController.delegate = self
+//    jotViewController.textColor = UIColor.black
+//    jotViewController.font = UIFont.boldSystemFont(ofSize: 64.0)
+//    jotViewController.fontSize = 64.0
+//    jotViewController.textEditingInsets = UIEdgeInsetsMake(12.0, 6.0, 0.0, 6.0)
+//    jotViewController.initialTextInsets = UIEdgeInsetsMake(6.0, 6.0, 6.0, 6.0)
+//    jotViewController.fitOriginalFontSizeToViewWidth = true
+//    jotViewController.textAlignment = .left
+//    jotViewController.drawingColor = UIColor.cyan
+    
+    addChildViewController(jotViewController)
+    view.addSubview(jotViewController.view)
+    view.insertSubview(jotViewController.view, belowSubview: tapGestureStackView)
+    jotViewController.didMove(toParentViewController: self)
+    jotViewController.view.frame = view.bounds
     
     tapBackwardsWidth.constant = UIScreen.main.bounds.width/3.0  // Gotta test this on a different screen size to know if this works
   }

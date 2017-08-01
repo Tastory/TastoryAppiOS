@@ -261,15 +261,16 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func add(moment: FoodieMoment,
            to position: Int? = nil) {
     
+    if position != nil {
+      DebugPrint.assert("FoodieJournal.add(to position:) not yet implemented. Adding to 'end' position")
+    }
+    
     // Temporary Code?
     if self.moments != nil {
       self.moments!.append(moment)
     } else {
       self.moments = [moment]
     }
-    
-    // Set all the approrpriate sync status bits for the Moment
-    // Redetermine what sync should be performed against the Moments of the Journal
   }
   
   
@@ -580,7 +581,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     if !childOperationPending {
       DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
-        self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
+        self.foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
       }
     }
   }
