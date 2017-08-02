@@ -26,6 +26,14 @@ protocol MarkupReturnDelegate {
 
 class MarkupViewController: UIViewController {
   
+  // MARK: - Constants
+  struct Constants {
+    static let SizeSliderMaxFont: Float = 128.0
+    static let SizeSliderMinFont: Float = 12.0
+    static let SizeSliderDefaultFont: Float = 48.0
+  }
+  
+  
   // MARK: - Public Instance Variables
   var mediaObj: FoodieMedia?
   var markupReturnDelegate: MarkupReturnDelegate?
@@ -61,6 +69,7 @@ class MarkupViewController: UIViewController {
   @IBOutlet weak var undoButton: UIButton!
   @IBOutlet weak var soundButton: UIButton!
   @IBOutlet weak var colorSlider: UISlider!
+  @IBOutlet weak var sizeSlider: UISlider!
   
   
   // MARK: - IBActions
@@ -139,6 +148,14 @@ class MarkupViewController: UIViewController {
     
     jotViewController.drawingColor = currentColor
     jotViewController.textColor = currentColor
+  }
+  
+  
+  @IBAction func sizeSliderChanged(_ sender: UISlider) {
+    
+    let fontSize = CGFloat(sender.value)
+    jotViewController.font = UIFont.boldSystemFont(ofSize: fontSize)
+    jotViewController.fontSize = fontSize
   }
   
   
@@ -442,13 +459,17 @@ class MarkupViewController: UIViewController {
     undoButton.isHidden = true
     deleteButton.isHidden = false
     colorSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
+    sizeSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
+    sizeSlider.minimumValue = Constants.SizeSliderMinFont
+    sizeSlider.maximumValue = Constants.SizeSliderMaxFont
+    sizeSlider.setValue(Constants.SizeSliderDefaultFont, animated: false)
     
     // This section setups the JotViewController with default initial values
     jotViewController.delegate = self
     jotViewController.state = JotViewState.text
     jotViewController.textColor = UIColor.black
-    jotViewController.font = UIFont.boldSystemFont(ofSize: 64.0)
-    jotViewController.fontSize = 64.0
+    jotViewController.font = UIFont.boldSystemFont(ofSize: CGFloat(Constants.SizeSliderDefaultFont))
+    jotViewController.fontSize = CGFloat(Constants.SizeSliderDefaultFont)
     jotViewController.textEditingInsets = UIEdgeInsetsMake(12.0, 6.0, 0.0, 6.0)
     jotViewController.initialTextInsets = UIEdgeInsetsMake(6.0, 6.0, 6.0, 6.0)
     jotViewController.fitOriginalFontSizeToViewWidth = true

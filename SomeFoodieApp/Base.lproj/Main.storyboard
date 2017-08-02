@@ -322,6 +322,13 @@
                                     </view>
                                 </subviews>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t4S-lT-gBv">
+                                <rect key="frame" x="315" y="629" width="44" height="30"/>
+                                <state key="normal" title="Sound"/>
+                                <connections>
+                                    <action selector="soundToggle:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="jnu-sB-8je"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
@@ -338,8 +345,10 @@
                             <constraint firstItem="PSs-bH-oOZ" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="cb5-so-Nwb"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="efA-ND-dRG"/>
                             <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="bottom" id="fNQ-Yf-4Lf"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="t4S-lT-gBv" secondAttribute="trailing" id="pqS-Hv-QVg"/>
                             <constraint firstAttribute="trailing" secondItem="De9-KV-Mtr" secondAttribute="trailing" id="uHJ-7z-fEq"/>
                             <constraint firstAttribute="trailing" secondItem="3Gc-Ev-vmE" secondAttribute="trailing" id="uPp-NK-myt"/>
+                            <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="t4S-lT-gBv" secondAttribute="bottom" constant="8" symbolic="YES" id="yyK-3b-7EJ"/>
                         </constraints>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="17T-uz-Ki4" appends="YES" id="h5e-pI-kLG"/>
@@ -350,6 +359,7 @@
                         <outlet property="activityIndicator" destination="PSs-bH-oOZ" id="ltb-9Q-KVm"/>
                         <outlet property="blurView" destination="lU5-U1-CUM" id="URy-RV-r5L"/>
                         <outlet property="photoView" destination="3Gc-Ev-vmE" id="tiQ-hZ-B0K"/>
+                        <outlet property="soundButton" destination="t4S-lT-gBv" id="ZDG-D8-Ify"/>
                         <outlet property="tapBackwardsWidth" destination="JVf-9n-aH0" id="NCS-Gv-0hn"/>
                         <outlet property="tapGestureStackView" destination="De9-KV-Mtr" id="a6F-Rd-dNf"/>
                         <outlet property="videoView" destination="nnO-KA-kth" id="Cmy-Ry-tDy"/>
@@ -500,7 +510,7 @@
                                 </connections>
                             </button>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="eZh-sa-B78">
-                                <rect key="frame" x="217" y="167" width="254" height="31"/>
+                                <rect key="frame" x="242" y="166" width="204" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="colorSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="j3f-dm-ZYb"/>
@@ -522,6 +532,13 @@
                                     <action selector="deleteButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hLO-Li-p13"/>
                                 </connections>
                             </button>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="gQS-fe-hw8">
+                                <rect key="frame" x="267" y="384" width="154" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="sizeSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="jep-QK-70b"/>
+                                </connections>
+                            </slider>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
@@ -538,6 +555,7 @@
                         <outlet property="exitButton" destination="KrM-3z-Z5X" id="m5z-DF-hS2"/>
                         <outlet property="foodButton" destination="Xf3-yP-YWE" id="aJ7-SR-Oxo"/>
                         <outlet property="saveButton" destination="5Da-16-S86" id="Yd6-y9-sg5"/>
+                        <outlet property="sizeSlider" destination="gQS-fe-hw8" id="hs9-ZM-YPo"/>
                         <outlet property="soundButton" destination="jIA-aA-ex6" id="avY-Fm-oRe"/>
                         <outlet property="textButton" destination="NrF-32-VrF" id="hHX-SI-gF3"/>
                         <outlet property="undoButton" destination="CKF-go-XiM" id="ep2-Fd-5Fw"/>

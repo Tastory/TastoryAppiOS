@@ -175,7 +175,7 @@ class FoodieFile {
     
     if(!(AWSServiceManager.default().defaultServiceConfiguration != nil))
     {
-      let credentialsProvider = AWSStaticCredentialsProvider(accessKey: "AKIAIAFK5EC3O6535MDQ", secretKey: "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")
+      let credentialsProvider = AWSStaticCredentialsProvider(accessKey: "AKIAIA5BRBK55UQTJ4VA", secretKey: "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")
       let configuration = AWSServiceConfiguration(region: AWSRegionType.USWest1, credentialsProvider:credentialsProvider)
       AWSServiceManager.default().defaultServiceConfiguration = configuration
     }
@@ -184,8 +184,6 @@ class FoodieFile {
     transferManager = AWSS3TransferManager.default()
     downloadsSession = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: nil)
   }
-  
-  
   
   
   func retrieveFromLocalToBufffer(fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
