@@ -223,7 +223,7 @@ NSString *const kLabelPointY = @"LabelPointY";
 		self.numberOfLines = 0;
 	}
 	
-	[self autosize];  // Change from refreshFont()
+	[self refreshFont];
 }
 
 
