@@ -153,6 +153,13 @@ class MapViewController: UIViewController {
     locationManager.disallowDeferredLocationUpdates()
     locationManager.startUpdatingLocation()
   }
+  
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    
+    DebugPrint.log("MapViewController.didReceiveMemoryWarning")
+  }
 }
 
 

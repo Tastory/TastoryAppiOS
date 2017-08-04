@@ -100,6 +100,13 @@ class MomentCollectionViewController: UICollectionViewController {
                                        bottom: 0, right: Constants.interitemSpacing)
     layout.maximumHeaderStretchWidth = momentWidthDefault
   }
+  
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    
+    DebugPrint.log("MomentCollectionViewController.didReceiveMemoryWarning")
+  }
 }
 
 

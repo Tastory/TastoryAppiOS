@@ -345,8 +345,10 @@
 - (void)unserialize:(NSArray*)array {
 	for (NSDictionary *labelDic in array) {
 		JotLabel *label = [JotLabel fromSerialized:labelDic];
+    label.initialTextInsets = self.initialTextInsets;
 		[self.labels addObject:label];
 		[self addSubview:label];
+    [label autosize];
 	}
 }
 

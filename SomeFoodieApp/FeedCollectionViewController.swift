@@ -51,6 +51,13 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    
+    DebugPrint.log("FeedCollectionViewController.didReceiveMemoryWarning")
+  }
+  
+  
   // MARK: - Public Instance Functions
   func queryResultCallback(objectArray: [AnyObject]?, error: Error?) {
   
