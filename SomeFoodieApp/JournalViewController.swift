@@ -255,6 +255,11 @@ class JournalViewController: UIViewController {
       
       for markup in markups {
         
+        if !markup.isDataAvailable {
+          displayErrorDialog()
+          DebugPrint.fatal("Markup not available even tho Moment deemed Loaded")
+        }
+        
         guard let dataType = markup.dataType else {
           displayErrorDialog()
           DebugPrint.assert("Unexpected markup.dataType = nil")
@@ -324,6 +329,7 @@ class JournalViewController: UIViewController {
       
       view.insertSubview(blurView, belowSubview: tapGestureStackView)
       view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
+      soundButton.isHidden = true
       activityIndicator.startAnimating()
     }
   }
@@ -455,6 +461,7 @@ class JournalViewController: UIViewController {
     // Always display activity indicator and blur layer up front
     view.insertSubview(blurView, belowSubview: tapGestureStackView)
     view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
+    soundButton.isHidden = true
     activityIndicator.startAnimating()
   }
   
@@ -483,6 +490,13 @@ class JournalViewController: UIViewController {
   
   override func viewDidDisappear(_ animated: Bool) {
     DebugPrint.verbose("JournalViewController disappearing")
+  }
+  
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    
+    DebugPrint.log("JournalViewController.didReceiveMemoryWarning")
   }
 }
 

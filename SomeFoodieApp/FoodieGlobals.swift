@@ -19,5 +19,5 @@ struct FoodieConstants {
   static let thumbnailPixels = 640.0
   static let jpegCompressionQuality: Double = 0.8
   static let themeColor: UIColor = .orange
-  static let momentsToBufferAtATime = 3
+  static let momentsToBufferAtATime = 5
 }

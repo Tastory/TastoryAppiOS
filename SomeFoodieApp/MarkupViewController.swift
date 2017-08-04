@@ -663,6 +663,13 @@ class MarkupViewController: UIViewController {
   }
   
   
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    
+    DebugPrint.log("MarkupViewController.didReceiveMemoryWarning")
+  }
+  
+  
   override var prefersStatusBarHidden: Bool {
     return true
   }
