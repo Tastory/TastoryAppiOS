@@ -132,23 +132,26 @@
                                             <action selector="launchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="k45-JV-u3I"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aSA-Ws-aTZ">
-                                        <rect key="frame" x="154.5" y="38" width="34" height="30"/>
-                                        <state key="normal" title="Feed"/>
-                                        <connections>
-                                            <action selector="launchFeed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3gV-PV-lKz"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sNl-Tb-SAf">
-                                        <rect key="frame" x="116" y="76" width="111" height="30"/>
+                                        <rect key="frame" x="116" y="38" width="111" height="30"/>
                                         <state key="normal" title="Current Position"/>
                                         <connections>
                                             <action selector="currentLocationReturn:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eE7-yk-10G"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8yq-x6-CLY">
-                                        <rect key="frame" x="129" y="114" width="85" height="30"/>
-                                        <state key="normal" title="Search Here"/>
+                                        <rect key="frame" x="147.5" y="76" width="48" height="30"/>
+                                        <state key="normal" title="Search"/>
+                                        <connections>
+                                            <action selector="searchWithFilter:" destination="BYZ-38-t0r" eventType="touchUpInside" id="VMj-jO-WoY"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aSA-Ws-aTZ">
+                                        <rect key="frame" x="137" y="114" width="69" height="30"/>
+                                        <state key="normal" title="Search All"/>
+                                        <connections>
+                                            <action selector="searchAll:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ubc-1d-u09"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                             </stackView>

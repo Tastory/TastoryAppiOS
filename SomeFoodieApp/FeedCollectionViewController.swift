@@ -18,8 +18,9 @@ class FeedCollectionViewController: UICollectionViewController {
   
   
   // MARK: - Private Instance Variable
+  var journalQuery: FoodieJournalQuery!
+  var journalArray = [FoodieJournal]()
   var numberOfItemsQueried: Int = 0
-  var queriedJournalArray = [FoodieJournal]()
   
   
   // MARK: - IBActions
@@ -37,8 +38,9 @@ class FeedCollectionViewController: UICollectionViewController {
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = false
     
-    // Do any additional setup after loading the view
-    FoodieJournal.queryAll(limit: 20, block: queryResultCallback)  // TODO: Don't hardcode this limit
+    numberOfItemsQueried = journalArray.count  // TODO - Need to implement pagination
+    
+    DebugPrint.verbose("journalArray.count = \(numberOfItemsQueried)")
     
     // Turn on CollectionView prefetching
     collectionView?.prefetchDataSource = self
@@ -59,28 +61,28 @@ class FeedCollectionViewController: UICollectionViewController {
   
   
   // MARK: - Public Instance Functions
-  func queryResultCallback(objectArray: [AnyObject]?, error: Error?) {
-  
-    guard let journalArray = objectArray as? [FoodieJournal] else {
-      queryErrorDialog()
-      DebugPrint.assert("queryResultCallback() did not return an array of Foodie Journals")
-      return
-    }
-    numberOfItemsQueried += journalArray.count
-    DebugPrint.verbose("\(journalArray.count) Journals returned. Total Journals retrieved at \(numberOfItemsQueried)")
-    
-    for journal in journalArray {
-      queriedJournalArray.append(journal)
-    }
-    
-    collectionView?.reloadData()
-  }
+//  func queryResultCallback(objectArray: [AnyObject]?, error: Error?) {
+//  
+//    guard let journalArray = objectArray as? [FoodieJournal] else {
+//      queryErrorDialog()
+//      DebugPrint.assert("queryResultCallback() did not return an array of Foodie Journals")
+//      return
+//    }
+//    numberOfItemsQueried += journalArray.count
+//    DebugPrint.verbose("\(journalArray.count) Journals returned. Total Journals retrieved at \(numberOfItemsQueried)")
+//    
+//    for journal in journalArray {
+//      journalArray.append(journal)
+//    }
+//    
+//    collectionView?.reloadData()
+//  }
   
   
   // MARK: - Private Instance Functions
   
   // Generic error dialog box to the user on internal errors
-  func queryErrorDialog() {
+  fileprivate func queryErrorDialog() {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "SomeFoodieApp",
                                               titleComment: "Alert diaglogue title when a Feed Collection View query error occurred",
@@ -95,7 +97,7 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
-  func fetchErrorDialog() {
+  fileprivate func fetchErrorDialog() {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "SomeFoodieApp",
                                               titleComment: "Alert diaglogue title when a Feed Collection View fetch error occurred",
@@ -109,7 +111,7 @@ class FeedCollectionViewController: UICollectionViewController {
     }
   }
   
-  func internalErrorDialog() {
+  fileprivate func internalErrorDialog() {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "SomeFoodieApp",
                                               titleComment: "Alert diaglogue title when a Feed Collection View internal error occured",
@@ -150,7 +152,7 @@ class FeedCollectionViewController: UICollectionViewController {
     let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.reuseIdentifier, for: indexPath) as! FeedCollectionViewCell
     
     // Configure the cell
-    let journal = queriedJournalArray[indexPath.row]
+    let journal = journalArray[indexPath.row]
     reusableCell.journalButton.tag = indexPath.row
     reusableCell.journalButton.addTarget(self, action: #selector(viewJournal(_:)), for: .touchUpInside)
     
@@ -185,7 +187,7 @@ class FeedCollectionViewController: UICollectionViewController {
         
         if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
           // DebugPrint.verbose("cellForItem(at:) DispatchQueue.main for cell #\(indexPath.row)")
-          cell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
+          cell.journalTitle?.text = self.journalArray[indexPath.row].title
           cell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
           
           pthread_mutex_lock(&cell.cellStatusMutex)
@@ -197,7 +199,7 @@ class FeedCollectionViewController: UICollectionViewController {
           
         } else {
           // None of the retrieve function actually did an async dispatch. So we are still in the collectionView.cellForItemAt context.
-          reusableCell.journalTitle?.text = self.queriedJournalArray[indexPath.row].title
+          reusableCell.journalTitle?.text = self.journalArray[indexPath.row].title
           reusableCell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
           
           pthread_mutex_lock(&reusableCell.cellStatusMutex)
@@ -209,7 +211,7 @@ class FeedCollectionViewController: UICollectionViewController {
         }
         
         if letsPrefetch {
-          let journal = self.queriedJournalArray[indexPath.row]
+          let journal = self.journalArray[indexPath.row]
           journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
         }
       }
@@ -237,14 +239,14 @@ class FeedCollectionViewController: UICollectionViewController {
     pthread_mutex_unlock(&feedCell.cellStatusMutex)
     
     if letsPrefetch {
-      let journal = self.queriedJournalArray[indexPath.row]
+      let journal = self.journalArray[indexPath.row]
       journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
     }
   }
   
   override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
     DebugPrint.verbose("collectionView didEndDisplayingCell indexPath.row = \(indexPath.row)")
-    let journal = queriedJournalArray[indexPath.row]
+    let journal = journalArray[indexPath.row]
     if let context = journal.contentPrefetchContext {
       FoodiePrefetch.global.removePrefetchWork(for: context)
     }
@@ -257,7 +259,7 @@ extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
   func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
     for indexPath in indexPaths {
       DebugPrint.verbose("collectionView prefetchItemsAt indexPath.row = \(indexPath.row)")
-      let journal = queriedJournalArray[indexPath.row]
+      let journal = journalArray[indexPath.row]
       journal.selfPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
     }
   }
@@ -265,7 +267,7 @@ extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
   func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
     for indexPath in indexPaths {
       DebugPrint.verbose("collectionView cancelPrefetchingForItemsAt indexPath.row = \(indexPath.row)")
-      let journal = queriedJournalArray[indexPath.row]
+      let journal = journalArray[indexPath.row]
       if let context = journal.selfPrefetchContext {
         FoodiePrefetch.global.removePrefetchWork(for: context)
       }

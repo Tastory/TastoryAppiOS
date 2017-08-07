@@ -91,6 +91,7 @@ class JournalEntryViewController: UITableViewController {
 
     // journal is already saved to local
     self.workingJournal?.saveRecursive(to: .server) {(success, error) in
+    //workingJournal?.setGeoPoint(latitude: 49.2778211, longitude: -123.1089668)
       if success {
         DebugPrint.verbose("Journal Save to Server Completed!")
         self.saveCompleteDialog()
