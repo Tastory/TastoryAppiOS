@@ -491,10 +491,15 @@ class FoodieObject {
     
     var needRetrieval = false
     
+    pthread_mutex_lock(&operationStateMutex)
+    
     if operationState == .pendingRetrieval {
       protectedOperationState = .retrieving
       needRetrieval = true
+      pthread_mutex_unlock(&operationStateMutex)
+      
     } else {
+      pthread_mutex_unlock(&operationStateMutex)
       return false  // Nothing pending, just return false
     }
     
@@ -505,11 +510,15 @@ class FoodieObject {
       delegateObj.retrieveRecursive(forceAnyways: false) { error in
         
         // Move forward state if success, backwards if failed
+        pthread_mutex_lock(&self.operationStateMutex)
+        
         if error == nil {
           self.protectedOperationState = .objectSynced
         } else {
           self.protectedOperationState = .notAvailable
         }
+        pthread_mutex_unlock(&self.operationStateMutex)
+        
         callback?(error)
         self.waitOnRetrieveDelegate?.retrieved(for: delegateObj)
         self.waitOnRetrieveDelegate = nil

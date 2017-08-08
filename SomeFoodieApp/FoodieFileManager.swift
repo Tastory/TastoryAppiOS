@@ -186,8 +186,6 @@ class FoodieFile {
   }
   
   
-  
-  
   func retrieveFromLocalToBufffer(fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     DispatchQueue.global(qos: .utility).async {
       let buffer: Data?

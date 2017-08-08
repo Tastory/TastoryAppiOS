@@ -9,7 +9,7 @@
 import UIKit
 import AVFoundation
 import SafariServices
-
+import Jot
 
 class JournalViewController: UIViewController {
   
@@ -29,11 +29,13 @@ class JournalViewController: UIViewController {
   
   
   // MARK: - Private Instance Variables
+  fileprivate let jotViewController = JotViewController()
   fileprivate var avPlayer: AVPlayer?
   fileprivate var avPlayerLayer: AVPlayerLayer?
   fileprivate var avPlayerItem: AVPlayerItem?
   fileprivate var photoTimer: Timer?
   fileprivate var currentMoment: FoodieMoment?
+  fileprivate var soundOn: Bool = true
   
   
   // Generic error dialog box to the user on internal errors
@@ -75,6 +77,7 @@ class JournalViewController: UIViewController {
   @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
   @IBOutlet weak var tapGestureStackView: UIStackView!
   @IBOutlet weak var tapBackwardsWidth: NSLayoutConstraint!
+  @IBOutlet weak var soundButton: UIButton!
   
   
   // MARK: - IBActions
@@ -108,7 +111,7 @@ class JournalViewController: UIViewController {
       
       // Stop video if a video is playing. Remove Timers & Observers
       avPlayer!.pause()
-      removeTimerAndObservers(for: moment)
+      stopVideoTimerAndObservers(for: moment)
       
       let safariViewController = SFSafariViewController(url: journalLinkUrl)
       safariViewController.delegate = self
@@ -120,6 +123,21 @@ class JournalViewController: UIViewController {
       view.window!.layer.add(transition, forKey: kCATransition)
       
       self.present(safariViewController, animated: false, completion: nil)
+    }
+  }
+  
+  @IBAction func soundToggle(_ sender: UIButton) {
+    
+    guard let playingMoment = currentMoment else {
+      // Not playing any moment, Sound button should do nothing and just return
+      return
+    }
+    soundOn = !soundOn
+    
+    if playingMoment.playSound && soundOn {
+      avPlayer?.volume = 1.0
+    } else {
+      avPlayer?.volume = 0.0
     }
   }
   
@@ -176,8 +194,11 @@ class JournalViewController: UIViewController {
       }
       
       photoView.image = UIImage(data: imageBuffer)
-      view.insertSubview(photoView, belowSubview: tapGestureStackView)
+      view.insertSubview(photoView, belowSubview: jotViewController.view)
 
+      // Hide the sound button
+      soundButton?.isHidden = true
+      
       // Create timer for advancing to the next media? // TODO: Should not be a fixed time
       photoTimer = Timer.scheduledTimer(withTimeInterval: Constants.MomentsViewingTimeInterval,
                                         repeats: false) { [weak self] timer in
@@ -203,12 +224,82 @@ class JournalViewController: UIViewController {
                                              object: avPlayerItem)
       
       avPlayer!.replaceCurrentItem(with: avPlayerItem)
-      view.insertSubview(videoView, belowSubview: tapGestureStackView)
+      view.insertSubview(videoView, belowSubview: jotViewController.view)
+      
+      // Should we play sound? Should the sound button be visible?
+      avPlayer!.volume = 0.0
+      
+      // Should we show the sound button?
+      if moment.playSound {
+        soundButton?.isHidden = false
+        
+        if soundOn {
+          avPlayer!.volume = 1.0
+        }
+      } else {
+        soundButton?.isHidden = true
+      }
+      
+      // Finally, let's play the Media
       avPlayer!.play()
       
       // No image nor video to work on, Fatal
     } else {
       DebugPrint.fatal("MediaType neither .photo nor .video")
+    }
+    
+    // See if there are any Markups to Unserialize
+    if let markups = moment.markups {
+      var jotDictionary = [AnyHashable: Any]()
+      var labelDictionary: [NSDictionary]?
+      
+      for markup in markups {
+        
+        if !markup.isDataAvailable {
+          displayErrorDialog()
+          DebugPrint.fatal("Markup not available even tho Moment deemed Loaded")
+        }
+        
+        guard let dataType = markup.dataType else {
+          displayErrorDialog()
+          DebugPrint.assert("Unexpected markup.dataType = nil")
+          return
+        }
+        
+        guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
+          displayErrorDialog()
+          DebugPrint.assert("markup.dataType did not actually translate into valid type")
+          return
+        }
+        
+        switch markupType {
+          
+        case .jotLabel:
+          guard let labelData = markup.data else {
+            displayErrorDialog()
+            DebugPrint.assert("Unexpected markup.data = nil when dataType == .jotLabel")
+            return
+          }
+          
+          if labelDictionary == nil {
+            labelDictionary = [labelData]
+          } else {
+            labelDictionary!.append(labelData)
+          }
+          
+        case .jotDrawView:
+          guard let drawViewDictionary = markup.data else {
+            displayErrorDialog()
+            DebugPrint.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
+            return
+          }
+          
+          jotDictionary[kDrawView] = drawViewDictionary
+        }
+      }
+      
+      jotDictionary[kLabels] = labelDictionary
+      jotViewController.unserialize(jotDictionary)
     }
   }
   
@@ -238,12 +329,14 @@ class JournalViewController: UIViewController {
       
       view.insertSubview(blurView, belowSubview: tapGestureStackView)
       view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
+      soundButton.isHidden = true
       activityIndicator.startAnimating()
     }
   }
   
   
-  fileprivate func removeTimerAndObservers(for moment: FoodieMoment) {
+  fileprivate func stopVideoTimerAndObservers(for moment: FoodieMoment) {
+    avPlayer?.pause()
     photoTimer?.invalidate()
     photoTimer = nil
     NotificationCenter.default.removeObserver(self)
@@ -253,8 +346,9 @@ class JournalViewController: UIViewController {
   fileprivate func cleanUpAndDismiss() {
     // TODO: Clean-up before dismissing
     if let moment = currentMoment {
-      removeTimerAndObservers(for: moment)
+      stopVideoTimerAndObservers(for: moment)
     }
+    jotViewController.clearAll()
     DispatchQueue.main.async { [weak self] in self?.dismiss(animated: true, completion: nil) }
   }
   
@@ -282,7 +376,8 @@ class JournalViewController: UIViewController {
       return
     }
     
-    removeTimerAndObservers(for: moment)
+    jotViewController.clearAll()
+    stopVideoTimerAndObservers(for: moment)
     
     // Figure out what is the next moment and display it
     let nextIndex = journal.getIndexOf(moment) + 1
@@ -315,7 +410,9 @@ class JournalViewController: UIViewController {
       DebugPrint.assert("Unexpected, currentMoment = nil")
       return
     }
-    removeTimerAndObservers(for: moment)
+    
+    jotViewController.clearAll()
+    stopVideoTimerAndObservers(for: moment)
     
     // Figure out what is the previous moment is and display it
     let index = journal.getIndexOf(moment)
@@ -333,9 +430,28 @@ class JournalViewController: UIViewController {
     super.viewDidLoad()
     
     avPlayer = AVPlayer()
+    avPlayer?.allowsExternalPlayback = false
     avPlayerLayer = AVPlayerLayer(player: avPlayer)
     avPlayerLayer!.frame = self.view.bounds
     videoView!.layer.addSublayer(avPlayerLayer!)
+    
+    // This section setups the JotViewController with default initial values
+    jotViewController.state = JotViewState.disabled
+//    jotViewController.delegate = self
+//    jotViewController.textColor = UIColor.black
+//    jotViewController.font = UIFont.boldSystemFont(ofSize: 64.0)
+//    jotViewController.fontSize = 64.0
+//    jotViewController.textEditingInsets = UIEdgeInsetsMake(12.0, 6.0, 0.0, 6.0)
+//    jotViewController.initialTextInsets = UIEdgeInsetsMake(6.0, 6.0, 6.0, 6.0)
+//    jotViewController.fitOriginalFontSizeToViewWidth = true
+//    jotViewController.textAlignment = .left
+//    jotViewController.drawingColor = UIColor.cyan
+    
+    addChildViewController(jotViewController)
+    view.addSubview(jotViewController.view)
+    view.insertSubview(jotViewController.view, belowSubview: tapGestureStackView)
+    jotViewController.didMove(toParentViewController: self)
+    jotViewController.view.frame = view.bounds
     
     tapBackwardsWidth.constant = UIScreen.main.bounds.width/3.0  // Gotta test this on a different screen size to know if this works
   }
@@ -345,6 +461,7 @@ class JournalViewController: UIViewController {
     // Always display activity indicator and blur layer up front
     view.insertSubview(blurView, belowSubview: tapGestureStackView)
     view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
+    soundButton.isHidden = true
     activityIndicator.startAnimating()
   }
   
@@ -373,6 +490,13 @@ class JournalViewController: UIViewController {
   
   override func viewDidDisappear(_ animated: Bool) {
     DebugPrint.verbose("JournalViewController disappearing")
+  }
+  
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    
+    DebugPrint.log("JournalViewController.didReceiveMemoryWarning")
   }
 }
 

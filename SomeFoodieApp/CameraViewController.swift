@@ -127,6 +127,19 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
       }
     }
   }
+  
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    
+    DebugPrint.log("CameraViewController.didReceiveMemoryWarning")
+  }
+  
+  
+  override var prefersStatusBarHidden: Bool {
+    return true
+  }
+  
 } // CameraViewController class definision
 
 

@@ -322,6 +322,13 @@
                                     </view>
                                 </subviews>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t4S-lT-gBv">
+                                <rect key="frame" x="315" y="629" width="44" height="30"/>
+                                <state key="normal" title="Sound"/>
+                                <connections>
+                                    <action selector="soundToggle:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="jnu-sB-8je"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
@@ -338,8 +345,10 @@
                             <constraint firstItem="PSs-bH-oOZ" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="cb5-so-Nwb"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="efA-ND-dRG"/>
                             <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="bottom" id="fNQ-Yf-4Lf"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="t4S-lT-gBv" secondAttribute="trailing" id="pqS-Hv-QVg"/>
                             <constraint firstAttribute="trailing" secondItem="De9-KV-Mtr" secondAttribute="trailing" id="uHJ-7z-fEq"/>
                             <constraint firstAttribute="trailing" secondItem="3Gc-Ev-vmE" secondAttribute="trailing" id="uPp-NK-myt"/>
+                            <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="t4S-lT-gBv" secondAttribute="bottom" constant="8" symbolic="YES" id="yyK-3b-7EJ"/>
                         </constraints>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="17T-uz-Ki4" appends="YES" id="h5e-pI-kLG"/>
@@ -350,6 +359,7 @@
                         <outlet property="activityIndicator" destination="PSs-bH-oOZ" id="ltb-9Q-KVm"/>
                         <outlet property="blurView" destination="lU5-U1-CUM" id="URy-RV-r5L"/>
                         <outlet property="photoView" destination="3Gc-Ev-vmE" id="tiQ-hZ-B0K"/>
+                        <outlet property="soundButton" destination="t4S-lT-gBv" id="ZDG-D8-Ify"/>
                         <outlet property="tapBackwardsWidth" destination="JVf-9n-aH0" id="NCS-Gv-0hn"/>
                         <outlet property="tapGestureStackView" destination="De9-KV-Mtr" id="a6F-Rd-dNf"/>
                         <outlet property="videoView" destination="nnO-KA-kth" id="Cmy-Ry-tDy"/>
@@ -450,32 +460,110 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Da-16-S86">
-                                <rect key="frame" x="319" y="617" width="34" height="30"/>
+                                <rect key="frame" x="325" y="629" width="34" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Save"/>
                                 <connections>
                                     <action selector="saveButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="X5X-lL-CO1"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jIA-aA-ex6">
+                                <rect key="frame" x="315" y="591" width="44" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Sound"/>
+                                <connections>
+                                    <action selector="soundButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="dkQ-EQ-R1s"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KrM-3z-Z5X" customClass="ExitButton" customModule="SomeFoodieApp" customModuleProvider="target">
+                                <rect key="frame" x="16" y="8" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="4py-wd-BeH"/>
+                                    <constraint firstAttribute="width" secondItem="KrM-3z-Z5X" secondAttribute="height" multiplier="1:1" id="pSH-Qf-XE1"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="exitButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="I3i-Pm-8CT"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NrF-32-VrF">
+                                <rect key="frame" x="329" y="8" width="30" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Text"/>
+                                <connections>
+                                    <action selector="textButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hEs-po-5DG"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xf3-yP-YWE">
+                                <rect key="frame" x="242" y="8" width="35" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Food"/>
+                                <connections>
+                                    <action selector="foodButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="Y2p-Gw-jh1"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ti7-uM-Tfb">
+                                <rect key="frame" x="285" y="8" width="36" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Draw"/>
+                                <connections>
+                                    <action selector="drawButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="l8o-q3-L1i"/>
+                                </connections>
+                            </button>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="eZh-sa-B78">
+                                <rect key="frame" x="242" y="166" width="204" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="colorSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="j3f-dm-ZYb"/>
+                                </connections>
+                            </slider>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CKF-go-XiM">
+                                <rect key="frame" x="285" y="46" width="38" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Undo"/>
+                                <connections>
+                                    <action selector="undoButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="1WG-ao-Czh"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rbc-ru-Sbr">
+                                <rect key="frame" x="282" y="46" width="45" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Delete"/>
+                                <connections>
+                                    <action selector="deleteButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hLO-Li-p13"/>
+                                </connections>
+                            </button>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="gQS-fe-hw8">
+                                <rect key="frame" x="267" y="384" width="154" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="sizeSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="jep-QK-70b"/>
+                                </connections>
+                            </slider>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
-                        <connections>
-                            <outletCollection property="gestureRecognizers" destination="YNa-YP-wSg" appends="YES" id="IH2-9J-4Iy"/>
-                        </connections>
+                        <constraints>
+                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="top" secondItem="Wru-2j-ls2" secondAttribute="bottom" constant="8" id="1FB-Hs-IxM"/>
+                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="leading" secondItem="3hs-y9-2cP" secondAttribute="leadingMargin" id="q5R-kJ-1tY"/>
+                        </constraints>
                     </view>
+                    <nil key="simulatedStatusBarMetrics"/>
                     <connections>
+                        <outlet property="colorSlider" destination="eZh-sa-B78" id="BSi-1v-y6r"/>
+                        <outlet property="deleteButton" destination="rbc-ru-Sbr" id="O9F-DD-yX6"/>
+                        <outlet property="drawButton" destination="ti7-uM-Tfb" id="q0A-uU-x0k"/>
+                        <outlet property="exitButton" destination="KrM-3z-Z5X" id="m5z-DF-hS2"/>
+                        <outlet property="foodButton" destination="Xf3-yP-YWE" id="aJ7-SR-Oxo"/>
                         <outlet property="saveButton" destination="5Da-16-S86" id="Yd6-y9-sg5"/>
+                        <outlet property="sizeSlider" destination="gQS-fe-hw8" id="hs9-ZM-YPo"/>
+                        <outlet property="soundButton" destination="jIA-aA-ex6" id="avY-Fm-oRe"/>
+                        <outlet property="textButton" destination="NrF-32-VrF" id="hHX-SI-gF3"/>
+                        <outlet property="undoButton" destination="CKF-go-XiM" id="ep2-Fd-5Fw"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bya-bk-WIy" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <swipeGestureRecognizer direction="right" id="YNa-YP-wSg">
-                    <connections>
-                        <action selector="exitSwiped:" destination="3Lz-hF-LGR" id="YZ5-wl-4CS"/>
-                    </connections>
-                </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1022" y="-666"/>
+            <point key="canvasLocation" x="1021.6" y="-666.11694152923542"/>
         </scene>
         <!--Journal Entry View Controller-->
         <scene sceneID="MEV-Xi-0JN">

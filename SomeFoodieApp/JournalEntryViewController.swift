@@ -223,6 +223,14 @@ class JournalEntryViewController: UITableViewController {
     // Start pre-upload operations, and other background trickeries
   }
   
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    
+    DebugPrint.log("JournalEntryViewController.didReceiveMemoryWarning")
+  }
+  
+  
   // MARK: - Private Instance Functions
   
   // Generic error dialog box to the user on internal errors

@@ -29,10 +29,20 @@
 			<key>orderHint</key>
 			<integer>5</integer>
 		</dict>
+		<key>Jot.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>16</integer>
+		</dict>
 		<key>Kanna.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>9</integer>
+		</dict>
+		<key>Masonry.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>15</integer>
 		</dict>
 		<key>Parse.xcscheme</key>
 		<dict>
@@ -75,9 +85,24 @@
 			<key>orderHint</key>
 			<integer>7</integer>
 		</dict>
+		<key>jot.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>14</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>06E2463E18860775710BDED29E5FDFA2</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>0A9D5F2D95239307331BD0B1E6BFCE74</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>1AE39BF99F07CDDFB7ABA096E3445946</key>
 		<dict>
 			<key>primary</key>
@@ -103,6 +128,11 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>48EBCFD40F9A127DCB9DEEE34825BFA5</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>4D10E4FF5A483B852B47CCA0B994E340</key>
 		<dict>
 			<key>primary</key>
@@ -123,7 +153,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>74AE346E366025A59CA66253C99E4FAD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>753FF27995C55D2E99CB98BE476D6D33</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>787F7D925FADA1EA78D2291E3319D485</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -148,12 +188,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>B27484E31CB8ACDDA6F783A629C93180</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>BE8C90589225FCC3A6672520B3A83618</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>C83B0F8778708382BFD09745CBCD1CBA</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>E0E4C5262D73BED38BBBA47CAF4E8F83</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>ED8D0D42DA9688156BB293FC8A255803</key>
 		<dict>
 			<key>primary</key>
 			<true/>
