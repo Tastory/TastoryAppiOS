@@ -60,42 +60,45 @@ class JournalEntryViewController: UITableViewController {
   
   // MARK: - IBActions
   @IBAction func testSaveJournal(_ sender: Any) {
-
+  
+    UIApplication.shared.beginIgnoringInteractionEvents()
+    
     workingJournal?.title = titleTextField?.text
     workingJournal?.journalURL = linkTextField?.text
     
     DebugPrint.verbose("\(self.workingJournal?.foodieObject.operationState)")
-    
-    if(self.workingJournal?.foodieObject.operationState != .objectModified)
+
+    //making sure that the operation state didnt change between checking and setting the flag
+    pthread_mutex_lock(&self.saveStateMutex)
+    if(self.workingJournal?.foodieObject.operationState == .savingToLocal)
     {
-      
-      
       // save in progress let the callback of the save to trigger the save to server
-      pthread_mutex_lock(&self.saveStateMutex)
       isSaveInProgress = true
-      pthread_mutex_unlock(&self.saveStateMutex)
     } else
     {
         saveJournalToServer()
     }
+    pthread_mutex_unlock(&self.saveStateMutex)
   }
   
   func saveJournalToServer(){
     // journal is already saved to local
-    self.workingJournal?.saveRecursive(to: .server) { [weak self] (success, error) in
+    self.workingJournal?.saveRecursive(to: .server) {(success, error) in
       if success {
         DebugPrint.verbose("Journal Save to Server Completed!")
-        self?.saveCompleteDialog()
-        self?.isSaveInProgress = false
+        self.saveCompleteDialog()
+         pthread_mutex_lock(&self.saveStateMutex)
+        self.isSaveInProgress = false
+         pthread_mutex_lock(&self.saveStateMutex)
       } else if let error = error {
         DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
       } else {
         DebugPrint.fatal("Journal Save to Server Failed without Error")
       }
+      UIApplication.shared.endIgnoringInteractionEvents()
     }
 
   }
-  
   
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
@@ -179,13 +182,8 @@ class JournalEntryViewController: UITableViewController {
           })
         }
       }
-      initializeJournalController()
-    } else {
-      
-      
-  
-      initializeJournalController()
     }
+    initializeJournalController()
   }
   
   func initializeJournalController() {
@@ -221,11 +219,9 @@ class JournalEntryViewController: UITableViewController {
 
   }
   
-  
   override func viewDidAppear(_ animated: Bool) {
     // Start pre-upload operations, and other background trickeries
   }
-  
   
   // MARK: - Private Instance Functions
   
@@ -294,7 +290,6 @@ class JournalEntryViewController: UITableViewController {
     super.encodeRestorableState(with: coder)
   }
   
-  
   override func decodeRestorableState(with coder: NSCoder) {
     
     if let title = coder.decodeObject(forKey: "title") as? String {
@@ -349,7 +344,6 @@ extension JournalEntryViewController {
   }
 }
 
-
 // MARK: - Scroll View Delegate
 extension JournalEntryViewController {
   
@@ -369,14 +363,12 @@ extension JournalEntryViewController {
   }
 }
 
-
 // MARK: - Tags TextView Delegate
 extension JournalEntryViewController: UITextViewDelegate {
   func textViewDidChange(_ textView: UITextView) {
     placeholderLabel.isHidden = !textView.text.isEmpty
   }
 }
-
 
 // MARK: - Text Fields' Delegate
 extension JournalEntryViewController: UITextFieldDelegate {

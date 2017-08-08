@@ -105,7 +105,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   fileprivate var contentRetrievalPending = false
   fileprivate var contentRetrievalPendingCallback: FoodieObject.SimpleErrorBlock?
   
-  
   // MARK: - Public Static Functions
   
   // Function to create a new FoodieJournal as the current Journal. Will assert if there already is a current Journal
@@ -606,8 +605,9 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     // Need to make sure all children FoodieRecursives saved before proceeding
     if let hasMoments = moments {
       for moment in hasMoments {
-        // omit saving of moment if they are marked modified to prevent double saving of moments to server
-        if(moment.foodieObject.operationState == .objectModified)
+        // omit saving of moment if they are not marked modified to prevent double saving of moments to server
+        if(moment.foodieObject.operationState == .objectModified ||
+          moment.foodieObject.operationState == .savedToLocal)
         {
           foodieObject.saveChild(moment, to: location, withName: name, withBlock: callback)
           childOperationPending = true
@@ -707,7 +707,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
 // MARK: - Parse Subclass Conformance
 extension FoodieJournal: PFSubclassing {
   static func parseClassName() -> String {
-    return "FoodieJournal"
+    return "FoodieJournalTest"
   }
 }
 
