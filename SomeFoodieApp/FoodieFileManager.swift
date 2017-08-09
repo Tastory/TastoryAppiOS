@@ -100,8 +100,8 @@ class FoodieFile {
   
   // MARK: - Private Constants
   struct Constants {
-    static let S3BucketKey = "foodilicious-testing2"
-    static let CloudFrontUrl = URL(string: "https://ddlhjufkblgu0i.cloudfront.net/")!
+    static let S3BucketKey = "foodilicious"
+    static let CloudFrontUrl = URL(string: "https://d2yt78i54ibg2t.cloudfront.net/")!
     static let DocumentFolderUrl = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
   }
   
