@@ -38,8 +38,9 @@ class JournalEntryViewController: UITableViewController {
   fileprivate var placeholderLabel = UILabel()
   fileprivate var momentViewController = MomentCollectionViewController()
   fileprivate var markupMoment: FoodieMoment? = nil
-  
+
   fileprivate var isSaveInProgress = false
+  fileprivate var triggerSaveJournal = false
   fileprivate var saveStateMutex = pthread_mutex_t()
   
   // MARK: - IBOutlets
@@ -70,26 +71,28 @@ class JournalEntryViewController: UITableViewController {
 
     //making sure that the operation state didnt change between checking and setting the flag
     pthread_mutex_lock(&self.saveStateMutex)
-    if(self.workingJournal?.foodieObject.operationState == .savingToLocal)
+
+    if(isSaveInProgress)
     {
-      // save in progress let the callback of the save to trigger the save to server
-      isSaveInProgress = true
-    } else
-    {
-        saveJournalToServer()
+      triggerSaveJournal = true
     }
     pthread_mutex_unlock(&self.saveStateMutex)
+
+    if(!triggerSaveJournal)
+    {
+      saveJournalToServer()
+    }
   }
   
   func saveJournalToServer(){
+
+    triggerSaveJournal = false
+
     // journal is already saved to local
     self.workingJournal?.saveRecursive(to: .server) {(success, error) in
       if success {
         DebugPrint.verbose("Journal Save to Server Completed!")
         self.saveCompleteDialog()
-         pthread_mutex_lock(&self.saveStateMutex)
-        self.isSaveInProgress = false
-         pthread_mutex_lock(&self.saveStateMutex)
       } else if let error = error {
         DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
       } else {
@@ -145,15 +148,18 @@ class JournalEntryViewController: UITableViewController {
               DebugPrint.verbose("Completed saving journal to local")
               // save recursive from journal already saved moment to .local
               // need to save to server for the moments
+
+              pthread_mutex_lock(&self.saveStateMutex)
+              self.isSaveInProgress = true
+              pthread_mutex_unlock(&self.saveStateMutex)
+
               self.returnedMoment!.saveRecursive(to: .server, withBlock: { (success, error) -> Void in
                 if(success)
                 {
-                  var isSaveToServer = false
                   pthread_mutex_lock(&self.saveStateMutex)
-                  isSaveToServer = self.isSaveInProgress
+                  self.isSaveInProgress = false
                   pthread_mutex_unlock(&self.saveStateMutex)
-
-                  if(isSaveToServer)
+                  if(self.triggerSaveJournal)
                   {
                     self.saveJournalToServer()
                   }
@@ -168,12 +174,10 @@ class JournalEntryViewController: UITableViewController {
             self.returnedMoment!.saveRecursive(to: .server, withBlock: { (success, error) -> Void in
               if(success)
               {
-                var isSaveToServer = false
                 pthread_mutex_lock(&self.saveStateMutex)
-                isSaveToServer = self.isSaveInProgress
+                self.isSaveInProgress = false
                 pthread_mutex_unlock(&self.saveStateMutex)
-                
-                if(isSaveToServer)
+                if(self.triggerSaveJournal)
                 {
                   self.saveJournalToServer()
                 }
