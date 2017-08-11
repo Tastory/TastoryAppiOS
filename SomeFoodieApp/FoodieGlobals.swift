@@ -20,5 +20,5 @@ struct FoodieConstants {
   static let jpegCompressionQuality: Double = 0.8
   static let themeColor: UIColor = .orange
   static let momentsToBufferAtATime = 5
-  static let journalFeedPaginationCount = 20
+  static let journalFeedPaginationCount = 50  // TODO: Need to implement pagination
 }

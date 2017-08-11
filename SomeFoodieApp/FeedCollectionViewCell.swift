@@ -11,6 +11,7 @@ import UIKit
 class FeedCollectionViewCell: UICollectionViewCell {
   @IBOutlet weak var journalButton: UIButton!
   @IBOutlet weak var journalTitle: UILabel!
+  @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
   
   var cellStatusMutex = pthread_mutex_t()
   var cellLoaded = false

@@ -35,7 +35,7 @@ class FoodiePFObject: PFObject {
     
     // See if this is already in memory, if so no need to do anything
     if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
-      callback?(nil)
+      DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }
       return
       
     } else if forceAnyways {

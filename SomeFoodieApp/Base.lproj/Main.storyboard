@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="lzL-s9-fsY">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="lzL-s9-fsY">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -235,10 +235,15 @@
                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="i2G-50-vAv">
+                                            <rect key="frame" x="83" y="156" width="20" height="20"/>
+                                        </activityIndicatorView>
                                     </subviews>
                                 </view>
                                 <constraints>
                                     <constraint firstItem="HVl-kq-EgA" firstAttribute="leading" secondItem="iOA-sb-ZC0" secondAttribute="leading" id="1K8-6V-ZFp"/>
+                                    <constraint firstItem="i2G-50-vAv" firstAttribute="centerY" secondItem="iOA-sb-ZC0" secondAttribute="centerY" id="CDb-uq-NHO"/>
+                                    <constraint firstItem="i2G-50-vAv" firstAttribute="centerX" secondItem="iOA-sb-ZC0" secondAttribute="centerX" id="IWd-95-oeN"/>
                                     <constraint firstAttribute="trailing" secondItem="HVl-kq-EgA" secondAttribute="trailing" id="Mwm-H2-zlx"/>
                                     <constraint firstAttribute="bottom" secondItem="HVl-kq-EgA" secondAttribute="bottom" id="UGJ-o4-GFv"/>
                                     <constraint firstItem="Ex6-Ee-5zY" firstAttribute="leading" secondItem="iOA-sb-ZC0" secondAttribute="leading" id="VoH-U1-pJC"/>
@@ -247,6 +252,7 @@
                                     <constraint firstItem="Ex6-Ee-5zY" firstAttribute="top" secondItem="iOA-sb-ZC0" secondAttribute="top" id="zXd-zd-Ql2"/>
                                 </constraints>
                                 <connections>
+                                    <outlet property="activityIndicator" destination="i2G-50-vAv" id="kAX-X9-pgh"/>
                                     <outlet property="journalButton" destination="Ex6-Ee-5zY" id="73K-nw-Tn2"/>
                                     <outlet property="journalTitle" destination="HVl-kq-EgA" id="9rt-Tp-Ej1"/>
                                 </connections>

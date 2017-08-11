@@ -20,7 +20,6 @@ class FeedCollectionViewController: UICollectionViewController {
   // MARK: - Private Instance Variable
   var journalQuery: FoodieJournalQuery!
   var journalArray = [FoodieJournal]()
-  var numberOfItemsQueried: Int = 0
   
   
   // MARK: - IBActions
@@ -38,9 +37,7 @@ class FeedCollectionViewController: UICollectionViewController {
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = false
     
-    numberOfItemsQueried = journalArray.count  // TODO - Need to implement pagination
-    
-    DebugPrint.verbose("journalArray.count = \(numberOfItemsQueried)")
+    DebugPrint.verbose("journalArray.count = \(journalArray.count)")
     
     // Turn on CollectionView prefetching
     collectionView?.prefetchDataSource = self
@@ -145,8 +142,9 @@ class FeedCollectionViewController: UICollectionViewController {
   
   
   override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return numberOfItemsQueried
+    return journalArray.count
   }
+  
   
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.reuseIdentifier, for: indexPath) as! FeedCollectionViewCell
@@ -155,6 +153,8 @@ class FeedCollectionViewController: UICollectionViewController {
     let journal = journalArray[indexPath.row]
     reusableCell.journalButton.tag = indexPath.row
     reusableCell.journalButton.addTarget(self, action: #selector(viewJournal(_:)), for: .touchUpInside)
+    reusableCell.activityIndicator.isHidden = false
+    reusableCell.activityIndicator.startAnimating()
     
     // DebugPrint.verbose("collectionView(cellForItemAt #\(indexPath.row)")
     
@@ -189,6 +189,8 @@ class FeedCollectionViewController: UICollectionViewController {
           // DebugPrint.verbose("cellForItem(at:) DispatchQueue.main for cell #\(indexPath.row)")
           cell.journalTitle?.text = self.journalArray[indexPath.row].title
           cell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+          cell.activityIndicator.isHidden = true
+          cell.activityIndicator.stopAnimating()
           
           pthread_mutex_lock(&cell.cellStatusMutex)
           cell.cellLoaded = true
@@ -198,9 +200,11 @@ class FeedCollectionViewController: UICollectionViewController {
           pthread_mutex_unlock(&cell.cellStatusMutex)
           
         } else {
-          // None of the retrieve function actually did an async dispatch. So we are still in the collectionView.cellForItemAt context.
+          // This is an out of view prefetch?
           reusableCell.journalTitle?.text = self.journalArray[indexPath.row].title
           reusableCell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+          reusableCell.activityIndicator.isHidden = true
+          reusableCell.activityIndicator.stopAnimating()
           
           pthread_mutex_lock(&reusableCell.cellStatusMutex)
           reusableCell.cellLoaded = true
