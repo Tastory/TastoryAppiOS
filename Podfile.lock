@@ -5,45 +5,51 @@ PODS:
   - AWSS3 (2.5.3):
     - AWSCore (= 2.5.3)
   - Bolts/Tasks (1.8.4)
-  - FoursquareAPIClient (3.1.0)
   - Jot (0.2.0):
     - Masonry (~> 1.0.2)
   - Kanna (2.2.0)
   - Masonry (1.0.2)
   - Parse (1.14.2):
     - Bolts/Tasks (~> 1.8)
+  - QuadratTouch (1.1.3)
   - SwiftyCam (2.1.0)
 
 DEPENDENCIES:
   - AWSCognito
   - AWSS3
-  - FoursquareAPIClient
   - Jot (from `https://github.com/biscottigelato/Jot.git`)
   - Kanna
   - Parse
+  - QuadratTouch (from `https://github.com/Constantine-Fry/das-quadrat.git`, branch `develop`)
   - SwiftyCam
 
 EXTERNAL SOURCES:
   Jot:
     :git: https://github.com/biscottigelato/Jot.git
+  QuadratTouch:
+    :branch: develop
+    :git: https://github.com/Constantine-Fry/das-quadrat.git
 
 CHECKOUT OPTIONS:
   Jot:
     :commit: 5ff226b2efc70fbf249a2558f117ef5e8e10d3fc
     :git: https://github.com/biscottigelato/Jot.git
+  QuadratTouch:
+    :commit: 4f10166069b9482da15a9b118e81102c3fffd507
+    :git: https://github.com/Constantine-Fry/das-quadrat.git
 
 SPEC CHECKSUMS:
   AWSCognito: 74be06e52a2a063ab932a9d457a89e003d68631d
   AWSCore: 344e21892790650cf902246d436402257a545bde
   AWSS3: 88095d68f9d588eaa042d7f502f350234f98f606
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
-  FoursquareAPIClient: 2bb916176f560c0afb6838a28c1a0970467a0edc
   Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
   Kanna: b3b3368d673845f48c572c6746c2278deebe26b9
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   Parse: 4335d65f40cb3d43190d723144bbe1afb9c38230
+  QuadratTouch: 9e311cbd4f0573b58cafe6783df1fa7ce2458afa
   SwiftyCam: 2f13473f67afa4658bff79453d7db6890e2fa84d
 
-PODFILE CHECKSUM: e2c85f58a881b6a4f325da0ee5602d0e56384b1f
+PODFILE CHECKSUM: a1181e561e290b296bcf45ae63befbb1b5bea65b
 
 COCOAPODS: 1.2.0

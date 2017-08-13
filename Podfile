@@ -7,12 +7,12 @@ target 'SomeFoodieApp' do
 
   # Pods for SomeFoodieApp
   pod 'Parse'
-  pod 'FoursquareAPIClient'
   pod 'Kanna'
   pod 'SwiftyCam'
   pod 'AWSS3'
   pod 'AWSCognito'
   pod 'Jot', :git => 'https://github.com/biscottigelato/Jot.git'
+  pod 'QuadratTouch', :git => 'https://github.com/Constantine-Fry/das-quadrat.git', :branch => 'develop'
   
   target 'SomeFoodieAppTests' do
     inherit! :search_paths

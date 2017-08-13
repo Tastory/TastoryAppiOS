@@ -27,6 +27,7 @@
 		8C1D4E241EDCECCD00939B2C /* FeedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */; };
 		8C1D4E261EDCED0800939B2C /* FeedCollectionLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E251EDCED0800939B2C /* FeedCollectionLayout.swift */; };
 		8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */; };
+		8C3254A51F40240900895572 /* VenueTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3254A41F40240900895572 /* VenueTableViewController.swift */; };
 		8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */; };
 		8C5C4DDE1EFEEDEC008C83EC /* FoodiePrefetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5C4DDD1EFEEDEC008C83EC /* FoodiePrefetch.swift */; };
 		8C61BCDC1E985D1300DDF248 /* DebugPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */; };
@@ -101,6 +102,7 @@
 		8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FeedCollectionViewCell.swift; path = SomeFoodieApp/FeedCollectionViewCell.swift; sourceTree = "<group>"; };
 		8C1D4E251EDCED0800939B2C /* FeedCollectionLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FeedCollectionLayout.swift; path = SomeFoodieApp/FeedCollectionLayout.swift; sourceTree = "<group>"; };
 		8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MKCoordinateSpan+Extension.swift"; sourceTree = "<group>"; };
+		8C3254A41F40240900895572 /* VenueTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenueTableViewController.swift; sourceTree = "<group>"; };
 		8C40B20B1F1466D40030B5B5 /* Jot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jot-Bridging-Header.h"; sourceTree = "<group>"; };
 		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
 		8C5C4DDD1EFEEDEC008C83EC /* FoodiePrefetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePrefetch.swift; sourceTree = "<group>"; };
@@ -329,6 +331,7 @@
 				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
 				8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */,
 				8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */,
+				8C3254A41F40240900895572 /* VenueTableViewController.swift */,
 				8CADA1A91E85D9CE00BF6CF0 /* ScrapeViewController.swift */,
 			);
 			name = Controllers;
@@ -680,6 +683,7 @@
 				8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */,
 				8C9AD0631E8F615D005F337E /* CameraButtonRingLayer.swift in Sources */,
 				8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */,
+				8C3254A51F40240900895572 /* VenueTableViewController.swift in Sources */,
 				8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */,
 				8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */,
 				8C1D4E261EDCED0800939B2C /* FeedCollectionLayout.swift in Sources */,

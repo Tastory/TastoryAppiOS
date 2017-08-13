@@ -45,7 +45,7 @@ class JournalEntryViewController: UITableViewController {
   
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
-  @IBOutlet weak var venueTextField: UITextField?
+  @IBOutlet weak var venueButton: UIButton?
   @IBOutlet weak var linkTextField: UITextField?
   @IBOutlet weak var tagsTextView: UITextView? {
     didSet {
@@ -60,6 +60,13 @@ class JournalEntryViewController: UITableViewController {
   
   
   // MARK: - IBActions
+  @IBAction func venueClicked(_ sender: UIButton) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as! VenueTableViewController
+    self.present(viewController, animated: true)
+  }
+  
+  
   @IBAction func testSaveJournal(_ sender: Any) {
 
     //TODO add spinner 
@@ -210,7 +217,7 @@ class JournalEntryViewController: UITableViewController {
     momentViewController.didMove(toParentViewController: self)
     
     titleTextField?.delegate = self
-    venueTextField?.delegate = self
+
     linkTextField?.delegate = self
     tagsTextView?.delegate = self
     

@@ -10,7 +10,8 @@
 #endif
 #endif
 
+#import "QuadratTouch.h"
 
-FOUNDATION_EXPORT double FoursquareAPIClientVersionNumber;
-FOUNDATION_EXPORT const unsigned char FoursquareAPIClientVersionString[];
+FOUNDATION_EXPORT double QuadratTouchVersionNumber;
+FOUNDATION_EXPORT const unsigned char QuadratTouchVersionString[];
 

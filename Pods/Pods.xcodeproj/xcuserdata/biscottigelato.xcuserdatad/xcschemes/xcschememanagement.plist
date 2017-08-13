@@ -32,7 +32,7 @@
 		<key>Jot.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>16</integer>
+			<integer>15</integer>
 		</dict>
 		<key>Kanna.xcscheme</key>
 		<dict>
@@ -42,7 +42,7 @@
 		<key>Masonry.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>15</integer>
+			<integer>14</integer>
 		</dict>
 		<key>Parse.xcscheme</key>
 		<dict>
@@ -69,6 +69,11 @@
 			<false/>
 			<key>orderHint</key>
 			<integer>3</integer>
+		</dict>
+		<key>QuadratTouch.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>16</integer>
 		</dict>
 		<key>SwiftyCam.xcscheme</key>
 		<dict>
@@ -188,6 +193,11 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>A1B175DB30B42A1A992C33428397CB90</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>B27484E31CB8ACDDA6F783A629C93180</key>
 		<dict>
 			<key>primary</key>
@@ -203,7 +213,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>D4C35DC41A69DF92BAFB32CF1BCC1A81</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>E0E4C5262D73BED38BBBA47CAF4E8F83</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E170DF91626C1F0EA2E72CBAC30F568D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
