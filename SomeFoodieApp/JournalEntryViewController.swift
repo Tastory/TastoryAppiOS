@@ -128,9 +128,12 @@ class JournalEntryViewController: UITableViewController {
           DebugPrint.assert("returnedMoment expected to match markupMoment")
         }
       } else {
-        
+
+
+        // TODO refactor out to journal
         // This is a new Moment. Let's add it to the Journal!
         journalUnwrapped.add(moment: returnedMoment!)
+        journalUnwrapped.foodieObject.markModified()
         
         // If there wasn't any moments before, we got to make this the default thumbnail for the Journal
         // Got to do this also when removing moments!!!

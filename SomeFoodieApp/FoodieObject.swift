@@ -246,7 +246,7 @@ class FoodieObject {
         
       } else {
         // Unexpected state combination
-        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), Type: \(delegate?.foodieObjectType()), State: \(operationState)")
+        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
       }
     }
       
@@ -262,7 +262,7 @@ class FoodieObject {
         
       } else {
         // Unexpected state combination
-        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), Type: \(delegate?.foodieObjectType()), State: \(operationState)")
+        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
       }
     }
   }

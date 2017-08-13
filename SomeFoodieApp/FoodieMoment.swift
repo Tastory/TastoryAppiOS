@@ -129,7 +129,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  static func query(withName name: String, withBlock: ([AnyObject]?, Error?) -> Void) {
+  static func queryFromPin(withName name: String, withBlock: ([AnyObject]?, Error?) -> Void) {
     let query = PFQuery(className: FoodieMoment.parseClassName())
     query.fromPin(withName: name)
     do {

@@ -267,11 +267,11 @@ class MarkupViewController: UIViewController {
       FoodieJournal.newCurrent(retrieveCallback: {(journal, error)-> Void in
         if error != nil {
           // pin was not found
-          showMarkUpComplete(markedUpMoment: momentObj, suggestedJournal: journal)
+          self.showMarkUpComplete(markedUpMoment: momentObj, suggestedJournal: journal)
         }
         else {
           // found a pin 
-          displayJournalSelection(newJournalHandler: { UIAlertAction -> Swift.Void in
+          self.displayJournalSelection(newJournalHandler: { UIAlertAction -> Swift.Void in
             self.showDiscardButton(journal: journal, moment: momentObj )
           }, addToCurrentHandler: { UIAlertAction -> Swift.Void in
             guard let currentJournal = FoodieJournal.currentJournal else {

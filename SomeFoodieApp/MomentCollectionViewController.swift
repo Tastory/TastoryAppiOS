@@ -186,7 +186,11 @@ extension MomentCollectionViewController {
     var thumbnail: UIImage?
     if moment.thumbnailObj?.imageMemoryBuffer == nil
     {
-      moment.thumbnailObj?.imageMemoryBuffer = NSData.dataWithContentsOfMappedFile(FoodieFile.Constants.DocumentFolderUrl.appendingPathComponent("\(moment.thumbnailFileName!)").path) as! Data
+      do {
+        try moment.thumbnailObj?.imageMemoryBuffer = Data(contentsOf: FoodieFile.Constants.DocumentFolderUrl.appendingPathComponent(moment.thumbnailFileName!))
+      } catch {
+        // TODO handle error 
+      }
     }
     thumbnail = UIImage(data: moment.thumbnailObj!.imageMemoryBuffer!)
     cell.momentButton.setImage(thumbnail, for: .normal)
