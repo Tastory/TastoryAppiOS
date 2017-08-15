@@ -106,61 +106,25 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   fileprivate var contentRetrievalPendingCallback: FoodieObject.SimpleErrorBlock?
   
   // MARK: - Public Static Functions
-  
-  // Function to create a new FoodieJournal as the current Journal. Will assert if there already is a current Journal
-  static func newCurrent(retrieveCallback: @escaping ((FoodieJournal, Error?)-> Void)) -> Void {
-    
-    // check to see if there is any draft journal
-    let query = PFQuery(className: FoodieJournal.parseClassName())
-    query.fromPin(withName: "workingJournal")
 
-      query.getFirstObjectInBackground(block: { (fetchedObject, error) in
-        if(fetchedObject == nil)
-        {
-          DebugPrint.verbose("Failed to retrieve workingJournal from local data store")
-          currentJournalPrivate = FoodieJournal(withState: .objectModified)
-          retrieveCallback(currentJournalPrivate!, FoodieObject.ErrorCode.retrievePinnedObjectError)
-          return 
-        }
+  static func setJournal(journal: FoodieJournal) {
+    currentJournalPrivate = journal
+  }
 
-        let currentJournal = fetchedObject as! FoodieJournal
-        do {
-          try currentJournal.fetchIfNeeded()
-           currentJournal.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: currentJournal.thumbnailFileName!, type: FoodieMediaType.photo)
 
-          if let moments = currentJournal.moments {
-            FoodieMoment.queryFromPin(withName: "workingJournal", withBlock: {(fetchedMoments,error )-> Void in
+  static func newCurrent() -> FoodieJournal {
+    if currentJournalPrivate != nil {
+      DebugPrint.assert(".newCurrent() without Save attempted but currentJournal != nil")
+    }
+    currentJournalPrivate = FoodieJournal(withState: .objectModified)
 
-              if error != nil
-              {
-                DebugPrint.verbose("Error fetching moments from pinned local store")
-              }
-
-              currentJournal.moments?.removeAll()
-              //TODO possible that there is zero moment
-              for moment in (fetchedMoments!) {
-
-                let foodieMoment = moment as! FoodieMoment
-
-                foodieMoment.mediaObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.mediaFileName!, type:  FoodieMediaType(rawValue:  foodieMoment.mediaType!)!)
-                //TODO make sure the file exists
-                foodieMoment.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.thumbnailFileName!, type: FoodieMediaType.photo)
-                currentJournal.moments?.append(foodieMoment)
-              }
-              currentJournal.foodieObject.markModified()
-              currentJournalPrivate = currentJournal
-              retrieveCallback(currentJournal,nil)
-            })
-          }
-        } catch {
-          DebugPrint.verbose("Failed to retrieve workingJournal from local data store")
-          currentJournalPrivate = FoodieJournal(withState: .objectModified)
-          retrieveCallback(currentJournalPrivate!, FoodieObject.ErrorCode.retrievePinnedObjectError)
-        }
-      })
+    guard let current = currentJournalPrivate else {
+      DebugPrint.fatal("Just created a new FoodieJournal() but currentJournalPrivate still nil")
+    }
+    return current
   }
   
-  
+
   // Function to create a new FoodieJournal as the current Journal. Save or discard the previous current Journal
   static func newCurrentSync(saveCurrent: Bool) throws -> FoodieJournal? {
     if saveCurrent {

@@ -264,26 +264,9 @@ class MarkupViewController: UIViewController {
     }
     else {
       // Create a new Current Journal
-      FoodieJournal.newCurrent(retrieveCallback: {(journal, error)-> Void in
-        if error != nil {
-          // pin was not found
-          self.showMarkUpComplete(markedUpMoment: momentObj, suggestedJournal: journal)
-        }
-        else {
-          // found a pin 
-          self.displayJournalSelection(newJournalHandler: { UIAlertAction -> Swift.Void in
-            self.showDiscardButton(journal: journal, moment: momentObj )
-          }, addToCurrentHandler: { UIAlertAction -> Swift.Void in
-            guard let currentJournal = FoodieJournal.currentJournal else {
-              self.saveErrorDialog()
-              DebugPrint.assert("nil FoodieJorunal.currentJournal when trying to Add a Moment to Current Journal")
-              return
-            }
-            self.showMarkUpComplete(markedUpMoment: momentObj, suggestedJournal: currentJournal)
-          })
-        }
-      })
-    }
+      let currentJournal = FoodieJournal.newCurrent()
+      self.showMarkUpComplete(markedUpMoment: momentObj, suggestedJournal: currentJournal)
+   }
   }
 
   func displayJournalSelection( newJournalHandler: @escaping (UIAlertAction) -> Swift.Void, addToCurrentHandler: @escaping (UIAlertAction) -> Swift.Void) {
@@ -382,7 +365,7 @@ class MarkupViewController: UIViewController {
       DebugPrint.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
       return
     }
-    OperationQueue.main.addOperation {
+    DispatchQueue.main.async {
       delegate.markupComplete(markedupMoment: markedUpMoment, suggestedJournal: suggestedJournal)
     }
   }

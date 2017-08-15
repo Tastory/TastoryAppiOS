@@ -61,7 +61,8 @@ class JournalEntryViewController: UITableViewController {
   
   // MARK: - IBActions
   @IBAction func testSaveJournal(_ sender: Any) {
-  
+
+    //TODO add spinner 
     UIApplication.shared.beginIgnoringInteractionEvents()
     
     workingJournal?.title = titleTextField?.text

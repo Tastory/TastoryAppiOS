@@ -127,21 +127,15 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       callback?(error)  // Callback regardless
     }
   }
-  
-  
-  static func queryFromPin(withName name: String, withBlock: ([AnyObject]?, Error?) -> Void) {
+
+  static func queryFromPin(withName name: String, withBlock: (([AnyObject]?, Error?) -> Void)?) {
     let query = PFQuery(className: FoodieMoment.parseClassName())
     query.fromPin(withName: name)
-    do {
-      var moments: [AnyObject]?
-      try moments = query.findObjects()
-      withBlock(moments, nil)
-    } catch {
-      withBlock(nil, FoodieObject.ErrorCode.retrievePinnedObjectError)
-    }
+      query.findObjectsInBackground() { (moments, error)in
+        withBlock?(moments, error)
+      }
   }
-  
-  
+
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
   func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
