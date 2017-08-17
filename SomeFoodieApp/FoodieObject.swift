@@ -47,7 +47,6 @@ class FoodieObject {
   
   // MARK: - Types & Enumerations
   typealias BooleanErrorBlock = (Bool, Error?) -> Void
-  typealias QueryResultBlock = ([AnyObject]?, Error?) -> Void
   typealias RetrievedObjectBlock = (Any?, Error?) -> Void
   typealias SimpleErrorBlock = (Error?) -> Void
   
@@ -423,7 +422,6 @@ class FoodieObject {
   
   // Function to delete this object
   func deleteObject(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
-    
     DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject")
     
     guard let delegateObj = delegate else {

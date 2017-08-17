@@ -76,7 +76,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     
     // If photo and in memory, or video and in local, just callback
     if !forceAnyways && (imageMemoryBuffer != nil || videoLocalBufferUrl != nil) {
-      callback?(nil)
+      DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }
       return
       
     } else if forceAnyways {

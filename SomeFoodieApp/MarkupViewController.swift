@@ -440,6 +440,7 @@ class MarkupViewController: UIViewController {
     super.viewDidLoad()
     
     // Setup the UI first - Assume text mode to start
+    foodButton.isHidden = true  // TODO: Unhide this later when want to implement the Food Tag Button
     undoButton.isHidden = true
     deleteButton.isHidden = false
     colorSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))

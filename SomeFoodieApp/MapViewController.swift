@@ -66,13 +66,6 @@ class MapViewController: UIViewController {
     viewController.cameraReturnDelegate = self
     self.present(viewController, animated: true)
   }
-
-
-  @IBAction func launchFeed(_ sender: UIButton) {
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FeedCollectionViewController") as! FeedCollectionViewController
-    self.present(viewController, animated: true)
-  }
   
   
   @IBAction func currentLocationReturn(_ sender: UIButton) {
@@ -89,17 +82,52 @@ class MapViewController: UIViewController {
     // Start updating location again
     locationManager.startUpdatingLocation()
   }
+  
+  
+  @IBAction func searchWithFilter(_ sender: UIButton) {
+    guard let currentMapView = mapView else {
+      locationErrorDialog(message: "Invalid Map View. Search Location Undefined", comment: "Alert dialog message when mapView is nil when user attempted to perform Search")
+      DebugPrint.assert("Search w/ Filter cannot be performed when mapView = nil")
+      return
+    }
 
+    // Get South West corner coordinate and North East corner coordinate of the Map view
+    let centerLatitude = currentMapView.region.center.latitude
+    let centerLongitude = currentMapView.region.center.longitude
+    let halfHeight = currentMapView.region.span.latitudeDelta/2
+    let halfWidth = currentMapView.region.span.longitudeDelta/2
+    let southWestCoordinate = CLLocationCoordinate2D(latitude: centerLatitude - halfHeight,
+                                                     longitude: centerLongitude - halfWidth)
+    let northEastCoordinate = CLLocationCoordinate2D(latitude: centerLatitude + halfHeight,
+                                                     longitude: centerLongitude + halfWidth)
+    
+    DebugPrint.verbose("Query Location Rectangle SouthWest - (\(southWestCoordinate.latitude), \(southWestCoordinate.longitude)), NorthEast - (\(northEastCoordinate.latitude), \(northEastCoordinate.longitude))")
+    
+    let journalQuery = FoodieJournalQuery()
+    journalQuery.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
+    journalQuery.setSkip(to: 0)
+    journalQuery.setLimit(to: FoodieConstants.journalFeedPaginationCount)
+    queryAndLaunchFeed(withQuery: journalQuery)
+  }
+  
 
+  @IBAction func searchAll(_ sender: UIButton) {
+    let journalQuery = FoodieJournalQuery()
+    journalQuery.setSkip(to: 0)
+    journalQuery.setLimit(to: FoodieConstants.journalFeedPaginationCount)
+    queryAndLaunchFeed(withQuery: journalQuery)
+  }
+  
+  
   // MARK: - Class Private Functions
 
   // Generic error dialog box to the user on internal errors
   fileprivate func internalErrorDialog() {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "SomeFoodieApp",
-                                              titleComment: "Alert diaglogue title when a Map view internal error occured",
+                                              titleComment: "Alert diaglogue title when a Map View internal error occured",
                                               message: "An internal error has occured. Please try again",
-                                              messageComment: "Alert dialog message when a Map view internal error occured",
+                                              messageComment: "Alert dialog message when a Map View internal error occured",
                                               preferredStyle: .alert)
     
       alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for generic MapView errors", style: .cancel)
@@ -112,17 +140,77 @@ class MapViewController: UIViewController {
   fileprivate func locationErrorDialog(message: String, comment: String) {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "SomeFoodieApp",
-                                              titleComment: "Alert diaglogue title when a Map view location error occured",
+                                              titleComment: "Alert diaglogue title when a Map View location error occured",
                                               message: message,
                                               messageComment: comment,
                                               preferredStyle: .alert)
       
-      alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for location related MapView errors", style: .cancel)
+      alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for location related Map View errors", style: .cancel)
       self.present(alertController, animated: true, completion: nil)
     }
   }
 
 
+  fileprivate func queryErrorDialog() {
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Map View query error occurred",
+                                              message: "A query error has occured. Please try again",
+                                              messageComment: "Alert dialog message when a Map View query error occurred",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for generic Map View errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
+  }
+  
+  
+  fileprivate func queryAndLaunchFeed(withQuery journalQuery: FoodieJournalQuery) {
+    
+    // Put up blur view and activity spinner before performing query
+    // TODO: We should factor these out so they can be used everywhere
+    // See https://stackoverflow.com/questions/28785715/how-to-display-an-activity-indicator-with-text-on-ios-8-with-swift
+    
+    let blurEffect = UIBlurEffect(style: .light)
+    let blurEffectView = UIVisualEffectView(effect: blurEffect)
+    blurEffectView.frame = view.bounds
+    blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    view.addSubview(blurEffectView)
+    
+    let activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+    activityView.center = self.view.center
+    activityView.startAnimating()
+    view.addSubview(activityView)
+    
+    journalQuery.createQueryAndSearch { (journals, error) in
+      
+      // Remove the blur view and activity spinner
+      blurEffectView.removeFromSuperview()
+      activityView.removeFromSuperview()
+      
+      if let err = error {
+        self.queryErrorDialog()
+        DebugPrint.assert("Create Journal Query & Search failed with error: \(err.localizedDescription)")
+        return
+      }
+      
+      guard let journalArray = journals else {
+        self.queryErrorDialog()
+        DebugPrint.assert("Create Journal Query & Search returned with nil Journal Array")
+        return
+      }
+      
+      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FeedCollectionViewController") as! FeedCollectionViewController
+      viewController.journalQuery = journalQuery
+      viewController.journalArray = journalArray
+      viewController.restorationClass = nil
+      self.present(viewController, animated: true)
+    }
+  }
+  
+  
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()

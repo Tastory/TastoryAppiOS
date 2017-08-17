@@ -45,7 +45,7 @@ class JournalEntryViewController: UITableViewController {
   
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
-  @IBOutlet weak var venueTextField: UITextField?
+  @IBOutlet weak var venueButton: UIButton?
   @IBOutlet weak var linkTextField: UITextField?
   @IBOutlet weak var tagsTextView: UITextView? {
     didSet {
@@ -60,6 +60,13 @@ class JournalEntryViewController: UITableViewController {
   
   
   // MARK: - IBActions
+  @IBAction func venueClicked(_ sender: UIButton) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as! VenueTableViewController
+    self.present(viewController, animated: true)
+  }
+  
+  
   @IBAction func testSaveJournal(_ sender: Any) {
 
     //TODO add spinner 
@@ -91,6 +98,7 @@ class JournalEntryViewController: UITableViewController {
 
     // journal is already saved to local
     self.workingJournal?.saveRecursive(to: .server) {(success, error) in
+    //workingJournal?.setGeoPoint(latitude: 49.2778211, longitude: -123.1089668)
       if success {
         DebugPrint.verbose("Journal Save to Server Completed!")
         self.saveCompleteDialog()
@@ -209,7 +217,7 @@ class JournalEntryViewController: UITableViewController {
     momentViewController.didMove(toParentViewController: self)
     
     titleTextField?.delegate = self
-    venueTextField?.delegate = self
+
     linkTextField?.delegate = self
     tagsTextView?.delegate = self
     
@@ -282,49 +290,47 @@ class JournalEntryViewController: UITableViewController {
   }
   
   override func encodeRestorableState(with coder: NSCoder) {
-    
-    if let title = titleTextField?.text {
-      workingJournal?.title = title
-    }
-    
-    if let link = linkTextField?.text {
-      workingJournal?.journalURL = link
-    }
-    
-    if let journal = workingJournal {
-      journal.foodieObject.markModified()
-      do {
-        try FoodieJournal.unpinAllObjects(withName: "workingJournal")
-      }
-      catch
-      {
-        DebugPrint.verbose("Failed to unpin workingJournal in the local data store")
-      }
-      journal.saveRecursive(to: .local, withName: "workingJournal",withBlock: nil)
-    }
-    
-    super.encodeRestorableState(with: coder)
+//    TODO: - Issue #6 - Commenting out for now. See issue for details
+//
+//    if let title = titleTextField?.text {
+//      workingJournal?.title = title
+//    }
+//    
+//    if let link = linkTextField?.text {
+//      workingJournal?.journalURL = link
+//    }
+//    
+//    if let journal = workingJournal {
+//      journal.foodieObject.markModified()
+//      do {
+//        try FoodieJournal.unpinAllObjects(withName: "workingJournal")
+//      }
+//      catch
+//      {
+//        DebugPrint.verbose("Failed to unpin workingJournal in the local data store")
+//      }
+//      journal.saveRecursive(to: .local, withName: "workingJournal",withBlock: nil)
+//    }
+//    
+//    super.encodeRestorableState(with: coder)
   }
   
   override func decodeRestorableState(with coder: NSCoder) {
-    
-    if let title = coder.decodeObject(forKey: "title") as? String {
-      titleTextField?.text = title
-    }
-    
-    if let venue = coder.decodeObject(forKey: "venue") as? String {
-      venueTextField?.text = venue
-    }
-    
-    if let link = coder.decodeObject(forKey: "link") as? String {
-      linkTextField?.text = link
-    }
-    
-    if let tags = coder.decodeObject(forKey: "tags") as? String {
-      tagsTextView?.text = tags
-    }
-    
-    super.decodeRestorableState(with: coder)
+//    TODO: - Issue #6 - Commenting out for now. See issue for details
+//
+//    if let title = coder.decodeObject(forKey: "title") as? String {
+//      titleTextField?.text = title
+//    }
+//    
+//    if let link = coder.decodeObject(forKey: "link") as? String {
+//      linkTextField?.text = link
+//    }
+//    
+//    if let tags = coder.decodeObject(forKey: "tags") as? String {
+//      tagsTextView?.text = tags
+//    }
+//    
+//    super.decodeRestorableState(with: coder)
   }
   
 }

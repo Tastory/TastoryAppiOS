@@ -100,8 +100,8 @@ class FoodieFile {
   
   // MARK: - Private Constants
   struct Constants {
-    static let S3BucketKey = "foodilicious"
-    static let CloudFrontUrl = URL(string: "https://d2yt78i54ibg2t.cloudfront.net/")!
+    static let S3BucketKey = "foodilicious-query"
+    static let CloudFrontUrl = URL(string: "https://d35zn91jb4p9lo.cloudfront.net/")!
     static let DocumentFolderUrl = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
   }
   
@@ -187,7 +187,7 @@ class FoodieFile {
   
   
   func retrieveFromLocalToBufffer(fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
-    DispatchQueue.global(qos: .utility).async {
+    DispatchQueue.global(qos: .userInitiated).async {
       let buffer: Data?
       do {
         buffer = try Data(contentsOf: Constants.DocumentFolderUrl.appendingPathComponent("\(fileName)"))
@@ -342,7 +342,7 @@ class FoodieFile {
   
   
   func saveDataToLocal(buffer: Data, fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DispatchQueue.global(qos: .utility).async {
+    DispatchQueue.global(qos: .userInitiated).async {
       do {
         try buffer.write(to: Constants.DocumentFolderUrl.appendingPathComponent("\(fileName)"))
       } catch {
@@ -357,7 +357,7 @@ class FoodieFile {
   
   
   func moveFileFromUrlToLocal(url: URL, fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DispatchQueue.global(qos: .utility).async {
+    DispatchQueue.global(qos: .userInitiated).async {
       do {
         try self.fileManager.moveItem(atPath: url.path, toPath: "\(Constants.DocumentFolderUrl.path)/\(fileName)")
       } catch {

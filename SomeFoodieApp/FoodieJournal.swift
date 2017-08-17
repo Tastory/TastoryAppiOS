@@ -181,20 +181,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     currentJournalPrivate = FoodieJournal(withState: .objectModified)
     return currentJournalPrivate
   }
-    
-  // Querying function for All
-  static func queryAll(skip: Int = 0, limit: Int, block: FoodieObject.QueryResultBlock?) { // Sorted by modified date in new to old order
-    let query = PFQuery(className: FoodieJournal.parseClassName())
-    query.skip = skip
-    query.limit = limit
-    //query.order(byDescending: <#T##String#>)
-    query.findObjectsInBackground { pfObjectArray, error in
-      block?(pfObjectArray, error)
-    }
-  }
-  
-  // More complex Query functionality TBD. Need a query structure? Query class? Hmm...
-  // Caching Queries
   
   
   // MARK: - Public Instance Functions
@@ -326,6 +312,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     DebugPrint.assert("journal.getIndexOf() cannot find Moment from Moment Array")
     return momentArray.count  // This is error case
+  }
+  
+  
+  func setGeoPoint(latitude: Double, longitude: Double) {
+    location = PFGeoPoint(latitude: latitude, longitude: longitude)
   }
   
   
