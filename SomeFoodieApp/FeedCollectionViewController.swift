@@ -129,7 +129,7 @@ class FeedCollectionViewController: UICollectionViewController {
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalViewController") as! JournalViewController
-    viewController.viewingJournal = queriedJournalArray[sender.tag]
+    viewController.viewingJournal = journalArray[sender.tag]
     self.present(viewController, animated: true)
   }
   

@@ -320,10 +320,6 @@ class JournalEntryViewController: UITableViewController {
       titleTextField?.text = title
     }
     
-    if let venue = coder.decodeObject(forKey: "venue") as? String {
-      venueTextField?.text = venue
-    }
-    
     if let link = coder.decodeObject(forKey: "link") as? String {
       linkTextField?.text = link
     }
