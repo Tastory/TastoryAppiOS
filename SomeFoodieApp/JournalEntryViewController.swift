@@ -13,7 +13,7 @@
 
 import UIKit
 import MapKit
-
+import Parse
 
 class JournalEntryViewController: UITableViewController {
   
@@ -38,7 +38,10 @@ class JournalEntryViewController: UITableViewController {
   fileprivate var placeholderLabel = UILabel()
   fileprivate var momentViewController = MomentCollectionViewController()
   fileprivate var markupMoment: FoodieMoment? = nil
-  
+
+  fileprivate var isSaveInProgress = false
+  fileprivate var triggerSaveJournal = false
+  fileprivate var saveStateMutex = pthread_mutex_t()
   
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
@@ -58,74 +61,140 @@ class JournalEntryViewController: UITableViewController {
   
   // MARK: - IBActions
   @IBAction func testSaveJournal(_ sender: Any) {
+
+    //TODO add spinner 
+    UIApplication.shared.beginIgnoringInteractionEvents()
     
     workingJournal?.title = titleTextField?.text
     workingJournal?.journalURL = linkTextField?.text
-    workingJournal?.saveRecursive(to: .local) { (success, error) in
-      if success {
-        DebugPrint.verbose("Journal Save to Local Completed!")
-        
-        self.workingJournal?.saveRecursive(to: .server) { [weak self] (success, error) in
-          if success {
-            DebugPrint.verbose("Journal Save to Server Completed!")
-            self?.saveCompleteDialog()
-          } else if let error = error {
-            DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
-          } else {
-            DebugPrint.fatal("Journal Save to Server Failed without Error")
-          }
-        }
-        
-      } else if let error = error {
-        DebugPrint.verbose("Journal Save to Local Failed with Error: \(error)")
-      } else {
-        DebugPrint.fatal("Journal Save to Local Failed without Error")
-      }
+    
+    DebugPrint.verbose("\(self.workingJournal?.foodieObject.operationState)")
+
+    //making sure that the operation state didnt change between checking and setting the flag
+    pthread_mutex_lock(&self.saveStateMutex)
+
+    if(isSaveInProgress)
+    {
+      triggerSaveJournal = true
+    }
+    pthread_mutex_unlock(&self.saveStateMutex)
+
+    if(!triggerSaveJournal)
+    {
+      saveJournalToServer()
     }
   }
   
+  func saveJournalToServer(){
+
+    triggerSaveJournal = false
+
+    // journal is already saved to local
+    self.workingJournal?.saveRecursive(to: .server) {(success, error) in
+      if success {
+        DebugPrint.verbose("Journal Save to Server Completed!")
+        self.saveCompleteDialog()
+      } else if let error = error {
+        DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
+      } else {
+        DebugPrint.fatal("Journal Save to Server Failed without Error")
+      }
+      UIApplication.shared.endIgnoringInteractionEvents()
+    }
+
+  }
   
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    guard let journalUnwrapped = workingJournal else {
-      DebugPrint.fatal("workingJournal = nil")
-    }
-    
-    // TODO: Do we need to download the Journal itself first? How can we tell?
-    
-    
-    // Let's figure out what to do with the returned Moment
-    if returnedMoment == nil {
-      // Nothing needs to be done. Assume no moment returned.
+    if let journalUnwrapped = workingJournal {
+      // TODO: Do we need to download the Journal itself first? How can we tell?
       
-    } else if markupMoment != nil {
       
-      // So there is a Moment under markup. The returned Moment should match this.
-      if returnedMoment === markupMoment {
+      // Let's figure out what to do with the returned Moment
+      if returnedMoment == nil {
+        // Nothing needs to be done. Assume no moment returned.
         
-        // TODO: Gotta do a Moment Replace operation. See Foodie Object Model
-        // Probably replace the Moment in Memory. Set the right flags so Pre-Upload will do the right things
+      } else if markupMoment != nil {
         
+        // So there is a Moment under markup. The returned Moment should match this.
+        if returnedMoment === markupMoment {
+          
+          // TODO: Gotta do a Moment Replace operation. See Foodie Object Model
+          // Probably replace the Moment in Memory. Set the right flags so Pre-Upload will do the right things
+          
+        } else {
+          internalErrorDialog()
+          DebugPrint.assert("returnedMoment expected to match markupMoment")
+        }
       } else {
-        internalErrorDialog()
-        DebugPrint.assert("returnedMoment expected to match markupMoment")
-      }
-    } else {
-      
-      // This is a new Moment. Let's add it to the Journal!
-      journalUnwrapped.add(moment: returnedMoment!)
-      
-      // If there wasn't any moments before, we got to make this the default thumbnail for the Journal
-      // Got to do this also when removing moments!!!
-      if journalUnwrapped.moments!.count == 1 {
-        // TODO: Do we need to factor out thumbnail operations?
-        journalUnwrapped.thumbnailFileName = returnedMoment!.thumbnailFileName
-        journalUnwrapped.thumbnailObj = returnedMoment!.thumbnailObj
+
+
+        // TODO refactor out to journal
+        // This is a new Moment. Let's add it to the Journal!
+        journalUnwrapped.add(moment: returnedMoment!)
+        journalUnwrapped.foodieObject.markModified()
+        
+        // If there wasn't any moments before, we got to make this the default thumbnail for the Journal
+        // Got to do this also when removing moments!!!
+        if journalUnwrapped.moments!.count == 1 {
+          // TODO: Do we need to factor out thumbnail operations?
+          journalUnwrapped.thumbnailFileName = returnedMoment!.thumbnailFileName
+          journalUnwrapped.thumbnailObj = returnedMoment!.thumbnailObj
+        }
+        
+        // only save to local when the journal is modified
+        if(journalUnwrapped.foodieObject.operationState == .objectModified) {
+          // save journal to local
+          journalUnwrapped.saveRecursive(to: .local, withName: "workingJournal", withBlock: { (success,error)-> Void in
+            if(success) {
+              DebugPrint.verbose("Completed saving journal to local")
+              // save recursive from journal already saved moment to .local
+              // need to save to server for the moments
+
+              pthread_mutex_lock(&self.saveStateMutex)
+              self.isSaveInProgress = true
+              pthread_mutex_unlock(&self.saveStateMutex)
+
+              self.returnedMoment!.saveRecursive(to: .server, withBlock: { (success, error) -> Void in
+                if(success)
+                {
+                  pthread_mutex_lock(&self.saveStateMutex)
+                  self.isSaveInProgress = false
+                  pthread_mutex_unlock(&self.saveStateMutex)
+                  if(self.triggerSaveJournal)
+                  {
+                    self.saveJournalToServer()
+                  }
+                }
+              })
+            }
+          })
+        }
+        else {
+          // temporarily save to moments to server
+          returnedMoment!.saveRecursive(to: .local, withBlock: {(success, error) -> Void in
+            self.returnedMoment!.saveRecursive(to: .server, withBlock: { (success, error) -> Void in
+              if(success)
+              {
+                pthread_mutex_lock(&self.saveStateMutex)
+                self.isSaveInProgress = false
+                pthread_mutex_unlock(&self.saveStateMutex)
+                if(self.triggerSaveJournal)
+                {
+                  self.saveJournalToServer()
+                }
+              }
+            })
+          })
+        }
       }
     }
-    
+    initializeJournalController()
+  }
+  
+  func initializeJournalController() {
     // TODO: How to visually convey status of Moments to user??
     
     // Setup the View, Moment VC, Text Fields, Keyboards, etc.
@@ -133,12 +202,12 @@ class JournalEntryViewController: UITableViewController {
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
-    momentViewController.workingJournal = journalUnwrapped
+    momentViewController.workingJournal = workingJournal
     momentViewController.momentHeight = Constants.momentHeight
     
     self.addChildViewController(momentViewController)
     momentViewController.didMove(toParentViewController: self)
-          
+    
     titleTextField?.delegate = self
     venueTextField?.delegate = self
     linkTextField?.delegate = self
@@ -154,9 +223,9 @@ class JournalEntryViewController: UITableViewController {
     previousSwipeRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(previousSwipeRecognizer)
     
-    titleTextField?.text = journalUnwrapped.title
+    titleTextField?.text = workingJournal?.title
+
   }
-  
   
   override func viewDidAppear(_ animated: Bool) {
     // Start pre-upload operations, and other background trickeries
@@ -211,6 +280,53 @@ class JournalEntryViewController: UITableViewController {
     // TODO: Data Passback through delegate?
     dismiss(animated: true, completion: nil)
   }
+  
+  override func encodeRestorableState(with coder: NSCoder) {
+    
+    if let title = titleTextField?.text {
+      workingJournal?.title = title
+    }
+    
+    if let link = linkTextField?.text {
+      workingJournal?.journalURL = link
+    }
+    
+    if let journal = workingJournal {
+      journal.foodieObject.markModified()
+      do {
+        try FoodieJournal.unpinAllObjects(withName: "workingJournal")
+      }
+      catch
+      {
+        DebugPrint.verbose("Failed to unpin workingJournal in the local data store")
+      }
+      journal.saveRecursive(to: .local, withName: "workingJournal",withBlock: nil)
+    }
+    
+    super.encodeRestorableState(with: coder)
+  }
+  
+  override func decodeRestorableState(with coder: NSCoder) {
+    
+    if let title = coder.decodeObject(forKey: "title") as? String {
+      titleTextField?.text = title
+    }
+    
+    if let venue = coder.decodeObject(forKey: "venue") as? String {
+      venueTextField?.text = venue
+    }
+    
+    if let link = coder.decodeObject(forKey: "link") as? String {
+      linkTextField?.text = link
+    }
+    
+    if let tags = coder.decodeObject(forKey: "tags") as? String {
+      tagsTextView?.text = tags
+    }
+    
+    super.decodeRestorableState(with: coder)
+  }
+  
 }
 
 
@@ -244,7 +360,6 @@ extension JournalEntryViewController {
   }
 }
 
-
 // MARK: - Scroll View Delegate
 extension JournalEntryViewController {
   
@@ -264,14 +379,12 @@ extension JournalEntryViewController {
   }
 }
 
-
 // MARK: - Tags TextView Delegate
 extension JournalEntryViewController: UITextViewDelegate {
   func textViewDidChange(_ textView: UITextView) {
     placeholderLabel.isHidden = !textView.text.isEmpty
   }
 }
-
 
 // MARK: - Text Fields' Delegate
 extension JournalEntryViewController: UITextFieldDelegate {

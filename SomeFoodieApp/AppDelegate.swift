@@ -32,12 +32,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       $0.isLocalDatastoreEnabled = true
     }
     Parse.initialize(with: configuration)
-
+    
     // For Parse Subclassing
     configureParse()
     return true
   }
-
+  
+  func application(_ application: UIApplication, shouldSaveApplicationState coder: NSCoder) -> Bool {
+    return true
+  }
+  
+  func application(_ application: UIApplication, shouldRestoreApplicationState coder: NSCoder) -> Bool {
+    return false
+  }
+  
   func applicationWillResignActive(_ application: UIApplication) {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
@@ -54,6 +62,49 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func applicationDidBecomeActive(_ application: UIApplication) {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    // check to see if there is any draft journal
+    let query = PFQuery(className: FoodieJournal.parseClassName())
+    query.fromPin(withName: "workingJournal")
+
+    query.getFirstObjectInBackground(block: { (fetchedObject, error) in
+      if(fetchedObject == nil)
+      {
+        DebugPrint.verbose("Failed to retrieve workingJournal from local data store")
+        return
+      }
+
+      let currentJournal = fetchedObject as! FoodieJournal
+      do {
+        //try currentJournal.fetchIfNeeded()
+        currentJournal.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: currentJournal.thumbnailFileName!, type: FoodieMediaType.photo)
+
+        if let moments = currentJournal.moments {
+          FoodieMoment.queryFromPin(withName: "workingJournal", withBlock: {(fetchedMoments,error )-> Void in
+
+            if error != nil
+            {
+              DebugPrint.verbose("Error fetching moments from pinned local store")
+            }
+
+            currentJournal.moments?.removeAll()
+            //TODO possible that there is zero moment
+            for moment in (fetchedMoments!) {
+
+              let foodieMoment = moment as! FoodieMoment
+
+              foodieMoment.mediaObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.mediaFileName!, type:  FoodieMediaType(rawValue:  foodieMoment.mediaType!)!)
+              //TODO make sure the file exists
+              foodieMoment.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.thumbnailFileName!, type: FoodieMediaType.photo)
+              currentJournal.moments?.append(foodieMoment)
+            }
+            currentJournal.foodieObject.markModified()
+            FoodieJournal.setJournal(journal: currentJournal)
+          })
+        }
+      } catch {
+        DebugPrint.verbose("Failed to retrieve workingJournal from local data store")
+      }
+    })
   }
 
   func applicationWillTerminate(_ application: UIApplication) {

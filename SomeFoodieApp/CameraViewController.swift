@@ -160,7 +160,6 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-    viewController.restorationClass = nil
     viewController.mediaObj = mediaObject
     viewController.markupReturnDelegate = self
     self.present(viewController, animated: true)
@@ -201,7 +200,6 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
       let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-      viewController.restorationClass = nil
       viewController.mediaObj = mediaObject
       viewController.markupReturnDelegate = self
       self.present(viewController, animated: true)

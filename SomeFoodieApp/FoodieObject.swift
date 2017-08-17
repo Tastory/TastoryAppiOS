@@ -93,6 +93,8 @@ class FoodieObject {
     case deleteStateTransitionIllegalStateTransition
     case deleteRetryError
     
+    case retrievePinnedObjectError
+    
     var errorDescription: String? {
       switch self {
       case .saveStateTransitionNoState:
@@ -110,7 +112,8 @@ class FoodieObject {
         return NSLocalizedString("Delete error due to illegal state transition", comment: "Error description for an exception error code")
       case .deleteRetryError:
         return NSLocalizedString("Delete Foodie Object failed with 2 attempts", comment: "Error description for an exception error code")
-        
+      case .retrievePinnedObjectError:
+        return NSLocalizedString("Failed to retrieve journal", comment: "Error description for an exception error code")
       }
     }
   
@@ -278,7 +281,7 @@ class FoodieObject {
       
     // If children all came back and no error, Save yourself!
     else {
-      saveObject(to: location) { /*[unowned self]*/ (success, error) in
+      saveObject(to: location, withName: name) { /*[unowned self]*/ (success, error) in
         if !success {
           if let hasError = error {
             self.protectedOperationError = hasError

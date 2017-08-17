@@ -63,7 +63,6 @@ class MapViewController: UIViewController {
   @IBAction func launchCamera(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
-    viewController.restorationClass = nil
     viewController.cameraReturnDelegate = self
     self.present(viewController, animated: true)
   }
@@ -72,7 +71,6 @@ class MapViewController: UIViewController {
   @IBAction func launchFeed(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FeedCollectionViewController") as! FeedCollectionViewController
-    viewController.restorationClass = nil
     self.present(viewController, animated: true)
   }
   
@@ -363,7 +361,6 @@ extension MapViewController: CameraReturnDelegate {
   func captureComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
-    viewController.restorationClass = nil
     
     var workingJournal: FoodieJournal?
     

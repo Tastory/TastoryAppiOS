@@ -105,23 +105,26 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   fileprivate var contentRetrievalPending = false
   fileprivate var contentRetrievalPendingCallback: FoodieObject.SimpleErrorBlock?
   
-  
   // MARK: - Public Static Functions
-  
-  // Function to create a new FoodieJournal as the current Journal. Will assert if there already is a current Journal
+
+  static func setJournal(journal: FoodieJournal) {
+    currentJournalPrivate = journal
+  }
+
+
   static func newCurrent() -> FoodieJournal {
     if currentJournalPrivate != nil {
       DebugPrint.assert(".newCurrent() without Save attempted but currentJournal != nil")
     }
     currentJournalPrivate = FoodieJournal(withState: .objectModified)
-    
+
     guard let current = currentJournalPrivate else {
       DebugPrint.fatal("Just created a new FoodieJournal() but currentJournalPrivate still nil")
     }
     return current
   }
   
-  
+
   // Function to create a new FoodieJournal as the current Journal. Save or discard the previous current Journal
   static func newCurrentSync(saveCurrent: Bool) throws -> FoodieJournal? {
     if saveCurrent {
@@ -134,6 +137,17 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       try current.saveSync()
 
     } else if currentJournalPrivate != nil {
+      
+      // make sure that this journal has never been saved to server before deleting otherwise you want to preserve it
+      if(currentJournalPrivate?.foodieObject.operationState == .savedToLocal)
+      {
+        currentJournalPrivate?.deleteRecursive(withBlock: {(success,error)-> Void in
+          if(success) {
+            DebugPrint.verbose("Removed local copy from discared journal")
+          }
+        })
+      }
+      
       DebugPrint.log("Current Journal being overwritten without Save")
     } else {
       DebugPrint.assert("Use .newCurrent() without Save instead")  // Only barfs at development time. Continues on Production...
@@ -167,8 +181,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     currentJournalPrivate = FoodieJournal(withState: .objectModified)
     return currentJournalPrivate
   }
-  
-  
+    
   // Querying function for All
   static func queryAll(skip: Int = 0, limit: Int, block: FoodieObject.QueryResultBlock?) { // Sorted by modified date in new to old order
     let query = PFQuery(className: FoodieJournal.parseClassName())
@@ -531,7 +544,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                     withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     DebugPrint.verbose("FoodieJournal.saveRecursive to Location: \(location)")
-    
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
     let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
     
@@ -546,9 +558,13 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     // Need to make sure all children FoodieRecursives saved before proceeding
     if let hasMoments = moments {
       for moment in hasMoments {
-        foodieObject.saveChild(moment, to: location, withName: name, withBlock: callback)
-        childOperationPending = true
-
+        // omit saving of moment if they are not marked modified to prevent double saving of moments to server
+        if(moment.foodieObject.operationState == .objectModified ||
+          moment.foodieObject.operationState == .savedToLocal)
+        {
+          foodieObject.saveChild(moment, to: location, withName: name, withBlock: callback)
+          childOperationPending = true
+        }
       }
     }
     

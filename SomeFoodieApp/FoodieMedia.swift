@@ -172,7 +172,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     }
 
     DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
-      self.foodieObject.savesCompletedFromAllChildren(to: location, withBlock: callback)
+      self.foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
     }
   }
 

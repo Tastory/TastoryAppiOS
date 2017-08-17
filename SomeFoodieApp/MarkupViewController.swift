@@ -245,149 +245,133 @@ class MarkupViewController: UIViewController {
       return
     }
     momentObj.aspectRatio = aspectRatio
-    
-    if FoodieJournal.currentJournal != nil {
-      // Display Action Sheet to ask user if they want to add this Moment to current Journal, or a new one, or Cancel
-      
-      // Create a button and associated Callback for adding the Moment to a new Journal
-      let addToNewButton = UIAlertAction(title: "New Journal",
-                                         comment: "Button for adding to a New Journal in Save Moment action sheet",
-                                         style: .default) { action in
-        
-        weak var weakSelf = self
 
-        // Create a button and associated Callback for discarding the previous current Journal and make a new one
-        let discardButton = UIAlertAction(title: "Discard",
-                                          comment: "Button to discard current Journal in alert dialog box to warn user",
-                                          style: .destructive) { action in
-          
-          var currentJournal: FoodieJournal!
-          
-          // Try to make a new Current Journal without saving the previous
-          do {
-            if let newCurrent = try FoodieJournal.newCurrentSync(saveCurrent: false) {
-              currentJournal = newCurrent
-            } else {
-              weakSelf?.internalErrorDialog()
-              DebugPrint.assert("Cannot create new current Journal in place of existing current Journal")
-              return
-            }
-          }
-          catch let thrown as FoodieJournal.ErrorCode {
-            weakSelf?.internalErrorDialog()
-            DebugPrint.assert("Caught FoodieJournal.Error from .newCurrentSync(): \(thrown.localizedDescription)")
+    if(FoodieJournal.currentJournal != nil)
+    {
+      displayJournalSelection(
+        newJournalHandler: { UIAlertAction -> Swift.Void in
+        self.showDiscardButton(journal: FoodieJournal.currentJournal!, moment: momentObj )
+      },
+        addToCurrentHandler: { UIAlertAction -> Swift.Void in
+          guard let currentJournal = FoodieJournal.currentJournal else {
+            self.saveErrorDialog()
+            DebugPrint.assert("nil FoodieJorunal.currentJournal when trying to Add a Moment to Current Journal")
             return
           }
-          catch let thrown {
-            weakSelf?.internalErrorDialog()
-            DebugPrint.assert("Caught unrecognized Error: \(thrown.localizedDescription)")
-            return
-          }
-           
-          // currentJournal.add(moment: momentObj)  // We don't add Moments here, we let the Journal Entry View decide what to do with it
-          
-          // Returned Markedup-Moment back to Presenting View Controller
-          if (weakSelf != nil) {
-            weakSelf!.avPlayer?.pause()
-            
-            guard let delegate = weakSelf!.markupReturnDelegate else {
-              weakSelf?.internalErrorDialog()
-              DebugPrint.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
-              return
-            }
-            delegate.markupComplete(markedupMoment: momentObj, suggestedJournal: currentJournal)
-            
-          } else {
-            weakSelf?.internalErrorDialog()
-            DebugPrint.assert("Unexpected. weakSelf became nil. Unable to proceed")
-            return
-          }
-        }
-        
-        let alertController = UIAlertController(title: "Discard & Overwrite",
-                                                titleComment: "Dialog title to warn user on discard and overwrite",
-                                                message: "Are you sure you want to discard and overwrite the current Journal?",
-                                                messageComment: "Dialog message to warn user on discard and overwrite",
-                                                preferredStyle: .alert)
-                                          
-        alertController.addAction(discardButton)
-        alertController.addAlertAction(title: "Cancel",
-                                       comment: "Alert Dialog box button to cancel discarding and overwritting of current Journal",
-                                       style: .cancel)
-         
-        // Present the Discard dialog box to the user
-        if (weakSelf != nil) {
-          weakSelf!.present(alertController, animated: true, completion: nil)
-        } else {
-          weakSelf?.internalErrorDialog()
-          DebugPrint.assert("weakSelf became nil. Unable to proceed")
-          return
-        }
-        
-      }
-      
-      // Create a button with associated Callback for adding the Moment to the current Journal
-      let addToCurrentButton = UIAlertAction(title: "Current Journal",
-                                             comment: "Button for adding to a Current Journal in Save Moment action sheet",
-                                             style: .default) { action in
-        
-        weak var weakSelf = self  // Do we need weak self here? We do right?
-        guard let currentJournal = FoodieJournal.currentJournal else {
-          weakSelf?.saveErrorDialog()
-          DebugPrint.assert("nil FoodieJorunal.currentJournal when trying to Add a Moment to Current Journal")
-          return
-        }
-        
-        // currentJournal.add(moment: momentObj)  // We don't add Moments here, we let the Journal Entry View decide what to do with it
-        
-        // Present the Journal Entry view
-        if (weakSelf != nil) {
-          weakSelf!.avPlayer?.pause()
-          
-          guard let delegate = weakSelf!.markupReturnDelegate else {
-            weakSelf?.internalErrorDialog()
-            DebugPrint.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
-            return
-          }
-          delegate.markupComplete(markedupMoment: momentObj, suggestedJournal: currentJournal)
-          
-        } else {
-          DebugPrint.fatal("weakSelf became nil. Unable to proceed")
-        }
-      }
-      
-      // Finally, create the Action Sheet!
-      let actionSheet = UIAlertController(title: "Add this Moment to...",
-                                          titleComment: "Title for Save Moment action sheet",
-                                          message: nil, messageComment: nil,
-                                          preferredStyle: .actionSheet)
-      actionSheet.addAction(addToNewButton)
-      actionSheet.addAction(addToCurrentButton)
-      actionSheet.addAlertAction(title: "Cancel",
-                                 comment: "Action Sheet button for Cancelling Adding a Moment in MarkupImageView",
-                                 style: .cancel)
-      self.present(actionSheet, animated: true, completion: nil)
-      
-    } else {
-      
+
+          self.showMarkUpComplete(markedUpMoment: momentObj, suggestedJournal: currentJournal)
+      })
+    }
+    else {
       // Create a new Current Journal
       let currentJournal = FoodieJournal.newCurrent()
-      // currentJournal.add(moment: momentObj)  // We don't add Moments here, we let the Journal Entry View decide what to do with it
-      
-      avPlayer?.pause()
-      
-      guard let delegate = markupReturnDelegate else {
-        internalErrorDialog()
-        DebugPrint.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
-        return
-      }
-      delegate.markupComplete(markedupMoment: momentObj, suggestedJournal: currentJournal)
+      self.showMarkUpComplete(markedUpMoment: momentObj, suggestedJournal: currentJournal)
+   }
+  }
+
+  func displayJournalSelection( newJournalHandler: @escaping (UIAlertAction) -> Swift.Void, addToCurrentHandler: @escaping (UIAlertAction) -> Swift.Void) {
+    // Display Action Sheet to ask user if they want to add this Moment to current Journal, or a new one, or Cancel
+    // Create a button and associated Callback for adding the Moment to a new Journal
+    let addToNewButton =
+      UIAlertAction(title: "New Journal",
+                    comment: "Button for adding to a New Journal in Save Moment action sheet",
+                    style: .default,
+                    handler: newJournalHandler)
+    // Create a button with associated Callback for adding the Moment to the current Journal
+    let addToCurrentButton =
+      UIAlertAction(title: "Current Journal",
+                    comment: "Button for adding to a Current Journal in Save Moment action sheet",
+                    style: .default,
+                    handler: addToCurrentHandler)
+
+    // Finally, create the Action Sheet!
+    let actionSheet = UIAlertController(title: "Add this Moment to...",
+                                        titleComment: "Title for Save Moment action sheet",
+                                        message: nil, messageComment: nil,
+                                        preferredStyle: .actionSheet)
+    actionSheet.addAction(addToNewButton)
+    actionSheet.addAction(addToCurrentButton)
+    actionSheet.addAlertAction(title: "Cancel",
+                               comment: "Action Sheet button for Cancelling Adding a Moment in MarkupImageView",
+                               style: .cancel)
+    self.present(actionSheet, animated: true, completion: nil)
+
+  }
+
+  func showDiscardButton(journal: FoodieJournal, moment: FoodieMoment) {
+    // Create a button and associated Callback for discarding the previous current Journal and make a new one
+    let discardButton =
+      UIKit.UIAlertAction(title: "Discard",
+                          comment: "Button to discard current Journal in alert dialog box to warn user",
+                          style: .destructive) { action in
+                            if(journal.foodieObject.operationState != .objectSynced)
+                            {
+                              // unpin the journal and delete moments from s3
+                              FoodiePFObject.unpinAllObjectsInBackground(withName: "workingJournal", block: { (success, error)in
+                                journal.deleteRecursive(withBlock: { (success, error) in
+                                  // TODO add handler
+                                })
+                              })
+                            }
+                            var currentJournal: FoodieJournal!
+
+                            // Try to make a new Current Journal without saving the previous
+                            do {
+                              if let newCurrent = try FoodieJournal.newCurrentSync(saveCurrent: false) {
+                                currentJournal = newCurrent
+                              } else {
+                                self.internalErrorDialog()
+                                DebugPrint.assert("Cannot create new current Journal in place of existing current Journal")
+                                return
+                              }
+                            }
+                            catch let thrown as FoodieJournal.ErrorCode {
+                              self.internalErrorDialog()
+                              DebugPrint.assert("Caught FoodieJournal.Error from .newCurrentSync(): \(thrown.localizedDescription)")
+                              return
+                            }
+                            catch let thrown {
+                              self.internalErrorDialog()
+                              DebugPrint.assert("Caught unrecognized Error: \(thrown.localizedDescription)")
+                              return
+                            }
+                            
+                            // currentJournal.add(moment: momentObj)  // We don't add Moments here, we let the Journal Entry View decide what to do with it
+                            self.showMarkUpComplete(markedUpMoment: moment, suggestedJournal: currentJournal)
+    }
+
+    let alertController =
+      UIAlertController(title: "Discard & Overwrite",
+                        titleComment: "Dialog title to warn user on discard and overwrite",
+                        message: "Are you sure you want to discard and overwrite the current Journal?",
+                        messageComment: "Dialog message to warn user on discard and overwrite",
+                        preferredStyle: .alert)
+
+    alertController.addAction(discardButton)
+    alertController.addAlertAction(title: "Cancel",
+                                   comment: "Alert Dialog box button to cancel discarding and overwritting of current Journal",
+                                   style: .cancel)
+
+    // Present the Discard dialog box to the user
+    self.present(alertController, animated: true, completion: nil)
+
+  }
+
+  func showMarkUpComplete(markedUpMoment: FoodieMoment, suggestedJournal: FoodieJournal ){
+    // Returned Markedup-Moment back to Presenting View Controller
+    self.avPlayer?.pause()
+    guard let delegate = self.markupReturnDelegate else {
+      self.internalErrorDialog()
+      DebugPrint.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
+      return
+    }
+    DispatchQueue.main.async {
+      delegate.markupComplete(markedupMoment: markedUpMoment, suggestedJournal: suggestedJournal)
     }
   }
-  
-  
+
   // MARK: - Private Instance Functions
-  
+
   // Generic error dialog box to the user on internal errors
   func internalErrorDialog() {
     if self.presentedViewController == nil {
@@ -402,7 +386,7 @@ class MarkupViewController: UIViewController {
       self.present(alertController, animated: true, completion: nil)
     }
   }
-  
+
   // Generic error dialog box to the user when displaying photo or video
   fileprivate func displayErrorDialog() {
     if self.presentedViewController == nil {
@@ -414,11 +398,11 @@ class MarkupViewController: UIViewController {
       alertController.addAlertAction(title: "OK",
                                      comment: "Button in alert dialog box for error when displaying photo or video in MarkupImageView",
                                      style: .default)
-      
+
       self.present(alertController, animated: true, completion: nil)
     }
   }
-  
+
   // Generic error dialog box to the user on save errors
   fileprivate func saveErrorDialog() {
     if self.presentedViewController == nil {
