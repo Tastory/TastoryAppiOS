@@ -246,7 +246,8 @@ class MarkupViewController: UIViewController {
     }
     momentObj.aspectRatio = aspectRatio
 
-    if(FoodieJournal.currentJournal != nil)
+    if(FoodieJournal.currentJournal != nil &&
+      FoodieJournal.currentJournal?.foodieObject.operationState != .objectSynced)
     {
       displayJournalSelection(
         newJournalHandler: { UIAlertAction -> Swift.Void in

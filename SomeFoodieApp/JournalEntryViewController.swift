@@ -47,6 +47,7 @@ class JournalEntryViewController: UITableViewController {
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var venueButton: UIButton?
   @IBOutlet weak var linkTextField: UITextField?
+
   @IBOutlet weak var tagsTextView: UITextView? {
     didSet {
       placeholderLabel = UILabel(frame: CGRect(x: 5, y: 7, width: 49, height: 19))
@@ -58,7 +59,16 @@ class JournalEntryViewController: UITableViewController {
     }
   }
   
-  
+
+  @IBAction func EditedTitle(_ sender: Any) {
+    workingJournal?.title = titleTextField?.text
+  }
+
+  @IBAction func EditedLink(_ sender: Any) {
+    workingJournal?.journalURL = linkTextField?.text
+  }
+
+
   // MARK: - IBActions
   @IBAction func venueClicked(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -118,7 +128,9 @@ class JournalEntryViewController: UITableViewController {
     
     if let journalUnwrapped = workingJournal {
       // TODO: Do we need to download the Journal itself first? How can we tell?
-      
+
+      titleTextField?.text = journalUnwrapped.title
+
       
       // Let's figure out what to do with the returned Moment
       if returnedMoment == nil {
@@ -314,25 +326,6 @@ class JournalEntryViewController: UITableViewController {
 //    
 //    super.encodeRestorableState(with: coder)
   }
-  
-  override func decodeRestorableState(with coder: NSCoder) {
-//    TODO: - Issue #6 - Commenting out for now. See issue for details
-//
-//    if let title = coder.decodeObject(forKey: "title") as? String {
-//      titleTextField?.text = title
-//    }
-//    
-//    if let link = coder.decodeObject(forKey: "link") as? String {
-//      linkTextField?.text = link
-//    }
-//    
-//    if let tags = coder.decodeObject(forKey: "tags") as? String {
-//      tagsTextView?.text = tags
-//    }
-//    
-//    super.decodeRestorableState(with: coder)
-  }
-  
 }
 
 

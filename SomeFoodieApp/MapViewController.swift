@@ -11,7 +11,7 @@ import MapKit
 import CoreLocation
 
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, UINavigationControllerDelegate {
 
   // MARK: - Class Constants
   fileprivate struct Constants {
@@ -59,6 +59,33 @@ class MapViewController: UIViewController {
     }
   }
 
+  @IBAction func LaunchDraftJournal(_ sender: Any) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
+
+    if(FoodieJournal.currentJournal == nil)
+    {
+      viewController.workingJournal =  FoodieJournal.newCurrent()
+    }
+    else
+    {
+      viewController.workingJournal = FoodieJournal.currentJournal
+    }
+    self.present(viewController, animated: true)
+  }
+
+  @IBAction func launchImagePicker(_ sender: Any) {
+    let imagePickerController = UIImagePickerController()
+    imagePickerController.sourceType = .photoLibrary
+    imagePickerController.delegate = self
+
+    // var types = UIImagePickerController.availableMediaTypes(for: UIImagePickerControllerSourceType.photoLibrary)
+
+    imagePickerController.mediaTypes = ["public.image", "public.movie"]
+
+    self.present(imagePickerController, animated: true, completion: nil)
+
+  }
 
   @IBAction func launchCamera(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -468,3 +495,25 @@ extension MapViewController: CameraReturnDelegate {
     }
   }
 }
+
+extension MapViewController: UIImagePickerControllerDelegate {
+  public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
+    let imageURL = info[UIImagePickerControllerReferenceURL] as! NSURL
+    let imageName = imageURL.lastPathComponent
+    //let documentDirectory = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first as! String
+    //let localPath = documentDirectory.appending(imageName)
+
+    /*
+     let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+     let data = UIImagePNGRepresentation(image)
+     data.writeToFile(localPath, atomically: true)
+
+     let imageData = NSData(contentsOfFile: localPath)!
+     let photoURL = NSURL(fileURLWithPath: localPath)
+     let imageWithData = UIImage(data: imageData)!
+     */
+    picker.dismiss(animated:true, completion: nil)
+    //self.dismiss(animated: true, completion: nil)
+  } 
+} 
+
