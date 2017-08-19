@@ -203,9 +203,9 @@
         <scene sceneID="1WN-B5-zBj">
             <objects>
                 <collectionViewController storyboardIdentifier="FeedCollectionViewController" id="HNg-5k-U9d" customClass="FeedCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="Ut2-ec-XIU">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="Ut2-ec-XIU">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="yuW-7Q-ONX">
@@ -293,10 +293,9 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lU5-U1-CUM">
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lU5-U1-CUM">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" id="pto-AP-chd">
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="pto-AP-chd">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
@@ -342,9 +341,12 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="lU5-U1-CUM" secondAttribute="bottom" id="1F9-XI-fNe"/>
+                            <constraint firstAttribute="trailing" secondItem="lU5-U1-CUM" secondAttribute="trailing" id="3NM-Jd-Az3"/>
                             <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="De9-KV-Mtr" secondAttribute="bottom" id="3gj-SM-eAT"/>
                             <constraint firstItem="De9-KV-Mtr" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="DdX-oD-DPD"/>
                             <constraint firstItem="De9-KV-Mtr" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="Gq5-co-kTu"/>
+                            <constraint firstItem="lU5-U1-CUM" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="L8g-YB-BSJ"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="Md4-SM-fkG"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="OMv-jK-C3v"/>
                             <constraint firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" id="P6T-e5-UJl"/>
@@ -357,6 +359,7 @@
                             <constraint firstAttribute="trailingMargin" secondItem="t4S-lT-gBv" secondAttribute="trailing" id="pqS-Hv-QVg"/>
                             <constraint firstAttribute="trailing" secondItem="De9-KV-Mtr" secondAttribute="trailing" id="uHJ-7z-fEq"/>
                             <constraint firstAttribute="trailing" secondItem="3Gc-Ev-vmE" secondAttribute="trailing" id="uPp-NK-myt"/>
+                            <constraint firstItem="lU5-U1-CUM" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="vnj-nw-zOS"/>
                             <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="t4S-lT-gBv" secondAttribute="bottom" constant="8" symbolic="YES" id="yyK-3b-7EJ"/>
                         </constraints>
                         <connections>
@@ -470,7 +473,7 @@
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Da-16-S86">
                                 <rect key="frame" x="325" y="629" width="34" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                 <state key="normal" title="Save"/>
                                 <connections>
                                     <action selector="saveButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="X5X-lL-CO1"/>
@@ -478,14 +481,14 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jIA-aA-ex6">
                                 <rect key="frame" x="315" y="591" width="44" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                 <state key="normal" title="Sound"/>
                                 <connections>
                                     <action selector="soundButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="dkQ-EQ-R1s"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KrM-3z-Z5X" customClass="ExitButton" customModule="SomeFoodieApp" customModuleProvider="target">
-                                <rect key="frame" x="16" y="8" width="40" height="40"/>
+                                <rect key="frame" x="10" y="10" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="4py-wd-BeH"/>
                                     <constraint firstAttribute="width" secondItem="KrM-3z-Z5X" secondAttribute="height" multiplier="1:1" id="pSH-Qf-XE1"/>
@@ -496,7 +499,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NrF-32-VrF">
                                 <rect key="frame" x="329" y="8" width="30" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Text"/>
                                 <connections>
                                     <action selector="textButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hEs-po-5DG"/>
@@ -504,7 +507,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xf3-yP-YWE">
                                 <rect key="frame" x="242" y="8" width="35" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Food"/>
                                 <connections>
                                     <action selector="foodButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="Y2p-Gw-jh1"/>
@@ -512,7 +515,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ti7-uM-Tfb">
                                 <rect key="frame" x="285" y="8" width="36" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Draw"/>
                                 <connections>
                                     <action selector="drawButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="l8o-q3-L1i"/>
@@ -520,14 +523,14 @@
                             </button>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="eZh-sa-B78">
                                 <rect key="frame" x="242" y="166" width="204" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="colorSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="j3f-dm-ZYb"/>
                                 </connections>
                             </slider>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CKF-go-XiM">
                                 <rect key="frame" x="285" y="46" width="38" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Undo"/>
                                 <connections>
                                     <action selector="undoButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="1WG-ao-Czh"/>
@@ -535,7 +538,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rbc-ru-Sbr">
                                 <rect key="frame" x="282" y="46" width="45" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Delete"/>
                                 <connections>
                                     <action selector="deleteButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hLO-Li-p13"/>
@@ -543,7 +546,7 @@
                             </button>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="gQS-fe-hw8">
                                 <rect key="frame" x="267" y="384" width="154" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="sizeSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="jep-QK-70b"/>
                                 </connections>
@@ -552,8 +555,8 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
-                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="top" secondItem="Wru-2j-ls2" secondAttribute="bottom" constant="8" id="1FB-Hs-IxM"/>
-                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="leading" secondItem="3hs-y9-2cP" secondAttribute="leadingMargin" id="q5R-kJ-1tY"/>
+                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="top" secondItem="Wru-2j-ls2" secondAttribute="bottom" constant="10" id="1FB-Hs-IxM"/>
+                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="leading" secondItem="3hs-y9-2cP" secondAttribute="leading" constant="10" id="q5R-kJ-1tY"/>
                         </constraints>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
@@ -586,10 +589,10 @@
                             <tableViewSection headerTitle="Stretch Map Section Header" id="3jh-aS-0if">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="k4v-QV-gqg">
-                                        <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="56" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="k4v-QV-gqg" id="Ttp-6L-HRV">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder=" Title" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="p0e-OO-Rl9">
@@ -607,10 +610,10 @@
                             <tableViewSection headerTitle="Moment Collection View Header" id="z8v-Ul-vTt">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="SCo-b3-SGy">
-                                        <rect key="frame" x="0.0" y="155.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="156" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SCo-b3-SGy" id="mrM-YN-vc8">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kwj-i7-hiS">
@@ -634,10 +637,10 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="TDd-Lf-Gze">
-                                        <rect key="frame" x="0.0" y="199.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="200" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TDd-Lf-Gze" id="hbb-k4-rcy">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder=" Link" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Sdu-9R-pbJ">
@@ -658,7 +661,7 @@
                                         <rect key="frame" x="0.0" y="280" width="375" height="133"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="qWC-Q9-gqR" id="QYD-OH-Fjz">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="132.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="132"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ijC-Vt-3Fq">
@@ -675,7 +678,7 @@
                                         <rect key="frame" x="0.0" y="413" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3yk-tP-0Df" id="qUP-ce-gSk">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cGu-Cc-dGg">
@@ -715,7 +718,7 @@
         <scene sceneID="Sf3-nA-ZH6">
             <objects>
                 <collectionViewController storyboardIdentifier="MomentCollectionViewController" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="SomeFoodieApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceHorizontal="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="TGu-A1-lSP">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceHorizontal="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="TGu-A1-lSP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="222"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
