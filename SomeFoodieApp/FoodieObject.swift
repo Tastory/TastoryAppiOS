@@ -231,7 +231,7 @@ class FoodieObject {
   
   // Function for state transition when all saves have completed
   func saveCompleteStateTransition(to location: StorageLocation) {
-    
+
     // State Transition for Save Error
     if protectedOperationError != nil {
       
@@ -243,9 +243,6 @@ class FoodieObject {
         // Dial back the state
         protectedOperationState = .savedToLocal
         
-      } else {
-        // Unexpected state combination
-        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
       }
     }
       
@@ -259,9 +256,6 @@ class FoodieObject {
         // Dial back the state
         protectedOperationState = .objectSynced
         
-      } else {
-        // Unexpected state combination
-        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
       }
     }
   }
@@ -327,7 +321,8 @@ class FoodieObject {
     switch operationState {
     case .savingToLocal, .savingToServer:
       // Save already occuring, another save not allowed
-      return (false, ErrorCode(.saveStateTransitionSaveAlreadyInProgress))
+      return (true, nil)
+    //return (false, ErrorCode(.saveStateTransitionSaveAlreadyInProgress))
     default:
       break
     }
@@ -342,8 +337,10 @@ class FoodieObject {
       case .objectModified:
         protectedOperationState = .savingToLocal
       default:
-        DebugPrint.assert("Illegal State Transition. Save to Local attempt not from .objectModified state. Current State = \(operationState)")
-        return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
+        DebugPrint.log("YOLO") 
+        //DebugPrint.assert("Illegal State Transition. Save to Local attempt not from .objectModified state. Current State = \(operationState)")
+        //return (true,nil)
+        //return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
       }
       
     case .server:
@@ -354,8 +351,10 @@ class FoodieObject {
       case .savedToLocal:
         protectedOperationState = .savingToServer
       default:
-        DebugPrint.assert("Illegal State Transition. Save to Sever attempt not from .savedToLocal state. Current State = \(operationState)")
-        return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
+        DebugPrint.log("YOLO")
+        //DebugPrint.assert("Illegal State Transition. Save to Sever attempt not from .savedToLocal state. Current State = \(operationState)")
+        //return (true, nil)
+        //return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
       }
     default:
     break

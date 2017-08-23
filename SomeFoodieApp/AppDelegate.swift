@@ -78,6 +78,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //try currentJournal.fetchIfNeeded()
         currentJournal.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: currentJournal.thumbnailFileName!, type: FoodieMediaType.photo)
 
+        // TODO move logic to  Foodie moment
         if let moments = currentJournal.moments {
           FoodieMoment.queryFromPin(withName: "workingJournal", withBlock: {(fetchedMoments,error )-> Void in
 

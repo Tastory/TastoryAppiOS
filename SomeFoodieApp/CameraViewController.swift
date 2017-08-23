@@ -20,7 +20,7 @@ protocol CameraReturnDelegate {
 }
 
 
-class CameraViewController: SwiftyCamViewController {  // View needs to comply to certain protocols going forward?
+class CameraViewController: SwiftyCamViewController, UINavigationControllerDelegate {  // View needs to comply to certain protocols going forward?
   
   // MARK: - Global Constants
   struct GlobalConstants {
@@ -41,10 +41,23 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
   @IBOutlet weak var captureButton: CameraButton?
   @IBOutlet weak var exitButton: ExitButton?
   @IBOutlet weak var tapRecognizer: UITapGestureRecognizer?  // This is workaround to detect capture button's been released after a photo
-  
+  @IBOutlet weak var imagePicker: UIButton?
   
   // MARK: - IBActions
-  
+
+  @IBAction func launchImagePicker(_ sender: Any) {
+    let imagePickerController = UIImagePickerController()
+    imagePickerController.sourceType = .photoLibrary
+    imagePickerController.delegate = self
+
+    // var types = UIImagePickerController.availableMediaTypes(for: UIImagePickerControllerSourceType.photoLibrary)
+
+    imagePickerController.mediaTypes = ["public.image", "public.movie"]
+
+    self.present(imagePickerController, animated: true, completion: nil)
+    
+  }
+
   @IBAction func capturePressed(_ sender: CameraButton) {
     captureButton?.buttonPressed()
   }
@@ -85,7 +98,11 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
     
     super.viewDidLoad()
     cameraDelegate = self
-    
+
+    if let imagePicker = imagePicker {
+      view.bringSubview(toFront: imagePicker)
+    }
+
     if let captureButton = captureButton {
       view.bringSubview(toFront: captureButton)
       captureButton.delegate = self
@@ -250,3 +267,57 @@ extension CameraViewController: MarkupReturnDelegate {
     delegate.captureComplete(markedupMoment: markedupMoment, suggestedJournal: suggestedJournal)
   }
 }
+
+extension CameraViewController: UIImagePickerControllerDelegate {
+  public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
+    let mediaType = info[UIImagePickerControllerMediaType] as! String
+    //let imageName = url.lastPathComponent
+    picker.dismiss(animated:true, completion: nil)
+
+    var mediaObject: FoodieMedia
+    var mediaName: String
+
+    if("public.movie" == mediaType)
+    {
+      let movieUrl = info[UIImagePickerControllerMediaURL] as! NSURL
+      mediaObject = FoodieMedia(withState: .objectModified, fileName: (movieUrl.lastPathComponent)!, type: .video)
+      mediaObject.videoLocalBufferUrl = URL(fileURLWithPath: (movieUrl.relativePath)!)
+    } else {
+      mediaName = FoodieFile.newPhotoFileName()
+      let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+      mediaObject = FoodieMedia(withState: .objectModified, fileName: mediaName, type: .photo)
+      mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieConstants.jpegCompressionQuality))
+    }
+
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+    viewController.mediaObj = mediaObject
+    viewController.markupReturnDelegate = self
+    self.present(viewController, animated: true)
+
+
+    /* Image
+
+
+
+    */
+
+
+
+    /*
+     let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+     let data = UIImagePNGRepresentation(image)
+     data.writeToFile(localPath, atomically: true)
+
+     let imageData = NSData(contentsOfFile: localPath)!
+     let photoURL = NSURL(fileURLWithPath: localPath)
+     let imageWithData = UIImage(data: imageData)!
+     */
+       //self.dismiss(animated: true, completion: nil)
+  }
+}
+
+
+
+
+

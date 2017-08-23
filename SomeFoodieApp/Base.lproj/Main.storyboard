@@ -123,24 +123,17 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes"/>
                             </textField>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="srX-2D-hwk">
-                                <rect key="frame" x="16" y="407" width="343" height="220"/>
+                                <rect key="frame" x="16" y="445" width="343" height="182"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
-                                        <rect key="frame" x="139" y="0.0" width="65" height="30"/>
-                                        <state key="normal" title="See Draft"/>
+                                        <rect key="frame" x="126.5" y="0.0" width="90" height="30"/>
+                                        <state key="normal" title="Journal Draft"/>
                                         <connections>
                                             <action selector="LaunchDraftJournal:" destination="BYZ-38-t0r" eventType="touchUpInside" id="wyX-65-NQ2"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3bh-BB-av7">
-                                        <rect key="frame" x="127" y="38" width="89" height="30"/>
-                                        <state key="normal" title="Image Picker"/>
-                                        <connections>
-                                            <action selector="launchImagePicker:" destination="BYZ-38-t0r" eventType="touchUpInside" id="rIh-oy-fZ3"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y2Q-Z6-pjW">
-                                        <rect key="frame" x="144.5" y="76" width="54" height="30"/>
+                                        <rect key="frame" x="144.5" y="38" width="54" height="30"/>
                                         <state key="normal" title="Camera"/>
                                         <connections>
                                             <action selector="launchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="HiK-NO-zpv"/>
@@ -447,6 +440,14 @@
                                     <action selector="exitPressed:" destination="ImI-Ed-QdP" eventType="touchUpInside" id="i5Y-3I-IEc"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3bh-BB-av7">
+                                <rect key="frame" x="270" y="617" width="89" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="My Photos"/>
+                                <connections>
+                                    <action selector="launchImagePicker:" destination="ImI-Ed-QdP" eventType="touchUpInside" id="b93-pK-TrC"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="30k-mM-bOe" firstAttribute="centerX" secondItem="oEc-gL-EdH" secondAttribute="centerX" id="b0a-4t-gdd"/>
@@ -458,6 +459,7 @@
                     <connections>
                         <outlet property="captureButton" destination="30k-mM-bOe" id="xaS-ZF-RGb"/>
                         <outlet property="exitButton" destination="kxo-zQ-usi" id="TLa-71-fEp"/>
+                        <outlet property="imagePicker" destination="3bh-BB-av7" id="NAr-KZ-7pb"/>
                         <outlet property="tapRecognizer" destination="Hy8-pD-3IZ" id="yNt-QN-sHL"/>
                     </connections>
                 </viewController>

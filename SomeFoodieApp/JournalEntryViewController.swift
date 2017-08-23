@@ -130,8 +130,8 @@ class JournalEntryViewController: UITableViewController {
       // TODO: Do we need to download the Journal itself first? How can we tell?
 
       titleTextField?.text = journalUnwrapped.title
+      linkTextField?.text = journalUnwrapped.journalURL
 
-      
       // Let's figure out what to do with the returned Moment
       if returnedMoment == nil {
         // Nothing needs to be done. Assume no moment returned.
