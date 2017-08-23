@@ -9,6 +9,7 @@
 import AWSCore
 import AWSCognito
 import AWSS3
+import HTTPStatusCodes
 import Foundation
 
 
@@ -43,6 +44,7 @@ class FoodieFile {
     case fileManagerReadLocalFailed
     case fileManagerSaveLocalFailed
     case urlSessionDownloadError
+    case urlSessionDownloadNotUrlError
     case urlSessionDownloadHttpResponseNil
     case urlSessionDownloadHttpResponseFailed
     case urlSessionDownloadTempUrlNil
@@ -68,6 +70,8 @@ class FoodieFile {
         return NSLocalizedString("Data.write failed", comment: "Error description for an exception error code")
       case .urlSessionDownloadError:
         return NSLocalizedString("DownloadSession.downloadTask Error", comment: "Error description for an exception error code")
+      case .urlSessionDownloadNotUrlError:
+        return NSLocalizedString("DownloadSession.downloadTask error not a URLError", comment: "Error description for an exception error code")
       case .urlSessionDownloadHttpResponseNil:
         return NSLocalizedString("DownloadSession.downloadTask HTTP Response nil", comment: "Error description for an exception error code")
       case .urlSessionDownloadHttpResponseFailed:
@@ -103,6 +107,8 @@ class FoodieFile {
     static let S3BucketKey = "foodilicious-query"
     static let CloudFrontUrl = URL(string: "https://d35zn91jb4p9lo.cloudfront.net/")!
     static let DocumentFolderUrl = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
+    static let AwsRetryCount = FoodieConstants.DefaultServerRequestRetryCount
+    static let AwsRetryDelay = FoodieConstants.DefaultServerRequestRetryDelay
   }
   
   
@@ -283,60 +289,75 @@ class FoodieFile {
     let localFileURL = Constants.DocumentFolderUrl.appendingPathComponent(fileName)
     let serverFileURL = Constants.CloudFrontUrl.appendingPathComponent(fileName)
     
-    DebugPrint.verbose("retrievingFrom \(serverFileURL.absoluteString)")
-    
-    // Let's time the download!
-    let downloadStartTime = PrecisionTime.now()
-    
-    let downloadTask = downloadsSession.downloadTask(with: serverFileURL) { (url, response, error) in
+    let retrieveRetry = SwiftRetry()
+    retrieveRetry.start("retrieve file '\(fileName)' from CloudFront", withCountOf: Constants.AwsRetryCount) {
+      DebugPrint.verbose("retrievingFrom \(serverFileURL.absoluteString)")
       
-      let downloadEndTime = PrecisionTime.now()
-      
-      if let downloadError = error {
-        DebugPrint.assert("Download error: \(downloadError.localizedDescription)")
-        callback?(ErrorCode.urlSessionDownloadError)
-        return
-      }
-      
-      guard let httpResponse = response as? HTTPURLResponse else {
-        DebugPrint.assert("Unexpected. Did not receipve HTTPURLResponse type or response = nil")
-        callback?(ErrorCode.urlSessionDownloadHttpResponseNil)
-        return
-      }
-      
-      if httpResponse.statusCode != 200 {
-        DebugPrint.error("Download HTTPURLResponse.statusCode != 200. statusCode = \(httpResponse.statusCode)")
-        callback?(ErrorCode.urlSessionDownloadHttpResponseFailed)  // TODO: Should Implement Retry
-        return
-      }
-      
-      guard let tempURL = url else {
-        DebugPrint.assert("Unexpected. Local url = nil")
-        callback?(ErrorCode.urlSessionDownloadTempUrlNil)
-        return
-      }
+      // Let's time the download!
+      let downloadStartTime = PrecisionTime.now()
+      let downloadTask = self.downloadsSession.downloadTask(with: serverFileURL) { (url, response, error) in
+        let downloadEndTime = PrecisionTime.now()
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+          DebugPrint.assert("Unexpected. Did not receive HTTPURLResponse type or response = nil")
+          callback?(ErrorCode.urlSessionDownloadHttpResponseNil)
+          return
+        }
+        
+        if httpResponse.statusCode != HTTPStatusCode.ok.rawValue {
+          DebugPrint.error("Download HTTPURLResponse.statusCode = \(httpResponse.statusCode)")
+          if !retrieveRetry.attemptRetryBasedOnHttpStatus(code: httpResponse.statusCode,
+                                                          after: Constants.AwsRetryDelay,
+                                                          withQoS: .userInitiated) {
+            callback?(ErrorCode.urlSessionDownloadHttpResponseFailed)
+          }
+          return
+        }
+        
+        if let downloadError = error {
+          guard let urlError = downloadError as? URLError else {
+            DebugPrint.assert("Download error is not URLError type - \(downloadError.localizedDescription)")
+            callback?(ErrorCode.urlSessionDownloadNotUrlError)
+            return
+          }
+          
+          DebugPrint.error("Download error: \(downloadError.localizedDescription)")
+          if !retrieveRetry.attemptRetryBasedOnURLError(urlError,
+                                                          after: Constants.AwsRetryDelay,
+                                                          withQoS: .userInitiated) {
+            callback?(ErrorCode.urlSessionDownloadError)
+          }
+          return
+        }
+        
+        guard let tempURL = url else {
+          DebugPrint.assert("Unexpected. Local url = nil")
+          callback?(ErrorCode.urlSessionDownloadTempUrlNil)
+          return
+        }
 
-      // We are in success-land!
-      let timeDifference = downloadEndTime - downloadStartTime
-      //try? self.fileManager.removeItem(at: localFileURL)  // TODO: If the file already exists, really shouldn't call this anyways.
-      
-      do {
-        let fileAttribute = try self.fileManager.attributesOfItem(atPath: tempURL.path)
-        let fileSizeKb = Float(fileAttribute[FileAttributeKey.size] as! Int)/1000.0
-        let avgDownloadSpeed = Float(fileSizeKb)/timeDifference.seconds  // KB/s
+        // We are in success-land!
+        let timeDifference = downloadEndTime - downloadStartTime
+        //try? self.fileManager.removeItem(at: localFileURL)  // TODO: If the file already exists, really shouldn't call this anyways.
         
-        DebugPrint.verbose("Download of \(fileName) of size \(fileSizeKb/1000.0) MB took \(timeDifference.milliSeconds) ms at \(avgDownloadSpeed) kB/s")
-        
-        try self.fileManager.copyItem(at: tempURL, to: localFileURL)
-      } catch {
-        DebugPrint.assert("Failed to move file from URLSessionDownload temp to local Documents folder. Erorr = \(error.localizedDescription)")
-        callback?(ErrorCode.fileManagerMoveItemFromDownloadToLocalFailed)
-        return
+        do {
+          let fileAttribute = try self.fileManager.attributesOfItem(atPath: tempURL.path)
+          let fileSizeKb = Float(fileAttribute[FileAttributeKey.size] as! Int)/1000.0
+          let avgDownloadSpeed = Float(fileSizeKb)/timeDifference.seconds  // KB/s
+          
+          DebugPrint.verbose("Download of \(fileName) of size \(fileSizeKb/1000.0) MB took \(timeDifference.milliSeconds) ms at \(avgDownloadSpeed) kB/s")
+          
+          try self.fileManager.copyItem(at: tempURL, to: localFileURL)
+        } catch {
+          DebugPrint.assert("Failed to move file from URLSessionDownload temp to local Documents folder. Erorr = \(error.localizedDescription)")
+          callback?(ErrorCode.fileManagerMoveItemFromDownloadToLocalFailed)
+          return
+        }
+        callback?(nil)
       }
-      callback?(nil)
-    }
     
-    downloadTask.resume()
+      downloadTask.resume()
+    }
   }
   #endif
   

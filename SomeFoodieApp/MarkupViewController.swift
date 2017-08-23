@@ -365,9 +365,7 @@ class MarkupViewController: UIViewController {
       DebugPrint.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
       return
     }
-    DispatchQueue.main.async {
-      delegate.markupComplete(markedupMoment: markedUpMoment, suggestedJournal: suggestedJournal)
-    }
+    delegate.markupComplete(markedupMoment: markedUpMoment, suggestedJournal: suggestedJournal)
   }
 
   // MARK: - Private Instance Functions
@@ -455,8 +453,8 @@ class MarkupViewController: UIViewController {
     jotViewController.textColor = UIColor.black
     jotViewController.font = UIFont.boldSystemFont(ofSize: CGFloat(Constants.SizeSliderDefaultFont))
     jotViewController.fontSize = CGFloat(Constants.SizeSliderDefaultFont)
-    //jotViewController.textEditingInsets = UIEdgeInsetsMake(12.0, 6.0, 0.0, 6.0)  // Commenting out because they are causing constraint conflicts. Not sure why these were inherited from the JotDemo Example
-    //jotViewController.initialTextInsets = UIEdgeInsetsMake(6.0, 6.0, 6.0, 6.0)  // Commenting out because they are causing constraint conflicts. Not sure why these were inherited from the JotDemo Example
+    //jotViewController.textEditingInsets = UIEdgeInsetsMake(12.0, 6.0, 0.0, 6.0)  // Constraint from JotDemo causes conflicts
+    //jotViewController.initialTextInsets = UIEdgeInsetsMake(6.0, 6.0, 6.0, 6.0)  // Constraint from JotDemo causes conflicts
     jotViewController.fitOriginalFontSizeToViewWidth = true
     jotViewController.textAlignment = .left
     jotViewController.drawingColor = UIColor.cyan
@@ -562,7 +560,7 @@ class MarkupViewController: UIViewController {
       }
       
       let options = [
-        kCGImageSourceThumbnailMaxPixelSize as String : FoodieConstants.thumbnailPixels as NSNumber,
+        kCGImageSourceThumbnailMaxPixelSize as String : FoodieConstants.ThumbnailPixels as NSNumber,
         kCGImageSourceCreateThumbnailFromImageAlways as String : true as NSNumber,
         kCGImageSourceCreateThumbnailWithTransform as String: true as NSNumber
       ]
@@ -609,7 +607,7 @@ class MarkupViewController: UIViewController {
       let asset = AVURLAsset(url: videoUrl)
       let imgGenerator = AVAssetImageGenerator(asset: asset)
       
-      imgGenerator.maximumSize = CGSize(width: FoodieConstants.thumbnailPixels, height: FoodieConstants.thumbnailPixels)  // Assuming either portrait or square
+      imgGenerator.maximumSize = CGSize(width: FoodieConstants.ThumbnailPixels, height: FoodieConstants.ThumbnailPixels)  // Assuming either portrait or square
       imgGenerator.appliesPreferredTrackTransform = true
       
       do {
@@ -643,7 +641,7 @@ class MarkupViewController: UIViewController {
     }
     
     thumbnailObject = FoodieMedia(withState: .objectModified, fileName: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), type: .photo)
-    thumbnailObject!.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieConstants.jpegCompressionQuality))
+    thumbnailObject!.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieConstants.JpegCompressionQuality))
     //CGImageRelease(thumbnailCgImage)
   }
   

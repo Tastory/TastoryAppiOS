@@ -16,9 +16,11 @@ enum FoodieMediaType: String {
 }
 
 struct FoodieConstants {
-  static let thumbnailPixels = 640.0
-  static let jpegCompressionQuality: Double = 0.8
-  static let themeColor: UIColor = .orange
-  static let momentsToBufferAtATime = 5
-  static let journalFeedPaginationCount = 50  // TODO: Need to implement pagination
+  static let ThumbnailPixels = 640.0
+  static let JpegCompressionQuality: Double = 0.8
+  static let ThemeColor: UIColor = .orange
+  static let MomentsToBufferAtATime = 5
+  static let JournalFeedPaginationCount = 50  // TODO: Need to implement pagination
+  static let DefaultServerRequestRetryCount = 3
+  static let DefaultServerRequestRetryDelay = 3.0
 }

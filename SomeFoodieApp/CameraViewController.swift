@@ -156,7 +156,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
 
     let mediaObject = FoodieMedia(withState: .objectModified, fileName: FoodieFile.newPhotoFileName(), type: .photo)
-    mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieConstants.jpegCompressionQuality))
+    mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieConstants.JpegCompressionQuality))
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController

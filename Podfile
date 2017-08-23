@@ -13,6 +13,7 @@ target 'SomeFoodieApp' do
   pod 'AWSCognito'
   pod 'Jot', :git => 'https://github.com/biscottigelato/Jot.git'
   pod 'QuadratTouch', :git => 'https://github.com/Constantine-Fry/das-quadrat.git', :branch => 'develop'
+  pod 'HTTPStatusCodes', '~> 3.1.2'
   
   target 'SomeFoodieAppTests' do
     inherit! :search_paths

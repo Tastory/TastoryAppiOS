@@ -21,8 +21,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var markups: Array<FoodieMarkup>? // Array of PFObjects as FoodieMarkup for the thumbnail
   @NSManaged var title: String? // Title for the Journal
   @NSManaged var author: FoodieUser? // Pointer to the user that authored this Moment
-  @NSManaged var eatery: FoodieEatery? // Pointer to the Restaurant object
-  @NSManaged var eateryName: String? // Easy access to eatery name
+  @NSManaged var venue: FoodieVenue? // Pointer to the Restaurant object
+  @NSManaged var venueName: String? // Easy access to venue name
   @NSManaged var categories: Array<FoodieCategory>? // Array of internal restaurant categoryIDs (all cateogires that applies, most accurate at index 0. Remove top levels if got sub already)
   @NSManaged var location: PFGeoPoint? // Geolocation of the Journal entry
   
@@ -516,8 +516,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       
       // Do we need to retrieve User?
       
-      if let eatery = self.eatery {
-        self.foodieObject.retrieveChild(eatery, forceAnyways: forceAnyways, withBlock: callback)
+      if let venue = self.venue {
+        self.foodieObject.retrieveChild(venue, forceAnyways: forceAnyways, withBlock: callback)
       }
       
       if let hasCategories = self.categories {
@@ -574,8 +574,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     // Do we need to save User? Is User considered modified?
     
-    if let eatery = eatery {
-      foodieObject.saveChild(eatery, to: location, withName: name, withBlock: callback)
+    if let venue = venue {
+      foodieObject.saveChild(venue, to: location, withName: name, withBlock: callback)
       childOperationPending = true
     }
     

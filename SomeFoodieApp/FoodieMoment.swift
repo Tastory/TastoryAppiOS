@@ -24,7 +24,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // Query Pointers
   @NSManaged var author: FoodieUser?  // Pointer to the user that authored this Moment
-  @NSManaged var eatery: FoodieEatery?  // Pointer to the FoodieEatery object
+  @NSManaged var venue: FoodieVenue?  // Pointer to the FoodieVenue object
   @NSManaged var categories: Array<Int>?  // Array of internal restaurant categoryIDs (all cateogires that applies, sub or primary)
   
   // Analytics

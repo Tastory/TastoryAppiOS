@@ -15,7 +15,7 @@ class JournalViewController: UIViewController {
   
   // MARK: - Constants
   struct Constants {
-    static let MomentsToBufferAtATime = FoodieConstants.momentsToBufferAtATime
+    static let MomentsToBufferAtATime = FoodieConstants.MomentsToBufferAtATime
     static let MomentsViewingTimeInterval = 3.0
   }
   
@@ -441,8 +441,8 @@ class JournalViewController: UIViewController {
 //    jotViewController.textColor = UIColor.black
 //    jotViewController.font = UIFont.boldSystemFont(ofSize: 64.0)
 //    jotViewController.fontSize = 64.0
-//    jotViewController.textEditingInsets = UIEdgeInsetsMake(12.0, 6.0, 0.0, 6.0)  // Commenting out because they are causing constraint conflicts. Not sure why these were inherited from the JotDemo Example
-//    jotViewController.initialTextInsets = UIEdgeInsetsMake(6.0, 6.0, 6.0, 6.0)  // Commenting out because they are causing constraint conflicts. Not sure why these were inherited from the JotDemo Example
+//    jotViewController.textEditingInsets = UIEdgeInsetsMake(12.0, 6.0, 0.0, 6.0)  // Constraint from JotDemo causes conflicts
+//    jotViewController.initialTextInsets = UIEdgeInsetsMake(6.0, 6.0, 6.0, 6.0)  // Constraint from JotDemo causes conflicts
 //    jotViewController.fitOriginalFontSizeToViewWidth = true
 //    jotViewController.textAlignment = .left
 //    jotViewController.drawingColor = UIColor.cyan

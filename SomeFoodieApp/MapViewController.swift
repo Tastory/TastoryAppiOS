@@ -106,7 +106,7 @@ class MapViewController: UIViewController {
     let journalQuery = FoodieJournalQuery()
     journalQuery.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
     journalQuery.setSkip(to: 0)
-    journalQuery.setLimit(to: FoodieConstants.journalFeedPaginationCount)
+    journalQuery.setLimit(to: FoodieConstants.JournalFeedPaginationCount)
     _ = journalQuery.addArrangement(type: .modificationTime, direction: .ascending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
     queryAndLaunchFeed(withQuery: journalQuery)
   }
@@ -115,7 +115,7 @@ class MapViewController: UIViewController {
   @IBAction func searchAll(_ sender: UIButton) {
     let journalQuery = FoodieJournalQuery()
     journalQuery.setSkip(to: 0)
-    journalQuery.setLimit(to: FoodieConstants.journalFeedPaginationCount)
+    journalQuery.setLimit(to: FoodieConstants.JournalFeedPaginationCount)
     _ = journalQuery.addArrangement(type: .modificationTime, direction: .ascending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
     queryAndLaunchFeed(withQuery: journalQuery)
   }
@@ -449,24 +449,26 @@ extension MapViewController: UITextFieldDelegate {
 
 extension MapViewController: CameraReturnDelegate {
   func captureComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
-    
-    var workingJournal: FoodieJournal?
-    
-    if let journal = suggestedJournal {
-      workingJournal = journal
-    } else if let journal = FoodieJournal.currentJournal {
-      workingJournal = journal
-    } else {
-      workingJournal = FoodieJournal(withState: .objectModified)
-    }
-    
-    viewController.workingJournal = workingJournal!
-    viewController.returnedMoment = markedupMoment
-    
-    dismiss(animated: true) { /*[unowned self] in*/
-      self.present(viewController, animated: true)
+    DispatchQueue.main.async {  // UI Work. We don't know which thread we might be in, so guarentee execute in Main thread
+      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
+      
+      var workingJournal: FoodieJournal?
+      
+      if let journal = suggestedJournal {
+        workingJournal = journal
+      } else if let journal = FoodieJournal.currentJournal {
+        workingJournal = journal
+      } else {
+        workingJournal = FoodieJournal(withState: .objectModified)
+      }
+      
+      viewController.workingJournal = workingJournal!
+      viewController.returnedMoment = markedupMoment
+      
+      self.dismiss(animated: true) { /*[unowned self] in*/
+        self.present(viewController, animated: true)
+      }
     }
   }
 }

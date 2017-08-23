@@ -29,6 +29,11 @@
 			<key>orderHint</key>
 			<integer>5</integer>
 		</dict>
+		<key>HTTPStatusCodes.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>9</integer>
+		</dict>
 		<key>Jot.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -73,12 +78,12 @@
 		<key>QuadratTouch.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>16</integer>
+			<integer>8</integer>
 		</dict>
 		<key>SwiftyCam.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>10</integer>
+			<integer>7</integer>
 		</dict>
 		<key>WKZombie.xcscheme</key>
 		<dict>
@@ -98,6 +103,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>00D87888938CE3B5281A34F467DED628</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>06E2463E18860775710BDED29E5FDFA2</key>
 		<dict>
 			<key>primary</key>
@@ -158,6 +168,11 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>618D8ED60BFD4FC46C7A6BA06BE467F8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>74AE346E366025A59CA66253C99E4FAD</key>
 		<dict>
 			<key>primary</key>
@@ -183,6 +198,11 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>873D8479D5D0094FE674A5768E09C903</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>9F7098779713B711F6C591B62A41F242</key>
 		<dict>
 			<key>primary</key>
@@ -194,6 +214,11 @@
 			<true/>
 		</dict>
 		<key>A1B175DB30B42A1A992C33428397CB90</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A3ED40AE093C0D5FD434D4B3A1FEAF8E</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -63,6 +63,7 @@ class JournalEntryViewController: UITableViewController {
   @IBAction func venueClicked(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as! VenueTableViewController
+    viewController.delegate = self
     self.present(viewController, animated: true)
   }
   
@@ -75,7 +76,7 @@ class JournalEntryViewController: UITableViewController {
     workingJournal?.title = titleTextField?.text
     workingJournal?.journalURL = linkTextField?.text
     
-    DebugPrint.verbose("\(self.workingJournal?.foodieObject.operationState)")
+    DebugPrint.verbose("\(String(describing: self.workingJournal?.foodieObject.operationState))")
 
     //making sure that the operation state didnt change between checking and setting the flag
     pthread_mutex_lock(&self.saveStateMutex)
@@ -250,7 +251,7 @@ class JournalEntryViewController: UITableViewController {
   // MARK: - Private Instance Functions
   
   // Generic error dialog box to the user on internal errors
-  private func internalErrorDialog() {
+  fileprivate func internalErrorDialog() {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "SomeFoodieApp",
                                               titleComment: "Alert diaglogue title when a Journal Entry view internal error occured",
@@ -265,7 +266,7 @@ class JournalEntryViewController: UITableViewController {
   }
   
   
-  private func saveCompleteDialog() {
+  fileprivate func saveCompleteDialog() {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "SomeFoodieApp",
                                               titleComment: "Alert diaglogue title when a Journal Entry view completes test save",
@@ -399,3 +400,12 @@ extension JournalEntryViewController: UITextFieldDelegate {
     return true
   }
 }
+
+// MARK: - Venue Table Return Delegate
+extension JournalEntryViewController: VenueTableReturnDelegate {
+  func venueSearchComplete(venueID: String, venueName: String) {
+    // TODO: 
+    DebugPrint.verbose("VenueTableReturnDelegate protocol as implemented by JournalEntryViewController called")
+  }
+}
+

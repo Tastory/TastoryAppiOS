@@ -14,10 +14,10 @@ import Parse
 class FoodieHistory: PFObject {
   
   @NSManaged var journal: FoodieJournal?
-  @NSManaged var eatery: FoodieEatery?
+  @NSManaged var venue: FoodieVenue?
   @NSManaged var user: FoodieUser?
   @NSManaged var journalRating: Double // TODO: Placeholder for later rev
-  @NSManaged var eateryRating: Double // TODO: Placeholder for later rev
+  @NSManaged var venueRating: Double // TODO: Placeholder for later rev
   
   // Date created vs Date modified is given for free
 
