@@ -13,7 +13,9 @@
 
 import UIKit
 import MapKit
+import CoreLocation
 import Parse
+
 
 class JournalEntryViewController: UITableViewController {
   
@@ -64,6 +66,9 @@ class JournalEntryViewController: UITableViewController {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as! VenueTableViewController
     viewController.delegate = self
+    viewController.currentLocation = CLLocation(latitude: CLLocationDegrees(49.2781372),
+                                                longitude: CLLocationDegrees(-123.1187237))  // TODO: This is just Test code. What we need is to create a app wide location service that we can start, stop and throttle according to what's going on or where the user is
+    // TODO: Check and rip out location data out of the Moments to create the suggested location
     self.present(viewController, animated: true)
   }
   

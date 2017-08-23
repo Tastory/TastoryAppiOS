@@ -93,7 +93,6 @@ class FeedCollectionViewController: UICollectionViewController {
     }
   }
   
-  
   fileprivate func fetchErrorDialog() {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "SomeFoodieApp",

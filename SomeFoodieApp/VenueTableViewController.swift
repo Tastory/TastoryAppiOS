@@ -19,17 +19,17 @@ class VenueTableViewController: UIViewController {
   
   // MARK: - Types & Enumerations
   
-  
   // MARK: - Public Instance Variables
   var delegate: VenueTableReturnDelegate?
   var venueID: String?
   var venueName: String?
-  var currentLocation: CLLocation?
-  var suggestedLocation: CLLocation?
+  var currentLocation: CLLocation? = nil
+  var suggestedLocation: CLLocation? = nil
   
   
   // MARK: - Private Instance Variables
-  fileprivate var venueResultArray = [(String, String)]()
+  fileprivate var venueResultArray: [FoodieVenue]?
+  fileprivate var nearLocation: String? = nil
   
   
   // MARK: - IBOutlet
@@ -63,10 +63,54 @@ class VenueTableViewController: UIViewController {
     }
   }
   
+  fileprivate func searchErrorDialog() {
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Venue Table View search error occurred",
+                                              message: "A query error has occured. Please try again",
+                                              messageComment: "Alert dialog message when a Venue Table View search error occurred",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for generic Venue Table View errors",
+                                     style: .default)
+      self.present(alertController, animated: true, completion: nil)
+    }
+  }
+  
+  
+  fileprivate func venueSearchCallback(_ venueArray: [FoodieVenue]?, _ error: Error?) {
+    if let error = error {
+      DebugPrint.error("Venue Search resulted in error - \(error.localizedDescription)")
+      searchErrorDialog()
+      return
+    }
+    
+    guard let venueArray = venueArray else {
+      // Just make sure venueResultArray is cleared
+      venueResultArray = nil
+      venueTableView.reloadData()
+      return
+    }
+    
+    venueResultArray = venueArray
+    venueTableView.reloadData()
+  }
+  
+  
+  // MARK - Public Instance Functions
+  
   
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
+    venueSearchBar.delegate = self
+    locationSearchBar.delegate = self
+    venueTableView.delegate = self
+    venueTableView.dataSource = self
+    
+    // TODO: Gotta offset the table a little bit?
+    // TODO: I think we need to narrow the search categories down a little bit. Aka. also augment FoodieVenue
+    // TODO: I think we need to figure out how to deal with Foursquare Category listings
   }
   
   
@@ -77,25 +121,73 @@ class VenueTableViewController: UIViewController {
 }
 
 
-// MARK: - UISearchBar Delegate Protocol Conformance
+// MARK: - Search Bar Delegate Protocol Conformance
 extension VenueTableViewController: UISearchBarDelegate {
+  
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     if searchBar === venueSearchBar {
       if let venueSearchText = venueSearchBar.text {
-        // TODO: Search Foursquare based on either 
-        //       1. the user supplied location
-        //       2. the suggested Geolocation
-        //       3. the current location
-        
-        //FoodieVenue.searchFoursquare(for: venueSearchText, at: <#T##CLLocation#>, withBlock: <#T##FoodieVenue.VenueErrorBlock?##FoodieVenue.VenueErrorBlock?##([FoodieVenue]?, Error?) -> Void#>)
-        
-        
-        // TODO: Update the table view with the Foursquare provided result
+        // Search Foursquare based on either
+        //  1. the user supplied location
+        //  2. the suggested Geolocation
+        //  3. the current location
+        if let nearLocation = nearLocation {
+          FoodieVenue.searchFoursquare(for: venueSearchText, near: nearLocation, withBlock: venueSearchCallback)
+        } else if let suggestedLocation = suggestedLocation {
+          FoodieVenue.searchFoursquare(for: venueSearchText, at: suggestedLocation, withBlock: venueSearchCallback)
+        } else if let currentLocation = currentLocation {
+          FoodieVenue.searchFoursquare(for: venueSearchText, at: currentLocation, withBlock: venueSearchCallback)
+        } else {
+          // Do nothing and save bandwidth?
+        }
       }
     }
   }
 }
 
 
+// MARK: - Table View Data Source Protocol Conformance
+extension VenueTableViewController: UITableViewDataSource {
+  
+  func numberOfSections(in tableView: UITableView) -> Int {
+    return 1  // Hard coded to 1 for now?
+  }
+  
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    if let count = venueResultArray?.count {
+      return count
+    } else {
+      return 0
+    }
+  }
+  
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(withIdentifier: "venueTableCell", for: indexPath)
+    
+    guard let venueResultArray = venueResultArray else {
+      DebugPrint.error("venueResultArray = nil even tho numberOfRowsInSection = \(tableView.numberOfRows(inSection: indexPath.section))")
+      internalErrorDialog()
+      cell.textLabel?.text = ""
+      return cell
+    }
+    
+    while true {
+      if let name = venueResultArray[indexPath.row].name {
+        cell.textLabel?.text = name
+        break
+      } else {
+        self.venueResultArray!.remove(at: indexPath.row)
+      }
+    }
+    
+    return cell
+  }
+}
+
+
+// MARK: - Table View Delegate Protocol Conformance
+extension VenueTableViewController: UITableViewDelegate {
+  
+}
 
 

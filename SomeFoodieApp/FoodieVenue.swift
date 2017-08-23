@@ -65,18 +65,21 @@ class FoodieVenue: FoodiePFObject  {
   // MARK: - Error Types Definition
   enum ErrorCode: LocalizedError {
     
+    case searchFoursquareBothNearAndLocation
     case searchFoursquareHttpStatusNil
     case searchFoursquareHttpStatusFailed
     case searchFoursquareResponseError
     
     var errorDescription: String? {
       switch self {
+      case .searchFoursquareBothNearAndLocation:
+        return NSLocalizedString("Both near & location nil or both not nil in Foursquare search common", comment: "Error description for an exception error code")
       case .searchFoursquareHttpStatusNil:
         return NSLocalizedString("HTTP Status came back nil upon Foursquare search", comment: "Error description for an exception error code")
       case .searchFoursquareHttpStatusFailed:
         return NSLocalizedString("HTTP Status failure upon Foursquare search", comment: "Error description for an exception error code")
       case .searchFoursquareResponseError:
-        return NSLocalizedString("HTTP Status failure upon Foursquare search", comment: "Error description for an exception error code")
+        return NSLocalizedString("General response error upon Foursquare search", comment: "Error description for an exception error code")
       }
     }
     
@@ -101,18 +104,47 @@ class FoodieVenue: FoodiePFObject  {
   static let foursquareClient = Client(clientID: Constants.FoursquareClientID, clientSecret: Constants.FoursquareClientSecret, redirectURL: "")
   static let foursquareConfiguration = Configuration(client: foursquareClient)
   static let foursquareSession = Session.sharedSession()
+  static var foursquareInitiated = false
   
   
   // MARK: - Public Static Functions
+  static func searchFoursquare(for venueName: String, near location: String, withBlock callback: VenueErrorBlock?) {
+    searchFoursquareCommon(for: venueName, near: location, withBlock: callback)
+  }
   
-  // Search Foursquare with Location and return list of matching Compact responses
   static func searchFoursquare(for venueName: String, at location: CLLocation, withBlock callback: VenueErrorBlock?) {
+    searchFoursquareCommon(for: venueName, at: location, withBlock: callback)
+  }
+  
+  
+  // MARK: - Private Static Functions
+  
+  // Search Foursquare and return list of matching Compact responses
+  private static func searchFoursquareCommon(for venueName: String, near area: String? = nil, at point: CLLocation? = nil, withBlock callback: VenueErrorBlock?) {
+    
+    if (area != nil && point != nil) || (area == nil && point == nil) {
+      callback?(nil, ErrorCode.searchFoursquareBothNearAndLocation)
+      DebugPrint.assert("Either both Near & Location are nil, or both are not-nil. This is theoretically impossible.")
+    }
+    
+    if !foursquareInitiated {
+      Session.setupSharedSessionWithConfiguration(foursquareConfiguration)
+      foursquareInitiated = true
+    }
+    
     let session = foursquareSession
-    var parameters = location.foursquareParameters()
-    parameters += [Parameter.query:venueName]
+    var parameters = [Parameter.query:venueName]
     parameters += [Parameter.limit: String(Constants.FoursquareSearchResultsLimit)]
     parameters += [Parameter.intent:"checkin"]
-  
+    
+    if let point = point {
+      parameters += point.foursquareParameters()
+    }
+    
+    if let area = area {
+      parameters += [Parameter.near: area]
+    }
+    
     let searchRetry = SwiftRetry()
     searchRetry.start("search Foursquare for \(venueName)", withCountOf: Constants.FoursquareSearchRetryCount) {
       // Perform Foursquare search with async response handling in block
@@ -192,7 +224,7 @@ class FoodieVenue: FoodiePFObject  {
               foodieVenue.name = name
               foodieVenue.foursquareVenueID = id
               foodieVenue.geoLocation = PFGeoPoint(latitude: Double(latitude), longitude: Double(longitude))
-
+              
               // Category, URL, Price and Hour information is not necassary at this point. Defer to only when the user actually do want this Venue
               responseVenueArray.append(foodieVenue)
             }
@@ -205,11 +237,6 @@ class FoodieVenue: FoodiePFObject  {
       }
       searchTask.start()
     }
-  }
-  
-  
-  static func searchFoursquare(for venueName: String, near location: String) {
-    
   }
   
   
