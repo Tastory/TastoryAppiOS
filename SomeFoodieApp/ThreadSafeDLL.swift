@@ -67,7 +67,7 @@ class ThreadSafeDLL {
   
   // MARK: - Private Instance Functions
   private func removeUnsafely(_ node: Node) {
-    guard let dll = node.dll, let prevNode = node.prevNode, let nextNode = node.nextNode else {
+    guard let dll = node.dll else {
       DebugPrint.fatal("Cannot remove a Node that doesn't belong to a list!")
     }
     
@@ -81,14 +81,16 @@ class ThreadSafeDLL {
     
     if node === headNode {
       self.headNode = node.nextNode
+    } else if let prevNode = node.prevNode {
+      prevNode.nextNode = node.nextNode
     }
     
     if node === tailNode {
       self.tailNode = node.prevNode
+    } else if let nextNode = node.nextNode {
+      nextNode.prevNode = node.prevNode
     }
     
-    prevNode.nextNode = nextNode
-    nextNode.prevNode = prevNode
     node.prevNode = nil
     node.nextNode = nil
     node.dll = nil

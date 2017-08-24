@@ -240,7 +240,7 @@ class MapViewController: UIViewController {
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
-
+    
     // Do any additional setup after loading the view.
     //mapView?.delegate = self
     panGestureRecognizer?.delegate = self
@@ -254,6 +254,11 @@ class MapViewController: UIViewController {
                                     span: MKCoordinateSpan(latitudeDelta: Constants.defaultMaxDelta, longitudeDelta: Constants.defaultMaxDelta))
     mapView?.setRegion(region, animated: false)
 
+    
+  }
+  
+  
+  override func viewWillAppear(_ animated: Bool) {
     // Setup a Location Watcher to update the Map View
     locationWatcher = LocationWatch.global.start() { (location, error) in
       if let error = error {
@@ -267,6 +272,12 @@ class MapViewController: UIViewController {
         DispatchQueue.main.async { self.mapView?.setRegion(region, animated: true) }
       }
     }
+  }
+  
+  
+  override func viewDidDisappear(_ animated: Bool) {
+    // Don't even know when we'll be back. Let the GPS stop if no one else is using it
+    locationWatcher?.stop()
   }
   
   

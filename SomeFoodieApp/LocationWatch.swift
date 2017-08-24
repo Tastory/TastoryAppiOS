@@ -15,6 +15,12 @@ class LocationWatch: NSObject {
   // MARK: - Types & Enumerations
   typealias LocationErrorBlock = (CLLocation?, Error?) -> Void
   
+  enum WatchState {
+    case started
+    case paused
+    case stopped
+  }
+  
   
   // MARK: Error Types Definition
   enum ErrorCode: LocalizedError {
@@ -50,10 +56,12 @@ class LocationWatch: NSObject {
     // MARK: - Private Instance Variables
     fileprivate var callback: LocationErrorBlock!
     fileprivate var continuous: Bool!
-    fileprivate var paused: Bool!
+    fileprivate var state: WatchState!
     
     // MARK: - Public Instance Variables
-    var isPaused: Bool { return paused }
+    var isStarted: Bool { return state == .started }
+    var isPaused: Bool { return state == .paused }
+    var isStopped: Bool { return state == .stopped }
     
     // MARK: - Public Instance Functions
     func pause() { LocationWatch.global.pause(self) }
@@ -86,7 +94,7 @@ class LocationWatch: NSObject {
   fileprivate func notifyWatchers (withLocation location: CLLocation? = nil, withError error: Error? = nil) {
     if let watcherArray = watcherDLL.convertToArray() as? [Context] {
       for watcher in watcherArray {
-        if !watcher.paused {
+        if watcher.isStarted {
           watcher.callback(location, error)
           if !watcher.continuous && (location != nil) { watcher.stop() }
         }
@@ -116,7 +124,7 @@ class LocationWatch: NSObject {
     let watcher = Context()
     watcher.callback = callback
     watcher.continuous = false
-    watcher.paused = false
+    watcher.state = .started
     watcherDLL.add(toTail: watcher)
     
     if let location = currentLocation {
@@ -129,7 +137,7 @@ class LocationWatch: NSObject {
     let watcher = Context()
     watcher.callback = callback
     watcher.continuous = true
-    watcher.paused = false
+    watcher.state = .started
     watcherDLL.add(toTail: watcher)
     
     if let location = currentLocation {
@@ -140,11 +148,11 @@ class LocationWatch: NSObject {
   }
 
   func pause(_ watcher: Context) {
-    watcher.paused = true
+    watcher.state = .paused
   }
   
   func resume(_ watcher: Context) {
-    watcher.paused = false
+    watcher.state = .started
     if let location = currentLocation {
       DispatchQueue.global(qos: .userInteractive).async { watcher.callback(location, nil) }
     }
@@ -152,13 +160,13 @@ class LocationWatch: NSObject {
   }
   
   func stop(_ watcher: Context) {
+    watcher.state = .stopped
     watcherDLL.remove(watcher)
     
     if watcherDLL.isEmpty {
       manager.stopUpdatingLocation()
     }
   }
-  
 }
 
 
