@@ -19,13 +19,12 @@ class MapViewController: UIViewController {
                                                               longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
     static let defaultMaxDelta: CLLocationDegrees = 0.05
     static let defaultMinDelta: CLLocationDegrees = 0.005
-    static let defaultDistanceFilter = 30.0  // meters, for LocationManager
   }
 
 
-  // MARK: - Class Variables
-  fileprivate var locationManager = CLLocationManager()
+  // MARK: - Instance Variables
   fileprivate var currentMapDelta = Constants.defaultMaxDelta
+  fileprivate var locationWatcher: LocationWatch.Context?
 
 
   // MARK: - IBOutlets
@@ -53,7 +52,7 @@ class MapViewController: UIViewController {
     // Stop updating location if any gestures detected against Map
     switch recognizer.state {
     case .began, .ended:
-      locationManager.stopUpdatingLocation()
+      locationWatcher?.pause()
     default:
       break
     }
@@ -80,7 +79,8 @@ class MapViewController: UIViewController {
     currentMapDelta = max(currentMapDelta, Constants.defaultMinDelta)
 
     // Start updating location again
-    locationManager.startUpdatingLocation()
+    locationWatcher?.resume()
+    
   }
   
   
@@ -168,6 +168,30 @@ class MapViewController: UIViewController {
   }
   
   
+  fileprivate func locationPermissionDeniedDialog() {
+    if self.presentedViewController == nil {
+      // Permission was denied before. Ask for permission again
+      guard let url = URL(string: UIApplicationOpenSettingsURLString) else {
+        DebugPrint.assert("UIApplicationOPenSettignsURLString ia an invalid URL String???")
+        internalErrorDialog()
+        return
+      }
+      
+      let alertController = UIAlertController(title: "Location Services Disabled",
+                                              titleComment: "Alert diaglogue title when user has denied access to location services",
+                                              message: "Please go to Settings > Privacy > Location Services and set this App's Location Access permission to 'While Using'",
+                                              messageComment: "Alert dialog message when the user has denied access to location services",
+                                              preferredStyle: .alert)
+      
+      alertController.addAlertAction(title: "Settings",
+      comment: "Alert diaglogue button to open Settings, hoping user will enable access to Location Services",
+      style: .default) { action in UIApplication.shared.open(url, options: [:]) }
+      
+      self.present(alertController, animated: true, completion: nil)
+    }
+  }
+  
+  
   fileprivate func queryAndLaunchFeed(withQuery journalQuery: FoodieJournalQuery) {
     
     // Put up blur view and activity spinner before performing query
@@ -230,16 +254,19 @@ class MapViewController: UIViewController {
                                     span: MKCoordinateSpan(latitudeDelta: Constants.defaultMaxDelta, longitudeDelta: Constants.defaultMaxDelta))
     mapView?.setRegion(region, animated: false)
 
-    // Setup Location Manager and Start Location Updates
-    locationManager.delegate = self
-    locationManager.requestWhenInUseAuthorization()
-    locationManager.desiredAccuracy = kCLLocationAccuracyBest //kCLLocationAccuracyHundredMeters
-    locationManager.distanceFilter = Constants.defaultDistanceFilter
-    locationManager.activityType = CLActivityType.fitness  // Fitness Type includes Walking
-    locationManager.allowsBackgroundLocationUpdates = false
-    locationManager.pausesLocationUpdatesAutomatically = true
-    locationManager.disallowDeferredLocationUpdates()
-    locationManager.startUpdatingLocation()
+    // Setup a Location Watcher to update the Map View
+    locationWatcher = LocationWatch.global.start() { (location, error) in
+      if let error = error {
+        self.locationErrorDialog(message: "LocationWatch returned error - \(error.localizedDescription)", comment: "Alert Dialogue Message")
+        DebugPrint.error("LocationWatch returned error - \(error.localizedDescription)")
+        return
+      }
+      
+      if let location = location {
+        let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: self.currentMapDelta, longitudeDelta: self.currentMapDelta))
+        DispatchQueue.main.async { self.mapView?.setRegion(region, animated: true) }
+      }
+    }
   }
   
   
@@ -247,60 +274,6 @@ class MapViewController: UIViewController {
     super.didReceiveMemoryWarning()
     
     DebugPrint.log("MapViewController.didReceiveMemoryWarning")
-  }
-}
-
-
-extension MapViewController: CLLocationManagerDelegate {
-
-  func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-
-    let region = MKCoordinateRegion(center: locations[0].coordinate, span: MKCoordinateSpan(latitudeDelta: currentMapDelta, longitudeDelta: currentMapDelta))
-    mapView?.setRegion(region, animated: true)
-  }
-
-
-  func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-
-    guard let errorCode = error as? CLError else {
-      internalErrorDialog()
-      DebugPrint.assert("Not getting CLError upon a Location Manager Error")
-      return
-    }
-
-    DebugPrint.error("CLError.code = \(errorCode.code.rawValue)")
-
-    switch errorCode.code {
-
-    case .locationUnknown:
-      locationErrorDialog(message: "Unable to obtain current location",
-                          comment: "Error message presented to user in error dialog of the Map View")
-
-    case .denied:
-      // User denied authorization
-      manager.stopUpdatingLocation()
-
-      // Permission was denied before. Ask for permission again
-      guard let url = URL(string: UIApplicationOpenSettingsURLString) else {
-        DebugPrint.assert("UIApplicationOPenSettignsURLString ia an invalid URL String???")
-        break
-      }
-
-      let alertController = UIAlertController(title: "Location Services Disabled",
-                                              titleComment: "Alert diaglogue title when user has denied access to location services",
-                                              message: "Please go to Settings > Privacy > Location Services and set this App's Location Access permission to 'While Using'",
-                                              messageComment: "Alert dialog message when the user has denied access to location services",
-                                              preferredStyle: .alert)
-
-      alertController.addAlertAction(title: "Settings",
-                                     comment: "Alert diaglogue button to open Settings, hoping user will enable access to Location Services",
-                                     style: .default) { action in UIApplication.shared.open(url, options: [:]) }
-
-      self.present(alertController, animated: true, completion: nil)
-
-    default:
-      DebugPrint.assert("Unrecognized fallthrough, error.localizedDescription = \(error.localizedDescription)")
-    }
   }
 }
 
@@ -395,7 +368,7 @@ extension MapViewController: UITextFieldDelegate {
       }
 
       // Move map to region as indicated by CLPlacemark
-      self.locationManager.stopUpdatingLocation()
+      self.locationWatcher?.pause()
 
       var region: MKCoordinateRegion?
 

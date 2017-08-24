@@ -24,7 +24,7 @@ class FoodiePrefetch {
   
   // MARK: - Structs
   class Context {
-    var contextPointerMutex = pthread_mutex_t()
+    //var contextPointerMutex = pthread_mutex_t()
     var prevContext: Context?
     var nextContext: Context?
     var delegate: FoodiePrefetchDelegate!
@@ -33,7 +33,7 @@ class FoodiePrefetch {
   
   
   // MARK: - Public Static Variables
-  static var global = FoodiePrefetch()
+  static var global: FoodiePrefetch!
   
   
   // MARK: - Private Instance Variables

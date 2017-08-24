@@ -108,11 +108,14 @@ class VenueTableViewController: UIViewController {
     venueTableView.delegate = self
     venueTableView.dataSource = self
     
-    // TODO: Gotta offset the table a little bit?
+    
     // TODO: I think we need to narrow the search categories down a little bit. Aka. also augment FoodieVenue
     // TODO: I think we need to figure out how to deal with Foursquare Category listings
   }
   
+  override func viewDidLayoutSubviews() {
+    venueTableView.contentInset = UIEdgeInsetsMake(stackView.bounds.height, 0.0, 0.0, 0.0)
+  }
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()

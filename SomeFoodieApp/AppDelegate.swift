@@ -22,6 +22,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Create Prefetch Manager singleton
     FoodiePrefetch.global = FoodiePrefetch()
     
+    // Initialize Location Watch manager
+    LocationWatch.global = LocationWatch()
+    
     // Initialize Parse.
     Parse.enableLocalDatastore()
     
@@ -113,7 +116,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func configureParse() {
     
     // FoodieObject is an Abstract! Don't Register!!
-    
     FoodieUser.registerSubclass()
     FoodieJournal.registerSubclass()
     FoodieVenue.registerSubclass()

@@ -13,7 +13,6 @@
 
 import UIKit
 import MapKit
-import CoreLocation
 import Parse
 
 
@@ -45,6 +44,7 @@ class JournalEntryViewController: UITableViewController {
   fileprivate var triggerSaveJournal = false
   fileprivate var saveStateMutex = pthread_mutex_t()
   
+  
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var venueButton: UIButton?
@@ -66,8 +66,7 @@ class JournalEntryViewController: UITableViewController {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as! VenueTableViewController
     viewController.delegate = self
-    viewController.currentLocation = CLLocation(latitude: CLLocationDegrees(49.2781372),
-                                                longitude: CLLocationDegrees(-123.1187237))  // TODO: This is just Test code. What we need is to create a app wide location service that we can start, stop and throttle according to what's going on or where the user is
+    //viewController.suggestedLocation
     // TODO: Check and rip out location data out of the Moments to create the suggested location
     self.present(viewController, animated: true)
   }
@@ -104,7 +103,6 @@ class JournalEntryViewController: UITableViewController {
 
     // journal is already saved to local
     self.workingJournal?.saveRecursive(to: .server) {(success, error) in
-    //workingJournal?.setGeoPoint(latitude: 49.2778211, longitude: -123.1089668)
       if success {
         DebugPrint.verbose("Journal Save to Server Completed!")
         self.saveCompleteDialog()
@@ -115,8 +113,8 @@ class JournalEntryViewController: UITableViewController {
       }
       UIApplication.shared.endIgnoringInteractionEvents()
     }
-
   }
+  
   
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
@@ -143,7 +141,6 @@ class JournalEntryViewController: UITableViewController {
           DebugPrint.assert("returnedMoment expected to match markupMoment")
         }
       } else {
-
 
         // TODO refactor out to journal
         // This is a new Moment. Let's add it to the Journal!
@@ -208,6 +205,7 @@ class JournalEntryViewController: UITableViewController {
     initializeJournalController()
   }
   
+  
   func initializeJournalController() {
     // TODO: How to visually convey status of Moments to user??
     
@@ -223,7 +221,6 @@ class JournalEntryViewController: UITableViewController {
     momentViewController.didMove(toParentViewController: self)
     
     titleTextField?.delegate = self
-
     linkTextField?.delegate = self
     tagsTextView?.delegate = self
     
@@ -238,8 +235,8 @@ class JournalEntryViewController: UITableViewController {
     tableView.addGestureRecognizer(previousSwipeRecognizer)
     
     titleTextField?.text = workingJournal?.title
-
   }
+  
   
   override func viewDidAppear(_ animated: Bool) {
     // Start pre-upload operations, and other background trickeries
@@ -284,7 +281,6 @@ class JournalEntryViewController: UITableViewController {
       self.present(alertController, animated: true, completion: nil)
     }
   }
-  
   
   func keyboardDismiss() {
     self.view.endEditing(true)
