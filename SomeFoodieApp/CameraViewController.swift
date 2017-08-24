@@ -34,8 +34,11 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
   var cameraReturnDelegate: CameraReturnDelegate?
   
   
-  // MARK: - Private Variables
-  private var crossLayer = CameraCrossLayer()
+  // MARK: - Private Instance Variables
+  fileprivate var crossLayer = CameraCrossLayer()
+  fileprivate var captureLocation: CLLocation? = nil
+  fileprivate var captureLocationError: Error? = nil
+  fileprivate var locationWatcher: LocationWatch.Context? = nil
   
   // MARK: - IBOutlets
   @IBOutlet weak var captureButton: CameraButton?
@@ -44,17 +47,18 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
   
   
   // MARK: - IBActions
-  
   @IBAction func capturePressed(_ sender: CameraButton) {
+    DebugPrint.userAction("CameraViewController.capturePressed()")
     captureButton?.buttonPressed()
   }
   
   @IBAction func captureTapped(_ sender: UITapGestureRecognizer) {
+    DebugPrint.userAction("CameraViewController.captureTapped()")
     captureButton?.buttonReleased()
   }
   
   @IBAction func exitPressed(_ sender: UIButton) {
-    // TODO: Data Passback through delegate?
+    DebugPrint.userAction("CameraViewController.exitPressed()")
     dismiss(animated: true, completion: nil)
   }
   
@@ -73,10 +77,17 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
     }
   }
   
-  
-  // MARK: - Reset the states of the Camera View
-  private func resetAllStates() {
-    
+  fileprivate func locationErrorDialog(message: String, comment: String) {
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Camera View location error occured",
+                                              message: message,
+                                              messageComment: comment,
+                                              preferredStyle: .alert)
+      
+      alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for location related Camera View errors", style: .cancel)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   
@@ -128,6 +139,24 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
     }
   }
   
+  override func viewWillAppear(_ animated: Bool) {
+    captureLocation = nil
+    captureLocationError = nil
+    locationWatcher = LocationWatch.global.start() { (location, error) in
+      if let error = error {
+        DebugPrint.log("Cannot obtain Location information for Camera capture")
+        self.captureLocationError = error
+      }
+      
+      if let location = location {
+        self.captureLocation = location
+      }
+    }
+  }
+  
+  override func viewDidDisappear(_ animated: Bool) {
+    locationWatcher?.stop()
+  }
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
@@ -150,17 +179,79 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     // Returns a UIImage captured from the current session
     DebugPrint.userAction("didTakePhoto") // TODO: Make photos brighter too
     
+//  Metadata/EXIF data Extraction Example
+//   1. By the time SwiftyCam have made it from a CGDataProvider -> CGImage -> UIImage and we convert it back to a CGDataProvider, it seems that everything is stripped
+//   2. Even putting the code to extract metadata into SwiftyCam, GPS data does not seem to be part of the data set.
+//
+//    if let cgImage = image.cgImage {
+//      if let cgProvider = cgImage.dataProvider {
+//        if let source = CGImageSourceCreateWithDataProvider(cgProvider, nil) {
+//          if let type = CGImageSourceGetType(source) {
+//            print("type: \(type)")
+//          }
+//          
+//          if let properties = CGImageSourceCopyProperties(source, nil) {
+//            print("properties - \(properties)")
+//          }
+//          
+//          let count = CGImageSourceGetCount(source)
+//          print("count: \(count)")
+//          
+//          for index in 0..<count {
+//            if let metaData = CGImageSourceCopyMetadataAtIndex(source, index, nil) {
+//              print("all metaData[\(index)]: \(metaData)")
+//              
+//              let typeId = CGImageMetadataGetTypeID()
+//              print("metadata typeId[\(index)]: \(typeId)")
+//              
+//              
+//              if let tags = CGImageMetadataCopyTags(metaData) as? [CGImageMetadataTag] {
+//                
+//                print("number of tags - \(tags.count)")
+//                
+//                for tag in tags {
+//                  
+//                  let tagType = CGImageMetadataTagGetTypeID()
+//                  if let name = CGImageMetadataTagCopyName(tag) {
+//                    print("name: \(name)")
+//                  }
+//                  if let value = CGImageMetadataTagCopyValue(tag) {
+//                    print("value: \(value)")
+//                  }
+//                  if let prefix = CGImageMetadataTagCopyPrefix(tag) {
+//                    print("prefix: \(prefix)")
+//                  }
+//                  if let namespace = CGImageMetadataTagCopyNamespace(tag) {
+//                    print("namespace: \(namespace)")
+//                  }
+//                  if let qualifiers = CGImageMetadataTagCopyQualifiers(tag) {
+//                    print("qualifiers: \(qualifiers)")
+//                  }
+//                  print("-------")
+//                }
+//              }
+//            }
+//            
+//            if let properties = CGImageSourceCopyPropertiesAtIndex(source, index, nil) {
+//              print("properties[\(index)]: \(properties)")
+//            }
+//          }
+//        }
+//      }
+//    }
+    
     // Also save photo to Photo Album.
     // TODO: Allow user to configure whether save to Photo Album also
     // TODO: Create error alert dialog box if this save fails.
     UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
 
     let mediaObject = FoodieMedia(withState: .objectModified, fileName: FoodieFile.newPhotoFileName(), type: .photo)
-    mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieConstants.JpegCompressionQuality))
+    mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieConstants.JpegCompressionQuality))  // TOOD: Is this main thread? If so do this conversion else where? Not like the user can do anything else tho? Pop-up a spinner instead?
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
     viewController.mediaObj = mediaObject
+    viewController.mediaLocation = captureLocation
     viewController.markupReturnDelegate = self
     self.present(viewController, animated: true)
   }
@@ -201,6 +292,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
       let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
       viewController.mediaObj = mediaObject
+      viewController.mediaLocation = captureLocation
       viewController.markupReturnDelegate = self
       self.present(viewController, animated: true)
       

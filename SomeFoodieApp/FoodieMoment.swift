@@ -17,12 +17,18 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var mediaType: String?  // Really an enum saying whether it's a Photo or Video
   @NSManaged var aspectRatio: Double  // In decimal, width / height, like 16:9 = 16/9 = 1.777...
   @NSManaged var width: Int  // height = width / aspectRatio
-  @NSManaged var markups: Array<FoodieMarkup>?  // Array of PFObjects as FoodieMarkup
-  @NSManaged var tags: Array<String>?  // Array of Strings, unstructured
   @NSManaged var thumbnailFileName: String?  // Thumbnail for the moment
+  
+  // Markups
+  @NSManaged var markups: Array<FoodieMarkup>?  // Array of PFObjects as FoodieMarkup
+  @NSManaged var eatags: Array<String>?  // Array of Strings, unstructured
+  @NSManaged var tags: Array<String>?  // Array of Strings, unstructured
+  
+  // Location & Others
+  @NSManaged var location: PFGeoPoint?  // Location where the media was originally captured
   @NSManaged var playSound: Bool
   
-  // Query Pointers
+  // Query Pointers?
   @NSManaged var author: FoodieUser?  // Pointer to the user that authored this Moment
   @NSManaged var venue: FoodieVenue?  // Pointer to the FoodieVenue object
   @NSManaged var categories: Array<Int>?  // Array of internal restaurant categoryIDs (all cateogires that applies, sub or primary)
@@ -33,8 +39,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // Date created vs Date updated is given for free
   
-  // this flag indicate if this moment has been retrieved from Parse
-  fileprivate var hasRetrieved = false
   
   // MARK: - Error Types Definition
   enum ErrorCode: LocalizedError {
@@ -58,7 +62,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  // MARK: - Public Instance Variable
+  // MARK: - Public Instance Variables
   var mediaObj: FoodieMedia? {
     didSet {
       mediaFileName = mediaObj!.foodieFileName
@@ -71,6 +75,10 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       thumbnailFileName = thumbnailObj!.foodieFileName
     }
   }
+  
+  
+  // MARK: - Private Instance Variables
+  fileprivate var hasRetrieved = false  // this flag indicate if this moment has been retrieved from Parse ?
   
   
   // MARK: - Public Instance Functions
@@ -107,6 +115,15 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       self.markups!.append(markup)
     } else {
       self.markups = [markup]
+    }
+  }
+  
+  func set(location: CLLocation?) {
+    if let location = location {
+      self.location = PFGeoPoint(latitude: location.coordinate.latitude,
+                                 longitude: location.coordinate.longitude)
+    } else {
+      self.location = nil
     }
   }
   

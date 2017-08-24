@@ -15,6 +15,7 @@
 
 import UIKit
 import ImageIO
+import CoreLocation
 import AVFoundation
 import Jot
 
@@ -36,6 +37,7 @@ class MarkupViewController: UIViewController {
   
   // MARK: - Public Instance Variables
   var mediaObj: FoodieMedia?
+  var mediaLocation: CLLocation?
   var markupReturnDelegate: MarkupReturnDelegate?
 
   
@@ -188,6 +190,7 @@ class MarkupViewController: UIViewController {
     // Initializing with Media Object also initialize foodieFileName and mediaType
     let momentObj = FoodieMoment(withState: .objectModified, foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
     
+    momentObj.set(location: mediaLocation)
     momentObj.playSound = soundOn
     
     // Setting the Thumbnail Object also initializes the thumbnailFileName

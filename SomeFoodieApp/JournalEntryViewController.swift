@@ -66,11 +66,12 @@ class JournalEntryViewController: UITableViewController {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as! VenueTableViewController
     viewController.delegate = self
-    //viewController.suggestedLocation
-    // TODO: Check and rip out location data out of the Moments to create the suggested location
+    
+    if let moments = workingJournal?.moments {
+      viewController.suggestedLocation = averageLocationOf(moments: moments)
+    }
     self.present(viewController, animated: true)
   }
-  
   
   @IBAction func testSaveJournal(_ sender: Any) {
 
@@ -97,8 +98,9 @@ class JournalEntryViewController: UITableViewController {
     }
   }
   
-  func saveJournalToServer(){
-
+  
+  // MARK: - Private Instance Functions
+  fileprivate func saveJournalToServer() {
     triggerSaveJournal = false
 
     // journal is already saved to local
@@ -112,6 +114,28 @@ class JournalEntryViewController: UITableViewController {
         DebugPrint.fatal("Journal Save to Server Failed without Error")
       }
       UIApplication.shared.endIgnoringInteractionEvents()
+    }
+  }
+  
+  fileprivate func averageLocationOf(moments: [FoodieMoment]) -> CLLocation? {
+    
+    var numValidCoordinates = 0
+    var sumLatitude: Double?
+    var sumLongitude: Double?
+    
+    for moment in moments {
+      if let location = moment.location {
+        sumLatitude = location.latitude + (sumLatitude ?? 0)
+        sumLongitude = location.longitude + (sumLongitude ?? 0)
+        numValidCoordinates += 1
+      }
+    }
+    
+    if numValidCoordinates != 0, let latitude = sumLatitude, let longitude = sumLongitude {
+      return CLLocation.init(latitude: latitude/Double(numValidCoordinates),
+                             longitude: longitude/Double(numValidCoordinates))
+    } else {
+      return nil
     }
   }
   
@@ -206,7 +230,7 @@ class JournalEntryViewController: UITableViewController {
   }
   
   
-  func initializeJournalController() {
+  fileprivate func initializeJournalController() {
     // TODO: How to visually convey status of Moments to user??
     
     // Setup the View, Moment VC, Text Fields, Keyboards, etc.
