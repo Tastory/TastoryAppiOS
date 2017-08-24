@@ -3,7 +3,7 @@
 //  SomeFoodieApp
 //
 //  Created by Howard Lee on 2017-08-12.
-//  Copyright © 2017 Howard's Creative Innovations. All rights reserved.
+//  Copyright © 2017 Eatelly. All rights reserved.
 //
 
 import UIKit
@@ -23,12 +23,12 @@ class VenueTableViewController: UIViewController {
   var delegate: VenueTableReturnDelegate?
   var venueID: String?
   var venueName: String?
-  var currentLocation: CLLocation? = nil
   var suggestedLocation: CLLocation? = nil
   
   
   // MARK: - Private Instance Variables
   fileprivate var venueResultArray: [FoodieVenue]?
+  fileprivate var currentLocation: CLLocation? = nil
   fileprivate var nearLocation: String? = nil
   
   
@@ -77,6 +77,18 @@ class VenueTableViewController: UIViewController {
     }
   }
   
+  fileprivate func locationErrorDialog(message: String, comment: String) {
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Venue Table View location error occured",
+                                              message: message,
+                                              messageComment: comment,
+                                              preferredStyle: .alert)
+      
+      alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for location related Venue Table View errors", style: .cancel)
+      self.present(alertController, animated: true, completion: nil)
+    }
+  }
   
   fileprivate func venueSearchCallback(_ venueArray: [FoodieVenue]?, _ error: Error?) {
     if let error = error {
@@ -108,6 +120,19 @@ class VenueTableViewController: UIViewController {
     venueTableView.delegate = self
     venueTableView.dataSource = self
     
+    // Let's just get location once everytime we enter this screen.
+    // Whats the odd of the user moving all the time? Saves some battery
+    LocationWatch.global.get { (location, error) in
+      if let error = error {
+        self.locationErrorDialog(message: "LocationWatch returned error - \(error.localizedDescription)", comment: "Alert Dialogue Message")
+        DebugPrint.error("LocationWatch returned error - \(error.localizedDescription)")
+        return
+      }
+      
+      if let location = location {
+        self.currentLocation = location
+      }
+    }
     
     // TODO: I think we need to narrow the search categories down a little bit. Aka. also augment FoodieVenue
     // TODO: I think we need to figure out how to deal with Foursquare Category listings

@@ -3,7 +3,7 @@
 //  SomeFoodieApp
 //
 //  Created by Howard Lee on 2017-08-23.
-//  Copyright © 2017 Howard's Creative Innovations. All rights reserved.
+//  Copyright © 2017 Eatelly. All rights reserved.
 //
 
 import UIKit
@@ -165,6 +165,7 @@ class LocationWatch: NSObject {
     
     if watcherDLL.isEmpty {
       manager.stopUpdatingLocation()
+      currentLocation = nil  // Make sure Current Location won't get out of date
     }
   }
 }
@@ -205,6 +206,7 @@ extension LocationWatch: CLLocationManagerDelegate {
     case .denied:
       // User denied authorization
       manager.stopUpdatingLocation()
+      currentLocation = nil
       notifyWatchers(withError: ErrorCode.managerFailDenied)
       DebugPrint.log("Unable to determine Location")
       

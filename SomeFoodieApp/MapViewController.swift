@@ -3,7 +3,7 @@
 //  SomeFoodieApp
 //
 //  Created by Howard Lee on 2017-03-20.
-//  Copyright © 2017 SomeFoodieCompany. All rights reserved.
+//  Copyright © 2017 Eatelly. All rights reserved.
 //
 
 import UIKit
@@ -72,6 +72,9 @@ class MapViewController: UIViewController {
     // Clear the text field while at it
     locationField?.text = ""
 
+    // Base the span of the new mapView on what the mapView span currently is
+    if let mapView = mapView { currentMapDelta = mapView.region.span.latitudeDelta }
+    
     // Take the lesser of current or default max latitude degrees
     currentMapDelta = min(currentMapDelta, Constants.defaultMaxDelta)
 
@@ -80,7 +83,6 @@ class MapViewController: UIViewController {
 
     // Start updating location again
     locationWatcher?.resume()
-    
   }
   
   
