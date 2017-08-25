@@ -59,8 +59,16 @@ class FoodieVenue: FoodiePFObject  {
   
   
   // MARK: - Types & Enumerations
-  typealias VenueErrorBlock = ([FoodieVenue]?, Error?) -> Void
+  typealias VenueErrorBlock = ([FoodieVenue]?, Geocode?, Error?) -> Void
 
+  struct Geocode {
+    var feature: String?
+    var center: CLLocation?
+    var ne: CLLocationCoordinate2D?
+    var sw: CLLocationCoordinate2D?
+    var name: String?
+    var displayName: String?
+  }
   
   
   // MARK: - Error Types Definition
@@ -115,7 +123,7 @@ class FoodieVenue: FoodiePFObject  {
   private static func searchFoursquareCommon(for venueName: String, near area: String? = nil, at point: CLLocation? = nil, withBlock callback: VenueErrorBlock?) {
     
     if (area != nil && point != nil) || (area == nil && point == nil) {
-      callback?(nil, ErrorCode.searchFoursquareBothNearAndLocation)
+      callback?(nil, nil, ErrorCode.searchFoursquareBothNearAndLocation)
       DebugPrint.assert("Either both Near & Location are nil, or both are not-nil. This is theoretically impossible.")
     }
     
@@ -139,7 +147,7 @@ class FoodieVenue: FoodiePFObject  {
         
         guard let httpStatusCode = result.HTTPSTatusCode else {
           DebugPrint.assert("No valid HTTP Status Code on Foursquare Search")
-          callback?(nil, ErrorCode.searchFoursquareHttpStatusNil)
+          callback?(nil, nil, ErrorCode.searchFoursquareHttpStatusNil)
           return
         }
         
@@ -148,7 +156,7 @@ class FoodieVenue: FoodiePFObject  {
           if !searchRetry.attemptRetryBasedOnHttpStatus(code: httpStatusCode,
                                                         after: Constants.FoursquareSearchRetryDelay,
                                                         withQoS: .userInteractive) {
-            callback?(nil, ErrorCode.searchFoursquareHttpStatusFailed)
+            callback?(nil, nil, ErrorCode.searchFoursquareHttpStatusFailed)
           }
           return
         }
@@ -160,11 +168,11 @@ class FoodieVenue: FoodiePFObject  {
             if !searchRetry.attemptRetryBasedOnURLError(urlError,
                                                         after: Constants.FoursquareSearchRetryDelay,
                                                         withQoS: .userInteractive) {
-              callback?(nil, ErrorCode.searchFoursquareResponseError)
+              callback?(nil, nil, ErrorCode.searchFoursquareResponseError)
             }
             return
           } else {
-            callback?(nil, ErrorCode.searchFoursquareResponseError)
+            callback?(nil, nil, ErrorCode.searchFoursquareResponseError)
             return
           }
         }
@@ -216,8 +224,42 @@ class FoodieVenue: FoodiePFObject  {
               responseVenueArray.append(foodieVenue)
             }
             
+            // Grab the Geocode if there is one
+            var geocodeStruct: Geocode? = nil
+            
+            if let geocode = response["geocode"] as? [String : AnyObject] {
+              geocodeStruct = Geocode()
+              
+              if let feature = geocode["feature"] {
+                geocodeStruct.feature = feature
+              }
+              
+              if let center = response["center"] as? [String : AnyObject] {
+                if let latitude = center["lat"], let longitude = center["lng"] {
+                  geocodeStruct.center = CLLocation(latitude: latitude, longitude: longitude)
+                }
+              }
+              
+              if let bounds = response["bounds"] as? [String : AnyObject] {
+                if let ne = bounds["ne"] as? [String : AnyObject] , let sw = bounds["sw"] as? [String : AnyObject] {
+                  if let neLat = ne["lat"], let neLng = ne["lng"], let swLat = sw["lat"], let swLng = sw["lng"] {
+                    geocodeStruct.ne = CLLocationCoordinate2D(latitude: neLat, longitude: neLng)
+                    geocodeStruct.sw = CLLocationCoordinate2D(latitude: swLat, longitude: swLng)
+                  }
+                }
+              }
+              
+              if let name = response["name"] {
+                geocodeStruct.name = name
+              }
+              
+              if let displayName = response["displayName"] {
+                geocodeStruct.displayName = displayName
+              }
+            }
+            
             // Return all the collected venues through the callback!
-            callback?(responseVenueArray, nil)
+            callback?(responseVenueArray, geocodeStruct, nil)
             //}
           }
         }

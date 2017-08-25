@@ -29,6 +29,7 @@ class VenueTableViewController: UIViewController {
   // MARK: - Private Instance Variables
   fileprivate var venueResultArray: [FoodieVenue]?
   fileprivate var currentLocation: CLLocation? = nil
+  fileprivate var venueName: String? = nil
   fileprivate var nearLocation: String? = nil
   
   
@@ -90,7 +91,7 @@ class VenueTableViewController: UIViewController {
     }
   }
   
-  fileprivate func venueSearchCallback(_ venueArray: [FoodieVenue]?, _ error: Error?) {
+  fileprivate func venueSearchCallback(_ venueArray: [FoodieVenue]?, _ geocode: FoodieVenue.Geocode?, _ error: Error?) {
     if let error = error {
       DebugPrint.error("Venue Search resulted in error - \(error.localizedDescription)")
       searchErrorDialog()
@@ -155,6 +156,7 @@ extension VenueTableViewController: UISearchBarDelegate {
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     if searchBar === venueSearchBar {
       if let venueSearchText = venueSearchBar.text {
+        venueName = venueSearchText
         // Search Foursquare based on either
         //  1. the user supplied location
         //  2. the suggested Geolocation
@@ -167,6 +169,20 @@ extension VenueTableViewController: UISearchBarDelegate {
           FoodieVenue.searchFoursquare(for: venueSearchText, at: currentLocation, withBlock: venueSearchCallback)
         } else {
           // Do nothing and save bandwidth?
+        }
+      } else {
+        venueName = ""
+      }
+    }
+  }
+  
+  func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    if searchBar === locationSearchBar {
+      if let nearText = locationSearchBar.text {
+        nearLocation = nearText
+        
+        if let venueSearchText = venueName {
+          FoodieVenue.searchFoursquare(for: venueSearchText, near: nearLocation, withBlock: venueSearchCallback)
         }
       }
     }
