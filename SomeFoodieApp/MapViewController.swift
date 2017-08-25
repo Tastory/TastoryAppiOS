@@ -108,7 +108,7 @@ class MapViewController: UIViewController {
     let journalQuery = FoodieJournalQuery()
     journalQuery.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
     journalQuery.setSkip(to: 0)
-    journalQuery.setLimit(to: FoodieConstants.JournalFeedPaginationCount)
+    journalQuery.setLimit(to: FoodieGlobal.Constants.JournalFeedPaginationCount)
     _ = journalQuery.addArrangement(type: .modificationTime, direction: .ascending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
     queryAndLaunchFeed(withQuery: journalQuery)
   }
@@ -117,7 +117,7 @@ class MapViewController: UIViewController {
   @IBAction func searchAll(_ sender: UIButton) {
     let journalQuery = FoodieJournalQuery()
     journalQuery.setSkip(to: 0)
-    journalQuery.setLimit(to: FoodieConstants.JournalFeedPaginationCount)
+    journalQuery.setLimit(to: FoodieGlobal.Constants.JournalFeedPaginationCount)
     _ = journalQuery.addArrangement(type: .modificationTime, direction: .ascending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
     queryAndLaunchFeed(withQuery: journalQuery)
   }

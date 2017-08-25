@@ -60,6 +60,7 @@ class FoodieVenue: FoodiePFObject  {
   
   // MARK: - Types & Enumerations
   typealias VenueErrorBlock = ([FoodieVenue]?, Error?) -> Void
+
   
   
   // MARK: - Error Types Definition
@@ -91,20 +92,11 @@ class FoodieVenue: FoodiePFObject  {
   
   
   // MARK: - Private Constants
-  struct Constants {
-    static let FoursquareClientID = "MIDYZC42VW5QCNEYMXZKH1XGEN4NMVRKZRX40SAPRDN3OQHM"
-    static let FoursquareClientSecret = "2UUA4PGJC5YTMQEUYUISWABLKJA50EUMO51WNVZQXJY1KGWO"
+  private struct Constants {
     static let FoursquareSearchResultsLimit = 50
     static let FoursquareSearchRetryCount = 5  // More retries, shorter delay
     static let FoursquareSearchRetryDelay = 1.0
   }
-  
-  
-  // MARK: - Public Static Variables
-  static let foursquareClient = Client(clientID: Constants.FoursquareClientID, clientSecret: Constants.FoursquareClientSecret, redirectURL: "")
-  static let foursquareConfiguration = Configuration(client: foursquareClient)
-  static let foursquareSession = Session.sharedSession()
-  static var foursquareInitiated = false
   
   
   // MARK: - Public Static Functions
@@ -127,12 +119,7 @@ class FoodieVenue: FoodiePFObject  {
       DebugPrint.assert("Either both Near & Location are nil, or both are not-nil. This is theoretically impossible.")
     }
     
-    if !foursquareInitiated {
-      Session.setupSharedSessionWithConfiguration(foursquareConfiguration)
-      foursquareInitiated = true
-    }
-    
-    let session = foursquareSession
+    let session = FoodieGlobal.foursquareSession
     var parameters = [Parameter.query:venueName]
     parameters += [Parameter.limit: String(Constants.FoursquareSearchResultsLimit)]
     parameters += [Parameter.intent:"checkin"]

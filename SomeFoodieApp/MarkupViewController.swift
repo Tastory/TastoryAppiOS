@@ -563,7 +563,7 @@ class MarkupViewController: UIViewController {
       }
       
       let options = [
-        kCGImageSourceThumbnailMaxPixelSize as String : FoodieConstants.ThumbnailPixels as NSNumber,
+        kCGImageSourceThumbnailMaxPixelSize as String : FoodieGlobal.Constants.ThumbnailPixels as NSNumber,
         kCGImageSourceCreateThumbnailFromImageAlways as String : true as NSNumber,
         kCGImageSourceCreateThumbnailWithTransform as String: true as NSNumber
       ]
@@ -610,7 +610,7 @@ class MarkupViewController: UIViewController {
       let asset = AVURLAsset(url: videoUrl)
       let imgGenerator = AVAssetImageGenerator(asset: asset)
       
-      imgGenerator.maximumSize = CGSize(width: FoodieConstants.ThumbnailPixels, height: FoodieConstants.ThumbnailPixels)  // Assuming either portrait or square
+      imgGenerator.maximumSize = CGSize(width: FoodieGlobal.Constants.ThumbnailPixels, height: FoodieGlobal.Constants.ThumbnailPixels)  // Assuming either portrait or square
       imgGenerator.appliesPreferredTrackTransform = true
       
       do {
@@ -644,7 +644,7 @@ class MarkupViewController: UIViewController {
     }
     
     thumbnailObject = FoodieMedia(withState: .objectModified, fileName: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), type: .photo)
-    thumbnailObject!.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieConstants.JpegCompressionQuality))
+    thumbnailObject!.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
     //CGImageRelease(thumbnailCgImage)
   }
   

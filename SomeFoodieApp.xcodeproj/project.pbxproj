@@ -21,7 +21,7 @@
 		8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */; };
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
 		8C1C71F41ECD7A4B00D2E4F8 /* FoodieFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */; };
-		8C1C71F61ED1602F00D2E4F8 /* FoodieGlobals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */; };
+		8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F51ED1602F00D2E4F8 /* FoodieGlobal.swift */; };
 		8C1D4E1E1ED9513800939B2C /* ThumbnailFrameLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E1D1ED9513800939B2C /* ThumbnailFrameLayer.swift */; };
 		8C1D4E221EDCEC9A00939B2C /* FeedCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */; };
 		8C1D4E241EDCECCD00939B2C /* FeedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */; };
@@ -99,7 +99,7 @@
 		8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButton.swift; path = SomeFoodieApp/CameraButton.swift; sourceTree = "<group>"; };
 		8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFileManager.swift; sourceTree = "<group>"; };
-		8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieGlobals.swift; sourceTree = "<group>"; };
+		8C1C71F51ED1602F00D2E4F8 /* FoodieGlobal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieGlobal.swift; sourceTree = "<group>"; };
 		8C1D4E1D1ED9513800939B2C /* ThumbnailFrameLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ThumbnailFrameLayer.swift; path = SomeFoodieApp/ThumbnailFrameLayer.swift; sourceTree = "<group>"; };
 		8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedCollectionViewController.swift; sourceTree = "<group>"; };
 		8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FeedCollectionViewCell.swift; path = SomeFoodieApp/FeedCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -227,7 +227,7 @@
 		8C9AD05A1E8F60E4005F337E /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				8C1C71F51ED1602F00D2E4F8 /* FoodieGlobals.swift */,
+				8C1C71F51ED1602F00D2E4F8 /* FoodieGlobal.swift */,
 				8C89867D1E958B4300B62306 /* FoodieObject.swift */,
 				8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */,
 				8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */,
@@ -670,7 +670,7 @@
 				8C8986741E91985700B62306 /* FoodieVenue.swift in Sources */,
 				8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */,
 				8C0590471EC653DF00027E91 /* DiscoverViewController.swift in Sources */,
-				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobals.swift in Sources */,
+				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */,
 				8C0590511EC7E6A400027E91 /* FoodieMedia.swift in Sources */,
 				8C8986721E91982E00B62306 /* FoodieJournal.swift in Sources */,
 				8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */,

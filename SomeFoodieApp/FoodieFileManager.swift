@@ -107,8 +107,8 @@ class FoodieFile {
     static let S3BucketKey = "foodilicious-query"
     static let CloudFrontUrl = URL(string: "https://d35zn91jb4p9lo.cloudfront.net/")!
     static let DocumentFolderUrl = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
-    static let AwsRetryCount = FoodieConstants.DefaultServerRequestRetryCount
-    static let AwsRetryDelay = FoodieConstants.DefaultServerRequestRetryDelay
+    static let AwsRetryCount = FoodieGlobal.Constants.DefaultServerRequestRetryCount
+    static let AwsRetryDelay = FoodieGlobal.Constants.DefaultServerRequestRetryDelay
   }
   
   

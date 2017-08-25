@@ -16,6 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     
+    var error: Error?
+    
     // Create S3 Manager singleton
     FoodieFile.manager = FoodieFile()
     
@@ -25,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Initialize Location Watch manager
     LocationWatch.global = LocationWatch()
     
-    // Initialize Parse.
+    // Initialize Parse
     Parse.enableLocalDatastore()
     
     let configuration = ParseClientConfiguration {
@@ -38,6 +40,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // For Parse Subclassing
     configureParse()
+    
+    // Initialize Das Quadrat
+    FoodieGlobal.foursquareInitialize()
+    FoodieCategory.getFromFoursquare(withBlock: nil)  // Let the fetch happen in the background
+    
+    // TODO: - Any Startup Test we want to do that we should use to block Startup?
+    error = nil
+    
+    // Launch Root View Controller
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "RootViewController") as! RootViewController
+    viewController.startupError = error
+    window = UIWindow(frame: UIScreen.main.bounds)
+    window?.rootViewController = viewController
+    window?.makeKeyAndVisible()
     return true
   }
   

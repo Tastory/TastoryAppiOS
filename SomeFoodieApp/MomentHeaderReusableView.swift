@@ -32,7 +32,7 @@ class MomentHeaderReusableView: UICollectionReusableView {
     addMomentLayer = AddMomentLayer(frame: bounds.insetBy(dx: bounds.maxX*Constants.addMomentIconInsetPct,
                                                           dy: bounds.maxY*Constants.addMomentIconInsetPct))
     addMomentLayer.lineWidth = 2.0
-    addMomentLayer.strokeColor = FoodieConstants.ThemeColor.cgColor
+    addMomentLayer.strokeColor = FoodieGlobal.Constants.ThemeColor.cgColor
     layer.addSublayer(addMomentLayer)
   }
   

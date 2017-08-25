@@ -22,7 +22,7 @@ class MomentCollectionViewCell: UICollectionViewCell {
     thumbFrameLayer = ThumbnailFrameLayer(frame: bounds) // bounds.insetBy(dx: bounds.maxX*Constants.thumbnailFrameInsetPct,
                                                          //       dy: bounds.maxY*Constants.thumbnailFrameInsetPct))
     thumbFrameLayer.lineWidth = Constants.thumbnailFrameLineWidth
-    thumbFrameLayer.strokeColor = FoodieConstants.ThemeColor.cgColor
+    thumbFrameLayer.strokeColor = FoodieGlobal.Constants.ThemeColor.cgColor
     thumbFrameView.layer.addSublayer(thumbFrameLayer)
   }
 }

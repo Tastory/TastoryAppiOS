@@ -15,7 +15,7 @@ class JournalViewController: UIViewController {
   
   // MARK: - Constants
   struct Constants {
-    static let MomentsToBufferAtATime = FoodieConstants.MomentsToBufferAtATime
+    static let MomentsToBufferAtATime = FoodieGlobal.Constants.MomentsToBufferAtATime
     static let MomentsViewingTimeInterval = 3.0
   }
   
