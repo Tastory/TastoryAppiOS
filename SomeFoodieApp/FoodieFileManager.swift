@@ -304,9 +304,15 @@ class FoodieFile {
           return
         }
         
-        if httpResponse.statusCode != HTTPStatusCode.ok.rawValue {
+        guard let httpStatusCode = HTTPStatusCode(rawValue: httpResponse.statusCode) else {
+          DebugPrint.error("Download HTTPURLResponse.statusCode is invalid")
+          callback?(ErrorCode.urlSessionDownloadHttpResponseFailed)
+          return
+        }
+        
+        if  httpStatusCode != HTTPStatusCode.ok {
           DebugPrint.error("Download HTTPURLResponse.statusCode = \(httpResponse.statusCode)")
-          if !retrieveRetry.attemptRetryBasedOnHttpStatus(code: httpResponse.statusCode,
+          if !retrieveRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                           after: Constants.AwsRetryDelay,
                                                           withQoS: .userInitiated) {
             callback?(ErrorCode.urlSessionDownloadHttpResponseFailed)

@@ -29,8 +29,8 @@ class VenueTableViewController: UIViewController {
   // MARK: - Private Instance Variables
   fileprivate var venueResultArray: [FoodieVenue]?
   fileprivate var currentLocation: CLLocation? = nil
-  fileprivate var venueName: String? = nil
   fileprivate var nearLocation: String? = nil
+  fileprivate var lastGoodNearLocation: String? = nil
   
   
   // MARK: - IBOutlet
@@ -91,11 +91,39 @@ class VenueTableViewController: UIViewController {
     }
   }
   
+  fileprivate func alertErrorDialog(title: String, message: String) {
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: title,
+                                              titleComment: "Alert diaglogue title when a Venue Table View geocode error occured",
+                                              message: message,
+                                              messageComment: "Alert diaglogue message when a Venue Table View geocode error occured",
+                                              preferredStyle: .alert)
+      
+      alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for Venue Table View errors", style: .cancel)
+      self.present(alertController, animated: true, completion: nil)
+    }
+  }
+  
   fileprivate func venueSearchCallback(_ venueArray: [FoodieVenue]?, _ geocode: FoodieVenue.Geocode?, _ error: Error?) {
-    if let error = error {
-      DebugPrint.error("Venue Search resulted in error - \(error.localizedDescription)")
-      searchErrorDialog()
+    
+    // Error Handle First
+    if let error = error as? FoodieVenue.ErrorCode {
+      switch error {
+      case .searchFoursquareFailedGeocode:
+        alertErrorDialog(title: "Cannot find Location", message: "Please input a valid location, or leave location field empty")
+      default:
+        searchErrorDialog()
+      }
       return
+    }
+    
+    // Update actual search Location if Geocode response available
+    if let geocode = geocode, let displayName = geocode.displayName {
+      locationSearchBar.text = displayName
+      nearLocation = displayName
+    } else {
+      locationSearchBar.text = ""
+      nearLocation = nil
     }
     
     guard let venueArray = venueArray else {
@@ -153,23 +181,31 @@ class VenueTableViewController: UIViewController {
 // MARK: - Search Bar Delegate Protocol Conformance
 extension VenueTableViewController: UISearchBarDelegate {
   
+  // MARK: - Private Static Functions
+  
+  private func fullVenueSearch() {
+    // Search Foursquare based on either
+    //  1. the user supplied location
+    //  2. the suggested Geolocation
+    //  3. the current location
+    if let venueName = venueName {
+      if let nearLocation = nearLocation {
+        FoodieVenue.searchFoursquare(for: venueName, near: nearLocation, withBlock: venueSearchCallback)
+      } else if let suggestedLocation = suggestedLocation {
+        FoodieVenue.searchFoursquare(for: venueName, at: suggestedLocation, withBlock: venueSearchCallback)
+      } else if let currentLocation = currentLocation {
+        FoodieVenue.searchFoursquare(for: venueName, at: currentLocation, withBlock: venueSearchCallback)
+      } else {
+        // Do nothing and save bandwidth?
+      }
+    }
+  }
+  
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     if searchBar === venueSearchBar {
       if let venueSearchText = venueSearchBar.text {
         venueName = venueSearchText
-        // Search Foursquare based on either
-        //  1. the user supplied location
-        //  2. the suggested Geolocation
-        //  3. the current location
-        if let nearLocation = nearLocation {
-          FoodieVenue.searchFoursquare(for: venueSearchText, near: nearLocation, withBlock: venueSearchCallback)
-        } else if let suggestedLocation = suggestedLocation {
-          FoodieVenue.searchFoursquare(for: venueSearchText, at: suggestedLocation, withBlock: venueSearchCallback)
-        } else if let currentLocation = currentLocation {
-          FoodieVenue.searchFoursquare(for: venueSearchText, at: currentLocation, withBlock: venueSearchCallback)
-        } else {
-          // Do nothing and save bandwidth?
-        }
+        fullVenueSearch()
       } else {
         venueName = ""
       }
@@ -177,16 +213,31 @@ extension VenueTableViewController: UISearchBarDelegate {
   }
   
   func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-    if searchBar === locationSearchBar {
+    if searchBar === venueSearchBar {
+      fullVenueSearch()
+    } else if searchBar === locationSearchBar {
       if let nearText = locationSearchBar.text {
         nearLocation = nearText
         
-        if let venueSearchText = venueName {
-          FoodieVenue.searchFoursquare(for: venueSearchText, near: nearLocation, withBlock: venueSearchCallback)
+        if let venueSearchText = venueName, venueSearchText != "" {
+          FoodieVenue.searchFoursquare(for: venueSearchText, near: nearText, withBlock: venueSearchCallback)
+        } else {
+          alertErrorDialog(title: "No Venue to Search", message: "Please specify a venue name ot search")
         }
       }
     }
   }
+  
+  func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+    if searchBar === locationSearchBar {
+      if let nearText = locationSearchBar.text, nearText != "" {
+        // Just leave it alone
+      } else {
+        nearLocation = nil
+      }
+    }
+  }
+
 }
 
 

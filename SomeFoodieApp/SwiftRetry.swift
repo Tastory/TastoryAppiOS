@@ -60,13 +60,8 @@ class SwiftRetry {
   }
   
   // Attempt retry as appropriate. Otherwise returns False.
-  func attemptRetryBasedOnHttpStatus(code: Int, after delaySeconds: Double = 0, withQoS serviceLevel: DispatchQoS.QoSClass = .background) -> Bool {
+  func attemptRetryBasedOnHttpStatus(httpStatus: HTTPStatusCode, after delaySeconds: Double = 0, withQoS serviceLevel: DispatchQoS.QoSClass = .background) -> Bool {
   
-    guard let httpStatus = HTTPStatusCode(rawValue: code) else {
-      DebugPrint.assert("Unexpected. Did not receive valid HTTP Status Code")
-      return false
-    }
-    
     switch httpStatus {
       
     case .ok:

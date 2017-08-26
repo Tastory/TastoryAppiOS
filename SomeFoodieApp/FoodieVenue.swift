@@ -61,8 +61,9 @@ class FoodieVenue: FoodiePFObject  {
   // MARK: - Types & Enumerations
   typealias VenueErrorBlock = ([FoodieVenue]?, Geocode?, Error?) -> Void
 
+  // Struct based on https://developer.foursquare.com/docs/responses/geocode
   struct Geocode {
-    var feature: String?
+    var cc: String?
     var center: CLLocation?
     var ne: CLLocationCoordinate2D?
     var sw: CLLocationCoordinate2D?
@@ -78,6 +79,7 @@ class FoodieVenue: FoodiePFObject  {
     case searchFoursquareHttpStatusNil
     case searchFoursquareHttpStatusFailed
     case searchFoursquareResponseError
+    case searchFoursquareFailedGeocode
     
     var errorDescription: String? {
       switch self {
@@ -89,6 +91,8 @@ class FoodieVenue: FoodiePFObject  {
         return NSLocalizedString("HTTP Status failure upon Foursquare search", comment: "Error description for an exception error code")
       case .searchFoursquareResponseError:
         return NSLocalizedString("General response error upon Foursquare search", comment: "Error description for an exception error code")
+      case .searchFoursquareFailedGeocode:
+        return NSLocalizedString("Cannot find specified location", comment: "Error description for an exception error code")
       }
     }
     
@@ -145,18 +149,37 @@ class FoodieVenue: FoodiePFObject  {
       // Perform Foursquare search with async response handling in block
       let searchTask = session.venues.search(parameters) { (result) in
         
-        guard let httpStatusCode = result.HTTPSTatusCode else {
+        guard let statusCode = result.HTTPSTatusCode, let httpStatusCode = HTTPStatusCode(rawValue: statusCode) else {
           DebugPrint.assert("No valid HTTP Status Code on Foursquare Search")
           callback?(nil, nil, ErrorCode.searchFoursquareHttpStatusNil)
           return
         }
         
-        if httpStatusCode != HTTPStatusCode.ok.rawValue {
-          DebugPrint.error("Search for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
-          if !searchRetry.attemptRetryBasedOnHttpStatus(code: httpStatusCode,
-                                                        after: Constants.FoursquareSearchRetryDelay,
-                                                        withQoS: .userInteractive) {
+        switch httpStatusCode {
+        
+        case .ok:
+          break
+          
+        case .badRequest:
+          if let error = result.error, let errorType = error.userInfo["errorType"] as? String {
+            if errorType == "failed_geocode" {
+              DebugPrint.userError("User inputted a location to perform Foursquare Venue search 'Near', but the Geocode was not found")
+              callback?(nil, nil, ErrorCode.searchFoursquareFailedGeocode)
+              break
+            }
+          }
+          fallthrough
+          
+        default:
+          if foursquareErrorLogging(for: httpStatusCode) {
             callback?(nil, nil, ErrorCode.searchFoursquareHttpStatusFailed)
+          } else {
+            DebugPrint.error("Search for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
+            if !searchRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
+                                                          after: Constants.FoursquareSearchRetryDelay,
+                                                          withQoS: .userInteractive) {
+              callback?(nil, nil, ErrorCode.searchFoursquareHttpStatusFailed)
+            }
           }
           return
         }
@@ -225,36 +248,46 @@ class FoodieVenue: FoodiePFObject  {
             }
             
             // Grab the Geocode if there is one
-            var geocodeStruct: Geocode? = nil
+            var geocodeStruct: Geocode!
             
             if let geocode = response["geocode"] as? [String : AnyObject] {
               geocodeStruct = Geocode()
+              if let feature = geocode["feature"] as? [String: AnyObject] {
               
-              if let feature = geocode["feature"] {
-                geocodeStruct.feature = feature
-              }
-              
-              if let center = response["center"] as? [String : AnyObject] {
-                if let latitude = center["lat"], let longitude = center["lng"] {
+                if let cc = feature["cc"] as? String {
+                  geocodeStruct.cc = cc
+                }
+                
+                if let center = feature["center"] as? [String : AnyObject],
+                   let latString = center["lat"] as? String,
+                   let lngString = center["lng"] as? String,
+                   let latitude = Double(latString),
+                   let longitude = Double(lngString) {
                   geocodeStruct.center = CLLocation(latitude: latitude, longitude: longitude)
                 }
-              }
-              
-              if let bounds = response["bounds"] as? [String : AnyObject] {
-                if let ne = bounds["ne"] as? [String : AnyObject] , let sw = bounds["sw"] as? [String : AnyObject] {
-                  if let neLat = ne["lat"], let neLng = ne["lng"], let swLat = sw["lat"], let swLng = sw["lng"] {
-                    geocodeStruct.ne = CLLocationCoordinate2D(latitude: neLat, longitude: neLng)
-                    geocodeStruct.sw = CLLocationCoordinate2D(latitude: swLat, longitude: swLng)
-                  }
+                
+                if let bounds = feature["bounds"] as? [String : AnyObject],
+                   let ne = bounds["ne"] as? [String : AnyObject],
+                   let sw = bounds["sw"] as? [String : AnyObject],
+                   let neLatString = ne["lat"] as? String,
+                   let neLngString = ne["lng"] as? String,
+                   let swLatString = sw["lat"] as? String,
+                   let swLngString = sw["lng"] as? String,
+                   let neLat = Double(neLatString),
+                   let neLng = Double(neLngString),
+                   let swLat = Double(swLatString),
+                   let swLng = Double(swLngString) {
+                  geocodeStruct.ne = CLLocationCoordinate2D(latitude: neLat, longitude: neLng)
+                  geocodeStruct.sw = CLLocationCoordinate2D(latitude: swLat, longitude: swLng)
                 }
-              }
-              
-              if let name = response["name"] {
-                geocodeStruct.name = name
-              }
-              
-              if let displayName = response["displayName"] {
-                geocodeStruct.displayName = displayName
+                
+                if let name = feature["name"] as? String {
+                  geocodeStruct.name = name
+                }
+                
+                if let displayName = feature["displayName"] as? String {
+                  geocodeStruct.displayName = displayName
+                }
               }
             }
             
@@ -268,7 +301,38 @@ class FoodieVenue: FoodiePFObject  {
     }
   }
   
-  
+  // Return true if the error should result in callback & return, false otherwise to fallthrough
+  private static func foursquareErrorLogging(for httpStatusCode: HTTPStatusCode) -> Bool {
+    // Handling here is loosely based on the description in https://developer.foursquare.com/overview/responses
+    
+    switch httpStatusCode {
+      
+    case .unauthorized:
+      DebugPrint.error("Foursquare HTTP error: Unauthorized - The OAuth token was provided but was invalid")
+      return true
+    
+    case .forbidden:
+      DebugPrint.error("Foursquare HTTP error: Forbidden - The requested information cannot be viewed by the acting user, for example, because they are not friends with the user whose data they are trying to read")
+      return true
+      
+    case .notFound:
+      DebugPrint.error("Foursquare HTTP error: Not Found - Endpoint does not exist")
+      return true
+    
+    case .methodNotAllowed:
+      DebugPrint.error("Foursquare HTTP error: Method Not Allowed - Attempting to use POST with a GET-only endpoint, or vice-versa")
+      return true
+      
+    case .conflict:
+      DebugPrint.error("Foursquare HTTP error: Conflict - The request could not be completed as it is. Use the information included in the response to modify the request and retry")
+      return true
+
+    default:
+      return false
+    }
+  }
+
+
   // MARK: - Public Instance Functions
   
   // This is the Initilizer Parse will call upon Query or Retrieves

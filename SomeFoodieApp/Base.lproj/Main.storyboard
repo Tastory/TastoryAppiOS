@@ -830,7 +830,7 @@
                                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </searchBar>
-                                    <searchBar opaque="NO" contentMode="redraw" placeholder="Location to Search Near" translatesAutoresizingMaskIntoConstraints="NO" id="X26-2v-yRG">
+                                    <searchBar opaque="NO" contentMode="redraw" placeholder="Search near Current Location" translatesAutoresizingMaskIntoConstraints="NO" id="X26-2v-yRG">
                                         <rect key="frame" x="0.0" y="64" width="375" height="44"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </searchBar>

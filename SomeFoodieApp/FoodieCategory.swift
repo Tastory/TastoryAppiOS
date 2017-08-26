@@ -86,15 +86,15 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
       // Get Foursquare Categories with async response handling in block
       let categoriesTask = session.venues.categories { (result) in
         
-        guard let httpStatusCode = result.HTTPSTatusCode else {
+        guard let statusCode = result.HTTPSTatusCode, let httpStatusCode = HTTPStatusCode(rawValue: statusCode) else {
           DebugPrint.error("No valid HTTP Status Code on Foursquare Search")
           callback?(nil, ErrorCode.searchFoursquareHttpStatusNil)
           return
         }
         
-        if httpStatusCode != HTTPStatusCode.ok.rawValue {
+        if httpStatusCode != HTTPStatusCode.ok {
           DebugPrint.error("Search for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
-          if !categoriesRetry.attemptRetryBasedOnHttpStatus(code: httpStatusCode,
+          if !categoriesRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                             after: Constants.FoursquareSearchRetryDelay,
                                                             withQoS: .userInteractive) {
             callback?(nil, ErrorCode.searchFoursquareHttpStatusFailed)
