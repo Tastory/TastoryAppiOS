@@ -11,7 +11,12 @@ import CoreLocation
 
 
 protocol VenueTableReturnDelegate {
-  func venueSearchComplete(venueID: String, venueName: String) // I don't think we need anything else passed back?
+  func venueSearchComplete(venue: FoodieVenue)
+  
+  // TODO: - Complete the input and output of data to/from VenueTableViewController
+  // 1. Lets put the address of each venue location underneath each
+  // 2. Lets make selecting a venue actually pass the venue back to the JournalEntryVC
+  // 3. Lets make it so one can pass in a FoodieVenue as a suggested Venue and auto initiate a search
 }
 
 
@@ -21,16 +26,16 @@ class VenueTableViewController: UIViewController {
   
   // MARK: - Public Instance Variables
   var delegate: VenueTableReturnDelegate?
-  var venueID: String?
-  var venueName: String?
-  var suggestedLocation: CLLocation? = nil
+  var suggestedVenue: FoodieVenue?
+  var suggestedLocation: CLLocation?
   
   
   // MARK: - Private Instance Variables
+  fileprivate var venueName: String?
   fileprivate var venueResultArray: [FoodieVenue]?
-  fileprivate var currentLocation: CLLocation? = nil
-  fileprivate var nearLocation: String? = nil
-  fileprivate var lastGoodNearLocation: String? = nil
+  fileprivate var currentLocation: CLLocation?
+  fileprivate var nearLocation: String?
+  //fileprivate var selectedVenue: FoodieVenue?
   
   
   // MARK: - IBOutlet
@@ -42,9 +47,6 @@ class VenueTableViewController: UIViewController {
   
   // MARK: - IBActions
   @IBAction func rightSwipe(_ sender: UISwipeGestureRecognizer) {
-    if let venueID = venueID, let venueName = venueName {
-      delegate?.venueSearchComplete(venueID: venueID, venueName: venueName)
-    }
     dismiss(animated: true, completion: nil)
   }
   
@@ -168,7 +170,7 @@ class VenueTableViewController: UIViewController {
   }
   
   override func viewDidLayoutSubviews() {
-    venueTableView.contentInset = UIEdgeInsetsMake(stackView.bounds.height, 0.0, 0.0, 0.0)
+    venueTableView.contentInset = UIEdgeInsetsMake(stackView.bounds.height, 0.0, 0.0, 0.0)  // This is so the Table View can be translucent underneath the Stack View of Search Bars
   }
   
   override func didReceiveMemoryWarning() {
@@ -266,10 +268,21 @@ extension VenueTableViewController: UITableViewDataSource {
       return cell
     }
     
+    let venue = venueResultArray[indexPath.row]
+    
     while true {
-      if let name = venueResultArray[indexPath.row].name {
+      if let name = venue.name {
         cell.textLabel?.text = name
+        
+        if let streetAddress = venue.streetAddress, let city = venue.city {
+          cell.detailTextLabel?.text = "\(streetAddress), \(city)"
+        } else if let streetAddress = venue.streetAddress {
+          cell.detailTextLabel?.text = streetAddress
+        } else if let city = venue.city {
+          cell.detailTextLabel?.text = city
+        }
         break
+        
       } else {
         self.venueResultArray!.remove(at: indexPath.row)
       }

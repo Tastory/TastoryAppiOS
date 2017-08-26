@@ -21,6 +21,14 @@ class FoodieVenue: FoodiePFObject  {
   @NSManaged var foursquareVenueID: String?
   @NSManaged var foursquareCategoryIDs: Array<String>?  // Arrange so that best matching highest level is closest to index 0?
   @NSManaged var venueURL: String?
+
+  // Location Information
+  @NSManaged var streetAddress: String?
+  @NSManaged var crossStreet: String?
+  @NSManaged var city: String?
+  @NSManaged var state: String?
+  @NSManaged var postalCode: String?
+  @NSManaged var country: String?
   @NSManaged var geoLocation: PFGeoPoint?  // Geolocation of the Journal entry
 
   // Hour Information (Machine Readable only)  // For human readable string, query Foursquare
@@ -105,7 +113,7 @@ class FoodieVenue: FoodiePFObject  {
   
   // MARK: - Private Constants
   private struct Constants {
-    static let FoursquareSearchResultsLimit = 50
+    static let FoursquareSearchResultsLimit = 20  // 20 Venues at a time is more than enough?
     static let FoursquareSearchRetryCount = 5  // More retries, shorter delay
     static let FoursquareSearchRetryDelay = 1.0
   }
@@ -242,6 +250,31 @@ class FoodieVenue: FoodiePFObject  {
               foodieVenue.name = name
               foodieVenue.foursquareVenueID = id
               foodieVenue.geoLocation = PFGeoPoint(latitude: Double(latitude), longitude: Double(longitude))
+              
+              // Get the rest of the address. Might not always be populated?
+              if let address = location["address"] as? String {
+                foodieVenue.streetAddress = address
+              }
+              
+              if let crossStreet = location["crossStreet"] as? String {
+                foodieVenue.crossStreet = crossStreet
+              }
+              
+              if let city = location["city"] as? String {
+                foodieVenue.city = city
+              }
+              
+              if let state = location["state"] as? String {
+                foodieVenue.state = state
+              }
+              
+              if let postalCode = location["postalCode"] as? String {
+                foodieVenue.postalCode = postalCode
+              }
+              
+              if let country = location["country"] as? String {
+                foodieVenue.country = country
+              }
               
               // Category, URL, Price and Hour information is not necassary at this point. Defer to only when the user actually do want this Venue
               responseVenueArray.append(foodieVenue)

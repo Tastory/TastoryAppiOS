@@ -428,7 +428,7 @@ extension JournalEntryViewController: UITextFieldDelegate {
 
 // MARK: - Venue Table Return Delegate
 extension JournalEntryViewController: VenueTableReturnDelegate {
-  func venueSearchComplete(venueID: String, venueName: String) {
+  func venueSearchComplete(venue: FoodieVenue) {
     // TODO: 
     DebugPrint.verbose("VenueTableReturnDelegate protocol as implemented by JournalEntryViewController called")
   }
