@@ -151,6 +151,7 @@ class VenueTableViewController: UIViewController {
     venueTableView.delegate = self
     venueTableView.dataSource = self
     
+    
     // Let's just get location once everytime we enter this screen.
     // Whats the odd of the user moving all the time? Saves some battery
     LocationWatch.global.get { (location, error) in
@@ -262,15 +263,22 @@ extension VenueTableViewController: UITableViewDataSource {
     let cell = tableView.dequeueReusableCell(withIdentifier: "venueTableCell", for: indexPath)
     
     guard let venueResultArray = venueResultArray else {
-      DebugPrint.error("venueResultArray = nil even tho numberOfRowsInSection = \(tableView.numberOfRows(inSection: indexPath.section))")
+      DebugPrint.assert("venueResultArray = nil even tho numberOfRowsInSection = \(tableView.numberOfRows(inSection: indexPath.section))")
       internalErrorDialog()
       cell.textLabel?.text = ""
+      cell.detailTextLabel?.text = ""
       return cell
     }
     
-    let venue = venueResultArray[indexPath.row]
-    
     while true {
+      // Handle it if we ever removed stuff off the venueResultArray
+      if venueResultArray.count <= indexPath.row {
+        cell.textLabel?.text = ""
+        cell.detailTextLabel?.text = ""
+        return cell
+      }
+      
+      let venue = venueResultArray[indexPath.row]
       if let name = venue.name {
         cell.textLabel?.text = name
         
@@ -284,10 +292,10 @@ extension VenueTableViewController: UITableViewDataSource {
         break
         
       } else {
+        // We are not going display venues with no name
         self.venueResultArray!.remove(at: indexPath.row)
       }
     }
-    
     return cell
   }
 }
@@ -295,7 +303,23 @@ extension VenueTableViewController: UITableViewDataSource {
 
 // MARK: - Table View Delegate Protocol Conformance
 extension VenueTableViewController: UITableViewDelegate {
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    guard let venueResultArray = venueResultArray else {
+      DebugPrint.assert("venueResultArray = nil not expected when user didSelectRowAt \(indexPath.row)")
+      internalErrorDialog()
+      return
+    }
+    
+    // Call the delegate's function for returning the venue
+    delegate?.venueSearchComplete(venue: venueResultArray[indexPath.row])
+    dismiss(animated: true, completion: nil)
+  }
   
+  // Hide the keyboard if the venue table begins dragging
+  func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    venueSearchBar?.resignFirstResponder()
+    locationSearchBar?.resignFirstResponder()
+  }
 }
 
 

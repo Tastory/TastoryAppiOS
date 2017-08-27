@@ -66,7 +66,9 @@ class JournalEntryViewController: UITableViewController {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as! VenueTableViewController
     viewController.delegate = self
+    viewController.suggestedVenue = workingJournal?.venue
     
+    // Average the locations of the Moments to create a location suggestion on where to search for a Venue
     if let moments = workingJournal?.moments {
       viewController.suggestedLocation = averageLocationOf(moments: moments)
     }
@@ -429,8 +431,35 @@ extension JournalEntryViewController: UITextFieldDelegate {
 // MARK: - Venue Table Return Delegate
 extension JournalEntryViewController: VenueTableReturnDelegate {
   func venueSearchComplete(venue: FoodieVenue) {
-    // TODO: 
-    DebugPrint.verbose("VenueTableReturnDelegate protocol as implemented by JournalEntryViewController called")
+    
+    // Update the UI first
+    guard let returnedVenueName = venue.name else {
+      internalErrorDialog()
+      DebugPrint.assert("Returned Venue has no name")
+      return
+    }
+    venueButton?.titleLabel?.text = returnedVenueName
+    
+    // Do a full Venue Fetch from Foursquare
+    venue.getDetailsFromFoursquare { (returnedVenue, error) in
+      venue.getHoursFromFoursquare { (hourSegmentsByDay, error) in
+        var today = 0
+        for hourSegments in hourSegmentsByDay! {
+          DebugPrint.verbose("Day \(today+1)")
+          for hourSegment in hourSegments {
+            if let openingHour = hourSegment["start"], let closingHour = hourSegment["end"] {
+              DebugPrint.verbose("Opening: \(openingHour)")
+              DebugPrint.verbose("Closing: \(closingHour)")
+            }
+          }
+          today += 1
+        }
+      }
+    }
+
+    // Query Parse to see if the Venue already exist
+    
+    // Pre-save the Venue
   }
 }
 

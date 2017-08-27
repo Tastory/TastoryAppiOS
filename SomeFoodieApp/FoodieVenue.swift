@@ -20,6 +20,7 @@ class FoodieVenue: FoodiePFObject  {
   @NSManaged var name: String?
   @NSManaged var foursquareVenueID: String?
   @NSManaged var foursquareCategoryIDs: Array<String>?  // Arrange so that best matching highest level is closest to index 0?
+  @NSManaged var foursquareURL: String?
   @NSManaged var venueURL: String?
 
   // Location Information
@@ -32,26 +33,10 @@ class FoodieVenue: FoodiePFObject  {
   @NSManaged var geoLocation: PFGeoPoint?  // Geolocation of the Journal entry
 
   // Hour Information (Machine Readable only)  // For human readable string, query Foursquare
-  @NSManaged var openingHours: [Int: Int]?  // Array of opening times indexed by day of the week. Comparison only. Do not do regular arithmetic on these because 0059 + 1 needs to become 0100
-  @NSManaged var closingHours: [Int: Int]?  // Array of closing times indexed by day of the week. Next day would be 24+whenever in might be
-  
-//  @NSManaged var mondayOpen: Int // Open time in minutes
-//  @NSManaged var mondayClose: Int // Close time in minutes. Next day would be 24+whenever it might be
-//  @NSManaged var tuesdayOpen: Int
-//  @NSManaged var tuesdayClose: Int
-//  @NSManaged var wednesdayOpen: Int
-//  @NSManaged var wednesdayClose: Int
-//  @NSManaged var thursdayOpen: Int
-//  @NSManaged var thursdayClose: Int
-//  @NSManaged var fridayOpen: Int
-//  @NSManaged var fridayClose: Int
-//  @NSManaged var saturdayOpen: Int
-//  @NSManaged var saturdayClose: Int
-//  @NSManaged var sundayOpen: Int
-//  @NSManaged var sundayClose: Int
-  
+  @NSManaged var hours: NSDictionary?  // Array of hours indexed by day of the week. Each day is an array of Dictionary, where key is either open, or close with an Int value.
+                                       // Int value for comparison only. Do not do regular arithmetic on these because 0059 + 1 needs to become 0100
   // Price Information
-  @NSManaged var priceTier: Double  // Average meal spending
+  @NSManaged var priceTier: Int  // Average meal spending
   @NSManaged var averagePrice: Double  // Placeholder: In currency as represented by currencyCode
   @NSManaged var currencySymbol: String? // Placeholder
   @NSManaged var currencyCode: String?  // Placeholder: Currency type by ISO 4217 code
@@ -67,8 +52,10 @@ class FoodieVenue: FoodiePFObject  {
   
   
   // MARK: - Types & Enumerations
-  typealias VenueErrorBlock = ([FoodieVenue]?, Geocode?, Error?) -> Void
-
+  typealias VenueErrorBlock = (FoodieVenue?, Error?) -> Void
+  typealias VenueArrayErrorBlock = ([FoodieVenue]?, Geocode?, Error?) -> Void
+  typealias HoursErrorBlock = ([[[String:Int]]]?, Error?) -> Void
+  
   // Struct based on https://developer.foursquare.com/docs/responses/geocode
   struct Geocode {
     var cc: String?
@@ -84,20 +71,20 @@ class FoodieVenue: FoodiePFObject  {
   enum ErrorCode: LocalizedError {
     
     case searchFoursquareBothNearAndLocation
-    case searchFoursquareHttpStatusNil
-    case searchFoursquareHttpStatusFailed
-    case searchFoursquareResponseError
+    case foursquareHttpStatusNil
+    case foursquareHttpStatusFailed
+    case foursquareResponseError
     case searchFoursquareFailedGeocode
     
     var errorDescription: String? {
       switch self {
       case .searchFoursquareBothNearAndLocation:
         return NSLocalizedString("Both near & location nil or both not nil in Foursquare search common", comment: "Error description for an exception error code")
-      case .searchFoursquareHttpStatusNil:
+      case .foursquareHttpStatusNil:
         return NSLocalizedString("HTTP Status came back nil upon Foursquare search", comment: "Error description for an exception error code")
-      case .searchFoursquareHttpStatusFailed:
+      case .foursquareHttpStatusFailed:
         return NSLocalizedString("HTTP Status failure upon Foursquare search", comment: "Error description for an exception error code")
-      case .searchFoursquareResponseError:
+      case .foursquareResponseError:
         return NSLocalizedString("General response error upon Foursquare search", comment: "Error description for an exception error code")
       case .searchFoursquareFailedGeocode:
         return NSLocalizedString("Cannot find specified location", comment: "Error description for an exception error code")
@@ -116,23 +103,293 @@ class FoodieVenue: FoodiePFObject  {
     static let FoursquareSearchResultsLimit = 20  // 20 Venues at a time is more than enough?
     static let FoursquareSearchRetryCount = 5  // More retries, shorter delay
     static let FoursquareSearchRetryDelay = 1.0
+    static let FoursquareGetDetailsRetryCount = 5  // More retries, shorter delay
+    static let FoursquareGetDetailsRetryDelay = 1.0
   }
   
   
   // MARK: - Public Static Functions
-  static func searchFoursquare(for venueName: String, near location: String, withBlock callback: VenueErrorBlock?) {
+  static func searchFoursquare(for venueName: String, near location: String, withBlock callback: VenueArrayErrorBlock?) {
     searchFoursquareCommon(for: venueName, near: location, withBlock: callback)
   }
   
-  static func searchFoursquare(for venueName: String, at location: CLLocation, withBlock callback: VenueErrorBlock?) {
+  static func searchFoursquare(for venueName: String, at location: CLLocation, withBlock callback: VenueArrayErrorBlock?) {
     searchFoursquareCommon(for: venueName, at: location, withBlock: callback)
+  }
+  
+  static func getDetailsFromFoursquare(for venueID: String, withBlock callback: VenueErrorBlock?) {
+    
+    let session = FoodieGlobal.foursquareSession
+    let getDetailsRetry = SwiftRetry()
+    getDetailsRetry.start("get details from Foursquare for \(venueID)", withCountOf: Constants.FoursquareGetDetailsRetryCount) {
+      // Perform Foursquare Venue Details get with async response handling in block
+      let getDetailsTask = session.venues.get(venueID) { (result) in
+        
+        guard let statusCode = result.HTTPSTatusCode, let httpStatusCode = HTTPStatusCode(rawValue: statusCode) else {
+          DebugPrint.assert("No valid HTTP Status Code on Foursquare Search")
+          callback?(nil, ErrorCode.foursquareHttpStatusNil)
+          return
+        }
+        
+        switch httpStatusCode {
+          
+        case .ok:
+          break
+          
+        default:
+          if foursquareErrorLogging(for: httpStatusCode) {
+            callback?(nil, ErrorCode.foursquareHttpStatusFailed)
+          } else {
+            DebugPrint.error("Get Details for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
+            if !getDetailsRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
+                                                          after: Constants.FoursquareGetDetailsRetryDelay,
+                                                          withQoS: .userInteractive) {
+              callback?(nil, ErrorCode.foursquareHttpStatusFailed)
+            }
+          }
+          return
+        }
+        
+        // TODO: - Consider CocoaErrorDomain and QuadratResponseErrorDomain error parsing
+        if let error = result.error {
+          DebugPrint.error("Get Details For Foursquare Venue responded with error \(error.localizedDescription) - \(result.description)")
+          if error.domain == NSURLErrorDomain, let urlError = error as? URLError {
+            if !getDetailsRetry.attemptRetryBasedOnURLError(urlError,
+                                                        after: Constants.FoursquareGetDetailsRetryDelay,
+                                                        withQoS: .userInteractive) {
+              callback?(nil, ErrorCode.foursquareResponseError)
+            }
+            return
+          } else {
+            callback?(nil, ErrorCode.foursquareResponseError)
+            return
+          }
+        }
+        
+        // Actual Response Venue Parsing Time
+        if let response = result.response {
+          if let venue = response["venue"] as? [String: AnyObject] {
+
+            let foodieVenue = FoodieVenue()
+            
+            guard let id = venue["id"] as? String else {
+              if let name = venue["name"] as? String {
+                DebugPrint.log("Invalid Foursquare Venue with no ID but Name: \(name))")
+              } else {
+                DebugPrint.log ("Invalid Foursquare Venue with no ID nor Name")
+              }
+              return
+            }
+            
+            guard let name = venue["name"] as? String else {
+              DebugPrint.log("Invalid Foursquare Venue with no Name but ID: \(id)")
+              return
+            }
+            
+            guard let location = venue["location"] as? [String: AnyObject] else {
+              DebugPrint.log("Invalid Foursquare Venue with no Location information. ID: \(id), Name: \(name)")
+              return
+            }
+            
+            guard let latitude = location["lat"] as? Float else {
+              DebugPrint.log("Invalid Foursquare Venue with no Latitude information. ID: \(id), Name: \(name)")
+              return
+            }
+            
+            guard let longitude = location["lng"] as? Float else {
+              DebugPrint.log("Invalid Foursquare Venue with no Longitude information. ID: \(id), Name: \(name)")
+              return
+            }
+            
+            foodieVenue.name = name
+            foodieVenue.foursquareVenueID = id
+            foodieVenue.geoLocation = PFGeoPoint(latitude: Double(latitude), longitude: Double(longitude))
+            
+            // Get the rest of the Venue Details. Might not always be populated?
+            
+            // Address Information
+            if let address = location["address"] as? String {
+              foodieVenue.streetAddress = address
+            }
+            
+            if let crossStreet = location["crossStreet"] as? String {
+              foodieVenue.crossStreet = crossStreet
+            }
+            
+            if let city = location["city"] as? String {
+              foodieVenue.city = city
+            }
+            
+            if let state = location["state"] as? String {
+              foodieVenue.state = state
+            }
+            
+            if let postalCode = location["postalCode"] as? String {
+              foodieVenue.postalCode = postalCode
+            }
+            
+            if let country = location["country"] as? String {
+              foodieVenue.country = country
+            }
+            
+            // Category Information
+            var foodieCategories: [String]?
+            if let categories = venue["categories"] as? [[String : AnyObject]] {
+              foodieCategories = [String]()
+              for category in categories {
+                if let categoryID = category["id"] as? String {
+                  if let primary = category["primary"] as? Bool, primary == true {
+                    foodieCategories!.insert(categoryID, at: 0)
+                  } else {
+                    foodieCategories!.append(categoryID)
+                  }
+                }
+              }
+            }
+            foodieVenue.foursquareCategoryIDs = foodieCategories
+            
+            // Venue URL
+            if let url = venue["url"] as? String {
+              foodieVenue.venueURL = url
+            }
+            
+            // Hours Information to be obtained in a subsequent call!
+            
+            // Price 
+            if let price = venue["price"] as? [String : AnyObject], let tier = price["tier"] as? Int {
+                foodieVenue.priceTier = tier
+            }
+            
+            // Foursquare URL
+            if let canonicalUrl = venue["canonicalUrl"] as? String {
+              foodieVenue.foursquareURL = canonicalUrl
+            }
+            
+            // Return the Venue~
+            callback?(foodieVenue, nil)
+          }
+        }
+      }
+      getDetailsTask.start()
+    }
+  }
+  
+  static func getHoursFromFoursquare(for venueID: String, withBlock callback: HoursErrorBlock?) {
+    
+    let session = FoodieGlobal.foursquareSession
+    let getHoursRetry = SwiftRetry()
+    getHoursRetry.start("get details from Foursquare for \(venueID)", withCountOf: Constants.FoursquareGetDetailsRetryCount) {
+      // Perform Foursquare Venue Details get with async response handling in block
+      let getHoursTask = session.venues.hours(venueID) { (result) in
+        
+        var hourSegmentsByDay: [[[String:Int]]]?
+        
+        guard let statusCode = result.HTTPSTatusCode, let httpStatusCode = HTTPStatusCode(rawValue: statusCode) else {
+          DebugPrint.assert("No valid HTTP Status Code on Foursquare Search")
+          callback?(nil, ErrorCode.foursquareHttpStatusNil)
+          return
+        }
+        
+        switch httpStatusCode {
+          
+        case .ok:
+          break
+          
+        default:
+          if foursquareErrorLogging(for: httpStatusCode) {
+            callback?(nil, ErrorCode.foursquareHttpStatusFailed)
+          } else {
+            DebugPrint.error("Get Details for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
+            if !getHoursRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
+                                                              after: Constants.FoursquareGetDetailsRetryDelay,
+                                                              withQoS: .userInteractive) {
+              callback?(nil, ErrorCode.foursquareHttpStatusFailed)
+            }
+          }
+          return
+        }
+        
+        // TODO: - Consider CocoaErrorDomain and QuadratResponseErrorDomain error parsing
+        if let error = result.error {
+          DebugPrint.error("Get Details For Foursquare Venue responded with error \(error.localizedDescription) - \(result.description)")
+          if error.domain == NSURLErrorDomain, let urlError = error as? URLError {
+            if !getHoursRetry.attemptRetryBasedOnURLError(urlError,
+                                                            after: Constants.FoursquareGetDetailsRetryDelay,
+                                                            withQoS: .userInteractive) {
+              callback?(nil, ErrorCode.foursquareResponseError)
+            }
+            return
+          } else {
+            callback?(nil, ErrorCode.foursquareResponseError)
+            return
+          }
+        }
+        
+        // Parsing the Response for Hour Information
+        if let response = result.response,
+           let hours = response["hours"] as? [String : AnyObject],
+           let timeframes = hours["timeframes"] as? [[String : AnyObject]] {
+          
+          hourSegmentsByDay = [[[String:Int]]]() // An Array of Array of Dictionary
+          for _ in 1...7 {
+            hourSegmentsByDay!.append([[String:Int]]())
+          }
+          
+          for timeframe in timeframes {
+                
+            guard let days = timeframe["days"] as? [Int] else {
+              break
+            }
+                
+            guard let open = timeframe["open"] as? [[String : AnyObject]] else {
+              break
+            }
+          
+            var segment = [String:Int]()
+            
+            for openSegment in open {
+              guard let start = openSegment["start"] as? String, let startInt = Int(start) else {
+                break
+              }
+              segment["start"] = startInt
+              
+              guard var end = openSegment["end"] as? String else {
+                break
+              }
+              
+              // Foursquare represents next day with a '+' symbol in front...
+              if end.characters[end.characters.startIndex] == "+" {
+                let index = end.index(end.startIndex, offsetBy: 1)
+                let endSubstring = end.substring(from: index)
+                guard let endInt = Int(endSubstring) else {
+                  break
+                }
+                segment["end"] = 2400 + endInt
+              } else {
+                guard let endInt = Int(end) else {
+                  break
+                }
+                segment["end"] = endInt
+              }
+              
+              // Add each timeframe to the corresponding day index in the FoodieVenue.hours property
+              for day in days {
+                hourSegmentsByDay![day-1].append(segment)
+              }
+            }
+          }
+        }
+        callback?(hourSegmentsByDay, nil)
+      }
+      getHoursTask.start()
+    }
   }
   
   
   // MARK: - Private Static Functions
   
   // Search Foursquare and return list of matching Compact responses
-  private static func searchFoursquareCommon(for venueName: String, near area: String? = nil, at point: CLLocation? = nil, withBlock callback: VenueErrorBlock?) {
+  private static func searchFoursquareCommon(for venueName: String, near area: String? = nil, at point: CLLocation? = nil, withBlock callback: VenueArrayErrorBlock?) {
     
     if (area != nil && point != nil) || (area == nil && point == nil) {
       callback?(nil, nil, ErrorCode.searchFoursquareBothNearAndLocation)
@@ -159,7 +416,7 @@ class FoodieVenue: FoodiePFObject  {
         
         guard let statusCode = result.HTTPSTatusCode, let httpStatusCode = HTTPStatusCode(rawValue: statusCode) else {
           DebugPrint.assert("No valid HTTP Status Code on Foursquare Search")
-          callback?(nil, nil, ErrorCode.searchFoursquareHttpStatusNil)
+          callback?(nil, nil, ErrorCode.foursquareHttpStatusNil)
           return
         }
         
@@ -180,13 +437,13 @@ class FoodieVenue: FoodiePFObject  {
           
         default:
           if foursquareErrorLogging(for: httpStatusCode) {
-            callback?(nil, nil, ErrorCode.searchFoursquareHttpStatusFailed)
+            callback?(nil, nil, ErrorCode.foursquareHttpStatusFailed)
           } else {
             DebugPrint.error("Search for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
             if !searchRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                           after: Constants.FoursquareSearchRetryDelay,
                                                           withQoS: .userInteractive) {
-              callback?(nil, nil, ErrorCode.searchFoursquareHttpStatusFailed)
+              callback?(nil, nil, ErrorCode.foursquareHttpStatusFailed)
             }
           }
           return
@@ -199,11 +456,11 @@ class FoodieVenue: FoodiePFObject  {
             if !searchRetry.attemptRetryBasedOnURLError(urlError,
                                                         after: Constants.FoursquareSearchRetryDelay,
                                                         withQoS: .userInteractive) {
-              callback?(nil, nil, ErrorCode.searchFoursquareResponseError)
+              callback?(nil, nil, ErrorCode.foursquareResponseError)
             }
             return
           } else {
-            callback?(nil, nil, ErrorCode.searchFoursquareResponseError)
+            callback?(nil, nil, ErrorCode.foursquareResponseError)
             return
           }
         }
@@ -220,30 +477,30 @@ class FoodieVenue: FoodiePFObject  {
               
               guard let id = venue["id"] as? String else {
                 if let name = venue["name"] as? String {
-                  DebugPrint.log("Invalid Foursquare entry with no ID but Name: \(name))")
+                  DebugPrint.log("Invalid Foursquare Venue with no ID but Name: \(name))")
                 } else {
-                  DebugPrint.log ("Invalid Foursquare entry with no ID nor Name")
+                  DebugPrint.log ("Invalid Foursquare Venue with no ID nor Name")
                 }
                 continue
               }
               
               guard let name = venue["name"] as? String else {
-                DebugPrint.log("Invalid Foursquare entry with no Name but ID: \(id)")
+                DebugPrint.log("Invalid Foursquare Venue with no Name but ID: \(id)")
                 continue
               }
               
               guard let location = venue["location"] as? [String: AnyObject] else {
-                DebugPrint.log("Invalid Foursquare entry with no Location information. ID: \(id), Name: \(name)")
+                DebugPrint.log("Invalid Foursquare Venue with no Location information. ID: \(id), Name: \(name)")
                 continue
               }
               
               guard let latitude = location["lat"] as? Float else {
-                DebugPrint.log("Invalid Foursquare entry with no Latitude information. ID: \(id), Name: \(name)")
+                DebugPrint.log("Invalid Foursquare Venue with no Latitude information. ID: \(id), Name: \(name)")
                 continue
               }
               
               guard let longitude = location["lng"] as? Float else {
-                DebugPrint.log("Invalid Foursquare entry with no Longitude information. ID: \(id), Name: \(name)")
+                DebugPrint.log("Invalid Foursquare Venue with no Longitude information. ID: \(id), Name: \(name)")
                 continue
               }
               
@@ -379,6 +636,20 @@ class FoodieVenue: FoodiePFObject  {
   override init(withState operationState: FoodieObject.OperationStates) {
     super.init(withState: operationState)
     foodieObject.delegate = self
+  }
+  
+  
+  func getDetailsFromFoursquare(withBlock callback: VenueErrorBlock?) {
+    if let venueID = foursquareVenueID {
+      FoodieVenue.getDetailsFromFoursquare(for: venueID, withBlock: callback)
+    }
+  }
+  
+  
+  func getHoursFromFoursquare(withBlock callback: HoursErrorBlock?) {
+    if let venueID = foursquareVenueID {
+      FoodieVenue.getHoursFromFoursquare(for: venueID, withBlock: callback)
+    }
   }
 }
 

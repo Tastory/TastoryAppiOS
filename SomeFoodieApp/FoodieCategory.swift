@@ -31,19 +31,19 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   enum ErrorCode: LocalizedError {
     
     case searchFoursquareBothNearAndLocation
-    case searchFoursquareHttpStatusNil
-    case searchFoursquareHttpStatusFailed
-    case searchFoursquareResponseError
+    case foursquareHttpStatusNil
+    case foursquareHttpStatusFailed
+    case foursquareResponseError
     
     var errorDescription: String? {
       switch self {
       case .searchFoursquareBothNearAndLocation:
         return NSLocalizedString("Both near & location nil or both not nil in Foursquare search common", comment: "Error description for an exception error code")
-      case .searchFoursquareHttpStatusNil:
+      case .foursquareHttpStatusNil:
         return NSLocalizedString("HTTP Status came back nil upon Foursquare search", comment: "Error description for an exception error code")
-      case .searchFoursquareHttpStatusFailed:
+      case .foursquareHttpStatusFailed:
         return NSLocalizedString("HTTP Status failure upon Foursquare search", comment: "Error description for an exception error code")
-      case .searchFoursquareResponseError:
+      case .foursquareResponseError:
         return NSLocalizedString("General response error upon Foursquare search", comment: "Error description for an exception error code")
       }
     }
@@ -88,7 +88,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
         
         guard let statusCode = result.HTTPSTatusCode, let httpStatusCode = HTTPStatusCode(rawValue: statusCode) else {
           DebugPrint.error("No valid HTTP Status Code on Foursquare Search")
-          callback?(nil, ErrorCode.searchFoursquareHttpStatusNil)
+          callback?(nil, ErrorCode.foursquareHttpStatusNil)
           return
         }
         
@@ -97,7 +97,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
           if !categoriesRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                             after: Constants.FoursquareSearchRetryDelay,
                                                             withQoS: .userInteractive) {
-            callback?(nil, ErrorCode.searchFoursquareHttpStatusFailed)
+            callback?(nil, ErrorCode.foursquareHttpStatusFailed)
           }
           return
         }
@@ -109,11 +109,11 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
             if !categoriesRetry.attemptRetryBasedOnURLError(urlError,
                                                             after: Constants.FoursquareSearchRetryDelay,
                                                             withQoS: .userInteractive) {
-              callback?(nil, ErrorCode.searchFoursquareResponseError)
+              callback?(nil, ErrorCode.foursquareResponseError)
             }
             return
           } else {
-            callback?(nil, ErrorCode.searchFoursquareResponseError)
+            callback?(nil, ErrorCode.foursquareResponseError)
             return
           }
         }
