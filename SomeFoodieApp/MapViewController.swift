@@ -105,7 +105,7 @@ class MapViewController: UIViewController {
     
     DebugPrint.verbose("Query Location Rectangle SouthWest - (\(southWestCoordinate.latitude), \(southWestCoordinate.longitude)), NorthEast - (\(northEastCoordinate.latitude), \(northEastCoordinate.longitude))")
     
-    let journalQuery = FoodieJournalQuery()
+    let journalQuery = FoodieQuery()
     journalQuery.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
     journalQuery.setSkip(to: 0)
     journalQuery.setLimit(to: FoodieGlobal.Constants.JournalFeedPaginationCount)
@@ -115,7 +115,7 @@ class MapViewController: UIViewController {
   
 
   @IBAction func searchAll(_ sender: UIButton) {
-    let journalQuery = FoodieJournalQuery()
+    let journalQuery = FoodieQuery()
     journalQuery.setSkip(to: 0)
     journalQuery.setLimit(to: FoodieGlobal.Constants.JournalFeedPaginationCount)
     _ = journalQuery.addArrangement(type: .modificationTime, direction: .ascending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
@@ -194,7 +194,7 @@ class MapViewController: UIViewController {
   }
   
   
-  fileprivate func queryAndLaunchFeed(withQuery journalQuery: FoodieJournalQuery) {
+  fileprivate func queryAndLaunchFeed(withQuery journalQuery: FoodieQuery) {
     
     // Put up blur view and activity spinner before performing query
     // TODO: We should factor these out so they can be used everywhere
@@ -211,7 +211,7 @@ class MapViewController: UIViewController {
     activityView.startAnimating()
     view.addSubview(activityView)
     
-    journalQuery.createQueryAndSearch { (journals, error) in
+    journalQuery.initJournalQueryAndSearch { (journals, error) in
       
       // Remove the blur view and activity spinner
       blurEffectView.removeFromSuperview()

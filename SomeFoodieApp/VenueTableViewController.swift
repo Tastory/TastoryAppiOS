@@ -93,26 +93,13 @@ class VenueTableViewController: UIViewController {
     }
   }
   
-  fileprivate func alertErrorDialog(title: String, message: String) {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: title,
-                                              titleComment: "Alert diaglogue title when a Venue Table View geocode error occured",
-                                              message: message,
-                                              messageComment: "Alert diaglogue message when a Venue Table View geocode error occured",
-                                              preferredStyle: .alert)
-      
-      alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for Venue Table View errors", style: .cancel)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-  
   fileprivate func venueSearchCallback(_ venueArray: [FoodieVenue]?, _ geocode: FoodieVenue.Geocode?, _ error: Error?) {
     
     // Error Handle First
     if let error = error as? FoodieVenue.ErrorCode {
       switch error {
       case .searchFoursquareFailedGeocode:
-        alertErrorDialog(title: "Cannot find Location", message: "Please input a valid location, or leave location field empty")
+        AlertDialog.present(from: self, title: "Cannot find Location", message: "Please input a valid location, or leave location field empty")
       default:
         searchErrorDialog()
       }
@@ -225,7 +212,7 @@ extension VenueTableViewController: UISearchBarDelegate {
         if let venueSearchText = venueName, venueSearchText != "" {
           FoodieVenue.searchFoursquare(for: venueSearchText, near: nearText, withBlock: venueSearchCallback)
         } else {
-          alertErrorDialog(title: "No Venue to Search", message: "Please specify a venue name ot search")
+          AlertDialog.present(from: self, title: "No Venue to Search", message: "Please specify a venue name ot search")
         }
       }
     }

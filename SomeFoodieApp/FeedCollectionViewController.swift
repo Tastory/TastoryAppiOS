@@ -18,7 +18,7 @@ class FeedCollectionViewController: UICollectionViewController {
   
   
   // MARK: - Private Instance Variable
-  var journalQuery: FoodieJournalQuery!
+  var journalQuery: FoodieQuery!
   var journalArray = [FoodieJournal]()
   
   

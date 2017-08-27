@@ -1,19 +1,19 @@
 //
-//  FoodieJournalQuery.swift
-//  SomeFoodieApp
+//  FoodieQuery.swift
+//  EatellyApp
 //
 //  Created by Howard Lee on 2017-08-05.
-//  Copyright © 2017 Howard's Creative Innovations. All rights reserved.
+//  Copyright © 2017 Eatelly. All rights reserved.
 //
 
 import Parse
 import CoreLocation
 
-class FoodieJournalQuery {
+class FoodieQuery {
   
   // MARK: - Types & Enumerations
-  
-  typealias ResultBlock = ([FoodieJournal]?, Error?) -> Void
+  typealias JournalsErrorBlock = ([FoodieJournal]?, Error?) -> Void
+  typealias VenuesErrorBlock = ([FoodieVenue]?, Error?) -> Void
   
   enum LocationType: String {
     case coordinateRectangle = "coordinateRectangle"
@@ -42,7 +42,7 @@ class FoodieJournalQuery {
     var errorDescription: String? {
       switch self {
       case .noPFQueryToPerformAnotherSearch:
-        return NSLocalizedString("No initial PFQuery created, so cannot get another batch of query results", comment: "Error description for a FoodieJournalQuery error code")
+        return NSLocalizedString("No initial PFQuery created, so cannot get another batch of query results", comment: "Error description for a FoodieQuery error code")
       }
     }
     
@@ -173,7 +173,7 @@ class FoodieJournalQuery {
   }
   
   
-  func createQueryAndSearch(withBlock callback: ResultBlock?) {
+  func initJournalQueryAndSearch(withBlock callback: JournalsErrorBlock?) {
     pfQuery = FoodieJournal.query()
     
     // A location is always required for Query&Search
@@ -236,7 +236,7 @@ class FoodieJournalQuery {
   }
   
     
-  func getAnother(_ count: Int, withBlock callback: ResultBlock?) {
+  func getNextJournals(for count: Int, withBlock callback: JournalsErrorBlock?) {
     guard let query = pfQuery else {
       DebugPrint.assert("No initial PFQuery created, so cannot get another batch of query results")
       callback?(nil, ErrorCode.noPFQueryToPerformAnotherSearch)

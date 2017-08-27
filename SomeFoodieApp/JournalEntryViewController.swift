@@ -440,26 +440,64 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
     }
     venueButton?.titleLabel?.text = returnedVenueName
     
+    // Query Parse to see if the Venue already exist
+    
+    
     // Do a full Venue Fetch from Foursquare
-    venue.getDetailsFromFoursquare { (returnedVenue, error) in
-      venue.getHoursFromFoursquare { (hourSegmentsByDay, error) in
-        var today = 0
-        for hourSegments in hourSegmentsByDay! {
-          DebugPrint.verbose("Day \(today+1)")
-          for hourSegment in hourSegments {
-            if let openingHour = hourSegment["start"], let closingHour = hourSegment["end"] {
-              DebugPrint.verbose("Opening: \(openingHour)")
-              DebugPrint.verbose("Closing: \(closingHour)")
-            }
-          }
-          today += 1
+//    DebugPrint.verbose("Before -")
+//    DebugPrint.verbose("Price Tier: \(venue.priceTier)")
+//    DebugPrint.verbose("Hour:")
+//    var b4Today = 0
+//    if let b4HourSegmentsByDay = venue.hours {
+//      for b4HourSegments in b4HourSegmentsByDay {
+//        DebugPrint.verbose("Day \(b4Today+1)")
+//        for b4HourSegment in b4HourSegments {
+//          if let openingHour = b4HourSegment["start"], let closingHour = b4HourSegment["end"] {
+//            DebugPrint.verbose("Opening: \(openingHour)")
+//            DebugPrint.verbose("Closing: \(closingHour)")
+//          }
+//        }
+//        b4Today += 1
+//      }
+//    }
+//    DebugPrint.verbose("After -")
+    
+    venue.getDetailsFromFoursquare { (_, error) in
+//      if let venue = returnedVenue {
+//        DebugPrint.verbose("PriceTier: \(venue.priceTier)")
+//      }
+      if let error = error {
+        AlertDialog.present(from: self, title: "Venue Details Error", message: "Unable to obtain additional Details for Venue")
+        DebugPrint.assert("Getting Venue Details from Foursquare resulted in Error - \(error.localizedDescription)")
+        return
+      }
+      
+      venue.getHoursFromFoursquare { (_, error) in
+//        var today = 0
+//        if let hourSegmentsByDay = venue.hours {
+//        
+//          for hourSegments in hourSegmentsByDay {
+//            DebugPrint.verbose("Day \(today+1)")
+//            for hourSegment in hourSegments {
+//              if let openingHour = hourSegment["start"], let closingHour = hourSegment["end"] {
+//                DebugPrint.verbose("Opening: \(openingHour)")
+//                DebugPrint.verbose("Closing: \(closingHour)")
+//              }
+//            }
+//            today += 1
+//          }
+//        }
+        if let error = error {
+          AlertDialog.present(from: self, title: "Venue Hours Detail Error", message: "Unable to obtain details regarding opening hours for Venue")
+          DebugPrint.assert("Getting Venue Hours from Foursquare resulted in Error - \(error.localizedDescription)")
+          return
         }
+        
+        // Pre-save the Venue
       }
     }
 
-    // Query Parse to see if the Venue already exist
     
-    // Pre-save the Venue
   }
 }
 
