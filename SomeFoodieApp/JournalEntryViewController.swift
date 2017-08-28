@@ -111,7 +111,13 @@ class JournalEntryViewController: UITableViewController {
     //workingJournal?.setGeoPoint(latitude: 49.2778211, longitude: -123.1089668)
       if success {
         DebugPrint.verbose("Journal Save to Server Completed!")
-        self.saveCompleteDialog()
+
+        FoodieJournal.unpinAllObjectsInBackground(withName: "workingJournal")
+        self.workingJournal = nil
+        FoodieJournal.setJournal(journal: nil)
+        self.saveCompleteDialog(handler: {(UIAlertAction) -> Void in
+          self.vcDismiss()
+        })
       } else if let error = error {
         DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
       } else {
@@ -277,7 +283,7 @@ class JournalEntryViewController: UITableViewController {
   }
   
   
-  private func saveCompleteDialog() {
+  private func saveCompleteDialog(handler: ((UIAlertAction) -> Void)? = nil) {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "SomeFoodieApp",
                                               titleComment: "Alert diaglogue title when a Journal Entry view completes test save",
@@ -286,7 +292,8 @@ class JournalEntryViewController: UITableViewController {
                                               preferredStyle: .alert)
       alertController.addAlertAction(title: "OK",
                                      comment: "Button in alert dialog box for completing a test save",
-                                     style: .default)
+                                     style: .default,
+                                     handler: handler)
       self.present(alertController, animated: true, completion: nil)
     }
   }
