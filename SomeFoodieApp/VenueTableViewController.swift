@@ -24,6 +24,13 @@ class VenueTableViewController: UIViewController {
   
   // MARK: - Types & Enumerations
   
+  
+  // MARK: - Constants
+  struct Constants {
+    fileprivate static let defaultLocationPlaceholderText = "Enter location to search near"
+  }
+  
+  
   // MARK: - Public Instance Variables
   var delegate: VenueTableReturnDelegate?
   var suggestedVenue: FoodieVenue?
@@ -35,7 +42,9 @@ class VenueTableViewController: UIViewController {
   fileprivate var venueResultArray: [FoodieVenue]?
   fileprivate var currentLocation: CLLocation?
   fileprivate var nearLocation: String?
-  //fileprivate var selectedVenue: FoodieVenue?
+  fileprivate var isVenueSearchUnderWay: Bool = false
+  fileprivate var isVenueSearchPending: Bool = false
+  fileprivate var searchMutex = pthread_mutex_t()
   
   
   // MARK: - IBOutlet
@@ -93,6 +102,40 @@ class VenueTableViewController: UIViewController {
     }
   }
   
+  
+  // Working along with venueSearchComplete(), this call is Thread Safe
+  fileprivate func fullVenueSearch() {
+    
+    pthread_mutex_lock(&searchMutex)
+    guard !isVenueSearchUnderWay else {
+      isVenueSearchPending = true
+      pthread_mutex_unlock(&searchMutex)
+      return
+    }
+    pthread_mutex_unlock(&searchMutex)
+    
+    // Search Foursquare based on either
+    //  1. the user supplied location
+    //  2. the suggested Geolocation
+    //  3. the current location
+    var venueNameToSearch = ""
+    if let venueName = venueName {
+      venueNameToSearch = venueName
+    }
+    if let nearLocation = nearLocation {
+      FoodieVenue.searchFoursquare(for: venueNameToSearch, near: nearLocation, withBlock: venueSearchCallback)
+    } else if let suggestedLocation = suggestedLocation {
+      FoodieVenue.searchFoursquare(for: venueNameToSearch, at: suggestedLocation, withBlock: venueSearchCallback)
+    } else if let currentLocation = currentLocation {
+      FoodieVenue.searchFoursquare(for: venueNameToSearch, at: currentLocation, withBlock: venueSearchCallback)
+    } else {
+      DebugPrint.error("No useful location to base the search on")
+      AlertDialog.present(from: self, title: "Cannot Determine Location", message: "Please enter a location to perform Venue Search")
+      locationSearchBar.placeholder = Constants.defaultLocationPlaceholderText
+      locationSearchBar.setNeedsDisplay()
+    }
+  }
+  
   fileprivate func venueSearchCallback(_ venueArray: [FoodieVenue]?, _ geocode: FoodieVenue.Geocode?, _ error: Error?) {
     
     // Error Handle First
@@ -124,6 +167,22 @@ class VenueTableViewController: UIViewController {
     
     venueResultArray = venueArray
     venueTableView.reloadData()
+    
+    // If search is pending, make sure another search will be done
+    var doAnotherSearch = false
+    
+    pthread_mutex_lock(&searchMutex)
+    isVenueSearchUnderWay = false
+    
+    if isVenueSearchPending {
+      isVenueSearchPending = false
+      doAnotherSearch = true
+    }
+    pthread_mutex_unlock(&searchMutex)
+    
+    if doAnotherSearch {
+      fullVenueSearch()
+    }
   }
   
   
@@ -138,6 +197,17 @@ class VenueTableViewController: UIViewController {
     venueTableView.delegate = self
     venueTableView.dataSource = self
     
+    // Update the UI
+    if let suggestedVenueName = suggestedVenue?.name {
+      venueSearchBar.text = suggestedVenueName
+      venueName = suggestedVenueName
+    }
+    
+    if suggestedLocation != nil {
+      locationSearchBar.placeholder = "Search near location of Moments"
+    } else {
+      locationSearchBar.placeholder = Constants.defaultLocationPlaceholderText
+    }
     
     // Let's just get location once everytime we enter this screen.
     // Whats the odd of the user moving all the time? Saves some battery
@@ -150,11 +220,23 @@ class VenueTableViewController: UIViewController {
       
       if let location = location {
         self.currentLocation = location
+        
+        // A Location suggestion based off the Moment have higher search priority. So only update the placeholder text to reflect this if there is no Suggested Location
+        if self.suggestedLocation == nil {
+          self.locationSearchBar.placeholder = "Search near Current Location"
+          self.locationSearchBar.setNeedsDisplay()
+        }
+        
+        // With the location updated, we can do another search
+        self.fullVenueSearch()
       }
     }
     
     // TODO: I think we need to narrow the search categories down a little bit. Aka. also augment FoodieVenue
     // TODO: I think we need to figure out how to deal with Foursquare Category listings
+    
+    // Kick off an initial search regardless?
+    fullVenueSearch()
   }
   
   override func viewDidLayoutSubviews() {
@@ -170,26 +252,6 @@ class VenueTableViewController: UIViewController {
 
 // MARK: - Search Bar Delegate Protocol Conformance
 extension VenueTableViewController: UISearchBarDelegate {
-  
-  // MARK: - Private Static Functions
-  
-  private func fullVenueSearch() {
-    // Search Foursquare based on either
-    //  1. the user supplied location
-    //  2. the suggested Geolocation
-    //  3. the current location
-    if let venueName = venueName {
-      if let nearLocation = nearLocation {
-        FoodieVenue.searchFoursquare(for: venueName, near: nearLocation, withBlock: venueSearchCallback)
-      } else if let suggestedLocation = suggestedLocation {
-        FoodieVenue.searchFoursquare(for: venueName, at: suggestedLocation, withBlock: venueSearchCallback)
-      } else if let currentLocation = currentLocation {
-        FoodieVenue.searchFoursquare(for: venueName, at: currentLocation, withBlock: venueSearchCallback)
-      } else {
-        // Do nothing and save bandwidth?
-      }
-    }
-  }
   
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     if searchBar === venueSearchBar {

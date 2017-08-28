@@ -13,6 +13,7 @@
 
 import UIKit
 import MapKit
+import CoreLocation
 import Parse
 
 
@@ -22,6 +23,11 @@ class JournalEntryViewController: UITableViewController {
   fileprivate struct Constants {
     static let mapHeight: CGFloat = floor(UIScreen.main.bounds.height/4)
     static let momentHeight: CGFloat = floor(UIScreen.main.bounds.height/3)
+    static let placeholderColor = UIColor(red: 0xC8/0xFF, green: 0xC8/0xFF, blue: 0xC8/0xFF, alpha: 1.0)
+    static let defaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
+                                                              longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
+    static let defaultDelta: CLLocationDegrees = 0.05
+    static let venueDelta: CLLocationDegrees = 0.005
   }
   
   
@@ -48,17 +54,9 @@ class JournalEntryViewController: UITableViewController {
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var venueButton: UIButton?
+  
   @IBOutlet weak var linkTextField: UITextField?
-  @IBOutlet weak var tagsTextView: UITextView? {
-    didSet {
-      placeholderLabel = UILabel(frame: CGRect(x: 5, y: 7, width: 49, height: 19))
-      placeholderLabel.text = "Tags" // TODO: Localization
-      placeholderLabel.textColor = UIColor(red: 0xC8/0xFF, green: 0xC8/0xFF, blue: 0xC8/0xFF, alpha: 1.0)
-      placeholderLabel.font = UIFont.systemFont(ofSize: 14)
-      placeholderLabel.isHidden = !tagsTextView!.text.isEmpty
-      tagsTextView?.addSubview(placeholderLabel)
-    }
-  }
+  @IBOutlet weak var tagsTextView: UITextView?
   
   
   // MARK: - IBActions
@@ -69,19 +67,27 @@ class JournalEntryViewController: UITableViewController {
     viewController.suggestedVenue = workingJournal?.venue
     
     // Average the locations of the Moments to create a location suggestion on where to search for a Venue
-    if let moments = workingJournal?.moments {
-      viewController.suggestedLocation = averageLocationOf(moments: moments)
-    }
+    viewController.suggestedLocation = averageLocationOfMoments()
     self.present(viewController, animated: true)
   }
   
   @IBAction func testSaveJournal(_ sender: Any) {
 
-    //TODO add spinner 
-    UIApplication.shared.beginIgnoringInteractionEvents()
-    
     workingJournal?.title = titleTextField?.text
     workingJournal?.journalURL = linkTextField?.text
+    
+    guard workingJournal?.title != nil && workingJournal?.venue != nil else {
+      AlertDialog.present(from: self, title: "Required Fields Empty", message: "The Title and Venue are essential to a Story!")
+      return
+    }
+    
+    guard let moments = workingJournal?.moments, !moments.isEmpty else {
+      AlertDialog.present(from: self, title: "Story has No Moments", message: "Add some Moments to make this an interesting Story!")
+      return
+    }
+    
+    //TODO add spinner 
+    UIApplication.shared.beginIgnoringInteractionEvents()
     
     DebugPrint.verbose("\(String(describing: self.workingJournal?.foodieObject.operationState))")
 
@@ -119,11 +125,15 @@ class JournalEntryViewController: UITableViewController {
     }
   }
   
-  fileprivate func averageLocationOf(moments: [FoodieMoment]) -> CLLocation? {
+  fileprivate func averageLocationOfMoments() -> CLLocation? {
     
     var numValidCoordinates = 0
     var sumLatitude: Double?
     var sumLongitude: Double?
+    
+    guard let moments = workingJournal?.moments, !moments.isEmpty else {
+      return nil
+    }
     
     for moment in moments {
       if let location = moment.location {
@@ -141,6 +151,24 @@ class JournalEntryViewController: UITableViewController {
     }
   }
   
+  fileprivate func updateStoryEntryMap(withCoordinate coordinate: CLLocationCoordinate2D, span: CLLocationDegrees, venueName: String? = nil) {
+    let region = MKCoordinateRegion(center: coordinate,
+                                    span: MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span))
+    mapView.setRegion(region, animated: true)
+    
+    // Remove all annotations each time
+    mapView.removeAnnotations(mapView.annotations)
+    
+    // Add back if an annotation is requested
+    if let name = venueName {
+      let annotation = MKPointAnnotation()
+      annotation.coordinate = coordinate
+      annotation.title = name
+      mapView.addAnnotation(annotation)
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { self.mapView.selectAnnotation(annotation, animated: true) }  // This makes the Annotation title pop-up after a slight delay
+    }
+  }
+  
   
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
@@ -149,6 +177,14 @@ class JournalEntryViewController: UITableViewController {
     if let journalUnwrapped = workingJournal {
       // TODO: Do we need to download the Journal itself first? How can we tell?
       
+      // Set the view to the values of the Story
+      if let storyTitle = journalUnwrapped.title {
+        titleTextField?.text = storyTitle
+      }
+      
+      if let venueName = journalUnwrapped.venue?.name {
+        venueButton?.setTitle(venueName, for: .normal)
+      }
       
       // Let's figure out what to do with the returned Moment
       if returnedMoment == nil {
@@ -259,15 +295,77 @@ class JournalEntryViewController: UITableViewController {
     previousSwipeRecognizer.direction = .right
     previousSwipeRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(previousSwipeRecognizer)
+  }
+  
+  
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     
-    titleTextField?.text = workingJournal?.title
+    if let workingJournal = workingJournal {
+      
+      // Update all the fields here?
+      if let title = workingJournal.title {
+        titleTextField?.text = title
+      }
+      
+      if let venueName = workingJournal.venue?.name {
+        venueButton?.setTitle(venueName, for: .normal)
+        venueButton?.setTitleColor(.black, for: .normal)
+      } else {
+        venueButton?.setTitle("Venue", for: .normal)
+        venueButton?.setTitleColor(Constants.placeholderColor, for: .normal)
+      }
+
+      if let storyURL = workingJournal.journalURL {
+        linkTextField?.text = storyURL
+      }
+      
+      if let tags = workingJournal.tags, !tags.isEmpty {
+        // TODO: Deal with tags here?
+      } else {
+        placeholderLabel = UILabel(frame: CGRect(x: 5, y: 7, width: 49, height: 19))
+        placeholderLabel.text = "Tags" // TODO: Localization
+        placeholderLabel.textColor = Constants.placeholderColor
+        placeholderLabel.font = UIFont.systemFont(ofSize: 14)
+        placeholderLabel.isHidden = !tagsTextView!.text.isEmpty
+        tagsTextView?.addSubview(placeholderLabel)  // Remember to remove on the way out. There might be real Tags next time in the TextView
+      }
+
+      // Lets update the map location to the top here
+      // If there's a Venue, use that location first. Usually if a venue have been freshly selected, it wouldn't have been confirmed in time. So another update is done in venueSearchComplete()
+      if let latitude = workingJournal.venue?.location?.latitude,
+        let longitude = workingJournal.venue?.location?.longitude {
+        updateStoryEntryMap(withCoordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: Constants.venueDelta, venueName: workingJournal.venue?.name)
+      }
+      
+      // Otherwise use the average location of the Moments
+      else if let momentsLocation = averageLocationOfMoments() {
+        updateStoryEntryMap(withCoordinate: momentsLocation.coordinate, span: Constants.defaultDelta)
+      }
+      
+      // Try to get a current location using the GPS
+      else {
+        LocationWatch.global.get { (location, error) in
+          if let error = error {
+            DebugPrint.error("StoryEntryVC with no Venue or Moments Location. Getting location through LocationWatch also resulted in error - \(error.localizedDescription)")
+            self.updateStoryEntryMap(withCoordinate: Constants.defaultCLCoordinate2D, span: Constants.defaultDelta)
+            return
+          } else if let location = location {
+            self.updateStoryEntryMap(withCoordinate: location.coordinate, span: Constants.defaultDelta)
+          }
+        }
+      }
+      
+      // Start pre-upload operations, and other background trickeries?
+    }
   }
   
-  
-  override func viewDidAppear(_ animated: Bool) {
-    // Start pre-upload operations, and other background trickeries
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    
+    // This is for removing the fake Placeholder text from the Tags TextView
+    placeholderLabel.removeFromSuperview()
   }
-  
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
@@ -432,14 +530,6 @@ extension JournalEntryViewController: UITextFieldDelegate {
 extension JournalEntryViewController: VenueTableReturnDelegate {
   func venueSearchComplete(venue: FoodieVenue) {
     
-    // Update the UI first
-    guard let returnedVenueName = venue.name else {
-      internalErrorDialog()
-      DebugPrint.assert("Returned Venue has no name")
-      return
-    }
-    venueButton?.titleLabel?.text = returnedVenueName
-    
     // Query Parse to see if the Venue already exist
     let venueQuery = FoodieQuery()
     venueQuery.addFoursquareVenueIdFilter(id: venue.foursquareVenueID!)
@@ -470,28 +560,7 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
       self.workingJournal?.venue = venueToUpdate
       
       // Do a full Venue Fetch from Foursquare
-      //    DebugPrint.verbose("Before -")
-      //    DebugPrint.verbose("Price Tier: \(venue.priceTier)")
-      //    DebugPrint.verbose("Hour:")
-      //    var b4Today = 0
-      //    if let b4HourSegmentsByDay = venue.hours {
-      //      for b4HourSegments in b4HourSegmentsByDay {
-      //        DebugPrint.verbose("Day \(b4Today+1)")
-      //        for b4HourSegment in b4HourSegments {
-      //          if let openingHour = b4HourSegment["start"], let closingHour = b4HourSegment["end"] {
-      //            DebugPrint.verbose("Opening: \(openingHour)")
-      //            DebugPrint.verbose("Closing: \(closingHour)")
-      //          }
-      //        }
-      //        b4Today += 1
-      //      }
-      //    }
-      //    DebugPrint.verbose("After -")
-      
       venueToUpdate.getDetailsFromFoursquare { (_, error) in
-        //      if let venue = returnedVenue {
-        //        DebugPrint.verbose("PriceTier: \(venue.priceTier)")
-        //      }
         if let error = error {
           AlertDialog.present(from: self, title: "Venue Details Error", message: "Unable to obtain additional Details for Venue")
           DebugPrint.assert("Getting Venue Details from Foursquare resulted in Error - \(error.localizedDescription)")
@@ -499,28 +568,24 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
         }
         
         venueToUpdate.getHoursFromFoursquare { (_, error) in
-          //        var today = 0
-          //        if let hourSegmentsByDay = venue.hours {
-          //
-          //          for hourSegments in hourSegmentsByDay {
-          //            DebugPrint.verbose("Day \(today+1)")
-          //            for hourSegment in hourSegments {
-          //              if let openingHour = hourSegment["start"], let closingHour = hourSegment["end"] {
-          //                DebugPrint.verbose("Opening: \(openingHour)")
-          //                DebugPrint.verbose("Closing: \(closingHour)")
-          //              }
-          //            }
-          //            today += 1
-          //          }
-          //        }
           if let error = error {
             AlertDialog.present(from: self, title: "Venue Hours Detail Error", message: "Unable to obtain details regarding opening hours for Venue")
             DebugPrint.assert("Getting Venue Hours from Foursquare resulted in Error - \(error.localizedDescription)")
             return
           }
           
-          // Pre-save the Venue
+          // Update the UI again here
+          if let name = venueToUpdate.name {
+            self.venueButton?.setTitle(name, for: .normal)
+            self.venueButton?.setTitleColor(.black, for: .normal)
+          }
           
+          // Update the map again here
+          if let latitude = venueToUpdate.location?.latitude, let longitude = venueToUpdate.location?.longitude {
+            self.updateStoryEntryMap(withCoordinate: CLLocationCoordinate2DMake(latitude, longitude), span: Constants.venueDelta, venueName: venueToUpdate.name)
+          }
+          
+          // Pre-save the Venue
           pthread_mutex_lock(&self.saveStateMutex)
           self.isSaveInProgress = true
           pthread_mutex_unlock(&self.saveStateMutex)
