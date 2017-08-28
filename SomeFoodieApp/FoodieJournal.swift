@@ -22,24 +22,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var title: String? // Title for the Journal
   @NSManaged var author: FoodieUser? // Pointer to the user that authored this Moment
   @NSManaged var venue: FoodieVenue? // Pointer to the Restaurant object
-  @NSManaged var venueName: String? // Easy access to venue name
-  @NSManaged var categories: Array<FoodieCategory>? // Array of internal restaurant categoryIDs (all cateogires that applies, most accurate at index 0. Remove top levels if got sub already)
-  @NSManaged var location: PFGeoPoint? // Geolocation of the Journal entry
-  
-  @NSManaged var mondayOpen: Int // Open time in seconds
-  @NSManaged var mondayClose: Int // Close time in seconds
-  @NSManaged var tuesdayOpen: Int
-  @NSManaged var tuesdayClose: Int
-  @NSManaged var wednesdayOpen: Int
-  @NSManaged var wednesdayClose: Int
-  @NSManaged var thursdayOpen: Int
-  @NSManaged var thursdayClose: Int
-  @NSManaged var fridayOpen: Int
-  @NSManaged var fridayClose: Int
-  @NSManaged var saturdayOpen: Int
-  @NSManaged var saturdayClose: Int
-  @NSManaged var sundayOpen: Int
-  @NSManaged var sundayClose: Int
+  //@NSManaged var venueName: String? // Easy access to venue name
+  @NSManaged var location: PFGeoPoint? // Geolocation of the Journal entry, TODO: Should be made into a relational query
   
   @NSManaged var journalURL: String? // URL to the Journal article
   @NSManaged var tags: Array<String>? // Array of Strings, unstructured
@@ -520,12 +504,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       if let venue = self.venue {
         self.foodieObject.retrieveChild(venue, forceAnyways: forceAnyways, withBlock: callback)
       }
-      
-      if let hasCategories = self.categories {
-        for category in hasCategories {
-          self.foodieObject.retrieveChild(category, forceAnyways: forceAnyways, withBlock: callback)
-        }
-      }
     }
   }
   
@@ -578,13 +556,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     if let venue = venue {
       foodieObject.saveChild(venue, to: location, withName: name, withBlock: callback)
       childOperationPending = true
-    }
-    
-    if let hasCategories = categories {
-      for category in hasCategories {
-        foodieObject.saveChild(category, to: location, withName: name, withBlock: callback)
-        childOperationPending = true
-      }
     }
     
     if !childOperationPending {

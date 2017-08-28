@@ -56,6 +56,8 @@ class FoodieQuery {
   // MARK: - Private Instance Variables
   private var pfQuery: PFQuery<PFObject>?
   
+  private var foursquareVenueID: String?
+  
   // Allow 2 ways to do location queries. Either coordinate + radius, or upper left and lower right coordinate
   private var locationType: LocationType = .noLocation
   private var southWestCoordinate: CLLocationCoordinate2D!
@@ -79,6 +81,10 @@ class FoodieQuery {
   
   // Arrangement Parameters
   private var arrangementArray: [(type: SortType, direction: SortDirection)] = [(SortType, SortDirection)]()
+  
+  
+  // MARK: - Private Functions
+  
   
   
   // MARK: - Public Instance Functions
@@ -111,6 +117,9 @@ class FoodieQuery {
     
   }
   
+  func addFoursquareVenueIdFilter(id: String) {
+    foursquareVenueID = id
+  }
   
   func setSkip(to value: Int) {
     skip = value
@@ -173,41 +182,16 @@ class FoodieQuery {
   }
   
   
-  func initJournalQueryAndSearch(withBlock callback: JournalsErrorBlock?) {
-    pfQuery = FoodieJournal.query()
-    
-    // A location is always required for Query&Search
-    switch locationType {
-      
-    case .coordinateRectangle:
-      let southWestGeoPoint = PFGeoPoint(latitude: southWestCoordinate.latitude,
-                                         longitude: southWestCoordinate.longitude)
-      let northEastGeoPoint = PFGeoPoint(latitude: northEastCoordinate.latitude,
-                                          longitude: northEastCoordinate.longitude)
-      pfQuery!.whereKey("location",
-                        withinGeoBoxFromSouthwest: southWestGeoPoint,
-                        toNortheast: northEastGeoPoint)
-      
-    case .pointAndRadius:
-      let originGeoPoint = PFGeoPoint(latitude: originCoordinate.latitude,
-                                      longitude: originCoordinate.longitude)
-      pfQuery!.whereKey("location",
-                        nearGeoPoint: originGeoPoint,
-                        withinKilometers: radius)
-      
-    case .noLocation:
-      break
-    }
-
+  func setupCommon(for query: PFQuery<PFObject>) -> PFQuery<PFObject> {
     // Set query constraints
-    pfQuery!.limit = limit
-    pfQuery!.skip = skip
-    
+    query.limit = limit
+    query.skip = skip
+
     // Set query arrangements
     for arrangement in arrangementArray {
-      
+
       var typeString: String!
-      
+
       switch arrangement.type {
       case .creationTime:
         typeString = "createdAt"
@@ -216,14 +200,52 @@ class FoodieQuery {
       case .price:
         typeString = "price"  // TODO: This doesn't work for now
       }
-      
+
       switch arrangement.direction {
       case .ascending:
-        pfQuery!.addAscendingOrder(typeString)
+        query.addAscendingOrder(typeString)
       case .descending:
-        pfQuery!.addDescendingOrder(typeString)
+        query.addDescendingOrder(typeString)
       }
     }
+    return query
+  }
+  
+  
+  func setupVenueCommon(for query: PFQuery<PFObject>) -> PFQuery<PFObject> {
+    if let id = foursquareVenueID {
+      query.whereKey("foursquareVenueID", equalTo: id)
+      
+    } else {
+      switch locationType {
+        
+      case .coordinateRectangle:
+        let southWestGeoPoint = PFGeoPoint(latitude: southWestCoordinate.latitude,
+                                           longitude: southWestCoordinate.longitude)
+        let northEastGeoPoint = PFGeoPoint(latitude: northEastCoordinate.latitude,
+                                           longitude: northEastCoordinate.longitude)
+        query.whereKey("location",
+                       withinGeoBoxFromSouthwest: southWestGeoPoint,
+                       toNortheast: northEastGeoPoint)
+        
+      case .pointAndRadius:
+        let originGeoPoint = PFGeoPoint(latitude: originCoordinate.latitude,
+                                        longitude: originCoordinate.longitude)
+        query.whereKey("location",
+                       nearGeoPoint: originGeoPoint,
+                       withinKilometers: radius)
+        
+      case .noLocation:
+        break
+      }
+    }
+    return query
+  }
+  
+  func initJournalQueryAndSearch(withBlock callback: JournalsErrorBlock?) {
+    pfQuery = FoodieJournal.query()
+    pfQuery = setupCommon(for: pfQuery!)
+    pfQuery = setupVenueCommon(for: pfQuery!)  // TODO: This should be relational query
     
     // Do the actual search!
     pfQuery!.findObjectsInBackground { (objects, error) in
@@ -235,7 +257,21 @@ class FoodieQuery {
     }
   }
   
+  func initVenueQueryAndSearch(withBlock callback: VenuesErrorBlock?) {
+    pfQuery = FoodieVenue.query()
+    pfQuery = setupCommon(for: pfQuery!)
+    pfQuery = setupVenueCommon(for: pfQuery!)
     
+    // Do the actual search!
+    pfQuery!.findObjectsInBackground { (objects, error) in
+      if let journals = objects as? [FoodieVenue] {
+        callback?(journals, error)
+      } else {
+        callback?(nil, error)
+      }
+    }
+  }
+  
   func getNextJournals(for count: Int, withBlock callback: JournalsErrorBlock?) {
     guard let query = pfQuery else {
       DebugPrint.assert("No initial PFQuery created, so cannot get another batch of query results")
@@ -251,6 +287,28 @@ class FoodieQuery {
     // Do the actual search!
     query.findObjectsInBackground { (objects, error) in
       if let journals = objects as? [FoodieJournal] {
+        callback?(journals, error)
+      } else {
+        callback?(nil, error)
+      }
+    }
+  }
+  
+  func getNextVenues(for count: Int, withBlock callback: VenuesErrorBlock?) {
+    guard let query = pfQuery else {
+      DebugPrint.assert("No initial PFQuery created, so cannot get another batch of query results")
+      callback?(nil, ErrorCode.noPFQueryToPerformAnotherSearch)
+      return
+    }
+    
+    skip = skip + limit
+    limit = count
+    query.skip = skip
+    query.limit = limit
+    
+    // Do the actual search!
+    query.findObjectsInBackground { (objects, error) in
+      if let journals = objects as? [FoodieVenue] {
         callback?(journals, error)
       } else {
         callback?(nil, error)

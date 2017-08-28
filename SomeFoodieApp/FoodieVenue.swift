@@ -30,7 +30,7 @@ class FoodieVenue: FoodiePFObject  {
   @NSManaged var state: String?
   @NSManaged var postalCode: String?
   @NSManaged var country: String?
-  @NSManaged var geoLocation: PFGeoPoint?  // Geolocation of the Journal entry
+  @NSManaged var location: PFGeoPoint?  // Geolocation of the Journal entry
 
   // Hour Information (Machine Readable only)  // For human readable string, query Foursquare
   @NSManaged var hours: Array<Array<NSDictionary>>?  // Array of hours indexed by day of the week. Each day is an array of Dictionary, where key is either open, or close with an Int value.
@@ -268,7 +268,7 @@ class FoodieVenue: FoodiePFObject  {
               
               foodieVenue.name = name
               foodieVenue.foursquareVenueID = id
-              foodieVenue.geoLocation = PFGeoPoint(latitude: Double(latitude), longitude: Double(longitude))
+              foodieVenue.location = PFGeoPoint(latitude: Double(latitude), longitude: Double(longitude))
               
               // Get the rest of the address. Might not always be populated?
               if let address = location["address"] as? String {
@@ -440,7 +440,7 @@ class FoodieVenue: FoodiePFObject  {
             
             foodieVenue.name = name
             foodieVenue.foursquareVenueID = id
-            foodieVenue.geoLocation = PFGeoPoint(latitude: Double(latitude), longitude: Double(longitude))
+            foodieVenue.location = PFGeoPoint(latitude: Double(latitude), longitude: Double(longitude))
             
             // Get the rest of the Venue Details. Might not always be populated?
             
@@ -700,7 +700,7 @@ extension FoodieVenue: FoodieObjectDelegate {
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
-                     withName name: String?,
+                     withName name: String? = nil,
                      withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
@@ -709,6 +709,10 @@ extension FoodieVenue: FoodieObjectDelegate {
     if let earlySuccess = earlyReturnStatus.success {
       DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
       return
+    }
+    
+    DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
+      self.foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
     }
   }
   

@@ -441,63 +441,121 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
     venueButton?.titleLabel?.text = returnedVenueName
     
     // Query Parse to see if the Venue already exist
+    let venueQuery = FoodieQuery()
+    venueQuery.addFoursquareVenueIdFilter(id: venue.foursquareVenueID!)
+    venueQuery.setSkip(to: 0)
+    venueQuery.setLimit(to: 2)
+    _ = venueQuery.addArrangement(type: .modificationTime, direction: .descending)
     
-    
-    // Do a full Venue Fetch from Foursquare
-//    DebugPrint.verbose("Before -")
-//    DebugPrint.verbose("Price Tier: \(venue.priceTier)")
-//    DebugPrint.verbose("Hour:")
-//    var b4Today = 0
-//    if let b4HourSegmentsByDay = venue.hours {
-//      for b4HourSegments in b4HourSegmentsByDay {
-//        DebugPrint.verbose("Day \(b4Today+1)")
-//        for b4HourSegment in b4HourSegments {
-//          if let openingHour = b4HourSegment["start"], let closingHour = b4HourSegment["end"] {
-//            DebugPrint.verbose("Opening: \(openingHour)")
-//            DebugPrint.verbose("Closing: \(closingHour)")
-//          }
-//        }
-//        b4Today += 1
-//      }
-//    }
-//    DebugPrint.verbose("After -")
-    
-    venue.getDetailsFromFoursquare { (_, error) in
-//      if let venue = returnedVenue {
-//        DebugPrint.verbose("PriceTier: \(venue.priceTier)")
-//      }
+    venueQuery.initVenueQueryAndSearch { (queriedVenues, error) in
+      
       if let error = error {
-        AlertDialog.present(from: self, title: "Venue Details Error", message: "Unable to obtain additional Details for Venue")
-        DebugPrint.assert("Getting Venue Details from Foursquare resulted in Error - \(error.localizedDescription)")
+        AlertDialog.present(from: self, title: "Venue Error", message: "Unable to verify Venue against Eatelly database")
+        DebugPrint.assert("Querying Parse for the Foursquare Venue ID resulted in Error - \(error.localizedDescription)")
         return
       }
       
-      venue.getHoursFromFoursquare { (_, error) in
-//        var today = 0
-//        if let hourSegmentsByDay = venue.hours {
-//        
-//          for hourSegments in hourSegmentsByDay {
-//            DebugPrint.verbose("Day \(today+1)")
-//            for hourSegment in hourSegments {
-//              if let openingHour = hourSegment["start"], let closingHour = hourSegment["end"] {
-//                DebugPrint.verbose("Opening: \(openingHour)")
-//                DebugPrint.verbose("Closing: \(closingHour)")
-//              }
-//            }
-//            today += 1
-//          }
-//        }
+      var venueToUpdate = venue
+      
+      if let queriedVenues = queriedVenues, !queriedVenues.isEmpty {
+        if queriedVenues.count > 1 {
+          DebugPrint.assert("More than 1 Venue returned from Parse for a single Foursquare Venue ID")
+        }
+        venueToUpdate = queriedVenues[0]
+        venueToUpdate.foodieObject.markModified()
+        // Do we have to fetch the rest of the Venue before we update and overwrite?
+      }
+
+      // Let's set the Journal <=> Venue relationship right away
+      self.workingJournal?.venue = venueToUpdate
+      
+      // Do a full Venue Fetch from Foursquare
+      //    DebugPrint.verbose("Before -")
+      //    DebugPrint.verbose("Price Tier: \(venue.priceTier)")
+      //    DebugPrint.verbose("Hour:")
+      //    var b4Today = 0
+      //    if let b4HourSegmentsByDay = venue.hours {
+      //      for b4HourSegments in b4HourSegmentsByDay {
+      //        DebugPrint.verbose("Day \(b4Today+1)")
+      //        for b4HourSegment in b4HourSegments {
+      //          if let openingHour = b4HourSegment["start"], let closingHour = b4HourSegment["end"] {
+      //            DebugPrint.verbose("Opening: \(openingHour)")
+      //            DebugPrint.verbose("Closing: \(closingHour)")
+      //          }
+      //        }
+      //        b4Today += 1
+      //      }
+      //    }
+      //    DebugPrint.verbose("After -")
+      
+      venueToUpdate.getDetailsFromFoursquare { (_, error) in
+        //      if let venue = returnedVenue {
+        //        DebugPrint.verbose("PriceTier: \(venue.priceTier)")
+        //      }
         if let error = error {
-          AlertDialog.present(from: self, title: "Venue Hours Detail Error", message: "Unable to obtain details regarding opening hours for Venue")
-          DebugPrint.assert("Getting Venue Hours from Foursquare resulted in Error - \(error.localizedDescription)")
+          AlertDialog.present(from: self, title: "Venue Details Error", message: "Unable to obtain additional Details for Venue")
+          DebugPrint.assert("Getting Venue Details from Foursquare resulted in Error - \(error.localizedDescription)")
           return
         }
         
-        // Pre-save the Venue
+        venueToUpdate.getHoursFromFoursquare { (_, error) in
+          //        var today = 0
+          //        if let hourSegmentsByDay = venue.hours {
+          //
+          //          for hourSegments in hourSegmentsByDay {
+          //            DebugPrint.verbose("Day \(today+1)")
+          //            for hourSegment in hourSegments {
+          //              if let openingHour = hourSegment["start"], let closingHour = hourSegment["end"] {
+          //                DebugPrint.verbose("Opening: \(openingHour)")
+          //                DebugPrint.verbose("Closing: \(closingHour)")
+          //              }
+          //            }
+          //            today += 1
+          //          }
+          //        }
+          if let error = error {
+            AlertDialog.present(from: self, title: "Venue Hours Detail Error", message: "Unable to obtain details regarding opening hours for Venue")
+            DebugPrint.assert("Getting Venue Hours from Foursquare resulted in Error - \(error.localizedDescription)")
+            return
+          }
+          
+          // Pre-save the Venue
+          
+          pthread_mutex_lock(&self.saveStateMutex)
+          self.isSaveInProgress = true
+          pthread_mutex_unlock(&self.saveStateMutex)
+          
+          venueToUpdate.saveRecursive(to: .local) { (_, error) in
+            if let error = error {
+              
+              pthread_mutex_lock(&self.saveStateMutex)
+              self.isSaveInProgress = false
+              pthread_mutex_unlock(&self.saveStateMutex)
+              
+              AlertDialog.present(from: self, title: "Local Save Failed", message: "Try free up some space and try again")
+              DebugPrint.assert("VenueToUpdate pre-save to local resulted in Error - \(error.localizedDescription)")
+              return
+            }
+            
+            venueToUpdate.saveRecursive(to: .server) { (_, error) in
+              
+              // Whether successful or not, save no longer in progress by this point
+              pthread_mutex_lock(&self.saveStateMutex)
+              self.isSaveInProgress = false
+              pthread_mutex_unlock(&self.saveStateMutex)
+              
+              if let error = error {
+                AlertDialog.present(from: self, title: "Server Save Failed", message: "Please check network connection and try again")
+                DebugPrint.assert("VenueToUpdate pre-save to server resulted in Error - \(error.localizedDescription)")
+                return
+              }
+              
+              DebugPrint.verbose("Venue Pre-save for '\(venueToUpdate.name ?? "Cannot Access Venue Name")' Successful!")
+            }
+          }
+        }
       }
     }
-
-    
   }
 }
 
