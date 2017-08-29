@@ -26,8 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     Parse.enableLocalDatastore()
     
     let configuration = ParseClientConfiguration {
-      $0.applicationId = "Ln4jrr1U3e0MlzutB80xlmp6q3weXRQM9vFMSaxi"
-      $0.clientKey = "ZFJpq42IVr9WSPP58lqEg4gfDWNeso8vtIhkSA5k"
+      $0.applicationId = "7dwZeNccj6qrvFjNoSXJvxQ7NaZ5mlmmrumZvO6S"
+      $0.clientKey = "I2iecAGe8Db3XpGjYRH7qqEuOJ8IVVCfhkKDl5uV"
       $0.server = "https://parseapi.back4app.com"
       $0.isLocalDatastoreEnabled = true
     }
@@ -74,36 +74,48 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
 
       let currentJournal = fetchedObject as! FoodieJournal
-      do {
-        //try currentJournal.fetchIfNeeded()
         currentJournal.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: currentJournal.thumbnailFileName!, type: FoodieMediaType.photo)
 
-        // TODO move logic to  Foodie moment
-        if let moments = currentJournal.moments {
-          FoodieMoment.queryFromPin(withName: "workingJournal", withBlock: {(fetchedMoments,error )-> Void in
+      // TODO move logic to  Foodie moment
+      if let moments = currentJournal.moments {
+        FoodieMoment.queryFromPin(withName: "workingJournal", withBlock: {(fetchedMoments,error )-> Void in
 
-            if error != nil
+          if error != nil
+          {
+            DebugPrint.verbose("Error fetching moments from pinned local store")
+          }
+
+          currentJournal.moments?.removeAll()
+          //TODO possible that there is zero moment
+          for moment in (fetchedMoments!) {
+
+            let foodieMoment = moment as! FoodieMoment
+
+            foodieMoment.mediaObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.mediaFileName!, type:  FoodieMediaType(rawValue:  foodieMoment.mediaType!)!)
+            //TODO make sure the file exists
+            foodieMoment.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.thumbnailFileName!, type: FoodieMediaType.photo)
+
+            if(foodieMoment.foodieObject.operationState != .objectSynced)
             {
-              DebugPrint.verbose("Error fetching moments from pinned local store")
+              foodieMoment.foodieObject.markModified()
             }
 
-            currentJournal.moments?.removeAll()
-            //TODO possible that there is zero moment
-            for moment in (fetchedMoments!) {
+              FoodieMarkup.queryFromPin(withName: "workingJournal", withBlock: { (fetchedMarkups, error) in
+                for markup in (fetchedMarkups!) {
+                  let foodieMarkup = markup as! FoodieMarkup
 
-              let foodieMoment = moment as! FoodieMoment
-
-              foodieMoment.mediaObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.mediaFileName!, type:  FoodieMediaType(rawValue:  foodieMoment.mediaType!)!)
-              //TODO make sure the file exists
-              foodieMoment.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.thumbnailFileName!, type: FoodieMediaType.photo)
-              currentJournal.moments?.append(foodieMoment)
-            }
-            currentJournal.foodieObject.markModified()
-            FoodieJournal.setJournal(journal: currentJournal)
-          })
-        }
-      } catch {
-        DebugPrint.verbose("Failed to retrieve workingJournal from local data store")
+                  if(foodieMarkup.foodieObject.operationState != .objectSynced)
+                  {
+                    foodieMoment.foodieObject.markModified()
+                  }
+                  foodieMoment.markups?.append(foodieMarkup)
+                }
+                currentJournal.moments?.append(foodieMoment)
+              })
+          }
+          currentJournal.foodieObject.markModified()
+          FoodieJournal.setJournal(journal: currentJournal)
+        })
       }
     })
   }

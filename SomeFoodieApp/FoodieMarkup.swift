@@ -38,6 +38,14 @@ class FoodieMarkup: FoodiePFObject {
     super.init(withState: operationState)
     foodieObject.delegate = self
   }
+
+  static func queryFromPin(withName name: String, withBlock: (([AnyObject]?, Error?) -> Void)?) {
+    let query = PFQuery(className: FoodieMarkup.parseClassName())
+    query.fromPin(withName: name)
+    query.findObjectsInBackground() { (markups, error)in
+      withBlock?(markups, error)
+    }
+  }
 }
 
 

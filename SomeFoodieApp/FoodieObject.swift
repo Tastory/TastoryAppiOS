@@ -239,11 +239,13 @@ class FoodieObject {
         // Dial back the state
         protectedOperationState = .objectModified
         
-      } else if (location == .server) && (operationState == .savingToServer) {
+      } else if (location == .server) {
         // Dial back the state
         protectedOperationState = .savedToLocal
-        
-      }
+      } /*else {
+        // Unexpected state combination
+        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
+      }*/
     }
       
     // State Transition for Success
@@ -252,11 +254,14 @@ class FoodieObject {
         // Dial back the state
         protectedOperationState = .savedToLocal
         
-      } else if (location == .server) && (operationState == .savingToServer) {
+      } else if (location == .server) {
         // Dial back the state
         protectedOperationState = .objectSynced
         
-      }
+      } /*else {
+        // Unexpected state combination
+        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
+      }*/
     }
   }
   
@@ -280,7 +285,7 @@ class FoodieObject {
             self.protectedOperationError = hasError
           } else {
             // TODO investigate if it is possible to have success = false and no error 
-            // I have seen it happened in once 
+            // I have seen it happened once
             DebugPrint.assert("saveObject failed but block contained no Error")
           }
         }
@@ -319,30 +324,17 @@ class FoodieObject {
   // Function for state transition at the beginning of saveRecursive
   func saveStateTransition(to location: StorageLocation) -> (success: Bool?, error: LocalizedError?) {
 
-    // Is save even allowed? Return false here if illegal state transition. Otherwise do state transition
-    switch operationState {
-    case .savingToLocal, .savingToServer:
-      // Save already occuring, another save not allowed
-      return (true, nil)
-    //return (false, ErrorCode(.saveStateTransitionSaveAlreadyInProgress))
-    default:
-      break
-    }
-    
     // Location dependent state transitions
     switch location {
     case .local:
       switch operationState {
-      case .objectSynced:
+      case .objectSynced , .savedToLocal:
         // No child object needs saving. Callback success in background
         return (true, nil)
       case .objectModified:
         protectedOperationState = .savingToLocal
       default:
-        DebugPrint.log("YOLO") 
-        //DebugPrint.assert("Illegal State Transition. Save to Local attempt not from .objectModified state. Current State = \(operationState)")
-        //return (true,nil)
-        //return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
+        break
       }
       
     case .server:
@@ -350,13 +342,10 @@ class FoodieObject {
       case .objectSynced:
         // No child object needs saving. Callback success in background
         return (true, nil)
-      case .savedToLocal:
+      case .savedToLocal, .objectModified, .savingToServer:
         protectedOperationState = .savingToServer
       default:
-        DebugPrint.log("YOLO")
-        //DebugPrint.assert("Illegal State Transition. Save to Sever attempt not from .savedToLocal state. Current State = \(operationState)")
-        //return (true, nil)
-        //return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
+        break
       }
     default:
     break

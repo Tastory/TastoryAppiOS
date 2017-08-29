@@ -62,10 +62,12 @@ class JournalEntryViewController: UITableViewController {
 
   @IBAction func EditedTitle(_ sender: Any) {
     workingJournal?.title = titleTextField?.text
+    saveJournalToLocal()
   }
 
   @IBAction func EditedLink(_ sender: Any) {
     workingJournal?.journalURL = linkTextField?.text
+    saveJournalToLocal()
   }
 
 
@@ -101,6 +103,16 @@ class JournalEntryViewController: UITableViewController {
       saveJournalToServer()
     }
   }
+
+  func saveJournalToLocal() {
+    if let journal = workingJournal {
+      journal.foodieObject.markModified()
+      //
+      FoodieJournal.unpinAllObjectsInBackground(withName: "workingJournal")
+      journal.saveRecursive(to: .local, withName: "workingJournal",withBlock: nil)
+    }
+  }
+
   
   func saveJournalToServer(){
 
