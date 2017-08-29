@@ -17,6 +17,30 @@ class FoodiePFObject: PFObject {
   var foodieObject: FoodieObject!
   
   
+  // MARK: - Public Static Variable
+  static func configure() {
+    Parse.enableLocalDatastore()
+    
+    let configuration = ParseClientConfiguration {
+      $0.applicationId = "bcq2IsV9NHVi8vwIQZXOr5Qzyqoj0ts1sgt7hNlw"
+      $0.clientKey = "yE4Bbq5vIv03oNNrhyAy5eu9AWUIIh1mj4LFmt81"
+      $0.server = "https://parseapi.back4app.com"
+      $0.isLocalDatastoreEnabled = true
+    }
+    Parse.initialize(with: configuration)
+    
+    // For Parse Subclassing
+    // FoodieObject is an Abstract! Don't Register!!
+    FoodieUser.registerSubclass()
+    FoodieJournal.registerSubclass()
+    FoodieVenue.registerSubclass()
+    FoodieCategory.registerSubclass()
+    FoodieMoment.registerSubclass()
+    FoodieMarkup.registerSubclass()
+    FoodieHistory.registerSubclass()
+  }
+  
+  
   // MARK: - Public Instance Functions
   override init() {
     super.init()

@@ -83,8 +83,12 @@ class FoodieQuery {
   private var arrangementArray: [(type: SortType, direction: SortDirection)] = [(SortType, SortDirection)]()
   
   
-  // MARK: - Private Functions
-  
+  // MARK: - Public Static Functions
+  static func getFirstObject(withName name: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    let query = FoodieJournal.query()!
+    query.fromPin(withName: name)
+    query.getFirstObjectInBackground(block: callback)
+  }
   
   
   // MARK: - Public Instance Functions

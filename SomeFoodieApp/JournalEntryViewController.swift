@@ -404,7 +404,7 @@ class JournalEntryViewController: UITableViewController {
       alertController.addAlertAction(title: "OK",
                                      comment: "Button in alert dialog box for completing a test save",
                                      style: .default)
-      self.present(alertController, animated: true, completion: nil)
+      DispatchQueue.main.async { self.present(alertController, animated: true, completion: nil) }
     }
   }
   

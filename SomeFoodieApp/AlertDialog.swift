@@ -19,7 +19,7 @@ struct AlertDialog {
                                               preferredStyle: .alert)
       
       alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box as presented from \(vcTitle)", style: .cancel)
-      vc.present(alertController, animated: true, completion: nil)
+      DispatchQueue.main.async { vc.present(alertController, animated: true, completion: nil) }
     }
   }
 }

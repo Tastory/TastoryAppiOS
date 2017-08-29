@@ -140,6 +140,12 @@ class FoodieObject {
   fileprivate var criticalMutex = pthread_mutex_t()
   
   
+  // MARK: - Public Static Functions
+  static func initialize() {
+    FoodiePFObject.configure()
+  }
+  
+  
   // MARK: - Public Instance Functions
   
   init(withState operationState: OperationStates) {

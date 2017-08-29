@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Parse
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -18,32 +17,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var error: Error?
     
+    // Initialize FoodieObject Database
+    FoodieObject.initialize()
+    
     // Create S3 Manager singleton
     FoodieFile.manager = FoodieFile()
     
     // Create Prefetch Manager singleton
     FoodiePrefetch.global = FoodiePrefetch()
     
-    // Initialize Location Watch manager
-    LocationWatch.global = LocationWatch()
-    
-    // Initialize Parse
-    Parse.enableLocalDatastore()
-    
-    let configuration = ParseClientConfiguration {
-      $0.applicationId = "bcq2IsV9NHVi8vwIQZXOr5Qzyqoj0ts1sgt7hNlw"
-      $0.clientKey = "yE4Bbq5vIv03oNNrhyAy5eu9AWUIIh1mj4LFmt81"
-      $0.server = "https://parseapi.back4app.com"
-      $0.isLocalDatastoreEnabled = true
-    }
-    Parse.initialize(with: configuration)
-    
-    // For Parse Subclassing
-    configureParse()
-    
     // Initialize Das Quadrat
     FoodieGlobal.foursquareInitialize()
     FoodieCategory.getFromFoursquare(withBlock: nil)  // Let the fetch happen in the background
+    
+    // Initialize Location Watch manager
+    LocationWatch.global = LocationWatch()
     
     // TODO: - Any Startup Test we want to do that we should use to block Startup?
     error = nil
@@ -83,9 +71,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func applicationDidBecomeActive(_ application: UIApplication) {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     // check to see if there is any draft journal
-    let query = FoodieJournal.query()!
-    query.fromPin(withName: "workingJournal")
-    query.getFirstObjectInBackground() { (object, error) in
+    FoodieQuery.getFirstObject(withName: "workingJournal") { (object, error) in
       
       if let error = error {
         DebugPrint.error("Fetching Journal from Local Datastore resulted in error - \(error.localizedDescription)")
@@ -98,6 +84,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
       
       journal.retrieveRecursive(forceAnyways: false) { error in
+        
+        if let error = error {
+          DebugPrint.error("Retrieve Recursive on Journal resulted in error - \(error.localizedDescription)")
+          return
+        }
+        
         journal.foodieObject.markModified()
         FoodieJournal.setJournal(journal: journal)
       }
@@ -111,14 +103,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   // For Parse Subclassing
   func configureParse() {
     
-    // FoodieObject is an Abstract! Don't Register!!
-    FoodieUser.registerSubclass()
-    FoodieJournal.registerSubclass()
-    FoodieVenue.registerSubclass()
-    FoodieCategory.registerSubclass()
-    FoodieMoment.registerSubclass()
-    FoodieMarkup.registerSubclass()
-    FoodieHistory.registerSubclass()
+
   }
 }
 
