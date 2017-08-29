@@ -14,9 +14,9 @@ struct AlertDialog {
     case genericInternalError = "Internal Error"
     case genericNetworkError = "Network Error"
     case genericLocationError = "Location Error"
-    case genericSaveError = "Local Save Error"
-    case genericRetrieveError = "Local Retrieve Error"
-    case genericDeleteError = "Local Delete Error"
+    case genericSaveError = "Save Error"
+    case genericRetrieveError = "Retrieve Error"
+    case genericDeleteError = "Delete Error"
   }
   
   

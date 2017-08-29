@@ -115,7 +115,7 @@ class JournalEntryViewController: UITableViewController {
     self.workingJournal?.saveRecursive(to: .server) {(success, error) in
       if success {
         DebugPrint.verbose("Journal Save Completed!")
-        AlertDialog.present(from: self, title: "Journal Save to Server Completed!", message: "")
+        AlertDialog.present(from: self, title: "Journal Save Completed!", message: "")
       } else if let error = error {
         DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
       } else {
@@ -516,7 +516,7 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
           
           // Pre-save the Venue
           self.preSave(venueToUpdate) { (error) in
-            if let error = error {
+            if error != nil {  // preSave should have logged the error, so skipping that here.
               AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain)
               return
             }
