@@ -27,6 +27,7 @@ class JournalEntryViewController: UITableViewController {
     static let defaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
                                                               longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
     static let defaultDelta: CLLocationDegrees = 0.05
+    static let suggestedDelta: CLLocationDegrees = 0.02
     static let venueDelta: CLLocationDegrees = 0.005
   }
   
@@ -272,6 +273,7 @@ class JournalEntryViewController: UITableViewController {
     // TODO: How to visually convey status of Moments to user??
     
     // Setup the View, Moment VC, Text Fields, Keyboards, etc.
+    mapView.showsUserLocation = true
     sectionOneView.addSubview(mapView)
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -340,7 +342,7 @@ class JournalEntryViewController: UITableViewController {
       
       // Otherwise use the average location of the Moments
       else if let momentsLocation = averageLocationOfMoments() {
-        updateStoryEntryMap(withCoordinate: momentsLocation.coordinate, span: Constants.defaultDelta)
+        updateStoryEntryMap(withCoordinate: momentsLocation.coordinate, span: Constants.suggestedDelta)
       }
       
       // Try to get a current location using the GPS
@@ -348,10 +350,10 @@ class JournalEntryViewController: UITableViewController {
         LocationWatch.global.get { (location, error) in
           if let error = error {
             DebugPrint.error("StoryEntryVC with no Venue or Moments Location. Getting location through LocationWatch also resulted in error - \(error.localizedDescription)")
-            self.updateStoryEntryMap(withCoordinate: Constants.defaultCLCoordinate2D, span: Constants.defaultDelta)
+            //self.updateStoryEntryMap(withCoordinate: Constants.defaultCLCoordinate2D, span: Constants.defaultDelta)  Just let it be a view of the entire North America I guess?
             return
           } else if let location = location {
-            self.updateStoryEntryMap(withCoordinate: location.coordinate, span: Constants.defaultDelta)
+            self.updateStoryEntryMap(withCoordinate: location.coordinate, span: Constants.suggestedDelta)
           }
         }
       }

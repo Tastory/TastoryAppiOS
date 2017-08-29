@@ -83,44 +83,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func applicationDidBecomeActive(_ application: UIApplication) {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     // check to see if there is any draft journal
-    let query = PFQuery(className: FoodieJournal.parseClassName())
+    let query = FoodieJournal.query()!
     query.fromPin(withName: "workingJournal")
-
-    query.getFirstObjectInBackground() { (fetchedObject, error) in
-      if(fetchedObject == nil)
-      {
-        DebugPrint.verbose("Failed to retrieve workingJournal from local data store")
+    query.getFirstObjectInBackground() { (object, error) in
+      
+      if let error = error {
+        DebugPrint.error("Fetching Journal from Local Datastore resulted in error - \(error.localizedDescription)")
         return
       }
       
-      let currentJournal = fetchedObject as! FoodieJournal
-      do {
-        //try currentJournal.fetchIfNeeded()
-        currentJournal.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: currentJournal.thumbnailFileName!, type: FoodieMediaType.photo)
-        
-        if currentJournal.moments != nil {
-          FoodieMoment.queryFromPin(withName: "workingJournal") { (fetchedMoments,error )-> Void in
-            
-            if error != nil
-            {
-              DebugPrint.verbose("Error fetching moments from pinned local store")
-            }
-            
-            currentJournal.moments?.removeAll()
-            //TODO possible that there is zero moment
-            for moment in (fetchedMoments!) {
-              
-              let foodieMoment = moment as! FoodieMoment
-              
-              foodieMoment.mediaObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.mediaFileName!, type:  FoodieMediaType(rawValue:  foodieMoment.mediaType!)!)
-              // TODO make sure the file exists
-              foodieMoment.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.thumbnailFileName!, type: FoodieMediaType.photo)
-              currentJournal.moments?.append(foodieMoment)
-            }
-            currentJournal.foodieObject.markModified()
-            FoodieJournal.setJournal(journal: currentJournal)
-          }
-        }
+      guard let journal = object as? FoodieJournal else {
+        DebugPrint.error("Retrieve pinned Journal from Local Datastore is nil or not a FoodieJournal")
+        return
+      }
+      
+      journal.retrieveRecursive(forceAnyways: false) { error in
+        journal.foodieObject.markModified()
+        FoodieJournal.setJournal(journal: journal)
       }
     }
   }

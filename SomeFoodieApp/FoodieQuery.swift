@@ -183,6 +183,9 @@ class FoodieQuery {
   
   
   func setupCommon(for query: PFQuery<PFObject>) -> PFQuery<PFObject> {
+    // TODO: Setup query cache policy
+    // query.cachePolicy = .networkElseCache  // With Pinning enabled, this results in 'NSInternalInconsistencyException', reason: 'Method not allowed when Pinning is enabled.'
+    
     // Set query constraints
     query.limit = limit
     query.skip = skip
