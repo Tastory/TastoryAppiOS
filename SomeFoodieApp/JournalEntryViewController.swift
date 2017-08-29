@@ -14,7 +14,6 @@
 import UIKit
 import MapKit
 import CoreLocation
-import Parse
 
 
 class JournalEntryViewController: UITableViewController {
@@ -115,8 +114,8 @@ class JournalEntryViewController: UITableViewController {
     // journal is already saved to local
     self.workingJournal?.saveRecursive(to: .server) {(success, error) in
       if success {
-        DebugPrint.verbose("Journal Save to Server Completed!")
-        self.saveCompleteDialog()
+        DebugPrint.verbose("Journal Save Completed!")
+        AlertDialog.present(from: self, title: "Journal Save to Server Completed!", message: "")
       } else if let error = error {
         DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
       } else {
@@ -170,107 +169,74 @@ class JournalEntryViewController: UITableViewController {
     }
   }
   
+  fileprivate func preSave(_ foodieObject: FoodieObjectDelegate?, withBlock callback: ((Error?) -> Void)?) {
+    
+    guard let journal = workingJournal else {
+      DebugPrint.assert("JournalEntryViewController has no Working Journal?")
+      AlertDialog.present(from: self, title: "Internal Error", message: "Unexpected Internal Error. Please try again")
+      return
+    }
+    
+    pthread_mutex_lock(&self.saveStateMutex)
+    self.isSaveInProgress = true
+    pthread_mutex_unlock(&self.saveStateMutex)
+    
+    // Save Journal to Local
+    journal.saveRecursive(to: .local, withName: "workingJournal") { (_, error) -> Void in
+      
+      if let error = error {
+        pthread_mutex_lock(&self.saveStateMutex)
+        self.isSaveInProgress = false
+        pthread_mutex_unlock(&self.saveStateMutex)
+        
+        DebugPrint.error("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      DebugPrint.verbose("Completed pre-saving Journal to Local")
+      guard let foodieObject = foodieObject else {
+        DebugPrint.log("No Foodie Object supplied on preSave(), skipping Object Server save")
+        callback?(nil)
+        return
+      }
+      
+      foodieObject.saveRecursive(to: .server, withName: nil) { (success, error) -> Void in
+      
+        pthread_mutex_lock(&self.saveStateMutex)
+        self.isSaveInProgress = false
+        pthread_mutex_unlock(&self.saveStateMutex)
+        
+        if let error = error {
+          DebugPrint.error("\(foodieObject.foodieObjectType()) pre-save to Server resulted in error - \(error.localizedDescription)")
+          callback?(error)
+          return
+        }
+        
+        DebugPrint.verbose("Completed pre-saving \(foodieObject.foodieObjectType()) to Server")
+        // If there's pending Journal Save, do it now
+        if self.triggerSaveJournal { self.saveJournalToServer() }
+        callback?(nil)
+      }
+    }
+  }
+  
+  
+  // MARK: - Public Instace Functions
+  
+  func keyboardDismiss() {
+    self.view.endEditing(true)
+  }
+  
+  func vcDismiss() {
+    // TODO: Data Passback through delegate?
+    dismiss(animated: true, completion: nil)
+  }
+  
   
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
-    
-    if let journalUnwrapped = workingJournal {
-      // TODO: Do we need to download the Journal itself first? How can we tell?
-      
-      // Set the view to the values of the Story
-      if let storyTitle = journalUnwrapped.title {
-        titleTextField?.text = storyTitle
-      }
-      
-      if let venueName = journalUnwrapped.venue?.name {
-        venueButton?.setTitle(venueName, for: .normal)
-      }
-      
-      // Let's figure out what to do with the returned Moment
-      if returnedMoment == nil {
-        // Nothing needs to be done. Assume no moment returned.
-        
-      } else if markupMoment != nil {
-        
-        // So there is a Moment under markup. The returned Moment should match this.
-        if returnedMoment === markupMoment {
-          
-          // TODO: Gotta do a Moment Replace operation. See Foodie Object Model
-          // Probably replace the Moment in Memory. Set the right flags so Pre-Upload will do the right things
-          
-        } else {
-          internalErrorDialog()
-          DebugPrint.assert("returnedMoment expected to match markupMoment")
-        }
-      } else {
-
-        // TODO refactor out to journal
-        // This is a new Moment. Let's add it to the Journal!
-        journalUnwrapped.add(moment: returnedMoment!)
-        journalUnwrapped.foodieObject.markModified()
-        
-        // If there wasn't any moments before, we got to make this the default thumbnail for the Journal
-        // Got to do this also when removing moments!!!
-        if journalUnwrapped.moments!.count == 1 {
-          // TODO: Do we need to factor out thumbnail operations?
-          journalUnwrapped.thumbnailFileName = returnedMoment!.thumbnailFileName
-          journalUnwrapped.thumbnailObj = returnedMoment!.thumbnailObj
-        }
-        
-        // only save to local when the journal is modified
-        if(journalUnwrapped.foodieObject.operationState == .objectModified) {
-          // save journal to local
-          journalUnwrapped.saveRecursive(to: .local, withName: "workingJournal", withBlock: { (success,error)-> Void in
-            if(success) {
-              DebugPrint.verbose("Completed saving journal to local")
-              // save recursive from journal already saved moment to .local
-              // need to save to server for the moments
-
-              pthread_mutex_lock(&self.saveStateMutex)
-              self.isSaveInProgress = true
-              pthread_mutex_unlock(&self.saveStateMutex)
-
-              self.returnedMoment!.saveRecursive(to: .server, withBlock: { (success, error) -> Void in
-                if(success)
-                {
-                  pthread_mutex_lock(&self.saveStateMutex)
-                  self.isSaveInProgress = false
-                  pthread_mutex_unlock(&self.saveStateMutex)
-                  if(self.triggerSaveJournal)
-                  {
-                    self.saveJournalToServer()
-                  }
-                }
-              })
-            }
-          })
-        }
-        else {
-          // temporarily save to moments to server
-          returnedMoment!.saveRecursive(to: .local, withBlock: {(success, error) -> Void in
-            self.returnedMoment!.saveRecursive(to: .server, withBlock: { (success, error) -> Void in
-              if(success)
-              {
-                pthread_mutex_lock(&self.saveStateMutex)
-                self.isSaveInProgress = false
-                pthread_mutex_unlock(&self.saveStateMutex)
-                if(self.triggerSaveJournal)
-                {
-                  self.saveJournalToServer()
-                }
-              }
-            })
-          })
-        }
-      }
-    }
-    initializeJournalController()
-  }
-  
-  
-  fileprivate func initializeJournalController() {
-    // TODO: How to visually convey status of Moments to user??
     
     // Setup the View, Moment VC, Text Fields, Keyboards, etc.
     mapView.showsUserLocation = true
@@ -297,6 +263,8 @@ class JournalEntryViewController: UITableViewController {
     previousSwipeRecognizer.direction = .right
     previousSwipeRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(previousSwipeRecognizer)
+    
+    // TODO: Do we need to download the Journal itself first? How can we tell?
   }
   
   
@@ -358,7 +326,46 @@ class JournalEntryViewController: UITableViewController {
         }
       }
       
-      // Start pre-upload operations, and other background trickeries?
+      // Let's figure out what to do with the returned Moment
+      guard let moment = returnedMoment else {
+        // Nothing needs to be done. Assume no moment returned.
+        return
+      }
+        
+      if markupMoment != nil {
+        // So there is a Moment under markup. The returned Moment should match this.
+        if returnedMoment === markupMoment {
+          
+          // TODO: Gotta do a Moment Replace operation. See Foodie Object Model
+          // Probably replace the Moment in Memory. Set the right flags so Pre-Upload will do the right things
+          
+        } else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain)
+          DebugPrint.assert("returnedMoment expected to match markupMoment")
+        }
+      } else {
+        
+        // This is a new Moment. Let's add it to the Journal!
+        workingJournal.add(moment: moment)
+        workingJournal.foodieObject.markModified()
+        
+        // If there wasn't any moments before, we got to make this the default thumbnail for the Journal
+        // Got to do this also when removing moments!!!
+        if workingJournal.moments!.count == 1 {
+          // TODO: Do we need to factor out thumbnail operations?
+          workingJournal.thumbnailFileName = moment.thumbnailFileName
+          workingJournal.thumbnailObj = moment.thumbnailObj
+        }
+        
+        preSave(moment) { (error) in
+          if error != nil {  // Error code should've already been printed to the Debug log from preSave()
+            AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .internalTryAgain)
+          }
+          self.returnedMoment = nil  // We should be in a state where whom is the returned Moment should no longer matter
+        }
+      }
+      
+      // TODO: How to visually convey status of Moments to user??
     }
   }
   
@@ -367,6 +374,9 @@ class JournalEntryViewController: UITableViewController {
     
     // This is for removing the fake Placeholder text from the Tags TextView
     placeholderLabel.removeFromSuperview()
+    
+    // We should clear this so we don't assume that we still have a returned moment
+    returnedMoment = nil
   }
   
   override func didReceiveMemoryWarning() {
@@ -374,93 +384,6 @@ class JournalEntryViewController: UITableViewController {
     
     DebugPrint.log("JournalEntryViewController.didReceiveMemoryWarning")
   }
-  
-  
-  // MARK: - Private Instance Functions
-  
-  // Generic error dialog box to the user on internal errors
-  fileprivate func internalErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
-                                              titleComment: "Alert diaglogue title when a Journal Entry view internal error occured",
-                                              message: "An internal error has occured. Please try again",
-                                              messageComment: "Alert dialog message when a Journal Entry view internal error occured",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for generic Journal Entry errors",
-                                     style: .default)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-  
-  
-  fileprivate func saveCompleteDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
-                                              titleComment: "Alert diaglogue title when a Journal Entry view completes test save",
-                                              message: "Journal Entry Save Completed!",
-                                              messageComment: "Alert dialog message when a Journal Entry view completes test save",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for completing a test save",
-                                     style: .default)
-      DispatchQueue.main.async { self.present(alertController, animated: true, completion: nil) }
-    }
-  }
-  
-  func keyboardDismiss() {
-    self.view.endEditing(true)
-  }
-  
-  func vcDismiss() {
-    // TODO: Data Passback through delegate?
-    dismiss(animated: true, completion: nil)
-  }
-  
-  override func encodeRestorableState(with coder: NSCoder) {
-//    TODO: - Issue #6 - Commenting out for now. See issue for details
-//
-//    if let title = titleTextField?.text {
-//      workingJournal?.title = title
-//    }
-//    
-//    if let link = linkTextField?.text {
-//      workingJournal?.journalURL = link
-//    }
-//    
-//    if let journal = workingJournal {
-//      journal.foodieObject.markModified()
-//      do {
-//        try FoodieJournal.unpinAllObjects(withName: "workingJournal")
-//      }
-//      catch
-//      {
-//        DebugPrint.verbose("Failed to unpin workingJournal in the local data store")
-//      }
-//      journal.saveRecursive(to: .local, withName: "workingJournal",withBlock: nil)
-//    }
-//    
-//    super.encodeRestorableState(with: coder)
-  }
-  
-  override func decodeRestorableState(with coder: NSCoder) {
-//    TODO: - Issue #6 - Commenting out for now. See issue for details
-//
-//    if let title = coder.decodeObject(forKey: "title") as? String {
-//      titleTextField?.text = title
-//    }
-//    
-//    if let link = coder.decodeObject(forKey: "link") as? String {
-//      linkTextField?.text = link
-//    }
-//    
-//    if let tags = coder.decodeObject(forKey: "tags") as? String {
-//      tagsTextView?.text = tags
-//    }
-//    
-//    super.decodeRestorableState(with: coder)
-  }
-  
 }
 
 
@@ -494,6 +417,7 @@ extension JournalEntryViewController {
   }
 }
 
+
 // MARK: - Scroll View Delegate
 extension JournalEntryViewController {
   
@@ -513,12 +437,14 @@ extension JournalEntryViewController {
   }
 }
 
+
 // MARK: - Tags TextView Delegate
 extension JournalEntryViewController: UITextViewDelegate {
   func textViewDidChange(_ textView: UITextView) {
     placeholderLabel.isHidden = !textView.text.isEmpty
   }
 }
+
 
 // MARK: - Text Fields' Delegate
 extension JournalEntryViewController: UITextFieldDelegate {
@@ -527,6 +453,7 @@ extension JournalEntryViewController: UITextFieldDelegate {
     return true
   }
 }
+
 
 // MARK: - Venue Table Return Delegate
 extension JournalEntryViewController: VenueTableReturnDelegate {
@@ -588,36 +515,10 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
           }
           
           // Pre-save the Venue
-          pthread_mutex_lock(&self.saveStateMutex)
-          self.isSaveInProgress = true
-          pthread_mutex_unlock(&self.saveStateMutex)
-          
-          venueToUpdate.saveRecursive(to: .local) { (_, error) in
+          self.preSave(venueToUpdate) { (error) in
             if let error = error {
-              
-              pthread_mutex_lock(&self.saveStateMutex)
-              self.isSaveInProgress = false
-              pthread_mutex_unlock(&self.saveStateMutex)
-              
-              AlertDialog.present(from: self, title: "Local Save Failed", message: "Try free up some space and try again")
-              DebugPrint.assert("VenueToUpdate pre-save to local resulted in Error - \(error.localizedDescription)")
+              AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain)
               return
-            }
-            
-            venueToUpdate.saveRecursive(to: .server) { (_, error) in
-              
-              // Whether successful or not, save no longer in progress by this point
-              pthread_mutex_lock(&self.saveStateMutex)
-              self.isSaveInProgress = false
-              pthread_mutex_unlock(&self.saveStateMutex)
-              
-              if let error = error {
-                AlertDialog.present(from: self, title: "Server Save Failed", message: "Please check network connection and try again")
-                DebugPrint.assert("VenueToUpdate pre-save to server resulted in Error - \(error.localizedDescription)")
-                return
-              }
-              
-              DebugPrint.verbose("Venue Pre-save for '\(venueToUpdate.name ?? "Cannot Access Venue Name")' Successful!")
             }
           }
         }

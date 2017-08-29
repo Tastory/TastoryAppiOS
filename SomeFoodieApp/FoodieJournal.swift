@@ -513,15 +513,14 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                     withName name: String? = nil,
                     withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieJournal.saveRecursive to Location: \(location)")
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
-    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
-    
-    if let earlySuccess = earlyReturnStatus.success {
-      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-      return
-    }
-    
+//    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
+//    
+//    if let earlySuccess = earlyReturnStatus.success {
+//      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
+//      return
+//    }
+//    
     var childOperationPending = false
     self.foodieObject.resetOutstandingChildOperations()
     

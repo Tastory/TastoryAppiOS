@@ -130,7 +130,6 @@ class FoodieObject {
   var operationError: Error? { return protectedOperationError }
   
 
-  
   // MARK: - Private Instance Variables
   fileprivate var operationStateMutex = pthread_mutex_t()
   fileprivate var protectedOperationState: OperationStates = .notAvailable  // If this is not explicitly initiated, would be because it's from Parse, hence notAvailable.
@@ -144,7 +143,6 @@ class FoodieObject {
   static func initialize() {
     FoodiePFObject.configure()
   }
-  
   
   // MARK: - Public Instance Functions
   
@@ -238,38 +236,38 @@ class FoodieObject {
   // Function for state transition when all saves have completed
   func saveCompleteStateTransition(to location: StorageLocation) {
     
-    // State Transition for Save Error
-    if protectedOperationError != nil {
-      
-      if (location == .local) && (operationState == .savingToLocal) {
-        // Dial back the state
-        protectedOperationState = .objectModified
-        
-      } else if (location == .server) && (operationState == .savingToServer) {
-        // Dial back the state
-        protectedOperationState = .savedToLocal
-        
-      } else {
-        // Unexpected state combination
-        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
-      }
-    }
-      
-    // State Transition for Success
-    else {
-      if (location == .local) && (operationState == .savingToLocal) {
-        // Dial back the state
-        protectedOperationState = .savedToLocal
-        
-      } else if (location == .server) && (operationState == .savingToServer) {
-        // Dial back the state
-        protectedOperationState = .objectSynced
-        
-      } else {
-        // Unexpected state combination
-        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
-      }
-    }
+//    // State Transition for Save Error
+//    if protectedOperationError != nil {
+//      
+//      if (location == .local) && (operationState == .savingToLocal) {
+//        // Dial back the state
+//        protectedOperationState = .objectModified
+//        
+//      } else if (location == .server) && (operationState == .savingToServer) {
+//        // Dial back the state
+//        protectedOperationState = .savedToLocal
+//        
+//      } else {
+//        // Unexpected state combination
+//        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
+//      }
+//    }
+//      
+//    // State Transition for Success
+//    else {
+//      if (location == .local) && (operationState == .savingToLocal) {
+//        // Dial back the state
+//        protectedOperationState = .savedToLocal
+//        
+//      } else if (location == .server) && (operationState == .savingToServer) {
+//        // Dial back the state
+//        protectedOperationState = .objectSynced
+//        
+//      } else {
+//        // Unexpected state combination
+//        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
+//      }
+//    }
   }
   
   
@@ -304,32 +302,32 @@ class FoodieObject {
   
   
   // Function for parent to inquire if this object's own save have completed
-  func isSaveCompleted(to location: StorageLocation) -> Bool {
-    
-    if ((location == .local) && (operationState == .savingToLocal)) ||
-      ((location == .server) && (operationState == .savingToServer)) {
-      // Save still in progress
-      return false
-    } else if ((location == .local) && (operationState == .savedToLocal)) ||
-      ((location == .server) && (operationState == .savedToServer)) {
-      // Saved!
-    } else if (operationState == .objectSynced) {
-      // Nothing needs to be done to begin with
-    } else if ((location == .local) && (operationState == .objectModified)) ||
-      ((location == .server) && (operationState == .savedToLocal)) {
-      // There must have been an unwind in state due to error
-    } else {
-      // Unexpected state transition. Barf
-      DebugPrint.fatal("Unable to proceed due to unexpected state transition. Location: \(location), State: \(operationState)")
-    }
-    return true
-  }
+//  func isSaveCompleted(to location: StorageLocation) -> Bool {
+//    
+//    if ((location == .local) && (operationState == .savingToLocal)) ||
+//      ((location == .server) && (operationState == .savingToServer)) {
+//      // Save still in progress
+//      return false
+//    } else if ((location == .local) && (operationState == .savedToLocal)) ||
+//      ((location == .server) && (operationState == .savedToServer)) {
+//      // Saved!
+//    } else if (operationState == .objectSynced) {
+//      // Nothing needs to be done to begin with
+//    } else if ((location == .local) && (operationState == .objectModified)) ||
+//      ((location == .server) && (operationState == .savedToLocal)) {
+//      // There must have been an unwind in state due to error
+//    } else {
+//      // Unexpected state transition. Barf
+//      DebugPrint.fatal("Unable to proceed due to unexpected state transition. Location: \(location), State: \(operationState)")
+//    }
+//    return true
+//  }
   
   
   // Function for state transition at the beginning of saveRecursive
   func saveStateTransition(to location: StorageLocation) -> (success: Bool?, error: LocalizedError?) {
 
-    return (true, nil)  // saveStateTransition is going to be removed anyways
+    return (nil, nil)  // saveStateTransition is going to be removed anyways
 //    // Is save even allowed? Return false here if illegal state transition. Otherwise do state transition
 //    switch operationState {
 //    case .savingToLocal, .savingToServer:

@@ -215,12 +215,12 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
                      withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
-    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
-    
-    if let earlySuccess = earlyReturnStatus.success {
-      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-      return
-    }
+//    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
+//    
+//    if let earlySuccess = earlyReturnStatus.success {
+//      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
+//      return
+//    }
   }
   
   // Trigger recursive delete against all child objects.
