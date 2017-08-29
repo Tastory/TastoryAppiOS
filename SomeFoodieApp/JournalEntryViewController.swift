@@ -86,8 +86,6 @@ class JournalEntryViewController: UITableViewController {
     
     workingJournal?.title = titleTextField?.text
     workingJournal?.journalURL = linkTextField?.text
-    
-    DebugPrint.verbose("\(self.workingJournal?.foodieObject.operationState)")
 
     //making sure that the operation state didnt change between checking and setting the flag
     pthread_mutex_lock(&self.saveStateMutex)

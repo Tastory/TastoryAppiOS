@@ -95,18 +95,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             //TODO make sure the file exists
             foodieMoment.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.thumbnailFileName!, type: FoodieMediaType.photo)
 
-            if(foodieMoment.foodieObject.operationState != .objectSynced)
+            if(foodieMoment.objectId == nil)
             {
               foodieMoment.foodieObject.markModified()
             }
 
               FoodieMarkup.queryFromPin(withName: "workingJournal", withBlock: { (fetchedMarkups, error) in
+                // TODO need to find out how these markup are mapped
+                // there is an array for journal and array for moment
                 for markup in (fetchedMarkups!) {
                   let foodieMarkup = markup as! FoodieMarkup
 
-                  if(foodieMarkup.foodieObject.operationState != .objectSynced)
+                  if(foodieMarkup.objectId == nil)
                   {
-                    foodieMoment.foodieObject.markModified()
+                    foodieMarkup.foodieObject.markModified()
                   }
                   foodieMoment.markups?.append(foodieMarkup)
                 }
