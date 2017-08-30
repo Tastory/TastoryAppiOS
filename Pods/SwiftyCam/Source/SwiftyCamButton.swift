@@ -20,7 +20,7 @@ import UIKit
 
 /// Delegate for SwiftyCamButton
 
-public protocol SwiftyCamButtonDelegate {
+public protocol SwiftyCamButtonDelegate: class {
     
     /// Called when UITapGestureRecognizer begins
     
@@ -48,16 +48,16 @@ public protocol SwiftyCamButtonDelegate {
 
 /// UIButton Subclass for Capturing Photo and Video with SwiftyCamViewController
 
-@IBDesignable open class SwiftyCamButton: UIButton {
-  
+open class SwiftyCamButton: UIButton {
+    
+    /// Delegate variable
+    
+    public weak var delegate: SwiftyCamButtonDelegate?
+    
     /// Maximum duration variable
     
     fileprivate var timer : Timer?
-  
-    /// Delegate variable
     
-    public var delegate: SwiftyCamButtonDelegate?
-  
     /// Initialization Declaration
     
     override public init(frame: CGRect) {
@@ -67,26 +67,29 @@ public protocol SwiftyCamButtonDelegate {
     
     /// Initialization Declaration
 
+    
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         createGestureRecognizers()
     }
-  
+    
     /// UITapGestureRecognizer Function
     
     @objc fileprivate func Tap() {
-       self.delegate?.buttonWasTapped()
+       delegate?.buttonWasTapped()
     }
     
     /// UILongPressGestureRecognizer Function
-
     @objc fileprivate func LongPress(_ sender:UILongPressGestureRecognizer!)  {
-        if (sender.state == UIGestureRecognizerState.ended) {
-            invalidateTimer()
-            self.delegate?.buttonDidEndLongPress()
-        } else if (sender.state == UIGestureRecognizerState.began) {
-            self.delegate?.buttonDidBeginLongPress()
+        switch sender.state {
+        case .began:
+            delegate?.buttonDidBeginLongPress()
             startTimer()
+        case .ended:
+            invalidateTimer()
+            delegate?.buttonDidEndLongPress()
+        default:
+            break
         }
     }
     
@@ -94,7 +97,7 @@ public protocol SwiftyCamButtonDelegate {
     
     @objc fileprivate func timerFinished() {
         invalidateTimer()
-        self.delegate?.longPressDidReachMaximumDuration()
+        delegate?.longPressDidReachMaximumDuration()
     }
     
     /// Start Maximum Duration Timer

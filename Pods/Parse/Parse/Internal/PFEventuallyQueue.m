@@ -80,10 +80,6 @@ NSTimeInterval const PFEventuallyQueueDefaultTimeoutRetryInterval = 600.0f;
     return self;
 }
 
-- (void)dealloc {
-    [self _stopMonitoringNetworkReachability];
-}
-
 ///--------------------------------------
 #pragma mark - Enqueueing Commands
 ///--------------------------------------
@@ -195,6 +191,11 @@ NSTimeInterval const PFEventuallyQueueDefaultTimeoutRetryInterval = 600.0f;
     }
     self.running = NO;
     dispatch_suspend(_processingQueueSource);
+}
+
+- (void)terminate {
+    [self _stopMonitoringNetworkReachability];
+    dispatch_source_cancel(_processingQueueSource);
 }
 
 - (void)removeAllCommands {
@@ -379,7 +380,6 @@ NSTimeInterval const PFEventuallyQueueDefaultTimeoutRetryInterval = 600.0f;
     [[PFReachability sharedParseReachability] removeListener:self];
 
     self.monitorsReachability = NO;
-    self.connected = YES;
 #endif
 }
 
@@ -389,9 +389,11 @@ NSTimeInterval const PFEventuallyQueueDefaultTimeoutRetryInterval = 600.0f;
 
 /** Manually sets the network connection status. */
 - (void)setConnected:(BOOL)connected {
+    @weakify(self);
     BFTaskCompletionSource *barrier = [BFTaskCompletionSource taskCompletionSource];
     dispatch_async(_processingQueue, ^{
         dispatch_sync(_synchronizationQueue, ^{
+            @strongify(self);
             if (self.connected != connected) {
                 _connected = connected;
                 if (connected) {

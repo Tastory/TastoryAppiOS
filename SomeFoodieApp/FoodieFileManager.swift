@@ -181,7 +181,7 @@ class FoodieFile {
     
     if(!(AWSServiceManager.default().defaultServiceConfiguration != nil))
     {
-      let credentialsProvider = AWSStaticCredentialsProvider(accessKey: "AKIAIA5BRBK55UQTJ4VA", secretKey: "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")
+      let credentialsProvider = AWSStaticCredentialsProvider(accessKey: "AKIAIZDMJPPVHKFCWPQQ", secretKey: "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")
       let configuration = AWSServiceConfiguration(region: AWSRegionType.USWest1, credentialsProvider:credentialsProvider)
       AWSServiceManager.default().defaultServiceConfiguration = configuration
     }

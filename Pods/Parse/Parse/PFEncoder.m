@@ -16,9 +16,11 @@
 #import "PFFieldOperation.h"
 #import "PFFile_Private.h"
 #import "PFGeoPointPrivate.h"
+#import "PFPolygonPrivate.h"
 #import "PFObjectPrivate.h"
 #import "PFOfflineStore.h"
 #import "PFRelationPrivate.h"
+#import "PFMacros.h"
 
 @implementation PFEncoder
 
@@ -71,6 +73,10 @@
         return [object encodeIntoDictionary];
 
     } else if ([object isKindOfClass:[PFGeoPoint class]]) {
+        // TODO (hallucinogen): pass object encoder here
+        return [object encodeIntoDictionary];
+
+    } else if ([object isKindOfClass:[PFPolygon class]]) {
         // TODO (hallucinogen): pass object encoder here
         return [object encodeIntoDictionary];
 

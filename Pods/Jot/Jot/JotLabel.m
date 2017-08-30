@@ -120,14 +120,9 @@ NSString *const kLabelPointY = @"LabelPointY";
 		insetViewRect = CGRectInset(self.superview.bounds,
 									_initialTextInsets.left + _initialTextInsets.right,
 									_initialTextInsets.top + _initialTextInsets.bottom);
-//    NSLog(@"fitOriginalFontSizeToViewWidth: YES");
-//    NSLog(@"superview.bounds.size.width: %f", self.superview.bounds.size.width);
-//    NSLog(@"initialTextInsets.left: %f", _initialTextInsets.left);
-//    NSLog(@"initialTextInsets.right: %f", _initialTextInsets.right);
 	} else {
 		temporarySizingLabel.numberOfLines = 1;
 		insetViewRect = CGRectMake(0.f, 0.f, CGFLOAT_MAX, CGFLOAT_MAX);
-//    NSLog(@"fitOriginalFontSizeToViewWidth: NO");
 	}
 	
 	CGSize originalSize = [temporarySizingLabel sizeThatFits:insetViewRect.size];
@@ -137,12 +132,6 @@ NSString *const kLabelPointY = @"LabelPointY";
 											originalSize.height * 1.05f);
 	temporarySizingLabel.center = self.center;
 	self.unscaledFrame = temporarySizingLabel.frame;
-  
-//  NSLog(@"insetViewRect.size.width: %f", insetViewRect.size.width);
-//  NSLog(@"SomeUnscaledFrame.Origin.x: %f", self.unscaledFrame.origin.x);
-//  NSLog(@"SomeUnscaledFrame.Origin.y: %f", self.unscaledFrame.origin.y);
-//  NSLog(@"SomeUnscaledFrame.Size.width: %f", self.unscaledFrame.size.width);
-//  NSLog(@"SomeUnscaledFrame.Size.height: %f", self.unscaledFrame.size.height);
 }
 
 
