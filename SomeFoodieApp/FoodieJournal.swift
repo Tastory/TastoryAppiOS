@@ -367,7 +367,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     // Start the content retrieval state machine if it's not already started
     var executeStateMachine = false
-    pthread_mutex_lock(&contentRetrievalMutex)
+    pthread_mutex_lock(&contentRetrievalMutex)  // TODO-Performance: Move to OperationQueue to eliminate chance of blocking main thread
     
     if contentRetrievalInProg {
       DebugPrint.verbose("Content Retrieval already in progress")
@@ -432,7 +432,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
 
     // If there was a pending retrieval operation, go for another round
     var executeStateMachine = false
-    pthread_mutex_lock(&contentRetrievalMutex)
+    pthread_mutex_lock(&contentRetrievalMutex)  // TODO-Performance: Move to OperationQueue to eliminate chance of blocking main thread
     
     if contentRetrievalPending {
       DebugPrint.verbose("Content Retrieval was pending. Initiate another round of Content Retrieval")

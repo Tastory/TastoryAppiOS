@@ -74,7 +74,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     FoodieQuery.getFirstObject(withName: "workingJournal") { (object, error) in
       
       if let error = error {
-        DebugPrint.error("Fetching Journal from Local Datastore resulted in error - \(error.localizedDescription)")
+        DebugPrint.log("No pinned draft Stories found in Local Datastore - \(error.localizedDescription)")
         return
       }
       

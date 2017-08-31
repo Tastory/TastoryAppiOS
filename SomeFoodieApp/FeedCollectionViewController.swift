@@ -191,7 +191,7 @@ class FeedCollectionViewController: UICollectionViewController {
           cell.activityIndicator.isHidden = true
           cell.activityIndicator.stopAnimating()
           
-          pthread_mutex_lock(&cell.cellStatusMutex)
+          pthread_mutex_lock(&cell.cellStatusMutex)  // TODO-Performance: Is there another way to do this? Lock in Main Thread here
           cell.cellLoaded = true
           if cell.cellDisplayed {
             letsPrefetch = true
@@ -205,7 +205,7 @@ class FeedCollectionViewController: UICollectionViewController {
           reusableCell.activityIndicator.isHidden = true
           reusableCell.activityIndicator.stopAnimating()
           
-          pthread_mutex_lock(&reusableCell.cellStatusMutex)
+          pthread_mutex_lock(&reusableCell.cellStatusMutex)  // TODO-Performance: Is there another way to do this? Lock in Main Thread here
           reusableCell.cellLoaded = true
           if reusableCell.cellDisplayed {
             letsPrefetch = true
@@ -234,7 +234,7 @@ class FeedCollectionViewController: UICollectionViewController {
     }
     
     var letsPrefetch = false
-    pthread_mutex_lock(&feedCell.cellStatusMutex)
+    pthread_mutex_lock(&feedCell.cellStatusMutex)  // TODO-Performance: Is there another way to do this? Lock in Main Thread here
     feedCell.cellDisplayed = true
     if feedCell.cellLoaded {
       letsPrefetch = true

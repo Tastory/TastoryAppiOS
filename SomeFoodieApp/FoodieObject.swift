@@ -162,7 +162,7 @@ class FoodieObject {
   
   // Function to mark memory modified
   func markModified() {
-    pthread_mutex_lock(&operationStateMutex)
+    pthread_mutex_lock(&operationStateMutex)  // TODO-Performance: To be removed? Otherwise make sure this never gets executed in Main Thread?
     // TODO: State transition sanity checks?
     protectedOperationState = .objectModified
     pthread_mutex_unlock(&operationStateMutex)
@@ -172,7 +172,7 @@ class FoodieObject {
   // Function to mark pending retrieval
   func markPendingRetrieval() {
     
-    pthread_mutex_lock(&operationStateMutex)
+    pthread_mutex_lock(&operationStateMutex)  // TODO-Performance: To be removed? Otherwise make sure this never gets executed in Main Thread?
     
     switch protectedOperationState {
     case .notAvailable:

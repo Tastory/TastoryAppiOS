@@ -62,7 +62,7 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
     dismiss(animated: true, completion: nil)
   }
   
-  // MARK: - Class Private Functions
+  // MARK: - Private Instance Functions
   
   // Generic error dialog box to the user on internal errors
   fileprivate func internalErrorDialog() {
@@ -91,15 +91,25 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
   }
   
   
+  // MARK: - Public Instance Function
+  func enableCaptureButton() {
+    
+  }
+  
+  
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     
     super.viewDidLoad()
+    
+    // Swifty Cam Setup
     cameraDelegate = self
+    //videoQuality = .medium  // Equal to AVCaptureSession.Preset.medium
     
     if let captureButton = captureButton {
       view.bringSubview(toFront: captureButton)
       captureButton.delegate = self
+      captureButton.isEnabled = false  // Disable this button until SwiftyCam's AVCaptureSession isRunning == true
     }
     
     if let exitButton = exitButton {
@@ -108,6 +118,12 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
     
     if let tapRecognizer = tapRecognizer {
       tapRecognizer.delegate = self
+    }
+    
+    // Listen to notification of when SwiftyCam's AVCaptureSession isRunning == true
+    NotificationCenter.default.addObserver(forName: .AVCaptureSessionDidStartRunning, object: nil, queue: OperationQueue.main) { _ in
+      self.captureButton?.isEnabled = true
+      NotificationCenter.default.removeObserver(self, name: .AVCaptureSessionDidStartRunning, object: nil)
     }
     
     // Request permission from user to access the Photo Album up front

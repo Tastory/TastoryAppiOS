@@ -154,18 +154,20 @@ class JournalEntryViewController: UITableViewController {
   fileprivate func updateStoryEntryMap(withCoordinate coordinate: CLLocationCoordinate2D, span: CLLocationDegrees, venueName: String? = nil) {
     let region = MKCoordinateRegion(center: coordinate,
                                     span: MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span))
-    mapView.setRegion(region, animated: true)
-    
-    // Remove all annotations each time
-    mapView.removeAnnotations(mapView.annotations)
-    
-    // Add back if an annotation is requested
-    if let name = venueName {
-      let annotation = MKPointAnnotation()
-      annotation.coordinate = coordinate
-      annotation.title = name
-      mapView.addAnnotation(annotation)
-      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { self.mapView.selectAnnotation(annotation, animated: true) }  // This makes the Annotation title pop-up after a slight delay
+    DispatchQueue.main.async {
+      self.mapView.setRegion(region, animated: true)
+      
+      // Remove all annotations each time
+      self.mapView.removeAnnotations(self.mapView.annotations)
+      
+      // Add back if an annotation is requested
+      if let name = venueName {
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = coordinate
+        annotation.title = name
+        self.mapView.addAnnotation(annotation)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { self.mapView.selectAnnotation(annotation, animated: true) }  // This makes the Annotation title pop-up after a slight delay
+      }
     }
   }
   

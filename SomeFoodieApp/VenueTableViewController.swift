@@ -106,33 +106,37 @@ class VenueTableViewController: UIViewController {
   // Working along with venueSearchComplete(), this call is Thread Safe
   fileprivate func fullVenueSearch() {
     
-    pthread_mutex_lock(&searchMutex)
-    guard !isVenueSearchUnderWay else {
-      isVenueSearchPending = true
-      pthread_mutex_unlock(&searchMutex)
-      return
-    }
-    pthread_mutex_unlock(&searchMutex)
-    
-    // Search Foursquare based on either
-    //  1. the user supplied location
-    //  2. the suggested Geolocation
-    //  3. the current location
-    var venueNameToSearch = ""
-    if let venueName = venueName {
-      venueNameToSearch = venueName
-    }
-    if let nearLocation = nearLocation {
-      FoodieVenue.searchFoursquare(for: venueNameToSearch, near: nearLocation, withBlock: venueSearchCallback)
-    } else if let suggestedLocation = suggestedLocation {
-      FoodieVenue.searchFoursquare(for: venueNameToSearch, at: suggestedLocation, withBlock: venueSearchCallback)
-    } else if let currentLocation = currentLocation {
-      FoodieVenue.searchFoursquare(for: venueNameToSearch, at: currentLocation, withBlock: venueSearchCallback)
-    } else {
-      DebugPrint.error("No useful location to base the search on")
-      AlertDialog.present(from: self, title: "Cannot Determine Location", message: "Please enter a location to perform Venue Search")
-      locationSearchBar.placeholder = Constants.defaultLocationPlaceholderText
-      locationSearchBar.setNeedsDisplay()
+    DispatchQueue.global(qos: .userInitiated).async {
+      
+      // In general, don't have mutexes locking the main thread please
+      pthread_mutex_lock(&self.searchMutex)
+      guard !self.isVenueSearchUnderWay else {
+        self.isVenueSearchPending = true
+        pthread_mutex_unlock(&self.searchMutex)
+        return
+      }
+      pthread_mutex_unlock(&self.searchMutex)
+      
+      // Search Foursquare based on either
+      //  1. the user supplied location
+      //  2. the suggested Geolocation
+      //  3. the current location
+      var venueNameToSearch = ""
+      if let venueName = self.venueName {
+        venueNameToSearch = venueName
+      }
+      if let nearLocation = self.nearLocation {
+        FoodieVenue.searchFoursquare(for: venueNameToSearch, near: nearLocation, withBlock: self.venueSearchCallback)
+      } else if let suggestedLocation = self.suggestedLocation {
+        FoodieVenue.searchFoursquare(for: venueNameToSearch, at: suggestedLocation, withBlock: self.venueSearchCallback)
+      } else if let currentLocation = self.currentLocation {
+        FoodieVenue.searchFoursquare(for: venueNameToSearch, at: currentLocation, withBlock: self.venueSearchCallback)
+      } else {
+        DebugPrint.error("No useful location to base the search on")
+        AlertDialog.present(from: self, title: "Cannot Determine Location", message: "Please enter a location to perform Venue Search")
+        self.locationSearchBar.placeholder = Constants.defaultLocationPlaceholderText
+        self.locationSearchBar.setNeedsDisplay()
+      }
     }
   }
   

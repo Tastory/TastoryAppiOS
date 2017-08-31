@@ -32,6 +32,7 @@
 		8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */; };
 		8C3254A51F40240900895572 /* VenueTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3254A41F40240900895572 /* VenueTableViewController.swift */; };
 		8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */; };
+		8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5B48501F579D3800C18089 /* SwiftMutex.swift */; };
 		8C5C4DDE1EFEEDEC008C83EC /* FoodiePrefetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5C4DDD1EFEEDEC008C83EC /* FoodiePrefetch.swift */; };
 		8C61BCDC1E985D1300DDF248 /* DebugPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */; };
 		8C7CE2881F36B92A00DEFCBE /* FoodieQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7CE2871F36B92A00DEFCBE /* FoodieQuery.swift */; };
@@ -112,6 +113,7 @@
 		8C3254A41F40240900895572 /* VenueTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenueTableViewController.swift; sourceTree = "<group>"; };
 		8C40B20B1F1466D40030B5B5 /* Jot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jot-Bridging-Header.h"; sourceTree = "<group>"; };
 		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
+		8C5B48501F579D3800C18089 /* SwiftMutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftMutex.swift; sourceTree = "<group>"; };
 		8C5C4DDD1EFEEDEC008C83EC /* FoodiePrefetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePrefetch.swift; sourceTree = "<group>"; };
 		8C61BCDB1E985D1300DDF248 /* DebugPrint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugPrint.swift; sourceTree = "<group>"; };
 		8C7CE2871F36B92A00DEFCBE /* FoodieQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieQuery.swift; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 				8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */,
 				8C2F79721F4E23F700851334 /* LocationWatch.swift */,
 				8CE259AC1F53808C00310749 /* AlertDialog.swift */,
+				8C5B48501F579D3800C18089 /* SwiftMutex.swift */,
 			);
 			name = Shared;
 			sourceTree = "<group>";
@@ -670,6 +673,7 @@
 				8C1089311EADC11B00457E66 /* MomentHeaderReusableView.swift in Sources */,
 				8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */,
 				8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */,
+				8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */,
 				8C8986741E91985700B62306 /* FoodieVenue.swift in Sources */,
 				8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */,
 				8C0590471EC653DF00027E91 /* DiscoverViewController.swift in Sources */,
