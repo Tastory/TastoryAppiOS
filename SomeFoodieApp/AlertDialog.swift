@@ -28,7 +28,7 @@ struct AlertDialog {
   }
   
   
-  static func present(from vc: UIViewController, title: String, message: String) {
+  static func present(from vc: UIViewController, title: String, message: String, completion handler: ((UIAlertAction) -> Void)? = nil) {
     if vc.presentedViewController == nil {
       let vcTitle = vc.title ?? "untitled ViewController"
       let alertController = UIAlertController(title: title,
@@ -37,13 +37,17 @@ struct AlertDialog {
                                               messageComment: "Alert dialog message as presented from \(vcTitle)",
                                               preferredStyle: .alert)
       
-      alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box as presented from \(vcTitle)", style: .cancel)
-      DispatchQueue.main.async { vc.present(alertController, animated: true, completion: nil) }
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box as presented from \(vcTitle)",
+                                     style: .cancel,
+                                     handler: handler)
+                                     
+    DispatchQueue.main.async { vc.present(alertController, animated: true, completion: nil) }
     }
   }
   
   
-  static func standardPresent(from vc: UIViewController, title: StdTitle, message: StdMsg) {
-    AlertDialog.present(from: vc, title: title.rawValue, message: message.rawValue)
+  static func standardPresent(from vc: UIViewController, title: StdTitle, message: StdMsg, completion handler: ((UIAlertAction) -> Void)? = nil) {
+    AlertDialog.present(from: vc, title: title.rawValue, message: message.rawValue, completion: handler)
   }
 }

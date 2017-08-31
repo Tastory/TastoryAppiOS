@@ -415,7 +415,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
         return
       }
       mediaObject = FoodieMedia(withState: .objectModified, fileName: mediaName, type: .photo)
-      mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieConstants.jpegCompressionQuality))
+      mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
     }
 
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
