@@ -20,7 +20,7 @@ protocol CameraReturnDelegate {
 }
 
 
-class CameraViewController: SwiftyCamViewController {  // View needs to comply to certain protocols going forward?
+class CameraViewController: SwiftyCamViewController, UINavigationControllerDelegate {  // View needs to comply to certain protocols going forward?
   
   // MARK: - Global Constants
   struct GlobalConstants {
@@ -44,9 +44,23 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
   @IBOutlet weak var captureButton: CameraButton?
   @IBOutlet weak var exitButton: ExitButton?
   @IBOutlet weak var tapRecognizer: UITapGestureRecognizer?  // This is workaround to detect capture button's been released after a photo
-  
+  @IBOutlet weak var imagePicker: UIButton?
   
   // MARK: - IBActions
+
+  @IBAction func launchImagePicker(_ sender: Any) {
+    let imagePickerController = UIImagePickerController()
+    imagePickerController.sourceType = .photoLibrary
+    imagePickerController.delegate = self
+
+    // var types = UIImagePickerController.availableMediaTypes(for: UIImagePickerControllerSourceType.photoLibrary)
+
+    imagePickerController.mediaTypes = ["public.image", "public.movie"]
+
+    self.present(imagePickerController, animated: true, completion: nil)
+    
+  }
+
   @IBAction func capturePressed(_ sender: CameraButton) {
     DebugPrint.userAction("CameraViewController.capturePressed()")
     captureButton?.buttonPressed()
@@ -104,9 +118,11 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
     
     // Swifty Cam Setup
     cameraDelegate = self
-    doubleTapCameraSwitch = false
-    videoQuality = .resolution1280x720
-    
+
+    if let imagePicker = imagePicker {
+      view.bringSubview(toFront: imagePicker)
+    }
+
     if let captureButton = captureButton {
       view.bringSubview(toFront: captureButton)
       captureButton.delegate = self
@@ -359,3 +375,58 @@ extension CameraViewController: MarkupReturnDelegate {
     delegate.captureComplete(markedupMoment: markedupMoment, suggestedJournal: suggestedJournal)
   }
 }
+
+extension CameraViewController: UIImagePickerControllerDelegate {
+  public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
+
+    guard let mediaType = info[UIImagePickerControllerMediaType] as? String else {
+      DebugPrint.assert("Media type is expected after selection from image picker")
+      return
+    }
+
+    picker.dismiss(animated:true, completion: nil)
+
+    var mediaObject: FoodieMedia
+    var mediaName: String
+
+    if("public.movie" == mediaType)
+    {
+      guard let movieUrl = info[UIImagePickerControllerMediaURL] as? NSURL else {
+        DebugPrint.assert("video URL is not returned from image picker")
+        return
+      }
+
+      guard let movieName = movieUrl.lastPathComponent else {
+        DebugPrint.assert("video URL is missing movie name")
+        return
+      }
+
+      guard let moviePath = movieUrl.relativePath else {
+        DebugPrint.assert("video URL is missing relative path")
+        return
+      }
+
+      mediaObject = FoodieMedia(withState: .objectModified, fileName: movieName, type: .video)
+      mediaObject.videoLocalBufferUrl = URL(fileURLWithPath: moviePath)
+    } else {
+      mediaName = FoodieFile.newPhotoFileName()
+      guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
+        DebugPrint.assert("UIImage is not returned from image picker")
+        return
+      }
+      mediaObject = FoodieMedia(withState: .objectModified, fileName: mediaName, type: .photo)
+      mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieConstants.jpegCompressionQuality))
+    }
+
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+    viewController.mediaObj = mediaObject
+    viewController.markupReturnDelegate = self
+    self.present(viewController, animated: true)
+  }
+}
+
+
+
+
+

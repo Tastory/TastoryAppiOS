@@ -289,6 +289,8 @@ class FoodieObject {
           if let hasError = error {
             self.protectedOperationError = hasError
           } else {
+            // TODO investigate if it is possible to have success = false and no error 
+            // I have seen it happened once
             DebugPrint.assert("saveObject failed but block contained no Error")
           }
         }

@@ -92,7 +92,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Public Static Functions
 
-  static func setJournal(journal: FoodieJournal) {
+  static func setJournal(journal: FoodieJournal?) {
     currentJournalPrivate = journal
   }
 

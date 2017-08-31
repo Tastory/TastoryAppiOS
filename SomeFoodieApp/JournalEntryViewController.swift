@@ -58,7 +58,18 @@ class JournalEntryViewController: UITableViewController {
   @IBOutlet weak var linkTextField: UITextField?
   @IBOutlet weak var tagsTextView: UITextView?
   
-  
+
+  @IBAction func EditedTitle(_ sender: Any) {
+    workingJournal?.title = titleTextField?.text
+    saveJournalToLocal()
+  }
+
+  @IBAction func EditedLink(_ sender: Any) {
+    workingJournal?.journalURL = linkTextField?.text
+    saveJournalToLocal()
+  }
+
+
   // MARK: - IBActions
   @IBAction func venueClicked(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -105,6 +116,16 @@ class JournalEntryViewController: UITableViewController {
       saveJournalToServer()
     }
   }
+
+  func saveJournalToLocal() {
+    if let journal = workingJournal {
+      journal.foodieObject.markModified()
+      //TODO investigate whether unpin is necessary
+      FoodieJournal.unpinAllObjectsInBackground(withName: "workingJournal")
+      journal.saveRecursive(to: .local, withName: "workingJournal",withBlock: nil)
+    }
+  }
+
   
   
   // MARK: - Private Instance Functions
@@ -116,6 +137,13 @@ class JournalEntryViewController: UITableViewController {
       if success {
         DebugPrint.verbose("Journal Save Completed!")
         AlertDialog.present(from: self, title: "Journal Save Completed!", message: "")
+
+        FoodieJournal.unpinAllObjectsInBackground(withName: "workingJournal")
+        self.workingJournal = nil
+        FoodieJournal.setJournal(journal: nil)
+        self.saveCompleteDialog(handler: {(UIAlertAction) -> Void in
+          self.vcDismiss()
+        })
       } else if let error = error {
         DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
       } else {
@@ -373,6 +401,20 @@ class JournalEntryViewController: UITableViewController {
   
   override func viewWillDisappear(_ animated: Bool) {
     view.endEditing(true)
+  
+  private func saveCompleteDialog(handler: ((UIAlertAction) -> Void)? = nil) {
+    if self.presentedViewController == nil {
+      let alertController = UIAlertController(title: "SomeFoodieApp",
+                                              titleComment: "Alert diaglogue title when a Journal Entry view completes test save",
+                                              message: "Journal Entry Save Completed!",
+                                              messageComment: "Alert dialog message when a Journal Entry view completes test save",
+                                              preferredStyle: .alert)
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in alert dialog box for completing a test save",
+                                     style: .default,
+                                     handler: handler)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
   
   override func viewDidDisappear(_ animated: Bool) {
