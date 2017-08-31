@@ -371,6 +371,10 @@ class JournalEntryViewController: UITableViewController {
     }
   }
   
+  override func viewWillDisappear(_ animated: Bool) {
+    view.endEditing(true)
+  }
+  
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
     
@@ -425,17 +429,15 @@ extension JournalEntryViewController {
   
   override func scrollViewDidScroll(_ scrollView: UIScrollView) {
     let currentOffset = scrollView.contentOffset.y
-    var height = Constants.mapHeight - currentOffset
+    let height = Constants.mapHeight - currentOffset
     
-    if height == 0 {
-      DebugPrint.error("Height tried to be 0")
-      height = 1
+    if height <= 10 {
+      // DebugPrint.verbose("Height tried to be < 10")
+      mapView.isHidden = true
     } else {
-      //DebugPrint.verbose("Height = \(height)")
+      mapView.isHidden = false
+      mapView.frame = CGRect(x: 0, y: currentOffset, width: self.view.bounds.width, height: height)
     }
-    
-    // Need to take the ceiling as a 0 height with cause a crash
-    mapView.frame = CGRect(x: 0, y: currentOffset, width: self.view.bounds.width, height: height)
   }
 }
 

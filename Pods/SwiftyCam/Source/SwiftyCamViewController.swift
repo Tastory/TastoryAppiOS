@@ -833,13 +833,9 @@ open class SwiftyCamViewController: UIViewController {
 		return image
 	}
 
-	fileprivate func capturePhotoAsyncronously(completionHandler: @escaping(Bool) -> ()) {
+  fileprivate func capturePhotoAsyncronously(completionHandler: @escaping(Bool) -> ()) {
 		if let videoConnection = photoFileOutput?.connection(withMediaType: AVMediaTypeVideo) {
 
-      print("self.session.isRunning: \(self.session.isRunning)")
-      print("videoConnection.isEnable: \(videoConnection.isEnabled)")
-      print("videoConnection.isActive: \(videoConnection.isActive)")
-      
 			photoFileOutput?.captureStillImageAsynchronously(from: videoConnection, completionHandler: {(sampleBuffer, error) in
 				if (sampleBuffer != nil) {
 					let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)

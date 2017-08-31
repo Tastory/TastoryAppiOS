@@ -649,6 +649,10 @@ class MarkupViewController: UIViewController {
   }
   
   
+  override func viewWillDisappear(_ animated: Bool) {
+    view.endEditing(true)  // Force clear the keyboard
+  }
+  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     

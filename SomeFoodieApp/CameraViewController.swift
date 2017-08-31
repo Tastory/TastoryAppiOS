@@ -104,7 +104,8 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
     
     // Swifty Cam Setup
     cameraDelegate = self
-    //videoQuality = .medium  // Equal to AVCaptureSession.Preset.medium
+    doubleTapCameraSwitch = false
+    videoQuality = .resolution1280x720
     
     if let captureButton = captureButton {
       view.bringSubview(toFront: captureButton)
