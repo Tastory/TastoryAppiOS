@@ -270,8 +270,12 @@ extension CameraViewController: MarkupReturnDelegate {
 
 extension CameraViewController: UIImagePickerControllerDelegate {
   public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
-    let mediaType = info[UIImagePickerControllerMediaType] as! String
-    //let imageName = url.lastPathComponent
+
+    guard let mediaType = info[UIImagePickerControllerMediaType] as? String else {
+      DebugPrint.assert("Media type is expected after selection from image picker")
+      return
+    }
+
     picker.dismiss(animated:true, completion: nil)
 
     var mediaObject: FoodieMedia
@@ -279,12 +283,19 @@ extension CameraViewController: UIImagePickerControllerDelegate {
 
     if("public.movie" == mediaType)
     {
-      let movieUrl = info[UIImagePickerControllerMediaURL] as! NSURL
+      guard let movieUrl = info[UIImagePickerControllerMediaURL] as? NSURL else {
+        DebugPrint.assert("video URL is not returned from image picker")
+        return
+      }
+
       mediaObject = FoodieMedia(withState: .objectModified, fileName: (movieUrl.lastPathComponent)!, type: .video)
       mediaObject.videoLocalBufferUrl = URL(fileURLWithPath: (movieUrl.relativePath)!)
     } else {
       mediaName = FoodieFile.newPhotoFileName()
-      let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+      guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
+        DebugPrint.assert("UIImage is not returned from image picker")
+        return
+      }
       mediaObject = FoodieMedia(withState: .objectModified, fileName: mediaName, type: .photo)
       mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieConstants.jpegCompressionQuality))
     }
@@ -294,26 +305,6 @@ extension CameraViewController: UIImagePickerControllerDelegate {
     viewController.mediaObj = mediaObject
     viewController.markupReturnDelegate = self
     self.present(viewController, animated: true)
-
-
-    /* Image
-
-
-
-    */
-
-
-
-    /*
-     let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-     let data = UIImagePNGRepresentation(image)
-     data.writeToFile(localPath, atomically: true)
-
-     let imageData = NSData(contentsOfFile: localPath)!
-     let photoURL = NSURL(fileURLWithPath: localPath)
-     let imageWithData = UIImage(data: imageData)!
-     */
-       //self.dismiss(animated: true, completion: nil)
   }
 }
 
