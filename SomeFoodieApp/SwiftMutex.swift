@@ -45,19 +45,21 @@ struct SwiftMutex {
       }
       
       // Try the lock first. Start block timer if fails. Then keep trying the lock
-      var rtn = pthread_mutex_trylock(&core)
-      while rtn != 0 {
-        DebugPrint.log("Lock Value is \(rtn)")
-        if blocktimer == nil {
-          blocktimer = Timer.scheduledTimer(withTimeInterval: Constant.secondsMutexConsideredTooLong,
-                                            repeats: true) { timer in
-                                              DebugPrint.log("\(thread)Blocked by mutex for +100ms", function: function, file: file, line: line)
-          }
-        } else {
-          usleep(Constant.tryLockSleepPeriodus)
-        }
+      var rtn: Int32 = 0
+      repeat {
         rtn = pthread_mutex_trylock(&core)
-      }
+        if rtn != 0 {
+          DebugPrint.log("Mutex Lock Value Returned \(rtn) on \(thread)", function: function, file: file, line: line)
+          if blocktimer == nil {
+            blocktimer = Timer.scheduledTimer(withTimeInterval: Constant.secondsMutexConsideredTooLong,
+                                              repeats: true) { timer in
+                                                DebugPrint.error("\(thread)Blocked by mutex for +100ms", function: function, file: file, line: line)
+            }
+          } else {
+            usleep(Constant.tryLockSleepPeriodus)
+          }
+        }
+      } while rtn != 0
       
       // Got the lock, invalidate block timer if it was started
       if let timer = blocktimer {
@@ -67,7 +69,7 @@ struct SwiftMutex {
       // Start the timer measuring how long this lock is going to be held
       heldtimer = Timer.scheduledTimer(withTimeInterval: Constant.secondsMutexConsideredTooLong,
                                        repeats: true) { timer in
-                                        DebugPrint.log("\(thread)Held mutex for +100ms", function: function, file: file, line: line)
+                                        DebugPrint.error("\(thread)Held mutex for +100ms", function: function, file: file, line: line)
       }
     }
     
@@ -86,7 +88,7 @@ struct SwiftMutex {
   // MARK: - Constants
   struct Constant {
     fileprivate static let secondsMutexConsideredTooLong = 0.1
-    fileprivate static let tryLockSleepPeriodus: UInt32 = 10000
+    fileprivate static let tryLockSleepPeriodus: UInt32 = 30000
   }
   
   // MARK: - Public Static Functions

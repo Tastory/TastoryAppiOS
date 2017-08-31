@@ -71,6 +71,7 @@ class FoodiePrefetch {
         delegate = workingContext.delegate
         objectToFetch = workingContext.objectToFetch
       } else {
+        SwiftMutex.unlock(&workQueueMutex)
         return
       }
       

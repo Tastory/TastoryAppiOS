@@ -470,7 +470,7 @@ class FoodieFile {
     let task = s3Handler.headObject(objRequest)
     task.continueWith() { (task:AWSTask<AWSS3HeadObjectOutput>) -> Any? in
       if let error = task.error as NSError? {
-        if error.domain == AWSS3ErrorDomain {
+        if error.domain == AWSS3ErrorDomain {  // TODO: - Please make sure there are no silent fall through case. It can cause missing callback, then the whole app will f'ck up. Currently there is no time-out catch mechanism. If all our code works correctly, and the lower layer guarentees 1 response for every request, time-out at a level as high as our app shouldn't need one
           // didnt find the object
           callback?(false, ErrorCode.awsS3FileDoesntExistError)
           return nil
@@ -564,7 +564,23 @@ class FoodieS3Object {
     guard let fileName = foodieFileName else {
       DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
     }
-    FoodieFile.manager.saveLocalFileToS3(fileName: fileName, withBlock: callback)
+    FoodieFile.manager.checkIfFileExistsS3(fileName: fileName) { (fileExists, error) in
+      if let error = error as? FoodieFile.ErrorCode {
+        switch error {
+        case .awsS3FileDoesntExistError:
+          break
+        default:
+          DebugPrint.error("CheckIfFileExists on S3 for Save returned error - \(error.localizedDescription)")
+          callback?(false, error)
+          return
+        }
+      }
+      if !fileExists {  // Save if file doesn't exist
+        FoodieFile.manager.saveLocalFileToS3(fileName: fileName, withBlock: callback)
+      } else {  // Assume already good and saved otherwise
+        callback?(true, nil)
+      }
+    }
   }
   
   
@@ -591,10 +607,12 @@ class FoodieS3Object {
     }
     
     FoodieFile.manager.checkIfFileExistsS3(fileName: fileName) { (success, error) in
-      if(success) {
-        FoodieFile.manager.deleteFileFromS3(fileName: fileName, withBlock: callback)
+      if let error = error {
+        DebugPrint.error("CheckIfFileExists on S3 for Delete returned error - \(error.localizedDescription)")
       }
-      else {
+      if success {
+        FoodieFile.manager.deleteFileFromS3(fileName: fileName, withBlock: callback)
+      } else {
         // file doesnt exists can let go of this error as if file was deleted successfully 
         callback?(true, nil)
       }
