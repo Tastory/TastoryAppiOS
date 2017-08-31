@@ -288,8 +288,18 @@ extension CameraViewController: UIImagePickerControllerDelegate {
         return
       }
 
-      mediaObject = FoodieMedia(withState: .objectModified, fileName: (movieUrl.lastPathComponent)!, type: .video)
-      mediaObject.videoLocalBufferUrl = URL(fileURLWithPath: (movieUrl.relativePath)!)
+      guard let movieName = movieUrl.lastPathComponent else {
+        DebugPrint.assert("video URL is missing movie name")
+        return
+      }
+
+      guard let moviePath = movieUrl.relativePath else {
+        DebugPrint.assert("video URL is missing relative path")
+        return
+      }
+
+      mediaObject = FoodieMedia(withState: .objectModified, fileName: movieName, type: .video)
+      mediaObject.videoLocalBufferUrl = URL(fileURLWithPath: moviePath)
     } else {
       mediaName = FoodieFile.newPhotoFileName()
       guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {

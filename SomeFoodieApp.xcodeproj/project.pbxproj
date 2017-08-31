@@ -446,7 +446,7 @@
 				TargetAttributes = {
 					8CBF557F1E7F7EDF00F4B1CD = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 9D6RF3S2T5;
+						DevelopmentTeam = U6CK262SK9;
 						ProvisioningStyle = Automatic;
 					};
 					8CBF55931E7F7EDF00F4B1CD = {
@@ -851,10 +851,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 9D6RF3S2T5;
+				DEVELOPMENT_TEAM = U6CK262SK9;
 				INFOPLIST_FILE = SomeFoodieApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.sfc.SomeFoodieAppvic;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sfc.SomeFoodieAppvicDebug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -865,10 +865,10 @@
 			baseConfigurationReference = F73B070E1BA758725ED554B8 /* Pods-SomeFoodieApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 9D6RF3S2T5;
+				DEVELOPMENT_TEAM = U6CK262SK9;
 				INFOPLIST_FILE = SomeFoodieApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.sfc.SomeFoodieAppvic;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sfc.SomeFoodieAppvicDebug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
