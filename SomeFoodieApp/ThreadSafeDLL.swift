@@ -23,8 +23,8 @@ class ThreadSafeDLL {
       guard let dll = dll else {
         DebugPrint.fatal("Cannot get Next Node on Node that doesn't belong to any List!")
       }
-      pthread_mutex_lock(&dll.listMutex)
-      defer { pthread_mutex_unlock(&dll.listMutex) }
+      SwiftMutex.lock(&dll.listMutex)
+      defer { SwiftMutex.unlock(&dll.listMutex) }
       return nextNode
     }
     
@@ -32,35 +32,35 @@ class ThreadSafeDLL {
       guard let dll = dll else {
         DebugPrint.fatal("Cannot get Next Node on Node that doesn't belong to any List!")
       }
-      pthread_mutex_lock(&dll.listMutex)
-      defer { pthread_mutex_unlock(&dll.listMutex) }
+      SwiftMutex.lock(&dll.listMutex)
+      defer { SwiftMutex.unlock(&dll.listMutex) }
       return prevNode
     }
   }
   
   
   // MARK: - Private Instance Variables
-  private var listMutex = pthread_mutex_t()
+  private var listMutex = SwiftMutex.create()
   private var headNode: Node?
   private var tailNode: Node?
   
   
   // MARK: - Public Instance Variables
   var isEmpty: Bool {
-    pthread_mutex_lock(&listMutex)
-    defer { pthread_mutex_unlock(&listMutex) }
+    SwiftMutex.lock(&listMutex)
+    defer { SwiftMutex.unlock(&listMutex) }
     return (headNode == nil)
   }
   
   var head: Node? {
-    pthread_mutex_lock(&listMutex)
-    defer { pthread_mutex_unlock(&listMutex) }
+    SwiftMutex.lock(&listMutex)
+    defer { SwiftMutex.unlock(&listMutex) }
     return headNode
   }
   
   var tail: Node? {
-    pthread_mutex_lock(&listMutex)
-    defer { pthread_mutex_unlock(&listMutex) }
+    SwiftMutex.lock(&listMutex)
+    defer { SwiftMutex.unlock(&listMutex) }
     return tailNode
   }
  
@@ -99,7 +99,8 @@ class ThreadSafeDLL {
   
   // MARK: - Public Instance Functions
   func add(toHead node: Node) {
-    pthread_mutex_lock(&listMutex)
+    SwiftMutex.lock(&listMutex)
+    defer { SwiftMutex.unlock(&listMutex) }
     
     if node.dll != nil {
       DebugPrint.fatal("Cannot to add a Node that already belongs to another list!")
@@ -117,13 +118,12 @@ class ThreadSafeDLL {
     headNode.prevNode = node
     node.nextNode = headNode
     self.headNode = node
-    
-    pthread_mutex_unlock(&listMutex)
   }
   
   
   func add(toTail node: Node) {
-    pthread_mutex_lock(&listMutex)
+    SwiftMutex.lock(&listMutex)
+    defer { SwiftMutex.unlock(&listMutex) }
     
     if node.dll != nil {
       DebugPrint.fatal("Cannot add a Node that already belongs to another list!")
@@ -141,21 +141,19 @@ class ThreadSafeDLL {
     tailNode.nextNode = node
     node.prevNode = tailNode
     self.tailNode = node
-    
-    pthread_mutex_unlock(&listMutex)
   }
   
   
   func remove(_ node: Node) {
-    pthread_mutex_lock(&listMutex)
+    SwiftMutex.lock(&listMutex)
     removeUnsafely(node)
-    pthread_mutex_unlock(&listMutex)
+    SwiftMutex.unlock(&listMutex)
   }
   
   
   func removeAll() {
-    pthread_mutex_lock(&listMutex)
-    defer { pthread_mutex_unlock(&listMutex) }
+    SwiftMutex.lock(&listMutex)
+    defer { SwiftMutex.unlock(&listMutex) }
     
     guard let headNode = headNode else { return }
     var thisNode: Node = headNode
@@ -169,8 +167,8 @@ class ThreadSafeDLL {
   
   
   func convertToArray() -> [Node]? {
-    pthread_mutex_lock(&listMutex)
-    defer { pthread_mutex_unlock(&listMutex) }
+    SwiftMutex.lock(&listMutex)
+    defer { SwiftMutex.unlock(&listMutex) }
     
     guard let headNode = headNode else { return nil }
     var thisNode: Node = headNode

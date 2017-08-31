@@ -13,7 +13,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
   @IBOutlet weak var journalTitle: UILabel!
   @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
   
-  var cellStatusMutex = pthread_mutex_t()
+  var cellStatusMutex = SwiftMutex.create()
   var cellLoaded = false
   var cellDisplayed = false
   

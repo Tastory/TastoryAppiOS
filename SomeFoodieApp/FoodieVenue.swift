@@ -204,7 +204,7 @@ class FoodieVenue: FoodiePFObject  {
             DebugPrint.error("Search for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
             if !searchRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                           after: Constants.FoursquareSearchRetryDelay,
-                                                          withQoS: .userInteractive) {
+                                                          withQoS: .utility) {
               callback?(nil, nil, ErrorCode.foursquareHttpStatusFailed)
             }
           }
@@ -217,7 +217,7 @@ class FoodieVenue: FoodiePFObject  {
           if error.domain == NSURLErrorDomain, let urlError = error as? URLError {
             if !searchRetry.attemptRetryBasedOnURLError(urlError,
                                                         after: Constants.FoursquareSearchRetryDelay,
-                                                        withQoS: .userInteractive) {
+                                                        withQoS: .utility) {
               callback?(nil, nil, ErrorCode.foursquareResponseError)
             }
             return
@@ -380,7 +380,7 @@ class FoodieVenue: FoodiePFObject  {
             DebugPrint.error("Get Details for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
             if !getDetailsRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                               after: Constants.FoursquareGetDetailsRetryDelay,
-                                                              withQoS: .userInteractive) {
+                                                              withQoS: .utility) {
               callback?(nil, ErrorCode.foursquareHttpStatusFailed)
             }
           }
@@ -393,7 +393,7 @@ class FoodieVenue: FoodiePFObject  {
           if error.domain == NSURLErrorDomain, let urlError = error as? URLError {
             if !getDetailsRetry.attemptRetryBasedOnURLError(urlError,
                                                             after: Constants.FoursquareGetDetailsRetryDelay,
-                                                            withQoS: .userInteractive) {
+                                                            withQoS: .utility) {
               callback?(nil, ErrorCode.foursquareResponseError)
             }
             return
@@ -539,7 +539,7 @@ class FoodieVenue: FoodiePFObject  {
             DebugPrint.error("Get Details for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
             if !getHoursRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                             after: Constants.FoursquareGetDetailsRetryDelay,
-                                                            withQoS: .userInteractive) {
+                                                            withQoS: .utility) {
               callback?(nil, ErrorCode.foursquareHttpStatusFailed)
             }
           }
@@ -552,7 +552,7 @@ class FoodieVenue: FoodiePFObject  {
           if error.domain == NSURLErrorDomain, let urlError = error as? URLError {
             if !getHoursRetry.attemptRetryBasedOnURLError(urlError,
                                                           after: Constants.FoursquareGetDetailsRetryDelay,
-                                                          withQoS: .userInteractive) {
+                                                          withQoS: .utility) {
               callback?(nil, ErrorCode.foursquareResponseError)
             }
             return

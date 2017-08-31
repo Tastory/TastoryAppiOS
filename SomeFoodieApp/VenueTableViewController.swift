@@ -28,6 +28,7 @@ class VenueTableViewController: UIViewController {
   // MARK: - Constants
   struct Constants {
     fileprivate static let defaultLocationPlaceholderText = "Enter location to search near"
+    fileprivate static let searchBarSearchDelay = 0.5
   }
   
   
@@ -44,7 +45,7 @@ class VenueTableViewController: UIViewController {
   fileprivate var nearLocation: String?
   fileprivate var isVenueSearchUnderWay: Bool = false
   fileprivate var isVenueSearchPending: Bool = false
-  fileprivate var searchMutex = pthread_mutex_t()
+  fileprivate var searchMutex = SwiftMutex.create()
   
   
   // MARK: - IBOutlet
@@ -104,18 +105,17 @@ class VenueTableViewController: UIViewController {
   
   
   // Working along with venueSearchComplete(), this call is Thread Safe
-  fileprivate func fullVenueSearch() {
-    
+  func fullVenueSearch() {
     DispatchQueue.global(qos: .userInitiated).async {
       
       // In general, don't have mutexes locking the main thread please
-      pthread_mutex_lock(&self.searchMutex)
+      SwiftMutex.lock(&self.searchMutex)
       guard !self.isVenueSearchUnderWay else {
         self.isVenueSearchPending = true
-        pthread_mutex_unlock(&self.searchMutex)
+        SwiftMutex.unlock(&self.searchMutex)
         return
       }
-      pthread_mutex_unlock(&self.searchMutex)
+      SwiftMutex.unlock(&self.searchMutex)
       
       // Search Foursquare based on either
       //  1. the user supplied location
@@ -148,41 +148,43 @@ class VenueTableViewController: UIViewController {
       case .searchFoursquareFailedGeocode:
         AlertDialog.present(from: self, title: "Cannot find Location", message: "Please input a valid location, or leave location field empty")
       default:
-        searchErrorDialog()
+        AlertDialog.present(from: self, title: "Venue Search Failed", message: "Please try another venue name or location")
       }
       return
     }
     
-    // Update actual search Location if Geocode response available
-    if let geocode = geocode, let displayName = geocode.displayName {
-      locationSearchBar.text = displayName
-      nearLocation = displayName
-    } else {
-      locationSearchBar.text = ""
-      nearLocation = nil
+    DispatchQueue.main.async {
+      // Update actual search Location if Geocode response available
+      if let geocode = geocode, let displayName = geocode.displayName {
+        self.locationSearchBar.text = displayName
+        self.nearLocation = displayName
+      } else {
+        self.locationSearchBar.text = ""
+        self.nearLocation = nil
+      }
+      
+      guard let venueArray = venueArray else {
+        // Just make sure venueResultArray is cleared
+        self.venueResultArray = nil
+        self.venueTableView.reloadData()
+        return
+      }
+      
+      self.venueResultArray = venueArray
+      self.venueTableView.reloadData()
     }
-    
-    guard let venueArray = venueArray else {
-      // Just make sure venueResultArray is cleared
-      venueResultArray = nil
-      venueTableView.reloadData()
-      return
-    }
-    
-    venueResultArray = venueArray
-    venueTableView.reloadData()
     
     // If search is pending, make sure another search will be done
     var doAnotherSearch = false
     
-    pthread_mutex_lock(&searchMutex)
+    SwiftMutex.lock(&searchMutex)
     isVenueSearchUnderWay = false
     
     if isVenueSearchPending {
       isVenueSearchPending = false
       doAnotherSearch = true
     }
-    pthread_mutex_unlock(&searchMutex)
+    SwiftMutex.unlock(&searchMutex)
     
     if doAnotherSearch {
       fullVenueSearch()
@@ -261,7 +263,8 @@ extension VenueTableViewController: UISearchBarDelegate {
     if searchBar === venueSearchBar {
       if let venueSearchText = venueSearchBar.text {
         venueName = venueSearchText
-        fullVenueSearch()
+        NSObject.cancelPreviousPerformRequests(withTarget: #selector(fullVenueSearch))
+        self.perform(#selector(fullVenueSearch), with: nil, afterDelay: Constants.searchBarSearchDelay)
       } else {
         venueName = ""
       }

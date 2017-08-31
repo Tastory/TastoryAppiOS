@@ -19,6 +19,9 @@ class CameraButton: SwiftyCamButton {
   var buttonLayer = CameraButtonLayer()
   // TODO: Busy Indicator Layer
   
+  fileprivate var animationReady = false
+  fileprivate var cameraSessionReady = false
+  
   override init(frame: CGRect) {
     super.init(frame: frame)
     self.frame = frame
@@ -35,6 +38,9 @@ class CameraButton: SwiftyCamButton {
     buttonLayer.animateSmallToMedium()
     ringLayer.resetAnimations()
     ringLayer.animateStrokeSmallCircle()
+    DispatchQueue.main.asyncAfter(deadline: .now() + CameraViewController.GlobalConstants.animateInDuration) { 
+      self.animationIsReady()
+    }
   }
   
   private func createLayers() {
@@ -63,6 +69,8 @@ class CameraButton: SwiftyCamButton {
     buttonLayer.animateSmallToMedium()
     ringLayer.resetAnimations()
     ringLayer.animateStrokeSmallCircle()
+    cameraSessionReady = false
+    animationReady = false
   }
   
   func startRecording() {
@@ -72,4 +80,19 @@ class CameraButton: SwiftyCamButton {
   func stopRecording() {
     ringLayer.pauseAnimations()
   }
+  
+  func cameraSessionIsReady() {
+    cameraSessionReady = true
+    if animationReady == true {
+      self.isEnabled = true
+    }
+  }
+  
+  func animationIsReady() {
+    animationReady = true
+    if cameraSessionReady == true {
+      self.isEnabled = true
+    }
+  }
+  
 }

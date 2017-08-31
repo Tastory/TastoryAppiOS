@@ -138,5 +138,6 @@ class CameraButtonRingLayer: CAShapeLayer {
     removeAllAnimations()
     speed = 1.0
     timeOffset = 0.0
+    strokeColor = smallColor.withAlphaComponent(Constants.smallAlpha).cgColor
   }
 }

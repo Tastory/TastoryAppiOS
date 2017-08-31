@@ -66,7 +66,9 @@ struct FoodieGlobal {
   // MARK: - Public Static Functions
   static func foursquareInitialize() {
     if !foursquareInitialized {
-      Session.setupSharedSessionWithConfiguration(foursquareConfiguration)
+      let foursquareSessionQueue = OperationQueue()
+      foursquareSessionQueue.qualityOfService = .userInitiated
+      Session.setupSharedSessionWithConfiguration(foursquareConfiguration, completionQueue: foursquareSessionQueue)
       foursquareInitialized = true
     }
   }

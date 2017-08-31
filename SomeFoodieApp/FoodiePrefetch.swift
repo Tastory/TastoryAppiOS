@@ -24,7 +24,7 @@ class FoodiePrefetch {
   
   // MARK: - Structs
   class Context {
-    //var contextPointerMutex = pthread_mutex_t()
+    //var contextPointerMutex = SwiftMutex.create()
     var prevContext: Context?
     var nextContext: Context?
     var delegate: FoodiePrefetchDelegate!
@@ -37,9 +37,9 @@ class FoodiePrefetch {
   
   
   // MARK: - Private Instance Variables
-  fileprivate var blockCountMutex = pthread_mutex_t()
+  fileprivate var blockCountMutex = SwiftMutex.create()
   fileprivate var blockCount = 0
-  fileprivate var workQueueMutex = pthread_mutex_t()
+  fileprivate var workQueueMutex = SwiftMutex.create()
   fileprivate var headOfWorkQueue: Context? = nil
   fileprivate var tailOfWorkQueue: Context? = nil
   
@@ -51,9 +51,9 @@ class FoodiePrefetch {
     var letsFetch = false
     
     // Just sample the block to determine whether to fetch or not
-    pthread_mutex_lock(&blockCountMutex)
+    SwiftMutex.lock(&blockCountMutex)
     if blockCount == 0 { letsFetch = true }
-    pthread_mutex_unlock(&blockCountMutex)
+    SwiftMutex.unlock(&blockCountMutex)
     
     if letsFetch {
       
@@ -63,7 +63,7 @@ class FoodiePrefetch {
       var delegate: FoodiePrefetchDelegate!
       var objectToFetch: AnyObject!
       
-      pthread_mutex_lock(&workQueueMutex)
+      SwiftMutex.lock(&workQueueMutex)
       
       // Issue a Prefetch if the Work Queue is not empty
       if headOfWorkQueue != nil {
@@ -74,7 +74,7 @@ class FoodiePrefetch {
         return
       }
       
-      pthread_mutex_unlock(&workQueueMutex)
+      SwiftMutex.unlock(&workQueueMutex)
       DebugPrint.verbose("prefetchNextIfNoBlock, doPrefetch")
       delegate.doPrefetch(on: objectToFetch, for: workingContext){ context in
         
@@ -89,22 +89,22 @@ class FoodiePrefetch {
   
   
   func blockPrefetching() {
-    pthread_mutex_lock(&blockCountMutex)
+    SwiftMutex.lock(&blockCountMutex)
     blockCount += 1
     let debugCount = blockCount
-    pthread_mutex_unlock(&blockCountMutex)
+    SwiftMutex.unlock(&blockCountMutex)
     
     DebugPrint.verbose("blockPrefetching up to blockCount of \(debugCount)")
   }
   
   
   func unblockPrefetching() {
-    pthread_mutex_lock(&blockCountMutex)
+    SwiftMutex.lock(&blockCountMutex)
     if blockCount >= 1 {
       blockCount -= 1
     }
     let debugCount = blockCount
-    pthread_mutex_unlock(&blockCountMutex)
+    SwiftMutex.unlock(&blockCountMutex)
     
     DebugPrint.verbose("unblockPrefetching down to blockCount of \(debugCount)")
     prefetchNextIfNoBlock()
@@ -120,7 +120,7 @@ class FoodiePrefetch {
     newContext.objectToFetch = objectToFetch
     newContext.nextContext = nil
     
-    pthread_mutex_lock(&workQueueMutex)
+    SwiftMutex.lock(&workQueueMutex)
     newContext.prevContext = tailOfWorkQueue
     
     if tailOfWorkQueue == nil {
@@ -134,7 +134,7 @@ class FoodiePrefetch {
       tailOfWorkQueue!.nextContext = newContext
       tailOfWorkQueue = newContext
     }
-    pthread_mutex_unlock(&workQueueMutex)
+    SwiftMutex.unlock(&workQueueMutex)
     
     // Kick off prefetch if first in queue and no block
     if firstInQueue {
@@ -146,11 +146,11 @@ class FoodiePrefetch {
   
   func removePrefetchWork(for context: Context) {
     DebugPrint.verbose("removePrefetchWork")
-    pthread_mutex_lock(&workQueueMutex)
+    SwiftMutex.lock(&workQueueMutex)
     
     if context.objectToFetch == nil {
       // Already removed, so just return
-      pthread_mutex_unlock(&workQueueMutex)
+      SwiftMutex.unlock(&workQueueMutex)
       return
     }
     
@@ -179,13 +179,13 @@ class FoodiePrefetch {
     context.delegate = nil
     context.objectToFetch = nil
     
-    pthread_mutex_unlock(&workQueueMutex)
+    SwiftMutex.unlock(&workQueueMutex)
   }
   
   
   func removeAllPrefetchWork() {
     DebugPrint.verbose("removeAllPrefetchWork")
-    pthread_mutex_lock(&workQueueMutex)
+    SwiftMutex.lock(&workQueueMutex)
     
     while headOfWorkQueue != nil {
       if let context = headOfWorkQueue {
@@ -213,7 +213,7 @@ class FoodiePrefetch {
         }
       }
     }
-    pthread_mutex_unlock(&workQueueMutex)
+    SwiftMutex.unlock(&workQueueMutex)
   }
   
 }

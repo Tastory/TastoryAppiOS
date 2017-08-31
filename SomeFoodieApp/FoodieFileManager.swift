@@ -547,7 +547,13 @@ class FoodieS3Object {
     guard let fileName = foodieFileName else {
       DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
     }
-    FoodieFile.manager.saveDataToLocal(buffer: buffer, fileName: fileName, withBlock: callback)
+    
+    // Check if the file already exist. If so just assume it's the right file
+    if !FoodieFile.manager.checkIfFileExistsLocally(fileName: fileName) {
+      FoodieFile.manager.saveDataToLocal(buffer: buffer, fileName: fileName, withBlock: callback)
+    } else {
+      callback?(true, nil)
+    }
   }
 
   
@@ -555,7 +561,13 @@ class FoodieS3Object {
     guard let fileName = foodieFileName else {
       DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
     }
-    FoodieFile.manager.moveFileFromUrlToLocal(url: url, fileName: fileName, withBlock: callback)
+    
+    // Check if the file already exist. If so just assume it's the right file
+    if !FoodieFile.manager.checkIfFileExistsLocally(fileName: fileName) {
+      FoodieFile.manager.moveFileFromUrlToLocal(url: url, fileName: fileName, withBlock: callback)
+    } else {
+      callback?(true, nil)
+    }
   }
   
   // Function to save this and all child Parse objects to server

@@ -48,7 +48,7 @@ class JournalEntryViewController: UITableViewController {
 
   fileprivate var isSaveInProgress = false
   fileprivate var triggerSaveJournal = false
-  fileprivate var saveStateMutex = pthread_mutex_t()
+  fileprivate var saveStateMutex = SwiftMutex.create()
   
   
   // MARK: - IBOutlets
@@ -92,13 +92,13 @@ class JournalEntryViewController: UITableViewController {
     DebugPrint.verbose("\(String(describing: self.workingJournal?.foodieObject.operationState))")
 
     //making sure that the operation state didnt change between checking and setting the flag
-    pthread_mutex_lock(&self.saveStateMutex)
+    SwiftMutex.lock(&self.saveStateMutex)
 
     if(isSaveInProgress)
     {
       triggerSaveJournal = true
     }
-    pthread_mutex_unlock(&self.saveStateMutex)
+    SwiftMutex.unlock(&self.saveStateMutex)
 
     if(!triggerSaveJournal)
     {
@@ -179,17 +179,17 @@ class JournalEntryViewController: UITableViewController {
       return
     }
     
-    pthread_mutex_lock(&self.saveStateMutex)
+    SwiftMutex.lock(&self.saveStateMutex)
     self.isSaveInProgress = true
-    pthread_mutex_unlock(&self.saveStateMutex)
+    SwiftMutex.unlock(&self.saveStateMutex)
     
     // Save Journal to Local
     journal.saveRecursive(to: .local, withName: "workingJournal") { (_, error) -> Void in
       
       if let error = error {
-        pthread_mutex_lock(&self.saveStateMutex)
+        SwiftMutex.lock(&self.saveStateMutex)
         self.isSaveInProgress = false
-        pthread_mutex_unlock(&self.saveStateMutex)
+        SwiftMutex.unlock(&self.saveStateMutex)
         
         DebugPrint.error("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
         callback?(error)
@@ -205,9 +205,9 @@ class JournalEntryViewController: UITableViewController {
       
       foodieObject.saveRecursive(to: .server, withName: nil) { (success, error) -> Void in
       
-        pthread_mutex_lock(&self.saveStateMutex)
+        SwiftMutex.lock(&self.saveStateMutex)
         self.isSaveInProgress = false
-        pthread_mutex_unlock(&self.saveStateMutex)
+        SwiftMutex.unlock(&self.saveStateMutex)
         
         if let error = error {
           DebugPrint.error("\(foodieObject.foodieObjectType()) pre-save to Server resulted in error - \(error.localizedDescription)")
@@ -509,8 +509,10 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
           
           // Update the UI again here
           if let name = venueToUpdate.name {
-            self.venueButton?.setTitle(name, for: .normal)
-            self.venueButton?.setTitleColor(.black, for: .normal)
+            DispatchQueue.main.async {
+              self.venueButton?.setTitle(name, for: .normal)
+              self.venueButton?.setTitleColor(.black, for: .normal)
+            }
           }
           
           // Update the map again here

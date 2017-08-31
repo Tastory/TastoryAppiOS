@@ -123,7 +123,7 @@ class CameraViewController: SwiftyCamViewController {  // View needs to comply t
     
     // Listen to notification of when SwiftyCam's AVCaptureSession isRunning == true
     NotificationCenter.default.addObserver(forName: .AVCaptureSessionDidStartRunning, object: nil, queue: OperationQueue.main) { _ in
-      self.captureButton?.isEnabled = true
+      self.captureButton?.cameraSessionIsReady()
       NotificationCenter.default.removeObserver(self, name: .AVCaptureSessionDidStartRunning, object: nil)
     }
     

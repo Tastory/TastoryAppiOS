@@ -128,7 +128,7 @@ class LocationWatch: NSObject {
     watcherDLL.add(toTail: watcher)
     
     if let location = currentLocation {
-      DispatchQueue.global(qos: .userInteractive).async { watcher.callback(location, nil) }
+      DispatchQueue.global(qos: .userInitiated).async { watcher.callback(location, nil) }
     }
     manager.startUpdatingLocation()
   }
@@ -141,7 +141,7 @@ class LocationWatch: NSObject {
     watcherDLL.add(toTail: watcher)
     
     if let location = currentLocation {
-      DispatchQueue.global(qos: .userInteractive).async { watcher.callback(location, nil) }
+      DispatchQueue.global(qos: .utility).async { watcher.callback(location, nil) }
     }
     manager.startUpdatingLocation()
     return watcher
@@ -154,7 +154,7 @@ class LocationWatch: NSObject {
   func resume(_ watcher: Context) {
     watcher.state = .started
     if let location = currentLocation {
-      DispatchQueue.global(qos: .userInteractive).async { watcher.callback(location, nil) }
+      DispatchQueue.global(qos: .utility).async { watcher.callback(location, nil) }
     }
     manager.startUpdatingLocation()
   }

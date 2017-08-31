@@ -131,12 +131,12 @@ class FoodieObject {
   
 
   // MARK: - Private Instance Variables
-  fileprivate var operationStateMutex = pthread_mutex_t()
+  fileprivate var operationStateMutex = SwiftMutex.create()
   fileprivate var protectedOperationState: OperationStates = .notAvailable  // If this is not explicitly initiated, would be because it's from Parse, hence notAvailable.
   fileprivate var protectedOperationError: Error?  // Need specific Error object class?
-  fileprivate var outstandingChildOperationsMutex = pthread_mutex_t()
+  fileprivate var outstandingChildOperationsMutex = SwiftMutex.create()
   fileprivate var outstandingChildOperations = 0
-  fileprivate var criticalMutex = pthread_mutex_t()
+  fileprivate var criticalMutex = SwiftMutex.create()
   
   
   // MARK: - Public Static Functions
@@ -162,17 +162,17 @@ class FoodieObject {
   
   // Function to mark memory modified
   func markModified() {
-    pthread_mutex_lock(&operationStateMutex)  // TODO-Performance: To be removed? Otherwise make sure this never gets executed in Main Thread?
+    SwiftMutex.lock(&operationStateMutex)  // TODO-Performance: To be removed? Otherwise make sure this never gets executed in Main Thread?
     // TODO: State transition sanity checks?
     protectedOperationState = .objectModified
-    pthread_mutex_unlock(&operationStateMutex)
+    SwiftMutex.unlock(&operationStateMutex)
   }
   
   
   // Function to mark pending retrieval
   func markPendingRetrieval() {
     
-    pthread_mutex_lock(&operationStateMutex)  // TODO-Performance: To be removed? Otherwise make sure this never gets executed in Main Thread?
+    SwiftMutex.lock(&operationStateMutex)  // TODO-Performance: To be removed? Otherwise make sure this never gets executed in Main Thread?
     
     switch protectedOperationState {
     case .notAvailable:
@@ -187,7 +187,7 @@ class FoodieObject {
       //DebugPrint.assert("FoodieObject.markPendingRetrieval. Invalid state transition")
     }
     
-    pthread_mutex_unlock(&operationStateMutex)
+    SwiftMutex.unlock(&operationStateMutex)
   }
 
   
@@ -209,9 +209,9 @@ class FoodieObject {
   // Function to call a child's retrieveRecursive()
   func retrieveChild(_ child: FoodieObjectDelegate, forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
-    pthread_mutex_lock(&self.outstandingChildOperationsMutex)
+    SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
-    pthread_mutex_unlock(&self.outstandingChildOperationsMutex)
+    SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
     
     child.retrieveRecursive(forceAnyways: forceAnyways) { (error) in
       
@@ -221,10 +221,10 @@ class FoodieObject {
       
       // This needs to be critical section or race condition between many childrens' completion can occur
       var childOperationsPending = true
-      pthread_mutex_lock(&self.outstandingChildOperationsMutex)
+      SwiftMutex.lock(&self.outstandingChildOperationsMutex)
       self.outstandingChildOperations -= 1
       if self.outstandingChildOperations == 0 { childOperationsPending = false }
-      pthread_mutex_unlock(&self.outstandingChildOperationsMutex)
+      SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
       
       if !childOperationsPending {
         self.retrievesCompletedFromAllChildren(withBlock: callback)
@@ -378,9 +378,9 @@ class FoodieObject {
     
     DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.saveChild of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location)")
     
-    pthread_mutex_lock(&self.outstandingChildOperationsMutex)
+    SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
-    pthread_mutex_unlock(&self.outstandingChildOperationsMutex)
+    SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
     
     // Save Recursive for each moment. Call saveCompletionFromChild when done and without errors
     child.saveRecursive(to: location, withName: name) { /*[unowned self]*/ (success, error) in
@@ -394,10 +394,10 @@ class FoodieObject {
       
       // This needs to be critical section or race condition between many childrens' completion can occur
       var childOperationsPending = true
-      pthread_mutex_lock(&self.outstandingChildOperationsMutex)
+      SwiftMutex.lock(&self.outstandingChildOperationsMutex)
       self.outstandingChildOperations -= 1
       if self.outstandingChildOperations == 0 { childOperationsPending = false }
-      pthread_mutex_unlock(&self.outstandingChildOperationsMutex)
+      SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
       
       if !childOperationsPending {
         self.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
@@ -460,9 +460,9 @@ class FoodieObject {
                    withBlock callback: FoodieObject.BooleanErrorBlock?) {
 
     // Lock here is in case that if the first operation competes and calls back before even the 2nd op's deleteChild goes out
-    pthread_mutex_lock(&self.criticalMutex)
+    SwiftMutex.lock(&self.criticalMutex)
     self.outstandingChildOperations += 1
-    pthread_mutex_unlock(&self.criticalMutex)
+    SwiftMutex.unlock(&self.criticalMutex)
     
     child.deleteRecursive(withName: nil, withBlock: {(success, error) -> Void in
       
@@ -475,12 +475,12 @@ class FoodieObject {
       }
       
       var childOperationsPending = true
-      pthread_mutex_lock(&self.criticalMutex)
+      SwiftMutex.lock(&self.criticalMutex)
       self.outstandingChildOperations -= 1
       if self.outstandingChildOperations == 0 {
         childOperationsPending = false
       }
-      pthread_mutex_unlock(&self.criticalMutex)
+      SwiftMutex.unlock(&self.criticalMutex)
       
       if !childOperationsPending {
         callback?(self.protectedOperationError == nil, self.protectedOperationError)
@@ -494,15 +494,15 @@ class FoodieObject {
     
     var needRetrieval = false
     
-    pthread_mutex_lock(&operationStateMutex)
+    SwiftMutex.lock(&operationStateMutex)
     
     if operationState == .pendingRetrieval {
       protectedOperationState = .retrieving
       needRetrieval = true
-      pthread_mutex_unlock(&operationStateMutex)
+      SwiftMutex.unlock(&operationStateMutex)
       
     } else {
-      pthread_mutex_unlock(&operationStateMutex)
+      SwiftMutex.unlock(&operationStateMutex)
       return false  // Nothing pending, just return false
     }
     
@@ -513,14 +513,14 @@ class FoodieObject {
       delegateObj.retrieveRecursive(forceAnyways: false) { error in
         
         // Move forward state if success, backwards if failed
-        pthread_mutex_lock(&self.operationStateMutex)
+        SwiftMutex.lock(&self.operationStateMutex)
         
         if error == nil {
           self.protectedOperationState = .objectSynced
         } else {
           self.protectedOperationState = .notAvailable
         }
-        pthread_mutex_unlock(&self.operationStateMutex)
+        SwiftMutex.unlock(&self.operationStateMutex)
         
         callback?(error)
         self.waitOnRetrieveDelegate?.retrieved(for: delegateObj)
@@ -535,7 +535,7 @@ class FoodieObject {
   func checkRetrieved(ifFalseSetDelegate delegate: FoodieObjectWaitOnRetrieveDelegate) -> Bool {
     
     var retrieved = false
-    pthread_mutex_lock(&operationStateMutex)
+    SwiftMutex.lock(&operationStateMutex)
     
     switch operationState {
     case .pendingRetrieval, .retrieving:
@@ -547,7 +547,7 @@ class FoodieObject {
       DebugPrint.error("FoodieObject.checkRetrieved() state unexpected")
     }
     
-    pthread_mutex_unlock(&operationStateMutex)
+    SwiftMutex.unlock(&operationStateMutex)
     return retrieved
   }
   
