@@ -125,11 +125,11 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="srX-2D-hwk">
                                 <rect key="frame" x="16" y="483" width="343" height="144"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y2Q-Z6-pjW">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
                                         <rect key="frame" x="144.5" y="0.0" width="54" height="30"/>
                                         <state key="normal" title="Camera"/>
                                         <connections>
-                                            <action selector="launchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="HiK-NO-zpv"/>
+                                            <action selector="launchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="k45-JV-u3I"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sNl-Tb-SAf">
@@ -433,14 +433,6 @@
                                     <action selector="exitPressed:" destination="ImI-Ed-QdP" eventType="touchUpInside" id="i5Y-3I-IEc"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3bh-BB-av7">
-                                <rect key="frame" x="270" y="617" width="89" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="My Photos"/>
-                                <connections>
-                                    <action selector="launchImagePicker:" destination="ImI-Ed-QdP" eventType="touchUpInside" id="b93-pK-TrC"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="30k-mM-bOe" firstAttribute="centerX" secondItem="oEc-gL-EdH" secondAttribute="centerX" id="b0a-4t-gdd"/>
@@ -452,7 +444,6 @@
                     <connections>
                         <outlet property="captureButton" destination="30k-mM-bOe" id="xaS-ZF-RGb"/>
                         <outlet property="exitButton" destination="kxo-zQ-usi" id="TLa-71-fEp"/>
-                        <outlet property="imagePicker" destination="3bh-BB-av7" id="NAr-KZ-7pb"/>
                         <outlet property="tapRecognizer" destination="Hy8-pD-3IZ" id="yNt-QN-sHL"/>
                     </connections>
                 </viewController>
@@ -607,9 +598,6 @@
                                                     <nil key="textColor"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
-                                                    <connections>
-                                                        <action selector="EditedTitle:" destination="YxI-Mg-cNr" eventType="editingDidEnd" id="eIq-50-a9F"/>
-                                                    </connections>
                                                 </textField>
                                             </subviews>
                                         </tableViewCellContentView>
@@ -713,8 +701,7 @@
                         </connections>
                     </tableView>
                     <connections>
-                        <outlet property="categoryTextField" destination="Sdu-9R-pbJ" id="euk-t2-Kgk"/>
-                        <outlet property="linkTextField" destination="F0e-5D-7TJ" id="e0u-tU-Ffi"/>
+                        <outlet property="linkTextField" destination="Sdu-9R-pbJ" id="Ve3-UO-asd"/>
                         <outlet property="tagsTextView" destination="ijC-Vt-3Fq" id="2sl-gj-NL9"/>
                         <outlet property="titleTextField" destination="p0e-OO-Rl9" id="HKe-RT-VXu"/>
                         <outlet property="venueButton" destination="kwj-i7-hiS" id="4pp-t5-837"/>
