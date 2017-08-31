@@ -26,6 +26,7 @@ xcuserdata/
 *.moved-aside
 *.xcuserstate
 *.xcscmblueprint
+xcschememanagement.plist
 
 ## Obj-C/Swift specific
 *.hmap
@@ -49,4 +50,3 @@ fastlane/test_output
 
 ## Playgrounds
 timeline.xctimeline
-
