@@ -59,8 +59,10 @@ class FoodieMedia: FoodieS3Object {
     mediaType = type
     
     // For videos, determine if the media file already exists in Local cache store
-    if type == .video {
-      videoLocalBufferUrl = FoodieFile.checkIfExistInLocal(for: fileName)
+    if type == .video && FoodieFile.manager.checkIfFileExistsLocally(for: fileName) {
+      videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: fileName)
+    } else {
+      videoLocalBufferUrl = nil
     }
   }
 }

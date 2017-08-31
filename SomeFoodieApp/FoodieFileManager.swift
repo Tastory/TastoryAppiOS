@@ -157,17 +157,6 @@ class FoodieFile {
   }
   
   
-  static func checkIfExistInLocal(for fileName: String) -> URL? {
-    let fileURL = getLocalFileURL(from: fileName)
-    
-    if FileManager.default.isReadableFile(atPath: fileURL.path) {
-      return fileURL
-    } else {
-      return nil
-    }
-  }
-  
-  
   // MARK: - Public Instance Functions
   init(){
     
@@ -467,9 +456,9 @@ class FoodieFile {
   }
   
   
-  func checkIfFileExistsLocally(fileName: String) -> Bool {
+  func checkIfFileExistsLocally(for fileName: String) -> Bool {
     let filePath = FoodieFile.getLocalFileURL(from: fileName).path
-    return fileManager.fileExists(atPath: filePath)
+    return fileManager.isReadableFile(atPath: filePath)
   }
   
   
@@ -549,7 +538,7 @@ class FoodieS3Object {
     }
     
     // Check if the file already exist. If so just assume it's the right file
-    if !FoodieFile.manager.checkIfFileExistsLocally(fileName: fileName) {
+    if !FoodieFile.manager.checkIfFileExistsLocally(for: fileName) {
       FoodieFile.manager.saveDataToLocal(buffer: buffer, fileName: fileName, withBlock: callback)
     } else {
       callback?(true, nil)
@@ -563,7 +552,7 @@ class FoodieS3Object {
     }
     
     // Check if the file already exist. If so just assume it's the right file
-    if !FoodieFile.manager.checkIfFileExistsLocally(fileName: fileName) {
+    if !FoodieFile.manager.checkIfFileExistsLocally(for: fileName) {
       FoodieFile.manager.moveFileFromUrlToLocal(url: url, fileName: fileName, withBlock: callback)
     } else {
       callback?(true, nil)
@@ -585,7 +574,7 @@ class FoodieS3Object {
       DebugPrint.fatal("Unexpected. FoodieS3Object has no foodieFileName")
     }
     
-    if (FoodieFile.manager.checkIfFileExistsLocally(fileName: fileName))
+    if (FoodieFile.manager.checkIfFileExistsLocally(for: fileName))
     {
       FoodieFile.manager.deleteFileFromLocal(fileName: fileName, withBlock: callback)
     } else {
