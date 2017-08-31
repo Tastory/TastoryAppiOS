@@ -60,6 +60,8 @@ class MapViewController: UIViewController {
   }
 
   @IBAction func LaunchDraftJournal(_ sender: Any) {
+    // This is used for viewing the draft journal to be used with update journal later
+    // Hid the button due to problems with empty draft journal and saving an empty journal is problematic
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
 

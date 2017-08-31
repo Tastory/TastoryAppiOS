@@ -105,7 +105,6 @@ class JournalEntryViewController: UITableViewController {
   func saveJournalToLocal() {
     if let journal = workingJournal {
       journal.foodieObject.markModified()
-      //
       FoodieJournal.unpinAllObjectsInBackground(withName: "workingJournal")
       journal.saveRecursive(to: .local, withName: "workingJournal",withBlock: nil)
     }

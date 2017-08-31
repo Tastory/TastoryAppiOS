@@ -307,10 +307,13 @@ class MarkupViewController: UIViewController {
                           style: .destructive) { action in
                             if(journal.foodieObject.operationState != .objectSynced)
                             {
-                              // unpin the journal and delete moments from s3
+                              // unpin the journal and delete journal from s3
                               FoodiePFObject.unpinAllObjectsInBackground(withName: "workingJournal", block: { (success, error)in
                                 journal.deleteRecursive(withBlock: { (success, error) in
-                                  // TODO add handler
+                                  if(error != nil)
+                                  {
+                                    DebugPrint.verbose("Encountered an error when deleting journal")
+                                  }
                                 })
                               })
                             }

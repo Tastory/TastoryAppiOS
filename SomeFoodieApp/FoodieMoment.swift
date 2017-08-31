@@ -153,7 +153,13 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         callback?(error)
         return
       }
-      
+
+      // objectID is only assigned when a PFObject is saved to server
+      if(self.objectId == nil)
+      {
+        self.foodieObject.markModified()
+      }
+
       self.foodieObject.resetOutstandingChildOperations()
       
       // Got through all sanity check, calling children's retrieveRecursive

@@ -549,7 +549,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     // Need to make sure all children FoodieRecursives saved before proceeding
     if let hasMoments = moments {
       for moment in hasMoments {
-        // omit saving of moment if they are not marked modified to prevent double saving of moments to server
+        // prevent double saving of moments if they are on the server already
         if(moment.foodieObject.operationState == .objectModified ||
           moment.foodieObject.operationState == .savedToLocal)
         {
@@ -567,8 +567,12 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     if let hasMarkups = markups {
       for markup in hasMarkups {
-        foodieObject.saveChild(markup, to: location, withName: name, withBlock: callback)
-        childOperationPending = true
+        if(markup.foodieObject.operationState == .objectModified ||
+          markup.foodieObject.operationState == .savedToLocal)
+        {
+          foodieObject.saveChild(markup, to: location, withName: name, withBlock: callback)
+          childOperationPending = true
+        }
       }
     }
     

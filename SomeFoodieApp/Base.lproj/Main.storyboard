@@ -123,17 +123,10 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes"/>
                             </textField>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="srX-2D-hwk">
-                                <rect key="frame" x="16" y="445" width="343" height="182"/>
+                                <rect key="frame" x="16" y="483" width="343" height="144"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
-                                        <rect key="frame" x="126.5" y="0.0" width="90" height="30"/>
-                                        <state key="normal" title="Journal Draft"/>
-                                        <connections>
-                                            <action selector="LaunchDraftJournal:" destination="BYZ-38-t0r" eventType="touchUpInside" id="wyX-65-NQ2"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y2Q-Z6-pjW">
-                                        <rect key="frame" x="144.5" y="38" width="54" height="30"/>
+                                        <rect key="frame" x="144.5" y="0.0" width="54" height="30"/>
                                         <state key="normal" title="Camera"/>
                                         <connections>
                                             <action selector="launchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="HiK-NO-zpv"/>

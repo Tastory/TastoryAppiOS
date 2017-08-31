@@ -54,7 +54,13 @@ extension FoodieMarkup: FoodieObjectDelegate {
   
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
   func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
-    
+
+    // objectID is only assigned when a PFObject is saved to server
+    if(self.objectId == nil)
+    {
+      self.foodieObject.markModified()
+    }
+
     // Retrieve self. This object have no children
     retrieve(forceAnyways: forceAnyways, withBlock: callback)
   }

@@ -66,7 +66,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let query = PFQuery(className: FoodieJournal.parseClassName())
     query.fromPin(withName: "workingJournal")
 
-    query.getFirstObjectInBackground(block: { (fetchedObject, error) in
+    query.getFirstObjectInBackground(){ (fetchedObject, error) in
       if(fetchedObject == nil)
       {
         DebugPrint.verbose("Failed to retrieve workingJournal from local data store")
@@ -74,52 +74,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
 
       let currentJournal = fetchedObject as! FoodieJournal
-        currentJournal.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: currentJournal.thumbnailFileName!, type: FoodieMediaType.photo)
 
-      // TODO move logic to  Foodie moment
-      if let moments = currentJournal.moments {
-        FoodieMoment.queryFromPin(withName: "workingJournal", withBlock: {(fetchedMoments,error )-> Void in
-
-          if error != nil
-          {
-            DebugPrint.verbose("Error fetching moments from pinned local store")
-          }
-
-          currentJournal.moments?.removeAll()
-          //TODO possible that there is zero moment
-          for moment in (fetchedMoments!) {
-
-            let foodieMoment = moment as! FoodieMoment
-
-            foodieMoment.mediaObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.mediaFileName!, type:  FoodieMediaType(rawValue:  foodieMoment.mediaType!)!)
-            //TODO make sure the file exists
-            foodieMoment.thumbnailObj = FoodieMedia(withState: .savedToLocal, fileName: foodieMoment.thumbnailFileName!, type: FoodieMediaType.photo)
-
-            if(foodieMoment.objectId == nil)
-            {
-              foodieMoment.foodieObject.markModified()
-            }
-
-              FoodieMarkup.queryFromPin(withName: "workingJournal", withBlock: { (fetchedMarkups, error) in
-                // TODO need to find out how these markup are mapped
-                // there is an array for journal and array for moment
-                for markup in (fetchedMarkups!) {
-                  let foodieMarkup = markup as! FoodieMarkup
-
-                  if(foodieMarkup.objectId == nil)
-                  {
-                    foodieMarkup.foodieObject.markModified()
-                  }
-                  foodieMoment.markups?.append(foodieMarkup)
-                }
-                currentJournal.moments?.append(foodieMoment)
-              })
-          }
-          currentJournal.foodieObject.markModified()
-          FoodieJournal.setJournal(journal: currentJournal)
-        })
+      currentJournal.retrieveRecursive() { error in
+        if(error != nil) {
+          DebugPrint.verbose("Error occured when retrieving journal when restoring from pin")
+        }
+        FoodieJournal.setJournal(journal: currentJournal)
       }
-    })
+    }
   }
 
   func applicationWillTerminate(_ application: UIApplication) {
