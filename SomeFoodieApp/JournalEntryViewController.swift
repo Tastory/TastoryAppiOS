@@ -57,17 +57,6 @@ class JournalEntryViewController: UITableViewController {
   
   @IBOutlet weak var linkTextField: UITextField?
   @IBOutlet weak var tagsTextView: UITextView?
-  
-
-  @IBAction func EditedTitle(_ sender: Any) {
-    workingJournal?.title = titleTextField?.text
-    saveJournalToLocal()
-  }
-
-  @IBAction func EditedLink(_ sender: Any) {
-    workingJournal?.journalURL = linkTextField?.text
-    saveJournalToLocal()
-  }
 
 
   // MARK: - IBActions
@@ -117,15 +106,15 @@ class JournalEntryViewController: UITableViewController {
     }
   }
 
-  func saveJournalToLocal() {
-    if let journal = workingJournal {
-      journal.foodieObject.markModified()
-      //TODO investigate whether unpin is necessary
-      FoodieJournal.unpinAllObjectsInBackground(withName: "workingJournal")
-      journal.saveRecursive(to: .local, withName: "workingJournal",withBlock: nil)
-    }
+  @IBAction func editedTitle(_ sender: Any) {
+    workingJournal?.title = titleTextField?.text
+    preSave(nil, withBlock: nil)
   }
-
+  
+  @IBAction func editedLink(_ sender: Any) {
+    workingJournal?.journalURL = linkTextField?.text
+    preSave(nil, withBlock: nil)
+  }
   
   
   // MARK: - Private Instance Functions

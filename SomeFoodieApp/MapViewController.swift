@@ -34,14 +34,14 @@ class MapViewController: UIViewController {
   @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer?
   @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer?
   @IBOutlet weak var locationField: UITextField?
+  @IBOutlet weak var draftButton: UIButton?
 
-
+  
   // MARK: - IBActions
   @IBAction func singleTapGestureDetected(_ sender: UITapGestureRecognizer) {
     // Dismiss keyboard if any gestures detected against Map
     locationField?.resignFirstResponder()
   }
-
 
   // Pan, Pinch, Double-Tap gestures all routed here
   @IBAction func mapGestureDetected(_ recognizer: UIGestureRecognizer) {
@@ -58,7 +58,7 @@ class MapViewController: UIViewController {
     }
   }
 
-  @IBAction func LaunchDraftJournal(_ sender: Any) {
+  @IBAction func launchDraftJournal(_ sender: Any) {
     // This is used for viewing the draft journal to be used with update journal later
     // Hid the button due to problems with empty draft journal and saving an empty journal is problematic
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -75,14 +75,12 @@ class MapViewController: UIViewController {
     self.present(viewController, animated: true)
   }
 
-
   @IBAction func launchCamera(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
     viewController.cameraReturnDelegate = self
     self.present(viewController, animated: true)
   }
-  
   
   @IBAction func currentLocationReturn(_ sender: UIButton) {
 
@@ -101,7 +99,6 @@ class MapViewController: UIViewController {
     // Start updating location again
     locationWatcher?.resume()
   }
-  
   
   @IBAction func searchWithFilter(_ sender: UIButton) {
     guard let currentMapView = mapView else {
@@ -130,7 +127,6 @@ class MapViewController: UIViewController {
     queryAndLaunchFeed(withQuery: journalQuery)
   }
   
-
   @IBAction func searchAll(_ sender: UIButton) {
     let journalQuery = FoodieQuery()
     journalQuery.setSkip(to: 0)
@@ -290,6 +286,13 @@ class MapViewController: UIViewController {
         let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: self.currentMapDelta, longitudeDelta: self.currentMapDelta))
         DispatchQueue.main.async { self.mapView?.setRegion(region, animated: true) }
       }
+    }
+    
+    // Don't bother showing the Draft Button if there's no Draft
+    if FoodieJournal.currentJournal == nil {
+      draftButton?.isHidden = true
+    } else {
+      draftButton?.isHidden = false
     }
   }
   
