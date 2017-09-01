@@ -133,14 +133,19 @@ class LocationWatch: NSObject {
     manager.startUpdatingLocation()
   }
   
-  func start(withBlock callback: @escaping LocationErrorBlock) -> Context {
+  func start(butPaused: Bool = false, withBlock callback: @escaping LocationErrorBlock) -> Context {
     let watcher = Context()
     watcher.callback = callback
     watcher.continuous = true
-    watcher.state = .started
+    
+    if butPaused == true {
+      watcher.state = .paused
+    } else {
+      watcher.state = .started
+    }
     watcherDLL.add(toTail: watcher)
     
-    if let location = currentLocation {
+    if let location = currentLocation, !butPaused {
       DispatchQueue.global(qos: .utility).async { watcher.callback(location, nil) }
     }
     manager.startUpdatingLocation()

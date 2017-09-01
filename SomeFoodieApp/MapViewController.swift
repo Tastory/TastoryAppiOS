@@ -25,8 +25,10 @@ class MapViewController: UIViewController {
   // MARK: - Instance Variables
   fileprivate var currentMapDelta = Constants.defaultMaxDelta
   fileprivate var locationWatcher: LocationWatch.Context?
-
-
+  fileprivate var lastLocation: CLLocationCoordinate2D? = nil
+  fileprivate var lastMapDelta: CLLocationDegrees? = nil
+  
+  
   // MARK: - IBOutlets
   @IBOutlet weak var mapView: MKMapView?
   @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer?
@@ -86,6 +88,10 @@ class MapViewController: UIViewController {
 
     // Clear the text field while at it
     locationField?.text = ""
+    
+    // Clear last location, we want the map to find the current location if the view resumes
+    lastLocation = nil
+    lastMapDelta = nil
 
     // Base the span of the new mapView on what the mapView span currently is
     if let mapView = mapView { currentMapDelta = mapView.region.span.latitudeDelta }
@@ -263,19 +269,21 @@ class MapViewController: UIViewController {
     doubleTapGestureRecognizer?.delegate = self
     singleTapGestureRecognizer?.delegate = self
     locationField?.delegate = self
-
-    // Provide a default Map Region incase Location Update is slow or user denies authorization
-    let region = MKCoordinateRegion(center: Constants.defaultCLCoordinate2D,
-                                    span: MKCoordinateSpan(latitudeDelta: Constants.defaultMaxDelta, longitudeDelta: Constants.defaultMaxDelta))
-    mapView?.setRegion(region, animated: false)
-
-    
   }
   
   
   override func viewWillAppear(_ animated: Bool) {
-    // Setup a Location Watcher to update the Map View
-    locationWatcher = LocationWatch.global.start() { (location, error) in
+    
+    // Provide a default Map Region incase Location Update is slow or user denies authorization
+    let startMapLocation: CLLocationCoordinate2D = lastLocation ?? Constants.defaultCLCoordinate2D
+    let startMapDelta: CLLocationDegrees = lastMapDelta ?? Constants.defaultMaxDelta
+    
+    let region = MKCoordinateRegion(center: startMapLocation,
+                                    span: MKCoordinateSpan(latitudeDelta: startMapDelta, longitudeDelta: startMapDelta))
+    mapView?.setRegion(region, animated: false)
+    
+    // Start/Restart the Location Watcher
+    locationWatcher = LocationWatch.global.start(butPaused: (lastLocation != nil)) { (location, error) in
       if let error = error {
         self.locationErrorDialog(message: "LocationWatch returned error - \(error.localizedDescription)", comment: "Alert Dialogue Message")
         DebugPrint.error("LocationWatch returned error - \(error.localizedDescription)")
@@ -300,6 +308,10 @@ class MapViewController: UIViewController {
   override func viewDidDisappear(_ animated: Bool) {
     // Don't even know when we'll be back. Let the GPS stop if no one else is using it
     locationWatcher?.stop()
+    
+    // Keep track of what the location is before we disappear
+    lastLocation = mapView?.centerCoordinate
+    lastMapDelta = mapView?.region.span.latitudeDelta
   }
   
   
