@@ -202,7 +202,7 @@ class MarkupViewController: UIViewController {
       if let jotLabels = jotDictionary[kLabels] as? [NSDictionary] {
         var index = 1
         for jotLabel in jotLabels {
-          DebugPrint.verbose("Jot Label #\(index) serialized")
+          CCLog.verbose("Jot Label #\(index) serialized")
           
           let markup = FoodieMarkup(withState: .objectModified)
           markup.data = jotLabel
@@ -215,11 +215,11 @@ class MarkupViewController: UIViewController {
           index += 1
         }
       } else {
-        DebugPrint.verbose("No Labels in jotDictionary")
+        CCLog.verbose("No Labels in jotDictionary")
       }
       
       if let drawViewDictionary = jotDictionary[kDrawView] as? NSDictionary {
-        DebugPrint.verbose("Jot DrawView serialized")
+        CCLog.verbose("Jot DrawView serialized")
         
         let markup = FoodieMarkup(withState: .objectModified)
         markup.data = drawViewDictionary
@@ -231,20 +231,20 @@ class MarkupViewController: UIViewController {
         print("No DrawView in jotDictionary")
       }
     } else {
-      DebugPrint.log("No dictionary returned by jotViewController to serialize into Markup")
+      CCLog.debug("No dictionary returned by jotViewController to serialize into Markup")
     }
     
     // Fill in the width and aspect ratio
     guard let width = mediaWidth else {
       saveErrorDialog()
-      DebugPrint.assert("Unexpected. mediaWidth == nil")
+      CCLog.assert("Unexpected. mediaWidth == nil")
       return
     }
     momentObj.width = width
     
     guard let aspectRatio = mediaAspectRatio else {
       saveErrorDialog()
-      DebugPrint.assert("Unexpected. mediaAspectRatio == nil")
+      CCLog.assert("Unexpected. mediaAspectRatio == nil")
       return
     }
     momentObj.aspectRatio = aspectRatio
@@ -258,7 +258,7 @@ class MarkupViewController: UIViewController {
         addToCurrentHandler: { UIAlertAction -> Swift.Void in
           guard let currentJournal = FoodieJournal.currentJournal else {
             self.saveErrorDialog()
-            DebugPrint.assert("nil FoodieJorunal.currentJournal when trying to Add a Moment to Current Journal")
+            CCLog.assert("nil FoodieJorunal.currentJournal when trying to Add a Moment to Current Journal")
             return
           }
 
@@ -314,7 +314,7 @@ class MarkupViewController: UIViewController {
                                 journal.deleteRecursive(withBlock: { (success, error) in
                                   if(error != nil)
                                   {
-                                    DebugPrint.verbose("Encountered an error when deleting journal")
+                                    CCLog.verbose("Encountered an error when deleting journal")
                                   }
                                 })
                               })
@@ -327,18 +327,18 @@ class MarkupViewController: UIViewController {
                                 currentJournal = newCurrent
                               } else {
                                 self.internalErrorDialog()
-                                DebugPrint.assert("Cannot create new current Journal in place of existing current Journal")
+                                CCLog.assert("Cannot create new current Journal in place of existing current Journal")
                                 return
                               }
                             }
                             catch let thrown as FoodieJournal.ErrorCode {
                               self.internalErrorDialog()
-                              DebugPrint.assert("Caught FoodieJournal.Error from .newCurrentSync(): \(thrown.localizedDescription)")
+                              CCLog.assert("Caught FoodieJournal.Error from .newCurrentSync(): \(thrown.localizedDescription)")
                               return
                             }
                             catch let thrown {
                               self.internalErrorDialog()
-                              DebugPrint.assert("Caught unrecognized Error: \(thrown.localizedDescription)")
+                              CCLog.assert("Caught unrecognized Error: \(thrown.localizedDescription)")
                               return
                             }
                             
@@ -368,7 +368,7 @@ class MarkupViewController: UIViewController {
     self.avPlayer?.pause()
     guard let delegate = self.markupReturnDelegate else {
       self.internalErrorDialog()
-      DebugPrint.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
+      CCLog.assert("Unexpected. markupReturnDelegate became nil. Unable to proceed")
       return
     }
     delegate.markupComplete(markedupMoment: markedUpMoment, suggestedJournal: suggestedJournal)
@@ -475,7 +475,7 @@ class MarkupViewController: UIViewController {
     // This section is for initiating the background Image or Video
     if mediaObj == nil {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, mediaObj == nil ")
+      CCLog.assert("Unexpected, mediaObj == nil ")
       return
     } else {
       mediaObject = mediaObj!
@@ -483,7 +483,7 @@ class MarkupViewController: UIViewController {
     
     guard let mediaType = mediaObject.mediaType else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, mediaType == nil")
+      CCLog.assert("Unexpected, mediaType == nil")
       return
     }
     
@@ -497,13 +497,13 @@ class MarkupViewController: UIViewController {
       
       guard let imageView = photoView else {
         displayErrorDialog()
-        DebugPrint.assert("photoView = UIImageView(frame: _) failed")
+        CCLog.assert("photoView = UIImageView(frame: _) failed")
         return
       }
       
       guard let imageBuffer = mediaObject.imageMemoryBuffer else {
         displayErrorDialog()
-        DebugPrint.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
+        CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
         return
       }
       
@@ -519,7 +519,7 @@ class MarkupViewController: UIViewController {
       
       guard let videoURL = mediaObject.videoLocalBufferUrl else {
         displayErrorDialog()
-        DebugPrint.assert("Unexpected, mediaObject.videoLocalBufferUrl == nil")
+        CCLog.assert("Unexpected, mediaObject.videoLocalBufferUrl == nil")
         return
       }
 
@@ -540,7 +540,7 @@ class MarkupViewController: UIViewController {
     
     // No image nor video to work on, Fatal
     } else {
-      DebugPrint.fatal("Both photoToMarkup and videoToMarkupURL are nil")
+      CCLog.fatal("Both photoToMarkup and videoToMarkupURL are nil")
     }
   }
   
@@ -555,13 +555,13 @@ class MarkupViewController: UIViewController {
     case .photo:
       guard let imageBuffer = mediaObject.imageMemoryBuffer else {
         internalErrorDialog()
-        DebugPrint.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
+        CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
         return
       }
       
       guard let imageSource = CGImageSourceCreateWithData(imageBuffer as CFData, nil) else {
         internalErrorDialog()
-        DebugPrint.assert("CGImageSourceCreateWithData() failed")
+        CCLog.assert("CGImageSourceCreateWithData() failed")
         return
       }
       
@@ -577,13 +577,13 @@ class MarkupViewController: UIViewController {
       
       if imageCount != 1 {
         internalErrorDialog()
-        DebugPrint.assert("Image Source Count not 1")
+        CCLog.assert("Image Source Count not 1")
         return
       }
       
       guard let imageProperties = (CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [String : AnyObject]) else {
         internalErrorDialog()
-        DebugPrint.assert("CGImageSourceCopyPropertiesAtIndex failed to get Dictionary of image properties")
+        CCLog.assert("CGImageSourceCopyPropertiesAtIndex failed to get Dictionary of image properties")
         return
       }
       
@@ -591,7 +591,7 @@ class MarkupViewController: UIViewController {
         mediaWidth = pixelWidth
       } else {
         internalErrorDialog()
-        DebugPrint.assert("Image property with index kCGImagePropertyPixelWidth did not return valid Integer value")
+        CCLog.assert("Image property with index kCGImagePropertyPixelWidth did not return valid Integer value")
         return
       }
       
@@ -599,14 +599,14 @@ class MarkupViewController: UIViewController {
         mediaAspectRatio = Double(mediaWidth!)/Double(pixelHeight)
       } else {
         internalErrorDialog()
-        DebugPrint.assert("Image property with index kCGImagePropertyPixelHeight did not return valid Integer value")
+        CCLog.assert("Image property with index kCGImagePropertyPixelHeight did not return valid Integer value")
         return
       }
       
     case .video:      // TODO: Allow user to change timeframe in video to base Thumbnail on
       guard let videoUrl = mediaObject.videoLocalBufferUrl else {
         internalErrorDialog()
-        DebugPrint.assert("Unexpected, videoLocalBufferUrl == nil")
+        CCLog.assert("Unexpected, videoLocalBufferUrl == nil")
         return
       }
       
@@ -620,7 +620,7 @@ class MarkupViewController: UIViewController {
         thumbnailCgImage = try imgGenerator.copyCGImage(at: CMTimeMake(0, 1), actualTime: nil)
       } catch {
         internalErrorDialog()
-        DebugPrint.assert("AVAssetImageGenerator.copyCGImage failed with error: \(error.localizedDescription)")
+        CCLog.assert("AVAssetImageGenerator.copyCGImage failed with error: \(error.localizedDescription)")
         return
       }
       
@@ -628,7 +628,7 @@ class MarkupViewController: UIViewController {
       
       if avTracks.count != 1 {
         internalErrorDialog()
-        DebugPrint.assert("There isn't exactly 1 video track for the AVURLAsset")
+        CCLog.assert("There isn't exactly 1 video track for the AVURLAsset")
         return
       }
       
@@ -636,13 +636,13 @@ class MarkupViewController: UIViewController {
       mediaWidth = Int(videoSize.width)
       mediaAspectRatio = Double(videoSize.width/videoSize.height)
       
-      //DebugPrint.verbose("Media width: \(videoSize.width) height: \(videoSize.height). Thumbnail width: \(thumbnailCgImage.width) height: \(thumbnailCgImage.height)")
+      //CCLog.verbose("Media width: \(videoSize.width) height: \(videoSize.height). Thumbnail width: \(thumbnailCgImage.width) height: \(thumbnailCgImage.height)")
     }
     
     // Create a Thumbnail Media with file name based on the original file name of the Media
     guard let foodieFileName = mediaObject.foodieFileName else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected. mediaObject.foodieFileName = nil")
+      CCLog.assert("Unexpected. mediaObject.foodieFileName = nil")
       return
     }
     
@@ -659,7 +659,7 @@ class MarkupViewController: UIViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    DebugPrint.log("MarkupViewController.didReceiveMemoryWarning")
+    CCLog.warning("MarkupViewController.didReceiveMemoryWarning")
   }
   
   

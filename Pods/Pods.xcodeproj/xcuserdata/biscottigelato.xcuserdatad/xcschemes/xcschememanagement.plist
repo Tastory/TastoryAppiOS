@@ -39,10 +39,15 @@
 			<key>orderHint</key>
 			<integer>15</integer>
 		</dict>
+		<key>KSCrash.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>16</integer>
+		</dict>
 		<key>Kanna.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>9</integer>
+			<integer>10</integer>
 		</dict>
 		<key>Masonry.xcscheme</key>
 		<dict>
@@ -79,6 +84,11 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>8</integer>
+		</dict>
+		<key>Sentry.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>17</integer>
 		</dict>
 		<key>SwiftyCam.xcscheme</key>
 		<dict>
@@ -138,6 +148,11 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>4470604F37CA0388B4CE529FFA1A40C2</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>4710D1A59B3FF3CF67BA72ABA2EF565F</key>
 		<dict>
 			<key>primary</key>
@@ -174,6 +189,11 @@
 			<true/>
 		</dict>
 		<key>618D8ED60BFD4FC46C7A6BA06BE467F8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6434A2A1332B3C22D84519F588EF16CE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -223,6 +243,11 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>A3C6881576ACAC4B3F5B55F09D2985EE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>A3ED40AE093C0D5FD434D4B3A1FEAF8E</key>
 		<dict>
 			<key>primary</key>
@@ -238,7 +263,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>C06CB9A4DC7F8197EA74F7FB073AC967</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>C83B0F8778708382BFD09745CBCD1CBA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D0E5FA686ED2E362997A656B8C349801</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -45,7 +45,7 @@ class LocationWatch: NSObject {
     
     init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
       self = errorCode
-      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+      CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
     }
   }
   
@@ -196,28 +196,28 @@ extension LocationWatch: CLLocationManagerDelegate {
     
     guard let errorCode = error as? CLError else {
       notifyWatchers(withError: ErrorCode.managerFailWithNoCLError)
-      DebugPrint.assert("Not getting CLError upon a Location Manager Error")
+      CCLog.assert("Not getting CLError upon a Location Manager Error")
       return
     }
     
-    DebugPrint.error("CLError.code = \(errorCode.code.rawValue)")
+    CCLog.warning("CLError.code = \(errorCode.code.rawValue)")
     
     switch errorCode.code {
       
     case .locationUnknown:
       notifyWatchers(withError: ErrorCode.managerFailUndeterminedLocation)
-      DebugPrint.log("Unable to determine Location")
+      CCLog.debug("Unable to determine Location")
       
     case .denied:
       // User denied authorization
       manager.stopUpdatingLocation()
       currentLocation = nil
       notifyWatchers(withError: ErrorCode.managerFailDenied)
-      DebugPrint.log("Unable to determine Location")
+      CCLog.debug("Unable to determine Location")
       
     default:
       notifyWatchers(withError: ErrorCode.managerFailUnknownError)
-      DebugPrint.assert("Unrecognized fallthrough, error.localizedDescription = \(error.localizedDescription)")
+      CCLog.assert("Unrecognized fallthrough, error.localizedDescription = \(error.localizedDescription)")
     }
   }
   

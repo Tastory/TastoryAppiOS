@@ -44,7 +44,7 @@ class FoodiePFObject: PFObject {
   // MARK: - Public Instance Functions
   override init() {
     super.init()
-    DebugPrint.log("FoodiePFObject.init() called with no initial state specified. Defaulting to .notAvailable")
+    CCLog.debug("FoodiePFObject.init() called with no initial state specified. Defaulting to .notAvailable")
     foodieObject = FoodieObject(withState: .notAvailable)
   }
   
@@ -67,7 +67,7 @@ class FoodiePFObject: PFObject {
         
         // Error handle?
         if let error = serverError {
-          DebugPrint.error("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
+          CCLog.warning("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
         }
         // Return if got what's wanted
         callback?(serverError)
@@ -86,9 +86,9 @@ class FoodiePFObject: PFObject {
 
       let nsError = err as NSError
       if nsError.domain == PFParseErrorDomain && nsError.code == PFErrorCode.errorCacheMiss.rawValue {
-        DebugPrint.log("fetchFromLocalDatastore Parse cache miss")
+        CCLog.debug("fetchFromLocalDatastore Parse cache miss")
       } else {
-        DebugPrint.assert("fetchFromLocalDatastore failed with error: \(err.localizedDescription)")
+        CCLog.assert("fetchFromLocalDatastore failed with error: \(err.localizedDescription)")
         return
       }
 
@@ -97,7 +97,7 @@ class FoodiePFObject: PFObject {
         
         // Error handle?
         if let error = serverError {
-          DebugPrint.error("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
+          CCLog.warning("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
         }
         // Return if got what's wanted
         callback?(serverError)
@@ -108,7 +108,7 @@ class FoodiePFObject: PFObject {
   
   // Function to save this and all child Parse objects to local.
   func saveToLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DebugPrint.verbose("FoodiePFObject.saveToLocal")
+    CCLog.verbose("FoodiePFObject.saveToLocal")
     
     // TODO: Maybe wanna track for Parse that only 1 Save on the top is necessary
     if let name = name {
@@ -121,7 +121,7 @@ class FoodiePFObject: PFObject {
   
   // Function to save this and all child Parse objects to server
   func saveToServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DebugPrint.verbose("FoodiePFObject.saveToServer")
+    CCLog.verbose("FoodiePFObject.saveToServer")
     
     // TODO: Maybe wanna track for Parse that only 1 Save on the top is necessary
     saveInBackground(block: callback)
@@ -130,7 +130,7 @@ class FoodiePFObject: PFObject {
   
   // Function to delete this and all child Parse objects from local
   func deleteFromLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DebugPrint.verbose("FoodiePFObject.deleteFromLocal")
+    CCLog.verbose("FoodiePFObject.deleteFromLocal")
     
     if let name = name {
       unpinInBackground(withName: name, block: callback)
@@ -142,7 +142,7 @@ class FoodiePFObject: PFObject {
   
   // Function to delete this and all child Parse objects from server
   func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DebugPrint.verbose("FoodiePFObject.deleteFromServer")
+    CCLog.verbose("FoodiePFObject.deleteFromServer")
     
     deleteInBackground(block: callback)
   }

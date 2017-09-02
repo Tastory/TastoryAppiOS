@@ -89,7 +89,7 @@ class JournalEntryViewController: UITableViewController {
     //TODO add spinner 
     UIApplication.shared.beginIgnoringInteractionEvents()
     
-    DebugPrint.verbose("\(String(describing: self.workingJournal?.foodieObject.operationState))")
+    CCLog.verbose("\(String(describing: self.workingJournal?.foodieObject.operationState))")
 
     //making sure that the operation state didnt change between checking and setting the flag
     SwiftMutex.lock(&self.saveStateMutex)
@@ -130,15 +130,15 @@ class JournalEntryViewController: UITableViewController {
         FoodieJournal.setJournal(journal: nil)
         
         // Pop-up Alert Dialog and then Dismiss
-        DebugPrint.verbose("Journal Save Completed!")
+        CCLog.verbose("Journal Save Completed!")
         AlertDialog.present(from: self, title: "Journal Save Completed!", message: "") { _ in
           self.vcDismiss()
         }
         
       } else if let error = error {
-        DebugPrint.verbose("Journal Save to Server Failed with Error: \(error)")
+        CCLog.verbose("Journal Save to Server Failed with Error: \(error)")
       } else {
-        DebugPrint.fatal("Journal Save to Server Failed without Error")
+        CCLog.fatal("Journal Save to Server Failed without Error")
       }
       UIApplication.shared.endIgnoringInteractionEvents()
     }
@@ -193,8 +193,8 @@ class JournalEntryViewController: UITableViewController {
   fileprivate func preSave(_ foodieObject: FoodieObjectDelegate?, withBlock callback: ((Error?) -> Void)?) {
     
     guard let journal = workingJournal else {
-      DebugPrint.assert("JournalEntryViewController has no Working Journal?")
-      AlertDialog.present(from: self, title: "Internal Error", message: "Unexpected Internal Error. Please try again")
+      CCLog.warning("JournalEntryViewController.preSave has no Working Journal?")
+      //AlertDialog.present(from: self, title: "Internal Error", message: "Unexpected Internal Error. Please try again")
       return
     }
     
@@ -210,14 +210,14 @@ class JournalEntryViewController: UITableViewController {
         self.isSaveInProgress = false
         SwiftMutex.unlock(&self.saveStateMutex)
         
-        DebugPrint.error("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
+        CCLog.warning("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
         callback?(error)
         return
       }
       
-      DebugPrint.verbose("Completed pre-saving Journal to Local")
+      CCLog.verbose("Completed pre-saving Journal to Local")
       guard let foodieObject = foodieObject else {
-        DebugPrint.log("No Foodie Object supplied on preSave(), skipping Object Server save")
+        CCLog.debug("No Foodie Object supplied on preSave(), skipping Object Server save")
         callback?(nil)
         return
       }
@@ -229,12 +229,12 @@ class JournalEntryViewController: UITableViewController {
         SwiftMutex.unlock(&self.saveStateMutex)
         
         if let error = error {
-          DebugPrint.error("\(foodieObject.foodieObjectType()) pre-save to Server resulted in error - \(error.localizedDescription)")
+          CCLog.warning("\(foodieObject.foodieObjectType()) pre-save to Server resulted in error - \(error.localizedDescription)")
           callback?(error)
           return
         }
         
-        DebugPrint.verbose("Completed pre-saving \(foodieObject.foodieObjectType()) to Server")
+        CCLog.verbose("Completed pre-saving \(foodieObject.foodieObjectType()) to Server")
         // If there's pending Journal Save, do it now
         if self.triggerSaveJournal { self.saveJournalToServer() }
         callback?(nil)
@@ -338,7 +338,7 @@ class JournalEntryViewController: UITableViewController {
       else {
         LocationWatch.global.get { (location, error) in
           if let error = error {
-            DebugPrint.error("StoryEntryVC with no Venue or Moments Location. Getting location through LocationWatch also resulted in error - \(error.localizedDescription)")
+            CCLog.warning("StoryEntryVC with no Venue or Moments Location. Getting location through LocationWatch also resulted in error - \(error.localizedDescription)")
             //self.updateStoryEntryMap(withCoordinate: Constants.defaultCLCoordinate2D, span: Constants.defaultDelta)  Just let it be a view of the entire North America I guess?
             return
           } else if let location = location {
@@ -362,7 +362,7 @@ class JournalEntryViewController: UITableViewController {
           
         } else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain)
-          DebugPrint.assert("returnedMoment expected to match markupMoment")
+          CCLog.assert("returnedMoment expected to match markupMoment")
         }
       } else {
         
@@ -407,7 +407,7 @@ class JournalEntryViewController: UITableViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    DebugPrint.log("JournalEntryViewController.didReceiveMemoryWarning")
+    CCLog.warning("JournalEntryViewController.didReceiveMemoryWarning")
   }
 }
 
@@ -451,7 +451,7 @@ extension JournalEntryViewController {
     let height = Constants.mapHeight - currentOffset
     
     if height <= 10 {
-      // DebugPrint.verbose("Height tried to be < 10")
+      // CCLog.verbose("Height tried to be < 10")
       mapView.isHidden = true
     } else {
       mapView.isHidden = false
@@ -493,7 +493,7 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
       
       if let error = error {
         AlertDialog.present(from: self, title: "Venue Error", message: "Unable to verify Venue against Eatelly database")
-        DebugPrint.assert("Querying Parse for the Foursquare Venue ID resulted in Error - \(error.localizedDescription)")
+        CCLog.assert("Querying Parse for the Foursquare Venue ID resulted in Error - \(error.localizedDescription)")
         return
       }
       
@@ -501,7 +501,7 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
       
       if let queriedVenues = queriedVenues, !queriedVenues.isEmpty {
         if queriedVenues.count > 1 {
-          DebugPrint.assert("More than 1 Venue returned from Parse for a single Foursquare Venue ID")
+          CCLog.assert("More than 1 Venue returned from Parse for a single Foursquare Venue ID")
         }
         venueToUpdate = queriedVenues[0]
         venueToUpdate.foodieObject.markModified()
@@ -515,14 +515,14 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
       venueToUpdate.getDetailsFromFoursquare { (_, error) in
         if let error = error {
           AlertDialog.present(from: self, title: "Venue Details Error", message: "Unable to obtain additional Details for Venue")
-          DebugPrint.assert("Getting Venue Details from Foursquare resulted in Error - \(error.localizedDescription)")
+          CCLog.assert("Getting Venue Details from Foursquare resulted in Error - \(error.localizedDescription)")
           return
         }
         
         venueToUpdate.getHoursFromFoursquare { (_, error) in
           if let error = error {
             AlertDialog.present(from: self, title: "Venue Hours Detail Error", message: "Unable to obtain details regarding opening hours for Venue")
-            DebugPrint.assert("Getting Venue Hours from Foursquare resulted in Error - \(error.localizedDescription)")
+            CCLog.assert("Getting Venue Hours from Foursquare resulted in Error - \(error.localizedDescription)")
             return
           }
           

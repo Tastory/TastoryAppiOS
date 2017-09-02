@@ -80,7 +80,7 @@ class PrecisionTime: Comparable {
   
   static func -(left: PrecisionTime, right: PrecisionTime) -> PrecisionTime {
     if left < right {
-      DebugPrint.fatal("PrecisionTime left operator smaller than right in attempt to subtract. Fatal Error.")
+      CCLog.fatal("PrecisionTime left operator smaller than right in attempt to subtract. Fatal Error.")
     }
     return PrecisionTime(ticks: (left.ticks - right.ticks))
   }

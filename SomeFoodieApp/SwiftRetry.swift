@@ -33,16 +33,16 @@ class SwiftRetry {
   func attempt(after delaySeconds: Double = 0, withQoS serviceLevel: DispatchQoS.QoSClass = .background) -> Bool {
     guard let requestName = requestName, let retryCount = retryCount, let initialRetryCount = initialRetryCount, let retryRequest = retryRequest else {
       self.retryRequest = nil  // Make sure we break the reference cycle
-      DebugPrint.assert("Retry attempted on uninitialized Swift Retry object")
+      CCLog.assert("Retry attempted on uninitialized Swift Retry object")
       return false
     }
     
     if retryCount <= 1 {
-      DebugPrint.verbose("All \(initialRetryCount) retry attempts of \(requestName) exhausted")
+      CCLog.verbose("All \(initialRetryCount) retry attempts of \(requestName) exhausted")
       self.retryRequest = nil  // Make sure we break the reference cycle
       return false
     } else {
-      DebugPrint.verbose("Retrying \(requestName) #\(initialRetryCount - retryCount + 1)/\(initialRetryCount)")
+      CCLog.verbose("Retrying \(requestName) #\(initialRetryCount - retryCount + 1)/\(initialRetryCount)")
       self.retryCount = retryCount - 1
       
       if delaySeconds != 0 {
@@ -65,7 +65,7 @@ class SwiftRetry {
     switch httpStatus {
       
     case .ok:
-      DebugPrint.assert("attemptRetryBasedOnHttpStatus() should only be used against non-good statuses")
+      CCLog.assert("attemptRetryBasedOnHttpStatus() should only be used against non-good statuses")
       return false  // Should never be here to begin with
       
     // Add other explicity handlings here
@@ -73,7 +73,7 @@ class SwiftRetry {
     // Explicit retry cases
     case .gatewayTimeout, .requestTimeout, .iisLoginTimeout, .temporaryRedirect:
       if !attempt(after: delaySeconds, withQoS: serviceLevel) {
-        DebugPrint.error("Retry attempts exhausted. Final \(httpStatus.description)")
+        CCLog.warning("Retry attempts exhausted. Final \(httpStatus.description)")
         return false
       }
       
@@ -81,11 +81,11 @@ class SwiftRetry {
       // Class based retry cases
       if httpStatus.isInformational || httpStatus.isSuccess || httpStatus.isServerError {
         if !attempt(after: delaySeconds, withQoS: serviceLevel) {
-          DebugPrint.error("Retry attempts exhausted. Final \(httpStatus.description)")
+          CCLog.warning("Retry attempts exhausted. Final \(httpStatus.description)")
           return false
         }
       } else { // if httpStatus.isRedirection || httpStatus.isClientError {
-        DebugPrint.error("Http Status failed. Retry not recommended - \(httpStatus.description)")
+        CCLog.warning("Http Status failed. Retry not recommended - \(httpStatus.description)")
         done()
         return false
       }
@@ -97,7 +97,7 @@ class SwiftRetry {
   func attemptRetryBasedOnURLError(_ error: URLError, after delaySeconds: Double = 0, withQoS serviceLevel: DispatchQoS.QoSClass = .background) -> Bool {
     
 //    guard let error = error.errorCode as? URLError.Code else {
-//      DebugPrint.assert("Error received is not of URLError type")
+//      CCLog.assert("Error received is not of URLError type")
 //      return false
 //    }
     
@@ -106,12 +106,12 @@ class SwiftRetry {
     case .timedOut, .secureConnectionFailed, .requestBodyStreamExhausted, .notConnectedToInternet, .networkConnectionLost, .httpTooManyRedirects, .downloadDecodingFailedMidStream, .downloadDecodingFailedToComplete, .dnsLookupFailed, .cannotLoadFromNetwork, .cannotFindHost, .cannotConnectToHost, .badServerResponse, .backgroundSessionWasDisconnected, .backgroundSessionInUseByAnotherProcess:
       
       if !attempt(after: delaySeconds, withQoS: serviceLevel) {
-        DebugPrint.error("Retry attempts exhausted. Final URLError - \(error.localizedDescription)")
+        CCLog.warning("Retry attempts exhausted. Final URLError - \(error.localizedDescription)")
         return false
       }
       
     default:
-      DebugPrint.error("NSURLError. Retry not recommended - \(error.localizedDescription)")
+      CCLog.warning("NSURLError. Retry not recommended - \(error.localizedDescription)")
       return false
     }
     return true

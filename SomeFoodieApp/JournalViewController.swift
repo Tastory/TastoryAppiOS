@@ -97,7 +97,7 @@ class JournalViewController: UIViewController {
     
     guard let journal = viewingJournal else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, viewingJournal = nil")
+      CCLog.assert("Unexpected, viewingJournal = nil")
       return
     }
     
@@ -105,7 +105,7 @@ class JournalViewController: UIViewController {
       
       guard let moment = currentMoment else {
         internalErrorDialog()
-        DebugPrint.assert("Unexpected currentMoment = nil")
+        CCLog.assert("Unexpected currentMoment = nil")
         return
       }
       
@@ -146,12 +146,12 @@ class JournalViewController: UIViewController {
   
   fileprivate func fetchSomeMoment(from momentNumber: Int) {
     guard let journal = viewingJournal else {
-      DebugPrint.fatal("Unexpected, no Journal being viewed by Journal View Controller")
+      CCLog.fatal("Unexpected, no Journal being viewed by Journal View Controller")
     }
     
     guard let moments = journal.moments else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, journalmoments = nil")
+      CCLog.assert("Unexpected, journalmoments = nil")
       return
     }
     
@@ -166,13 +166,13 @@ class JournalViewController: UIViewController {
     
     guard let mediaObject = moment.mediaObj else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, moment.mediaObj == nil ")
+      CCLog.assert("Unexpected, moment.mediaObj == nil ")
       return
     }
     
     guard let mediaType = mediaObject.mediaType else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, mediaObject.mediaType == nil")
+      CCLog.assert("Unexpected, mediaObject.mediaType == nil")
       return
     }
     
@@ -189,7 +189,7 @@ class JournalViewController: UIViewController {
 
       guard let imageBuffer = mediaObject.imageMemoryBuffer else {
         displayErrorDialog()
-        DebugPrint.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
+        CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
         return
       }
       
@@ -209,11 +209,11 @@ class JournalViewController: UIViewController {
       
       guard let videoURL = mediaObject.videoLocalBufferUrl else {
         displayErrorDialog()
-        DebugPrint.assert("Unexpected, mediaObject.videoLocalBufferUrl == nil")
+        CCLog.assert("Unexpected, mediaObject.videoLocalBufferUrl == nil")
         return
       }
       
-      DebugPrint.verbose("Playing Video with URL: \(videoURL)")
+      CCLog.verbose("Playing Video with URL: \(videoURL)")
       
       avPlayerItem = AVPlayerItem(url: videoURL)
       
@@ -245,7 +245,7 @@ class JournalViewController: UIViewController {
       
       // No image nor video to work on, Fatal
     } else {
-      DebugPrint.fatal("MediaType neither .photo nor .video")
+      CCLog.fatal("MediaType neither .photo nor .video")
     }
     
     // See if there are any Markups to Unserialize
@@ -257,18 +257,18 @@ class JournalViewController: UIViewController {
         
         if !markup.isDataAvailable {
           displayErrorDialog()
-          DebugPrint.fatal("Markup not available even tho Moment deemed Loaded")
+          CCLog.fatal("Markup not available even tho Moment deemed Loaded")
         }
         
         guard let dataType = markup.dataType else {
           displayErrorDialog()
-          DebugPrint.assert("Unexpected markup.dataType = nil")
+          CCLog.assert("Unexpected markup.dataType = nil")
           return
         }
         
         guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
           displayErrorDialog()
-          DebugPrint.assert("markup.dataType did not actually translate into valid type")
+          CCLog.assert("markup.dataType did not actually translate into valid type")
           return
         }
         
@@ -277,7 +277,7 @@ class JournalViewController: UIViewController {
         case .jotLabel:
           guard let labelData = markup.data else {
             displayErrorDialog()
-            DebugPrint.assert("Unexpected markup.data = nil when dataType == .jotLabel")
+            CCLog.assert("Unexpected markup.data = nil when dataType == .jotLabel")
             return
           }
           
@@ -290,7 +290,7 @@ class JournalViewController: UIViewController {
         case .jotDrawView:
           guard let drawViewDictionary = markup.data else {
             displayErrorDialog()
-            DebugPrint.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
+            CCLog.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
             return
           }
           
@@ -307,7 +307,7 @@ class JournalViewController: UIViewController {
   fileprivate func displayMomentIfLoaded(for moment: FoodieMoment) {
     
     guard let journal = viewingJournal else {
-      DebugPrint.fatal("Unexpected, no Journal being viewed by Journal View Controller")
+      CCLog.fatal("Unexpected, no Journal being viewed by Journal View Controller")
     }
     
     let momentIndex = journal.getIndexOf(moment)
@@ -320,12 +320,12 @@ class JournalViewController: UIViewController {
         DispatchQueue.main.async { [weak self] in self?.displayMoment(moment) }
       } else {
         // Seems moment is not available. Move on to the next one
-        DebugPrint.error("displayMomentIfLoaded moment.checkRetrieved returned operationState != .objectSynced. Skipping moment index = \(momentIndex)")
+        CCLog.warning("displayMomentIfLoaded moment.checkRetrieved returned operationState != .objectSynced. Skipping moment index = \(momentIndex)")
         currentMoment = moment
         displayNextMoment()
       }
     } else {
-      DebugPrint.verbose("displayMomentIfLoaded: Not yet loaded")
+      CCLog.verbose("displayMomentIfLoaded: Not yet loaded")
       
       view.insertSubview(blurView, belowSubview: tapGestureStackView)
       view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
@@ -360,19 +360,19 @@ class JournalViewController: UIViewController {
     
     guard let journal = viewingJournal else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, viewingJournal = nil")
+      CCLog.assert("Unexpected, viewingJournal = nil")
       return
     }
     
     guard let moments = journal.moments else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, viewingJournal.moments = nil")
+      CCLog.assert("Unexpected, viewingJournal.moments = nil")
       return
     }
     
     guard let moment = currentMoment else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, currentMoment = nil")
+      CCLog.assert("Unexpected, currentMoment = nil")
       return
     }
     
@@ -395,19 +395,19 @@ class JournalViewController: UIViewController {
     
     guard let journal = viewingJournal else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, viewingJournal = nil")
+      CCLog.assert("Unexpected, viewingJournal = nil")
       return
     }
     
     guard let moments = journal.moments else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, viewingJournal.moments = nil")
+      CCLog.assert("Unexpected, viewingJournal.moments = nil")
       return
     }
     
     guard let moment = currentMoment else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, currentMoment = nil")
+      CCLog.assert("Unexpected, currentMoment = nil")
       return
     }
     
@@ -469,13 +469,13 @@ class JournalViewController: UIViewController {
   override func viewDidAppear(_ animated: Bool) {
     guard let journal = viewingJournal else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected viewingJournal = nil")
+      CCLog.assert("Unexpected viewingJournal = nil")
       return
     }
     
     guard let moments = journal.moments, !moments.isEmpty else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected viewingJournal.moments = nil or empty")
+      CCLog.assert("Unexpected viewingJournal.moments = nil or empty")
       return
     }
     
@@ -489,14 +489,14 @@ class JournalViewController: UIViewController {
   
   
   override func viewDidDisappear(_ animated: Bool) {
-    DebugPrint.verbose("JournalViewController disappearing")
+    CCLog.verbose("JournalViewController disappearing")
   }
   
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    DebugPrint.log("JournalViewController.didReceiveMemoryWarning")
+    CCLog.warning("JournalViewController.didReceiveMemoryWarning")
   }
 }
 
@@ -508,7 +508,7 @@ extension JournalViewController: FoodieObjectWaitOnRetrieveDelegate {
   func retrieved(for object: FoodieObjectDelegate) {
     guard let moment = object as? FoodieMoment else {
       internalErrorDialog()
-      DebugPrint.assert("JouranlViewController retrieved() for object is not FoodieMoment")
+      CCLog.assert("JouranlViewController retrieved() for object is not FoodieMoment")
       return
     }
     DispatchQueue.main.async { [weak self] in self?.displayMoment(moment) }

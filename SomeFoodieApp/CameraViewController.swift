@@ -62,17 +62,17 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   }
 
   @IBAction func capturePressed(_ sender: CameraButton) {
-    DebugPrint.userAction("CameraViewController.capturePressed()")
+    CCLog.info("User Action - CameraViewController.capturePressed()")
     captureButton?.buttonPressed()
   }
   
   @IBAction func captureTapped(_ sender: UITapGestureRecognizer) {
-    DebugPrint.userAction("CameraViewController.captureTapped()")
+    CCLog.info("User Action - CameraViewController.captureTapped()")
     captureButton?.buttonReleased()
   }
   
   @IBAction func exitPressed(_ sender: UIButton) {
-    DebugPrint.userAction("CameraViewController.exitPressed()")
+    CCLog.info("User Action - CameraViewController.exitPressed()")
     dismiss(animated: true, completion: nil)
   }
   
@@ -153,7 +153,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
       default:
         // Permission was denied before. Ask for permission again
         guard let url = URL(string: UIApplicationOpenSettingsURLString) else {
-          DebugPrint.assert("UIApplicationOPenSettignsURLString ia an invalid URL String???")
+          CCLog.assert("UIApplicationOPenSettignsURLString ia an invalid URL String???")
           break
         }
         
@@ -177,7 +177,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     captureLocationError = nil
     locationWatcher = LocationWatch.global.start() { (location, error) in
       if let error = error {
-        DebugPrint.log("Cannot obtain Location information for Camera capture")
+        CCLog.debug("Cannot obtain Location information for Camera capture")
         self.captureLocationError = error
       }
       
@@ -194,7 +194,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    DebugPrint.log("CameraViewController.didReceiveMemoryWarning")
+    CCLog.warning("CameraViewController.didReceiveMemoryWarning")
   }
   
   
@@ -210,7 +210,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake image: UIImage) {
     // Called when takePhoto() is called or if a SwiftyCamButton initiates a tap gesture
     // Returns a UIImage captured from the current session
-    DebugPrint.userAction("didTakePhoto") // TODO: Make photos brighter too
+    CCLog.info("User Action - didTakePhoto") // TODO: Make photos brighter too
     
 //  Metadata/EXIF data Extraction Example
 //   1. By the time SwiftyCam have made it from a CGDataProvider -> CGImage -> UIImage and we convert it back to a CGDataProvider, it seems that everything is stripped
@@ -293,7 +293,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didBeginRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
     // Called when startVideoRecording() is called
     // Called if a SwiftyCamButton begins a long press gesture
-    DebugPrint.userAction("didBeginRecordingVideo")
+    CCLog.info("User Action - didBeginRecordingVideo")
     // TODO: Make Videos Brighter?
     captureButton?.startRecording()
   }
@@ -302,7 +302,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
     // Called when stopVideoRecording() is called
     // Called if a SwiftyCamButton ends a long press gesture
-    DebugPrint.userAction("didFinishRecordingVideo")
+    CCLog.info("User Action - didFinishRecordingVideo")
     captureButton?.stopRecording()
     captureButton?.buttonReleased()
   }
@@ -311,7 +311,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishProcessVideoAt url: URL) {
     // Called when stopVideoRecording() is called and the video is finished processing
     // Returns a URL in the temporary directory where video is stored
-    DebugPrint.log("didFinishProcessVideoAt")
+    CCLog.debug("didFinishProcessVideoAt")
     
     if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(url.path) {
       // Also save video to Photo Album.
@@ -331,7 +331,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       
     } else {
       self.internalErrorDialog()
-      DebugPrint.assert("Received invalid URL for local filesystem")
+      CCLog.assert("Received invalid URL for local filesystem")
       captureButton?.buttonReset()
     }
   }
@@ -341,20 +341,20 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     // Called when a user initiates a tap gesture on the preview layer
     // Will only be called if tapToFocus = true
     // Returns a CGPoint of the tap location on the preview layer
-    DebugPrint.userAction("didFocusAtPoint")
+    CCLog.info("User Action - didFocusAtPoint")
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didChangeZoomLevel zoom: CGFloat) {
     // Called when a user initiates a pinch gesture on the preview layer
     // Will only be called if pinchToZoomn = true
     // Returns a CGFloat of the current zoom level
-    DebugPrint.userAction("didChangeZoomLevel")
+    CCLog.info("User Action - didChangeZoomLevel")
   }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didSwitchCameras camera: SwiftyCamViewController.CameraSelection) {
     // Called when user switches between cameras
     // Returns current camera selection
-    DebugPrint.userAction("didSwitchCameras")
+    CCLog.info("User Action - didSwitchCameras")
   }
   
   
@@ -369,7 +369,7 @@ extension CameraViewController: MarkupReturnDelegate {
   func markupComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
     guard let delegate = cameraReturnDelegate else {
       internalErrorDialog()
-      DebugPrint.assert("Unexpected, cameraReturnDelegate = nil")
+      CCLog.assert("Unexpected, cameraReturnDelegate = nil")
       return
     }
     delegate.captureComplete(markedupMoment: markedupMoment, suggestedJournal: suggestedJournal)
@@ -380,7 +380,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
   public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
 
     guard let mediaType = info[UIImagePickerControllerMediaType] as? String else {
-      DebugPrint.assert("Media type is expected after selection from image picker")
+      CCLog.assert("Media type is expected after selection from image picker")
       return
     }
 
@@ -392,17 +392,17 @@ extension CameraViewController: UIImagePickerControllerDelegate {
     if("public.movie" == mediaType)
     {
       guard let movieUrl = info[UIImagePickerControllerMediaURL] as? NSURL else {
-        DebugPrint.assert("video URL is not returned from image picker")
+        CCLog.assert("video URL is not returned from image picker")
         return
       }
 
       guard let movieName = movieUrl.lastPathComponent else {
-        DebugPrint.assert("video URL is missing movie name")
+        CCLog.assert("video URL is missing movie name")
         return
       }
 
       guard let moviePath = movieUrl.relativePath else {
-        DebugPrint.assert("video URL is missing relative path")
+        CCLog.assert("video URL is missing relative path")
         return
       }
 
@@ -411,7 +411,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
     } else {
       mediaName = FoodieFile.newPhotoFileName()
       guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
-        DebugPrint.assert("UIImage is not returned from image picker")
+        CCLog.assert("UIImage is not returned from image picker")
         return
       }
       mediaObject = FoodieMedia(withState: .objectModified, fileName: mediaName, type: .photo)

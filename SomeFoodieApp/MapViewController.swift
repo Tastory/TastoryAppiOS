@@ -109,7 +109,7 @@ class MapViewController: UIViewController {
   @IBAction func searchWithFilter(_ sender: UIButton) {
     guard let currentMapView = mapView else {
       locationErrorDialog(message: "Invalid Map View. Search Location Undefined", comment: "Alert dialog message when mapView is nil when user attempted to perform Search")
-      DebugPrint.assert("Search w/ Filter cannot be performed when mapView = nil")
+      CCLog.assert("Search w/ Filter cannot be performed when mapView = nil")
       return
     }
 
@@ -123,7 +123,7 @@ class MapViewController: UIViewController {
     let northEastCoordinate = CLLocationCoordinate2D(latitude: centerLatitude + halfHeight,
                                                      longitude: centerLongitude + halfWidth)
     
-    DebugPrint.verbose("Query Location Rectangle SouthWest - (\(southWestCoordinate.latitude), \(southWestCoordinate.longitude)), NorthEast - (\(northEastCoordinate.latitude), \(northEastCoordinate.longitude))")
+    CCLog.verbose("Query Location Rectangle SouthWest - (\(southWestCoordinate.latitude), \(southWestCoordinate.longitude)), NorthEast - (\(northEastCoordinate.latitude), \(northEastCoordinate.longitude))")
     
     let journalQuery = FoodieQuery()
     journalQuery.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
@@ -193,7 +193,7 @@ class MapViewController: UIViewController {
     if self.presentedViewController == nil {
       // Permission was denied before. Ask for permission again
       guard let url = URL(string: UIApplicationOpenSettingsURLString) else {
-        DebugPrint.assert("UIApplicationOPenSettignsURLString ia an invalid URL String???")
+        CCLog.assert("UIApplicationOPenSettignsURLString ia an invalid URL String???")
         internalErrorDialog()
         return
       }
@@ -238,13 +238,13 @@ class MapViewController: UIViewController {
       
       if let err = error {
         self.queryErrorDialog()
-        DebugPrint.assert("Create Journal Query & Search failed with error: \(err.localizedDescription)")
+        CCLog.assert("Create Journal Query & Search failed with error: \(err.localizedDescription)")
         return
       }
       
       guard let journalArray = journals else {
         self.queryErrorDialog()
-        DebugPrint.assert("Create Journal Query & Search returned with nil Journal Array")
+        CCLog.assert("Create Journal Query & Search returned with nil Journal Array")
         return
       }
       
@@ -286,7 +286,7 @@ class MapViewController: UIViewController {
     locationWatcher = LocationWatch.global.start(butPaused: (lastLocation != nil)) { (location, error) in
       if let error = error {
         self.locationErrorDialog(message: "LocationWatch returned error - \(error.localizedDescription)", comment: "Alert Dialogue Message")
-        DebugPrint.error("LocationWatch returned error - \(error.localizedDescription)")
+        CCLog.warning("LocationWatch returned error - \(error.localizedDescription)")
         return
       }
       
@@ -318,7 +318,7 @@ class MapViewController: UIViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    DebugPrint.log("MapViewController.didReceiveMemoryWarning")
+    CCLog.warning("MapViewController.didReceiveMemoryWarning")
   }
 }
 
@@ -356,13 +356,13 @@ extension MapViewController: UITextFieldDelegate {
           return
 
         default:
-          DebugPrint.assert("geocodeAddressString Error Handle, CLError Code - \(error)")
+          CCLog.assert("geocodeAddressString Error Handle, CLError Code - \(error)")
         }
       }
 
       guard let placemarks = placemarks else {
 
-        DebugPrint.userError("No Placemark found from location entered into text field by User")
+        CCLog.info("User Error - No Placemark found from location entered into text field by User")
 
         // No valid placemarks returned
         textField.text = "No Results Found"
@@ -431,7 +431,7 @@ extension MapViewController: UITextFieldDelegate {
         region = MKCoordinateRegion(center: clRegion.center, span: MKCoordinateSpan(height: clRegion.radius*2))
 
       } else {
-        DebugPrint.assert("Placemark contained no location")
+        CCLog.assert("Placemark contained no location")
 
         // There actually isn't a valid location in the placemark...
         textField.text = "No Results Found"

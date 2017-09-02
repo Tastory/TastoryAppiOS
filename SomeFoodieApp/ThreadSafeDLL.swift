@@ -21,7 +21,7 @@ class ThreadSafeDLL {
     
     var next: Node? {
       guard let dll = dll else {
-        DebugPrint.fatal("Cannot get Next Node on Node that doesn't belong to any List!")
+        CCLog.fatal("Cannot get Next Node on Node that doesn't belong to any List!")
       }
       SwiftMutex.lock(&dll.listMutex)
       defer { SwiftMutex.unlock(&dll.listMutex) }
@@ -30,7 +30,7 @@ class ThreadSafeDLL {
     
     var prev: Node? {
       guard let dll = dll else {
-        DebugPrint.fatal("Cannot get Next Node on Node that doesn't belong to any List!")
+        CCLog.fatal("Cannot get Next Node on Node that doesn't belong to any List!")
       }
       SwiftMutex.lock(&dll.listMutex)
       defer { SwiftMutex.unlock(&dll.listMutex) }
@@ -68,15 +68,15 @@ class ThreadSafeDLL {
   // MARK: - Private Instance Functions
   private func removeUnsafely(_ node: Node) {
     guard let dll = node.dll else {
-      DebugPrint.fatal("Cannot remove a Node that doesn't belong to a list!")
+      CCLog.fatal("Cannot remove a Node that doesn't belong to a list!")
     }
     
     if dll !== self {
-      DebugPrint.fatal("Cannot remove a Node that belongs to another list!")
+      CCLog.fatal("Cannot remove a Node that belongs to another list!")
     }
     
     guard let headNode = headNode, let tailNode = tailNode else {
-      DebugPrint.fatal("HeadNode/TailNode = nil, unable to proceed")
+      CCLog.fatal("HeadNode/TailNode = nil, unable to proceed")
     }
     
     if node === headNode {
@@ -103,7 +103,7 @@ class ThreadSafeDLL {
     defer { SwiftMutex.unlock(&listMutex) }
     
     if node.dll != nil {
-      DebugPrint.fatal("Cannot to add a Node that already belongs to another list!")
+      CCLog.fatal("Cannot to add a Node that already belongs to another list!")
     }
     node.dll = self
     
@@ -126,7 +126,7 @@ class ThreadSafeDLL {
     defer { SwiftMutex.unlock(&listMutex) }
     
     if node.dll != nil {
-      DebugPrint.fatal("Cannot add a Node that already belongs to another list!")
+      CCLog.fatal("Cannot add a Node that already belongs to another list!")
     }
     node.dll = self
     

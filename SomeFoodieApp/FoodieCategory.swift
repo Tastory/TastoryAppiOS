@@ -50,7 +50,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
     
     init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
       self = errorCode
-      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+      CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
     }
   }
   
@@ -87,13 +87,13 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
       let categoriesTask = session.venues.categories { (result) in
         
         guard let statusCode = result.HTTPSTatusCode, let httpStatusCode = HTTPStatusCode(rawValue: statusCode) else {
-          DebugPrint.error("No valid HTTP Status Code on Foursquare Search")
+          CCLog.warning("No valid HTTP Status Code on Foursquare Search")
           callback?(nil, ErrorCode.foursquareHttpStatusNil)
           return
         }
         
         if httpStatusCode != HTTPStatusCode.ok {
-          DebugPrint.error("Search for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
+          CCLog.warning("Search for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
           if !categoriesRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                             after: Constants.FoursquareSearchRetryDelay,
                                                             withQoS: .utility) {
@@ -104,7 +104,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
         
         // TODO: - Consider CocoaErrorDomain and QuadratResponseErrorDomain error parsing
         if let error = result.error {
-          DebugPrint.error("Search For Foursquare Venue responded with error \(error.localizedDescription) - \(result.description)")
+          CCLog.warning("Search For Foursquare Venue responded with error \(error.localizedDescription) - \(result.description)")
           if error.domain == NSURLErrorDomain, let urlError = error as? URLError {
             if !categoriesRetry.attemptRetryBasedOnURLError(urlError,
                                                             after: Constants.FoursquareSearchRetryDelay,
@@ -139,7 +139,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   private static func convertRecursive(from dictionary: [String : Any]) -> FoodieCategory? {
     let foodieCategory = FoodieCategory()
     guard let id = dictionary["id"] as? String else {
-      DebugPrint.assert("Received dictionary with no ID")
+      CCLog.assert("Received dictionary with no ID")
       return nil
     }
     foodieCategory.foursquareCategoryID = id
@@ -227,7 +227,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
+    CCLog.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
     
     // Delete itself first
     foodieObject.deleteObjectLocalNServer(withName: name, withBlock: callback)

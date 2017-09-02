@@ -74,7 +74,7 @@ extension FoodieMarkup: FoodieObjectDelegate {
   func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
+    CCLog.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
     
     // Object might not be retrieved, retrieve first to have access to children
     retrieve { error in

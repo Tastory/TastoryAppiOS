@@ -48,7 +48,7 @@ class FoodieQuery {
     
     init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
       self = errorCode
-      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+      CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
     }
   }
   
@@ -281,7 +281,7 @@ class FoodieQuery {
   
   func getNextJournals(for count: Int, withBlock callback: JournalsErrorBlock?) {
     guard let query = pfQuery else {
-      DebugPrint.assert("No initial PFQuery created, so cannot get another batch of query results")
+      CCLog.assert("No initial PFQuery created, so cannot get another batch of query results")
       callback?(nil, ErrorCode.noPFQueryToPerformAnotherSearch)
       return
     }
@@ -303,7 +303,7 @@ class FoodieQuery {
   
   func getNextVenues(for count: Int, withBlock callback: VenuesErrorBlock?) {
     guard let query = pfQuery else {
-      DebugPrint.assert("No initial PFQuery created, so cannot get another batch of query results")
+      CCLog.assert("No initial PFQuery created, so cannot get another batch of query results")
       callback?(nil, ErrorCode.noPFQueryToPerformAnotherSearch)
       return
     }

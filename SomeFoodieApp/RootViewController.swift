@@ -33,6 +33,8 @@ class RootViewController: UIViewController {
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    CCLog.info("Main Thread ID Checkpoint")
   }
   
   override func viewDidAppear(_ animated: Bool) {
@@ -49,6 +51,6 @@ class RootViewController: UIViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    DebugPrint.log("RootViewController.didReceiveMemoryWarning")
+    CCLog.warning("RootViewController.didReceiveMemoryWarning")
   }
 }

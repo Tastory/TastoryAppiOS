@@ -33,11 +33,11 @@ class FeedCollectionViewController: UICollectionViewController {
   // MARK: - View Controller Lifecycle Functions
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = false
     
-    DebugPrint.verbose("journalArray.count = \(journalArray.count)")
+    CCLog.verbose("journalArray.count = \(journalArray.count)")
     
     // Turn on CollectionView prefetching
     collectionView?.prefetchDataSource = self
@@ -53,7 +53,7 @@ class FeedCollectionViewController: UICollectionViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    DebugPrint.log("FeedCollectionViewController.didReceiveMemoryWarning")
+    CCLog.warning("FeedCollectionViewController.didReceiveMemoryWarning")
   }
   
   
@@ -62,11 +62,11 @@ class FeedCollectionViewController: UICollectionViewController {
 //  
 //    guard let journalArray = objectArray as? [FoodieJournal] else {
 //      queryErrorDialog()
-//      DebugPrint.assert("queryResultCallback() did not return an array of Foodie Journals")
+//      CCLog.assert("queryResultCallback() did not return an array of Foodie Journals")
 //      return
 //    }
 //    numberOfItemsQueried += journalArray.count
-//    DebugPrint.verbose("\(journalArray.count) Journals returned. Total Journals retrieved at \(numberOfItemsQueried)")
+//    CCLog.verbose("\(journalArray.count) Journals returned. Total Journals retrieved at \(numberOfItemsQueried)")
 //    
 //    for journal in journalArray {
 //      journalArray.append(journal)
@@ -155,7 +155,7 @@ class FeedCollectionViewController: UICollectionViewController {
     reusableCell.activityIndicator.isHidden = false
     reusableCell.activityIndicator.startAnimating()
     
-    // DebugPrint.verbose("collectionView(cellForItemAt #\(indexPath.row)")
+    // CCLog.verbose("collectionView(cellForItemAt #\(indexPath.row)")
     
     FoodiePrefetch.global.blockPrefetching()
     
@@ -165,19 +165,19 @@ class FeedCollectionViewController: UICollectionViewController {
       
       if let error = journalError {
         self.fetchErrorDialog()
-        DebugPrint.assert("Journal.selfRetrieval() callback with error: \(error.localizedDescription)")
+        CCLog.assert("Journal.selfRetrieval() callback with error: \(error.localizedDescription)")
         return
       }
       
       guard let thumbnailObject = journal.thumbnailObj else {
         self.fetchErrorDialog()
-        DebugPrint.assert("Journal.selfRetrieval callback with thumbnailObj = nil")
+        CCLog.assert("Journal.selfRetrieval callback with thumbnailObj = nil")
         return
       }
       
       guard let thumbnailData = thumbnailObject.imageMemoryBuffer else {
         self.internalErrorDialog()
-        DebugPrint.assert("Unexpected, thumbnailObject.imageMemoryBuffer = nil")
+        CCLog.assert("Unexpected, thumbnailObject.imageMemoryBuffer = nil")
         return
       }
       
@@ -185,7 +185,7 @@ class FeedCollectionViewController: UICollectionViewController {
         var letsPrefetch = false
         
         if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
-          // DebugPrint.verbose("cellForItem(at:) DispatchQueue.main for cell #\(indexPath.row)")
+          // CCLog.verbose("cellForItem(at:) DispatchQueue.main for cell #\(indexPath.row)")
           cell.journalTitle?.text = self.journalArray[indexPath.row].title
           cell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
           cell.activityIndicator.isHidden = true
@@ -229,7 +229,7 @@ class FeedCollectionViewController: UICollectionViewController {
     
     guard let feedCell = cell as? FeedCollectionViewCell else {
       internalErrorDialog()
-      DebugPrint.assert("Cannot cast cell as FeedCollectionViewCell")
+      CCLog.assert("Cannot cast cell as FeedCollectionViewCell")
       return
     }
     
@@ -248,7 +248,7 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-    DebugPrint.verbose("collectionView didEndDisplayingCell indexPath.row = \(indexPath.row)")
+    CCLog.verbose("collectionView didEndDisplayingCell indexPath.row = \(indexPath.row)")
     let journal = journalArray[indexPath.row]
     if let context = journal.contentPrefetchContext {
       FoodiePrefetch.global.removePrefetchWork(for: context)
@@ -261,7 +261,7 @@ extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
   
   func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
     for indexPath in indexPaths {
-      DebugPrint.verbose("collectionView prefetchItemsAt indexPath.row = \(indexPath.row)")
+      CCLog.verbose("collectionView prefetchItemsAt indexPath.row = \(indexPath.row)")
       let journal = journalArray[indexPath.row]
       journal.selfPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
     }
@@ -269,7 +269,7 @@ extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
   
   func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
     for indexPath in indexPaths {
-      DebugPrint.verbose("collectionView cancelPrefetchingForItemsAt indexPath.row = \(indexPath.row)")
+      CCLog.verbose("collectionView cancelPrefetchingForItemsAt indexPath.row = \(indexPath.row)")
       let journal = journalArray[indexPath.row]
       if let context = journal.selfPrefetchContext {
         FoodiePrefetch.global.removePrefetchWork(for: context)

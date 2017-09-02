@@ -14,7 +14,9 @@ target 'SomeFoodieApp' do
   pod 'Jot', :git => 'https://github.com/biscottigelato/Jot.git'
   pod 'QuadratTouch', :git => 'https://github.com/Constantine-Fry/das-quadrat.git', :branch => 'develop'
   pod 'HTTPStatusCodes', '~> 3.1.2'
-  
+  pod 'Fabric'
+  pod 'Crashlytics'
+
   target 'SomeFoodieAppTests' do
     inherit! :search_paths
     # Pods for testing

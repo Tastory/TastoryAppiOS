@@ -57,7 +57,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
       self = errorCode
-      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+      CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
     }
   }
   
@@ -108,7 +108,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
            to position: Int? = nil) {
     
     if position != nil {
-      DebugPrint.assert("FoodieJournal.add(to position:) not yet implemented. Adding to 'end' position")
+      CCLog.assert("FoodieJournal.add(to position:) not yet implemented. Adding to 'end' position")
     }
     
     if self.markups != nil {
@@ -160,13 +160,13 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     retrieve(forceAnyways: forceAnyways) { (error) in
       
       if let momentError = error {
-        DebugPrint.assert("Moment.retrieve() resulted in error: \(momentError.localizedDescription)")
+        CCLog.assert("Moment.retrieve() resulted in error: \(momentError.localizedDescription)")
         callback?(error)
         return
       }
 
       guard let media = self.mediaObj else {
-        DebugPrint.assert("Unexpected Moment.retrieve() resulted in moment.mediaObj = nil")
+        CCLog.assert("Unexpected Moment.retrieve() resulted in moment.mediaObj = nil")
         callback?(error)
         return
       }
@@ -266,9 +266,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   func verbose() {
-//    DebugPrint.verbose("FoodieMoment ID: \(getUniqueIdentifier())")
-//    DebugPrint.verbose("  Media Filename: \(mediaFileName)")
-//    DebugPrint.verbose("  Media Type: \(mediaType)")
+//    CCLog.verbose("FoodieMoment ID: \(getUniqueIdentifier())")
+//    CCLog.verbose("  Media Filename: \(mediaFileName)")
+//    CCLog.verbose("  Media Type: \(mediaType)")
   }
   
   

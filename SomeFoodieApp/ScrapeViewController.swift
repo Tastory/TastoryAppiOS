@@ -22,13 +22,13 @@ class ScrapeViewController: UIViewController {
     
     guard let urlText = blogURLfield?.text else {
       // TODO: Ask the user to input something
-      DebugPrint.error("startScraping - Received empty URL input")
+      CCLog.warning("startScraping - Received empty URL input")
       return
     }
 
     guard let url = URL(string: urlText) else {
       // TODO: Tell user that the entered URL is not a valid URL
-      DebugPrint.error("Received invalid URL input")
+      CCLog.warning("Received invalid URL input")
       return
     }
     
@@ -36,24 +36,24 @@ class ScrapeViewController: UIViewController {
           
       if let error = error {
         // TODO: Tell user about the error
-        DebugPrint.error("\(error)")
+        CCLog.warning("\(error)")
         return
       }
       
-      DebugPrint.log("Current thread is: \(Thread.current)")
-      DebugPrint.log("Current thread is \(Thread.isMainThread ? "" : "not ")main thread")
+      CCLog.debug("Current thread is: \(Thread.current)")
+      CCLog.debug("Current thread is \(Thread.isMainThread ? "" : "not ")main thread")
       
       guard let response = response as? HTTPURLResponse else {
         // TODO: Non-HTTP resposne received. How to handle??
-        DebugPrint.error("Non-HTTP response received")
+        CCLog.warning("Non-HTTP response received")
         return
       }
       
-      DebugPrint.log("response = \(response)")
+      CCLog.debug("response = \(response)")
       
       guard let data = data else {
         // TODO: Something wrong with the returned data. How to handle?
-        DebugPrint.error("No valid data received")
+        CCLog.warning("No valid data received")
         return
       }
       
@@ -61,18 +61,18 @@ class ScrapeViewController: UIViewController {
       if response.statusCode == 200 {
         guard let myHTMLString = String(data: data, encoding: String.Encoding.utf8) else {
           // TODO: Returned data is not UTF8. How to handle?
-          DebugPrint.error("Returned data is not UTF8")
+          CCLog.warning("Returned data is not UTF8")
           return
         }
         
         guard let doc = Kanna.HTML(html: myHTMLString, encoding: String.Encoding.utf8) else {
           //TODO: Not able to create Kanna HTML document. How to handle?
-          DebugPrint.error("Not able to create Kanna HTML document")
+          CCLog.warning("Not able to create Kanna HTML document")
           return
         }
 
         guard let cssSelector = self.cssField?.text else {
-          DebugPrint.error("CSS field empty")
+          CCLog.warning("CSS field empty")
           return
         }
 
@@ -100,12 +100,12 @@ class ScrapeViewController: UIViewController {
           matchNum = matchNum + 1
         }
         
-        DebugPrint.log("Parsing Complete")
+        CCLog.debug("Parsing Complete")
         
         
       } else {
         // TODO: Gotta handle other return status codes
-        DebugPrint.error("response.statusCode = \(response.statusCode)")
+        CCLog.warning("response.statusCode = \(response.statusCode)")
       }
     }
         

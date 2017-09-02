@@ -31,7 +31,7 @@ class FoodieMedia: FoodieS3Object {
     
     init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
       self = errorCode
-      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+      CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
     }
   }
   
@@ -73,7 +73,7 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let type = mediaType else {
-      DebugPrint.fatal("Retrieve not allowed when Media has no MediaType")
+      CCLog.fatal("Retrieve not allowed when Media has no MediaType")
     }
     
     // If photo and in memory, or video and in local, just callback
@@ -87,7 +87,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       case .photo:
         retrieveFromServerToBuffer() { buffer, error in
           if let err = error {
-            DebugPrint.error("retrieveFromServerToBuffer for photo failed with error \(err.localizedDescription)")
+            CCLog.warning("retrieveFromServerToBuffer for photo failed with error \(err.localizedDescription)")
           }
           if let imageBuffer = buffer as? Data { self.imageMemoryBuffer = imageBuffer }
           callback?(error)
@@ -96,12 +96,12 @@ extension FoodieMedia: FoodieObjectDelegate {
       case .video:
         retrieveFromServerToLocal() { (error) in
           if let err = error {
-            DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
+            CCLog.warning("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
           }
           if let fileName = self.foodieFileName {
             self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: fileName)
           } else {
-            DebugPrint.fatal("FoodieMedia.retrieve() resulted in foodieFileName = nil")
+            CCLog.fatal("FoodieMedia.retrieve() resulted in foodieFileName = nil")
           }
           callback?(error)
         }
@@ -124,12 +124,12 @@ extension FoodieMedia: FoodieObjectDelegate {
         if err == FoodieFile.ErrorCode.fileManagerReadLocalNoFile {
           // This is expected when file is not cached to local
         } else {
-          DebugPrint.error("retrieveFromLocalToBuffer for photo failed with error \(err.localizedDescription)")
+          CCLog.warning("retrieveFromLocalToBuffer for photo failed with error \(err.localizedDescription)")
         }
         
         self.retrieveFromServerToBuffer() { (serverBuffer, serverError) in
           if let error = serverError {
-            DebugPrint.error("retrieveFromServerToBuffer for photo failed with error \(error.localizedDescription)")
+            CCLog.warning("retrieveFromServerToBuffer for photo failed with error \(error.localizedDescription)")
           }
           if let imageBuffer = serverBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
           callback?(serverError)
@@ -139,12 +139,12 @@ extension FoodieMedia: FoodieObjectDelegate {
     case .video:
       retrieveFromServerToLocal() { error in
         if let err = error {
-          DebugPrint.error("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
+          CCLog.warning("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
         }
         if let fileName = self.foodieFileName {
           self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: fileName)
         } else {
-          DebugPrint.fatal("FoodieMedia.retrieve() resulted in foodieFileName = nil")
+          CCLog.fatal("FoodieMedia.retrieve() resulted in foodieFileName = nil")
         }
         callback?(error)
       }
@@ -212,7 +212,7 @@ extension FoodieMedia: FoodieObjectDelegate {
   func deleteRecursive(withName name: String? = nil,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    DebugPrint.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
+    CCLog.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
     
     // Delete itself first
     foodieObject.deleteObjectLocalNServer(withName: name, withBlock: callback)

@@ -47,7 +47,7 @@ class FoodiePrefetch {
   // MARK: - Public Instance Function
   func prefetchNextIfNoBlock() {
     
-    DebugPrint.verbose("prefetchNextIfNoBlock")
+    CCLog.verbose("prefetchNextIfNoBlock")
     var letsFetch = false
     
     // Just sample the block to determine whether to fetch or not
@@ -57,7 +57,7 @@ class FoodiePrefetch {
     
     if letsFetch {
       
-      DebugPrint.verbose("prefetchNextIfNoBlock, letsFetch = true")
+      CCLog.verbose("prefetchNextIfNoBlock, letsFetch = true")
       
       var workingContext: Context!
       var delegate: FoodiePrefetchDelegate!
@@ -76,7 +76,7 @@ class FoodiePrefetch {
       }
       
       SwiftMutex.unlock(&workQueueMutex)
-      DebugPrint.verbose("prefetchNextIfNoBlock, doPrefetch")
+      CCLog.verbose("prefetchNextIfNoBlock, doPrefetch")
       delegate.doPrefetch(on: objectToFetch, for: workingContext){ context in
         
         // Prefetch completes. Remove if not already removed
@@ -95,7 +95,7 @@ class FoodiePrefetch {
     let debugCount = blockCount
     SwiftMutex.unlock(&blockCountMutex)
     
-    DebugPrint.verbose("blockPrefetching up to blockCount of \(debugCount)")
+    CCLog.verbose("blockPrefetching up to blockCount of \(debugCount)")
   }
   
   
@@ -107,13 +107,13 @@ class FoodiePrefetch {
     let debugCount = blockCount
     SwiftMutex.unlock(&blockCountMutex)
     
-    DebugPrint.verbose("unblockPrefetching down to blockCount of \(debugCount)")
+    CCLog.verbose("unblockPrefetching down to blockCount of \(debugCount)")
     prefetchNextIfNoBlock()
   }
   
   
   func addPrefetchWork(for delegate: FoodiePrefetchDelegate, on objectToFetch: AnyObject) -> Context {
-    DebugPrint.verbose("addPrefetchWork")
+    CCLog.verbose("addPrefetchWork")
     
     var firstInQueue = false
     let newContext = Context()
@@ -126,7 +126,7 @@ class FoodiePrefetch {
     
     if tailOfWorkQueue == nil {
       if headOfWorkQueue != nil {
-        DebugPrint.fatal("headOfWorkQueue not nil when tailOfWorkQueue is nil")
+        CCLog.fatal("headOfWorkQueue not nil when tailOfWorkQueue is nil")
       }
       headOfWorkQueue = newContext
       tailOfWorkQueue = newContext
@@ -146,7 +146,7 @@ class FoodiePrefetch {
   
   
   func removePrefetchWork(for context: Context) {
-    DebugPrint.verbose("removePrefetchWork")
+    CCLog.verbose("removePrefetchWork")
     SwiftMutex.lock(&workQueueMutex)
     
     if context.objectToFetch == nil {
@@ -185,7 +185,7 @@ class FoodiePrefetch {
   
   
   func removeAllPrefetchWork() {
-    DebugPrint.verbose("removeAllPrefetchWork")
+    CCLog.verbose("removeAllPrefetchWork")
     SwiftMutex.lock(&workQueueMutex)
     
     while headOfWorkQueue != nil {

@@ -17,6 +17,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var error: Error?
     
+    // Initialize Crash, Error & Log Reporting
+    CCLog.initializeLogging()
+    CCLog.initializeReporting()
+    
     // Initialize FoodieObject Database
     FoodieObject.initialize()
     
@@ -32,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // Initialize Location Watch manager
     LocationWatch.global = LocationWatch()
-    
+
     // TODO: - Any Startup Test we want to do that we should use to block Startup?
     error = nil
     
@@ -74,19 +78,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     FoodieQuery.getFirstObject(withName: "workingJournal") { (object, error) in
       
       if let error = error {
-        DebugPrint.log("No pinned draft Stories found in Local Datastore - \(error.localizedDescription)")
+        CCLog.debug("No pinned draft Stories found in Local Datastore - \(error.localizedDescription)")
         return
       }
       
       guard let journal = object as? FoodieJournal else {
-        DebugPrint.error("Retrieve pinned Journal from Local Datastore is nil or not a FoodieJournal")
+        CCLog.warning("Retrieve pinned Journal from Local Datastore is nil or not a FoodieJournal")
         return
       }
       
       journal.retrieveRecursive(forceAnyways: false) { error in
         
         if let error = error {
-          DebugPrint.error("Retrieve Recursive on Journal resulted in error - \(error.localizedDescription)")
+          CCLog.warning("Retrieve Recursive on Journal resulted in error - \(error.localizedDescription)")
           return
         }
         
@@ -98,12 +102,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func applicationWillTerminate(_ application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-  }
-  
-  // For Parse Subclassing
-  func configureParse() {
-    
-
   }
 }
 

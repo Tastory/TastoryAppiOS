@@ -61,7 +61,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
       self = errorCode
-      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+      CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
     }
   }
   
@@ -99,12 +99,12 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
 
   static func newCurrent() -> FoodieJournal {
     if currentJournalPrivate != nil {
-      DebugPrint.assert(".newCurrent() without Save attempted but currentJournal != nil")
+      CCLog.assert(".newCurrent() without Save attempted but currentJournal != nil")
     }
     currentJournalPrivate = FoodieJournal(withState: .objectModified)
 
     guard let current = currentJournalPrivate else {
-      DebugPrint.fatal("Just created a new FoodieJournal() but currentJournalPrivate still nil")
+      CCLog.fatal("Just created a new FoodieJournal() but currentJournalPrivate still nil")
     }
     return current
   }
@@ -114,7 +114,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   static func newCurrentSync(saveCurrent: Bool) throws -> FoodieJournal? {
     if saveCurrent {
       guard let current = currentJournalPrivate else {
-        DebugPrint.assert("nil currentJournalPrivate on Journal Save when trying to create a new current Journal")
+        CCLog.assert("nil currentJournalPrivate on Journal Save when trying to create a new current Journal")
         return nil
       }
       
@@ -128,14 +128,14 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       {
         currentJournalPrivate?.deleteRecursive(withBlock: {(success,error)-> Void in
           if(success) {
-            DebugPrint.verbose("Removed local copy from discared journal")
+            CCLog.verbose("Removed local copy from discared journal")
           }
         })
       }
       
-      DebugPrint.log("Current Journal being overwritten without Save")
+      CCLog.debug("Current Journal being overwritten without Save")
     } else {
-      DebugPrint.assert("Use .newCurrent() without Save instead")  // Only barfs at development time. Continues on Production...
+      CCLog.assert("Use .newCurrent() without Save instead")  // Only barfs at development time. Continues on Production...
     }
     currentJournalPrivate = FoodieJournal(withState: .objectModified)
     return currentJournalPrivate
@@ -147,11 +147,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     if saveCurrent {
       // If anything fails here report failure up to Controller layer and let Controller handle
       guard let callback = saveCallback else {
-        DebugPrint.assert("nil errorCallback on Journal Save when trying to create a new current Journal")
+        CCLog.assert("nil errorCallback on Journal Save when trying to create a new current Journal")
         return nil
       }
       guard let current = currentJournalPrivate else {
-        DebugPrint.assert("nil currentJournalPrivate on Journal Save when trying ot create a new current Journal")
+        CCLog.assert("nil currentJournalPrivate on Journal Save when trying ot create a new current Journal")
         return nil
       }
       
@@ -159,9 +159,9 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       current.saveAsync(callback: callback)
       
     } else if currentJournalPrivate != nil {
-      DebugPrint.log("Current Journal being overwritten without Save")
+      CCLog.debug("Current Journal being overwritten without Save")
     } else {
-      DebugPrint.assert("Use .newCurrent() without Save instead")  // Only barfs at development time. Continues on Production...
+      CCLog.assert("Use .newCurrent() without Save instead")  // Only barfs at development time. Continues on Production...
     }
     currentJournalPrivate = FoodieJournal(withState: .objectModified)
     return currentJournalPrivate
@@ -217,7 +217,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       blockWait = blockWait + 1
     }
   
-    DebugPrint.verbose("FoodieJournal.saveSync Completed. Save took \(blockWait) seconds")
+    CCLog.verbose("FoodieJournal.saveSync Completed. Save took \(blockWait) seconds")
   
     if let error = blockError {
       throw error
@@ -246,7 +246,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
            to position: Int? = nil) {
     
     if position != nil {
-      DebugPrint.assert("FoodieJournal.add(to position:) not yet implemented. Adding to 'end' position")
+      CCLog.assert("FoodieJournal.add(to position:) not yet implemented. Adding to 'end' position")
     }
     
     // Temporary Code?
@@ -284,7 +284,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func getIndexOf(_ moment: FoodieMoment) -> Int {
 
     guard let momentArray = moments else {
-      DebugPrint.fatal("journal.getIndexOf() has moments = nil. Invalid")
+      CCLog.fatal("journal.getIndexOf() has moments = nil. Invalid")
     }
     
     var index = 0
@@ -295,7 +295,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       index += 1
     }
     
-    DebugPrint.assert("journal.getIndexOf() cannot find Moment from Moment Array")
+    CCLog.assert("journal.getIndexOf() cannot find Moment from Moment Array")
     return momentArray.count  // This is error case
   }
   
@@ -313,20 +313,20 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     // Do we still need to fetch the Journal?
     retrieve() { journalError in
       if let error = journalError {
-        DebugPrint.assert("Journal.retrieve() callback with error: \(error.localizedDescription)")
+        CCLog.assert("Journal.retrieve() callback with error: \(error.localizedDescription)")
         callback?(error)
         return
       }
       
       guard let thumbnailObject = self.thumbnailObj else {
-        DebugPrint.assert("Unexpected, thumbnailObject = nil")
+        CCLog.assert("Unexpected, thumbnailObject = nil")
         callback?(ErrorCode.selfRetrievalJournalNilThumbnail)
         return
       }
       
       thumbnailObject.retrieve() { thumbnailError in
         if let error = thumbnailError {
-          DebugPrint.assert("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
+          CCLog.assert("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
           callback?(error)
           return
         }
@@ -342,7 +342,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func contentRetrievalRequest(fromMoment startNumber: Int, forUpTo numberOfMoments: Int, withBlock callback: FoodieObject.SimpleErrorBlock? = nil) {
     
     guard let momentArray = moments else {
-      DebugPrint.assert("journal.contentRetrieve momentArray = nil. Journal with 0 moment is invalid")
+      CCLog.assert("journal.contentRetrieve momentArray = nil. Journal with 0 moment is invalid")
       callback?(ErrorCode.contentRetrieveMomentArrayNil)
       return
     }
@@ -370,11 +370,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     SwiftMutex.lock(&contentRetrievalMutex)  // TODO-Performance: Move to OperationQueue to eliminate chance of blocking main thread
     
     if contentRetrievalInProg {
-      DebugPrint.verbose("Content Retrieval already in progress")
+      CCLog.verbose("Content Retrieval already in progress")
       contentRetrievalPending = true
       contentRetrievalPendingCallback = callback
     } else {
-      DebugPrint.verbose("Content Retrieval begins")
+      CCLog.verbose("Content Retrieval begins")
       contentRetrievalInProg = true
       executeStateMachine = true
     }
@@ -392,7 +392,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func contentRetrievalStateMachine(momentIndex: Int, withError firstError: Error?, withBlock callback: FoodieObject.SimpleErrorBlock? = nil) {
     
     guard let momentArray = moments else {
-      DebugPrint.assert("journal.contentRetrieve momentArray = nil unexpected")
+      CCLog.assert("journal.contentRetrieve momentArray = nil unexpected")
       callback?(ErrorCode.contentRetrieveMomentArrayNil)
       return
     }
@@ -410,7 +410,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
         
         if let err = error {
           // TODO: How do we signal a background task error? Get whatever top of the presenting stack and push an error dialoge box on it?
-          DebugPrint.error("journal.contentRetrieve moment.retrieveIfPending returned error = \(err.localizedDescription)")
+          CCLog.warning("journal.contentRetrieve moment.retrieveIfPending returned error = \(err.localizedDescription)")
           if currentError == nil { currentError = err }
           self.contentRetrievalStateMachine(momentIndex: momentIndex+1, withError: currentError, withBlock: callback)
           return
@@ -435,11 +435,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     SwiftMutex.lock(&contentRetrievalMutex)  // TODO-Performance: Move to OperationQueue to eliminate chance of blocking main thread
     
     if contentRetrievalPending {
-      DebugPrint.verbose("Content Retrieval was pending. Initiate another round of Content Retrieval")
+      CCLog.verbose("Content Retrieval was pending. Initiate another round of Content Retrieval")
       contentRetrievalPending = false
       executeStateMachine = true
     } else {
-      DebugPrint.verbose("Content Retrieval completes!")
+      CCLog.verbose("Content Retrieval completes!")
       contentRetrievalInProg = false
     }
     
@@ -471,13 +471,13 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     retrieve(forceAnyways: forceAnyways) { error in
       
       if let journalError = error {
-        DebugPrint.assert("Journal.retrieve() resulted in error: \(journalError.localizedDescription)")
+        CCLog.assert("Journal.retrieve() resulted in error: \(journalError.localizedDescription)")
         callback?(error)
         return
       }
       
       guard let thumbnail = self.thumbnailObj else {
-        DebugPrint.assert("Unexpected Journal.retrieve() resulted in self.thumbnailObj = nil")
+        CCLog.assert("Unexpected Journal.retrieve() resulted in self.thumbnailObj = nil")
         callback?(error)
         return
       }
@@ -602,13 +602,13 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   }
   
   func verbose() {
-//    DebugPrint.verbose("FoodieJournal ID: \(getUniqueIdentifier())")
-//    DebugPrint.verbose("  Title: \(title)")
-//    DebugPrint.verbose("  Thumbnail Filename: \(thumbnailFileName)")
-//    DebugPrint.verbose("  Contains \(moments!.count) Moments with ID as follows:")
+//    CCLog.verbose("FoodieJournal ID: \(getUniqueIdentifier())")
+//    CCLog.verbose("  Title: \(title)")
+//    CCLog.verbose("  Thumbnail Filename: \(thumbnailFileName)")
+//    CCLog.verbose("  Contains \(moments!.count) Moments with ID as follows:")
 //    
 //    for moment in moments! {
-//      DebugPrint.verbose("    \(moment.getUniqueIdentifier())")
+//      CCLog.verbose("    \(moment.getUniqueIdentifier())")
 //    }
   }
   
@@ -639,10 +639,10 @@ extension FoodieJournal: FoodiePrefetchDelegate {
       
       if journal.thumbnailObj == nil {
         // No Thumbnail Object, so assume the Journal itself needs to be retrieved
-        DebugPrint.verbose("doPrefetch journal.selfRetrieval")
+        CCLog.verbose("doPrefetch journal.selfRetrieval")
         journal.selfRetrieval() { error in
           if let journalError = error {
-            DebugPrint.assert("On prefetch, Journal.selfRetrieval() callback with error: \(journalError.localizedDescription)")
+            CCLog.assert("On prefetch, Journal.selfRetrieval() callback with error: \(journalError.localizedDescription)")
           }
           callback?(context)
         }
@@ -650,7 +650,7 @@ extension FoodieJournal: FoodiePrefetchDelegate {
       } else {
         journal.contentRetrievalRequest(fromMoment: 0, forUpTo: Constants.MomentsToBufferAtATime) { error in
           if let journalError = error {
-            DebugPrint.assert("On prefetch, Journal.contentRetrieval() callback with error: \(journalError.localizedDescription)")
+            CCLog.assert("On prefetch, Journal.contentRetrieval() callback with error: \(journalError.localizedDescription)")
           }
           callback?(context)
         }

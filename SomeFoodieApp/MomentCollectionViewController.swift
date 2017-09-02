@@ -40,7 +40,7 @@ class MomentCollectionViewController: UICollectionViewController {
       let cell = collectionView!.cellForItem(at: indexPath) as! MomentCollectionViewCell
 
       guard let momentArray = workingJournal.moments else {
-        DebugPrint.fatal("No Moments but Moment Thumbnail long pressed? What?")
+        CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
       }
       
       // Clear the last thumbnail selection if any
@@ -79,7 +79,7 @@ class MomentCollectionViewController: UICollectionViewController {
     super.viewDidLoad()
 
     guard let momentHeightUnwrapped = momentHeight else {
-      DebugPrint.fatal("nil momentHeight in Moment Collection View Controller")
+      CCLog.fatal("nil momentHeight in Moment Collection View Controller")
     }
 //    // Uncomment the following line to preserve selection between presentations
 //    self.clearsSelectionOnViewWillAppear = false
@@ -105,7 +105,7 @@ class MomentCollectionViewController: UICollectionViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    DebugPrint.log("MomentCollectionViewController.didReceiveMemoryWarning")
+    CCLog.warning("MomentCollectionViewController.didReceiveMemoryWarning")
   }
 }
 
@@ -132,12 +132,12 @@ extension MomentCollectionViewController {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath) as! MomentCollectionViewCell
     
     guard let momentArray = workingJournal.moments else {
-      DebugPrint.log("No Moments for workingJournal")
+      CCLog.debug("No Moments for workingJournal")
       return cell
     }
     
     if indexPath.row >= momentArray.count {
-      DebugPrint.assert("indexPath.row >= momentArray.count")
+      CCLog.assert("indexPath.row >= momentArray.count")
       return cell
     }
     
@@ -147,25 +147,25 @@ extension MomentCollectionViewController {
 //    moment.fetchIfNeededInBackground { (object, error) in
 //      
 //      if let err = error {
-//        DebugPrint.fatal("Error fetching moment: \(err)")
+//        CCLog.fatal("Error fetching moment: \(err)")
 //      }
 //      
 //      guard let moment = object as? FoodieMoment else {
-//        DebugPrint.fatal("fetched Object is not a FoodieMoment")
+//        CCLog.fatal("fetched Object is not a FoodieMoment")
 //      }
 //      
 //      guard let file = moment.media else {
-//        DebugPrint.fatal("Moment Media is nil")
+//        CCLog.fatal("Moment Media is nil")
 //      }
 //      
 //      file.getDataInBackground { (data, error) in
 //        
 //        if let err = error {
-//          DebugPrint.fatal("Error getting media data: \(err)")
+//          CCLog.fatal("Error getting media data: \(err)")
 //        }
 //        
 //        guard let imageData = data else {
-//          DebugPrint.fatal("nil data obtained from media file")
+//          CCLog.fatal("nil data obtained from media file")
 //        }
 //        
 //        if let image = UIImage(data: imageData) {
@@ -173,11 +173,11 @@ extension MomentCollectionViewController {
 //          if let currentCell = collectionView.cellForItem(at: indexPath) as? MomentCollectionViewCell {
 //            currentCell.momentButton.setImage(image, for: .normal)
 //          } else {
-//            DebugPrint.log("MomentCollectionViewCell not visible or indexPath is out of range")
+//            CCLog.debug("MomentCollectionViewCell not visible or indexPath is out of range")
 //          }
 //          
 //        } else {
-//          DebugPrint.fatal("Error getting image from image data")
+//          CCLog.fatal("Error getting image from image data")
 //        }
 //      }
 //    }
@@ -216,7 +216,7 @@ extension MomentCollectionViewController {
     case UICollectionElementKindSectionFooter:
       reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.footerElementReuseId, for: indexPath)
     default:
-      DebugPrint.fatal("Unrecognized Kind '\(kind)' for Supplementary Element")
+      CCLog.fatal("Unrecognized Kind '\(kind)' for Supplementary Element")
     }
     return reusableView
   }
@@ -228,11 +228,11 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
     guard let momentArray = workingJournal.moments else {
-      DebugPrint.log("No Moments for workingJournal")
+      CCLog.debug("No Moments for workingJournal")
       return momentSizeDefault
     }
     if indexPath.row >= momentArray.count {
-      DebugPrint.assert("indexPath.row >= momentArray.count")
+      CCLog.assert("indexPath.row >= momentArray.count")
       return momentSizeDefault
     }
     let moment = momentArray[indexPath.row]

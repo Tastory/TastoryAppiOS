@@ -132,7 +132,7 @@ class VenueTableViewController: UIViewController {
       } else if let currentLocation = self.currentLocation {
         FoodieVenue.searchFoursquare(for: venueNameToSearch, at: currentLocation, withBlock: self.venueSearchCallback)
       } else {
-        DebugPrint.error("No useful location to base the search on")
+        CCLog.warning("No useful location to base the search on")
         AlertDialog.present(from: self, title: "Cannot Determine Location", message: "Please enter a location to perform Venue Search")
         self.locationSearchBar.placeholder = Constants.defaultLocationPlaceholderText
         self.locationSearchBar.setNeedsDisplay()
@@ -220,7 +220,7 @@ class VenueTableViewController: UIViewController {
     LocationWatch.global.get { (location, error) in
       if let error = error {
         self.locationErrorDialog(message: "LocationWatch returned error - \(error.localizedDescription)", comment: "Alert Dialogue Message")
-        DebugPrint.error("LocationWatch returned error - \(error.localizedDescription)")
+        CCLog.warning("LocationWatch returned error - \(error.localizedDescription)")
         return
       }
       
@@ -251,7 +251,7 @@ class VenueTableViewController: UIViewController {
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
-    DebugPrint.log("JournalViewController.didReceiveMemoryWarning")
+    CCLog.warning("JournalViewController.didReceiveMemoryWarning")
   }
 }
 
@@ -319,7 +319,7 @@ extension VenueTableViewController: UITableViewDataSource {
     let cell = tableView.dequeueReusableCell(withIdentifier: "venueTableCell", for: indexPath)
     
     guard let venueResultArray = venueResultArray else {
-      DebugPrint.assert("venueResultArray = nil even tho numberOfRowsInSection = \(tableView.numberOfRows(inSection: indexPath.section))")
+      CCLog.assert("venueResultArray = nil even tho numberOfRowsInSection = \(tableView.numberOfRows(inSection: indexPath.section))")
       internalErrorDialog()
       cell.textLabel?.text = ""
       cell.detailTextLabel?.text = ""
@@ -361,7 +361,7 @@ extension VenueTableViewController: UITableViewDataSource {
 extension VenueTableViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     guard let venueResultArray = venueResultArray else {
-      DebugPrint.assert("venueResultArray = nil not expected when user didSelectRowAt \(indexPath.row)")
+      CCLog.assert("venueResultArray = nil not expected when user didSelectRowAt \(indexPath.row)")
       internalErrorDialog()
       return
     }

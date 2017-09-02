@@ -118,7 +118,7 @@ class FoodieObject {
   
     init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
       self = errorCode
-      DebugPrint.error(errorDescription ?? "", function: function, file: file, line: line)
+      CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
     }
   }
   
@@ -183,8 +183,8 @@ class FoodieObject {
       break
       
     default:
-      DebugPrint.verbose("FoodieObject.markPendingRetrieval() attempted from operationState = \(protectedOperationState.rawValue)")
-      //DebugPrint.assert("FoodieObject.markPendingRetrieval. Invalid state transition")
+      CCLog.verbose("FoodieObject.markPendingRetrieval() attempted from operationState = \(protectedOperationState.rawValue)")
+      //CCLog.assert("FoodieObject.markPendingRetrieval. Invalid state transition")
     }
     
     SwiftMutex.unlock(&operationStateMutex)
@@ -249,7 +249,7 @@ class FoodieObject {
 //        
 //      } else {
 //        // Unexpected state combination
-//        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
+//        CCLog.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
 //      }
 //    }
 //      
@@ -265,7 +265,7 @@ class FoodieObject {
 //        
 //      } else {
 //        // Unexpected state combination
-//        DebugPrint.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
+//        CCLog.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
 //      }
 //    }
   }
@@ -274,7 +274,7 @@ class FoodieObject {
   // Function when all child saves have completed
   func savesCompletedFromAllChildren(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
     
-    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.savesCompletedFromAllChildren to Location: \(location)")
+    CCLog.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.savesCompletedFromAllChildren to Location: \(location)")
     
     // If children all came back and there is error, unwind state and call callback
     if protectedOperationError != nil {
@@ -291,7 +291,7 @@ class FoodieObject {
           } else {
             // TODO investigate if it is possible to have success = false and no error 
             // I have seen it happened once
-            DebugPrint.assert("saveObject failed but block contained no Error")
+            CCLog.assert("saveObject failed but block contained no Error")
           }
         }
         
@@ -320,7 +320,7 @@ class FoodieObject {
 //      // There must have been an unwind in state due to error
 //    } else {
 //      // Unexpected state transition. Barf
-//      DebugPrint.fatal("Unable to proceed due to unexpected state transition. Location: \(location), State: \(operationState)")
+//      CCLog.fatal("Unable to proceed due to unexpected state transition. Location: \(location), State: \(operationState)")
 //    }
 //    return true
 //  }
@@ -349,7 +349,7 @@ class FoodieObject {
 //      case .objectModified:
 //        protectedOperationState = .savingToLocal
 //      default:
-//        DebugPrint.assert("Illegal State Transition. Save to Local attempt not from .objectModified state. Current State = \(operationState)")
+//        CCLog.assert("Illegal State Transition. Save to Local attempt not from .objectModified state. Current State = \(operationState)")
 //        return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
 //      }
 //      
@@ -361,7 +361,7 @@ class FoodieObject {
 //      case .savedToLocal:
 //        protectedOperationState = .savingToServer
 //      default:
-//        DebugPrint.assert("Illegal State Transition. Save to Sever attempt not from .savedToLocal state. Current State = \(operationState)")
+//        CCLog.assert("Illegal State Transition. Save to Sever attempt not from .savedToLocal state. Current State = \(operationState)")
 //        return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
 //      }
 //    default:
@@ -378,7 +378,7 @@ class FoodieObject {
                  withName name: String? = nil,
                  withBlock callback: BooleanErrorBlock?) {
     
-    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.saveChild of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location)")
+    CCLog.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.saveChild of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location)")
     
     SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
@@ -390,7 +390,7 @@ class FoodieObject {
         if let hasError = error {
           self.protectedOperationError = hasError
         } else {
-          DebugPrint.assert("saveChild failed but block contained no Error")
+          CCLog.assert("saveChild failed but block contained no Error")
         }
       }
       
@@ -411,10 +411,10 @@ class FoodieObject {
   // Function to save this object
   func saveObject(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
     
-    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.saveObject to Location: \(location)")
+    CCLog.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.saveObject to Location: \(location)")
     
     guard let delegateObj = delegate else {
-      DebugPrint.fatal("delegate not expected to be nil in saveObject()")
+      CCLog.fatal("delegate not expected to be nil in saveObject()")
     }
     switch location {
     case .local:
@@ -429,10 +429,10 @@ class FoodieObject {
   
   // Function to delete this object
   func deleteObject(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
-    DebugPrint.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject")
+    CCLog.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject")
     
     guard let delegateObj = delegate else {
-      DebugPrint.fatal("delegate not expected to be nil in deleteObject()")
+      CCLog.fatal("delegate not expected to be nil in deleteObject()")
     }
     switch location {
     case .local:
@@ -472,7 +472,7 @@ class FoodieObject {
         if let hasError = error {
           self.protectedOperationError = hasError
         } else {
-          DebugPrint.assert("deleteChild failed but block contained no Error")
+          CCLog.assert("deleteChild failed but block contained no Error")
         }
       }
       
@@ -510,7 +510,7 @@ class FoodieObject {
     
     if needRetrieval {
       guard let delegateObj = delegate else {
-        DebugPrint.fatal("delegate not expected to be nil in retrieveIfPending()")
+        CCLog.fatal("delegate not expected to be nil in retrieveIfPending()")
       }
       delegateObj.retrieveRecursive(forceAnyways: false) { error in
         
@@ -546,7 +546,7 @@ class FoodieObject {
     case .notAvailable, .objectSynced:
       retrieved = true
     default:
-      DebugPrint.error("FoodieObject.checkRetrieved() state unexpected")
+      CCLog.warning("FoodieObject.checkRetrieved() state unexpected")
     }
     
     SwiftMutex.unlock(&operationStateMutex)
