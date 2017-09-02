@@ -118,7 +118,8 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     
     // Swifty Cam Setup
     cameraDelegate = self
-
+    doubleTapCameraSwitch = false
+    
     if let imagePicker = imagePicker {
       view.bringSubview(toFront: imagePicker)
     }

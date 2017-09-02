@@ -303,29 +303,6 @@ class FoodieObject {
   }
   
   
-  // Function for parent to inquire if this object's own save have completed
-//  func isSaveCompleted(to location: StorageLocation) -> Bool {
-//    
-//    if ((location == .local) && (operationState == .savingToLocal)) ||
-//      ((location == .server) && (operationState == .savingToServer)) {
-//      // Save still in progress
-//      return false
-//    } else if ((location == .local) && (operationState == .savedToLocal)) ||
-//      ((location == .server) && (operationState == .savedToServer)) {
-//      // Saved!
-//    } else if (operationState == .objectSynced) {
-//      // Nothing needs to be done to begin with
-//    } else if ((location == .local) && (operationState == .objectModified)) ||
-//      ((location == .server) && (operationState == .savedToLocal)) {
-//      // There must have been an unwind in state due to error
-//    } else {
-//      // Unexpected state transition. Barf
-//      CCLog.fatal("Unable to proceed due to unexpected state transition. Location: \(location), State: \(operationState)")
-//    }
-//    return true
-//  }
-  
-  
   // Function for state transition at the beginning of saveRecursive
   func saveStateTransition(to location: StorageLocation) -> (success: Bool?, error: LocalizedError?) {
 

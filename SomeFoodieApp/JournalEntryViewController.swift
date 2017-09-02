@@ -71,7 +71,7 @@ class JournalEntryViewController: UITableViewController {
     self.present(viewController, animated: true)
   }
   
-  @IBAction func testSaveJournal(_ sender: Any) {
+  @IBAction func testSaveJournal(_ sender: UIButton) {
 
     workingJournal?.title = titleTextField?.text
     workingJournal?.journalURL = linkTextField?.text
@@ -93,7 +93,6 @@ class JournalEntryViewController: UITableViewController {
 
     //making sure that the operation state didnt change between checking and setting the flag
     SwiftMutex.lock(&self.saveStateMutex)
-
     if(isSaveInProgress)
     {
       triggerSaveJournal = true
@@ -106,13 +105,21 @@ class JournalEntryViewController: UITableViewController {
     }
   }
 
-  @IBAction func editedTitle(_ sender: Any) {
-    workingJournal?.title = titleTextField?.text
+  @IBAction func editedTitle(_ sender: UITextField) {
+    guard let text = sender.text, let journal = workingJournal, text != journal.title else {
+      // Nothing changed, don't do anything
+      return
+    }
+    journal.title = text
     preSave(nil, withBlock: nil)
   }
   
-  @IBAction func editedLink(_ sender: Any) {
-    workingJournal?.journalURL = linkTextField?.text
+  @IBAction func editedLink(_ sender: UITextField) {
+    guard let text = sender.text, let journal = workingJournal, text != journal.journalURL else {
+      // Nothing changed, don't do anything
+      return
+    }
+    journal.journalURL = text
     preSave(nil, withBlock: nil)
   }
   
@@ -204,6 +211,10 @@ class JournalEntryViewController: UITableViewController {
     
     // Save Journal to Local
     journal.saveRecursive(to: .local, withName: "workingJournal") { (_, error) -> Void in
+      defer {
+        // If there's pending Journal Save, give it a try after callback() successful or not
+        if self.triggerSaveJournal { self.saveJournalToServer() }
+      }
       
       if let error = error {
         SwiftMutex.lock(&self.saveStateMutex)
@@ -235,8 +246,6 @@ class JournalEntryViewController: UITableViewController {
         }
         
         CCLog.verbose("Completed pre-saving \(foodieObject.foodieObjectType()) to Server")
-        // If there's pending Journal Save, do it now
-        if self.triggerSaveJournal { self.saveJournalToServer() }
         callback?(nil)
       }
     }
