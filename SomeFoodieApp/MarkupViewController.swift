@@ -34,8 +34,16 @@ class MarkupViewController: UIViewController {
     static let SizeSliderDefaultFont: Float = 48.0
   }
   
+  let FontChoiceArray: [String] = [
+    "BoldSystemFont",
+    "Futura-Medium",
+    "BodoniSvtyTwoOSITCTT-Book",
+    "Noteworthy-Light"
+  ]
+  
   
   // MARK: - Public Instance Variables
+  var fontArrayIndex = 0
   var mediaObj: FoodieMedia?
   var mediaLocation: CLLocation?
   var markupReturnDelegate: MarkupReturnDelegate?
@@ -67,6 +75,8 @@ class MarkupViewController: UIViewController {
   @IBOutlet weak var textButton: UIButton!
   @IBOutlet weak var drawButton: UIButton!
   @IBOutlet weak var foodButton: UIButton!
+  @IBOutlet weak var bgndButton: UIButton!
+  @IBOutlet weak var alignButton: UIButton!
   @IBOutlet weak var deleteButton: UIButton!
   @IBOutlet weak var undoButton: UIButton!
   @IBOutlet weak var soundButton: UIButton!
@@ -80,8 +90,13 @@ class MarkupViewController: UIViewController {
   }
   
   @IBAction func textButtonAction(_ sender: UIButton) {
-    jotViewController.state = JotViewState.editingText
-    undoButton.isHidden = true
+    if jotViewController.state != JotViewState.editingText {
+      jotViewController.state = JotViewState.editingText
+      undoButton.isHidden = true
+    } else {
+      jotViewController.font = getNextFont(size: jotViewController.fontSize)
+      CCLog.verbose("New Font Selected: \(jotViewController.font.fontName)")
+    }
   }
 
   
@@ -90,8 +105,43 @@ class MarkupViewController: UIViewController {
       jotViewController.state = JotViewState.drawing
       deleteButton.isHidden = true
       undoButton.isHidden = false
-      
     }
+  }
+  
+  @IBAction func bgndButtonAction(_ sender: UIButton) {
+    var whiteValue = jotViewController.whiteValue
+    var alphaValue = jotViewController.alphaValue
+    
+    if whiteValue == 0.0, alphaValue == 0.0 {
+      whiteValue = 0.0
+      alphaValue = 0.3
+    } else if whiteValue == 0.0, alphaValue == 0.3 {
+      whiteValue = 1.0
+      alphaValue = 0.3
+    } else if whiteValue == 1.0, alphaValue == 0.3 {
+      whiteValue = 0.0
+      alphaValue = 0.0
+    }
+    
+    jotViewController.whiteValue = whiteValue
+    jotViewController.alphaValue = alphaValue
+  }
+  
+  @IBAction func alignButton(_ sender: UIButton) {
+    var alignment = jotViewController.textAlignment
+    
+    switch alignment {
+    case .left:
+      alignment = .center
+    case .center:
+      alignment = .right
+    case .right:
+      alignment = .left
+    default:
+      alignment = .left
+    }
+    
+    jotViewController.textAlignment = alignment
   }
   
   
@@ -154,9 +204,7 @@ class MarkupViewController: UIViewController {
   
   
   @IBAction func sizeSliderChanged(_ sender: UISlider) {
-    
     let fontSize = CGFloat(sender.value)
-    jotViewController.font = UIFont.boldSystemFont(ofSize: fontSize)
     jotViewController.fontSize = fontSize
   }
   
@@ -272,6 +320,9 @@ class MarkupViewController: UIViewController {
    }
   }
 
+  
+  // MARK - Public Instance Functions
+  
   func displayJournalSelection( newJournalHandler: @escaping (UIAlertAction) -> Swift.Void, addToCurrentHandler: @escaping (UIAlertAction) -> Swift.Void) {
     // Display Action Sheet to ask user if they want to add this Moment to current Journal, or a new one, or Cancel
     // Create a button and associated Callback for adding the Moment to a new Journal
@@ -374,8 +425,18 @@ class MarkupViewController: UIViewController {
     delegate.markupComplete(markedupMoment: markedUpMoment, suggestedJournal: suggestedJournal)
   }
 
+  
   // MARK: - Private Instance Functions
-
+  private func getNextFont(size: CGFloat) -> UIFont {
+    fontArrayIndex += 1
+    if fontArrayIndex >= FontChoiceArray.count { fontArrayIndex = 0 }
+    if fontArrayIndex != 0, let newFont = UIFont(name: FontChoiceArray[fontArrayIndex], size: size) {
+      return newFont
+    } else {
+      return UIFont.boldSystemFont(ofSize: size)
+    }
+  }
+  
   // Generic error dialog box to the user on internal errors
   func internalErrorDialog() {
     if self.presentedViewController == nil {
@@ -457,10 +518,10 @@ class MarkupViewController: UIViewController {
     jotViewController.delegate = self
     jotViewController.state = JotViewState.text
     jotViewController.textColor = UIColor.black
-    jotViewController.font = UIFont.boldSystemFont(ofSize: CGFloat(Constants.SizeSliderDefaultFont))
+    jotViewController.font = getNextFont(size: CGFloat(Constants.SizeSliderDefaultFont))
     jotViewController.fontSize = CGFloat(Constants.SizeSliderDefaultFont)
-    //jotViewController.textEditingInsets = UIEdgeInsetsMake(12.0, 6.0, 0.0, 6.0)  // Constraint from JotDemo causes conflicts
-    //jotViewController.initialTextInsets = UIEdgeInsetsMake(6.0, 6.0, 6.0, 6.0)  // Constraint from JotDemo causes conflicts
+    jotViewController.whiteValue = 0.0
+    jotViewController.alphaValue = 0.0
     jotViewController.fitOriginalFontSizeToViewWidth = true
     jotViewController.textAlignment = .left
     jotViewController.drawingColor = UIColor.cyan

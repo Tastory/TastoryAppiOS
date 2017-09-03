@@ -55,6 +55,8 @@ NSString const* kDate = @"Date";
         _textAlignment = self.textView.textAlignment;
         _textColor = self.textView.textColor;
         _textString = @"";
+        _whiteValue = self.textView.whiteValue;
+        _alphaValue = self.textView.alphaValue;
         _drawingColor = self.drawView.strokeColor;
         _drawingStrokeWidth = self.drawView.strokeWidth;
         _textEditingInsets = self.textEditView.textEditingInsets;
@@ -206,7 +208,19 @@ NSString const* kDate = @"Date";
 	self.textView.textColor =
 	self.textEditView.textColor = textColor;
 }
+  
+- (void)setWhiteValue:(CGFloat)whiteValue
+{
+  _whiteValue = whiteValue;
+  self.textView.whiteValue = whiteValue;
+}
 
+- (void)setAlphaValue:(CGFloat)alphaValue
+{
+  _alphaValue = alphaValue;
+  self.textView.alphaValue = alphaValue;
+}
+  
 - (void)setInitialTextInsets:(UIEdgeInsets)initialTextInsets
 {
 	_initialTextInsets = initialTextInsets;

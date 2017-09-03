@@ -37,6 +37,8 @@
     _scale = 1.f;
     _font = [UIFont systemFontOfSize:fontSize];
     _textAlignment = NSTextAlignmentCenter;
+    _whiteValue = 0.0;
+    _alphaValue = 0.0;
     _textColor = [UIColor blackColor];
     
     _labels = [NSMutableArray new];
@@ -116,6 +118,24 @@
     }
 }
 
+- (void)setWhiteValue:(CGFloat)whiteValue
+{
+  _whiteValue = whiteValue;
+  if (_selectedLabel) {
+    self.selectedLabel.layer.backgroundColor = [[UIColor colorWithWhite: whiteValue alpha: self.alphaValue] CGColor];
+    [self.selectedLabel autosize];
+  }
+}
+  
+- (void)setAlphaValue:(CGFloat)alphaValue
+{
+  _alphaValue = alphaValue;
+  if (_selectedLabel) {
+    self.selectedLabel.layer.backgroundColor = [[UIColor colorWithWhite: self.whiteValue alpha: alphaValue] CGColor];
+    [self.selectedLabel autosize];
+  }
+}
+  
 - (void)setInitialTextInsets:(UIEdgeInsets)initialTextInsets
 {
 	_initialTextInsets = initialTextInsets;
@@ -199,6 +219,7 @@
 	self.selectedLabel.unscaledFontSize = self.font.pointSize;
 	self.selectedLabel.textColor = self.textColor;
 	self.selectedLabel.textAlignment = self.textAlignment;
+  self.selectedLabel.layer.backgroundColor = [[UIColor colorWithWhite: self.whiteValue alpha: self.alphaValue] CGColor];
 	self.selectedLabel.center = point;
 	[self.selectedLabel autosize];
 	[self.labels addObject:self.selectedLabel];

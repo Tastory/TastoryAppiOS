@@ -63,6 +63,12 @@
 @property (nonatomic, assign) NSTextAlignment textAlignment;
 
 /**
+ *  Greyscale & alpha value of the textView background color
+ */
+@property (nonatomic, assign) CGFloat whiteValue;
+@property (nonatomic, assign) CGFloat alphaValue;
+
+/**
  *  The initial insets of the text displayed in the JotTextView, which only
  *  applies if fitOriginalFontSizeToViewWidth is true. If fitOriginalFontSizeToViewWidth
  *  is true, then initialTextInsets sets the initial insets of the displayed text relative to the

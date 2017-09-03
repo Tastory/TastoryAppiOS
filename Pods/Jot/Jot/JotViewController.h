@@ -115,6 +115,12 @@ typedef NS_ENUM(NSUInteger, JotViewState){
 @property (nonatomic, assign) NSTextAlignment textAlignment;
 
 /**
+ *  Greyscale & alpha value of the textView background color
+ */
+@property (nonatomic, assign) CGFloat whiteValue;
+@property (nonatomic, assign) CGFloat alphaValue;
+  
+/**
  *  Sets the stroke color for drawing. Each drawing path can have its own stroke color.
  */
 @property (nonatomic, strong) UIColor *drawingColor;

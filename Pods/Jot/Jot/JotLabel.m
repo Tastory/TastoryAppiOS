@@ -23,12 +23,13 @@ NSString *const kLabelColorBlue = @"LabelColorBlue";
 NSString *const kLabelColorAlpha = @"LabelColorAlpha";
 NSString *const kLabelPointX = @"LabelPointX";
 NSString *const kLabelPointY = @"LabelPointY";
+NSString *const kBgWhiteValue = @"BgWhiteValue";
+NSString *const kBgAlphaValue = @"BgAlphaValue";
 
 
 @interface JotLabel ()
 
 @property (nonatomic, strong) CAShapeLayer *borderLayer;
-
 @end
 
 @implementation JotLabel
@@ -40,6 +41,9 @@ NSString *const kLabelPointY = @"LabelPointY";
 		_initialRotationTransform = CGAffineTransformIdentity;
 		_scale = 1;
 		_unscaledFrame = self.frame;
+    
+    self.layer.backgroundColor = [[UIColor colorWithWhite:0.0 alpha:0.0] CGColor];
+    self.layer.cornerRadius = 5.0;
 	}
 	return self;
 }
@@ -65,8 +69,8 @@ NSString *const kLabelPointY = @"LabelPointY";
 		CGPoint labelCenter = self.center;
 		CGRect scaledFrame = CGRectMake(0.f,
 										0.f,
-										_unscaledFrame.size.width * self.scale * 1.05f,
-										_unscaledFrame.size.height * self.scale * 1.05f);
+										_unscaledFrame.size.width * self.scale * 1.03f,
+										_unscaledFrame.size.height * self.scale * 1.03f);
 		CGAffineTransform labelTransform = self.transform;
 		self.transform = CGAffineTransformIdentity;
 		self.frame = scaledFrame;
@@ -86,8 +90,8 @@ NSString *const kLabelPointY = @"LabelPointY";
 		CGPoint labelCenter = self.center;
 		CGRect scaledFrame = CGRectMake(0.f,
 										0.f,
-										_unscaledFrame.size.width * _scale * 1.05f,
-											 _unscaledFrame.size.height* _scale * 1.05f);
+										_unscaledFrame.size.width * _scale * 1.03f,
+											 _unscaledFrame.size.height* _scale * 1.03f);
 		CGFloat currentFontSize = self.unscaledFontSize * _scale;
 		self.font = [self.font fontWithSize:currentFontSize];
 		
@@ -128,9 +132,10 @@ NSString *const kLabelPointY = @"LabelPointY";
 	CGSize originalSize = [temporarySizingLabel sizeThatFits:insetViewRect.size];
 	temporarySizingLabel.frame = CGRectMake(0.f,
 											0.f,
-											originalSize.width * 1.05f,
-											originalSize.height * 1.05f);
+											originalSize.width * 1.03f,
+											originalSize.height * 1.03f);
 	temporarySizingLabel.center = self.center;
+  
 	self.unscaledFrame = temporarySizingLabel.frame;
 }
 
@@ -162,6 +167,12 @@ NSString *const kLabelPointY = @"LabelPointY";
 	dic[kRotation] = @(atan2f(self.transform.b, self.transform.a)); // Tan 2 Float?
 	dic[kScale] = @(self.scale);  // CGFloat
 	dic[kFitWidth] = @(self.fitOriginalFontSizeToViewWidth);  // Bool
+  
+  CGFloat bgWhiteValue;
+  CGFloat bgAlphaValue;
+  [[UIColor colorWithCGColor: self.layer.backgroundColor] getWhite: &bgWhiteValue alpha: &bgAlphaValue];
+  dic[kBgWhiteValue] = @(bgWhiteValue);
+  dic[kBgAlphaValue] = @(bgAlphaValue);
 	return dic;
 }
 
@@ -211,6 +222,9 @@ NSString *const kLabelPointY = @"LabelPointY";
 		self.fitOriginalFontSizeToViewWidth = YES;
 		self.numberOfLines = 0;
 	}
+  if (dictionary[kBgWhiteValue] && dictionary[kBgAlphaValue]) {
+    self.layer.backgroundColor = [[UIColor colorWithWhite: [dictionary[kBgWhiteValue] floatValue] alpha: [dictionary[kBgAlphaValue] floatValue]] CGColor];
+  }
 	
 	[self refreshFont];
 }
