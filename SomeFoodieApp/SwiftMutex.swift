@@ -82,17 +82,17 @@ struct SwiftMutex {
       }
       
       // Start the timer measuring how long this lock is going to be held
-      timerUUID = arc4random()
-      CCLog.verbose("Lock heldTimer UUID - \(timerUUID)")
-      heldtimer = Timer.scheduledTimer(withTimeInterval: Constant.secondsMutexConsideredTooLong,
-                                       repeats: true) { timer in
-        CCLog.warning("\(thread)Held mutex for +100ms", function: function, file: file, line: line)
-      }
+//      timerUUID = arc4random()
+//      CCLog.verbose("Lock heldTimer UUID - \(timerUUID)")
+//      heldtimer = Timer.scheduledTimer(withTimeInterval: Constant.secondsMutexConsideredTooLong,
+//                                       repeats: true) { timer in
+//        CCLog.warning("\(thread)Held mutex for +100ms", function: function, file: file, line: line)
+//      }
       
       // Record whose the lock holder
-      lockHoldingFunction = function
-      lockHoldingFile = file
-      lockHoldingLine = line
+//      lockHoldingFunction = function
+//      lockHoldingFile = file
+//      lockHoldingLine = line
     }
     
     func unlock() {
@@ -101,15 +101,15 @@ struct SwiftMutex {
         CCLog.assert("pthread_mutex_unlock returned \(rtn)")
       }
       // Stop the holding timer
-      CCLog.verbose("Unlock heldTimer UUID - \(timerUUID)")
-      if let timer = heldtimer {
-        timer.invalidate()
-        heldtimer = nil
-      }
+//      CCLog.verbose("Unlock heldTimer UUID - \(timerUUID)")
+//      if let timer = heldtimer {
+//        timer.invalidate()
+//        heldtimer = nil
+//      }
       // Remove lock hold tracking variables
-      lockHoldingFile = ""
-      lockHoldingFunction = ""
-      lockHoldingLine = 0
+//      lockHoldingFile = ""
+//      lockHoldingFunction = ""
+//      lockHoldingLine = 0
     }
   }
   

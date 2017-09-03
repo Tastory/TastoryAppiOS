@@ -236,38 +236,38 @@ class FoodieObject {
   // Function for state transition when all saves have completed
   func saveCompleteStateTransition(to location: StorageLocation) {
     
-//    // State Transition for Save Error
-//    if protectedOperationError != nil {
-//      
-//      if (location == .local) && (operationState == .savingToLocal) {
-//        // Dial back the state
-//        protectedOperationState = .objectModified
-//        
-//      } else if (location == .server) && (operationState == .savingToServer) {
-//        // Dial back the state
-//        protectedOperationState = .savedToLocal
-//        
-//      } else {
-//        // Unexpected state combination
-//        CCLog.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
-//      }
-//    }
-//      
-//    // State Transition for Success
-//    else {
-//      if (location == .local) && (operationState == .savingToLocal) {
-//        // Dial back the state
-//        protectedOperationState = .savedToLocal
-//        
-//      } else if (location == .server) && (operationState == .savingToServer) {
-//        // Dial back the state
-//        protectedOperationState = .objectSynced
-//        
-//      } else {
-//        // Unexpected state combination
-//        CCLog.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
-//      }
-//    }
+    // State Transition for Save Error
+    if protectedOperationError != nil {
+      
+      if (location == .local) {
+        // Dial back the state
+        protectedOperationState = .objectModified
+        
+      } else if (location == .server) {
+        // Dial back the state
+        protectedOperationState = .savedToLocal
+        
+      } else {
+        // Unexpected state combination
+        CCLog.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
+      }
+    }
+      
+    // State Transition for Success
+    else {
+      if (location == .local) {
+        // Dial back the state
+        protectedOperationState = .savedToLocal
+        
+      } else if (location == .server) {
+        // Dial back the state
+        protectedOperationState = .objectSynced
+        
+      } else {
+        // Unexpected state combination
+        CCLog.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
+      }
+    }
   }
   
   

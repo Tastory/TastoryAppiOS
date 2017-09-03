@@ -132,7 +132,7 @@ class JournalEntryViewController: UITableViewController {
     self.workingJournal?.saveRecursive(to: .server) {(success, error) in
       if success {
         // Unpin all pre saves since Story now on Server
-        FoodieJournal.unpinAllObjectsInBackground(withName: "workingJournal")
+        FoodieJournal.unpinAllObjectsInBackground(withName: "workingJournal")  // Should we really do this? Don't we want the content in cache for immediate view backs??
         self.workingJournal = nil
         FoodieJournal.setJournal(journal: nil)
         
@@ -211,18 +211,17 @@ class JournalEntryViewController: UITableViewController {
     
     // Save Journal to Local
     journal.saveRecursive(to: .local, withName: "workingJournal") { (_, error) -> Void in
-      defer {
-        // If there's pending Journal Save, give it a try after callback() successful or not
-        if self.triggerSaveJournal { self.saveJournalToServer() }
-      }
       
       if let error = error {
+        CCLog.warning("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
+        callback?(error)
+        
         SwiftMutex.lock(&self.saveStateMutex)
         self.isSaveInProgress = false
         SwiftMutex.unlock(&self.saveStateMutex)
         
-        CCLog.warning("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
-        callback?(error)
+        // If there's pending Journal Save, give it a try after callback() successful or not
+        if self.triggerSaveJournal { self.saveJournalToServer() }
         return
       }
       
@@ -230,6 +229,13 @@ class JournalEntryViewController: UITableViewController {
       guard let foodieObject = foodieObject else {
         CCLog.debug("No Foodie Object supplied on preSave(), skipping Object Server save")
         callback?(nil)
+        
+        SwiftMutex.lock(&self.saveStateMutex)
+        self.isSaveInProgress = false
+        SwiftMutex.unlock(&self.saveStateMutex)
+        
+        // If there's pending Journal Save, give it a try after callback() successful or not
+        if self.triggerSaveJournal { self.saveJournalToServer() }
         return
       }
       
@@ -242,11 +248,25 @@ class JournalEntryViewController: UITableViewController {
         if let error = error {
           CCLog.warning("\(foodieObject.foodieObjectType()) pre-save to Server resulted in error - \(error.localizedDescription)")
           callback?(error)
+          
+          SwiftMutex.lock(&self.saveStateMutex)
+          self.isSaveInProgress = false
+          SwiftMutex.unlock(&self.saveStateMutex)
+          
+          // If there's pending Journal Save, give it a try after callback() successful or not
+          if self.triggerSaveJournal { self.saveJournalToServer() }
           return
         }
         
         CCLog.verbose("Completed pre-saving \(foodieObject.foodieObjectType()) to Server")
         callback?(nil)
+        
+        SwiftMutex.lock(&self.saveStateMutex)
+        self.isSaveInProgress = false
+        SwiftMutex.unlock(&self.saveStateMutex)
+        
+        // If there's pending Journal Save, give it a try after callback() successful or not
+        if self.triggerSaveJournal { self.saveJournalToServer() }
       }
     }
   }
