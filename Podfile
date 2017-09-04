@@ -1,7 +1,7 @@
 # Uncomment the next line to define a global platform for your project
 # platform :ios, '9.0'
 
-target 'SomeFoodieApp' do
+target 'EatellyApp' do
   # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
   use_frameworks!
 
@@ -17,12 +17,12 @@ target 'SomeFoodieApp' do
   pod 'Fabric'
   pod 'Crashlytics'
 
-  target 'SomeFoodieAppTests' do
+  target 'EatellyAppTests' do
     inherit! :search_paths
     # Pods for testing
   end
 
-  target 'SomeFoodieAppUITests' do
+  target 'EatellyAppUITests' do
     inherit! :search_paths
     # Pods for testing
   end

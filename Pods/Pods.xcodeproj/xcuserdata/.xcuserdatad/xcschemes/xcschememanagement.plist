@@ -49,17 +49,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-SomeFoodieApp.xcscheme</key>
+		<key>Pods-EatellyApp.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-SomeFoodieAppTests.xcscheme</key>
+		<key>Pods-EatellyAppTests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-SomeFoodieAppUITests.xcscheme</key>
+		<key>Pods-EatellyAppUITests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
