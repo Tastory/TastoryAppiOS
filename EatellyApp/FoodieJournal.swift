@@ -326,7 +326,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       
       thumbnailObject.retrieve() { thumbnailError in
         if let error = thumbnailError {
-          CCLog.assert("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
+          CCLog.warning("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
           callback?(error)
           return
         }

@@ -11,7 +11,7 @@ import UIKit
 struct AlertDialog {
   
   enum StdTitle: String {
-    case genericInternalError = "Internal Error"
+    case genericInternalError = "Application Internal Error"
     case genericNetworkError = "Network Error"
     case genericLocationError = "Location Error"
     case genericSaveError = "Save Error"
@@ -21,7 +21,8 @@ struct AlertDialog {
   
   
   enum StdMsg: String {
-    case internalTryAgain = "Please try again or restart the app and try again"
+    case internalTryAgain = "Please try again or restart the app and try again"  // Non-Fatal
+    case inconsistencyFatal = "Internal inconsistency. Unable to proceed. App will now restart"  // Fatal
     case networkTryAgain = "Please check your network connection and try again"
     case locationTryAgain = "Please make sure location permission is 'Allowed' and try again"  // TODO: This should open Privacy Settings
     case saveTryAgain = "Please free up some space and try again"

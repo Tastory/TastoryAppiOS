@@ -45,10 +45,8 @@ class JournalEntryViewController: UITableViewController {
   fileprivate var placeholderLabel = UILabel()
   fileprivate var momentViewController = MomentCollectionViewController()
   fileprivate var markupMoment: FoodieMoment? = nil
-
-  fileprivate var isSaveInProgress = false
-  fileprivate var triggerSaveJournal = false
-  fileprivate var saveStateMutex = SwiftMutex.create()
+  fileprivate let activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+  fileprivate let saveOperationQueue = OperationQueue()
   
   
   // MARK: - IBOutlets
@@ -73,45 +71,75 @@ class JournalEntryViewController: UITableViewController {
   
   @IBAction func testSaveJournal(_ sender: UIButton) {
 
-    workingJournal?.title = titleTextField?.text
-    workingJournal?.journalURL = linkTextField?.text
+    guard let journal = workingJournal else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
+      CCLog.fatal("No Working Journal when user pressed Post Story")
+    }
     
-    guard workingJournal?.title != nil && workingJournal?.venue != nil else {
+    guard journal.title != nil && journal.venue != nil else {
       AlertDialog.present(from: self, title: "Required Fields Empty", message: "The Title and Venue are essential to a Story!")
       return
     }
     
-    guard let moments = workingJournal?.moments, !moments.isEmpty else {
+    guard let moments = journal.moments, !moments.isEmpty else {
       AlertDialog.present(from: self, title: "Story has No Moments", message: "Add some Moments to make this an interesting Story!")
       return
     }
     
-    //TODO add spinner 
-    UIApplication.shared.beginIgnoringInteractionEvents()
+    CCLog.info("User pressed 'Post Story'")
     
-    CCLog.verbose("\(String(describing: self.workingJournal?.foodieObject.operationState))")
+    // Block out user inputs until save completes - aka. No more Pre Saves are possible. Yay!
+    UIApplication.shared.beginIgnoringInteractionEvents()
+    activityView.center = self.view.center
+    activityView.startAnimating()
+    view.addSubview(activityView)
 
-    //making sure that the operation state didnt change between checking and setting the flag
-    SwiftMutex.lock(&self.saveStateMutex)
-    if(isSaveInProgress)
-    {
-      triggerSaveJournal = true
+    let journalSaveOperation = JournalSaveOperation(on: journal) { (error) in
+      
+      if let error = error {
+        CCLog.warning("Save Story to Server Failed with Error: \(error)")
+        AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
+      } else {
+        
+        // TODO: What we really should do is to move this from a workingJournal/User Document space, into the Cache space.
+        FoodieJournal.unpinAllObjectsInBackground(withName: "workingJournal")
+        FoodieJournal.setJournal(journal: nil)
+        self.workingJournal = nil
+        
+        // Remove the spinner and resume user interaction
+        DispatchQueue.main.async {
+          self.activityView.stopAnimating()
+          self.activityView.removeFromSuperview()
+          UIApplication.shared.endIgnoringInteractionEvents()
+        }
+        
+        // Pop-up Alert Dialog and then Dismiss
+        CCLog.info("Story Posted!")
+        AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
+          self.vcDismiss()
+        }
+      }
     }
-    SwiftMutex.unlock(&self.saveStateMutex)
-
-    if(!triggerSaveJournal)
-    {
-      saveJournalToServer()
+    
+    // Make double sure that Journal Save won't occur until all the Pre Saves have completed
+    for preSaveOperation in PreSaveOperation.pendingOperations {
+      journalSaveOperation.addDependency(preSaveOperation)
     }
+    saveOperationQueue.addOperation(journalSaveOperation)
   }
+  
 
   @IBAction func editedTitle(_ sender: UITextField) {
     guard let text = sender.text, let journal = workingJournal, text != journal.title else {
       // Nothing changed, don't do anything
       return
     }
+    
+    CCLog.info("User edited Title of Story")
     journal.title = text
-    preSave(nil, withBlock: nil)
+    
+    let journalPreSaveOperation = PreSaveOperation(on: journal, with: nil, withBlock: nil)
+    saveOperationQueue.addOperation(journalPreSaveOperation)
   }
   
   @IBAction func editedLink(_ sender: UITextField) {
@@ -119,38 +147,15 @@ class JournalEntryViewController: UITableViewController {
       // Nothing changed, don't do anything
       return
     }
+    
+    CCLog.info("User edited Link of Story")
     journal.journalURL = text
-    preSave(nil, withBlock: nil)
+    let journalPreSaveOperation = PreSaveOperation(on: journal, with: nil, withBlock: nil)
+    saveOperationQueue.addOperation(journalPreSaveOperation)
   }
   
   
   // MARK: - Private Instance Functions
-  fileprivate func saveJournalToServer() {
-    triggerSaveJournal = false
-
-    // journal is already saved to local
-    self.workingJournal?.saveRecursive(to: .server) {(success, error) in
-      if success {
-        // Unpin all pre saves since Story now on Server
-        FoodieJournal.unpinAllObjectsInBackground(withName: "workingJournal")  // Should we really do this? Don't we want the content in cache for immediate view backs??
-        self.workingJournal = nil
-        FoodieJournal.setJournal(journal: nil)
-        
-        // Pop-up Alert Dialog and then Dismiss
-        CCLog.verbose("Journal Save Completed!")
-        AlertDialog.present(from: self, title: "Journal Save Completed!", message: "") { _ in
-          self.vcDismiss()
-        }
-        
-      } else if let error = error {
-        CCLog.verbose("Journal Save to Server Failed with Error: \(error)")
-      } else {
-        CCLog.fatal("Journal Save to Server Failed without Error")
-      }
-      UIApplication.shared.endIgnoringInteractionEvents()
-    }
-  }
-  
   fileprivate func averageLocationOfMoments() -> CLLocation? {
     
     var numValidCoordinates = 0
@@ -197,80 +202,6 @@ class JournalEntryViewController: UITableViewController {
     }
   }
   
-  fileprivate func preSave(_ foodieObject: FoodieObjectDelegate?, withBlock callback: ((Error?) -> Void)?) {
-    
-    guard let journal = workingJournal else {
-      CCLog.warning("JournalEntryViewController.preSave has no Working Journal?")
-      //AlertDialog.present(from: self, title: "Internal Error", message: "Unexpected Internal Error. Please try again")
-      return
-    }
-    
-    SwiftMutex.lock(&self.saveStateMutex)
-    self.isSaveInProgress = true
-    SwiftMutex.unlock(&self.saveStateMutex)
-    
-    // Save Journal to Local
-    journal.saveRecursive(to: .local, withName: "workingJournal") { (_, error) -> Void in
-      
-      if let error = error {
-        CCLog.warning("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
-        callback?(error)
-        
-        SwiftMutex.lock(&self.saveStateMutex)
-        self.isSaveInProgress = false
-        SwiftMutex.unlock(&self.saveStateMutex)
-        
-        // If there's pending Journal Save, give it a try after callback() successful or not
-        if self.triggerSaveJournal { self.saveJournalToServer() }
-        return
-      }
-      
-      CCLog.verbose("Completed pre-saving Journal to Local")
-      guard let foodieObject = foodieObject else {
-        CCLog.debug("No Foodie Object supplied on preSave(), skipping Object Server save")
-        callback?(nil)
-        
-        SwiftMutex.lock(&self.saveStateMutex)
-        self.isSaveInProgress = false
-        SwiftMutex.unlock(&self.saveStateMutex)
-        
-        // If there's pending Journal Save, give it a try after callback() successful or not
-        if self.triggerSaveJournal { self.saveJournalToServer() }
-        return
-      }
-      
-      foodieObject.saveRecursive(to: .server, withName: nil) { (success, error) -> Void in
-      
-        SwiftMutex.lock(&self.saveStateMutex)
-        self.isSaveInProgress = false
-        SwiftMutex.unlock(&self.saveStateMutex)
-        
-        if let error = error {
-          CCLog.warning("\(foodieObject.foodieObjectType()) pre-save to Server resulted in error - \(error.localizedDescription)")
-          callback?(error)
-          
-          SwiftMutex.lock(&self.saveStateMutex)
-          self.isSaveInProgress = false
-          SwiftMutex.unlock(&self.saveStateMutex)
-          
-          // If there's pending Journal Save, give it a try after callback() successful or not
-          if self.triggerSaveJournal { self.saveJournalToServer() }
-          return
-        }
-        
-        CCLog.verbose("Completed pre-saving \(foodieObject.foodieObjectType()) to Server")
-        callback?(nil)
-        
-        SwiftMutex.lock(&self.saveStateMutex)
-        self.isSaveInProgress = false
-        SwiftMutex.unlock(&self.saveStateMutex)
-        
-        // If there's pending Journal Save, give it a try after callback() successful or not
-        if self.triggerSaveJournal { self.saveJournalToServer() }
-      }
-    }
-  }
-  
   
   // MARK: - Public Instace Functions
   
@@ -313,6 +244,9 @@ class JournalEntryViewController: UITableViewController {
     previousSwipeRecognizer.direction = .right
     previousSwipeRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(previousSwipeRecognizer)
+    
+    // Setup the Save Operation Queue
+    saveOperationQueue.maxConcurrentOperationCount = 1
     
     // TODO: Do we need to download the Journal itself first? How can we tell?
   }
@@ -407,15 +341,14 @@ class JournalEntryViewController: UITableViewController {
           workingJournal.thumbnailObj = moment.thumbnailObj
         }
         
-        preSave(moment) { (error) in
+        let momentPreSaveOperation = PreSaveOperation(on: workingJournal, with: moment) { (error) in
           if error != nil {  // Error code should've already been printed to the Debug log from preSave()
             AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .internalTryAgain)
           }
           self.returnedMoment = nil  // We should be in a state where whom is the returned Moment should no longer matter
         }
+        saveOperationQueue.addOperation(momentPreSaveOperation)
       }
-      
-      // TODO: How to visually convey status of Moments to user??
     }
   }
   
@@ -437,6 +370,96 @@ class JournalEntryViewController: UITableViewController {
     super.didReceiveMemoryWarning()
     
     CCLog.warning("JournalEntryViewController.didReceiveMemoryWarning")
+  }
+  
+  
+  // Pre-Save Operations Child Class
+  class PreSaveOperation: AsyncOperation {
+    
+    static var pendingOperations = [PreSaveOperation]()
+    
+    var journal: FoodieJournal
+    var foodieObject: FoodieObjectDelegate?
+    var callback: ((Error?) -> Void)?
+    
+    init(on journal: FoodieJournal, with foodieObject: FoodieObjectDelegate?, withBlock callback: ((Error?) -> Void)?) {
+      self.journal = journal
+      self.foodieObject = foodieObject
+      self.callback = callback
+
+      super.init()
+      
+      PreSaveOperation.pendingOperations.append(self)
+    }
+    
+    override func finished() {
+      guard let index = PreSaveOperation.pendingOperations.index(of: self) else {
+        CCLog.fatal("Cannot find index for Pre Save Operation in Pending List")
+      }
+      PreSaveOperation.pendingOperations.remove(at: index)
+      super.finished()
+    }
+    
+    override func main() {
+      
+      CCLog.debug("Pre-Save Operation Started")
+      
+      // Save Journal to Local
+      journal.saveRecursive(to: .local, withName: "workingJournal") { (_, error) -> Void in
+        
+        if let error = error {
+          CCLog.warning("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
+          self.callback?(error)
+          self.finished()
+          return
+        }
+        
+        CCLog.debug("Completed pre-saving Journal to Local")
+        guard let foodieObject = self.foodieObject else {
+          CCLog.debug("No Foodie Object supplied on preSave(), skipping Object Server save")
+          self.callback?(nil)
+          self.finished()
+          return
+        }
+        
+        foodieObject.saveRecursive(to: .server, withName: nil) { (success, error) -> Void in
+          
+          if let error = error {
+            CCLog.warning("\(foodieObject.foodieObjectType()) pre-save to Server resulted in error - \(error.localizedDescription)")
+            self.callback?(error)
+            self.finished()
+            return
+          }
+          
+          CCLog.debug("Completed pre-saving \(foodieObject.foodieObjectType()) to Server")
+          self.callback?(nil)
+          self.finished()
+        }
+      }
+    }
+  }
+  
+  // Journal Save Operation Child Class
+  class JournalSaveOperation: AsyncOperation {
+    
+    var journal: FoodieJournal
+    var error: Error?
+    var callback: ((Error?) -> Void)?
+    
+    init(on journal: FoodieJournal, withBlock callback: ((Error?) -> Void)?) {
+      self.journal = journal
+      self.callback = callback
+      super.init()
+    }
+    
+    override func main() {
+      CCLog.debug ("Journal Save Operation Started")
+      
+      journal.saveRecursive(to: .server) { (_, error) in
+        self.callback?(error)
+        self.finished()
+      }
+    }
   }
 }
 
@@ -511,6 +534,11 @@ extension JournalEntryViewController: UITextFieldDelegate {
 extension JournalEntryViewController: VenueTableReturnDelegate {
   func venueSearchComplete(venue: FoodieVenue) {
     
+    guard let journal = workingJournal else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
+      CCLog.fatal("No Working Journal after Venue Search Completes")
+    }
+    
     // Query Parse to see if the Venue already exist
     let venueQuery = FoodieQuery()
     venueQuery.addFoursquareVenueIdFilter(id: venue.foursquareVenueID!)
@@ -569,12 +597,13 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
           }
           
           // Pre-save the Venue
-          self.preSave(venueToUpdate) { (error) in
+          let venuePreSaveOperation = PreSaveOperation(on: journal, with: venueToUpdate) { (error) in
             if error != nil {  // preSave should have logged the error, so skipping that here.
               AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain)
               return
             }
           }
+          self.saveOperationQueue.addOperation(venuePreSaveOperation)
         }
       }
     }
