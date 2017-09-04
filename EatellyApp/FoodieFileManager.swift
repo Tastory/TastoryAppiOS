@@ -104,8 +104,8 @@ class FoodieFile {
   
   // MARK: - Private Constants
   struct Constants {
-    static let S3BucketKey = "foodilicious-query"
-    static let CloudFrontUrl = URL(string: "https://d35zn91jb4p9lo.cloudfront.net/")!
+    static let S3BucketKey = "eatelly-master"
+    static let CloudFrontUrl = URL(string: "https://doi8luossq3vt.cloudfront.net/")!
     static let DocumentFolderUrl = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
     static let AwsRetryCount = FoodieGlobal.Constants.DefaultServerRequestRetryCount
     static let AwsRetryDelay = FoodieGlobal.Constants.DefaultServerRequestRetryDelay
@@ -170,7 +170,8 @@ class FoodieFile {
     
     if(!(AWSServiceManager.default().defaultServiceConfiguration != nil))
     {
-      let credentialsProvider = AWSStaticCredentialsProvider(accessKey: "AKIAIZDMJPPVHKFCWPQQ", secretKey: "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")
+      let credentialsProvider = AWSStaticCredentialsProvider(accessKey: "AKIAIIG7G45RQHBX3JGQ", secretKey: "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")
+      //let credentialsProvider = AWSStaticCredentialsProvider(accessKey: "AKIAJOCP23CCCK7MP7XQ", secretKey: "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")
       let configuration = AWSServiceConfiguration(region: AWSRegionType.USWest1, credentialsProvider:credentialsProvider)
       AWSServiceManager.default().defaultServiceConfiguration = configuration
     }
