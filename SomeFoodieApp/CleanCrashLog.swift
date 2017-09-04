@@ -17,12 +17,15 @@ class CCLog {
   struct Constant {
     #if DEBUG
     fileprivate static let stdoutMinSeverity = LogSeverity.verbose
+    fileprivate static let rotatingMinSeverity = LogSeverity.debug
+    fileprivate static let osLogMinSeverity = LogSeverity.debug
+    fileprivate static let crashlyticsLogMinSeverity = LogSeverity.debug
     #else
-    private let stdoutMinSeverity = LogSeverity.debug
-    #endif
+    fileprivate static let stdoutMinSeverity = LogSeverity.debug
     fileprivate static let rotatingMinSeverity = LogSeverity.debug
     fileprivate static let osLogMinSeverity = LogSeverity.info
     fileprivate static let crashlyticsLogMinSeverity = LogSeverity.info
+    #endif
   }
   
   
@@ -30,18 +33,19 @@ class CCLog {
   static func initializeLogging() {
     
     var configs = [LogConfiguration]()
+    let timestampString = "yyyy-MM-dd HH:mm:ss.SSSSSSxx"
     
     // For Debug, consider adding Filters. See CleanroomLogger documentation on LogFilter
     
     // Create a recorder for logging to stdout & stderr and add a configuration that references it
-    let stderr = StandardStreamsLogRecorder(formatters: [XcodeLogFormatter()])
+    let stderr = StandardStreamsLogRecorder(formatters: [XcodePlusLogFormatter(timestampString: timestampString)])
     configs.append(BasicLogConfiguration(minimumSeverity: Constant.stdoutMinSeverity, recorders: [stderr]))
     
     // Create a configuration for a 15-day rotating log directory
     let fileCfg = RotatingLogFileConfiguration(minimumSeverity: Constant.rotatingMinSeverity,
                                                daysToKeep: 15,
                                                directoryPath: (NSTemporaryDirectory() as NSString).appendingPathComponent("CleanCrashLog"),
-                                               formatters: [ParsableLogFormatter(timestampStyle: .default)])
+                                               formatters: [ParsableDelimitLogFormatter(delimiterStyle: .spacedPipe, showTimestamp: true)])
     
     // Crash if the log directory doesn’t exist yet & can’t be created
     try! fileCfg.createLogDirectory()
@@ -54,12 +58,13 @@ class CCLog {
 //    }
     
     // Create a recorder for logging into Crashlytics
-    let crashlyticsLog = CrashlyticsLogRecorder(formatters: [ParsableLogFormatter(timestampStyle: .default)])
+    let crashlyticsLog = CrashlyticsLogRecorder(formatters: [ParsableDelimitLogFormatter(delimiterStyle: .spacedPipe, showTimestamp: false)])
     configs.append(BasicLogConfiguration.init(minimumSeverity: Constant.crashlyticsLogMinSeverity, recorders: [crashlyticsLog]))
 
     // Enable logging using the LogRecorders created above
     Log.enable(configuration: configs)
   }
+  
   
   static func initializeReporting() {
     Fabric.with([Crashlytics.self, AWSCognito.self])
@@ -91,7 +96,8 @@ class CCLog {
     Log.error?.message(description, function: function, filePath: file, fileLine: line)
     #if DEBUG
     DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 1.0) {
-      assertionFailure("\(description), \(file), \(function), \(line)")  // Wait for logging to flush before Asserting
+      Crashlytics.sharedInstance().crash()  // Wait for logging to flush before Crashing
+      assertionFailure("\(description), \(file), \(function), \(line)")  // This will never get called
     }
     sleep(3)  // This just merely prevents this thread from proceeding, but also relinquish processor resources to other threads
     #endif
@@ -101,7 +107,8 @@ class CCLog {
   static func fatal(_ description: String, function: String = #function, file: String = #file, line: Int = #line) -> Never {
     Log.error?.message(description, function: function, filePath: file, fileLine: line)
     sleep(3) // Sleep this thread and wait for logging to flush before going Fatal
-    fatalError("\(description), \(file), \(function), \(line)")
+    Crashlytics.sharedInstance().crash()
+    fatalError("\(description), \(file), \(function), \(line)")  // This won't actually get called
   }
 }
 
@@ -111,5 +118,89 @@ class CrashlyticsLogRecorder: LogRecorderBase
 {
   override func record(message: String, for entry: LogEntry, currentQueue: DispatchQueue, synchronousMode: Bool) {
     CLSLogv("%@", getVaList([message]))  // As suggested at the bottom of https://stackoverflow.com/questions/28054329/how-to-use-crashlytics-logging-in-swift
+  }
+}
+
+
+// MARK: - Defining Custom Log Formatter to augment XcodeLogFormatter and ParsableLogFormatter
+fileprivate class XcodePlusLogFormatter: LogFormatter {
+  
+  private let traceFormatter: XcodeTraceLogFormatter
+  private let defaultFormatter: FieldBasedLogFormatter
+  
+  /**
+   Initializes a new `XcodeLogFormatter` instance.
+   
+   - parameter showCallSite: If `true`, the source file and line indicating
+   the call site of the log request will be added to formatted log messages.
+   */
+  public init(showCallSite: Bool = true, timestampString: String? = nil)
+  {
+    traceFormatter = XcodeTraceLogFormatter()
+    
+    var fields: [FieldBasedLogFormatter.Field] = []
+    var timestampStyle: TimestampStyle = .default
+    
+    if let timestampString = timestampString {
+      timestampStyle = .custom(timestampString)
+    }
+    
+    fields.append(.timestamp(timestampStyle))
+    fields.append(.delimiter(.space))
+    fields.append(.severity(.xcode))
+    fields.append(.delimiter(.space))
+    fields.append(.payload)
+    
+    if showCallSite {
+      fields.append(.delimiter(.space))
+      fields.append(.delimiter(.custom(" @ ")))
+      fields.append(.callSite)
+      fields.append(.delimiter(.spacedHyphen))
+      fields.append(.stackFrame)
+    }
+    
+    defaultFormatter = FieldBasedLogFormatter(fields: fields)
+  }
+  
+  /**
+   Called to create a string representation of the passed-in `LogEntry`.
+   
+   - parameter entry: The `LogEntry` to attempt to convert into a string.
+   
+   - returns:  A `String` representation of `entry`, or `nil` if the
+   receiver could not format the `LogEntry`.
+   */
+  open func format(_ entry: LogEntry) -> String?
+  {
+    return traceFormatter.format(entry) ?? defaultFormatter.format(entry)
+  }
+}
+
+
+fileprivate class ParsableDelimitLogFormatter: FieldBasedLogFormatter {
+  
+  init(delimiterStyle: DelimiterStyle, showTimestamp: Bool) {
+    var fields: [FieldBasedLogFormatter.Field] = []
+    
+    if showTimestamp {
+      fields.append(.timestamp(.default))
+      fields.append(.delimiter(delimiterStyle))
+    }
+    
+    fields.append(.severity(.numeric))
+    fields.append(.delimiter(delimiterStyle))
+    
+    fields.append(.callingThread(.hex))
+    fields.append(.delimiter(delimiterStyle))
+    
+    fields.append(.callSite)
+    fields.append(.delimiter(delimiterStyle))
+    
+    fields.append(.stackFrame)
+    fields.append(.delimiter(delimiterStyle))
+    
+    fields.append(.payload)
+    
+    super.init(fields: fields)
   }
 }
