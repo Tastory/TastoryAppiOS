@@ -36,9 +36,9 @@ class MarkupViewController: UIViewController {
   
   let FontChoiceArray: [String] = [
     "BoldSystemFont",
-    "Futura-Medium",
     "BodoniSvtyTwoOSITCTT-Book",
-    "Noteworthy-Light"
+    "Futura-Medium",
+    "Noteworthy-Bold"
   ]
   
   
