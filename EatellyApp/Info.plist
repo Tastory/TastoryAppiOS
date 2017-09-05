@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>0.0.1</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>2</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -37,15 +37,15 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppleMusicUsageDescription</key>
-	<string> </string>
+	<string>With permission we can save a copy of each Moment to the Camera Roll</string>
 	<key>NSCameraUsageDescription</key>
-	<string></string>
+	<string>The Camera is essential to craft a visually appetizing Story</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string> </string>
+	<string>With location we can help you find interesting Stories nearby</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string></string>
+	<string>Sound and ambience can make your Story more immersive</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string> </string>
+	<string>With permission we can save a copy of each Moment to the Camera Roll</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
