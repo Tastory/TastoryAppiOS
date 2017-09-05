@@ -11,7 +11,6 @@ PODS:
   - HTTPStatusCodes (3.1.2)
   - Jot (0.2.0):
     - Masonry (~> 1.0.2)
-  - Kanna (2.2.1)
   - Masonry (1.0.2)
   - Parse (1.15.2):
     - Bolts/Tasks (~> 1.8)
@@ -25,7 +24,6 @@ DEPENDENCIES:
   - Fabric
   - HTTPStatusCodes (~> 3.1.2)
   - Jot (from `https://github.com/biscottigelato/Jot.git`)
-  - Kanna
   - Parse
   - QuadratTouch (from `https://github.com/Constantine-Fry/das-quadrat.git`, branch `develop`)
   - SwiftyCam
@@ -54,12 +52,11 @@ SPEC CHECKSUMS:
   Fabric: f050464eac45a2ce5a8e6e6a07e977c0df32fe28
   HTTPStatusCodes: 88155ba36826366a898a7b4f34d311f49083d546
   Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
-  Kanna: 182789ab065e8f9a6ccc2a74ce6283d3401c0c4a
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   Parse: 7daa8804b876d250a65420534c97d2d786c3b0b4
   QuadratTouch: 9e311cbd4f0573b58cafe6783df1fa7ce2458afa
   SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
 
-PODFILE CHECKSUM: 7f3c1176b9f68333a44348952ced1bbd0f5d5293
+PODFILE CHECKSUM: d8d3a5dcea822cdaba66c246ff4e2e27ae275455
 
 COCOAPODS: 1.2.0

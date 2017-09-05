@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		02F0D7FA35D63813954A6E40 /* Pods_EatellyAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3A307EE1B68AC226850DD93 /* Pods_EatellyAppUITests.framework */; };
-		28797E268830ACEB7E7E9DA3 /* Pods_EatellyApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2ADFD6B48CE6FF6A3D49A958 /* Pods_EatellyApp.framework */; };
 		2AACB8A0ED0098FD58223358 /* Pods_EatellyAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 490D2BF6CF558F645352FCED /* Pods_EatellyAppTests.framework */; };
 		8C0590471EC653DF00027E91 /* DiscoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590461EC653DF00027E91 /* DiscoverViewController.swift */; };
 		8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590481EC65B0000027E91 /* RootViewController.swift */; };
@@ -31,6 +30,8 @@
 		8C1ED6F11F5D15A300A8CC94 /* CameraCrossLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6EC1F5D15A300A8CC94 /* CameraCrossLayer.swift */; };
 		8C1ED6F21F5D15A300A8CC94 /* ThumbnailFrameLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6ED1F5D15A300A8CC94 /* ThumbnailFrameLayer.swift */; };
 		8C1ED6F41F5DEC2500A8CC94 /* AsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6F31F5DEC2500A8CC94 /* AsyncOperation.swift */; };
+		8C1ED6FE1F5E2BDC00A8CC94 /* Pods_EatellyApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2ADFD6B48CE6FF6A3D49A958 /* Pods_EatellyApp.framework */; };
+		8C1ED7001F5E2BF700A8CC94 /* CleanroomLogger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C1ED6FF1F5E2BF700A8CC94 /* CleanroomLogger.framework */; };
 		8C2F796F1F4C0D9A00851334 /* SwiftRetry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */; };
 		8C2F79731F4E23F700851334 /* LocationWatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F79721F4E23F700851334 /* LocationWatch.swift */; };
 		8C2F79771F4E3E6E00851334 /* ThreadSafeDLL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F79761F4E3E6E00851334 /* ThreadSafeDLL.swift */; };
@@ -52,7 +53,6 @@
 		8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0601E8F615D005F337E /* ExitButton.swift */; };
 		8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0611E8F615D005F337E /* MarkupViewController.swift */; };
 		8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */; };
-		8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CADA1A91E85D9CE00BF6CF0 /* ScrapeViewController.swift */; };
 		8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */; };
 		8CBF55891E7F7EDF00F4B1CD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */; };
 		8CBF558B1E7F7EDF00F4B1CD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF558A1E7F7EDF00F4B1CD /* Assets.xcassets */; };
@@ -60,8 +60,6 @@
 		8CBF55991E7F7EDF00F4B1CD /* EatellyAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55981E7F7EDF00F4B1CD /* EatellyAppTests.swift */; };
 		8CBF55A41E7F7EDF00F4B1CD /* EatellyAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55A31E7F7EDF00F4B1CD /* EatellyAppUITests.swift */; };
 		8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55B11E80C72200F4B1CD /* MapViewController.swift */; };
-		8CC21AFE1F5A5FEA00BA486B /* CleanroomLogger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC21AFD1F5A5FEA00BA486B /* CleanroomLogger.framework */; };
-		8CC21AFF1F5A5FEA00BA486B /* CleanroomLogger.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC21AFD1F5A5FEA00BA486B /* CleanroomLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8CC48D601EFC81CD003A0FC9 /* PrecisionTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */; };
 		8CE259AD1F53808C00310749 /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE259AC1F53808C00310749 /* AlertDialog.swift */; };
 		8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */; };
@@ -86,20 +84,6 @@
 			remoteInfo = SomeFoodieApp;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		8CC21B001F5A5FEB00BA486B /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				8CC21AFF1F5A5FEA00BA486B /* CleanroomLogger.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		2ADFD6B48CE6FF6A3D49A958 /* Pods_EatellyApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EatellyApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -129,6 +113,7 @@
 		8C1ED6EC1F5D15A300A8CC94 /* CameraCrossLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCrossLayer.swift; sourceTree = "<group>"; };
 		8C1ED6ED1F5D15A300A8CC94 /* ThumbnailFrameLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailFrameLayer.swift; sourceTree = "<group>"; };
 		8C1ED6F31F5DEC2500A8CC94 /* AsyncOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncOperation.swift; sourceTree = "<group>"; };
+		8C1ED6FF1F5E2BF700A8CC94 /* CleanroomLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CleanroomLogger.framework; path = Carthage/Build/iOS/CleanroomLogger.framework; sourceTree = "<group>"; };
 		8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftRetry.swift; sourceTree = "<group>"; };
 		8C2F79721F4E23F700851334 /* LocationWatch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationWatch.swift; sourceTree = "<group>"; };
 		8C2F79761F4E3E6E00851334 /* ThreadSafeDLL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadSafeDLL.swift; sourceTree = "<group>"; };
@@ -151,7 +136,6 @@
 		8C9AD0601E8F615D005F337E /* ExitButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExitButton.swift; path = EatellyApp/ExitButton.swift; sourceTree = "<group>"; };
 		8C9AD0611E8F615D005F337E /* MarkupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkupViewController.swift; sourceTree = "<group>"; };
 		8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+Extension.swift"; sourceTree = "<group>"; };
-		8CADA1A91E85D9CE00BF6CF0 /* ScrapeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrapeViewController.swift; sourceTree = "<group>"; };
 		8CBF55801E7F7EDF00F4B1CD /* EatellyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EatellyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8CBF55881E7F7EDF00F4B1CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -165,7 +149,6 @@
 		8CBF55A31E7F7EDF00F4B1CD /* EatellyAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EatellyAppUITests.swift; sourceTree = "<group>"; };
 		8CBF55A51E7F7EDF00F4B1CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8CBF55B11E80C72200F4B1CD /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
-		8CC21AFD1F5A5FEA00BA486B /* CleanroomLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CleanroomLogger.framework; path = Carthage/Build/iOS/CleanroomLogger.framework; sourceTree = "<group>"; };
 		8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrecisionTime.swift; sourceTree = "<group>"; };
 		8CE259AC1F53808C00310749 /* AlertDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertDialog.swift; sourceTree = "<group>"; };
 		8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JournalEntryViewController.swift; sourceTree = "<group>"; };
@@ -182,8 +165,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8CC21AFE1F5A5FEA00BA486B /* CleanroomLogger.framework in Frameworks */,
-				28797E268830ACEB7E7E9DA3 /* Pods_EatellyApp.framework in Frameworks */,
+				8C1ED6FE1F5E2BDC00A8CC94 /* Pods_EatellyApp.framework in Frameworks */,
+				8C1ED7001F5E2BF700A8CC94 /* CleanroomLogger.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,7 +192,7 @@
 		7F099451BAA097407AA93744 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8CC21AFD1F5A5FEA00BA486B /* CleanroomLogger.framework */,
+				8C1ED6FF1F5E2BF700A8CC94 /* CleanroomLogger.framework */,
 				2ADFD6B48CE6FF6A3D49A958 /* Pods_EatellyApp.framework */,
 				490D2BF6CF558F645352FCED /* Pods_EatellyAppTests.framework */,
 				F3A307EE1B68AC226850DD93 /* Pods_EatellyAppUITests.framework */,
@@ -369,7 +352,6 @@
 				8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */,
 				8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */,
 				8C3254A41F40240900895572 /* VenueTableViewController.swift */,
-				8CADA1A91E85D9CE00BF6CF0 /* ScrapeViewController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -420,8 +402,9 @@
 				8CBF557E1E7F7EDF00F4B1CD /* Resources */,
 				84D757715DAF1055157B0816 /* [CP] Embed Pods Frameworks */,
 				3AA03047B325747368B028FE /* [CP] Copy Pods Resources */,
-				8CC21B001F5A5FEB00BA486B /* Embed Frameworks */,
 				8C3C3FDC1F5954C60000092E /* Dsym Upload for Crash Reporting */,
+				8C1ED6F51F5E261A00A8CC94 /* Carthage Workaround */,
+				8C1ED6F61F5E28C500A8CC94 /* Remove Unsupported Architectures */,
 			);
 			buildRules = (
 			);
@@ -486,7 +469,6 @@
 				TargetAttributes = {
 					8CBF557F1E7F7EDF00F4B1CD = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 9D6RF3S2T5;
 						ProvisioningStyle = Automatic;
 					};
 					8CBF55931E7F7EDF00F4B1CD = {
@@ -641,6 +623,36 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EatellyApp/Pods-EatellyApp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		8C1ED6F51F5E261A00A8CC94 /* Carthage Workaround */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/CleanroomLogger.framework",
+			);
+			name = "Carthage Workaround";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/CleanroomLogger.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+		8C1ED6F61F5E28C500A8CC94 /* Remove Unsupported Architectures */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Remove Unsupported Architectures";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Scripts/RemoveUnsupportedArch.sh\"";
+		};
 		8C3C3FDC1F5954C60000092E /* Dsym Upload for Crash Reporting */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -745,7 +757,6 @@
 				8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */,
 				8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */,
 				8C3254A51F40240900895572 /* VenueTableViewController.swift in Sources */,
-				8CADA1AA1E85D9CE00BF6CF0 /* ScrapeViewController.swift in Sources */,
 				8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */,
 				8C1D4E261EDCED0800939B2C /* FeedCollectionLayout.swift in Sources */,
 				8C61BCDC1E985D1300DDF248 /* CleanCrashLog.swift in Sources */,
@@ -949,6 +960,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eatelly.EatellyApp.iOS.PreAlpha;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
