@@ -104,8 +104,8 @@ class FoodieFile {
   
   // MARK: - Private Constants
   struct Constants {
-    static let S3BucketKey = "eatelly-dev-howard"
-    static let CloudFrontUrl = URL(string: "https://d1axaetmqd29cm.cloudfront.net/")!
+    static let S3BucketKey = "eatelly-master"
+    static let CloudFrontUrl = URL(string: "https://doi8luossq3vt.cloudfront.net/")!
     static let DocumentFolderUrl = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
     static let AwsRetryCount = FoodieGlobal.Constants.DefaultServerRequestRetryCount
     static let AwsRetryDelay = FoodieGlobal.Constants.DefaultServerRequestRetryDelay
