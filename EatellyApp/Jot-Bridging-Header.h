@@ -1,6 +1,6 @@
 //
 //  Jot-Bridging-Header.h
-//  SomeFoodieApp
+//  EatellyApp
 //
 //  Created by Howard Lee on 2017-07-10.
 //  Copyright © 2017 Eatelly. All rights reserved.

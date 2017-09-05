@@ -1,6 +1,6 @@
 //
 //  VenueTableViewController.swift
-//  SomeFoodieApp
+//  EatellyApp
 //
 //  Created by Howard Lee on 2017-08-12.
 //  Copyright © 2017 Eatelly. All rights reserved.
@@ -64,7 +64,7 @@ class VenueTableViewController: UIViewController {
   // MARK: - Private Instance Functions
   fileprivate func internalErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Venue Table view internal error occured",
                                               message: "An internal error has occured. Please try again",
                                               messageComment: "Alert dialog message when a Venue Table view internal error occured",
@@ -78,7 +78,7 @@ class VenueTableViewController: UIViewController {
   
   fileprivate func searchErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Venue Table View search error occurred",
                                               message: "A query error has occured. Please try again",
                                               messageComment: "Alert dialog message when a Venue Table View search error occurred",
@@ -92,7 +92,7 @@ class VenueTableViewController: UIViewController {
   
   fileprivate func locationErrorDialog(message: String, comment: String) {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Venue Table View location error occured",
                                               message: message,
                                               messageComment: comment,

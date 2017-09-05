@@ -1,9 +1,9 @@
 //
 //  FoodieUser.swift
-//  SomeFoodieApp
+//  EatellyApp
 //
 //  Created by Howard Lee on 2017-04-03.
-//  Copyright © 2017 SomeFoodieCompany. All rights reserved.
+//  Copyright © 2017 Eatelly. All rights reserved.
 //
 
 

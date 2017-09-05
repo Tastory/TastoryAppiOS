@@ -1,9 +1,9 @@
 //
 //  JournalViewController.swift
-//  SomeFoodieApp
+//  EatellyApp
 //
 //  Created by Howard Lee on 2017-04-23.
-//  Copyright © 2017 SomeFoodieCompany. All rights reserved.
+//  Copyright © 2017 Eatelly. All rights reserved.
 //
 
 import UIKit
@@ -41,7 +41,7 @@ class JournalViewController: UIViewController {
   // Generic error dialog box to the user on internal errors
   func internalErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Journal View internal error occured",
                                               message: "An internal error has occured. Please try again",
                                               messageComment: "Alert dialog message when a Journal View internal error occured",
@@ -56,7 +56,7 @@ class JournalViewController: UIViewController {
   // Generic error dialog box to the user when displaying photo or video
   fileprivate func displayErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when Journal View has problem displaying photo or video",
                                               message: "Error displaying media. Please try again",
                                               messageComment: "Alert dialog message when Journal View has problem displaying photo or video",

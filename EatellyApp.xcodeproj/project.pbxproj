@@ -973,9 +973,9 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = 9D6RF3S2T5;
-				INFOPLIST_FILE = SomeFoodieAppTests/Info.plist;
+				INFOPLIST_FILE = EatellyAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.hci.SomeFoodieAppTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eatelly.EatellyAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EatellyApp.app/EatellyApp";
@@ -989,9 +989,9 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = 9D6RF3S2T5;
-				INFOPLIST_FILE = SomeFoodieAppTests/Info.plist;
+				INFOPLIST_FILE = EatellyAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.hci.SomeFoodieAppTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eatelly.EatellyAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EatellyApp.app/EatellyApp";
@@ -1004,12 +1004,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = 9D6RF3S2T5;
-				INFOPLIST_FILE = SomeFoodieAppUITests/Info.plist;
+				INFOPLIST_FILE = EatellyAppUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.hci.SomeFoodieAppUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hci.EatellyAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
-				TEST_TARGET_NAME = SomeFoodieApp;
+				TEST_TARGET_NAME = EatellyApp;
 			};
 			name = Debug;
 		};
@@ -1019,12 +1019,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = 9D6RF3S2T5;
-				INFOPLIST_FILE = SomeFoodieAppUITests/Info.plist;
+				INFOPLIST_FILE = EatellyAppUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.hci.SomeFoodieAppUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hci.EatellyAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
-				TEST_TARGET_NAME = SomeFoodieApp;
+				TEST_TARGET_NAME = EatellyApp;
 			};
 			name = Release;
 		};

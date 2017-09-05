@@ -1,15 +1,15 @@
 //
-//  SomeFoodieAppTests.swift
-//  SomeFoodieAppTests
+//  EatellyAppTests.swift
+//  EatellyAppTests
 //
 //  Created by Howard Lee on 2017-03-19.
-//  Copyright © 2017 SomeFoodieCompany. All rights reserved.
+//  Copyright © 2017 Eatelly. All rights reserved.
 //
 
 import XCTest
-@testable import SomeFoodieApp
+@testable import EatellyApp
 
-class SomeFoodieAppTests: XCTestCase {
+class EatellyAppTests: XCTestCase {
     
     override func setUp() {
         super.setUp()

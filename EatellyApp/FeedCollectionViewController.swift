@@ -1,6 +1,6 @@
 //
 //  FeedCollectionViewController.swift
-//  SomeFoodieApp
+//  EatellyApp
 //
 //  Created by Howard Lee on 2017-05-29.
 //  Copyright © 2017 Eatelly. All rights reserved.
@@ -81,7 +81,7 @@ class FeedCollectionViewController: UICollectionViewController {
   // Generic error dialog box to the user on internal errors
   fileprivate func queryErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Feed Collection View query error occurred",
                                               message: "A query error has occured. Please try again",
                                               messageComment: "Alert dialog message when a Feed Collection View query error occurred",
@@ -95,7 +95,7 @@ class FeedCollectionViewController: UICollectionViewController {
   
   fileprivate func fetchErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Feed Collection View fetch error occurred",
                                               message: "A fetch error has occured. Please try again",
                                               messageComment: "Alert dialog message when a Feed Collection View fetch error occurred",
@@ -109,7 +109,7 @@ class FeedCollectionViewController: UICollectionViewController {
   
   fileprivate func internalErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Feed Collection View internal error occured",
                                               message: "An internal error has occured. Please try again",
                                               messageComment: "Alert dialog message when a Feed Collection View internal error occured",

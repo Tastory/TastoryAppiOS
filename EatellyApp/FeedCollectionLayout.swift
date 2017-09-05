@@ -1,6 +1,6 @@
 //
 //  FeedCollectionLayout.swift
-//  SomeFoodieApp
+//  EatellyApp
 //
 //  Created by Howard Lee on 2017-05-29.
 //  Copyright © 2017 Eatelly. All rights reserved.

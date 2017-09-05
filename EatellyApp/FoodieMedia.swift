@@ -1,9 +1,9 @@
 //
 //  FoodieMedia.swift
-//  SomeFoodieApp
+//  EatellyApp
 //
 //  Created by Victor Tsang on 2017-05-08.
-//  Copyright © 2017 SomeFoodieCompany. All rights reserved.
+//  Copyright © 2017 Eatelly. All rights reserved.
 //
 
 import Foundation

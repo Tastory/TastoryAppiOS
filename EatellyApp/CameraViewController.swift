@@ -1,9 +1,9 @@
 //
 //  CameraViewController.swift
-//  SomeFoodieApp
+//  EatellyApp
 //
 //  Created by Howard Lee on 2017-03-26.
-//  Copyright © 2017 SomeFoodieCompany. All rights reserved.
+//  Copyright © 2017 Eatelly. All rights reserved.
 //
 //  This is a reusable Camera View Controller created based on the Swifty Cam - https://github.com/Awalz/SwiftyCam
 //  Input  -
@@ -81,7 +81,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   // Generic error dialog box to the user on internal errors
   fileprivate func internalErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Camera view internal error occured",
                                               message: "An internal error has occured. Please try again",
                                               messageComment: "Alert dialog message when a Camera view internal error occured",
@@ -93,7 +93,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   
   fileprivate func locationErrorDialog(message: String, comment: String) {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Camera View location error occured",
                                               message: message,
                                               messageComment: comment,
@@ -160,7 +160,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
         
         let alertController = UIAlertController(title: "Photo Library Inaccessible",
                                                 titleComment: "Alert diaglogue title when user has denied access to the photo album",
-                                                message: "Please go to Settings > Privacy > Photos to allow SomeFoodieApp to save to your photos",
+                                                message: "Please go to Settings > Privacy > Photos to allow EatellyApp to save to your photos",
                                                 messageComment: "Alert dialog message when the user has denied access to the photo album",
                                                 preferredStyle: .alert)
         

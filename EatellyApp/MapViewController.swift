@@ -1,6 +1,6 @@
 //
 //  MapViewController.swift
-//  SomeFoodieApp
+//  EatellyApp
 //
 //  Created by Howard Lee on 2017-03-20.
 //  Copyright © 2017 Eatelly. All rights reserved.
@@ -147,7 +147,7 @@ class MapViewController: UIViewController {
   // Generic error dialog box to the user on internal errors
   fileprivate func internalErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Map View internal error occured",
                                               message: "An internal error has occured. Please try again",
                                               messageComment: "Alert dialog message when a Map View internal error occured",
@@ -162,7 +162,7 @@ class MapViewController: UIViewController {
   // Error dialog box to the user on location errors
   fileprivate func locationErrorDialog(message: String, comment: String) {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Map View location error occured",
                                               message: message,
                                               messageComment: comment,
@@ -176,7 +176,7 @@ class MapViewController: UIViewController {
 
   fileprivate func queryErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Map View query error occurred",
                                               message: "A query error has occured. Please try again",
                                               messageComment: "Alert dialog message when a Map View query error occurred",

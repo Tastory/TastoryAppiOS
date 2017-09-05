@@ -1,6 +1,6 @@
 //
 //  RootViewController.swift
-//  SomeFoodieApp
+//  EatellyApp
 //
 //  Created by Howard Lee on 2017-05-12.
 //  Copyright © 2017 Eatelly. All rights reserved.

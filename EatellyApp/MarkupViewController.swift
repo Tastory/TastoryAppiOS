@@ -1,9 +1,9 @@
 //
 //  MarkupViewController.swift
-//  SomeFoodieApp
+//  EatellyApp
 //
 //  Created by Howard Lee on 2017-03-26.
-//  Copyright © 2017 SomeFoodieCompany. All rights reserved.
+//  Copyright © 2017 Eatelly. All rights reserved.
 //
 //  This is a reusable (Image/Video) Markup View Controller created based on the Swifty Cam - https://github.com/Awalz/SwiftyCam
 //  Input  - photoToMarkup:    Photo to be Marked-up. Either this or videoToMarkupURL should be set, not both
@@ -440,7 +440,7 @@ class MarkupViewController: UIViewController {
   // Generic error dialog box to the user on internal errors
   func internalErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when a Markup Image view internal error occured",
                                               message: "An internal error has occured. Please try again",
                                               messageComment: "Alert dialog message when a Markup Image view internal error occured",
@@ -455,7 +455,7 @@ class MarkupViewController: UIViewController {
   // Generic error dialog box to the user when displaying photo or video
   fileprivate func displayErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when Markup Image view has problem displaying photo or video",
                                               message: "Error displaying media. Please try again",
                                               messageComment: "Alert dialog message when Markup Image view has problem displaying photo or video",
@@ -471,7 +471,7 @@ class MarkupViewController: UIViewController {
   // Generic error dialog box to the user on save errors
   fileprivate func saveErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when Markup Image view has problem saving",
                                               message: "Error saving Journal. Please try again",
                                               messageComment: "Alert dialog message when Markup Image view has problem saving",
@@ -486,7 +486,7 @@ class MarkupViewController: UIViewController {
   // Generic error dialog box to the user when adding Moments
   fileprivate func addErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "SomeFoodieApp",
+      let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when Markup Image view has problem adding a Moment",
                                               message: "Error adding Moment. Please try again",
                                               messageComment: "Alert dialog message when Markup Image view has problem adding a Moment",
