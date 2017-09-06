@@ -18,7 +18,6 @@ class FoodieQuery {
   enum LocationType: String {
     case coordinateRectangle = "coordinateRectangle"
     case pointAndRadius = "pointAndRadius"
-    case noLocation = "noLocation"
   }
   
   enum SortType: String {
@@ -63,7 +62,7 @@ class FoodieQuery {
   private var foursquareVenueID: String?
   
   // Allow 2 ways to do location queries. Either coordinate + radius, or upper left and lower right coordinate
-  private var locationType: LocationType = .noLocation
+  private var locationType: LocationType?
   private var southWestCoordinate: CLLocationCoordinate2D!
   private var northEastCoordinate: CLLocationCoordinate2D!
   private var lowerRightCoordiante: CLLocationCoordinate2D!
@@ -71,13 +70,13 @@ class FoodieQuery {
   private var radius: Double!  // In km
   
   // Parameters for filteringy by Category
-  private var filterByCategory: Bool = false
+  private var category: String?
   
   // Parameters for filtering by Hour of Operation
-  private var filterByHour: Bool = false
+  private var hourOpen: String?
   
   // Parameters for filtering by Price
-  private var filterByPrice: Bool = false
+  private var priceTiers: [Int]?
   
   // Constraining Parameters
   private var skip: Int = 0
@@ -190,7 +189,7 @@ class FoodieQuery {
   }
   
   
-  func setupCommon(for query: PFQuery<PFObject>) -> PFQuery<PFObject> {
+  func setupCommonQuery(for query: PFQuery<PFObject>) -> PFQuery<PFObject> {
     // TODO: Setup query cache policy
     // query.cachePolicy = .networkElseCache  // With Pinning enabled, this results in 'NSInternalInconsistencyException', reason: 'Method not allowed when Pinning is enabled.'
     
@@ -223,13 +222,13 @@ class FoodieQuery {
   }
   
   
-  func setupVenueCommon(for query: PFQuery<PFObject>) -> PFQuery<PFObject> {
-    if let id = foursquareVenueID {
-      query.whereKey("foursquareVenueID", equalTo: id)
+  func setupVenueQuery(for query: PFQuery<PFObject>) -> PFQuery<PFObject>? {
+    var addedQueryMetric = false
+    
+    if let location = locationType {
+      addedQueryMetric = true
       
-    } else {
-      switch locationType {
-        
+      switch location {
       case .coordinateRectangle:
         let southWestGeoPoint = PFGeoPoint(latitude: southWestCoordinate.latitude,
                                            longitude: southWestCoordinate.longitude)
@@ -238,19 +237,45 @@ class FoodieQuery {
         query.whereKey("location",
                        withinGeoBoxFromSouthwest: southWestGeoPoint,
                        toNortheast: northEastGeoPoint)
-        
       case .pointAndRadius:
         let originGeoPoint = PFGeoPoint(latitude: originCoordinate.latitude,
                                         longitude: originCoordinate.longitude)
         query.whereKey("location",
                        nearGeoPoint: originGeoPoint,
                        withinKilometers: radius)
-        
-      case .noLocation:
-        break
       }
     }
-    return query
+    
+    if let category = category {
+      addedQueryMetric = true
+      query.whereKey("category", equalTo: category)
+    }
+    
+    if let priceTiers = priceTiers {
+      addedQueryMetric = true
+      if priceTiers.isEmpty {
+        CCLog.assert("Non-nil but empty priceTiers array supplied")
+      } else {
+        query.whereKey("priceTier", containedIn: priceTiers)
+      }
+    }
+    
+    if let hourOpen = hourOpen {
+      addedQueryMetric = true
+      CCLog.assert("Hours based query not implemented yet!")
+    }
+    
+    return addedQueryMetric ? query : nil
+  }
+  
+
+  func setupVenueQueryWithFoursquareID(for query: PFQuery<PFObject>) -> PFQuery<PFObject> {
+    if let id = foursquareVenueID {
+      return query.whereKey("foursquareVenueID", equalTo: id)
+    } else {
+      CCLog.assert("Expected Foursquare Venue ID to setup query")
+      return query
+    }
   }
   
   
@@ -263,18 +288,19 @@ class FoodieQuery {
     }
     
     // This is the Inner Query
-    guard var innerQuery = FoodieVenue.query() else {
+    guard let innerQuery = FoodieVenue.query() else {
       CCLog.assert("Cannot create a PFQuery object from FoodieJournal")
       callback?(nil, ErrorCode.cannotCreatePFQuery)
       return
     }
     
-    outerQuery = setupCommon(for: outerQuery)
-    innerQuery = setupVenueCommon(for: innerQuery)
+    outerQuery = setupCommonQuery(for: outerQuery)
     
-    // Create the Relational Query
-    outerQuery.whereKey("venue", matchesQuery: innerQuery)
-    
+    // If there's any Venue filtering criteria, create a relational query
+    if let innerQuery = setupVenueQuery(for: innerQuery) {
+      outerQuery.whereKey("venue", matchesQuery: innerQuery)
+    }
+  
     // Keep track of the Query objects
     pfQuery = outerQuery
     pfInnerQuery = innerQuery
@@ -297,8 +323,8 @@ class FoodieQuery {
       return
     }
     
-    query = setupCommon(for: query)
-    query = setupVenueCommon(for: query)
+    query = setupCommonQuery(for: query)
+    query = setupVenueQueryWithFoursquareID(for: query)
     pfQuery = query
     
     // Do the actual search!
