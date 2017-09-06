@@ -102,7 +102,7 @@ class JournalEntryViewController: UITableViewController {
       } else {
         
         // TODO: What we really should do is to move this from a workingJournal/User Document space, into the Cache space.
-        FoodieJournal.unpinAllObjectsInBackground(withName: "workingJournal")
+        FoodieJournal.unpinAllObjectsInBackground(withName: FoodieGlobal.Constants.SavedDraftPinName)
         FoodieJournal.removeCurrent()
         self.workingJournal = nil
         
@@ -405,7 +405,7 @@ class JournalEntryViewController: UITableViewController {
       CCLog.debug("Pre-Save Operation Started")
       
       // Save Journal to Local
-      journal.saveRecursive(to: .local, withName: "workingJournal") { (_, error) -> Void in
+      journal.saveRecursive(to: .local, withName: FoodieGlobal.Constants.SavedDraftPinName) { (_, error) -> Void in
         
         if let error = error {
           CCLog.warning("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
@@ -422,7 +422,7 @@ class JournalEntryViewController: UITableViewController {
           return
         }
         
-        foodieObject.saveRecursive(to: .server, withName: "workingJournal") { (success, error) -> Void in
+        foodieObject.saveRecursive(to: .server, withName: FoodieGlobal.Constants.SavedDraftPinName) { (success, error) -> Void in
           
           if let error = error {
             CCLog.warning("\(foodieObject.foodieObjectType()) pre-save to Server resulted in error - \(error.localizedDescription)")

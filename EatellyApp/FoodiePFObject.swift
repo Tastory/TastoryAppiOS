@@ -68,6 +68,9 @@ class FoodiePFObject: PFObject {
         // Error handle?
         if let error = serverError {
           CCLog.warning("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
+          if let delegate = self.foodieObject.delegate {
+            CCLog.warning("Failure on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())")
+          }
         }
         // Return if got what's wanted
         callback?(serverError)
@@ -89,6 +92,9 @@ class FoodiePFObject: PFObject {
         CCLog.debug("fetchFromLocalDatastore Parse cache miss")
       } else {
         CCLog.assert("fetchFromLocalDatastore failed with error: \(err.localizedDescription)")
+        if let delegate = self.foodieObject.delegate {
+          CCLog.warning("Failure on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())")
+        }
         return
       }
 
@@ -98,6 +104,9 @@ class FoodiePFObject: PFObject {
         // Error handle?
         if let error = serverError {
           CCLog.warning("fetchIfNeededInBackground failed with error: \(error.localizedDescription)")
+          if let delegate = self.foodieObject.delegate {
+            CCLog.warning("Failure on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())")
+          }
         }
         // Return if got what's wanted
         callback?(serverError)
