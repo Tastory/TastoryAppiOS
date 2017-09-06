@@ -84,7 +84,7 @@ class FoodieQuery {
   
   
   // MARK: - Public Static Functions
-  static func getFirstObject(withName name: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  static func getFirstObject(withName name: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {  // TODO: - Should be get first Journal yo
     let query = FoodieJournal.query()!
     query.fromPin(withName: name)
     query.getFirstObjectInBackground(block: callback)

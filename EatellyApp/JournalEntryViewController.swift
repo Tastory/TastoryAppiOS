@@ -103,7 +103,7 @@ class JournalEntryViewController: UITableViewController {
         
         // TODO: What we really should do is to move this from a workingJournal/User Document space, into the Cache space.
         FoodieJournal.unpinAllObjectsInBackground(withName: "workingJournal")
-        FoodieJournal.setJournal(journal: nil)
+        FoodieJournal.removeCurrent()
         self.workingJournal = nil
         
         // Remove the spinner and resume user interaction
@@ -311,44 +311,44 @@ class JournalEntryViewController: UITableViewController {
       }
       
       // Let's figure out what to do with the returned Moment
-      guard let moment = returnedMoment else {
-        // Nothing needs to be done. Assume no moment returned.
-        return
-      }
-        
-      if markupMoment != nil {
-        // So there is a Moment under markup. The returned Moment should match this.
-        if returnedMoment === markupMoment {
-          
-          // TODO: Gotta do a Moment Replace operation. See Foodie Object Model
-          // Probably replace the Moment in Memory. Set the right flags so Pre-Upload will do the right things
-          
+      if let moment = returnedMoment {
+        if markupMoment != nil {
+          // So there is a Moment under markup. The returned Moment should match this.
+          if returnedMoment === markupMoment {
+            
+            // TODO: Gotta do a Moment Replace operation. See Foodie Object Model
+            // Probably replace the Moment in Memory. Set the right flags so Pre-Upload will do the right things
+            
+          } else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain)
+            CCLog.assert("returnedMoment expected to match markupMoment")
+          }
         } else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain)
-          CCLog.assert("returnedMoment expected to match markupMoment")
+          
+          // This is a new Moment. Let's add it to the Journal!
+          workingJournal.add(moment: moment)
+          workingJournal.foodieObject.markModified()
+          
+          // If there wasn't any moments before, we got to make this the default thumbnail for the Journal
+          // Got to do this also when removing moments!!!
+          if workingJournal.moments!.count == 1 {
+            // TODO: Do we need to factor out thumbnail operations?
+            workingJournal.thumbnailFileName = moment.thumbnailFileName
+            workingJournal.thumbnailObj = moment.thumbnailObj
+          }
+          
+          let momentPreSaveOperation = PreSaveOperation(on: workingJournal, with: moment) { (error) in
+            if error != nil {  // Error code should've already been printed to the Debug log from preSave()
+              AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .internalTryAgain)
+            }
+            self.returnedMoment = nil  // We should be in a state where whom is the returned Moment should no longer matter
+          }
+          saveOperationQueue.addOperation(momentPreSaveOperation)
         }
       } else {
-        
-        // This is a new Moment. Let's add it to the Journal!
-        workingJournal.add(moment: moment)
-        workingJournal.foodieObject.markModified()
-        
-        // If there wasn't any moments before, we got to make this the default thumbnail for the Journal
-        // Got to do this also when removing moments!!!
-        if workingJournal.moments!.count == 1 {
-          // TODO: Do we need to factor out thumbnail operations?
-          workingJournal.thumbnailFileName = moment.thumbnailFileName
-          workingJournal.thumbnailObj = moment.thumbnailObj
-        }
-        
-        let momentPreSaveOperation = PreSaveOperation(on: workingJournal, with: moment) { (error) in
-          if error != nil {  // Error code should've already been printed to the Debug log from preSave()
-            AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .internalTryAgain)
-          }
-          self.returnedMoment = nil  // We should be in a state where whom is the returned Moment should no longer matter
-        }
-        saveOperationQueue.addOperation(momentPreSaveOperation)
+        CCLog.debug("No Moment returned on viewWillAppear")
       }
+      
     }
   }
   
@@ -422,7 +422,7 @@ class JournalEntryViewController: UITableViewController {
           return
         }
         
-        foodieObject.saveRecursive(to: .server, withName: nil) { (success, error) -> Void in
+        foodieObject.saveRecursive(to: .server, withName: "workingJournal") { (success, error) -> Void in
           
           if let error = error {
             CCLog.warning("\(foodieObject.foodieObjectType()) pre-save to Server resulted in error - \(error.localizedDescription)")
@@ -455,7 +455,7 @@ class JournalEntryViewController: UITableViewController {
     override func main() {
       CCLog.debug ("Journal Save Operation Started")
       
-      journal.saveRecursive(to: .server) { (_, error) in
+      journal.saveRecursive(to: .server, withName: FoodieGlobal.Constants.SavedDraftPinName) { (_, error) in
         self.callback?(error)
         self.finished()
       }

@@ -73,7 +73,7 @@ class FoodieObject {
   }
   
   
-  enum StorageLocation {
+  enum StorageLocation: String {
     case local
     case server
     case both
@@ -365,9 +365,10 @@ class FoodieObject {
     child.saveRecursive(to: location, withName: name) { /*[unowned self]*/ (success, error) in
       if !success {
         if let hasError = error {
+          CCLog.warning("saveChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(hasError.localizedDescription)")
           self.protectedOperationError = hasError
         } else {
-          CCLog.assert("saveChild failed but block contained no Error")
+          CCLog.fatal("saveChild failed but block contained no Error")
         }
       }
       
@@ -406,7 +407,7 @@ class FoodieObject {
   
   // Function to delete this object
   func deleteObject(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
-    CCLog.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject")
+    CCLog.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject from \(location.rawValue)")
     
     guard let delegateObj = delegate else {
       CCLog.fatal("delegate not expected to be nil in deleteObject()")
@@ -436,6 +437,7 @@ class FoodieObject {
   
   
   func deleteChild(_ child: FoodieObjectDelegate,
+                   withName name: String? = nil,
                    withBlock callback: FoodieObject.BooleanErrorBlock?) {
 
     // Lock here is in case that if the first operation competes and calls back before even the 2nd op's deleteChild goes out
@@ -443,7 +445,7 @@ class FoodieObject {
     self.outstandingChildOperations += 1
     SwiftMutex.unlock(&self.criticalMutex)
     
-    child.deleteRecursive(withName: nil, withBlock: {(success, error) -> Void in
+    child.deleteRecursive(withName: name, withBlock: {(success, error) -> Void in
       
       if !success {
         if let hasError = error {

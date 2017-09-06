@@ -22,9 +22,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var title: String? // Title for the Journal
   @NSManaged var author: FoodieUser? // Pointer to the user that authored this Moment
   @NSManaged var venue: FoodieVenue? // Pointer to the Restaurant object
-  //@NSManaged var venueName: String? // Easy access to venue name
-  @NSManaged var location: PFGeoPoint? // Geolocation of the Journal entry, TODO: Should be made into a relational query
-  
+
   @NSManaged var journalURL: String? // URL to the Journal article
   @NSManaged var tags: Array<String>? // Array of Strings, unstructured
 
@@ -35,10 +33,10 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   // Date created vs Date updated is given for free
   
   
+  
   // MARK: Error Types Definition
   enum ErrorCode: LocalizedError {
     
-    case saveSyncFailedWithNoError
     case selfRetrievalJournalNilThumbnail
     case selfRetrievalThumbnailNilImage
     case contentRetrieveMomentArrayNil
@@ -46,8 +44,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     var errorDescription: String? {
       switch self {
-      case .saveSyncFailedWithNoError:
-        return NSLocalizedString("saveSync() Failed, but no Error was returned from saveRecursive", comment: "Error description for an exception error code")
       case .selfRetrievalJournalNilThumbnail:
         return NSLocalizedString("selfRetrieval() Journal retrieved with thumbnailFileName = nil", comment: "Error description for an exception error code")
       case .selfRetrievalThumbnailNilImage:
@@ -66,17 +62,18 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
+  
   // MARK: - Public Constants
   struct Constants {
     static let MomentsToBufferAtATime = 2
   }
   
   
-  // MARK: - Public Static Variables
-  static var currentJournal: FoodieJournal? { return currentJournalPrivate }
   
-  // MARK: - Private Static Variables
-  private static var currentJournalPrivate: FoodieJournal?
+  // MARK: - Public Read-Only Static Variables
+  fileprivate(set) static var currentJournal: FoodieJournal?
+  
+  
   
   // MARK: - Public Instance Variables
   var thumbnailObj: FoodieMedia?
@@ -84,87 +81,41 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   var contentPrefetchContext: FoodiePrefetch.Context?
 
 
+  
   // MARK: - Private Instance Variables
   fileprivate var contentRetrievalMutex = SwiftMutex.create()
   fileprivate var contentRetrievalInProg = false
   fileprivate var contentRetrievalPending = false
   fileprivate var contentRetrievalPendingCallback: FoodieObject.SimpleErrorBlock?
   
+  
+  
   // MARK: - Public Static Functions
-
-  static func setJournal(journal: FoodieJournal?) {
-    currentJournalPrivate = journal
-  }
-
-
   static func newCurrent() -> FoodieJournal {
-    if currentJournalPrivate != nil {
-      CCLog.assert(".newCurrent() without Save attempted but currentJournal != nil")
+    if currentJournal != nil {
+      CCLog.assert("Attempted to create a new currentJournal but currentJournal != nil")
     }
-    currentJournalPrivate = FoodieJournal(withState: .objectModified)
+    
+    currentJournal = FoodieJournal(withState: .objectModified)
+    CCLog.debug("New Current Journal created. Session FoodieObject ID = \(currentJournal!.getUniqueIdentifier())")
 
-    guard let current = currentJournalPrivate else {
-      CCLog.fatal("Just created a new FoodieJournal() but currentJournalPrivate still nil")
+    guard let current = currentJournal else {
+      CCLog.fatal("Just created a new FoodieJournal but currentJournal still nil")
     }
     return current
   }
   
-
-  // Function to create a new FoodieJournal as the current Journal. Save or discard the previous current Journal
-  static func newCurrentSync(saveCurrent: Bool) throws -> FoodieJournal? {
-    if saveCurrent {
-      guard let current = currentJournalPrivate else {
-        CCLog.assert("nil currentJournalPrivate on Journal Save when trying to create a new current Journal")
-        return nil
-      }
-      
-      // This save blocks until complete
-      try current.saveSync()
-
-    } else if currentJournalPrivate != nil {
-      
-      // make sure that this journal has never been saved to server before deleting otherwise you want to preserve it
-      if(currentJournalPrivate?.foodieObject.operationState == .savedToLocal)
-      {
-        currentJournalPrivate?.deleteRecursive(withBlock: {(success,error)-> Void in
-          if(success) {
-            CCLog.verbose("Removed local copy from discared journal")
-          }
-        })
-      }
-      
-      CCLog.debug("Current Journal being overwritten without Save")
-    } else {
-      CCLog.assert("Use .newCurrent() without Save instead")  // Only barfs at development time. Continues on Production...
-    }
-    currentJournalPrivate = FoodieJournal(withState: .objectModified)
-    return currentJournalPrivate
+  
+  static func removeCurrent() {
+    if currentJournal == nil { CCLog.assert("CurrentJournal is already nil") }
+    CCLog.debug("Current Journal Nil'd")
+    currentJournal = nil
   }
   
   
-  // Asynchronous version of creating a new Current Journal
-  static func newCurrentAsync(saveCurrent: Bool, saveCallback: ((Bool, Error?) -> Void)?)  -> FoodieJournal? {
-    if saveCurrent {
-      // If anything fails here report failure up to Controller layer and let Controller handle
-      guard let callback = saveCallback else {
-        CCLog.assert("nil errorCallback on Journal Save when trying to create a new current Journal")
-        return nil
-      }
-      guard let current = currentJournalPrivate else {
-        CCLog.assert("nil currentJournalPrivate on Journal Save when trying ot create a new current Journal")
-        return nil
-      }
-      
-      // This save happens in the background
-      current.saveAsync(callback: callback)
-      
-    } else if currentJournalPrivate != nil {
-      CCLog.debug("Current Journal being overwritten without Save")
-    } else {
-      CCLog.assert("Use .newCurrent() without Save instead")  // Only barfs at development time. Continues on Production...
-    }
-    currentJournalPrivate = FoodieJournal(withState: .objectModified)
-    return currentJournalPrivate
+  static func setCurrentJournal(to journal: FoodieJournal) {
+    currentJournal = journal
+    CCLog.debug("Current Journal set. Session FoodieObject ID = \(journal.getUniqueIdentifier())")
   }
   
   
@@ -184,63 +135,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  // Function to save Journal. Block until complete
-  func saveSync() throws {
-    
-    var block = true
-    var blockError: Error? = nil
-    var blockSuccess = false
-    var blockWait = 0
-    
-    saveRecursive(to: .local) { /*[unowned self]*/ (success, error) in
-      if success {
-        self.saveRecursive(to: .server) { (success, error) in
-          if success {
-            block = false
-            blockSuccess = true
-            blockError = nil
-          } else {
-            block = false
-            blockSuccess = false
-            blockError = error
-          }
-        }
-      } else {
-        block = false
-        blockSuccess = false
-        blockError = error
-      }
-    }
-    
-    while block {
-      sleep(1)
-      blockWait = blockWait + 1
-    }
-  
-    CCLog.verbose("FoodieJournal.saveSync Completed. Save took \(blockWait) seconds")
-  
-    if let error = blockError {
-      throw error
-    } else if blockSuccess != true {
-      throw ErrorCode(.saveSyncFailedWithNoError)
-    }
-    
-    return
-  }
-
-  
-  // Function to save Journal in background
-  func saveAsync(callback: ((Bool, Error?) -> Void)?) {
-    saveRecursive(to: .local) { /*[unowned self]*/ (success, error) in
-      if success {
-        self.saveRecursive(to: .server, withBlock: callback)
-      } else {
-        callback?(false, error)
-      }
-    }
-  }
-  
-
   // Function to add Moment to Journal. If no position specified, add to end of array
   func add(moment: FoodieMoment,
            to position: Int? = nil) {
@@ -274,12 +168,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  func deleteAsync(withBlock callback: FoodieObject.BooleanErrorBlock?){
-    deleteRecursive(withBlock: callback)
-  }
-  
-
-  
   // Function to get index of specified Moment in Moment Array
   func getIndexOf(_ moment: FoodieMoment) -> Int {
 
@@ -299,10 +187,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     return momentArray.count  // This is error case
   }
   
-  
-  func setGeoPoint(latitude: Double, longitude: Double) {
-    location = PFGeoPoint(latitude: latitude, longitude: longitude)
-  }
   
   
   // MARK: - Journal specific Retrieval algorithms
@@ -510,7 +394,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
-                    withName name: String? = nil,
+                    withName name: String?,
                     withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
@@ -565,28 +449,29 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   }
  
   // Trigger recursive delete against all child objects.
-  func deleteRecursive(withName name: String? = nil,
+  func deleteRecursive(withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    retrieve() { error in
+    // Why are we retrieving again? retrieve() { error in
       
       // TOOD: Victor, what happens if retrieve fails?
       
       self.foodieObject.deleteObjectLocalNServer(withName: name) { (success, error) in
         
         if (success) {
+          
           self.foodieObject.resetOutstandingChildOperations()
           
           // check to see if there are more items such as moments, markups to delete
           if let hasMoment = self.moments {
             for moment in hasMoment {
-              self.foodieObject.deleteChild(moment, withBlock: callback)
+              self.foodieObject.deleteChild(moment, withName: name, withBlock: callback)
             }
           }
           
           if let hasMarkup = self.markups {
             for markup in hasMarkup {
-              self.foodieObject.deleteChild(markup, withBlock: callback)
+              self.foodieObject.deleteChild(markup, withName: name, withBlock: callback)
             }
           }
           
@@ -598,7 +483,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
           callback?(success, error)
         }
       }
-    }
+    // }
   }
   
   func verbose() {

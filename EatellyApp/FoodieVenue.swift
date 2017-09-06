@@ -700,7 +700,7 @@ extension FoodieVenue: FoodieObjectDelegate {
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
-                     withName name: String? = nil,
+                     withName name: String?,
                      withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
@@ -718,7 +718,7 @@ extension FoodieVenue: FoodieObjectDelegate {
   
   
   // Trigger recursive delete against all child objects.
-  func deleteRecursive(withName name: String? = nil,
+  func deleteRecursive(withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     CCLog.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")

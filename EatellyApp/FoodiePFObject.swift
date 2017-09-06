@@ -108,7 +108,7 @@ class FoodiePFObject: PFObject {
   
   // Function to save this and all child Parse objects to local.
   func saveToLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    CCLog.verbose("FoodiePFObject.saveToLocal")
+    CCLog.debug("FoodiePFObject.saveToLocal with name '\(name ?? "")', session ID \(self.getUniqueIdentifier())")
     
     // TODO: Maybe wanna track for Parse that only 1 Save on the top is necessary
     if let name = name {
@@ -121,7 +121,7 @@ class FoodiePFObject: PFObject {
   
   // Function to save this and all child Parse objects to server
   func saveToServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    CCLog.verbose("FoodiePFObject.saveToServer")
+    CCLog.debug("FoodiePFObject.saveToServer")
     
     // TODO: Maybe wanna track for Parse that only 1 Save on the top is necessary
     saveInBackground(block: callback)
@@ -130,7 +130,7 @@ class FoodiePFObject: PFObject {
   
   // Function to delete this and all child Parse objects from local
   func deleteFromLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    CCLog.verbose("FoodiePFObject.deleteFromLocal")
+    CCLog.debug("FoodiePFObject.deleteFromLocal with name '\(name ?? "")', session ID \(self.getUniqueIdentifier())")
     
     if let name = name {
       unpinInBackground(withName: name, block: callback)
@@ -142,7 +142,7 @@ class FoodiePFObject: PFObject {
   
   // Function to delete this and all child Parse objects from server
   func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    CCLog.verbose("FoodiePFObject.deleteFromServer")
+    CCLog.debug("FoodiePFObject.deleteFromServer")
     
     deleteInBackground(block: callback)
   }

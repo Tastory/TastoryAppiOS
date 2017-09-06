@@ -187,7 +187,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
-                     withName name: String? = nil,
+                     withName name: String?,
                      withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
@@ -216,7 +216,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
     
     if let thumbnail = thumbnailObj {
-      foodieObject.saveChild(thumbnail, to: location, withBlock: callback)
+      foodieObject.saveChild(thumbnail, to: location, withName: name, withBlock: callback)
       childOperationPending = true
     }
     
@@ -230,7 +230,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   // Trigger recursive saves against all child objects.
-  func deleteRecursive(withName name: String? = nil,
+  func deleteRecursive(withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     // retrieve moment first
@@ -246,11 +246,11 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           
           // check for media and thumbnails to be deleted from this object
           if let hasMedia = self.mediaObj {
-            self.foodieObject.deleteChild(hasMedia, withBlock: callback)
+            self.foodieObject.deleteChild(hasMedia, withName: name, withBlock: callback)
           }
               
           if let hasMomentThumb = self.thumbnailObj {
-            self.foodieObject.deleteChild(hasMomentThumb, withBlock: callback)
+            self.foodieObject.deleteChild(hasMomentThumb, withName: name, withBlock: callback)
           }
           
           // TODO: Victor, what happens if there is neither Moments nor Markup in this Journal? I know it's hypothetical.

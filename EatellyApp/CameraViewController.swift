@@ -119,6 +119,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     // Swifty Cam Setup
     cameraDelegate = self
     doubleTapCameraSwitch = false
+    videoQuality = .resolution1280x720  // .high is 16x9, but .medium is 4x3
     
     if let imagePicker = imagePicker {
       view.bringSubview(toFront: imagePicker)

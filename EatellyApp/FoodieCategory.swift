@@ -224,7 +224,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   }
   
   // Trigger recursive delete against all child objects.
-  func deleteRecursive(withName name: String? = nil,
+  func deleteRecursive(withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
     CCLog.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")

@@ -74,8 +74,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func applicationDidBecomeActive(_ application: UIApplication) {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+
     // check to see if there is any draft journal
-    FoodieQuery.getFirstObject(withName: "workingJournal") { (object, error) in
+    FoodieQuery.getFirstObject(withName: FoodieGlobal.Constants.SavedDraftPinName) { (object, error) in
       
       if let error = error {
         CCLog.debug("No pinned draft Stories found in Local Datastore - \(error.localizedDescription)")
@@ -95,7 +96,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         journal.foodieObject.markModified()
-        FoodieJournal.setJournal(journal: journal)
+        FoodieJournal.setCurrentJournal(to: journal)
       }
     }
   }
