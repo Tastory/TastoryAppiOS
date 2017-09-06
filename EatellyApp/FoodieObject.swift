@@ -407,16 +407,16 @@ class FoodieObject {
   
   // Function to delete this object
   func deleteObject(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
-    CCLog.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.deleteObject from \(location.rawValue)")
-    
-    guard let delegateObj = delegate else {
+    guard let delegate = delegate else {
       CCLog.fatal("delegate not expected to be nil in deleteObject()")
     }
+    CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())).Object.deleteObject from \(location.rawValue)")
+    
     switch location {
     case .local:
-      delegateObj.deleteFromLocal(withName: name, withBlock: callback)
+      delegate.deleteFromLocal(withName: name, withBlock: callback)
     case .server:
-      delegateObj.deleteFromServer(withBlock: callback)
+      delegate.deleteFromServer(withBlock: callback)
     default:
       break
     }
@@ -424,13 +424,21 @@ class FoodieObject {
   
   
   func deleteObjectLocalNServer(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    // delete from local first
-    deleteObject(from: .local, withName: name) { (success, error) in
-      if(success) {
-        self.deleteObject(from: .server, withName: name, withBlock: callback)
-      } else {
-        // error when deleting journal from local
-        callback?(success, error)
+    // Delete from Server first!!! Remove it from circulation. Also delete from Local might remove memory copy also!!
+    deleteObject(from: .server, withName: name) { (success, serverError) in
+      
+      if let error = serverError, let delegate = self.delegate {
+        CCLog.warning("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())).Object.deleteObject from Server failed on error - \(error.localizedDescription)")
+      } else if self.delegate == nil { CCLog.fatal("FoodieObject.delegate == nil") }
+      
+      self.deleteObject(from: .local, withName: name) { (success, localError) in
+       
+        if let error = localError, let delegate = self.delegate {
+          CCLog.warning("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())).Object.deleteObject from Local failed on error - \(error.localizedDescription)")
+        } else if self.delegate == nil { CCLog.fatal("FoodieObject.delegate == nil") }
+        
+        // If there's no Local error, see if Server delete resulted in an error
+        callback?(success, localError ?? serverError)
       }
     }
   }

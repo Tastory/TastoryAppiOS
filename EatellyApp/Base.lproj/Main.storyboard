@@ -76,7 +76,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes"/>
                             </textField>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="srX-2D-hwk">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="srX-2D-hwk" customClass="PassthruStackView" customModule="EatellyApp" customModuleProvider="target">
                                 <rect key="frame" x="16" y="445" width="343" height="182"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1zZ-dd-fcW">
@@ -128,6 +128,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="buttonStackView" destination="srX-2D-hwk" id="D6b-b5-ux5"/>
                         <outlet property="doubleTapGestureRecognizer" destination="gtB-Zu-pZ4" id="qyu-HN-IhQ"/>
                         <outlet property="draftButton" destination="1zZ-dd-fcW" id="xkV-cw-rjf"/>
                         <outlet property="locationField" destination="0wJ-kE-Bqf" id="udw-u7-LkJ"/>

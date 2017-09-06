@@ -245,12 +245,18 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           self.foodieObject.resetOutstandingChildOperations()
           
           // check for media and thumbnails to be deleted from this object
-          if let hasMedia = self.mediaObj {
-            self.foodieObject.deleteChild(hasMedia, withName: name, withBlock: callback)
+          if let media = self.mediaObj {
+            self.foodieObject.deleteChild(media, withName: name, withBlock: callback)
           }
               
-          if let hasMomentThumb = self.thumbnailObj {
-            self.foodieObject.deleteChild(hasMomentThumb, withName: name, withBlock: callback)
+          if let thumbnail = self.thumbnailObj {
+            self.foodieObject.deleteChild(thumbnail, withName: name, withBlock: callback)
+          }
+          
+          if let markups = self.markups {
+            for markup in markups {
+              self.foodieObject.deleteChild(markup, withName: name, withBlock: callback)
+            }
           }
           
           // TODO: Victor, what happens if there is neither Moments nor Markup in this Journal? I know it's hypothetical.

@@ -49,6 +49,7 @@
 		8C8986781E91DC5800B62306 /* FoodieHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986771E91DC5800B62306 /* FoodieHistory.swift */; };
 		8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986791E933E2E00B62306 /* FoodieUser.swift */; };
 		8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89867D1E958B4300B62306 /* FoodieObject.swift */; };
+		8C900D311F5FAAC30058BDFE /* TransparentStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C900D301F5FAAC30058BDFE /* TransparentStackView.swift */; };
 		8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */; };
 		8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0601E8F615D005F337E /* ExitButton.swift */; };
 		8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0611E8F615D005F337E /* MarkupViewController.swift */; };
@@ -132,6 +133,7 @@
 		8C8986771E91DC5800B62306 /* FoodieHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieHistory.swift; sourceTree = "<group>"; };
 		8C8986791E933E2E00B62306 /* FoodieUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieUser.swift; sourceTree = "<group>"; };
 		8C89867D1E958B4300B62306 /* FoodieObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieObject.swift; sourceTree = "<group>"; };
+		8C900D301F5FAAC30058BDFE /* TransparentStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TransparentStackView.swift; path = EatellyApp/TransparentStackView.swift; sourceTree = "<group>"; };
 		8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMoment.swift; sourceTree = "<group>"; };
 		8C9AD0601E8F615D005F337E /* ExitButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExitButton.swift; path = EatellyApp/ExitButton.swift; sourceTree = "<group>"; };
 		8C9AD0611E8F615D005F337E /* MarkupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkupViewController.swift; sourceTree = "<group>"; };
@@ -321,6 +323,7 @@
 				8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */,
 				8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */,
 				8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */,
+				8C900D301F5FAAC30058BDFE /* TransparentStackView.swift */,
 				8CBF558C1E7F7EDF00F4B1CD /* LaunchScreen.storyboard */,
 				8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */,
 			);
@@ -749,6 +752,7 @@
 				8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */,
 				8C8986761E91A72D00B62306 /* FoodieCategory.swift in Sources */,
 				8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */,
+				8C900D311F5FAAC30058BDFE /* TransparentStackView.swift in Sources */,
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */,
 				8CE259AD1F53808C00310749 /* AlertDialog.swift in Sources */,

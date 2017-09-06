@@ -452,8 +452,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func deleteRecursive(withName name: String?,
                        withBlock callback: FoodieObject.BooleanErrorBlock?) {
     
-    // Why are we retrieving again? retrieve() { error in
-      
+    retrieve() { error in  // This is for incase this object is not here. No way to access child objects if that's the case.
       // TOOD: Victor, what happens if retrieve fails?
       
       self.foodieObject.deleteObjectLocalNServer(withName: name) { (success, error) in
@@ -475,6 +474,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
             }
           }
           
+          // Don't delete Users nor Venues!!!
+          
           // TODO: Victor, what happens if there is neither Moments nor Markup in this Journal? I know it's hypothetical. 
           // But it will mean the whole recursive operation hangs because there will never be a callback
           
@@ -483,7 +484,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
           callback?(success, error)
         }
       }
-    // }
+    }
   }
   
   func verbose() {

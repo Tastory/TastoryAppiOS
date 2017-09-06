@@ -27,7 +27,7 @@ class MapViewController: UIViewController {
   fileprivate var locationWatcher: LocationWatch.Context?
   fileprivate var lastLocation: CLLocationCoordinate2D? = nil
   fileprivate var lastMapDelta: CLLocationDegrees? = nil
-  
+
   
   // MARK: - IBOutlets
   @IBOutlet weak var mapView: MKMapView?
@@ -35,6 +35,7 @@ class MapViewController: UIViewController {
   @IBOutlet weak var pinchGestureRecognizer: UIPinchGestureRecognizer?
   @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer?
   @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer?
+  @IBOutlet weak var buttonStackView: UIStackView!
   @IBOutlet weak var locationField: UITextField?
   @IBOutlet weak var draftButton: UIButton?
 
@@ -45,6 +46,7 @@ class MapViewController: UIViewController {
     locationField?.resignFirstResponder()
   }
 
+  
   // Pan, Pinch, Double-Tap gestures all routed here
   @IBAction func mapGestureDetected(_ recognizer: UIGestureRecognizer) {
 
@@ -60,6 +62,7 @@ class MapViewController: UIViewController {
     }
   }
 
+  
   @IBAction func launchDraftJournal(_ sender: Any) {
     // This is used for viewing the draft journal to be used with update journal later
     // Hid the button due to problems with empty draft journal and saving an empty journal is problematic
@@ -77,12 +80,14 @@ class MapViewController: UIViewController {
     self.present(viewController, animated: true)
   }
 
+  
   @IBAction func launchCamera(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
     viewController.cameraReturnDelegate = self
     self.present(viewController, animated: true)
   }
+  
   
   @IBAction func currentLocationReturn(_ sender: UIButton) {
 
@@ -105,6 +110,7 @@ class MapViewController: UIViewController {
     // Start updating location again
     locationWatcher?.resume()
   }
+  
   
   @IBAction func searchWithFilter(_ sender: UIButton) {
     guard let currentMapView = mapView else {
@@ -133,6 +139,7 @@ class MapViewController: UIViewController {
     queryAndLaunchFeed(withQuery: journalQuery)
   }
   
+  
   @IBAction func searchAll(_ sender: UIButton) {
     let journalQuery = FoodieQuery()
     journalQuery.setSkip(to: 0)
@@ -140,6 +147,7 @@ class MapViewController: UIViewController {
     _ = journalQuery.addArrangement(type: .modificationTime, direction: .ascending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
     queryAndLaunchFeed(withQuery: journalQuery)
   }
+  
   
   
   // MARK: - Class Private Functions
@@ -269,6 +277,35 @@ class MapViewController: UIViewController {
     doubleTapGestureRecognizer?.delegate = self
     singleTapGestureRecognizer?.delegate = self
     locationField?.delegate = self
+    
+    // If current journal is nil, double check and see if there are any in Local Datastore
+    if FoodieJournal.currentJournal == nil {
+      
+      FoodieQuery.getFirstObject(withName: FoodieGlobal.Constants.SavedDraftPinName) { (object, error) in
+        
+        if let error = error {
+          CCLog.debug("No pinned draft Stories found in Local Datastore - \(error.localizedDescription)")
+          return
+        }
+        
+        guard let journal = object as? FoodieJournal else {
+          CCLog.warning("Retrieve pinned Journal from Local Datastore is nil or not a FoodieJournal")
+          return
+        }
+        
+        journal.retrieveRecursive(forceAnyways: false) { error in
+          
+          if let error = error {
+            CCLog.warning("Retrieve Recursive on Journal resulted in error - \(error.localizedDescription)")
+            return
+          }
+          
+          journal.foodieObject.markModified()
+          FoodieJournal.setCurrentJournal(to: journal)
+          self.draftButton?.isHidden = false
+        }
+      }
+    }
   }
   
   
