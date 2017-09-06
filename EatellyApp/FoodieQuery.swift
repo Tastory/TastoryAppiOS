@@ -37,10 +37,13 @@ class FoodieQuery {
   // MARK: Error Types Definition
   enum ErrorCode: LocalizedError {
     
+    case cannotCreatePFQuery
     case noPFQueryToPerformAnotherSearch
     
     var errorDescription: String? {
       switch self {
+      case .cannotCreatePFQuery:
+        return NSLocalizedString("Cannot create PFQuery, unable to perform the Query", comment: "Error description for a FoodieQuery error code")
       case .noPFQueryToPerformAnotherSearch:
         return NSLocalizedString("No initial PFQuery created, so cannot get another batch of query results", comment: "Error description for a FoodieQuery error code")
       }
@@ -55,6 +58,7 @@ class FoodieQuery {
   
   // MARK: - Private Instance Variables
   private var pfQuery: PFQuery<PFObject>?
+  private var pfInnerQuery: PFQuery<PFObject>?
   
   private var foursquareVenueID: String?
   
@@ -249,10 +253,31 @@ class FoodieQuery {
     return query
   }
   
+  
   func initJournalQueryAndSearch(withBlock callback: JournalsErrorBlock?) {
-    pfQuery = FoodieJournal.query()
-    pfQuery = setupCommon(for: pfQuery!)
-    pfQuery = setupVenueCommon(for: pfQuery!)  // TODO: This should be relational query
+    // This is the Outer Query
+    guard var outerQuery = FoodieJournal.query() else {
+      CCLog.assert("Cannot create a PFQuery object from FoodieJournal")
+      callback?(nil, ErrorCode.cannotCreatePFQuery)
+      return
+    }
+    
+    // This is the Inner Query
+    guard var innerQuery = FoodieVenue.query() else {
+      CCLog.assert("Cannot create a PFQuery object from FoodieJournal")
+      callback?(nil, ErrorCode.cannotCreatePFQuery)
+      return
+    }
+    
+    outerQuery = setupCommon(for: outerQuery)
+    innerQuery = setupVenueCommon(for: innerQuery)
+    
+    // Create the Relational Query
+    outerQuery.whereKey("venue", matchesQuery: innerQuery)
+    
+    // Keep track of the Query objects
+    pfQuery = outerQuery
+    pfInnerQuery = innerQuery
     
     // Do the actual search!
     pfQuery!.findObjectsInBackground { (objects, error) in
@@ -264,10 +289,17 @@ class FoodieQuery {
     }
   }
   
+  
   func initVenueQueryAndSearch(withBlock callback: VenuesErrorBlock?) {
-    pfQuery = FoodieVenue.query()
-    pfQuery = setupCommon(for: pfQuery!)
-    pfQuery = setupVenueCommon(for: pfQuery!)
+    guard var query = FoodieVenue.query() else {
+      CCLog.assert("Cannot create a PFQuery object from FoodieJournal")
+      callback?(nil, ErrorCode.cannotCreatePFQuery)
+      return
+    }
+    
+    query = setupCommon(for: query)
+    query = setupVenueCommon(for: query)
+    pfQuery = query
     
     // Do the actual search!
     pfQuery!.findObjectsInBackground { (objects, error) in
@@ -278,6 +310,7 @@ class FoodieQuery {
       }
     }
   }
+  
   
   func getNextJournals(for count: Int, withBlock callback: JournalsErrorBlock?) {
     guard let query = pfQuery else {
@@ -300,6 +333,7 @@ class FoodieQuery {
       }
     }
   }
+  
   
   func getNextVenues(for count: Int, withBlock callback: VenuesErrorBlock?) {
     guard let query = pfQuery else {
