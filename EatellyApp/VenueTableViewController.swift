@@ -27,7 +27,7 @@ class VenueTableViewController: UIViewController {
   
   // MARK: - Constants
   struct Constants {
-    fileprivate static let defaultLocationPlaceholderText = "Enter location to search near"
+    fileprivate static let defaultLocationPlaceholderText = "Location to search near"
     fileprivate static let searchBarSearchDelay = 0.5
   }
   
@@ -350,6 +350,12 @@ extension VenueTableViewController: UITableViewDataSource {
       } else {
         // We are not going display venues with no name
         self.venueResultArray!.remove(at: indexPath.row)
+        if let id = venue.foursquareVenueID {
+          CCLog.warning("Venue with No Name! Venue ID \(id)")
+        }
+        else {
+          CCLog.warning("Venue with No Name and No Venue ID either!!")
+        }
       }
     }
     return cell

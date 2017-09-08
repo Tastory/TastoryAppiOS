@@ -79,6 +79,11 @@
 			<key>orderHint</key>
 			<integer>7</integer>
 		</dict>
+		<key>RATreeView.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>9</integer>
+		</dict>
 		<key>Sentry.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -262,7 +267,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>A906862C65FDE233F61EF071C466C2A8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>B27484E31CB8ACDDA6F783A629C93180</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>BD7B78695629488C3A6FC4D4ECBD84A7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -273,6 +288,11 @@
 			<true/>
 		</dict>
 		<key>C01C9EE308D2E8F6032F14C5E336796D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C0325921E63D9DB0103014BF98DE2361</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -288,6 +308,11 @@
 			<true/>
 		</dict>
 		<key>CA56845BD3390DAF0BF5A2AC2EECE956</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>CD61912BE4A5148141B9B382C6644D27</key>
 		<dict>
 			<key>primary</key>
 			<true/>

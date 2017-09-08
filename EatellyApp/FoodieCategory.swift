@@ -23,6 +23,11 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var subcategoryIDs: Array<String>?
 
   
+  // MARK: - Public Instance Variables
+  var subcategories: [FoodieCategory]?
+  var catLevel: Int = 0
+  
+  
   // MARK: - Types & Enumeration
   typealias CategoriesErrorBlock = ([FoodieCategory]?, Error?) -> Void
   
@@ -71,11 +76,8 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Public Static Variables
   static var list: [String: FoodieCategory] { return protectedList }
   static var tree: [String: FoodieCategory] { return protectedTree }
-  
-  
-  // MARK: - Public Instance Variables
-  var subcategories: [FoodieCategory]?
-  
+  static var otherCategoryID: String = ""
+
   
   // MARK: - Public Static Functions
   static func getFromFoursquare(withBlock callback: CategoriesErrorBlock?) {
@@ -123,9 +125,31 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
         protectedTree.removeAll(keepingCapacity: true)
         
         if let categoryArray = result.response?["categories"] as? [[String: Any]] {
+          
+          // Create a 'Others' category
+          otherCategoryID = UUID().uuidString  // It doesn't matter that a new one is generated each time, as long as it's the same everytime
+          let others = FoodieCategory(withState: .objectModified)
+          others.foursquareCategoryID = otherCategoryID
+          others.name = "Other"
+          others.pluralName = "Others"
+          others.shortName = "Other"
+          others.iconPrefix = nil  // TODO: ??
+          others.iconSuffix = nil
+          others.catLevel = 1
+          protectedTree[otherCategoryID] = others
+          protectedTree[otherCategoryID]!.subcategories = [FoodieCategory]()
+          protectedTree[otherCategoryID]!.subcategoryIDs = [String]()
+          
           for category in categoryArray {
-            if let foodieCategory = convertRecursive(from: category) {
+            // Food & Nightlife goes through the regular processing
+            if let foodieCategory = convertRecursive(from: category, forLevel: 1) {
               protectedTree[foodieCategory.foursquareCategoryID!] = foodieCategory
+            }
+            
+            // All other categories go thru Others
+            if let foodieCategory = convertRecursive(from: category, forLevel: 2) {
+              protectedTree[otherCategoryID]!.subcategories!.append(foodieCategory)
+              protectedTree[otherCategoryID]!.subcategoryIDs!.append(foodieCategory.foursquareCategoryID!)
             }
           }
         }
@@ -136,8 +160,8 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Private Static Functions
-  private static func convertRecursive(from dictionary: [String : Any]) -> FoodieCategory? {
-    let foodieCategory = FoodieCategory()
+  private static func convertRecursive(from dictionary: [String : Any], forLevel level: Int) -> FoodieCategory? {
+    let foodieCategory = FoodieCategory(withState: .objectModified)
     guard let id = dictionary["id"] as? String else {
       CCLog.assert("Received dictionary with no ID")
       return nil
@@ -165,6 +189,8 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
       }
     }
     
+    foodieCategory.catLevel = level
+    
     // Append self to static list first. It's by reference anyways so it's fine.
     protectedList[id] = foodieCategory
     
@@ -173,7 +199,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
       foodieCategory.subcategoryIDs = [String]()
       
       for category in categories {
-        if let childCategory = convertRecursive(from: category) {
+        if let childCategory = convertRecursive(from: category, forLevel: level+1) {
           foodieCategory.subcategoryIDs?.append(childCategory.foursquareCategoryID!)  // Force unwrap because you know a freshly converted Category will have ID for sure
           foodieCategory.subcategories?.append(childCategory)
         }

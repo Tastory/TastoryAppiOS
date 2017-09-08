@@ -42,6 +42,8 @@
 		8C5C4DDE1EFEEDEC008C83EC /* FoodiePrefetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5C4DDD1EFEEDEC008C83EC /* FoodiePrefetch.swift */; };
 		8C61BCDC1E985D1300DDF248 /* CleanCrashLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCDB1E985D1300DDF248 /* CleanCrashLog.swift */; };
 		8C7CE2881F36B92A00DEFCBE /* FoodieQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7CE2871F36B92A00DEFCBE /* FoodieQuery.swift */; };
+		8C841B491F6242C00002A5A2 /* CategoryTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C841B481F6242C00002A5A2 /* CategoryTableViewCell.xib */; };
+		8C841B4B1F6244700002A5A2 /* CategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C841B4A1F6244700002A5A2 /* CategoryTableViewCell.swift */; };
 		8C8986701E91981C00B62306 /* FoodieMarkup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89866F1E91981C00B62306 /* FoodieMarkup.swift */; };
 		8C8986721E91982E00B62306 /* FoodieJournal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986711E91982E00B62306 /* FoodieJournal.swift */; };
 		8C8986741E91985700B62306 /* FoodieVenue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986731E91985700B62306 /* FoodieVenue.swift */; };
@@ -50,6 +52,7 @@
 		8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986791E933E2E00B62306 /* FoodieUser.swift */; };
 		8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89867D1E958B4300B62306 /* FoodieObject.swift */; };
 		8C900D311F5FAAC30058BDFE /* TransparentStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C900D301F5FAAC30058BDFE /* TransparentStackView.swift */; };
+		8C900D331F60C0E50058BDFE /* CategoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */; };
 		8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */; };
 		8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0601E8F615D005F337E /* ExitButton.swift */; };
 		8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0611E8F615D005F337E /* MarkupViewController.swift */; };
@@ -126,6 +129,9 @@
 		8C5C4DDD1EFEEDEC008C83EC /* FoodiePrefetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePrefetch.swift; sourceTree = "<group>"; };
 		8C61BCDB1E985D1300DDF248 /* CleanCrashLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CleanCrashLog.swift; sourceTree = "<group>"; };
 		8C7CE2871F36B92A00DEFCBE /* FoodieQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieQuery.swift; sourceTree = "<group>"; };
+		8C841B471F623E670002A5A2 /* RATreeView-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RATreeView-Bridging-Header.h"; sourceTree = "<group>"; };
+		8C841B481F6242C00002A5A2 /* CategoryTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CategoryTableViewCell.xib; path = EatellyApp/CategoryTableViewCell.xib; sourceTree = "<group>"; };
+		8C841B4A1F6244700002A5A2 /* CategoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CategoryTableViewCell.swift; path = EatellyApp/CategoryTableViewCell.swift; sourceTree = "<group>"; };
 		8C89866F1E91981C00B62306 /* FoodieMarkup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMarkup.swift; sourceTree = "<group>"; };
 		8C8986711E91982E00B62306 /* FoodieJournal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieJournal.swift; sourceTree = "<group>"; };
 		8C8986731E91985700B62306 /* FoodieVenue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieVenue.swift; sourceTree = "<group>"; };
@@ -134,6 +140,7 @@
 		8C8986791E933E2E00B62306 /* FoodieUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieUser.swift; sourceTree = "<group>"; };
 		8C89867D1E958B4300B62306 /* FoodieObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieObject.swift; sourceTree = "<group>"; };
 		8C900D301F5FAAC30058BDFE /* TransparentStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TransparentStackView.swift; path = EatellyApp/TransparentStackView.swift; sourceTree = "<group>"; };
+		8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryTableViewController.swift; sourceTree = "<group>"; };
 		8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMoment.swift; sourceTree = "<group>"; };
 		8C9AD0601E8F615D005F337E /* ExitButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExitButton.swift; path = EatellyApp/ExitButton.swift; sourceTree = "<group>"; };
 		8C9AD0611E8F615D005F337E /* MarkupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkupViewController.swift; sourceTree = "<group>"; };
@@ -232,6 +239,7 @@
 				8CBF558A1E7F7EDF00F4B1CD /* Assets.xcassets */,
 				8CBF558F1E7F7EDF00F4B1CD /* Info.plist */,
 				8C40B20B1F1466D40030B5B5 /* Jot-Bridging-Header.h */,
+				8C841B471F623E670002A5A2 /* RATreeView-Bridging-Header.h */,
 				8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */,
 			);
 			name = "Supporting Files";
@@ -324,6 +332,8 @@
 				8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */,
 				8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */,
 				8C900D301F5FAAC30058BDFE /* TransparentStackView.swift */,
+				8C841B4A1F6244700002A5A2 /* CategoryTableViewCell.swift */,
+				8C841B481F6242C00002A5A2 /* CategoryTableViewCell.xib */,
 				8CBF558C1E7F7EDF00F4B1CD /* LaunchScreen.storyboard */,
 				8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */,
 			);
@@ -355,6 +365,7 @@
 				8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */,
 				8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */,
 				8C3254A41F40240900895572 /* VenueTableViewController.swift */,
+				8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -514,6 +525,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8CBF558E1E7F7EDF00F4B1CD /* LaunchScreen.storyboard in Resources */,
+				8C841B491F6242C00002A5A2 /* CategoryTableViewCell.xib in Resources */,
 				8CBF558B1E7F7EDF00F4B1CD /* Assets.xcassets in Resources */,
 				8CBF55891E7F7EDF00F4B1CD /* Main.storyboard in Resources */,
 			);
@@ -736,6 +748,7 @@
 				8C1ED6EE1F5D15A300A8CC94 /* AddMomentLayer.swift in Sources */,
 				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */,
 				8C1ED6F41F5DEC2500A8CC94 /* AsyncOperation.swift in Sources */,
+				8C841B4B1F6244700002A5A2 /* CategoryTableViewCell.swift in Sources */,
 				8C0590511EC7E6A400027E91 /* FoodieMedia.swift in Sources */,
 				8C8986721E91982E00B62306 /* FoodieJournal.swift in Sources */,
 				8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */,
@@ -773,6 +786,7 @@
 				8CC48D601EFC81CD003A0FC9 /* PrecisionTime.swift in Sources */,
 				8C05904B1EC6671400027E91 /* UIStoryboard+Extension.swift in Sources */,
 				8C5C4DDE1EFEEDEC008C83EC /* FoodiePrefetch.swift in Sources */,
+				8C900D331F60C0E50058BDFE /* CategoryTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -966,6 +980,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

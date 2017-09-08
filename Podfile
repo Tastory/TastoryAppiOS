@@ -15,6 +15,7 @@ target 'EatellyApp' do
   pod 'HTTPStatusCodes', '~> 3.1.2'
   pod 'Fabric'
   pod 'Crashlytics'
+  pod 'RATreeView'
 
   target 'EatellyAppTests' do
     inherit! :search_paths

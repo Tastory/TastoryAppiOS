@@ -90,8 +90,8 @@ class MarkupViewController: UIViewController {
   }
   
   @IBAction func textButtonAction(_ sender: UIButton) {
-    if jotViewController.state != JotViewState.editingText {
-      jotViewController.state = JotViewState.editingText
+    if jotViewController.state != .editingText {
+      jotViewController.state = .editingText
       undoButton.isHidden = true
     } else {
       jotViewController.font = getNextFont(size: jotViewController.fontSize)
@@ -101,9 +101,14 @@ class MarkupViewController: UIViewController {
 
   
   @IBAction func drawButtonAction(_ sender: UIButton) {
-    if jotViewController.state == JotViewState.text {
+    if jotViewController.state == .text {
+      
+      view.endEditing(true)
+      
       jotViewController.state = JotViewState.drawing
       deleteButton.isHidden = true
+      bgndButton.isHidden = true
+      alignButton.isHidden = true
       undoButton.isHidden = false
     }
   }
@@ -111,6 +116,9 @@ class MarkupViewController: UIViewController {
   @IBAction func bgndButtonAction(_ sender: UIButton) {
     var whiteValue = jotViewController.whiteValue
     var alphaValue = jotViewController.alphaValue
+    
+    view.endEditing(true)
+    jotViewController.state = .text
     
     if whiteValue == 0.0, alphaValue == 0.0 {
       whiteValue = 0.0
@@ -146,7 +154,7 @@ class MarkupViewController: UIViewController {
   
   
   @IBAction func foodButtonAction(_ sender: UIButton) {
-    jotViewController.state = JotViewState.editingText
+    jotViewController.state = .editingText
     undoButton.isHidden = true
   }
   
@@ -160,6 +168,8 @@ class MarkupViewController: UIViewController {
     var satValue = 0.0
     var valValue = 0.0
     var currentColor: UIColor!
+    
+    view.endEditing(true)
     
     // We are gonna cut up the slider. First 5% fades from white. Last 5% fades to black.
     // Gonna only allow 90% of the Hue pie, so it doesn't loop back to Red
@@ -205,6 +215,9 @@ class MarkupViewController: UIViewController {
   
   @IBAction func sizeSliderChanged(_ sender: UISlider) {
     let fontSize = CGFloat(sender.value)
+    
+    view.endEditing(true)
+    
     jotViewController.fontSize = fontSize
   }
   
@@ -484,6 +497,8 @@ class MarkupViewController: UIViewController {
     foodButton.isHidden = true  // TODO: Unhide this later when want to implement the Food Tag Button
     undoButton.isHidden = true
     deleteButton.isHidden = false
+    bgndButton.isHidden = false
+    alignButton.isHidden = false
     colorSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
     sizeSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
     sizeSlider.minimumValue = Constants.SizeSliderMinFont
@@ -710,11 +725,16 @@ extension MarkupViewController: JotViewControllerDelegate {
   
   func jotViewController(_ jotViewController: JotViewController, isEditingText isEditing: Bool) {
     deleteButton.isHidden = false
+    bgndButton.isHidden = false
+    alignButton.isHidden = false
+    
   }
   
   func jotViewController(_ jotViewController: JotViewController!, didSelectLabel labelInfo: [AnyHashable : Any]!) {
     if jotViewController.state == .text || jotViewController.state == .editingText {
       deleteButton.isHidden = false
+      bgndButton.isHidden = false
+      alignButton.isHidden = false
     }
   }
 }

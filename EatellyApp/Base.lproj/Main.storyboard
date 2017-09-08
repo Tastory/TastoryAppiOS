@@ -70,10 +70,10 @@
                                     <outletCollection property="gestureRecognizers" destination="huL-4O-wj6" appends="YES" id="7kU-O7-nOa"/>
                                 </connections>
                             </mapView>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="18" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Location to search" textAlignment="center" minimumFontSize="18" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
                                 <rect key="frame" x="16" y="28" width="343" height="30"/>
                                 <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes"/>
                             </textField>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="srX-2D-hwk" customClass="PassthruStackView" customModule="EatellyApp" customModuleProvider="target">
@@ -116,11 +116,23 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Category to search" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wze-6b-mmH">
+                                <rect key="frame" x="16" y="66" width="343" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="categoryEditBegin:" destination="BYZ-38-t0r" eventType="editingDidBegin" id="8h2-oN-U0j"/>
+                                </connections>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="wze-6b-mmH" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="DsH-mi-lOt"/>
+                            <constraint firstItem="wze-6b-mmH" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="Hhl-u3-Hi4"/>
                             <constraint firstItem="0wJ-kE-Bqf" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" symbolic="YES" id="Nbp-8y-0cy"/>
                             <constraint firstItem="0wJ-kE-Bqf" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="PUi-hX-qEd"/>
+                            <constraint firstItem="wze-6b-mmH" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="dz1-w5-8kP"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="srX-2D-hwk" secondAttribute="bottom" constant="40" id="lDU-su-0gR"/>
                             <constraint firstAttribute="trailingMargin" secondItem="srX-2D-hwk" secondAttribute="trailing" id="nhL-m8-gFi"/>
                             <constraint firstAttribute="trailingMargin" secondItem="0wJ-kE-Bqf" secondAttribute="trailing" id="sre-db-TIA"/>
@@ -160,7 +172,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-428" y="-666"/>
+            <point key="canvasLocation" x="-428" y="-666.11694152923542"/>
         </scene>
         <!--Feed Collection View Controller-->
         <scene sceneID="1WN-B5-zBj">
@@ -843,7 +855,7 @@
                                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </searchBar>
-                                    <searchBar opaque="NO" contentMode="redraw" text="" placeholder="Enter location to search near" translatesAutoresizingMaskIntoConstraints="NO" id="X26-2v-yRG">
+                                    <searchBar opaque="NO" contentMode="redraw" text="" placeholder="Location to search near" translatesAutoresizingMaskIntoConstraints="NO" id="X26-2v-yRG">
                                         <rect key="frame" x="0.0" y="64" width="375" height="44"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </searchBar>
@@ -880,6 +892,60 @@
                 </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="2461.5999999999999" y="-463.71814092953525"/>
+        </scene>
+        <!--Category Table View Controller-->
+        <scene sceneID="r9j-Iu-ATn">
+            <objects>
+                <viewController storyboardIdentifier="CategoryTableViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="MUc-1H-WcJ" userLabel="Category Table View Controller" customClass="CategoryTableViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="2S4-0h-dJb"/>
+                        <viewControllerLayoutGuide type="bottom" id="Gau-O1-hVX"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="cjn-8n-QMI">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="dp8-CM-2Vn">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
+                                <subviews>
+                                    <view opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="375" placeholderIntrinsicHeight="20" translatesAutoresizingMaskIntoConstraints="NO" id="8ur-XQ-hy3">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="20"/>
+                                        <color key="backgroundColor" red="0.7885406613" green="0.78752297159999995" blue="0.80913728480000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="dhW-2P-Kfe"/>
+                                        </constraints>
+                                    </view>
+                                    <searchBar opaque="NO" contentMode="redraw" text="" placeholder="Category to search" translatesAutoresizingMaskIntoConstraints="NO" id="biv-RP-Mpe" userLabel="Category Search Bar">
+                                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </searchBar>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="dp8-CM-2Vn" firstAttribute="top" secondItem="cjn-8n-QMI" secondAttribute="top" id="NYI-0D-NUc"/>
+                            <constraint firstAttribute="trailing" secondItem="dp8-CM-2Vn" secondAttribute="trailing" id="cZT-jr-iPB"/>
+                            <constraint firstItem="dp8-CM-2Vn" firstAttribute="leading" secondItem="cjn-8n-QMI" secondAttribute="leading" id="rfk-hj-jba"/>
+                        </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="8ss-rC-qvn" appends="YES" id="es5-0H-1D5"/>
+                        </connections>
+                    </view>
+                    <connections>
+                        <outlet property="categorySearchBar" destination="biv-RP-Mpe" id="K5S-OZ-g3A"/>
+                        <outlet property="stackView" destination="dp8-CM-2Vn" id="Wjo-ED-38w"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iba-lP-l1Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="right" id="8ss-rC-qvn">
+                    <connections>
+                        <action selector="rightSwipe:" destination="MUc-1H-WcJ" id="3xS-Ha-qqo"/>
+                    </connections>
+                </swipeGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="297" y="-1352"/>
         </scene>
     </scenes>
 </document>
