@@ -28,18 +28,20 @@ class MapViewController: UIViewController {
   fileprivate var lastLocation: CLLocationCoordinate2D? = nil
   fileprivate var lastMapDelta: CLLocationDegrees? = nil
   fileprivate var searchCategory: FoodieCategory?
+  fileprivate var storyQuery: FoodieQuery?
+  fileprivate var storyArray = [FoodieJournal]()
   
   
   // MARK: - IBOutlets
-  @IBOutlet weak var mapView: MKMapView?
-  @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer?
-  @IBOutlet weak var pinchGestureRecognizer: UIPinchGestureRecognizer?
-  @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer?
-  @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer?
+  @IBOutlet weak var mapView: MKMapView!
+  @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer!
+  @IBOutlet weak var pinchGestureRecognizer: UIPinchGestureRecognizer!
+  @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer!
+  @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer!
   @IBOutlet weak var buttonStackView: UIStackView!
-  @IBOutlet weak var locationField: UITextField?
+  @IBOutlet weak var locationField: UITextField!
   @IBOutlet weak var categoryField: UITextField!
-  @IBOutlet weak var draftButton: UIButton?
+  @IBOutlet weak var draftButton: UIButton!
 
   
   // MARK: - IBActions
@@ -66,8 +68,6 @@ class MapViewController: UIViewController {
   
   
   
-  
-  
   @IBAction func launchDraftJournal(_ sender: Any) {
     // This is used for viewing the draft journal to be used with update journal later
     // Hid the button due to problems with empty draft journal and saving an empty journal is problematic
@@ -86,12 +86,14 @@ class MapViewController: UIViewController {
   }
 
   
+  
   @IBAction func launchCamera(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
     viewController.cameraReturnDelegate = self
     self.present(viewController, animated: true)
   }
+  
   
   
   @IBAction func currentLocationReturn(_ sender: UIButton) {
@@ -118,39 +120,51 @@ class MapViewController: UIViewController {
   
   
   @IBAction func searchWithFilter(_ sender: UIButton) {
-    guard let currentMapView = mapView else {
-      locationErrorDialog(message: "Invalid Map View. Search Location Undefined", comment: "Alert dialog message when mapView is nil when user attempted to perform Search")
-      CCLog.assert("Search w/ Filter cannot be performed when mapView = nil")
-      return
+    performQuery { journals, error in
+      if let error = error {
+        AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+          CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
+        }
+        return
+      }
+      
+      guard let journals = journals else {
+        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
+          CCLog.assert("Story Query resulted in nil")
+        }
+        return
+      }
+      
+      self.displayAnnotations(onStories: journals)
     }
-
-    // Get South West corner coordinate and North East corner coordinate of the Map view
-    let centerLatitude = currentMapView.region.center.latitude
-    let centerLongitude = currentMapView.region.center.longitude
-    let halfHeight = currentMapView.region.span.latitudeDelta/2
-    let halfWidth = currentMapView.region.span.longitudeDelta/2
-    let southWestCoordinate = CLLocationCoordinate2D(latitude: centerLatitude - halfHeight,
-                                                     longitude: centerLongitude - halfWidth)
-    let northEastCoordinate = CLLocationCoordinate2D(latitude: centerLatitude + halfHeight,
-                                                     longitude: centerLongitude + halfWidth)
-    
-    CCLog.verbose("Query Location Rectangle SouthWest - (\(southWestCoordinate.latitude), \(southWestCoordinate.longitude)), NorthEast - (\(northEastCoordinate.latitude), \(northEastCoordinate.longitude))")
-    
-    let journalQuery = FoodieQuery()
-    journalQuery.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
-    journalQuery.setSkip(to: 0)
-    journalQuery.setLimit(to: FoodieGlobal.Constants.JournalFeedPaginationCount)
-    _ = journalQuery.addArrangement(type: .modificationTime, direction: .ascending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
-    queryAndLaunchFeed(withQuery: journalQuery)
   }
   
   
-  @IBAction func searchAll(_ sender: UIButton) {
-    let journalQuery = FoodieQuery()
-    journalQuery.setSkip(to: 0)
-    journalQuery.setLimit(to: FoodieGlobal.Constants.JournalFeedPaginationCount)
-    _ = journalQuery.addArrangement(type: .modificationTime, direction: .ascending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
-    queryAndLaunchFeed(withQuery: journalQuery)
+  @IBAction func showFeed(_ sender: UIButton) {
+    performQuery { journals, error in
+      if let error = error {
+        AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+          CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
+        }
+        return
+      }
+      
+      guard let journals = journals else {
+        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
+          CCLog.assert("Story Query resulted in storyArray = nil")
+        }
+        return
+      }
+      
+      guard let query = self.storyQuery else {
+        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce a Query") { action in
+          CCLog.assert("Story Query resulted in storyQuery = nil")
+        }
+        return
+      }
+      
+      self.launchFeed(withJournalArray: journals, withJournalQuery: query)
+    }
   }
   
   
@@ -226,8 +240,32 @@ class MapViewController: UIViewController {
   }
   
   
-  fileprivate func queryAndLaunchFeed(withQuery journalQuery: FoodieQuery) {
+  fileprivate func performQuery(withBlock callback: FoodieQuery.JournalsErrorBlock?) {
     
+    guard let currentMapView = mapView else {
+      locationErrorDialog(message: "Invalid Map View. Search Location Undefined", comment: "Alert dialog message when mapView is nil when user attempted to perform Search")
+      CCLog.assert("Search w/ Filter cannot be performed when mapView = nil")
+      return
+    }
+    
+    // Get South West corner coordinate and North East corner coordinate of the Map view
+    let centerLatitude = currentMapView.region.center.latitude
+    let centerLongitude = currentMapView.region.center.longitude
+    let halfHeight = currentMapView.region.span.latitudeDelta/2
+    let halfWidth = currentMapView.region.span.longitudeDelta/2
+    let southWestCoordinate = CLLocationCoordinate2D(latitude: centerLatitude - halfHeight,
+                                                     longitude: centerLongitude - halfWidth)
+    let northEastCoordinate = CLLocationCoordinate2D(latitude: centerLatitude + halfHeight,
+                                                     longitude: centerLongitude + halfWidth)
+    
+    CCLog.verbose("Query Location Rectangle SouthWest - (\(southWestCoordinate.latitude), \(southWestCoordinate.longitude)), NorthEast - (\(northEastCoordinate.latitude), \(northEastCoordinate.longitude))")
+    
+    storyQuery = FoodieQuery()
+    storyQuery!.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
+    storyQuery!.setSkip(to: 0)
+    storyQuery!.setLimit(to: FoodieGlobal.Constants.JournalFeedPaginationCount)
+    _ = storyQuery!.addArrangement(type: .modificationTime, direction: .ascending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
+
     // Put up blur view and activity spinner before performing query
     // TODO: We should factor these out so they can be used everywhere
     // See https://stackoverflow.com/questions/28785715/how-to-display-an-activity-indicator-with-text-on-ios-8-with-swift
@@ -243,7 +281,8 @@ class MapViewController: UIViewController {
     activityView.startAnimating()
     view.addSubview(activityView)
     
-    journalQuery.initJournalQueryAndSearch { (journals, error) in
+    // Actually do the Query
+    storyQuery!.initJournalQueryAndSearch { (journals, error) in
       
       // Remove the blur view and activity spinner
       blurEffectView.removeFromSuperview()
@@ -252,22 +291,61 @@ class MapViewController: UIViewController {
       if let err = error {
         self.queryErrorDialog()
         CCLog.assert("Create Journal Query & Search failed with error: \(err.localizedDescription)")
+        callback?(nil, err)
         return
       }
       
       guard let journalArray = journals else {
         self.queryErrorDialog()
         CCLog.assert("Create Journal Query & Search returned with nil Journal Array")
+        callback?(nil, nil)  // TODO: - Return a real error fucking
         return
       }
       
-      let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FeedCollectionViewController") as! FeedCollectionViewController
-      viewController.journalQuery = journalQuery
-      viewController.journalArray = journalArray
-      viewController.restorationClass = nil
-      self.present(viewController, animated: true)
+      self.storyArray = journalArray
+      callback?(journalArray, nil)
     }
+  }
+  
+  
+  fileprivate func displayAnnotations(onStories stories: [FoodieJournal]) {
+
+    DispatchQueue.main.async {
+      self.mapView.removeAnnotations(self.mapView.annotations)
+    }
+    
+    for story in stories {
+      story.selfRetrieval { error in
+        if let error = error {
+          AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story Digest - \(error.localizedDescription)") { action in
+            CCLog.assert("Failed to retrieve Story Digest via story.selfRetrieval. Error - \(error.localizedDescription)")
+          }
+          return
+        }
+      
+        guard let title = story.title, let venue = story.venue, let location = venue.location else {
+          CCLog.warning("No Title, Venue or Location to Story. Skipping Story")
+          return
+        }
+        
+        DispatchQueue.main.async {
+          let annotation = MKPointAnnotation()
+          annotation.title = title
+          annotation.coordinate = CLLocationCoordinate2D(latitude: location.latitude , longitude: location.longitude)
+          self.mapView.addAnnotation(annotation)
+        }
+      }
+    }
+  }
+  
+  
+  fileprivate func launchFeed(withJournalArray journals: [FoodieJournal], withJournalQuery query: FoodieQuery) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FeedCollectionViewController") as! FeedCollectionViewController
+    viewController.journalQuery = query
+    viewController.journalArray = journals
+    viewController.restorationClass = nil
+    self.present(viewController, animated: true)
   }
   
   

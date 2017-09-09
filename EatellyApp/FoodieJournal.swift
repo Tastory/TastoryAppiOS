@@ -38,6 +38,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   enum ErrorCode: LocalizedError {
     
     case selfRetrievalJournalNilThumbnail
+    case selfRetrievalJournalNilVenue
     case selfRetrievalThumbnailNilImage
     case contentRetrieveMomentArrayNil
     case contentRetrieveObjectNilNotMoment
@@ -46,6 +47,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       switch self {
       case .selfRetrievalJournalNilThumbnail:
         return NSLocalizedString("selfRetrieval() Journal retrieved with thumbnailFileName = nil", comment: "Error description for an exception error code")
+      case .selfRetrievalJournalNilVenue:
+        return NSLocalizedString("selfRetrieval() Journal retrieved with venue = nil", comment: "Error description for an exception error code")
       case .selfRetrievalThumbnailNilImage:
         return NSLocalizedString("selfRetrieval() Thumbnail retrieved with imageMemoryBuffer = nil", comment: "Error description for an exception error code")
       case .contentRetrieveMomentArrayNil:
@@ -208,6 +211,12 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
+      guard let venue = self.venue else {
+        CCLog.assert("Unexpected, venue = nil")
+        callback?(ErrorCode.selfRetrievalJournalNilVenue)
+        return
+      }
+      
       thumbnailObject.retrieve() { thumbnailError in
         if let error = thumbnailError {
           CCLog.warning("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
@@ -215,8 +224,16 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
           return
         }
         
-        // Both retrieved, we can now callback!
-        callback?(nil)
+        venue.retrieve() { venueError in
+          if let error = venueError {
+            CCLog.warning("Venue.retrieve() callback with error: \(error.localizedDescription)")
+            callback?(error)
+            return
+          }
+          
+          // Both retrieved, we can now callback!
+          callback?(nil)
+        }
       }
     }
   }
