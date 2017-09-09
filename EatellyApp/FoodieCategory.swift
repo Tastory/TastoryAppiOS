@@ -25,6 +25,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Public Instance Variables
   var subcategories: [FoodieCategory]?
+  var substitudedCategoryIDs: Array<String>?
   var catLevel: Int = 0
   
   
@@ -65,17 +66,16 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
     //static let FoursquareSearchResultsLimit = 50
     static let FoursquareSearchRetryCount = 10  // More retries, shorter delay
     static let FoursquareSearchRetryDelay = 2.0
+    static let NonOthersFoursquareCategories = ["4d4b7105d754a06374d81259" /* Food */, "4d4b7105d754a06376d81259" /* Nightlife Spot */]
   }
   
   
-  // MARK: - Private Static Varaibles
-  private static var protectedList = [String: FoodieCategory]()
-  private static var protectedTree = [String: FoodieCategory]()
+  // MARK: - Read-Only Static Varaibles
+  private(set) static var list = [String: FoodieCategory]()
+  private(set) static var tree = [FoodieCategory]()
   
   
   // MARK: - Public Static Variables
-  static var list: [String: FoodieCategory] { return protectedList }
-  static var tree: [String: FoodieCategory] { return protectedTree }
   static var otherCategoryID: String = ""
 
   
@@ -121,8 +121,8 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
         }
         
         // Let the list and tree start anew
-        protectedList.removeAll(keepingCapacity: true)
-        protectedTree.removeAll(keepingCapacity: true)
+        list.removeAll(keepingCapacity: true)
+        tree.removeAll(keepingCapacity: true)
         
         if let categoryArray = result.response?["categories"] as? [[String: Any]] {
           
@@ -136,22 +136,32 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
           others.iconPrefix = nil  // TODO: ??
           others.iconSuffix = nil
           others.catLevel = 1
-          protectedTree[otherCategoryID] = others
-          protectedTree[otherCategoryID]!.subcategories = [FoodieCategory]()
-          protectedTree[otherCategoryID]!.subcategoryIDs = [String]()
+          others.substitudedCategoryIDs = [String]()
           
           for category in categoryArray {
-            // Food & Nightlife goes through the regular processing
-            if let foodieCategory = convertRecursive(from: category, forLevel: 1) {
-              protectedTree[foodieCategory.foursquareCategoryID!] = foodieCategory
+            
+            // Unfortunately we need the id first
+            guard let id = category["id"] as? String else {
+              CCLog.assert("Received dictionary with no ID")
+              break
             }
             
-            // All other categories go thru Others
-            if let foodieCategory = convertRecursive(from: category, forLevel: 2) {
-              protectedTree[otherCategoryID]!.subcategories!.append(foodieCategory)
-              protectedTree[otherCategoryID]!.subcategoryIDs!.append(foodieCategory.foursquareCategoryID!)
+            // Food & Nightlife goes through the regular processing
+            if Constants.NonOthersFoursquareCategories.contains(id) {
+              if let foodieCategory = convertRecursive(from: category, forLevel: 1) {
+                tree.append(foodieCategory)
+              }
+            }
+            
+            // All other categories just becomes Others
+            else {
+              others.substitudedCategoryIDs!.append(id)
             }
           }
+          
+          // Append the Others category
+          tree.append(others)
+          list[otherCategoryID] = others
         }
       }
       categoriesTask.start()
@@ -191,8 +201,8 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
     
     foodieCategory.catLevel = level
     
-    // Append self to static list first. It's by reference anyways so it's fine.
-    protectedList[id] = foodieCategory
+    // Must append in here, cuz if you are not top level there's no other place
+    list[id] = foodieCategory
     
     if let categories = dictionary["categories"] as? [[String : Any]] {
       foodieCategory.subcategories = [FoodieCategory]()

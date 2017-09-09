@@ -27,7 +27,7 @@ protocol FoodieObjectDelegate: class {
   
   func deleteFromLocal(withName name: String?, withBlock callback: FoodieObject.BooleanErrorBlock?)
   
-  func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?)
+  func deleteFromLocalNServer(withBlock callback: FoodieObject.BooleanErrorBlock?)
   
   func verbose()
   
@@ -416,7 +416,7 @@ class FoodieObject {
     case .local:
       delegate.deleteFromLocal(withName: name, withBlock: callback)
     case .server:
-      delegate.deleteFromServer(withBlock: callback)
+      delegate.deleteFromLocalNServer(withBlock: callback)
     default:
       break
     }
@@ -431,15 +431,8 @@ class FoodieObject {
         CCLog.warning("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())).Object.deleteObject from Server failed on error - \(error.localizedDescription)")
       } else if self.delegate == nil { CCLog.fatal("FoodieObject.delegate == nil") }
       
-      self.deleteObject(from: .local, withName: name) { (success, localError) in
-       
-        if let error = localError, let delegate = self.delegate {
-          CCLog.warning("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())).Object.deleteObject from Local failed on error - \(error.localizedDescription)")
-        } else if self.delegate == nil { CCLog.fatal("FoodieObject.delegate == nil") }
-        
-        // If there's no Local error, see if Server delete resulted in an error
-        callback?(success, localError ?? serverError)
-      }
+      // If there's no Local error, see if Server delete resulted in an error
+      callback?(success, serverError)
     }
   }
   

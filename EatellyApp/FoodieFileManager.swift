@@ -620,6 +620,15 @@ class FoodieS3Object {
     }
   }
   
+  // TODO: - Very hacky. Need Model Cleanup
+  func deleteFromLocalNServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    deleteFromServer { (serverSuccess, serverError) in
+      self.deleteFromLocal { (localSuccess, localError) in
+        callback?(serverSuccess && localSuccess, serverError ?? localError)
+      }
+    }
+  }
+  
   func getUniqueIdentifier() -> String {
     return foodieFileName!
   }

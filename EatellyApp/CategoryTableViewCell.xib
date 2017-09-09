@@ -13,42 +13,54 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CategoryCell" rowHeight="44" id="m2R-Ly-LC8" customClass="CategoryTableViewCell" customModule="EatellyApp" customModuleProvider="target">
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CategoryCell" rowHeight="50" id="m2R-Ly-LC8" customClass="CategoryTableViewCell" customModule="EatellyApp" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="m2R-Ly-LC8" id="bYw-6P-7Gm">
                 <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SDY-7C-4hJ" userLabel="Triangle Indicator View">
-                        <rect key="frame" x="8" y="8" width="28" height="28"/>
-                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SDY-7C-4hJ" userLabel="Category Icon View">
+                        <rect key="frame" x="16" y="8" width="28" height="28"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="width" secondItem="SDY-7C-4hJ" secondAttribute="height" multiplier="1:1" id="tBk-NR-RAv"/>
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Example Title Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2DA-Sd-zvl">
-                        <rect key="frame" x="44" y="8" width="323" height="27"/>
+                        <rect key="frame" x="60" y="8" width="255.5" height="27"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YiG-E5-bko" customClass="ExpandButton" customModule="EatellyApp" customModuleProvider="target">
+                        <rect key="frame" x="331.5" y="8" width="27.5" height="27.5"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="YiG-E5-bko" secondAttribute="height" multiplier="1:1" id="B49-zs-Cti"/>
+                        </constraints>
+                        <connections>
+                            <action selector="expandButtonAction:" destination="m2R-Ly-LC8" eventType="touchUpInside" id="3tc-r0-OFA"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="2DA-Sd-zvl" firstAttribute="top" secondItem="bYw-6P-7Gm" secondAttribute="topMargin" id="1gE-iX-OVZ"/>
                     <constraint firstItem="SDY-7C-4hJ" firstAttribute="top" secondItem="bYw-6P-7Gm" secondAttribute="topMargin" id="1tK-WK-kWx"/>
                     <constraint firstItem="SDY-7C-4hJ" firstAttribute="bottom" secondItem="bYw-6P-7Gm" secondAttribute="bottomMargin" id="9jV-CJ-BoU"/>
-                    <constraint firstItem="2DA-Sd-zvl" firstAttribute="leading" secondItem="SDY-7C-4hJ" secondAttribute="trailing" constant="8" id="Iqc-7b-CEq"/>
-                    <constraint firstItem="2DA-Sd-zvl" firstAttribute="leading" secondItem="SDY-7C-4hJ" secondAttribute="trailing" constant="8" id="L2i-hD-g69"/>
-                    <constraint firstItem="2DA-Sd-zvl" firstAttribute="trailing" secondItem="bYw-6P-7Gm" secondAttribute="trailingMargin" id="M4h-yZ-Mdm"/>
+                    <constraint firstItem="2DA-Sd-zvl" firstAttribute="leading" secondItem="SDY-7C-4hJ" secondAttribute="trailing" constant="16" id="Iqc-7b-CEq"/>
+                    <constraint firstItem="YiG-E5-bko" firstAttribute="bottom" secondItem="bYw-6P-7Gm" secondAttribute="bottom" constant="-8" id="JXp-fh-4LU"/>
+                    <constraint firstItem="YiG-E5-bko" firstAttribute="top" secondItem="bYw-6P-7Gm" secondAttribute="top" constant="8" id="JiC-C3-LOH"/>
+                    <constraint firstItem="YiG-E5-bko" firstAttribute="leading" secondItem="2DA-Sd-zvl" secondAttribute="trailing" constant="16" id="WkZ-iQ-VBK"/>
                     <constraint firstAttribute="bottomMargin" secondItem="2DA-Sd-zvl" secondAttribute="bottom" id="bxB-uH-sD4"/>
-                    <constraint firstItem="SDY-7C-4hJ" firstAttribute="leading" secondItem="bYw-6P-7Gm" secondAttribute="leadingMargin" id="lS5-3r-JcX"/>
+                    <constraint firstAttribute="trailing" secondItem="YiG-E5-bko" secondAttribute="trailing" constant="16" id="eC9-Es-0ux"/>
+                    <constraint firstItem="SDY-7C-4hJ" firstAttribute="leading" secondItem="bYw-6P-7Gm" secondAttribute="leading" constant="16" id="lS5-3r-JcX" userLabel="Icon Leading Constraint"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="indicatorLeadingConstraint" destination="lS5-3r-JcX" id="sgg-Lu-Y4A"/>
+                <outlet property="categoryIconView" destination="SDY-7C-4hJ" id="NQ8-7U-mjU"/>
+                <outlet property="expandButton" destination="YiG-E5-bko" id="wpE-bF-mUl"/>
+                <outlet property="iconLeadingConstraint" destination="lS5-3r-JcX" id="qi3-et-qAL"/>
                 <outlet property="titleLabel" destination="2DA-Sd-zvl" id="lQz-GN-B0Y"/>
-                <outlet property="triangleIndicatorView" destination="SDY-7C-4hJ" id="8Wu-5n-Qln"/>
             </connections>
             <point key="canvasLocation" x="90.5" y="25"/>
         </tableViewCell>

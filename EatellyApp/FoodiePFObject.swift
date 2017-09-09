@@ -150,9 +150,10 @@ class FoodiePFObject: PFObject {
   
   
   // Function to delete this and all child Parse objects from server
-  func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    CCLog.debug("FoodiePFObject.deleteFromServer")
+  func deleteFromLocalNServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
+    CCLog.debug("FoodiePFObject.deleteFromLocalNServer")
     
+    // Delete should also unpin. Might want to double check this
     deleteInBackground(block: callback)
   }
   

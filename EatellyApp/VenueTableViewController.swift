@@ -245,6 +245,13 @@ class VenueTableViewController: UIViewController {
     fullVenueSearch()
   }
   
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    venueSearchBar?.resignFirstResponder()
+    locationSearchBar?.resignFirstResponder()
+  }
+  
+  
   override func viewDidLayoutSubviews() {
     venueTableView.contentInset = UIEdgeInsetsMake(stackView.bounds.height, 0.0, 0.0, 0.0)  // This is so the Table View can be translucent underneath the Stack View of Search Bars
   }

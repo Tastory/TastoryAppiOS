@@ -27,7 +27,8 @@ class MapViewController: UIViewController {
   fileprivate var locationWatcher: LocationWatch.Context?
   fileprivate var lastLocation: CLLocationCoordinate2D? = nil
   fileprivate var lastMapDelta: CLLocationDegrees? = nil
-
+  fileprivate var searchCategory: FoodieCategory?
+  
   
   // MARK: - IBOutlets
   @IBOutlet weak var mapView: MKMapView?
@@ -37,6 +38,7 @@ class MapViewController: UIViewController {
   @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer?
   @IBOutlet weak var buttonStackView: UIStackView!
   @IBOutlet weak var locationField: UITextField?
+  @IBOutlet weak var categoryField: UITextField!
   @IBOutlet weak var draftButton: UIButton?
 
   
@@ -61,14 +63,9 @@ class MapViewController: UIViewController {
       break
     }
   }
-
   
-  @IBAction func categoryEditBegin(_ sender: UITextField) {
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CategoryTableViewController") as! CategoryTableViewController
-    //viewController.delegate = self
-    self.present(viewController, animated: true)
-  }
+  
+  
   
   
   @IBAction func launchDraftJournal(_ sender: Any) {
@@ -285,6 +282,7 @@ class MapViewController: UIViewController {
     doubleTapGestureRecognizer?.delegate = self
     singleTapGestureRecognizer?.delegate = self
     locationField?.delegate = self
+    categoryField?.delegate = self
     
     // If current journal is nil, double check and see if there are any in Local Datastore
     if FoodieJournal.currentJournal == nil {
@@ -381,6 +379,10 @@ extension MapViewController: UITextFieldDelegate {
   // TODO: textFieldShouldReturn, implement Dynamic Filter Querying with another Geocoder
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 
+    if textField === categoryField {
+      return true
+    }
+    
     guard let location = textField.text, let region = mapView?.region else {
       // No text in location field, or no map view all together?
       return true
@@ -496,10 +498,23 @@ extension MapViewController: UITextFieldDelegate {
 
 
   func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-
-    // Set the text field color back to black once user starts editing. Might have been set to Red for errors.
-    textField.textColor = UIColor.black
-    return true
+    if textField === locationField {
+      // Set the text field color back to black once user starts editing. Might have been set to Red for errors.
+      textField.textColor = UIColor.black
+      return true
+      
+    } else if textField == categoryField {
+      
+      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CategoryTableViewController") as! CategoryTableViewController
+      viewController.delegate = self
+      self.present(viewController, animated: true)
+      return false
+      
+    } else {
+      CCLog.assert("Unexpected call of textFieldShoudlBeginEditing on textField \(textField.placeholder ?? "")")
+      return false
+    }
   }
 
 //  let userInfo = notification.userInfo!
@@ -536,4 +551,16 @@ extension MapViewController: CameraReturnDelegate {
   }
 }
 
+
+extension MapViewController: CategoryTableReturnDelegate {
+  func categorySearchComplete(category: FoodieCategory?) {
+    if let category = category {
+      searchCategory = category
+      categoryField.text = category.name ?? ""
+    } else {
+      searchCategory = nil
+      categoryField.text = ""
+    }
+  }
+}
 

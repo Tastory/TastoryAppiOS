@@ -70,7 +70,7 @@
                                     <outletCollection property="gestureRecognizers" destination="huL-4O-wj6" appends="YES" id="7kU-O7-nOa"/>
                                 </connections>
                             </mapView>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Location to search" textAlignment="center" minimumFontSize="18" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Location to search" textAlignment="center" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
                                 <rect key="frame" x="16" y="28" width="343" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -108,22 +108,33 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aSA-Ws-aTZ">
-                                        <rect key="frame" x="137" y="152" width="69" height="30"/>
-                                        <state key="normal" title="Search All"/>
+                                        <rect key="frame" x="154.5" y="152" width="34" height="30"/>
+                                        <state key="normal" title="Feed"/>
                                         <connections>
                                             <action selector="searchAll:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ubc-1d-u09"/>
                                         </connections>
                                     </button>
                                 </subviews>
                             </stackView>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Category to search" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wze-6b-mmH">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Category to search" textAlignment="center" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="wze-6b-mmH">
                                 <rect key="frame" x="16" y="66" width="343" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <action selector="categoryEditBegin:" destination="BYZ-38-t0r" eventType="editingDidBegin" id="8h2-oN-U0j"/>
-                                </connections>
+                            </textField>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Open at Time" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="udl-HT-366">
+                                <rect key="frame" x="16" y="104" width="225" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Price" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5l3-RR-AbH">
+                                <rect key="frame" x="249" y="104" width="110" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
                             </textField>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -141,6 +152,7 @@
                     </view>
                     <connections>
                         <outlet property="buttonStackView" destination="srX-2D-hwk" id="D6b-b5-ux5"/>
+                        <outlet property="categoryField" destination="wze-6b-mmH" id="7Ji-iN-Yq3"/>
                         <outlet property="doubleTapGestureRecognizer" destination="gtB-Zu-pZ4" id="qyu-HN-IhQ"/>
                         <outlet property="draftButton" destination="1zZ-dd-fcW" id="xkV-cw-rjf"/>
                         <outlet property="locationField" destination="0wJ-kE-Bqf" id="udw-u7-LkJ"/>
@@ -151,6 +163,72 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <view contentMode="scaleToFill" id="Sj7-Bc-LXo">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="150"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="J4d-Gm-iXe">
+                            <rect key="frame" x="0.0" y="0.0" width="240" height="120"/>
+                            <date key="date" timeIntervalSinceReferenceDate="526622622.48087102">
+                                <!--2017-09-09 04:03:42 +0000-->
+                            </date>
+                        </datePicker>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hxa-nJ-SU6">
+                            <rect key="frame" x="0.0" y="120" width="120" height="30"/>
+                            <state key="normal" title="OK"/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lNG-39-HlS">
+                            <rect key="frame" x="120" y="120" width="120" height="30"/>
+                            <state key="normal" title="Cancel"/>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstItem="lNG-39-HlS" firstAttribute="top" secondItem="J4d-Gm-iXe" secondAttribute="bottom" id="02G-tJ-zig"/>
+                        <constraint firstItem="lNG-39-HlS" firstAttribute="leading" secondItem="hxa-nJ-SU6" secondAttribute="trailing" id="4lg-EC-bUt"/>
+                        <constraint firstAttribute="trailing" secondItem="lNG-39-HlS" secondAttribute="trailing" id="8XC-IH-LBp"/>
+                        <constraint firstAttribute="bottom" secondItem="hxa-nJ-SU6" secondAttribute="bottom" id="GyX-jB-FKW"/>
+                        <constraint firstItem="hxa-nJ-SU6" firstAttribute="width" secondItem="lNG-39-HlS" secondAttribute="width" id="Nbl-x0-t6G"/>
+                        <constraint firstItem="hxa-nJ-SU6" firstAttribute="leading" secondItem="Sj7-Bc-LXo" secondAttribute="leading" id="QKw-rT-kyB"/>
+                        <constraint firstItem="J4d-Gm-iXe" firstAttribute="leading" secondItem="Sj7-Bc-LXo" secondAttribute="leading" id="RVl-ap-kIQ"/>
+                        <constraint firstItem="hxa-nJ-SU6" firstAttribute="top" secondItem="J4d-Gm-iXe" secondAttribute="bottom" id="cUY-Mr-lcN"/>
+                        <constraint firstAttribute="trailing" secondItem="J4d-Gm-iXe" secondAttribute="trailing" id="fkU-XF-LYz"/>
+                        <constraint firstItem="lNG-39-HlS" firstAttribute="leading" secondItem="hxa-nJ-SU6" secondAttribute="trailing" id="hg3-BA-ek3"/>
+                        <constraint firstItem="J4d-Gm-iXe" firstAttribute="top" secondItem="Sj7-Bc-LXo" secondAttribute="top" id="wC3-os-b54"/>
+                        <constraint firstAttribute="bottom" secondItem="lNG-39-HlS" secondAttribute="bottom" id="zba-dS-K3v"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" id="hwx-hh-WCD">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="150"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kpK-99-Ped">
+                            <rect key="frame" x="0.0" y="0.0" width="240" height="120"/>
+                        </pickerView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BnX-LF-GX3">
+                            <rect key="frame" x="0.0" y="120" width="120" height="30"/>
+                            <state key="normal" title="OK"/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3JO-9q-FsX">
+                            <rect key="frame" x="120" y="120" width="120" height="30"/>
+                            <state key="normal" title="Cancel"/>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="kpK-99-Ped" secondAttribute="trailing" id="AgB-vg-Hbc"/>
+                        <constraint firstItem="kpK-99-Ped" firstAttribute="leading" secondItem="hwx-hh-WCD" secondAttribute="leading" id="BVf-ty-LqN"/>
+                        <constraint firstItem="BnX-LF-GX3" firstAttribute="leading" secondItem="hwx-hh-WCD" secondAttribute="leading" id="Bqf-Pd-jIN"/>
+                        <constraint firstItem="3JO-9q-FsX" firstAttribute="height" secondItem="BnX-LF-GX3" secondAttribute="height" id="LqO-Ty-JT7"/>
+                        <constraint firstAttribute="bottom" secondItem="BnX-LF-GX3" secondAttribute="bottom" id="WIN-DR-wgN"/>
+                        <constraint firstAttribute="bottom" secondItem="3JO-9q-FsX" secondAttribute="bottom" id="Xqf-Nr-sPw"/>
+                        <constraint firstAttribute="trailing" secondItem="3JO-9q-FsX" secondAttribute="trailing" id="YrW-93-hzY"/>
+                        <constraint firstItem="BnX-LF-GX3" firstAttribute="top" secondItem="kpK-99-Ped" secondAttribute="bottom" id="eR1-uI-oB6"/>
+                        <constraint firstItem="BnX-LF-GX3" firstAttribute="width" secondItem="3JO-9q-FsX" secondAttribute="width" id="fPH-9v-5hM"/>
+                        <constraint firstItem="kpK-99-Ped" firstAttribute="top" secondItem="hwx-hh-WCD" secondAttribute="top" id="hnd-mk-BVc"/>
+                        <constraint firstItem="3JO-9q-FsX" firstAttribute="leading" secondItem="BnX-LF-GX3" secondAttribute="trailing" id="jGq-G0-apM"/>
+                    </constraints>
+                </view>
                 <panGestureRecognizer minimumNumberOfTouches="1" id="mRO-al-sTI">
                     <connections>
                         <action selector="mapGestureDetected:" destination="BYZ-38-t0r" id="5bn-BY-Dw1"/>
@@ -432,7 +510,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="298" y="-666"/>
+            <point key="canvasLocation" x="297" y="-666"/>
         </scene>
         <!--Markup View Controller-->
         <scene sceneID="H9q-fk-uJF">
