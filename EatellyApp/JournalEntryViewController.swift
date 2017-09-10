@@ -52,7 +52,7 @@ class JournalEntryViewController: UITableViewController {
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var venueButton: UIButton?
-  
+  @IBOutlet weak var authorTextField: UITextField!
   @IBOutlet weak var linkTextField: UITextField?
   @IBOutlet weak var tagsTextView: UITextView?
 
@@ -137,10 +137,23 @@ class JournalEntryViewController: UITableViewController {
     
     CCLog.info("User edited Title of Story")
     journal.title = text
-    
     let journalPreSaveOperation = PreSaveOperation(on: journal, with: nil, withBlock: nil)
     saveOperationQueue.addOperation(journalPreSaveOperation)
   }
+  
+
+  @IBAction func editedAuthor(_ sender: UITextField) {
+    guard let text = sender.text, let journal = workingJournal, text != journal.authorText else {
+      // Nothing changed, don't do anything
+      return
+    }
+    
+    CCLog.info("User edited Author of Story")
+    journal.authorText = text
+    let journalPreSaveOperation = PreSaveOperation(on: journal, with: nil, withBlock: nil)
+    saveOperationQueue.addOperation(journalPreSaveOperation)
+  }
+  
   
   @IBAction func editedLink(_ sender: UITextField) {
     guard let text = sender.text, let journal = workingJournal, text != journal.journalURL else {
@@ -232,6 +245,7 @@ class JournalEntryViewController: UITableViewController {
     momentViewController.didMove(toParentViewController: self)
     
     titleTextField?.delegate = self
+    authorTextField?.delegate = self
     linkTextField?.delegate = self
     tagsTextView?.delegate = self
     
@@ -270,6 +284,10 @@ class JournalEntryViewController: UITableViewController {
         venueButton?.setTitleColor(Constants.placeholderColor, for: .normal)
       }
 
+      if let authorText = workingJournal.authorText {
+        authorTextField?.text = authorText
+      }
+      
       if let storyURL = workingJournal.journalURL {
         linkTextField?.text = storyURL
       }

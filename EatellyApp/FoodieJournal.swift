@@ -22,7 +22,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var title: String? // Title for the Journal
   @NSManaged var author: FoodieUser? // Pointer to the user that authored this Moment
   @NSManaged var venue: FoodieVenue? // Pointer to the Restaurant object
-
+  @NSManaged var authorText: String? // Placeholder before real user ability is added
   @NSManaged var journalURL: String? // URL to the Journal article
   @NSManaged var tags: Array<String>? // Array of Strings, unstructured
 
