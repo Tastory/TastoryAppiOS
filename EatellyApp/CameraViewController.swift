@@ -44,8 +44,8 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   @IBOutlet weak var captureButton: CameraButton?
   @IBOutlet weak var exitButton: ExitButton?
   @IBOutlet weak var tapRecognizer: UITapGestureRecognizer?  // This is workaround to detect capture button's been released after a photo
-  @IBOutlet weak var imagePicker: UIButton?
-  
+  @IBOutlet weak var pickerButton: ImagePickerButton!
+
   // MARK: - IBActions
 
   @IBAction func launchImagePicker(_ sender: Any) {
@@ -121,8 +121,8 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     doubleTapCameraSwitch = false
     videoQuality = .resolution1280x720  // .high is 16x9, but .medium is 4x3
     
-    if let imagePicker = imagePicker {
-      view.bringSubview(toFront: imagePicker)
+    if let pickerButton = pickerButton {
+      view.bringSubview(toFront: pickerButton)
     }
 
     if let captureButton = captureButton {

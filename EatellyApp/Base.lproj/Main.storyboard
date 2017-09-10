@@ -116,19 +116,19 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Category to search" textAlignment="center" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="wze-6b-mmH">
+                            <textField hidden="YES" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Category to search" textAlignment="center" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="wze-6b-mmH">
                                 <rect key="frame" x="16" y="66" width="343" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Price" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5l3-RR-AbH">
+                            <textField hidden="YES" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Price" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5l3-RR-AbH">
                                 <rect key="frame" x="224" y="104" width="135" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Open at Time" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="udl-HT-366">
+                            <textField hidden="YES" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Open at Time" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="udl-HT-366">
                                 <rect key="frame" x="16" y="104" width="200" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="200" id="8KY-2V-wGv"/>
@@ -499,17 +499,30 @@
                                     <action selector="exitPressed:" destination="ImI-Ed-QdP" eventType="touchUpInside" id="i5Y-3I-IEc"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hPs-qT-rXL" customClass="ImagePickerButton" customModule="EatellyApp" customModuleProvider="target">
+                                <rect key="frame" x="319" y="599" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="ZMe-kb-yeB"/>
+                                    <constraint firstAttribute="width" secondItem="hPs-qT-rXL" secondAttribute="height" multiplier="1:1" id="yGW-de-dxW"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="launchImagePicker:" destination="ImI-Ed-QdP" eventType="touchUpInside" id="GqK-N0-etg"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="30k-mM-bOe" firstAttribute="centerX" secondItem="oEc-gL-EdH" secondAttribute="centerX" id="b0a-4t-gdd"/>
                             <constraint firstAttribute="leadingMargin" secondItem="kxo-zQ-usi" secondAttribute="leading" id="jHg-7x-M0c"/>
                             <constraint firstItem="kxo-zQ-usi" firstAttribute="centerY" secondItem="30k-mM-bOe" secondAttribute="centerY" id="lWT-iL-82h"/>
+                            <constraint firstItem="hPs-qT-rXL" firstAttribute="trailing" secondItem="oEc-gL-EdH" secondAttribute="trailingMargin" id="rO6-zC-fkA"/>
                             <constraint firstItem="ld9-ET-76c" firstAttribute="top" secondItem="30k-mM-bOe" secondAttribute="bottom" constant="8" symbolic="YES" id="wcu-QE-Qme"/>
+                            <constraint firstItem="hPs-qT-rXL" firstAttribute="centerY" secondItem="30k-mM-bOe" secondAttribute="centerY" id="zhX-8f-aDC"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="captureButton" destination="30k-mM-bOe" id="xaS-ZF-RGb"/>
                         <outlet property="exitButton" destination="kxo-zQ-usi" id="TLa-71-fEp"/>
+                        <outlet property="pickerButton" destination="hPs-qT-rXL" id="Gdg-Xw-AAM"/>
                         <outlet property="tapRecognizer" destination="Hy8-pD-3IZ" id="yNt-QN-sHL"/>
                     </connections>
                 </viewController>
@@ -520,7 +533,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="297" y="-666"/>
+            <point key="canvasLocation" x="296.80000000000001" y="-666.11694152923542"/>
         </scene>
         <!--Markup View Controller-->
         <scene sceneID="H9q-fk-uJF">

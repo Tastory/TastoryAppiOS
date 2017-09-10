@@ -427,11 +427,7 @@ class FoodieObject {
     // Delete from Server first!!! Remove it from circulation. Also delete from Local might remove memory copy also!!
     deleteObject(from: .server, withName: name) { (success, serverError) in
       
-      if let error = serverError, let delegate = self.delegate {
-        CCLog.warning("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())).Object.deleteObject from Server failed on error - \(error.localizedDescription)")
-      } else if self.delegate == nil { CCLog.fatal("FoodieObject.delegate == nil") }
-      
-      // If there's no Local error, see if Server delete resulted in an error
+      // Just callback. The object itself is likely gone tho.
       callback?(success, serverError)
     }
   }

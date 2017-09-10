@@ -68,6 +68,8 @@
 		8CE259AD1F53808C00310749 /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE259AC1F53808C00310749 /* AlertDialog.swift */; };
 		8CE49EB11F637918007278C1 /* ExpandButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB01F637918007278C1 /* ExpandButton.swift */; };
 		8CE49EB31F638162007278C1 /* ArrowLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB21F638162007278C1 /* ArrowLayer.swift */; };
+		8CE49EB51F64C8E8007278C1 /* PickerSquareLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB41F64C8E8007278C1 /* PickerSquareLayer.swift */; };
+		8CE49EB71F64CA06007278C1 /* ImagePickerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB61F64CA06007278C1 /* ImagePickerButton.swift */; };
 		8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */; };
 		8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */; };
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */; };
@@ -164,6 +166,8 @@
 		8CE259AC1F53808C00310749 /* AlertDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertDialog.swift; sourceTree = "<group>"; };
 		8CE49EB01F637918007278C1 /* ExpandButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExpandButton.swift; path = EatellyApp/ExpandButton.swift; sourceTree = "<group>"; };
 		8CE49EB21F638162007278C1 /* ArrowLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrowLayer.swift; sourceTree = "<group>"; };
+		8CE49EB41F64C8E8007278C1 /* PickerSquareLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerSquareLayer.swift; sourceTree = "<group>"; };
+		8CE49EB61F64CA06007278C1 /* ImagePickerButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImagePickerButton.swift; path = EatellyApp/ImagePickerButton.swift; sourceTree = "<group>"; };
 		8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JournalEntryViewController.swift; sourceTree = "<group>"; };
 		8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentCollectionViewCell.swift; path = EatellyApp/MomentCollectionViewCell.swift; sourceTree = "<group>"; };
 		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
@@ -331,6 +335,7 @@
 				8CD328DA1E8B2BD600E5254F /* Layers */,
 				8C1A0D7E1E88F711001DE075 /* CameraButton.swift */,
 				8C9AD0601E8F615D005F337E /* ExitButton.swift */,
+				8CE49EB61F64CA06007278C1 /* ImagePickerButton.swift */,
 				8CE49EB01F637918007278C1 /* ExpandButton.swift */,
 				8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */,
 				8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */,
@@ -382,6 +387,7 @@
 				8C1ED6EA1F5D15A300A8CC94 /* CameraButtonLayer.swift */,
 				8C1ED6EB1F5D15A300A8CC94 /* CameraButtonRingLayer.swift */,
 				8C1ED6EC1F5D15A300A8CC94 /* CameraCrossLayer.swift */,
+				8CE49EB41F64C8E8007278C1 /* PickerSquareLayer.swift */,
 				8CE49EB21F638162007278C1 /* ArrowLayer.swift */,
 				8C1ED6ED1F5D15A300A8CC94 /* ThumbnailFrameLayer.swift */,
 			);
@@ -778,7 +784,9 @@
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */,
 				8CE259AD1F53808C00310749 /* AlertDialog.swift in Sources */,
 				8C2F79771F4E3E6E00851334 /* ThreadSafeDLL.swift in Sources */,
+				8CE49EB71F64CA06007278C1 /* ImagePickerButton.swift in Sources */,
 				8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */,
+				8CE49EB51F64C8E8007278C1 /* PickerSquareLayer.swift in Sources */,
 				8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */,
 				8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */,
 				8C3254A51F40240900895572 /* VenueTableViewController.swift in Sources */,
