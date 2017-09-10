@@ -120,6 +120,10 @@ class MapViewController: UIViewController {
   
   
   @IBAction func searchWithFilter(_ sender: UIButton) {
+    
+    // Kill all Pre-fetches
+    FoodiePrefetch.global.removeAllPrefetchWork()
+    
     performQuery { journals, error in
       if let error = error {
         AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
@@ -329,9 +333,10 @@ class MapViewController: UIViewController {
         }
         
         DispatchQueue.main.async {
-          let annotation = MKPointAnnotation()
-          annotation.title = title
-          annotation.coordinate = CLLocationCoordinate2D(latitude: location.latitude , longitude: location.longitude)
+          let annotation = StoryMapAnnotation(title: title,
+                                              journal: story,
+                                              coordinate: CLLocationCoordinate2D(latitude: location.latitude,
+                                                                                 longitude: location.longitude))
           self.mapView.addAnnotation(annotation)
         }
       }
@@ -354,7 +359,7 @@ class MapViewController: UIViewController {
     super.viewDidLoad()
     
     // Do any additional setup after loading the view.
-    //mapView?.delegate = self
+    mapView?.delegate = self
     panGestureRecognizer?.delegate = self
     pinchGestureRecognizer?.delegate = self
     doubleTapGestureRecognizer?.delegate = self
@@ -394,6 +399,9 @@ class MapViewController: UIViewController {
   
   
   override func viewWillAppear(_ animated: Bool) {
+    
+    // Kill all Pre-fetches
+    FoodiePrefetch.global.removeAllPrefetchWork()
     
     // Provide a default Map Region incase Location Update is slow or user denies authorization
     let startMapLocation: CLLocationCoordinate2D = lastLocation ?? Constants.defaultCLCoordinate2D
@@ -642,3 +650,120 @@ extension MapViewController: CategoryTableReturnDelegate {
   }
 }
 
+
+extension MapViewController: MKMapViewDelegate {
+  
+  class StoryButton: UIButton {
+    var story: FoodieJournal?
+  }
+  
+  func storyCalloutTapped(sender: StoryButton) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalViewController") as! JournalViewController
+    
+    guard let story = sender.story else {
+      AlertDialog.present(from: self, title: "Story Load Error", message: "No Story was loaded for this location! Please try another one!") { action in
+        CCLog.assert("No story contained in StoryButton clicked")
+      }
+      return
+    }
+    
+    viewController.viewingJournal = story
+    self.present(viewController, animated: true)
+  }
+  
+  
+  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+    guard let annotation = annotation as? StoryMapAnnotation else {
+      return nil
+    }
+    
+    let identifier = "StoryMapPin"
+    var view: MKPinAnnotationView
+    
+    if let dequeuedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKPinAnnotationView {
+      dequeuedView.annotation = annotation
+      view = dequeuedView
+    } else {
+      view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+      view.canShowCallout = true
+    }
+    
+    if let thumbnail = annotation.journal.thumbnailObj, let imageData = thumbnail.imageMemoryBuffer {
+      
+      let screenSize = UIScreen.main.bounds
+      
+      let calloutAccView = UIView()
+      calloutAccView.translatesAutoresizingMaskIntoConstraints = false
+      
+      let titleLabel = UILabel()
+      titleLabel.text = annotation.title
+      titleLabel.font = UIFont.systemFont(ofSize: 17.0)
+      titleLabel.textColor = UIColor.white
+      titleLabel.textAlignment = .center
+      titleLabel.backgroundColor = UIColor(colorLiteralRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.2)
+      titleLabel.isUserInteractionEnabled = false  // This is so that all the clicks go straight thru to the button at the back
+      titleLabel.translatesAutoresizingMaskIntoConstraints = false
+      
+      if let venueName = annotation.journal.venue?.name {
+        annotation.title = "@ "
+        if venueName.characters.count < 22 {
+          annotation.title! += venueName
+        } else {
+          let index = venueName.index(venueName.startIndex, offsetBy: 22)
+          annotation.title! += venueName.substring(to: index)
+          annotation.title! += "..."
+        }
+      } else { annotation.title = " " }
+      
+      
+      let thumbnailButton = StoryButton()
+      thumbnailButton.setImage(UIImage(data: imageData), for: .normal)
+      thumbnailButton.translatesAutoresizingMaskIntoConstraints = false
+      thumbnailButton.story = annotation.journal
+      thumbnailButton.addTarget(self, action: #selector(storyCalloutTapped(sender:)), for: .touchUpInside)
+      
+      calloutAccView.addSubview(thumbnailButton)
+      calloutAccView.addSubview(titleLabel)
+      
+      let views = ["titleLabel": titleLabel,
+                   "thumbnailButton": thumbnailButton]
+      let metrics = ["width": screenSize.width/2.0,
+                     "height": screenSize.height/2.0,
+                     "labelHeight": screenSize.height/10.0]
+      var constraints = [NSLayoutConstraint]()
+      constraints += NSLayoutConstraint.constraints(withVisualFormat: "H:|[thumbnailButton(width)]|", options: [], metrics: metrics, views: views)
+      constraints += NSLayoutConstraint.constraints(withVisualFormat: "V:|[thumbnailButton(height)]|", options: [], metrics: metrics, views: views)
+      constraints += NSLayoutConstraint.constraints(withVisualFormat: "H:|[titleLabel(width)]|", options: [], metrics: metrics, views: views)
+      constraints += NSLayoutConstraint.constraints(withVisualFormat: "V:[titleLabel(labelHeight)]|", options: [], metrics: metrics, views: views)
+      calloutAccView.addConstraints(constraints)
+      
+      view.detailCalloutAccessoryView = calloutAccView
+
+    } else {
+      AlertDialog.present(from: self, title: "Story Retrieval Error", message: "No Thumbnail for Story!") { action in
+        CCLog.warning("No Thumbnail for Story in Map View. Thumbnail filename - \(annotation.journal.thumbnailFileName ?? "Filename Not Found")")
+      }
+    }
+    return view
+  }
+  
+  
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    guard let annotation = view.annotation as? StoryMapAnnotation else {
+      CCLog.warning("No StoryMapAnnotation associated with Annotation View")
+      return
+    }
+    let story = annotation.journal
+    story.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: story, on: story)
+  }
+  
+  
+  func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+    guard let annotation = view.annotation as? StoryMapAnnotation, let context = annotation.journal.contentPrefetchContext else {
+      CCLog.warning("No PrefetchContext associated with Story, or no StoryMapAnnotation associated with Annotation View")
+      return
+    }
+    FoodiePrefetch.global.removePrefetchWork(for: context)
+  }
+}

@@ -70,6 +70,7 @@
 		8CE49EB31F638162007278C1 /* ArrowLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB21F638162007278C1 /* ArrowLayer.swift */; };
 		8CE49EB51F64C8E8007278C1 /* PickerSquareLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB41F64C8E8007278C1 /* PickerSquareLayer.swift */; };
 		8CE49EB71F64CA06007278C1 /* ImagePickerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB61F64CA06007278C1 /* ImagePickerButton.swift */; };
+		8CE49EBA1F64D36B007278C1 /* StoryMapAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */; };
 		8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */; };
 		8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */; };
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */; };
@@ -168,6 +169,7 @@
 		8CE49EB21F638162007278C1 /* ArrowLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrowLayer.swift; sourceTree = "<group>"; };
 		8CE49EB41F64C8E8007278C1 /* PickerSquareLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerSquareLayer.swift; sourceTree = "<group>"; };
 		8CE49EB61F64CA06007278C1 /* ImagePickerButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImagePickerButton.swift; path = EatellyApp/ImagePickerButton.swift; sourceTree = "<group>"; };
+		8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryMapAnnotation.swift; sourceTree = "<group>"; };
 		8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JournalEntryViewController.swift; sourceTree = "<group>"; };
 		8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentCollectionViewCell.swift; path = EatellyApp/MomentCollectionViewCell.swift; sourceTree = "<group>"; };
 		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
@@ -365,6 +367,7 @@
 		8CD328D91E8B2B8C00E5254F /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				8CE49EB81F64D334007278C1 /* Annotation */,
 				8C0590481EC65B0000027E91 /* RootViewController.swift */,
 				8C0590461EC653DF00027E91 /* DiscoverViewController.swift */,
 				8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */,
@@ -393,6 +396,14 @@
 			);
 			name = Layers;
 			path = EatellyApp;
+			sourceTree = "<group>";
+		};
+		8CE49EB81F64D334007278C1 /* Annotation */ = {
+			isa = PBXGroup;
+			children = (
+				8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */,
+			);
+			name = Annotation;
 			sourceTree = "<group>";
 		};
 		C134799359005D8F88374E25 /* Pods */ = {
@@ -785,6 +796,7 @@
 				8CE259AD1F53808C00310749 /* AlertDialog.swift in Sources */,
 				8C2F79771F4E3E6E00851334 /* ThreadSafeDLL.swift in Sources */,
 				8CE49EB71F64CA06007278C1 /* ImagePickerButton.swift in Sources */,
+				8CE49EBA1F64D36B007278C1 /* StoryMapAnnotation.swift in Sources */,
 				8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */,
 				8CE49EB51F64C8E8007278C1 /* PickerSquareLayer.swift in Sources */,
 				8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */,

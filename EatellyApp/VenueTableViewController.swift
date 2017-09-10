@@ -288,7 +288,8 @@ extension VenueTableViewController: UISearchBarDelegate {
         if let venueSearchText = venueName, venueSearchText != "" {
           FoodieVenue.searchFoursquare(for: venueSearchText, near: nearText, withBlock: venueSearchCallback)
         } else {
-          AlertDialog.present(from: self, title: "No Venue to Search", message: "Please specify a venue name ot search")
+          FoodieVenue.searchFoursquare(for: "", near: nearText, withBlock: venueSearchCallback)
+          //AlertDialog.present(from: self, title: "No Venue to Search", message: "Please specify a venue name ot search")
         }
       }
     }
