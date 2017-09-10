@@ -701,6 +701,7 @@ extension MapViewController: MKMapViewDelegate {
       titleLabel.font = UIFont.systemFont(ofSize: 17.0)
       titleLabel.textColor = UIColor.white
       titleLabel.textAlignment = .center
+      titleLabel.numberOfLines = 3
       titleLabel.backgroundColor = UIColor(colorLiteralRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.2)
       titleLabel.isUserInteractionEnabled = false  // This is so that all the clicks go straight thru to the button at the back
       titleLabel.translatesAutoresizingMaskIntoConstraints = false
