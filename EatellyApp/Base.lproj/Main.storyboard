@@ -859,7 +859,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
-                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="OoU-Aa-vB2" customClass="MomentCollectionLayout" customModule="EatellyApp" customModuleProvider="target">
+                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="OoU-Aa-vB2">
                             <size key="itemSize" width="100" height="222"/>
                             <size key="headerReferenceSize" width="100" height="222"/>
                             <size key="footerReferenceSize" width="100" height="222"/>

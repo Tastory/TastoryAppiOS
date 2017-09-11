@@ -49,10 +49,14 @@ class MomentCollectionViewController: UICollectionViewController {
         for moment in momentArray {
           if workingJournal.thumbnailFileName == moment.thumbnailFileName {
             let oldIndexPath = IndexPath(row: momentArrayIndex, section: indexPath.section)
-            if let oldCell = collectionView!.cellForItem(at: oldIndexPath) as? MomentCollectionViewCell {
-              oldCell.thumbFrameView.isHidden = true
-            } else {
-              collectionView!.reloadItems(at: [oldIndexPath])
+            
+            // If the oldIndexPath is same as the pressed indexPath, nothing to do here really.
+            if oldIndexPath != indexPath {
+              if let oldCell = collectionView!.cellForItem(at: oldIndexPath) as? MomentCollectionViewCell {
+                oldCell.thumbFrameView.isHidden = true
+              } else {
+                collectionView!.reloadItems(at: [oldIndexPath])
+              }
             }
             break
           }
@@ -91,14 +95,14 @@ class MomentCollectionViewController: UICollectionViewController {
 
     // Setup the Moment Colleciton Layout
     // Note: Setting either layout.itemSize or layout.estimatedItemSize will cause crashes
-    let layout = collectionViewLayout as! MomentCollectionLayout
+    let layout = collectionViewLayout as! UICollectionViewFlowLayout
     layout.minimumLineSpacing = Constants.interitemSpacing
     layout.minimumInteritemSpacing = Constants.interitemSpacing
-    layout.headerReferenceSize = CGSize(width: 1, height: momentHeightUnwrapped)
+    layout.headerReferenceSize = momentSizeDefault
     layout.footerReferenceSize = momentSizeDefault
     layout.sectionInset = UIEdgeInsets(top: 0, left: Constants.interitemSpacing,
                                        bottom: 0, right: Constants.interitemSpacing)
-    layout.maximumHeaderStretchWidth = momentWidthDefault
+    self.collectionView?.contentInset = UIEdgeInsetsMake(0.0, CGFloat(-1.0*momentWidthDefault), 0.0, 0.0)
   }
   
   
