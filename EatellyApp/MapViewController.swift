@@ -13,14 +13,37 @@ import CoreLocation
 
 class MapViewController: UIViewController {
 
+  // MARK: Error Types Definition
+  enum ErrorCode: LocalizedError {
+    
+    case mapQueryExceededMaxLat
+    
+    var errorDescription: String? {
+      switch self {
+      case .mapQueryExceededMaxLat:
+        return NSLocalizedString("Exceeded allowed maximum number of degrees latitude for map query", comment: "Error description for a Map View Controller Query")
+      }
+    }
+    
+    init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
+      self = errorCode
+      CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
+    }
+  }
+  
+  
+  
   // MARK: - Class Constants
   fileprivate struct Constants {
     static let defaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
                                                               longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
     static let defaultMaxDelta: CLLocationDegrees = 0.05
     static let defaultMinDelta: CLLocationDegrees = 0.005
+    
+    static let queryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
   }
 
+  
 
   // MARK: - Instance Variables
   fileprivate var currentMapDelta = Constants.defaultMaxDelta
@@ -30,6 +53,7 @@ class MapViewController: UIViewController {
   fileprivate var searchCategory: FoodieCategory?
   fileprivate var storyQuery: FoodieQuery?
   fileprivate var storyArray = [FoodieJournal]()
+  
   
   
   // MARK: - IBOutlets
@@ -43,6 +67,7 @@ class MapViewController: UIViewController {
   @IBOutlet weak var categoryField: UITextField!
   @IBOutlet weak var draftButton: UIButton!
 
+  
   
   // MARK: - IBActions
   @IBAction func singleTapGestureDetected(_ sender: UITapGestureRecognizer) {
@@ -67,7 +92,6 @@ class MapViewController: UIViewController {
   }
   
   
-  
   @IBAction func launchDraftJournal(_ sender: Any) {
     // This is used for viewing the draft journal to be used with update journal later
     // Hid the button due to problems with empty draft journal and saving an empty journal is problematic
@@ -84,7 +108,6 @@ class MapViewController: UIViewController {
     }
     self.present(viewController, animated: true)
   }
-
   
   
   @IBAction func launchCamera(_ sender: UIButton) {
@@ -126,8 +149,12 @@ class MapViewController: UIViewController {
     
     performQuery { journals, error in
       if let error = error {
-        AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
-          CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
+        if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
+          AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
+        } else {
+          AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+            CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
+          }
         }
         return
       }
@@ -147,8 +174,12 @@ class MapViewController: UIViewController {
   @IBAction func showFeed(_ sender: UIButton) {
     performQuery { journals, error in
       if let error = error {
-        AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
-          CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
+        if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
+          AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
+        } else {
+          AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+            CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
+          }
         }
         return
       }
@@ -246,23 +277,24 @@ class MapViewController: UIViewController {
   
   fileprivate func performQuery(withBlock callback: FoodieQuery.JournalsErrorBlock?) {
     
-    guard let currentMapView = mapView else {
+    guard let mapRect = mapView?.visibleMapRect else {
       locationErrorDialog(message: "Invalid Map View. Search Location Undefined", comment: "Alert dialog message when mapView is nil when user attempted to perform Search")
       CCLog.assert("Search w/ Filter cannot be performed when mapView = nil")
       return
     }
     
-    // Get South West corner coordinate and North East corner coordinate of the Map view
-    let centerLatitude = currentMapView.region.center.latitude
-    let centerLongitude = currentMapView.region.center.longitude
-    let halfHeight = currentMapView.region.span.latitudeDelta/2
-    let halfWidth = currentMapView.region.span.longitudeDelta/2
-    let southWestCoordinate = CLLocationCoordinate2D(latitude: centerLatitude - halfHeight,
-                                                     longitude: centerLongitude - halfWidth)
-    let northEastCoordinate = CLLocationCoordinate2D(latitude: centerLatitude + halfHeight,
-                                                     longitude: centerLongitude + halfWidth)
+    let northEastMapPoint = MKMapPointMake(mapRect.origin.x + mapRect.size.width, mapRect.origin.y)
+    let southWestMapPoint = MKMapPointMake(mapRect.origin.x, mapRect.origin.y + mapRect.size.height)
+    let northEastCoordinate = MKCoordinateForMapPoint(northEastMapPoint)
+    let southWestCoordinate = MKCoordinateForMapPoint(southWestMapPoint)
     
     CCLog.verbose("Query Location Rectangle SouthWest - (\(southWestCoordinate.latitude), \(southWestCoordinate.longitude)), NorthEast - (\(northEastCoordinate.latitude), \(northEastCoordinate.longitude))")
+    
+    // We are going to limit search to a maximum of 1 degree of of Latitude (approximately 111km)
+    guard (northEastCoordinate.latitude - southWestCoordinate.latitude) < Constants.queryMaxLatDelta else {
+      callback?(nil, ErrorCode.mapQueryExceededMaxLat)
+      return
+    }
     
     storyQuery = FoodieQuery()
     storyQuery!.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
