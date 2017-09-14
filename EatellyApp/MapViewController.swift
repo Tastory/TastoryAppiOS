@@ -300,7 +300,7 @@ class MapViewController: UIViewController {
     storyQuery!.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
     storyQuery!.setSkip(to: 0)
     storyQuery!.setLimit(to: FoodieGlobal.Constants.JournalFeedPaginationCount)
-    _ = storyQuery!.addArrangement(type: .modificationTime, direction: .ascending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
+    _ = storyQuery!.addArrangement(type: .creationTime, direction: .descending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
 
     // Put up blur view and activity spinner before performing query
     // TODO: We should factor these out so they can be used everywhere
