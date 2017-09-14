@@ -426,7 +426,6 @@ class JournalViewController: UIViewController {
   
   fileprivate func resumeStateTrack() {
     isPaused = false
-    pauseResumeButton.setTitle("⏸", for: .normal)
   }
   
   
