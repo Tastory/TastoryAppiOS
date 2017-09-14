@@ -393,9 +393,20 @@
                                     </view>
                                 </subviews>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t4S-lT-gBv">
-                                <rect key="frame" x="315" y="629" width="44" height="30"/>
-                                <state key="normal" title="Sound"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7rC-KB-BnZ">
+                                <rect key="frame" x="329" y="617" width="30" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="⏯"/>
+                                <connections>
+                                    <action selector="pausePlayToggle:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="ZMf-Tj-MeS"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t4S-lT-gBv">
+                                <rect key="frame" x="331" y="584" width="30" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="🔉"/>
                                 <connections>
                                     <action selector="soundToggle:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="jnu-sB-8je"/>
                                 </connections>
@@ -419,11 +430,9 @@
                             <constraint firstItem="PSs-bH-oOZ" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="cb5-so-Nwb"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="efA-ND-dRG"/>
                             <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="bottom" id="fNQ-Yf-4Lf"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="t4S-lT-gBv" secondAttribute="trailing" id="pqS-Hv-QVg"/>
                             <constraint firstAttribute="trailing" secondItem="De9-KV-Mtr" secondAttribute="trailing" id="uHJ-7z-fEq"/>
                             <constraint firstAttribute="trailing" secondItem="3Gc-Ev-vmE" secondAttribute="trailing" id="uPp-NK-myt"/>
                             <constraint firstItem="lU5-U1-CUM" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="vnj-nw-zOS"/>
-                            <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="t4S-lT-gBv" secondAttribute="bottom" constant="8" symbolic="YES" id="yyK-3b-7EJ"/>
                         </constraints>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="17T-uz-Ki4" appends="YES" id="h5e-pI-kLG"/>
@@ -433,6 +442,7 @@
                     <connections>
                         <outlet property="activityIndicator" destination="PSs-bH-oOZ" id="ltb-9Q-KVm"/>
                         <outlet property="blurView" destination="lU5-U1-CUM" id="URy-RV-r5L"/>
+                        <outlet property="pauseResumeButton" destination="7rC-KB-BnZ" id="qTD-9Q-iCi"/>
                         <outlet property="photoView" destination="3Gc-Ev-vmE" id="tiQ-hZ-B0K"/>
                         <outlet property="soundButton" destination="t4S-lT-gBv" id="ZDG-D8-Ify"/>
                         <outlet property="tapBackwardsWidth" destination="JVf-9n-aH0" id="NCS-Gv-0hn"/>
@@ -462,7 +472,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-428" y="690"/>
+            <point key="canvasLocation" x="-428" y="689.5052473763119"/>
         </scene>
         <!--Camera View Controller-->
         <scene sceneID="wzA-2G-nOi">
@@ -548,17 +558,19 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Da-16-S86">
-                                <rect key="frame" x="325" y="629" width="34" height="30"/>
+                                <rect key="frame" x="327" y="617" width="34" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                <state key="normal" title="Save"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="💾"/>
                                 <connections>
                                     <action selector="saveButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="X5X-lL-CO1"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jIA-aA-ex6">
-                                <rect key="frame" x="315" y="591" width="44" height="30"/>
+                                <rect key="frame" x="325" y="578" width="44" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                <state key="normal" title="Sound"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <state key="normal" title="🔉"/>
                                 <connections>
                                     <action selector="soundButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="dkQ-EQ-R1s"/>
                                 </connections>
@@ -574,44 +586,41 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NrF-32-VrF">
-                                <rect key="frame" x="329" y="8" width="30" height="30"/>
+                                <rect key="frame" x="293" y="15" width="30" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Text"/>
+                                <fontDescription key="fontDescription" name="TimesNewRomanPS-BoldMT" family="Times New Roman" pointSize="28"/>
+                                <state key="normal" title="T">
+                                    <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                </state>
                                 <connections>
                                     <action selector="textButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hEs-po-5DG"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xf3-yP-YWE">
-                                <rect key="frame" x="242" y="8" width="35" height="30"/>
+                                <rect key="frame" x="257" y="15" width="30" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Food"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="🍴"/>
                                 <connections>
                                     <action selector="foodButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="Y2p-Gw-jh1"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ti7-uM-Tfb">
-                                <rect key="frame" x="285" y="8" width="36" height="30"/>
+                                <rect key="frame" x="329" y="15" width="30" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Draw"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <state key="normal" title="✏️"/>
                                 <connections>
                                     <action selector="drawButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="l8o-q3-L1i"/>
                                 </connections>
                             </button>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="eZh-sa-B78">
-                                <rect key="frame" x="242" y="166" width="204" height="31"/>
+                                <rect key="frame" x="242" y="181" width="204" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="colorSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="j3f-dm-ZYb"/>
                                 </connections>
                             </slider>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CKF-go-XiM">
-                                <rect key="frame" x="284" y="46" width="38" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Undo"/>
-                                <connections>
-                                    <action selector="undoButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="1WG-ao-Czh"/>
-                                </connections>
-                            </button>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="gQS-fe-hw8">
                                 <rect key="frame" x="267" y="384" width="154" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
@@ -620,27 +629,39 @@
                                 </connections>
                             </slider>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Nh-We-bhr">
-                                <rect key="frame" x="241" y="46" width="37" height="30"/>
+                                <rect key="frame" x="294" y="48" width="30" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Bgnd"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="🔲"/>
                                 <connections>
                                     <action selector="bgndButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="KgV-2q-twe"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PR5-g3-wOV">
-                                <rect key="frame" x="242" y="84" width="35" height="30"/>
+                                <rect key="frame" x="258" y="48" width="30" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Align"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                <state key="normal" title="📏"/>
                                 <connections>
                                     <action selector="alignButton:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="N4j-ax-KF6"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rbc-ru-Sbr">
-                                <rect key="frame" x="281" y="46" width="45" height="30"/>
+                                <rect key="frame" x="331" y="48" width="30" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Delete"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="🗑"/>
                                 <connections>
                                     <action selector="deleteButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hLO-Li-p13"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CKF-go-XiM">
+                                <rect key="frame" x="331" y="48" width="30" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="🔙"/>
+                                <connections>
+                                    <action selector="undoButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="1WG-ao-Czh"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -796,7 +817,7 @@
                                         <rect key="frame" x="0.0" y="324" width="375" height="133"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="qWC-Q9-gqR" id="QYD-OH-Fjz">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="132.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="132"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ijC-Vt-3Fq">
@@ -813,7 +834,7 @@
                                         <rect key="frame" x="0.0" y="457" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3yk-tP-0Df" id="qUP-ce-gSk">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cGu-Cc-dGg">

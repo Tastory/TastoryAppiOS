@@ -16,7 +16,7 @@ class JournalViewController: UIViewController {
   // MARK: - Constants
   struct Constants {
     static let MomentsToBufferAtATime = FoodieGlobal.Constants.MomentsToBufferAtATime
-    static let MomentsViewingTimeInterval = 3.0
+    static let MomentsViewingTimeInterval = 5.0
   }
   
   
@@ -36,6 +36,8 @@ class JournalViewController: UIViewController {
   fileprivate var photoTimer: Timer?
   fileprivate var currentMoment: FoodieMoment?
   fileprivate var soundOn: Bool = true
+  fileprivate var isPaused: Bool = false
+  fileprivate var photoTimeRemaining: TimeInterval = 0.0
   
   
   // Generic error dialog box to the user on internal errors
@@ -78,6 +80,7 @@ class JournalViewController: UIViewController {
   @IBOutlet weak var tapGestureStackView: UIStackView!
   @IBOutlet weak var tapBackwardsWidth: NSLayoutConstraint!
   @IBOutlet weak var soundButton: UIButton!
+  @IBOutlet weak var pauseResumeButton: UIButton!
   
   
   // MARK: - IBActions
@@ -125,6 +128,68 @@ class JournalViewController: UIViewController {
       self.present(safariViewController, animated: false, completion: nil)
     }
   }
+  
+  @IBAction func pausePlayToggle(_ sender: UIButton) {
+    
+    guard let currentMoment = currentMoment, let mediaObject = currentMoment.mediaObj, let mediaType = mediaObject.mediaType else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.assert("No Current Moment, Media Object, or Media Type for JournalVC when trying to pause/reumse")
+        self.cleanUpAndDismiss()
+      }
+      return
+    }
+    
+    if let photoTimer = photoTimer {
+      
+      // Sanity check invalid combos
+      guard photoTimer.isValid == !isPaused, mediaType == .photo else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.assert("JournalVC has Valid PhotoTimer but Media Type not of Photo, or isPaused == true")
+          self.cleanUpAndDismiss()
+        }
+        return
+      }
+      
+      if photoTimer.isValid {
+        // Photo is 'playing'. Pause photo timer
+        photoTimeRemaining = photoTimer.fireDate.timeIntervalSinceNow
+        photoTimer.invalidate()
+        pauseStateTrack()
+        
+      } else {
+        // Photo is 'paused'. Restart photo timer from where left off
+        self.photoTimer = Timer.scheduledTimer(withTimeInterval: photoTimeRemaining,
+                                               repeats: false) { [weak self] timer in
+          self?.displayNextMoment()
+        }
+        resumeStateTrack()
+      }
+    } else {
+      
+      // Sanity check invalid combos
+      guard (avPlayer!.rate == 0.0) == isPaused, mediaType == .video else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.assert("JournalVC avPlayer.rate and isPaused mismatches. Or MediaType not of Video")
+          self.cleanUpAndDismiss()
+        }
+        return
+      }
+      
+      if avPlayer!.rate != 0.0 {
+        // Video is playing. Pause the video
+        avPlayer!.pause()
+        pauseStateTrack()
+      
+      } else {
+        // Video is paused. Restarted the video
+        avPlayer!.play()
+        resumeStateTrack()
+      }
+    }
+    
+    
+  }
+  
   
   @IBAction func soundToggle(_ sender: UIButton) {
     
@@ -339,6 +404,7 @@ class JournalViewController: UIViewController {
     avPlayer?.pause()
     photoTimer?.invalidate()
     photoTimer = nil
+    resumeStateTrack()
     NotificationCenter.default.removeObserver(self)
   }
   
@@ -351,6 +417,18 @@ class JournalViewController: UIViewController {
     jotViewController.clearAll()
     DispatchQueue.main.async { [weak self] in self?.dismiss(animated: true, completion: nil) }
   }
+  
+  
+  fileprivate func pauseStateTrack() {
+    isPaused = true
+  }
+  
+  
+  fileprivate func resumeStateTrack() {
+    isPaused = false
+    pauseResumeButton.setTitle("⏸", for: .normal)
+  }
+  
   
   
   // MARK: - Public Instance Functions

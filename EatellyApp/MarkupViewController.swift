@@ -210,6 +210,10 @@ class MarkupViewController: UIViewController {
     
     jotViewController.drawingColor = currentColor
     jotViewController.textColor = currentColor
+    
+    // Change the slider track and knob color accordingly
+    colorSlider.minimumTrackTintColor = currentColor
+    colorSlider.thumbTintColor = currentColor
   }
   
   
@@ -500,6 +504,7 @@ class MarkupViewController: UIViewController {
     bgndButton.isHidden = false
     alignButton.isHidden = false
     colorSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
+    colorSlider.value = 0.0  // Cuz default color is white
     sizeSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
     sizeSlider.minimumValue = Constants.SizeSliderMinFont
     sizeSlider.maximumValue = Constants.SizeSliderMaxFont
