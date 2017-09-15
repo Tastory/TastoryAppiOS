@@ -29,8 +29,7 @@ protocol FoodieObjectDelegate: class {
   func saveToLocal(withName name: String?,
                    withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func saveToLocalNServer(withName name: String?,
-                          withBlock callback: FoodieObject.SimpleErrorBlock?)
+  func saveToLocalNServer(withBlock callback: FoodieObject.SimpleErrorBlock?)
   
   
   func deleteRecursive(from location: FoodieObject.StorageLocation,
@@ -40,8 +39,7 @@ protocol FoodieObjectDelegate: class {
   func deleteFromLocal(withName name: String?,
                        withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func deleteFromLocalNServer(withName name: String?,
-                              withBlock callback: FoodieObject.SimpleErrorBlock?)
+  func deleteFromLocalNServer(withBlock callback: FoodieObject.SimpleErrorBlock?)
   
   
   func getUniqueIdentifier() -> String

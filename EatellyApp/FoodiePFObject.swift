@@ -174,7 +174,7 @@ class FoodiePFObject: PFObject {
     }
     CCLog.debug("Save \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) in Background")
     
-    // TODO: Maybe wanna track for Parse that only 1 Save on the top is necessary
+    // TODO: Save should also pin. And to which namespace? Might want to double check this
     saveInBackground { success, error in self.booleanToSimpleErrorCallback(success, error, callback) }
   }
   
@@ -200,7 +200,7 @@ class FoodiePFObject: PFObject {
     }
     CCLog.debug("Delete \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) in Background")
     
-    // Delete should also unpin. Might want to double check this
+    // TODO: Delete should also unpin. And across all namespace? Might want to double check this
     deleteInBackground { success, error in self.booleanToSimpleErrorCallback(success, error, callback) }
   }
   
