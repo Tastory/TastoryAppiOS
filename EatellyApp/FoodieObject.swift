@@ -11,30 +11,45 @@ import Foundation
  
 protocol FoodieObjectDelegate: class {
 
-  func retrieve(forceAnyways: Bool, withBlock callback: FoodieObject.SimpleErrorBlock?)
+  func retrieveRecursive(forceAnyways: Bool,
+                         from location: FoodieObject.StorageLocation,
+                         withBlock callback: FoodieObject.SimpleErrorBlock?)
+
+  func retrieveFromLocal(forceAnyways: Bool,
+                         withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func retrieveRecursive(forceAnyways: Bool, withBlock callback: FoodieObject.SimpleErrorBlock?)
+  func retrieveFromLocalThenServer(forceAnyways: Bool,
+                                   withBlock callback: FoodieObject.SimpleErrorBlock?)
+  
   
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      withName name: String?,
-                     withBlock callback: FoodieObject.BooleanErrorBlock?)
+                     withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func saveToLocal(withName name: String?, withBlock callback: FoodieObject.BooleanErrorBlock?)
+  func saveToLocal(withName name: String?,
+                   withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func saveToServer(withBlock callback: FoodieObject.BooleanErrorBlock?)
+  func saveToLocalNServer(withName name: String?,
+                          withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func deleteRecursive(withName name: String?,
-                       withBlock callback: FoodieObject.BooleanErrorBlock?)
   
-  func deleteFromLocal(withName name: String?, withBlock callback: FoodieObject.BooleanErrorBlock?)
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       withName name: String?,
+                       withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func deleteFromLocalNServer(withBlock callback: FoodieObject.BooleanErrorBlock?)
+  func deleteFromLocal(withName name: String?,
+                       withBlock callback: FoodieObject.SimpleErrorBlock?)
+  
+  func deleteFromLocalNServer(withName name: String?,
+                              withBlock callback: FoodieObject.SimpleErrorBlock?)
+  
   
   func getUniqueIdentifier() -> String
   
   func foodieObjectType() -> String
 }
 
+ 
 
 protocol FoodieObjectWaitOnRetrieveDelegate: class {
   
@@ -42,6 +57,7 @@ protocol FoodieObjectWaitOnRetrieveDelegate: class {
 }
 
 
+ 
 class FoodieObject {
   
   // MARK: - Types & Enumerations
@@ -74,7 +90,6 @@ class FoodieObject {
   
   enum StorageLocation: String {
     case local
-    case server
     case both
   }
   
