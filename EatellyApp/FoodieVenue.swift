@@ -727,10 +727,6 @@ extension FoodieVenue: FoodieObjectDelegate {
     foodieObject.deleteObjectLocalNServer(withName: name, withBlock: callback)
   }
   
-  func verbose() {
-    
-  }
-  
   
   func foodieObjectType() -> String {
     return "FoodieVenue"

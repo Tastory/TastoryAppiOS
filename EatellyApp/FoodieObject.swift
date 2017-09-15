@@ -8,6 +8,7 @@
 
 import Foundation
 
+ 
 protocol FoodieObjectDelegate: class {
 
   func retrieve(forceAnyways: Bool, withBlock callback: FoodieObject.SimpleErrorBlock?)
@@ -28,8 +29,6 @@ protocol FoodieObjectDelegate: class {
   func deleteFromLocal(withName name: String?, withBlock callback: FoodieObject.BooleanErrorBlock?)
   
   func deleteFromLocalNServer(withBlock callback: FoodieObject.BooleanErrorBlock?)
-  
-  func verbose()
   
   func getUniqueIdentifier() -> String
   

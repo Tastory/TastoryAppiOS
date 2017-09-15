@@ -20,6 +20,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var aspectRatio: Double
   @NSManaged var width: Int
   @NSManaged var markups: Array<FoodieMarkup>? // Array of PFObjects as FoodieMarkup for the thumbnail
+  
   @NSManaged var title: String? // Title for the Journal
   @NSManaged var author: FoodieUser? // Pointer to the user that authored this Moment
   @NSManaged var venue: FoodieVenue? // Pointer to the Restaurant object
@@ -502,17 +503,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
         }
       }
     }
-  }
-  
-  func verbose() {
-//    CCLog.verbose("FoodieJournal ID: \(getUniqueIdentifier())")
-//    CCLog.verbose("  Title: \(title)")
-//    CCLog.verbose("  Thumbnail Filename: \(thumbnailFileName)")
-//    CCLog.verbose("  Contains \(moments!.count) Moments with ID as follows:")
-//    
-//    for moment in moments! {
-//      CCLog.verbose("    \(moment.getUniqueIdentifier())")
-//    }
   }
   
   

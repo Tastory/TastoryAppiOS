@@ -13,6 +13,7 @@
 import UIKit
 import Photos
 import SwiftyCam
+import MobileCoreServices
 
 
 protocol CameraReturnDelegate {
@@ -391,8 +392,10 @@ extension CameraViewController: UIImagePickerControllerDelegate {
     var mediaObject: FoodieMedia
     var mediaName: String
 
-    if("public.movie" == mediaType)
-    {
+    switch mediaType {
+      
+    case String(kUTTypeMovie):
+      
       guard let movieUrl = info[UIImagePickerControllerMediaURL] as? NSURL else {
         CCLog.assert("video URL is not returned from image picker")
         return
@@ -410,14 +413,25 @@ extension CameraViewController: UIImagePickerControllerDelegate {
 
       mediaObject = FoodieMedia(withState: .objectModified, fileName: movieName, type: .video)
       mediaObject.videoLocalBufferUrl = URL(fileURLWithPath: moviePath)
-    } else {
+    
+    case String(kUTTypeImage):
+      
       mediaName = FoodieFile.newPhotoFileName()
+      
       guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
         CCLog.assert("UIImage is not returned from image picker")
         return
       }
+      
       mediaObject = FoodieMedia(withState: .objectModified, fileName: mediaName, type: .photo)
       mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+      
+    default:
+      AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { action in
+        CCLog.assert("Media returned from Image Picker is neither a Photo nor a Video")
+        self.dismiss(animated: true, completion: nil)
+      }
+      return
     }
 
     let storyboard = UIStoryboard(name: "Main", bundle: nil)

@@ -271,13 +271,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  func verbose() {
-//    CCLog.verbose("FoodieMoment ID: \(getUniqueIdentifier())")
-//    CCLog.verbose("  Media Filename: \(mediaFileName)")
-//    CCLog.verbose("  Media Type: \(mediaType)")
-  }
-  
-  
   func foodieObjectType() -> String {
     return "FoodieMoment"
   }
