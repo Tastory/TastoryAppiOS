@@ -14,12 +14,15 @@ class FoodieMedia: FoodieS3Object {
   // MARK: - Error Types Definition
   enum ErrorCode: LocalizedError {
     
+    case retreiveFileDoesNotExist
     case saveToLocalwithNilMediaType
     case saveToLocalwithNilImageMemoryBuffer
     case saveToLocalwithNilvideoLocalBufferUrl
     
     var errorDescription: String? {
       switch self {
+      case .retreiveFileDoesNotExist:
+        return NSLocalizedString("File for filename does not exist", comment: "Error description for an exception error code")
       case .saveToLocalwithNilMediaType:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, medaiType = nil", comment: "Error description for an exception error code")
       case .saveToLocalwithNilImageMemoryBuffer:
@@ -52,15 +55,19 @@ class FoodieMedia: FoodieS3Object {
   
   
   // This is the Initializer we will call internally
-  init(withState operationState: FoodieObject.OperationStates, fileName: String, type: FoodieMediaType) {
+  init(withState operationState: FoodieObject.OperationStates,
+       for fileName: String,
+       localType: FoodieObject.LocalType,
+       mediaType: FoodieMediaType) {
+    
     super.init(withState: operationState)
     foodieObject.delegate = self
-    foodieFileName = fileName
-    mediaType = type
+    self.foodieFileName = fileName
+    self.mediaType = mediaType
     
     // For videos, determine if the media file already exists in Local cache store
-    if type == .video && FoodieFile.manager.checkIfFileExistsLocally(for: fileName) {
-      videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: fileName)
+    if mediaType == .video && FoodieFile.manager.checkIfExists(in: localType, for: fileName) {
+      videoLocalBufferUrl = FoodieFile.getFileURL(for: localType, with: fileName)
     } else {
       videoLocalBufferUrl = nil
     }
@@ -71,9 +78,55 @@ class FoodieMedia: FoodieS3Object {
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieMedia: FoodieObjectDelegate {
   
-  func retrieve(forceAnyways: Bool = false,
-                from location: FoodieObject.StorageLocation,
-                withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrieveFromLocal(type localType: FoodieObject.LocalType,
+                         forceAnyways: Bool,
+                         withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    guard let fileName = foodieFileName else {
+      CCLog.fatal("FoodieMedia has no foodieFileName")
+    }
+    
+    guard let type = mediaType else {
+      CCLog.fatal("Retrieve not allowed when Media has no MediaType")
+    }
+    
+    // If photo and in memory, or video and in local, just callback
+    if !forceAnyways && (imageMemoryBuffer != nil || videoLocalBufferUrl != nil) {
+      DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }
+      return
+    }
+    
+    switch type {
+      
+    case .photo:
+      retrieveToBuffer(from: localType) { buffer, error in
+        if let error = error {
+          CCLog.warning("Retrieve from \(localType.rawValue) Failed - \(error.localizedDescription)")
+        } else if let imageBuffer = buffer as? Data {
+          self.imageMemoryBuffer = imageBuffer
+        } else {
+          CCLog.fatal("No Error, but no Buffer either. Cannot proceed")
+        }
+        callback?(error)
+      }
+      
+    case .video:
+      if checkIfExists(in: localType) {
+        self.videoLocalBufferUrl = FoodieFile.getFileURL(for: .cache, with: fileName)
+        callback?(nil)
+      } else {
+        callback?(ErrorCode.retreiveFileDoesNotExist)
+      }
+    }
+  }
+  
+  
+  func retrieveFromLocalThenServer(forceAnyways: Bool,
+                                   withBlock callback: FoodieObject.SimpleErrorBlock?) { // Always from Cache, then Server
+    
+    guard let fileName = foodieFileName else {
+      CCLog.fatal("FoodieMedia has no foodieFileName")
+    }
     
     guard let type = mediaType else {
       CCLog.fatal("Retrieve not allowed when Media has no MediaType")
@@ -89,8 +142,8 @@ extension FoodieMedia: FoodieObjectDelegate {
       switch type {
       case .photo:
         retrieveFromServerToBuffer() { buffer, error in
-          if let err = error {
-            CCLog.warning("retrieveFromServerToBuffer for photo failed with error \(err.localizedDescription)")
+          if let error = error {
+            CCLog.warning("retrieveFromServerToBuffer for photo failed with error \(error.localizedDescription)")
           }
           if let imageBuffer = buffer as? Data { self.imageMemoryBuffer = imageBuffer }
           callback?(error)
@@ -98,14 +151,10 @@ extension FoodieMedia: FoodieObjectDelegate {
         
       case .video:
         retrieveFromServerToLocal() { (error) in
-          if let err = error {
-            CCLog.warning("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
+          if let error = error {
+            CCLog.warning("retrieveFromServerToLocal for video failed with error \(error.localizedDescription)")
           }
-          if let fileName = self.foodieFileName {
-            self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: fileName)
-          } else {
-            CCLog.fatal("FoodieMedia.retrieve() resulted in foodieFileName = nil")
-          }
+          self.videoLocalBufferUrl = FoodieFile.getFileURL(for: .cache, with: fileName)
           callback?(error)
         }
       }
@@ -116,26 +165,26 @@ extension FoodieMedia: FoodieObjectDelegate {
     switch type {
       
     case .photo:
-      retrieveFromLocalToBuffer() { localBuffer, localError in
-        guard let err = localError as? FoodieFile.ErrorCode else {
+      retrieveToBuffer(from: .cache) { buffer, error in
+        guard let error = error as? FoodieFile.ErrorCode else {
           // Error is nil. This is actually success case!
-          if let imageBuffer = localBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
+          if let imageBuffer = buffer as? Data { self.imageMemoryBuffer = imageBuffer }
           callback?(nil)
           return
         }
         
-        if err == FoodieFile.ErrorCode.fileManagerReadLocalNoFile {
+        if error == FoodieFile.ErrorCode.fileManagerReadLocalNoFile {
           // This is expected when file is not cached to local
         } else {
-          CCLog.warning("retrieveFromLocalToBuffer for photo failed with error \(err.localizedDescription)")
+          CCLog.warning("retrieveFromLocalToBuffer for photo failed with error \(error.localizedDescription)")
         }
         
-        self.retrieveFromServerToBuffer() { (serverBuffer, serverError) in
-          if let error = serverError {
+        self.retrieveFromServerToBuffer() { (buffer, error) in
+          if let error = error {
             CCLog.warning("retrieveFromServerToBuffer for photo failed with error \(error.localizedDescription)")
           }
-          if let imageBuffer = serverBuffer as? Data { self.imageMemoryBuffer = imageBuffer }
-          callback?(serverError)
+          if let buffer = buffer as? Data { self.imageMemoryBuffer = buffer }
+          callback?(error)
         }
       }
       
@@ -144,11 +193,7 @@ extension FoodieMedia: FoodieObjectDelegate {
         if let err = error {
           CCLog.warning("retrieveFromServerToLocal for video failed with error \(err.localizedDescription)")
         }
-        if let fileName = self.foodieFileName {
-          self.videoLocalBufferUrl = FoodieFile.getLocalFileURL(from: fileName)
-        } else {
-          CCLog.fatal("FoodieMedia.retrieve() resulted in foodieFileName = nil")
-        }
+        self.videoLocalBufferUrl = FoodieFile.getFileURL(for: .cache, with: fileName)
         callback?(error)
       }
     }
@@ -156,8 +201,9 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
-  func retrieveRecursive(forceAnyways: Bool = false,
-                         from location: FoodieObject.StorageLocation,
+  func retrieveRecursive(from location: FoodieObject.StorageLocation,
+                         type localType: FoodieObject.LocalType,
+                         forceAnyways: Bool = false,
                          withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Retrieve self. This object have no children
@@ -167,8 +213,8 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
-                     withName name: String?,
-                     withBlock callback: FoodieObject.BooleanErrorBlock?) {
+                     type localType: FoodieObject.LocalType,
+                     withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
 //    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
@@ -214,8 +260,9 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   
   // Trigger recursive delete against all child objects.
-  func deleteRecursive(withName name: String?,
-                       withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       type localType: FoodieObject.LocalType,
+                       withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     CCLog.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
     

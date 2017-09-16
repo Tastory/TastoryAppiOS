@@ -45,17 +45,20 @@ class FoodieMarkup: FoodiePFObject {
 extension FoodieMarkup: FoodieObjectDelegate {
   
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
-  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrieveRecursive(from location: FoodieObject.StorageLocation,
+                         type localType: FoodieObject.LocalType,
+                         forceAnyways: Bool = false,
+                         withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Retrieve self. This object have no children
-    retrieve(forceAnyways: forceAnyways, withBlock: callback)
+    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
   }
   
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
-                     withName name: String?,
-                     withBlock callback: FoodieObject.BooleanErrorBlock?) {
+                     type localType: FoodieObject.LocalType,
+                     withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
 //    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
@@ -66,26 +69,17 @@ extension FoodieMarkup: FoodieObjectDelegate {
 //    }
     
     DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
-      self.foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
+      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
     }
   }
   
   
-  func deleteRecursive(withName name: String?,
-                       withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    
-    CCLog.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
-    
-    // Object might not be retrieved, retrieve first to have access to children
-    retrieve { error in
-      
-      if let hasError = error {
-        callback?(false, hasError)
-      }
-      
-      // Delete itself first
-      self.foodieObject.deleteObjectLocalNServer(withName: name, withBlock: callback)
-    }
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       type localType: FoodieObject.LocalType,
+                       withBlock callback: FoodieObject.SimpleErrorBlock?) {
+
+    // Delete self. For now, this object has no children
+    foodieObject.deleteObject(from: location, type: localType, withBlock: callback)
   }
   
   

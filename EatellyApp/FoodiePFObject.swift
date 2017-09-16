@@ -70,8 +70,8 @@ class FoodiePFObject: PFObject {
   }
   
   
-  func retrieveFromLocal(forceAnyways: Bool,
-                         type localType: FoodieLocalType,  // At the Fetch stage, Parse doesn't care any more
+  func retrieveFromLocal(type localType: FoodieObject.LocalType,  // At the Fetch stage, Parse doesn't care any more
+                         forceAnyways: Bool,
                          withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     guard let delegate = foodieObject.delegate else {
@@ -154,8 +154,8 @@ class FoodiePFObject: PFObject {
         if let error = serverError {
           CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
         } else {
-          CCLog.debug("Pin \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) to Name '\(FoodieLocalType.cache.rawValue)'")
-          self.pinInBackground(withName: FoodieLocalType.cache.rawValue) { (success, error) in self.booleanToSimpleErrorCallback(success, error, nil) }
+          CCLog.debug("Pin \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) to Name '\(FoodieObject.LocalType.cache.rawValue)'")
+          self.pinInBackground(withName: FoodieObject.LocalType.cache.rawValue) { (success, error) in self.booleanToSimpleErrorCallback(success, error, nil) }
         }
         // Return if got what's wanted
         callback?(serverError)
@@ -164,7 +164,7 @@ class FoodiePFObject: PFObject {
   }
   
   
-  func saveToLocal(type localType: FoodieLocalType,
+  func saveToLocal(type localType: FoodieObject.LocalType,
                    withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
@@ -176,7 +176,7 @@ class FoodiePFObject: PFObject {
   }
   
   
-  func saveToLocalNServer(type localType: FoodieLocalType,
+  func saveToLocalNServer(type localType: FoodieObject.LocalType,
                           withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
@@ -196,7 +196,7 @@ class FoodiePFObject: PFObject {
   }
   
   
-  func deleteFromLocal(type localType: FoodieLocalType,
+  func deleteFromLocal(type localType: FoodieObject.LocalType,
                        withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")

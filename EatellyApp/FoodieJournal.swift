@@ -199,8 +199,9 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func selfRetrieval(withBlock callback: FoodieObject.SimpleErrorBlock? = nil) {
     
     // Do we still need to fetch the Journal?
-    retrieve() { journalError in
-      if let error = journalError {
+    retrieve(from: .both, type: .cache, forceAnyways: false) { error in
+      
+      if let error = error {
         CCLog.assert("Journal.retrieve() callback with error: \(error.localizedDescription)")
         callback?(error)
         return
@@ -218,15 +219,16 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      thumbnailObject.retrieve() { thumbnailError in
-        if let error = thumbnailError {
+      thumbnailObject.retrieveRecursive(from: .both, type: .cache) { error in
+        
+        if let error = error {
           CCLog.warning("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
           callback?(error)
           return
         }
         
-        venue.retrieve() { venueError in
-          if let error = venueError {
+        venue.retrieveRecursive(from: .both, type: .cache) { error in
+          if let error = error {
             CCLog.warning("Venue.retrieve() callback with error: \(error.localizedDescription)")
             callback?(error)
             return
@@ -356,10 +358,15 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
 
   // MARK: - Foodie Object Delegate Conformance
   
-  override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
-    super.retrieve(forceAnyways: forceAnyways) { error in
+  fileprivate func retrieve(from location: FoodieObject.StorageLocation,
+                            type localType: FoodieObject.LocalType,
+                            forceAnyways: Bool,
+                            withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      
       if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
-        self.thumbnailObj = FoodieMedia(withState: .notAvailable, fileName: fileName, type: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
+        self.thumbnailObj = FoodieMedia(withState: .notAvailable, for: fileName, localType: localType, mediaType: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
       }
       callback?(error)  // Callback regardless
     }
@@ -367,13 +374,16 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
-  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrieveRecursive(from location: FoodieObject.StorageLocation,
+                         type localType: FoodieObject.LocalType,
+                         forceAnyways: Bool = false,
+                         withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Retrieve self first, then retrieve children afterwards
-    retrieve(forceAnyways: forceAnyways) { error in
+    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
-      if let journalError = error {
-        CCLog.assert("Journal.retrieve() resulted in error: \(journalError.localizedDescription)")
+      if let error = error {
+        CCLog.assert("Journal.retrieve() resulted in error: \(error.localizedDescription)")
         callback?(error)
         return
       }
@@ -387,24 +397,24 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       self.foodieObject.resetOutstandingChildOperations()
       
       // Got through all sanity check, calling children's retrieveRecursive
-      self.foodieObject.retrieveChild(thumbnail, forceAnyways: forceAnyways, withBlock: callback)
+      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
       
-      if let hasMoments = self.moments {
-        for moment in hasMoments {
-          self.foodieObject.retrieveChild(moment, forceAnyways: forceAnyways, withBlock: callback)
+      if let moments = self.moments {
+        for moment in moments {
+          self.foodieObject.retrieveChild(moment, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
         }
       }
       
-      if let hasMarkups = self.markups {
-        for markup in hasMarkups {
-          self.foodieObject.retrieveChild(markup, forceAnyways: forceAnyways, withBlock: callback)
+      if let markups = self.markups {
+        for markup in markups {
+          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
         }
       }
       
       // Do we need to retrieve User?
       
       if let venue = self.venue {
-        self.foodieObject.retrieveChild(venue, forceAnyways: forceAnyways, withBlock: callback)
+        self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
       }
     }
   }
@@ -412,8 +422,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
-                    withName name: String?,
-                    withBlock callback: FoodieObject.BooleanErrorBlock?) {
+                     type localType: FoodieObject.LocalType,
+                     withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
 //    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
@@ -422,18 +432,18 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
 //      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
 //      return
 //    }
-//    
-    var childOperationPending = false
+//
     self.foodieObject.resetOutstandingChildOperations()
+    var childOperationPending = false
     
     // Need to make sure all children FoodieRecursives saved before proceeding
-    if let hasMoments = moments {
-      for moment in hasMoments {
-        // omit saving of moment if they are not marked modified to prevent double saving of moments to server
+    if let moments = moments {
+      for moment in moments {
+        // Omit saving of moment if they are not marked modified to prevent double saving of moments to server
         if(moment.foodieObject.operationState == .objectModified ||
           moment.foodieObject.operationState == .savedToLocal)
         {
-          foodieObject.saveChild(moment, to: location, withName: name, withBlock: callback)
+          foodieObject.saveChild(moment, to: location, type: localType, withBlock: callback)
           childOperationPending = true
         }
       }
@@ -447,7 +457,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     if let hasMarkups = markups {
       for markup in hasMarkups {
-        foodieObject.saveChild(markup, to: location, withName: name, withBlock: callback)
+        foodieObject.saveChild(markup, to: location, type: localType, withBlock: callback)
         childOperationPending = true
       }
     }
@@ -455,51 +465,78 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     // Do we need to save User? Is User considered modified?
     
     if let venue = venue {
-      foodieObject.saveChild(venue, to: location, withName: name, withBlock: callback)
+      foodieObject.saveChild(venue, to: location, type: localType, withBlock: callback)
       childOperationPending = true
     }
     
     if !childOperationPending {
-      DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
-        self.foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
+      DispatchQueue.global(qos: .userInitiated).async {
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
       }
     }
   }
  
+  
   // Trigger recursive delete against all child objects.
-  func deleteRecursive(withName name: String?,
-                       withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       type localType: FoodieObject.LocalType,
+                       withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
-    retrieve() { error in  // This is for incase this object is not here. No way to access child objects if that's the case.
-      // TOOD: Victor, what happens if retrieve fails?
+    // Retrieve the Journal (only) to guarentee access to the childrens
+    retrieve(from: location, type: localType, forceAnyways: false) { error in
       
-      self.foodieObject.deleteObjectLocalNServer(withName: name) { (success, error) in
+      if let error = error {
+        CCLog.assert("Journal.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      // Delete self first before deleting children
+      self.foodieObject.deleteObject(from: location, type: localType) { error in
         
-        if (success) {
+        if let error = error {
+          CCLog.warning("Deleting self resulted in error: \(error.localizedDescription)")
           
-          self.foodieObject.resetOutstandingChildOperations()
-          
-          // check to see if there are more items such as moments, markups to delete
-          if let hasMoment = self.moments {
-            for moment in hasMoment {
-              self.foodieObject.deleteChild(moment, withName: name, withBlock: callback)
+          // Do best effort delete of all children
+          if let moments = self.moments {
+            for moment in moments {
+              self.foodieObject.deleteChild(moment, from: location, type: localType, withBlock: nil)
             }
           }
           
-          if let hasMarkup = self.markups {
-            for markup in hasMarkup {
-              self.foodieObject.deleteChild(markup, withName: name, withBlock: callback)
+          if let markups = self.markups {
+            for markup in markups {
+              self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: nil)
             }
           }
           
           // Don't delete Users nor Venues!!!
           
-          // TODO: Victor, what happens if there is neither Moments nor Markup in this Journal? I know it's hypothetical. 
-          // But it will mean the whole recursive operation hangs because there will never be a callback
-          
-        } else {
-          // error when deleting journal from server
-          callback?(success, error)
+          // Just callback with the error
+          callback?(error)
+          return
+        }
+        
+        self.foodieObject.resetOutstandingChildOperations()
+        var childOperationPending = false
+        
+        if let moments = self.moments {
+          for moment in moments {
+            self.foodieObject.deleteChild(moment, from: location, type: localType, withBlock: nil)
+            childOperationPending = true
+          }
+        }
+        
+        if let markups = self.markups {
+          for markup in markups {
+            self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: nil)
+            childOperationPending = true
+          }
+        }
+        
+        if !childOperationPending {
+          CCLog.assert("No child deletes pending. Is this okay?")
+          callback?(error)
         }
       }
     }

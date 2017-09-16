@@ -11,13 +11,13 @@ import Foundation
  
 protocol FoodieObjectDelegate: class {
 
-  func retrieveRecursive(forceAnyways: Bool,
-                         from location: FoodieObject.StorageLocation,
-                         type localType: FoodieLocalType,
+  func retrieveRecursive(from location: FoodieObject.StorageLocation,
+                         type localType: FoodieObject.LocalType,
+                         forceAnyways: Bool,
                          withBlock callback: FoodieObject.SimpleErrorBlock?)
 
-  func retrieveFromLocal(forceAnyways: Bool,
-                         type localType: FoodieLocalType,
+  func retrieveFromLocal(type localType: FoodieObject.LocalType,
+                         forceAnyways: Bool,
                          withBlock callback: FoodieObject.SimpleErrorBlock?)
   
   func retrieveFromLocalThenServer(forceAnyways: Bool,
@@ -25,21 +25,21 @@ protocol FoodieObjectDelegate: class {
   
   
   func saveRecursive(to location: FoodieObject.StorageLocation,
-                     type localType: FoodieLocalType,
+                     type localType: FoodieObject.LocalType,
                      withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func saveToLocal(type localType: FoodieLocalType,
+  func saveToLocal(type localType: FoodieObject.LocalType,
                    withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func saveToLocalNServer(type localType: FoodieLocalType,
+  func saveToLocalNServer(type localType: FoodieObject.LocalType,
                           withBlock callback: FoodieObject.SimpleErrorBlock?)
   
   
   func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       type localType: FoodieLocalType,
+                       type localType: FoodieObject.LocalType,
                        withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func deleteFromLocal(type localType: FoodieLocalType,
+  func deleteFromLocal(type localType: FoodieObject.LocalType,
                        withBlock callback: FoodieObject.SimpleErrorBlock?)
   
   func deleteFromLocalNServer(withBlock callback: FoodieObject.SimpleErrorBlock?)  // Always whacks all
@@ -86,6 +86,12 @@ class FoodieObject {
     case deletingFromServer = "deletingFromServer"
     case deletedFromServer  = "deletedFromServer"
     case deleteError        = "deleteError"
+  }
+  
+  
+  enum LocalType: String {
+    case cache = "FoodieCache"
+    case draft = "FoodieDraft"
   }
   
   
@@ -154,10 +160,13 @@ class FoodieObject {
   fileprivate var criticalMutex = SwiftMutex.create()
   
   
+  
   // MARK: - Public Static Functions
   static func initialize() {
     FoodiePFObject.configure()
   }
+  
+  
   
   // MARK: - Public Instance Functions
   
@@ -166,10 +175,6 @@ class FoodieObject {
     protectedOperationError = nil
   }
   
-  // mark object for delete
-  /*func markPendingDelete() {
-      protectedOperationState = .pendingDelete
-  }*/
   
   // Reset outstandingChildOperations
   func resetOutstandingChildOperations() { outstandingChildOperations = 0 }
@@ -206,8 +211,7 @@ class FoodieObject {
   }
 
   
-  // Function when all child retrieves have completed
-  func retrievesCompletedFromAllChildren(withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrievesCompletedFromAllChildren(withBlock callback: SimpleErrorBlock?) {
     
     // If children all came back and there is error, unwind state and call callback
     if protectedOperationError != nil {
@@ -221,17 +225,16 @@ class FoodieObject {
   }
   
   
-  // Function to call a child's retrieveRecursive()
-  func retrieveChild(_ child: FoodieObjectDelegate, forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrieveChild(_ child: FoodieObjectDelegate, from location: StorageLocation, type localType: LocalType, forceAnyways: Bool, withBlock callback: SimpleErrorBlock?) {
     
     SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
     SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
     
-    child.retrieveRecursive(forceAnyways: forceAnyways) { (error) in
+    child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
-      if let childError = error {
-        self.protectedOperationError = childError
+      if let error = error {
+        self.protectedOperationError = error
       }
       
       // This needs to be critical section or race condition between many childrens' completion can occur
@@ -248,6 +251,25 @@ class FoodieObject {
   }
   
   
+  func retrieveObject(from location: StorageLocation, type localType: LocalType, forceAnyways: Bool, withBlock callback: SimpleErrorBlock?) {
+    guard let delegate = delegate else {
+      CCLog.fatal("delegate = nil. Unable to proceed.")
+    }
+    
+    switch location {
+    case .local:
+      delegate.retrieveFromLocal(type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    case .both:
+      guard localType == .cache else {
+        CCLog.fatal("Cannot retrieve from both server and local with localType of .draft")
+      }
+      delegate.retrieveFromLocalThenServer(forceAnyways: forceAnyways, withBlock: callback)
+    default:
+      break
+    }
+  }
+  
+
   // Function for state transition when all saves have completed
   func saveCompleteStateTransition(to location: StorageLocation) {
     
@@ -258,7 +280,7 @@ class FoodieObject {
         // Dial back the state
         protectedOperationState = .objectModified
         
-      } else if (location == .server) {
+      } else if (location == .both) {
         // Dial back the state
         protectedOperationState = .savedToLocal
         
@@ -274,7 +296,7 @@ class FoodieObject {
         // Dial back the state
         protectedOperationState = .savedToLocal
         
-      } else if (location == .server) {
+      } else if (location == .both) {
         // Dial back the state
         protectedOperationState = .objectSynced
         
@@ -287,32 +309,30 @@ class FoodieObject {
   
   
   // Function when all child saves have completed
-  func savesCompletedFromAllChildren(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
+  func savesCompletedFromAllChildren(to location: StorageLocation, type localType: LocalType, withBlock callback: SimpleErrorBlock?) {
     
     CCLog.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.savesCompletedFromAllChildren to Location: \(location)")
     
     // If children all came back and there is error, unwind state and call callback
     if protectedOperationError != nil {
       saveCompleteStateTransition(to: location)
-      callback?(false, operationError)
+      callback?(operationError)
     }
       
     // If children all came back and no error, Save yourself!
     else {
-      saveObject(to: location, withName: name) { /*[unowned self]*/ (success, error) in
-        if !success {
-          if let hasError = error {
-            self.protectedOperationError = hasError
-          } else {
-            // TODO investigate if it is possible to have success = false and no error 
-            // I have seen it happened once
-            CCLog.assert("saveObject failed but block contained no Error")
-          }
+      saveObject(to: location, type: localType) { error in
+        if let hasError = error {
+          self.protectedOperationError = hasError
+        } else {
+          // TODO investigate if it is possible to have success = false and no error 
+          // I have seen it happened once
+          CCLog.assert("saveObject failed but block contained no Error")
         }
         
         // State transition accordingly and call callback
         self.saveCompleteStateTransition(to: location)
-        callback?(self.protectedOperationError == nil, self.protectedOperationError)
+        callback?(self.protectedOperationError)
       }
     }
   }
@@ -365,10 +385,7 @@ class FoodieObject {
   
   
   // Function to call a child's saveRecursive
-  func saveChild(_ child: FoodieObjectDelegate,
-                 to location: StorageLocation,
-                 withName name: String? = nil,
-                 withBlock callback: BooleanErrorBlock?) {
+  func saveChild(_ child: FoodieObjectDelegate, to location: StorageLocation, type localType: LocalType, withBlock callback: SimpleErrorBlock?) {
     
     CCLog.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.saveChild of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location)")
     
@@ -377,14 +394,10 @@ class FoodieObject {
     SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
     
     // Save Recursive for each moment. Call saveCompletionFromChild when done and without errors
-    child.saveRecursive(to: location, withName: name) { /*[unowned self]*/ (success, error) in
-      if !success {
-        if let hasError = error {
-          CCLog.warning("saveChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(hasError.localizedDescription)")
-          self.protectedOperationError = hasError
-        } else {
-          CCLog.fatal("saveChild failed but block contained no Error")
-        }
+    child.saveRecursive(to: location, type: localType) { error in
+      if let hasError = error {
+        CCLog.warning("saveChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(hasError.localizedDescription)")
+        self.protectedOperationError = hasError
       }
       
       // This needs to be critical section or race condition between many childrens' completion can occur
@@ -395,78 +408,45 @@ class FoodieObject {
       SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
       
       if !childOperationsPending {
-        self.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
+        self.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
       }
     }
   }
   
   
   // Function to save this object
-  func saveObject(to location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
-    
-    CCLog.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.saveObject to Location: \(location)")
-    
-    guard let delegateObj = delegate else {
-      CCLog.fatal("delegate not expected to be nil in saveObject()")
-    }
-    switch location {
-    case .local:
-      delegateObj.saveToLocal(withName: name, withBlock: callback)
-    case .server:
-      delegateObj.saveToServer(withBlock: callback)
-    default:
-      break
-    }
-  }
-  
-  
-  // Function to delete this object
-  func deleteObject(from location: StorageLocation, withName name: String? = nil, withBlock callback: BooleanErrorBlock?) {
+  func saveObject(to location: StorageLocation, type localType: LocalType, withBlock callback: SimpleErrorBlock?) {
     guard let delegate = delegate else {
-      CCLog.fatal("delegate not expected to be nil in deleteObject()")
+      CCLog.fatal("delegate = nil. Unable to proceed.")
     }
-    CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())).Object.deleteObject from \(location.rawValue)")
     
     switch location {
     case .local:
-      delegate.deleteFromLocal(withName: name, withBlock: callback)
-    case .server:
-      delegate.deleteFromLocalNServer(withBlock: callback)
+      delegate.saveToLocal(type: localType, withBlock: callback)
+    case .both:
+      delegate.saveToLocalNServer(type: localType, withBlock: callback)
     default:
       break
     }
   }
   
   
-  func deleteObjectLocalNServer(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    // Delete from Server first!!! Remove it from circulation. Also delete from Local might remove memory copy also!!
-    deleteObject(from: .server, withName: name) { (success, serverError) in
-      
-      // Just callback. The object itself is likely gone tho.
-      callback?(success, serverError)
-    }
-  }
-  
-  
-  func deleteChild(_ child: FoodieObjectDelegate,
-                   withName name: String? = nil,
-                   withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  // Function to delete child
+  func deleteChild(_ child: FoodieObjectDelegate, from location: StorageLocation, type localType: LocalType, withBlock callback: SimpleErrorBlock?) {
 
     // Lock here is in case that if the first operation competes and calls back before even the 2nd op's deleteChild goes out
     SwiftMutex.lock(&self.criticalMutex)
     self.outstandingChildOperations += 1
     SwiftMutex.unlock(&self.criticalMutex)
     
-    child.deleteRecursive(withName: name, withBlock: {(success, error) -> Void in
+    child.deleteRecursive(from: location, type: localType) { error in
       
-      if !success {
-        if let hasError = error {
-          self.protectedOperationError = hasError
-        } else {
-          CCLog.assert("deleteChild failed but block contained no Error")
-        }
+      if let hasError = error {
+        self.protectedOperationError = hasError
+      } else {
+        CCLog.assert("deleteChild failed but block contained no Error")
       }
-      
+
       var childOperationsPending = true
       SwiftMutex.lock(&self.criticalMutex)
       self.outstandingChildOperations -= 1
@@ -476,14 +456,31 @@ class FoodieObject {
       SwiftMutex.unlock(&self.criticalMutex)
       
       if !childOperationsPending {
-        callback?(self.protectedOperationError == nil, self.protectedOperationError)
+        callback?(self.protectedOperationError)
       }
-    })
+    }
+  }
+  
+  
+  // Function to delete this object
+  func deleteObject(from location: StorageLocation, type localType: LocalType, withBlock callback: SimpleErrorBlock?) {
+    guard let delegate = delegate else {
+      CCLog.fatal("delegate = nil. Unable to proceed.")
+    }
+    
+    switch location {
+    case .local:
+      delegate.deleteFromLocal(type: localType, withBlock: callback)
+    case .both:
+      delegate.deleteFromLocalNServer(withBlock: callback)
+    default:
+      break
+    }
   }
   
   
   // Function to retrieve if the Download status calls for
-  func retrieveIfPending(withBlock callback: FoodieObject.SimpleErrorBlock?) -> Bool {
+  func retrieveIfPending(withBlock callback: SimpleErrorBlock?) -> Bool {
     
     var needRetrieval = false
     
@@ -503,7 +500,7 @@ class FoodieObject {
       guard let delegateObj = delegate else {
         CCLog.fatal("delegate not expected to be nil in retrieveIfPending()")
       }
-      delegateObj.retrieveRecursive(forceAnyways: false) { error in
+      delegateObj.retrieveRecursive(from: .both, type: .cache, forceAnyways: false) { error in
         
         // Move forward state if success, backwards if failed
         SwiftMutex.lock(&self.operationStateMutex)

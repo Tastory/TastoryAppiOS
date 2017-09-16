@@ -656,6 +656,7 @@ class FoodieVenue: FoodiePFObject  {
   }
 
 
+  
   // MARK: - Public Instance Functions
   
   // This is the Initilizer Parse will call upon Query or Retrieves
@@ -687,21 +688,25 @@ class FoodieVenue: FoodiePFObject  {
 }
 
 
+
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieVenue: FoodieObjectDelegate {
   
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
-  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrieveRecursive(from location: FoodieObject.StorageLocation,
+                         type localType: FoodieObject.LocalType,
+                         forceAnyways: Bool = false,
+                         withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Retrieve self. This object have no children
-    retrieve(forceAnyways: forceAnyways, withBlock: callback)
+    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
   }
   
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
-                     withName name: String?,
-                     withBlock callback: FoodieObject.BooleanErrorBlock?) {
+                     type localType: FoodieObject.LocalType,
+                     withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
 //    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
@@ -712,19 +717,18 @@ extension FoodieVenue: FoodieObjectDelegate {
 //    }
     
     DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
-      self.foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
+      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
     }
   }
   
   
   // Trigger recursive delete against all child objects.
-  func deleteRecursive(withName name: String?,
-                       withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       type localType: FoodieObject.LocalType,
+                       withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
-    CCLog.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
-    
-    // Delete itself first
-    foodieObject.deleteObjectLocalNServer(withName: name, withBlock: callback)
+    // Delete self. This object have no children
+    foodieObject.deleteObject(from: location, type: localType, withBlock: callback)
   }
   
   
@@ -739,6 +743,7 @@ extension FoodieVenue: PFSubclassing {
     return "FoodieVenue"
   }
 }
+
 
 
 // MARK: - Parameterization of Core Location

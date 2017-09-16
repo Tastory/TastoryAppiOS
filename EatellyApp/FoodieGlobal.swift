@@ -18,12 +18,6 @@ enum FoodieMediaType: String {
 }
 
 
-enum FoodieLocalType: String {
-  case cache = "FoodieCache"
-  case draft = "FoodieDraft"
-}
-
-
 struct FoodieGlobal {
   
   // MARK: - Constants

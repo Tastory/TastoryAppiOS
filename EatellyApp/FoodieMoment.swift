@@ -19,13 +19,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var width: Int  // height = width / aspectRatio
   @NSManaged var thumbnailFileName: String?  // Thumbnail for the moment
   
-  // Markups
   @NSManaged var markups: Array<FoodieMarkup>?  // Array of PFObjects as FoodieMarkup
   @NSManaged var eatags: Array<String>?  // Array of Strings, unstructured
   @NSManaged var tags: Array<String>?  // Array of Strings, unstructured
-  
-  // Location & Others
-  @NSManaged var location: PFGeoPoint?  // Location where the media was originally captured
   @NSManaged var playSound: Bool
   
   // Query Pointers?
@@ -38,6 +34,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var clickthroughs: Int  // How many times have this been clicked through to the next
   
   // Date created vs Date updated is given for free
+  
   
   
   // MARK: - Error Types Definition
@@ -62,6 +59,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
+  
   // MARK: - Public Instance Variables
   var mediaObj: FoodieMedia? {
     didSet {
@@ -77,8 +75,10 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
+  
   // MARK: - Private Instance Variables
   fileprivate var hasRetrieved = false  // this flag indicate if this moment has been retrieved from Parse ?
+  
   
   
   // MARK: - Public Instance Functions
@@ -118,49 +118,42 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  func set(location: CLLocation?) {
-    if let location = location {
-      self.location = PFGeoPoint(latitude: location.coordinate.latitude,
-                                 longitude: location.coordinate.longitude)
-    } else {
-      self.location = nil
-    }
-  }
   
   
   // MARK: - Foodie Object Delegate Conformance
 
   // Retrieves just the moment itself
-  override func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
-    super.retrieve(forceAnyways: forceAnyways) { error in
+  fileprivate func retrieve(from location: FoodieObject.StorageLocation,
+                            type localType: FoodieObject.LocalType,
+                            forceAnyways: Bool,
+                            withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      
       if self.mediaObj == nil, let fileName = self.mediaFileName,
         let typeString = self.mediaType, let type = FoodieMediaType(rawValue: typeString) {
-        self.mediaObj = FoodieMedia(withState: .notAvailable, fileName: fileName, type: type)
+        self.mediaObj = FoodieMedia(withState: .notAvailable, for: fileName, localType: localType, mediaType: type)
       }
       
       if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
-        self.thumbnailObj = FoodieMedia(withState: .notAvailable, fileName: fileName, type: .photo)
+        self.thumbnailObj = FoodieMedia(withState: .notAvailable, for: fileName, localType: localType, mediaType: .photo)
       }
       callback?(error)  // Callback regardless
     }
   }
 
-  static func queryFromPin(withName name: String, withBlock: (([AnyObject]?, Error?) -> Void)?) {
-    let query = PFQuery(className: FoodieMoment.parseClassName())
-    query.fromPin(withName: name)
-      query.findObjectsInBackground() { (moments, error)in
-        withBlock?(moments, error)
-      }
-  }
-
+  
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
-  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrieveRecursive(from location: FoodieObject.StorageLocation,
+                         type localType: FoodieObject.LocalType,
+                         forceAnyways: Bool = false,
+                         withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Retrieve self first, then retrieve children afterwards
-    retrieve(forceAnyways: forceAnyways) { (error) in
+    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
-      if let momentError = error {
-        CCLog.assert("Moment.retrieve() resulted in error: \(momentError.localizedDescription)")
+      if let error = error {
+        CCLog.assert("Moment.retrieve() resulted in error: \(error.localizedDescription)")
         callback?(error)
         return
       }
@@ -174,11 +167,11 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       self.foodieObject.resetOutstandingChildOperations()
       
       // Got through all sanity check, calling children's retrieveRecursive
-      self.foodieObject.retrieveChild(media, withBlock: callback)
+      self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
       
-      if let hasMarkups = self.markups {
-        for markup in hasMarkups {
-          self.foodieObject.retrieveChild(markup, withBlock: callback)
+      if let markups = self.markups {
+        for markup in markups {
+          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
         }
       }
     }
@@ -187,8 +180,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
-                     withName name: String?,
-                     withBlock callback: FoodieObject.BooleanErrorBlock?) {
+                     type localType: FoodieObject.LocalType,
+                     withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Do state transition for this save. Early return if no save needed, or if illegal state transition
 //    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
@@ -199,72 +192,99 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
 //    }
     
     foodieObject.resetOutstandingChildOperations()
-    
     var childOperationPending = false
     
     // Need to make sure all children FoodieRecursives saved before proceeding
     if let media = mediaObj {
-      foodieObject.saveChild(media, to: location, withName: name, withBlock: callback)
+      foodieObject.saveChild(media, to: location, type: localType, withBlock: callback)
       childOperationPending = true
     }
     
-    if let hasMarkups = markups {
-      for markup in hasMarkups {
-        foodieObject.saveChild(markup, to: location, withName: name, withBlock: callback)
+    if let markups = markups {
+      for markup in markups {
+        foodieObject.saveChild(markup, to: location, type: localType, withBlock: callback)
         childOperationPending = true
       }
     }
     
     if let thumbnail = thumbnailObj {
-      foodieObject.saveChild(thumbnail, to: location, withName: name, withBlock: callback)
+      foodieObject.saveChild(thumbnail, to: location, type: localType, withBlock: callback)
       childOperationPending = true
     }
     
     if !childOperationPending {
-      DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
-        self.foodieObject.savesCompletedFromAllChildren(to: location, withName: name, withBlock: callback)
+      CCLog.assert("No child saves pending. Then why is this even saved?")
+      DispatchQueue.global(qos: .userInitiated).async {
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
       }
     }
   }
   
   
-  
   // Trigger recursive saves against all child objects.
-  func deleteRecursive(withName name: String?,
-                       withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  func deleteRecursive(from location: FoodieObject.StorageLocation,
+                       type localType: FoodieObject.LocalType,
+                       withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
-    // retrieve moment first
-    self.retrieve() { error in
+    // Retrieve the Moment (only) to guarentee access to the childrens
+    retrieve(from: location, type: localType, forceAnyways: false) { error in
       
-      // TOOD: Victor, what happens if retrieve fails?
+      if let error = error {
+        CCLog.assert("Moment.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
       
-      // Delete self from both local and server first
-      self.foodieObject.deleteObjectLocalNServer(withName: name) { (success, error) in
+      // Delete self first before deleting children
+      self.foodieObject.deleteObject(from: location, type: localType) { error in
         
-        if(success) {
-          self.foodieObject.resetOutstandingChildOperations()
+        if let error = error {
+          CCLog.warning("Deleting self resulted in error: \(error.localizedDescription)")
           
-          // check for media and thumbnails to be deleted from this object
+          // Do best effort delete of all children
           if let media = self.mediaObj {
-            self.foodieObject.deleteChild(media, withName: name, withBlock: callback)
+            self.foodieObject.deleteChild(media, from: location, type: localType, withBlock: nil)
           }
-              
+          
           if let thumbnail = self.thumbnailObj {
-            self.foodieObject.deleteChild(thumbnail, withName: name, withBlock: callback)
+            self.foodieObject.deleteChild(thumbnail, from: location, type: localType, withBlock: nil)
           }
           
           if let markups = self.markups {
             for markup in markups {
-              self.foodieObject.deleteChild(markup, withName: name, withBlock: callback)
+              self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: nil)
             }
           }
           
-          // TODO: Victor, what happens if there is neither Moments nor Markup in this Journal? I know it's hypothetical.
-          // But it will mean the whole recursive operation hangs because there will never be a callback
-          
-        } else {
-          // error when deleting journal from server
-          callback?(success, error)
+          // Just callback with the error
+          callback?(error)
+          return
+        }
+        
+        self.foodieObject.resetOutstandingChildOperations()
+        var childOperationPending = false
+        
+        // check for media and thumbnails to be deleted from this object
+        if let media = self.mediaObj {
+          self.foodieObject.deleteChild(media, from: location, type: localType, withBlock: callback)
+          childOperationPending = true
+        }
+            
+        if let thumbnail = self.thumbnailObj {
+          self.foodieObject.deleteChild(thumbnail, from: location, type: localType, withBlock: callback)
+          childOperationPending = true
+        }
+        
+        if let markups = self.markups {
+          for markup in markups {
+            self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: callback)
+            childOperationPending = true
+          }
+        }
+        
+        if !childOperationPending {
+          CCLog.assert("No child deletes pending. Is this okay?")
+          callback?(error)
         }
       }
     }

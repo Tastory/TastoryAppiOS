@@ -107,9 +107,9 @@ class FoodieFile {
   struct Constants {
     static let S3BucketKey = "eatelly-dev-howard"
     static let CloudFrontUrl = URL(string: "https://d1axaetmqd29cm.cloudfront.net/")!
-    static let DraftStoryMediaFolderUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieLocalType.draft.rawValue, isDirectory: true)
+    static let DraftStoryMediaFolderUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieObject.LocalType.draft.rawValue, isDirectory: true)
     static let CleanCrashLogFolderUrl = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("CleanCrashLog", isDirectory: true)
-    static let CacheFoodieMediaFolderUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieLocalType.cache.rawValue, isDirectory: true)
+    static let CacheFoodieMediaFolderUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieObject.LocalType.cache.rawValue, isDirectory: true)
     static let AwsRetryCount = FoodieGlobal.Constants.DefaultServerRequestRetryCount
     static let AwsRetryDelay = FoodieGlobal.Constants.DefaultServerRequestRetryDelay
   }
@@ -157,7 +157,7 @@ class FoodieFile {
   }
   
   
-  static func getFileURL(for localType: FoodieLocalType, with fileName: String) -> URL {
+  static func getFileURL(for localType: FoodieObject.LocalType, with fileName: String) -> URL {
     switch localType {
     case .cache:
       return Constants.CacheFoodieMediaFolderUrl.appendingPathComponent(fileName, isDirectory: false)
@@ -189,7 +189,7 @@ class FoodieFile {
   }
   
   
-  func retrieve(from localType: FoodieLocalType, with fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  func retrieve(from localType: FoodieObject.LocalType, with fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     DispatchQueue.global(qos: .userInitiated).async {  // Make this an async call as the callback is expected to be not on the main thread
       let buffer: Data?
 
@@ -215,7 +215,7 @@ class FoodieFile {
   
   
   // Cloudfront based implementation
-  func retrieveFromS3(to localType: FoodieLocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrieveFromS3(to localType: FoodieObject.LocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     let localFileURL = FoodieFile.getFileURL(for: localType, with: fileName)
     let serverFileURL = Constants.CloudFrontUrl.appendingPathComponent(fileName)
@@ -298,7 +298,7 @@ class FoodieFile {
   }
   
   
-  func save(to localType: FoodieLocalType, from buffer: Data, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func save(to localType: FoodieObject.LocalType, from buffer: Data, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     DispatchQueue.global(qos: .userInitiated).async {  // Make this an async call as the callback is expected to be not on the main thread
       do {
         try buffer.write(to: FoodieFile.getFileURL(for: localType, with: fileName))
@@ -313,7 +313,7 @@ class FoodieFile {
   }
   
   
-  func moveFile(from url: URL, to localType: FoodieLocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func moveFile(from url: URL, to localType: FoodieObject.LocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     DispatchQueue.global(qos: .userInitiated).async {
       do {
         try self.fileManager.moveItem(at: url, to: FoodieFile.getFileURL(for: localType, with: fileName))
@@ -328,7 +328,7 @@ class FoodieFile {
   }
   
   
-  func saveToS3(from localType: FoodieLocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func saveToS3(from localType: FoodieObject.LocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     guard let uploadRequest = AWSS3TransferManagerUploadRequest() else {
       CCLog.assert("AWSS3TransferManagerUploadRequest() returned nil")
@@ -367,7 +367,7 @@ class FoodieFile {
   }
   
   
-  func delete(from localType: FoodieLocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func delete(from localType: FoodieObject.LocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     DispatchQueue.global(qos: .userInitiated).async {
       do {
         try self.fileManager.removeItem(at: FoodieFile.getFileURL(for: localType, with: fileName))
@@ -398,7 +398,7 @@ class FoodieFile {
   }
   
   
-  func checkIfExists(in localType: FoodieLocalType, for fileName: String) -> Bool {
+  func checkIfExists(in localType: FoodieObject.LocalType, for fileName: String) -> Bool {
     let filePath = FoodieFile.getFileURL(for: localType, with: fileName).path
     return fileManager.isReadableFile(atPath: filePath)
   }
@@ -444,7 +444,12 @@ class FoodieS3Object {
   }
 
   
-  func retrieve(from localType: FoodieLocalType, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  func checkIfExists(in localType: FoodieObject.LocalType) -> Bool {
+    FoodieFile.manager.checkIfExists(in: localType, for: foodieFileName)
+  }
+  
+  
+  func retrieveToBuffer(from localType: FoodieObject.LocalType, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     guard let fileName = foodieFileName else {
       CCLog.fatal("FoodieS3Object has no foodieFileName")
     }
@@ -482,7 +487,7 @@ class FoodieS3Object {
   }
   
   
-  func save(buffer: Data, to localType: FoodieLocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func save(buffer: Data, to localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let fileName = foodieFileName else {
       CCLog.fatal("FoodieS3Object has no foodieFileName")
     }
@@ -498,7 +503,7 @@ class FoodieS3Object {
   }
 
   
-  func move(url: URL, to localType: FoodieLocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func move(url: URL, to localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let fileName = foodieFileName else {
       CCLog.fatal("FoodieS3Object has no foodieFileName")
     }
@@ -514,7 +519,7 @@ class FoodieS3Object {
   }
   
   
-  func saveToServer(from localType: FoodieLocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func saveToServer(from localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let fileName = foodieFileName else {
       CCLog.fatal("FoodieS3Object has no foodieFileName")
     }
@@ -540,7 +545,7 @@ class FoodieS3Object {
   }
   
   
-  func delete(from localType: FoodieLocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func delete(from localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let fileName = foodieFileName else {
       CCLog.fatal("Unexpected. FoodieS3Object has no foodieFileName")
     }
