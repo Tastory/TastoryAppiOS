@@ -18,6 +18,12 @@ enum FoodieMediaType: String {
 }
 
 
+enum FoodieLocalType: String {
+  case cache = "FoodieCache"
+  case draft = "FoodieDraft"
+}
+
+
 struct FoodieGlobal {
   
   // MARK: - Constants
@@ -29,7 +35,6 @@ struct FoodieGlobal {
     static let JournalFeedPaginationCount = 50  // TODO: Need to implement pagination
     static let DefaultServerRequestRetryCount = 3
     static let DefaultServerRequestRetryDelay = 3.0
-    static let SavedDraftPinName = "workingJournal"
   }
   
   

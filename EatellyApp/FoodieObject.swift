@@ -13,33 +13,36 @@ protocol FoodieObjectDelegate: class {
 
   func retrieveRecursive(forceAnyways: Bool,
                          from location: FoodieObject.StorageLocation,
+                         type localType: FoodieLocalType,
                          withBlock callback: FoodieObject.SimpleErrorBlock?)
 
   func retrieveFromLocal(forceAnyways: Bool,
+                         type localType: FoodieLocalType,
                          withBlock callback: FoodieObject.SimpleErrorBlock?)
   
   func retrieveFromLocalThenServer(forceAnyways: Bool,
-                                   withBlock callback: FoodieObject.SimpleErrorBlock?)
+                                   withBlock callback: FoodieObject.SimpleErrorBlock?)  // Always from Cache, then Server
   
   
   func saveRecursive(to location: FoodieObject.StorageLocation,
-                     withName name: String?,
+                     type localType: FoodieLocalType,
                      withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func saveToLocal(withName name: String?,
+  func saveToLocal(type localType: FoodieLocalType,
                    withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func saveToLocalNServer(withBlock callback: FoodieObject.SimpleErrorBlock?)
+  func saveToLocalNServer(type localType: FoodieLocalType,
+                          withBlock callback: FoodieObject.SimpleErrorBlock?)
   
   
   func deleteRecursive(from location: FoodieObject.StorageLocation,
-                       withName name: String?,
+                       type localType: FoodieLocalType,
                        withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func deleteFromLocal(withName name: String?,
+  func deleteFromLocal(type localType: FoodieLocalType,
                        withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func deleteFromLocalNServer(withBlock callback: FoodieObject.SimpleErrorBlock?)
+  func deleteFromLocalNServer(withBlock callback: FoodieObject.SimpleErrorBlock?)  // Always whacks all
   
   
   func getUniqueIdentifier() -> String

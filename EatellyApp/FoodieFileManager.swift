@@ -102,25 +102,31 @@ class FoodieFile {
   }
   
   
+  
   // MARK: - Private Constants
   struct Constants {
-    static let S3BucketKey = "eatelly-master"
-    static let CloudFrontUrl = URL(string: "https://doi8luossq3vt.cloudfront.net/")!
-    static let DocumentFolderUrl = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).last!
+    static let S3BucketKey = "eatelly-dev-howard"
+    static let CloudFrontUrl = URL(string: "https://d1axaetmqd29cm.cloudfront.net/")!
+    static let DraftStoryMediaFolderUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieLocalType.draft.rawValue, isDirectory: true)
+    static let CleanCrashLogFolderUrl = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("CleanCrashLog", isDirectory: true)
+    static let CacheFoodieMediaFolderUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieLocalType.cache.rawValue, isDirectory: true)
     static let AwsRetryCount = FoodieGlobal.Constants.DefaultServerRequestRetryCount
     static let AwsRetryDelay = FoodieGlobal.Constants.DefaultServerRequestRetryDelay
   }
   
   
+  
   // MARK: - Public Static Variables
   static var manager: FoodieFile!
-  static var localBufferDirectory: String!
+
+  
   
   // MARK: - Private Instance Variables
   private let s3Handler: AWSS3
   private let fileManager: FileManager
   private let transferManager: AWSS3TransferManager
   private let downloadsSession: URLSession
+  
   
   
   // MARK: - Public Static Functions
@@ -147,19 +153,22 @@ class FoodieFile {
         newFileName.append(".")
       }
     }
-    
     return newFileName.appending("-Thumbnail.jpg")
   }
   
   
-  static func getLocalFileURL(from fileName: String) -> URL {
-    return Constants.DocumentFolderUrl.appendingPathComponent(fileName)
+  static func getFileURL(for localType: FoodieLocalType, with fileName: String) -> URL {
+    switch localType {
+    case .cache:
+      return Constants.CacheFoodieMediaFolderUrl.appendingPathComponent(fileName, isDirectory: false)
+    case .draft:
+      return Constants.DraftStoryMediaFolderUrl.appendingPathComponent(fileName, isDirectory: false)
+    }
   }
   
   
   // MARK: - Public Instance Functions
-  init(){
-    
+  init() {
     /*
      Authenticating with AWS Cognito
      let devAuth = AWSDeveloperIdentity(regionType: AWSRegionType.USWest2, identityPoolId: "us-west-2:140fac21-62cb-47f1-a5c1-63ba886fc234", useEnhancedFlow: true, identityProviderManager:nil)
@@ -168,11 +177,9 @@ class FoodieFile {
      AWSServiceManager.default().defaultServiceConfiguration = configuration
      */
     
-    if(!(AWSServiceManager.default().defaultServiceConfiguration != nil))
-    {
+    if AWSServiceManager.default().defaultServiceConfiguration == nil {
       let credentialsProvider = AWSStaticCredentialsProvider(accessKey: "AKIAIIG7G45RQHBX3JGQ", secretKey: "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")
-      //let credentialsProvider = AWSStaticCredentialsProvider(accessKey: "AKIAJOCP23CCCK7MP7XQ", secretKey: "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")
-      let configuration = AWSServiceConfiguration(region: AWSRegionType.USWest1, credentialsProvider:credentialsProvider)
+      let configuration = AWSServiceConfiguration(region: AWSRegionType.USWest1, credentialsProvider: credentialsProvider)
       AWSServiceManager.default().defaultServiceConfiguration = configuration
     }
     s3Handler = AWSS3.default()
@@ -182,16 +189,17 @@ class FoodieFile {
   }
   
   
-  func retrieveFromLocalToBufffer(fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
-    DispatchQueue.global(qos: .userInitiated).async {
+  func retrieve(from localType: FoodieLocalType, with fileName: String, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+    DispatchQueue.global(qos: .userInitiated).async {  // Make this an async call as the callback is expected to be not on the main thread
       let buffer: Data?
+
       do {
-        buffer = try Data(contentsOf: Constants.DocumentFolderUrl.appendingPathComponent("\(fileName)"))
+        buffer = try Data(contentsOf: FoodieFile.getFileURL(for: localType, with: fileName))
       } catch {
         let nsError = error as NSError
 
         if nsError.domain == NSCocoaErrorDomain && nsError.code == NSFileReadNoSuchFileError {
-          CCLog.debug("No file '\(fileName) in local directory")
+          CCLog.info("No file '\(fileName) in local directory")
           callback?(nil, ErrorCode.fileManagerReadLocalNoFile)
           return
         } else {
@@ -206,77 +214,10 @@ class FoodieFile {
   }
   
   
-  #if false
-  // S3 Transfer Manager based implementation
-  func retrieveFromServerToLocal(fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?)
-  {
-    guard let downloadRequest = AWSS3TransferManagerDownloadRequest() else {
-      CCLog.assert("AWSS3TransferManagerDownloadRequest() returned nil")
-      callback?(nil, ErrorCode.awsS3TransferManagerDownloadRequestNil)
-      return
-    }
-    
-    let localFileUrl = Constants.DocumentFolderUrl.appendingPathComponent(fileName)
-    
-    downloadRequest.bucket = Constants.S3BucketKey
-    downloadRequest.key = fileName
-    downloadRequest.downloadingFileURL = localFileUrl
-  
-    // Let's time the download!
-    let downloadStartTime = PrecisionTime.now()
-    
-    transferManager.download(downloadRequest).continueWith(executor: AWSExecutor.mainThread()) { (task:AWSTask<AnyObject>) -> Any? in
-      
-      let downloadEndTime = PrecisionTime.now()
-      
-      if let error = task.error as NSError? {
-        if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
-          switch code {
-          case .cancelled:
-            CCLog.debug("AWS Transfer Download with Key \(downloadRequest.key!)")
-            callback?(nil, ErrorCode.awsS3TransferDownloadCancelled)
-          case .paused:
-            // Victor to look into what is the right action for Pause
-            CCLog.fatal("Pause is not well understood and not currently supported. Pulling a Fatal condition for now")
-          default:
-            CCLog.warning("AWS Transfer Download with Key \(String(describing: downloadRequest.key)) resulted in Error: \(error)")
-            callback?(nil, ErrorCode.awsS3TransferDownloadUnknownError)
-          }
-        } else {
-          CCLog.warning("AWS Transfer Download with Key \(String(describing: downloadRequest.key)) resulted in Error: \(error)")
-          callback?(nil, ErrorCode.awsS3TransferDownloadUnknownError)
-        }
-        return nil
-      }
-      
-      // We are in success-land!
-      let timeDifference = downloadEndTime - downloadStartTime
-      var timeBaseInfo = mach_timebase_info_data_t()
-      mach_timebase_info(&timeBaseInfo)
-      let timeDifferenceNs = timeDifference * UInt64(timeBaseInfo.numer) / UInt64(timeBaseInfo.denom)
-      let timeDifferenceS = Float(timeDifferenceNs)/1000000000
-      
-      do {
-        let fileAttribute = try self.fileManager.attributesOfItem(atPath: localFileUrl.path)
-        let fileSizeKb = Float(fileAttribute[FileAttributeKey.size] as! Int)/1000.0
-        let avgDownloadSpeed = Float(fileSizeKb)/timeDifferenceS  // KB/s
-      
-        CCLog.verbose("Download of \(fileName) of size \(fileSizeKb/1000.0) MB took \(timeDifferenceS*1000.0) ms at \(avgDownloadSpeed) kB/s")
-      } catch {
-        CCLog.fatal("Obtaining file attribute failed. Error = \(error.localizedDescription)")
-      }
-      
-      // TODO: might be useful to store in parse for tracking the version: _ = task.result
-      CCLog.debug("AWS Transfer Download completed for Key \(downloadRequest.key!)")
-      callback?(downloadRequest.key!, nil)
-      return nil
-    }
-  }
-  #else
   // Cloudfront based implementation
-  func retrieveFromServerToLocal(fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrieveFromS3(to localType: FoodieLocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
-    let localFileURL = Constants.DocumentFolderUrl.appendingPathComponent(fileName)
+    let localFileURL = FoodieFile.getFileURL(for: localType, with: fileName)
     let serverFileURL = Constants.CloudFrontUrl.appendingPathComponent(fileName)
     
     let retrieveRetry = SwiftRetry()
@@ -355,51 +296,49 @@ class FoodieFile {
       downloadTask.resume()
     }
   }
-  #endif
   
   
-  func saveDataToLocal(buffer: Data, fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    DispatchQueue.global(qos: .userInitiated).async {
+  func save(to localType: FoodieLocalType, from buffer: Data, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    DispatchQueue.global(qos: .userInitiated).async {  // Make this an async call as the callback is expected to be not on the main thread
       do {
-        try buffer.write(to: Constants.DocumentFolderUrl.appendingPathComponent("\(fileName)"))
+        try buffer.write(to: FoodieFile.getFileURL(for: localType, with: fileName))
       } catch {
         CCLog.assert("Failed to write media data to local Documents folder \(error.localizedDescription)")
-        callback?(false, ErrorCode.fileManagerSaveLocalFailed)
+        callback?(ErrorCode.fileManagerSaveLocalFailed)
         return
       }
       // Save to Local completed successfully!!
-      callback?(true, nil)
+      callback?(nil)
     }
   }
   
   
-  func moveFileFromUrlToLocal(url: URL, fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  func moveFile(from url: URL, to localType: FoodieLocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     DispatchQueue.global(qos: .userInitiated).async {
       do {
-        try self.fileManager.moveItem(atPath: url.path, toPath: "\(Constants.DocumentFolderUrl.path)/\(fileName)")
+        try self.fileManager.moveItem(at: url, to: FoodieFile.getFileURL(for: localType, with: fileName))
       } catch {
         CCLog.assert("Failed to move media file to local Documents folder \(error.localizedDescription)")
-        callback?(false, ErrorCode.fileManagerMoveItemLocalFailed)
+        callback?(ErrorCode.fileManagerMoveItemLocalFailed)
         return
       }
       // Move local completed successfully!!
-      callback?(true, nil)
+      callback?(nil)
     }
   }
   
   
-  func saveLocalFileToS3(fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  func saveToS3(from localType: FoodieLocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     guard let uploadRequest = AWSS3TransferManagerUploadRequest() else {
       CCLog.assert("AWSS3TransferManagerUploadRequest() returned nil")
-      callback?(false, ErrorCode.awsS3TransferManagerUploadRequestNil)
+      callback?(ErrorCode.awsS3TransferManagerUploadRequestNil)
       return
     }
     uploadRequest.bucket = Constants.S3BucketKey
     uploadRequest.key = fileName
-    uploadRequest.body = Constants.DocumentFolderUrl.appendingPathComponent("\(fileName)")
-    
-    // Victor, I don't realy understand this code. What is the return -> Any? for in the closure block?
+    uploadRequest.body = FoodieFile.getFileURL(for: localType, with: fileName)
+
     transferManager.upload(uploadRequest).continueWith(executor: AWSExecutor.mainThread()) { (task:AWSTask<AnyObject>) -> Any? in
       
       if let error = task.error as NSError? {
@@ -407,64 +346,65 @@ class FoodieFile {
           switch code {
           case .cancelled:
             CCLog.debug("AWS Transfer Upload with Key \(uploadRequest.key!) cancelled")
-            callback?(false, ErrorCode.awsS3TransferUploadCancelled)
+            callback?(ErrorCode.awsS3TransferUploadCancelled)
           case .paused:
-            // Victor, how is this supposed to work? If it's paused, then when does the resume come in? We need to do a callback once AWS SDK calls us back because there's a pending chain of FoodieObjects saves waiting on this callback. Unless AWS SDK will call us back again some time down the road when this resumes and completes? I am doubtful tho....?
             CCLog.fatal("Pause is not well understood and not currently supported. Pulling a Fatal condition for now")
           default:
             CCLog.warning("AWS Transfer Upload with Key \(String(describing: uploadRequest.key)) resulted in Error: \(error)")
-            callback?(false, ErrorCode.awsS3TransferUploadUnknownError)
+            callback?(ErrorCode.awsS3TransferUploadUnknownError)
           }
         } else {
           CCLog.warning("AWS Transfer Upload with Key \(String(describing: uploadRequest.key)) resulted in Error: \(error)")
-          callback?(false, ErrorCode.awsS3TransferUploadUnknownError)
+          callback?(ErrorCode.awsS3TransferUploadUnknownError)
         }
         return nil
       }
       // TODO: might be useful to store in parse for tracking the version
       CCLog.debug("AWS Transfer Upload completed for Key \(uploadRequest.key!)")
-      callback?(true, nil)
+      callback?(nil)
       return nil
     }
   }
   
   
-  func deleteFileFromLocal(fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    do {
-      try fileManager.removeItem(atPath: "\(Constants.DocumentFolderUrl.path)/\(fileName)")
-    } catch {
-      print("Failed to delete media file from local Documents foler \(error.localizedDescription)")
-      callback?(false, ErrorCode.fileManagerMoveItemLocalFailed)
+  func delete(from localType: FoodieLocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    DispatchQueue.global(qos: .userInitiated).async {
+      do {
+        try self.fileManager.removeItem(at: FoodieFile.getFileURL(for: localType, with: fileName))
+      } catch {
+        CCLog.warning("Failed to delete media file from local Documents foler \(error.localizedDescription)")
+        callback?(ErrorCode.fileManagerMoveItemLocalFailed)
+      }
+      // Delete local completed successfully!!
+      callback?(nil)
     }
-    // Delete local completed successfully!!
-    callback?(true, nil)
   }
 
 
-  func deleteFileFromS3(fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  func deleteFromS3(for fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     let delRequest = AWSS3DeleteObjectRequest()!
     delRequest.bucket = Constants.S3BucketKey
     delRequest.key = fileName
+    
     let deleteTask = s3Handler.deleteObject(delRequest)
     deleteTask.continueWith() { (task: AWSTask<AWSS3DeleteObjectOutput>) -> Any? in
       if let error = task.error as NSError? {
-          callback?(false,error)
+        callback?(error)
       }
-      // successfully deleted
-      callback?(true, nil)
+      // Successfully deleted
+      callback?(nil)
       return nil
     }
   }
   
   
-  func checkIfFileExistsLocally(for fileName: String) -> Bool {
-    let filePath = FoodieFile.getLocalFileURL(from: fileName).path
+  func checkIfExists(in localType: FoodieLocalType, for fileName: String) -> Bool {
+    let filePath = FoodieFile.getFileURL(for: localType, with: fileName).path
     return fileManager.isReadableFile(atPath: filePath)
   }
   
   
-  func checkIfFileExistsS3(fileName: String, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    
+  func checkIfExistsInS3(for fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     let objRequest = AWSS3HeadObjectRequest()!
     objRequest.bucket = Constants.S3BucketKey
     objRequest.key = fileName
@@ -473,17 +413,18 @@ class FoodieFile {
       if let error = task.error as NSError? {
         if error.domain == AWSS3ErrorDomain {  // TODO: - Please make sure there are no silent fall through case. It can cause missing callback, then the whole app will f'ck up. Currently there is no time-out catch mechanism. If all our code works correctly, and the lower layer guarentees 1 response for every request, time-out at a level as high as our app shouldn't need one
           // didnt find the object
-          callback?(false, ErrorCode.awsS3FileDoesntExistError)
+          callback?(ErrorCode.awsS3FileDoesntExistError)
           return nil
         }
       }
       // found object
-      callback?(true, nil)
+      callback?(nil)
       return nil
     }
   }
   
-  func cancelAllS3Transfer()
+  
+  func cancelAllS3Transfers()
   {
     transferManager.cancelAll()
   }
@@ -502,132 +443,156 @@ class FoodieS3Object {
     foodieObject = FoodieObject(withState: operationState)
   }
 
-  func retrieveFromLocalToBuffer(withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  
+  func retrieve(from localType: FoodieLocalType, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     guard let fileName = foodieFileName else {
-      CCLog.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+      CCLog.fatal("FoodieS3Object has no foodieFileName")
     }
-    FoodieFile.manager.retrieveFromLocalToBufffer(fileName: fileName, withBlock: callback)
+    
+    CCLog.debug("Retrieve \(fileName) from \(localType.rawValue)")
+    FoodieFile.manager.retrieve(from: localType, with: fileName, withBlock: callback)
   }
   
   
   func retrieveFromServerToLocal(withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let fileName = foodieFileName else {
-      CCLog.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+      CCLog.fatal("FoodieS3Object has no foodieFileName")
     }
-    FoodieFile.manager.retrieveFromServerToLocal(fileName: fileName, withBlock: callback)
+    
+    CCLog.debug("Retrieve \(fileName) from S3 to Local Cache")
+    FoodieFile.manager.retrieveFromS3(to: .cache, with: fileName, withBlock: callback)  // For now, would only ever retrieve from Server to Cache. Never to Draft
   }
   
   
   func retrieveFromServerToBuffer(withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     guard let fileName = foodieFileName else {
-      CCLog.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+      CCLog.fatal("FoodieS3Object has no foodieFileName")
     }
-    FoodieFile.manager.retrieveFromServerToLocal(fileName: fileName) { (error) in
-      if error == nil {
-        FoodieFile.manager.retrieveFromLocalToBufffer(fileName: fileName, withBlock: callback)
-      }
-      else {
+    
+    CCLog.debug("Retrieve \(fileName) from S3 to Local Cache")
+    FoodieFile.manager.retrieveFromS3(to: .cache, with: fileName) { error in
+      if let error = error {
+        CCLog.warning("Retrieve \(fileName) from S3 to Local Cache Failed - \(error.localizedDescription)")
         callback?(nil, error)
+      } else {
+        CCLog.debug("Retreive \(fileName) from Local Cache")
+        FoodieFile.manager.retrieve(from: .cache, with: fileName, withBlock: callback)
       }
     }
   }
   
   
-  func saveDataBufferToLocal(buffer: Data, withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  func save(buffer: Data, to localType: FoodieLocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let fileName = foodieFileName else {
-      CCLog.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+      CCLog.fatal("FoodieS3Object has no foodieFileName")
     }
     
     // Check if the file already exist. If so just assume it's the right file
-    if !FoodieFile.manager.checkIfFileExistsLocally(for: fileName) {
-      FoodieFile.manager.saveDataToLocal(buffer: buffer, fileName: fileName, withBlock: callback)
+    if !FoodieFile.manager.checkIfExists(in: localType, for: fileName) {
+      CCLog.debug("Save Buffer as \(fileName) to \(localType.rawValue)")
+      FoodieFile.manager.save(to: localType, from: buffer, with: fileName, withBlock: callback)
     } else {
-      callback?(true, nil)
+      CCLog.debug("File \(fileName) already exist. Skipping Save")
+      callback?(nil)
     }
   }
 
   
-  func saveTmpUrlToLocal(url: URL, withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  func move(url: URL, to localType: FoodieLocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let fileName = foodieFileName else {
-      CCLog.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+      CCLog.fatal("FoodieS3Object has no foodieFileName")
     }
     
     // Check if the file already exist. If so just assume it's the right file
-    if !FoodieFile.manager.checkIfFileExistsLocally(for: fileName) {
-      FoodieFile.manager.moveFileFromUrlToLocal(url: url, fileName: fileName, withBlock: callback)
+    if !FoodieFile.manager.checkIfExists(in: localType, for: fileName) {
+      CCLog.debug("Move to \(localType.rawValue) as \(fileName) from \(url.absoluteString)")
+      FoodieFile.manager.moveFile(from: url, to: localType, with: fileName, withBlock: callback)
     } else {
-      callback?(true, nil)
+      CCLog.debug("File \(fileName) already exist. Skipping Move")
+      callback?(nil)
     }
   }
   
-  // Function to save this and all child Parse objects to server
-  func saveToServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
+  
+  func saveToServer(from localType: FoodieLocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let fileName = foodieFileName else {
-      CCLog.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+      CCLog.fatal("FoodieS3Object has no foodieFileName")
     }
-    FoodieFile.manager.checkIfFileExistsS3(fileName: fileName) { (fileExists, error) in
+    
+    FoodieFile.manager.checkIfExistsInS3(for: fileName) { error in
       if let error = error as? FoodieFile.ErrorCode {
         switch error {
         case .awsS3FileDoesntExistError:
-          break
+          CCLog.debug("File \(fileName) does not exist on S3. Saving from \(localType.rawValue)")
+          FoodieFile.manager.saveToS3(from: localType, with: fileName, withBlock: callback)
+          return
+          
         default:
           CCLog.warning("CheckIfFileExists on S3 for Save returned error - \(error.localizedDescription)")
-          callback?(false, error)
+          callback?(error)
           return
         }
-      }
-      if !fileExists {  // Save if file doesn't exist
-        FoodieFile.manager.saveLocalFileToS3(fileName: fileName, withBlock: callback)
-      } else {  // Assume already good and saved otherwise
-        callback?(true, nil)
-      }
-    }
-  }
-  
-  
-  // Function to delete this and all child Parse objects from local
-  func deleteFromLocal(withName name: String? = nil, withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    guard let fileName = foodieFileName else {
-      CCLog.fatal("Unexpected. FoodieS3Object has no foodieFileName")
-    }
-    
-    if (FoodieFile.manager.checkIfFileExistsLocally(for: fileName))
-    {
-      FoodieFile.manager.deleteFileFromLocal(fileName: fileName, withBlock: callback)
-    } else {
-      // file doesnt exists can let go of this error as if file was deleted successfully
-      callback?(true, nil)
-    }
-  }
-  
-  
-  // Function to delete this and all child Parse objects from server
-  func deleteFromServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    guard let fileName = foodieFileName else {
-      CCLog.fatal("Unexpected. FoodieS3Object has no foodieFileName")
-    }
-    
-    FoodieFile.manager.checkIfFileExistsS3(fileName: fileName) { (success, error) in
-      if let error = error {
-        CCLog.warning("CheckIfFileExists on S3 for Delete returned error - \(error.localizedDescription)")
-      }
-      if success {
-        FoodieFile.manager.deleteFileFromS3(fileName: fileName, withBlock: callback)
       } else {
-        // file doesnt exists can let go of this error as if file was deleted successfully 
-        callback?(true, nil)
+        CCLog.debug("File \(fileName) already exists on S3. Skipping Save")
+        callback?(nil)  // So the File exists. Assume already good and saved otherwise
       }
     }
   }
   
-  // TODO: - Very hacky. Need Model Cleanup
-  func deleteFromLocalNServer(withBlock callback: FoodieObject.BooleanErrorBlock?) {
-    deleteFromServer { (serverSuccess, serverError) in
-      self.deleteFromLocal { (localSuccess, localError) in
-        callback?(serverSuccess && localSuccess, serverError ?? localError)
+  
+  func delete(from localType: FoodieLocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    guard let fileName = foodieFileName else {
+      CCLog.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+    }
+    
+    if FoodieFile.manager.checkIfExists(in: localType, for: fileName) {
+      CCLog.debug("Delete \(fileName) from \(localType.rawValue)")
+      FoodieFile.manager.delete(from: localType, with: fileName, withBlock: callback)
+    } else {
+      CCLog.debug("File \(fileName) already not found from \(localType). Skipping Delete")
+      callback?(nil)
+    }
+  }
+  
+  
+  func deleteFromServer(withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    guard let fileName = foodieFileName else {
+      CCLog.fatal("Unexpected. FoodieS3Object has no foodieFileName")
+    }
+    
+    FoodieFile.manager.checkIfExistsInS3(for: fileName) { error in
+      if let error = error as? FoodieFile.ErrorCode {
+        switch error {
+        case .awsS3FileDoesntExistError:
+          CCLog.debug("File \(fileName) already not found on S3. Skipping Delete")
+          callback?(nil)
+          return
+          
+        default:
+          CCLog.warning("CheckIfFileExists on S3 for Delete returned error - \(error.localizedDescription)")
+          callback?(error)
+          return
+        }
+      } else {
+        CCLog.debug("File \(fileName) already exists on S3. Skipping Save")
+        FoodieFile.manager.deleteFromS3(for: fileName, withBlock: callback)
       }
     }
   }
+  
+  
+  func deleteFromLocalNServer(withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    // Just try to delete this from everywhere indiscriminately
+    deleteFromServer { serverError in
+      self.delete(from: .cache) { cacheError in
+        self.delete(from: .draft) { draftError in
+          callback?(serverError ?? cacheError ?? draftError)
+        }
+      }
+    }
+  }
+  
   
   func getUniqueIdentifier() -> String {
     return foodieFileName!

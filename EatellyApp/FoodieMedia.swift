@@ -71,7 +71,10 @@ class FoodieMedia: FoodieS3Object {
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieMedia: FoodieObjectDelegate {
   
-  func retrieve(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrieve(forceAnyways: Bool = false,
+                from location: FoodieObject.StorageLocation,
+                withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
     guard let type = mediaType else {
       CCLog.fatal("Retrieve not allowed when Media has no MediaType")
     }
@@ -153,7 +156,9 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
-  func retrieveRecursive(forceAnyways: Bool = false, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrieveRecursive(forceAnyways: Bool = false,
+                         from location: FoodieObject.StorageLocation,
+                         withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Retrieve self. This object have no children
     retrieve(forceAnyways: forceAnyways, withBlock: callback)

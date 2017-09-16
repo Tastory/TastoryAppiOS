@@ -12,12 +12,8 @@ import Foundation
 
 // Abstract Class for Foodie Objects based on PFObject
 class FoodiePFObject: PFObject {
-
-  // MARK: - Public Instance Variable
-  var foodieObject: FoodieObject!
   
-  
-  // MARK: - Public Static Variable
+  // MARK: - Public Static Function
   static func configure() {
     Parse.enableLocalDatastore()
     
@@ -41,6 +37,25 @@ class FoodiePFObject: PFObject {
   }
   
   
+  // MARK: - Public Instance Variable
+  var foodieObject: FoodieObject!
+  
+  
+  // MARK: - Private Instance Functions
+  private func booleanToSimpleErrorCallback (_ success: Bool, _ error: Error?, function: String = #function, file: String = #file, line: Int = #line, _ callback: FoodieObject.SimpleErrorBlock?) {
+    #if DEBUG  // Do this sanity check low and never need to worry about it again
+      if (success && error != nil) || (!success && error == nil) {
+        CCLog.fatal("Parse layer come back with Success and Error mismatch")
+      }
+    #endif
+    
+    if !success {
+      CCLog.warning("\(function) Failed with Error - \(error!.localizedDescription) on line \(line) of \((file as NSString).lastPathComponent)")
+    }
+    callback?(error)
+  }
+  
+  
   // MARK: - Public Instance Functions
   override init() {
     super.init()
@@ -56,7 +71,9 @@ class FoodiePFObject: PFObject {
   
   
   func retrieveFromLocal(forceAnyways: Bool,
+                         type localType: FoodieLocalType,  // At the Fetch stage, Parse doesn't care any more
                          withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
@@ -88,8 +105,10 @@ class FoodiePFObject: PFObject {
   }
   
   
+  // At the Fetch stage, Parse doesn't care about Draft vs Cache anymore. But this always saves a copy back into Cache if ultimately retrieved from Server
   func retrieveFromLocalThenServer(forceAnyways: Bool,
                                    withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
@@ -134,6 +153,9 @@ class FoodiePFObject: PFObject {
       self.fetchInBackground { serverObject, serverError in
         if let error = serverError {
           CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
+        } else {
+          CCLog.debug("Pin \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) to Name '\(FoodieLocalType.cache.rawValue)'")
+          self.pinInBackground(withName: FoodieLocalType.cache.rawValue) { (success, error) in self.booleanToSimpleErrorCallback(success, error, nil) }
         }
         // Return if got what's wanted
         callback?(serverError)
@@ -142,55 +164,46 @@ class FoodiePFObject: PFObject {
   }
   
   
-  private func booleanToSimpleErrorCallback (_ success: Bool, _ error: Error?, _ callback: FoodieObject.SimpleErrorBlock?) {
-    #if DEBUG  // Do this sanity check low and never need to worry about it again
-      if (success && error != nil) || (!success && error == nil) {
-        CCLog.fatal("Parse layer come back with Success and Error mismatch")
-      }
-    #endif
-    callback?(error)
-  }
-  
-  
-  func saveToLocal(withName name: String?,
+  func saveToLocal(type localType: FoodieLocalType,
                    withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
-    CCLog.debug("Pin \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) to Local with Name \(name ?? "nil")")
     
     // TODO: Maybe wanna track for Parse that only 1 Save on the top is necessary
-    if let name = name {
-      pinInBackground(withName: name) { success, error in self.booleanToSimpleErrorCallback(success, error, callback) }
-    } else {
-      pinInBackground { success, error in self.booleanToSimpleErrorCallback(success, error, callback) }
-    }
+    CCLog.debug("Pin \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) to Local with Name \(localType.rawValue)")
+    pinInBackground(withName: localType.rawValue) { success, error in self.booleanToSimpleErrorCallback(success, error, callback) }
   }
   
   
-  func saveToLocalNServer(withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func saveToLocalNServer(type localType: FoodieLocalType,
+                          withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
-    CCLog.debug("Save \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) in Background")
     
-    // TODO: Save should also pin. And to which namespace? Might want to double check this
-    saveInBackground { success, error in self.booleanToSimpleErrorCallback(success, error, callback) }
+    CCLog.debug("Pin \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) with Name \(localType.rawValue)")
+    pinInBackground(withName: localType.rawValue) { (success, error) in
+      
+      guard success || error == nil else {
+        self.booleanToSimpleErrorCallback(success, error, callback)
+        return
+      }
+      
+      CCLog.debug("Save \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) in background")
+      self.saveInBackground { success, error in self.booleanToSimpleErrorCallback(success, error, callback) }
+    }
   }
   
   
-  func deleteFromLocal(withName name: String?,
+  func deleteFromLocal(type localType: FoodieLocalType,
                        withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
-    CCLog.debug("Delete \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) from Local with Name \(name ?? "nil")")
     
-    if let name = name {
-      unpinInBackground(withName: name) { success, error in self.booleanToSimpleErrorCallback(success, error, callback) }
-    } else {
-      unpinInBackground { success, error in self.booleanToSimpleErrorCallback(success, error, callback) }
-    }
+    CCLog.debug("Delete \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) from Local with Name \(localType.rawValue)")
+    unpinInBackground(withName: localType.rawValue) { success, error in self.booleanToSimpleErrorCallback(success, error, callback) }
   }
   
   
@@ -198,9 +211,9 @@ class FoodiePFObject: PFObject {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
-    CCLog.debug("Delete \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) in Background")
     
-    // TODO: Delete should also unpin. And across all namespace? Might want to double check this
+    // TODO: Delete should also unpin across all namespaces
+    CCLog.debug("Delete \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) in Background")
     deleteInBackground { success, error in self.booleanToSimpleErrorCallback(success, error, callback) }
   }
   
