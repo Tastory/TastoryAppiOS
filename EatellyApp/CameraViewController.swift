@@ -281,7 +281,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     // TODO: Create error alert dialog box if this save fails.
     UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
 
-    let mediaObject = FoodieMedia(withState: .objectModified, fileName: FoodieFile.newPhotoFileName(), type: .photo)
+    let mediaObject = FoodieMedia(withState: .objectModified, for: FoodieFile.newPhotoFileName(), localType: .draft, mediaType: .photo)
     mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))  // TOOD: Is this main thread? If so do this conversion else where? Not like the user can do anything else tho? Pop-up a spinner instead?
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -322,7 +322,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       // TODO: Create error alert dialog box if this save fails.
       UISaveVideoAtPathToSavedPhotosAlbum(url.path, nil, nil, nil)
       
-      let mediaObject = FoodieMedia(withState: .objectModified, fileName: FoodieFile.newVideoFileName(), type: .video)
+      let mediaObject = FoodieMedia.init(withState: .objectModified, for: FoodieFile.newVideoFileName(), localType: .draft, mediaType: .video)
       mediaObject.videoLocalBufferUrl = url
       
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -411,7 +411,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
         return
       }
 
-      mediaObject = FoodieMedia(withState: .objectModified, fileName: movieName, type: .video)
+      mediaObject = FoodieMedia(withState: .objectModified, for: movieName, localType: .draft, mediaType: .video)
       mediaObject.videoLocalBufferUrl = URL(fileURLWithPath: moviePath)
     
     case String(kUTTypeImage):
@@ -423,7 +423,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
         return
       }
       
-      mediaObject = FoodieMedia(withState: .objectModified, fileName: mediaName, type: .photo)
+      mediaObject = FoodieMedia(withState: .objectModified, for: mediaName, localType: .draft, mediaType: .photo)
       mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
       
     default:

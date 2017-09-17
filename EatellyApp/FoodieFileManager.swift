@@ -445,7 +445,10 @@ class FoodieS3Object {
 
   
   func checkIfExists(in localType: FoodieObject.LocalType) -> Bool {
-    FoodieFile.manager.checkIfExists(in: localType, for: foodieFileName)
+    guard let fileName = foodieFileName else {
+      CCLog.fatal("FoodieS3Object has no foodieFileName")
+    }
+    return FoodieFile.manager.checkIfExists(in: localType, for: fileName)
   }
   
   

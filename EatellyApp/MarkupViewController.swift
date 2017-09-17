@@ -379,7 +379,7 @@ class MarkupViewController: UIViewController {
                           style: .destructive) { action in
                             
       // Delete all traces of this unPosted Story
-      journal.deleteRecursive(withName: FoodieGlobal.Constants.SavedDraftPinName) { (success, error) in
+      journal.deleteRecursive(from: .both, type: .draft) { error in
         if let error = error {
           CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
         }
