@@ -255,7 +255,6 @@ class MarkupViewController: UIViewController {
     // Initializing with Media Object also initialize foodieFileName and mediaType
     let momentObj = FoodieMoment(withState: .objectModified, foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
     
-    momentObj.set(location: mediaLocation)
     momentObj.playSound = soundOn
     
     // Setting the Thumbnail Object also initializes the thumbnailFileName
@@ -703,7 +702,8 @@ class MarkupViewController: UIViewController {
       return
     }
     
-    thumbnailObject = FoodieMedia(withState: .objectModified, fileName: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), type: .photo)
+    thumbnailObject = FoodieMedia(withState: .objectModified, for: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), localType: .draft, mediaType: .photo)
+    
     thumbnailObject!.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
     //CGImageRelease(thumbnailCgImage)
   }

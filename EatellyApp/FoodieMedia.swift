@@ -15,7 +15,6 @@ class FoodieMedia: FoodieS3Object {
   enum ErrorCode: LocalizedError {
     
     case retreiveFileDoesNotExist
-    case saveToLocalwithNilMediaType
     case saveToLocalwithNilImageMemoryBuffer
     case saveToLocalwithNilvideoLocalBufferUrl
     
@@ -76,9 +75,9 @@ class FoodieMedia: FoodieS3Object {
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieMedia: FoodieObjectDelegate {
   
-  func retrieveFromLocal(type localType: FoodieObject.LocalType,
-                         forceAnyways: Bool,
-                         withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrieve(from localType: FoodieObject.LocalType,
+                forceAnyways: Bool,
+                withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     guard let fileName = foodieFileName else {
       CCLog.fatal("FoodieMedia has no foodieFileName")
@@ -218,34 +217,15 @@ extension FoodieMedia: FoodieObjectDelegate {
     // Retrieve self. This object have no children
     switch location {
     case .local:
-      retrieveFromLocal(type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      retrieve(from: localType, forceAnyways: forceAnyways, withBlock: callback)
     case .both:
       retrieveFromLocalThenServer(forceAnyways: forceAnyways, withBlock: callback)
     }
   }
   
   
-  // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
-  func saveRecursive(to location: FoodieObject.StorageLocation,
-                     type localType: FoodieObject.LocalType,
-                     withBlock callback: FoodieObject.SimpleErrorBlock?) {
-    
-    // Do state transition for this save. Early return if no save needed, or if illegal state transition
-//    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
-//    
-//    if let earlySuccess = earlyReturnStatus.success {
-//      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-//      return
-//    }
-
-    DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
-      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-    }
-  }
-
-  
   // Function to save this media object to local.
-  func saveToLocal(type localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func save(to localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     guard let fileName = foodieFileName else {
       CCLog.fatal("FoodieMedia has no foodieFileName")
@@ -274,6 +254,41 @@ extension FoodieMedia: FoodieObjectDelegate {
         }
         callback?(error)
       }
+    }
+  }
+  
+  
+  // Function to Save to both Local & Server
+  func saveToLocalNServer(type localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    // Save to Local first, then Server.
+    save(to: localType) { error in
+      
+      if let error = error {
+        CCLog.warning("Save to Local in Save to Local & Server failed - \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      self.saveToServer(from: localType, withBlock: callback)
+    }
+  }
+  
+  
+  // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
+  func saveRecursive(to location: FoodieObject.StorageLocation,
+                     type localType: FoodieObject.LocalType,
+                     withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    // Do state transition for this save. Early return if no save needed, or if illegal state transition
+    //    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
+    //
+    //    if let earlySuccess = earlyReturnStatus.success {
+    //      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
+    //      return
+    //    }
+    
+    DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
+      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
     }
   }
   

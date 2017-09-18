@@ -19,9 +19,13 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var width: Int  // height = width / aspectRatio
   @NSManaged var thumbnailFileName: String?  // Thumbnail for the moment
   
+  // Markups
   @NSManaged var markups: Array<FoodieMarkup>?  // Array of PFObjects as FoodieMarkup
   @NSManaged var eatags: Array<String>?  // Array of Strings, unstructured
   @NSManaged var tags: Array<String>?  // Array of Strings, unstructured
+  
+  // Location & Others
+  @NSManaged var location: PFGeoPoint?  // Location where the media was originally captured
   @NSManaged var playSound: Bool
   
   // Query Pointers?
@@ -118,6 +122,16 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
+  
+  // Function to set Moment Locations
+  func set(location: CLLocation?) {
+    if let location = location {
+      self.location = PFGeoPoint(latitude: location.coordinate.latitude,
+                                 longitude: location.coordinate.longitude)
+    } else {
+      self.location = nil
+    }
+  }
   
   
   // MARK: - Foodie Object Delegate Conformance

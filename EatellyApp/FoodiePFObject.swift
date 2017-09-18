@@ -70,9 +70,9 @@ class FoodiePFObject: PFObject {
   }
   
   
-  func retrieveFromLocal(type localType: FoodieObject.LocalType,  // At the Fetch stage, Parse doesn't care any more
-                         forceAnyways: Bool,
-                         withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func retrieve(from localType: FoodieObject.LocalType,  // At the Fetch stage, Parse doesn't care any more
+                forceAnyways: Bool,
+                withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
@@ -164,8 +164,8 @@ class FoodiePFObject: PFObject {
   }
   
   
-  func saveToLocal(type localType: FoodieObject.LocalType,
-                   withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func save(to localType: FoodieObject.LocalType,
+            withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
@@ -196,8 +196,8 @@ class FoodiePFObject: PFObject {
   }
   
   
-  func deleteFromLocal(type localType: FoodieObject.LocalType,
-                       withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func delete(from localType: FoodieObject.LocalType,
+              withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }

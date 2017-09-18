@@ -402,7 +402,7 @@ class MapViewController: UIViewController {
     // If current journal is nil, double check and see if there are any in Local Datastore
     if FoodieJournal.currentJournal == nil {
       
-      FoodieQuery.getFirstStory(withName: FoodieGlobal.Constants.SavedDraftPinName) { (object, error) in
+      FoodieQuery.getFirstStory(from: .draft) { (object, error) in
         
         if let error = error {
           CCLog.debug("No pinned draft Stories found in Local Datastore - \(error.localizedDescription)")

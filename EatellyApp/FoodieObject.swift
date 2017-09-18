@@ -11,38 +11,38 @@ import Foundation
  
 protocol FoodieObjectDelegate: class {
 
-  func retrieveRecursive(from location: FoodieObject.StorageLocation,
-                         type localType: FoodieObject.LocalType,
-                         forceAnyways: Bool,
-                         withBlock callback: FoodieObject.SimpleErrorBlock?)
-
-  func retrieveFromLocal(type localType: FoodieObject.LocalType,
-                         forceAnyways: Bool,
-                         withBlock callback: FoodieObject.SimpleErrorBlock?)
+  func retrieve(from localType: FoodieObject.LocalType,
+                forceAnyways: Bool,
+                withBlock callback: FoodieObject.SimpleErrorBlock?)
   
   func retrieveFromLocalThenServer(forceAnyways: Bool,
                                    withBlock callback: FoodieObject.SimpleErrorBlock?)  // Always from Cache, then Server
   
+  func retrieveRecursive(from location: FoodieObject.StorageLocation,
+                         type localType: FoodieObject.LocalType,
+                         forceAnyways: Bool,
+                         withBlock callback: FoodieObject.SimpleErrorBlock?)
+  
+  
+  func save(to localType: FoodieObject.LocalType,
+            withBlock callback: FoodieObject.SimpleErrorBlock?)
+  
+  func saveToLocalNServer(type localType: FoodieObject.LocalType,
+                          withBlock callback: FoodieObject.SimpleErrorBlock?)
   
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
                      withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func saveToLocal(type localType: FoodieObject.LocalType,
-                   withBlock callback: FoodieObject.SimpleErrorBlock?)
   
-  func saveToLocalNServer(type localType: FoodieObject.LocalType,
-                          withBlock callback: FoodieObject.SimpleErrorBlock?)
+  func delete(from localType: FoodieObject.LocalType,
+              withBlock callback: FoodieObject.SimpleErrorBlock?)
   
+  func deleteFromLocalNServer(withBlock callback: FoodieObject.SimpleErrorBlock?)  // Always whacks all
   
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
                        withBlock callback: FoodieObject.SimpleErrorBlock?)
-  
-  func deleteFromLocal(type localType: FoodieObject.LocalType,
-                       withBlock callback: FoodieObject.SimpleErrorBlock?)
-  
-  func deleteFromLocalNServer(withBlock callback: FoodieObject.SimpleErrorBlock?)  // Always whacks all
   
   
   func getUniqueIdentifier() -> String
@@ -258,14 +258,12 @@ class FoodieObject {
     
     switch location {
     case .local:
-      delegate.retrieveFromLocal(type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      delegate.retrieve(from: localType, forceAnyways: forceAnyways, withBlock: callback)
     case .both:
       guard localType == .cache else {
         CCLog.fatal("Cannot retrieve from both server and local with localType of .draft")
       }
       delegate.retrieveFromLocalThenServer(forceAnyways: forceAnyways, withBlock: callback)
-    default:
-      break
     }
   }
   
@@ -422,11 +420,9 @@ class FoodieObject {
     
     switch location {
     case .local:
-      delegate.saveToLocal(type: localType, withBlock: callback)
+      delegate.save(to: localType, withBlock: callback)
     case .both:
       delegate.saveToLocalNServer(type: localType, withBlock: callback)
-    default:
-      break
     }
   }
   
@@ -470,11 +466,9 @@ class FoodieObject {
     
     switch location {
     case .local:
-      delegate.deleteFromLocal(type: localType, withBlock: callback)
+      delegate.delete(from: localType, withBlock: callback)
     case .both:
       delegate.deleteFromLocalNServer(withBlock: callback)
-    default:
-      break
     }
   }
   
