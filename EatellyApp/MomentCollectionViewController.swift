@@ -31,6 +31,28 @@ class MomentCollectionViewController: UICollectionViewController {
   fileprivate var momentWidthDefault: CGFloat!
   fileprivate var momentSizeDefault: CGSize!
 
+  @IBAction func tapAction(_ sender: UITapGestureRecognizer) {
+    let point = sender.location(in: self.collectionView)
+
+    if let indexPath = collectionView!.indexPathForItem(at: point) {
+    guard let momentArray = workingJournal.moments else {
+        CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
+      }
+
+    if(indexPath.row >= momentArray.count)
+    {
+      CCLog.fatal("Moment selection is out of bound")
+    }
+
+    let moment = momentArray[indexPath.row]
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+    viewController.mediaObj = moment.mediaObj
+    viewController.markupReturnDelegate = self
+    self.present(viewController, animated: true)
+    }
+
+  }
 
   // MARK: - IBActions
   @IBAction func longPressAction(_ lpgr: UILongPressGestureRecognizer) {
@@ -134,7 +156,6 @@ extension MomentCollectionViewController {
 
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath) as! MomentCollectionViewCell
-    
     guard let momentArray = workingJournal.moments else {
       CCLog.debug("No Moments for workingJournal")
       return cell
@@ -206,6 +227,9 @@ extension MomentCollectionViewController {
     } else {
       cell.thumbFrameView.isHidden = true
     }
+
+    cell.delegate = self
+
     return cell
   }
 
@@ -241,5 +265,57 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
     }
     let moment = momentArray[indexPath.row]
     return CGSize(width: momentHeight!/CGFloat(moment.aspectRatio), height: momentHeight!)
+  }
+}
+
+extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
+  func deleteMoment(sourceCell cell: MomentCollectionViewCell) {
+    if let indexPath = collectionView!.indexPath(for: cell) {
+      guard let momentArray = workingJournal.moments else {
+        CCLog.fatal("No Moments for workingJournal")
+      }
+
+      if indexPath.item >= momentArray.count {
+        CCLog.fatal("Deleting a moment from an out of bound index")
+      }
+
+      let moment = momentArray[indexPath.item]
+      moment.deleteRecursive(withName: nil){ (success, error) in
+
+        if let error = error {
+          CCLog.warning("Deleting moment resulted in Error - \(error.localizedDescription)")
+        }
+
+        self.workingJournal.moments?.remove(at: indexPath.item)
+        self.collectionView!.reloadData()
+      }
+    }
+  }
+}
+
+//TODO need to figure a better way to return from moment markup back to journalentry VC 
+extension MomentCollectionViewController: MarkupReturnDelegate {
+  func markupComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
+    DispatchQueue.main.async {  // UI Work. We don't know which thread we might be in, so guarentee execute in Main thread
+      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
+
+      var workingJournal: FoodieJournal?
+
+      if let journal = suggestedJournal {
+        workingJournal = journal
+      } else if let journal = FoodieJournal.currentJournal {
+        workingJournal = journal
+      } else {
+        workingJournal = FoodieJournal(withState: .objectModified)
+      }
+
+      viewController.workingJournal = workingJournal!
+      viewController.returnedMoment = markedupMoment
+
+      self.dismiss(animated: true) { /*[unowned self] in*/
+        self.present(viewController, animated: true)
+      }
+    }
   }
 }
