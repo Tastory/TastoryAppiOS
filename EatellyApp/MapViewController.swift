@@ -414,7 +414,7 @@ class MapViewController: UIViewController {
           return
         }
         
-        journal.retrieveRecursive(forceAnyways: false) { error in
+        journal.retrieveRecursive(from: .local, type: .draft, forceAnyways: false) { error in
           
           if let error = error {
             CCLog.warning("Retrieve Recursive on Journal resulted in error - \(error.localizedDescription)")

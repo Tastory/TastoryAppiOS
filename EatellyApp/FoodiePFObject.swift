@@ -115,7 +115,7 @@ class FoodiePFObject: PFObject {
     
     // See if this is already in memory, if so no need to do anything
     if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
-      CCLog.debug("\(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()). Data Available and not Forcing Anyways. Calling back with nil")
+      CCLog.debug("\(delegate.foodieObjectType()) \(getUniqueIdentifier()). Data Available and not Forcing Anyways. Calling back with nil")
       DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }  // Calling back in a different thread, because sometimes we might still be in main thread all the way from the caller
       return
     }

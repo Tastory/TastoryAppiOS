@@ -222,7 +222,7 @@ class FoodieFile {
     
     let retrieveRetry = SwiftRetry()
     retrieveRetry.start("retrieve file '\(fileName)' from CloudFront", withCountOf: Constants.AwsRetryCount) {
-      CCLog.verbose("retrievingFrom \(serverFileURL.absoluteString)")
+      CCLog.verbose("Retrieving from \(serverFileURL.absoluteString)")
       
       // Let's time the download!
       let downloadStartTime = PrecisionTime.now()

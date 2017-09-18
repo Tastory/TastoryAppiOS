@@ -93,29 +93,31 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     activityView.startAnimating()
     view.addSubview(activityView)
 
+    // This will cause a save to both Local Cache and Server
     let journalSaveOperation = JournalSaveOperation(on: journal) { (error) in
       
       if let error = error {
         CCLog.warning("Save Story to Server Failed with Error: \(error)")
         AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
       } else {
- 
-        // TODO: What we really should do is to move this from a workingJournal/User Document space, into the Cache space.
-        FoodieJournal.unpinAllObjectsInBackground(withName: FoodieGlobal.Constants.SavedDraftPinName)
-        FoodieJournal.removeCurrent()
-        self.workingJournal = nil
         
-        // Remove the spinner and resume user interaction
-        DispatchQueue.main.async {
-          self.activityView.stopAnimating()
-          self.activityView.removeFromSuperview()
-          UIApplication.shared.endIgnoringInteractionEvents()
-        }
-        
-        // Pop-up Alert Dialog and then Dismiss
-        CCLog.info("Story Posted!")
-        AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
-          self.vcDismiss()
+        // Now removing it from Draft
+        journal.deleteRecursive(from: .local, type: .draft) { (error) in
+          FoodieJournal.removeCurrent()
+          self.workingJournal = nil
+          
+          // Remove the spinner and resume user interaction
+          DispatchQueue.main.async {
+            self.activityView.stopAnimating()
+            self.activityView.removeFromSuperview()
+            UIApplication.shared.endIgnoringInteractionEvents()
+          }
+          
+          // Pop-up Alert Dialog and then Dismiss
+          CCLog.info("Story Posted!")
+          AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
+            self.vcDismiss()
+          }
         }
       }
     }
@@ -452,32 +454,32 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       CCLog.debug("Pre-Save Operation Started")
       
       // Save Journal to Local
-      journal.saveRecursive(to: .local, withName: FoodieGlobal.Constants.SavedDraftPinName) { (_, error) -> Void in
-        
+      journal.saveRecursive(to: .local, type: .draft) { error in  // TODO: Should really change to save Digest to Local instead
+
         if let error = error {
           CCLog.warning("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
           self.callback?(error)
           self.finished()
           return
         }
-        
         CCLog.debug("Completed pre-saving Journal to Local")
+      
         guard let foodieObject = self.foodieObject else {
           CCLog.debug("No Foodie Object supplied on preSave(), skipping Object Server save")
           self.callback?(nil)
           self.finished()
           return
         }
-        
-        foodieObject.saveRecursive(to: .server, withName: FoodieGlobal.Constants.SavedDraftPinName) { (success, error) -> Void in
-          
+
+        foodieObject.saveRecursive(to: .both, type: .draft) { error in
+
           if let error = error {
-            CCLog.warning("\(foodieObject.foodieObjectType()) pre-save to Server resulted in error - \(error.localizedDescription)")
+            CCLog.warning("\(foodieObject.foodieObjectType()) pre-save to local & server resulted in error - \(error.localizedDescription)")
             self.callback?(error)
             self.finished()
             return
           }
-          
+
           CCLog.debug("Completed pre-saving \(foodieObject.foodieObjectType()) to Server")
           self.callback?(nil)
           self.finished()
@@ -488,7 +490,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   
   // Journal Save Operation Child Class
   class JournalSaveOperation: AsyncOperation {
-    
+  
     var journal: FoodieJournal
     var error: Error?
     var callback: ((Error?) -> Void)?
@@ -502,7 +504,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     override func main() {
       CCLog.debug ("Journal Save Operation Started")
       
-      journal.saveRecursive(to: .server, withName: FoodieGlobal.Constants.SavedDraftPinName) { (_, error) in
+      journal.saveRecursive(to: .both, type: .cache) { error in
         self.callback?(error)
         self.finished()
       }
