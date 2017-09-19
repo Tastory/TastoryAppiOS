@@ -178,10 +178,18 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
+      guard let thumbnail = self.thumbnailObj else {
+        CCLog.assert("Unexpected Moment.retrieve() resulted in moment.thumbnailObj = nil")
+        callback?(error)
+        return
+      }
+      
       self.foodieObject.resetOutstandingChildOperations()
       
       // Got through all sanity check, calling children's retrieveRecursive
       self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      
+      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
       
       if let markups = self.markups {
         for markup in markups {

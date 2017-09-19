@@ -98,7 +98,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     case .photo:
       retrieveToBuffer(from: localType) { buffer, error in
         if let error = error {
-          CCLog.warning("Retrieve from \(localType.rawValue) Failed - \(error.localizedDescription)")
+          CCLog.warning("Retrieve from \(localType) Failed - \(error.localizedDescription)")
         } else if let imageBuffer = buffer as? Data {
           self.imageMemoryBuffer = imageBuffer
         } else {
@@ -119,7 +119,8 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   
   func retrieveFromLocalThenServer(forceAnyways: Bool,
-                                   withBlock callback: FoodieObject.SimpleErrorBlock?) { // Always from Cache, then Server
+                                   type localType: FoodieObject.LocalType,
+                                   withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     guard let fileName = foodieFileName else {
       CCLog.fatal("FoodieMedia has no foodieFileName")
@@ -151,8 +152,8 @@ extension FoodieMedia: FoodieObjectDelegate {
           if let error = error {
             CCLog.warning("retrieveFromServerToLocal for video failed with error \(error.localizedDescription)")
             callback?(error)
-          } else if self.checkIfExists(in: .cache) {
-            self.videoLocalBufferUrl = FoodieFile.getFileURL(for: .cache, with: fileName)
+          } else if self.checkIfExists(in: localType) {
+            self.videoLocalBufferUrl = FoodieFile.getFileURL(for: localType, with: fileName)
             callback?(nil)
           } else {
             callback?(ErrorCode.retreiveFileDoesNotExist)
@@ -219,7 +220,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     case .local:
       retrieve(from: localType, forceAnyways: forceAnyways, withBlock: callback)
     case .both:
-      retrieveFromLocalThenServer(forceAnyways: forceAnyways, withBlock: callback)
+      retrieveFromLocalThenServer(forceAnyways: forceAnyways, type: localType, withBlock: callback)
     }
   }
   

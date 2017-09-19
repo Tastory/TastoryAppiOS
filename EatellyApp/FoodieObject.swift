@@ -11,12 +11,16 @@ import Foundation
  
 protocol FoodieObjectDelegate: class {
 
+  static func deleteAll(from localType: FoodieObject.LocalType,
+                        withBlock callback: FoodieObject.SimpleErrorBlock?)
+  
   func retrieve(from localType: FoodieObject.LocalType,
                 forceAnyways: Bool,
                 withBlock callback: FoodieObject.SimpleErrorBlock?)
   
   func retrieveFromLocalThenServer(forceAnyways: Bool,
-                                   withBlock callback: FoodieObject.SimpleErrorBlock?)  // Always from Cache, then Server
+                                   type: FoodieObject.LocalType,
+                                   withBlock callback: FoodieObject.SimpleErrorBlock?)
   
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
@@ -167,6 +171,12 @@ class FoodieObject {
   }
   
   
+  static func deleteAll(from localType: LocalType, withBlock callback: SimpleErrorBlock?) {
+    FoodiePFObject.deleteAll(from: localType) { error in
+      FoodieS3Object.deleteAll(from: localType, withBlock: callback)
+    }
+  }
+  
   
   // MARK: - Public Instance Functions
   
@@ -226,14 +236,18 @@ class FoodieObject {
   
   
   func retrieveChild(_ child: FoodieObjectDelegate, from location: StorageLocation, type localType: LocalType, forceAnyways: Bool, withBlock callback: SimpleErrorBlock?) {
+    guard let delegate = delegate else {
+      CCLog.fatal("delegate = nil. Unable to proceed.")
+    }
+    CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Retrieve Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
     
     SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
     SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
     
     child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways) { error in
-      
       if let error = error {
+        CCLog.warning("retrieveChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(error.localizedDescription)")
         self.protectedOperationError = error
       }
       
@@ -260,10 +274,7 @@ class FoodieObject {
     case .local:
       delegate.retrieve(from: localType, forceAnyways: forceAnyways, withBlock: callback)
     case .both:
-      guard localType == .cache else {
-        CCLog.fatal("Cannot retrieve from both server and local with localType of .draft")
-      }
-      delegate.retrieveFromLocalThenServer(forceAnyways: forceAnyways, withBlock: callback)
+      delegate.retrieveFromLocalThenServer(forceAnyways: forceAnyways, type: localType, withBlock: callback)
     }
   }
   
@@ -308,8 +319,9 @@ class FoodieObject {
   
   // Function when all child saves have completed
   func savesCompletedFromAllChildren(to location: StorageLocation, type localType: LocalType, withBlock callback: SimpleErrorBlock?) {
-    
-    CCLog.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.savesCompletedFromAllChildren to Location: \(location)")
+    guard let delegate = delegate else {
+      CCLog.fatal("delegate = nil. Unable to proceed.")
+    }
     
     // If children all came back and there is error, unwind state and call callback
     if protectedOperationError != nil {
@@ -320,14 +332,10 @@ class FoodieObject {
     // If children all came back and no error, Save yourself!
     else {
       saveObject(to: location, type: localType) { error in
-        if let hasError = error {
-          self.protectedOperationError = hasError
-        } else {
-          // TODO investigate if it is possible to have success = false and no error 
-          // I have seen it happened once
-          CCLog.assert("saveObject failed but block contained no Error")
+        if let error = error {
+          CCLog.warning("Saving Object \(delegate.foodieObjectType()) \(delegate.getUniqueIdentifier()) to \(location), \(localType) Failed - \(error.localizedDescription)")
+          self.protectedOperationError = error
         }
-        
         // State transition accordingly and call callback
         self.saveCompleteStateTransition(to: location)
         callback?(self.protectedOperationError)
@@ -384,18 +392,20 @@ class FoodieObject {
   
   // Function to call a child's saveRecursive
   func saveChild(_ child: FoodieObjectDelegate, to location: StorageLocation, type localType: LocalType, withBlock callback: SimpleErrorBlock?) {
-    
-    CCLog.verbose("\(delegate!.foodieObjectType())(\(delegate!.getUniqueIdentifier())).Object.saveChild of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location)")
+    guard let delegate = delegate else {
+      CCLog.fatal("delegate = nil. Unable to proceed.")
+    }
+    CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Saving Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
     
     SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
     SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
     
-    // Save Recursive for each moment. Call saveCompletionFromChild when done and without errors
+    // Save Recursive for each children. Call saveCompletionFromChild when done and without errors
     child.saveRecursive(to: location, type: localType) { error in
-      if let hasError = error {
-        CCLog.warning("saveChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(hasError.localizedDescription)")
-        self.protectedOperationError = hasError
+      if let error = error {
+        CCLog.warning("saveChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(error.localizedDescription)")
+        self.protectedOperationError = error
       }
       
       // This needs to be critical section or race condition between many childrens' completion can occur
@@ -417,7 +427,6 @@ class FoodieObject {
     guard let delegate = delegate else {
       CCLog.fatal("delegate = nil. Unable to proceed.")
     }
-    
     switch location {
     case .local:
       delegate.save(to: localType, withBlock: callback)
@@ -429,26 +438,28 @@ class FoodieObject {
   
   // Function to delete child
   func deleteChild(_ child: FoodieObjectDelegate, from location: StorageLocation, type localType: LocalType, withBlock callback: SimpleErrorBlock?) {
-
+    guard let delegate = delegate else {
+      CCLog.fatal("delegate = nil. Unable to proceed.")
+    }
+    CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Delete Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
+    
     // Lock here is in case that if the first operation competes and calls back before even the 2nd op's deleteChild goes out
     SwiftMutex.lock(&self.criticalMutex)
     self.outstandingChildOperations += 1
     SwiftMutex.unlock(&self.criticalMutex)
     
+    // Delete Recursive for each children
     child.deleteRecursive(from: location, type: localType) { error in
-      
-      if let hasError = error {
-        self.protectedOperationError = hasError
-      } else {
-        CCLog.assert("deleteChild failed but block contained no Error")
+      if let error = error {
+        CCLog.warning("deleteChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(error.localizedDescription)")
+        self.protectedOperationError = error
       }
 
+      // This needs to be critical section or race condition between many childrens' completion can occur
       var childOperationsPending = true
       SwiftMutex.lock(&self.criticalMutex)
       self.outstandingChildOperations -= 1
-      if self.outstandingChildOperations == 0 {
-        childOperationsPending = false
-      }
+      if self.outstandingChildOperations == 0 { childOperationsPending = false }
       SwiftMutex.unlock(&self.criticalMutex)
       
       if !childOperationsPending {

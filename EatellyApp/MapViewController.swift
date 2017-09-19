@@ -410,14 +410,28 @@ class MapViewController: UIViewController {
         }
         
         guard let journal = object as? FoodieJournal else {
-          CCLog.warning("Retrieve pinned Journal from Local Datastore is nil or not a FoodieJournal")
+          FoodieObject.deleteAll(from: .draft) { error in
+            if let error = error {
+              CCLog.warning("Delete All resulted in Error - \(error.localizedDescription)")
+            }
+            AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { action in
+              CCLog.assert("Retrieve pinned Journal from Local Datastore is nil or not a FoodieJournal. Clearing Draft Pin and Directory")
+            }
+          }
           return
         }
         
         journal.retrieveRecursive(from: .local, type: .draft, forceAnyways: false) { error in
           
-          if let error = error {
-            CCLog.warning("Retrieve Recursive on Journal resulted in error - \(error.localizedDescription)")
+          if let retrieveError = error {
+            FoodieObject.deleteAll(from: .draft) { error in
+              if let deleteError = error {
+                CCLog.warning("Delete All resulted in Error - \(deleteError.localizedDescription)")
+              }
+              AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { action in
+                CCLog.assert("Retrieve Recursive on Draft Story \(journal.getUniqueIdentifier()) resulted in error. Clearing Draft Pin and Directory - \(retrieveError.localizedDescription)")
+              }
+            }
             return
           }
           

@@ -196,7 +196,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Journal specific Retrieval algorithms
   
   // Function to retrieve the Journal minus the Moments
-  func selfRetrieval(withBlock callback: FoodieObject.SimpleErrorBlock? = nil) {
+  func selfRetrieval(withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     // Do we still need to fetch the Journal?
     retrieve(from: .both, type: .cache, forceAnyways: false) { error in
@@ -439,13 +439,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     // Need to make sure all children FoodieRecursives saved before proceeding
     if let moments = moments {
       for moment in moments {
-        // Omit saving of moment if they are not marked modified to prevent double saving of moments to server
-        if(moment.foodieObject.operationState == .objectModified ||
-          moment.foodieObject.operationState == .savedToLocal)
-        {
-          foodieObject.saveChild(moment, to: location, type: localType, withBlock: callback)
-          childOperationPending = true
-        }
+        foodieObject.saveChild(moment, to: location, type: localType, withBlock: callback)
+        childOperationPending = true
       }
     }
     
@@ -510,7 +505,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
             }
           }
           
-          // Don't delete Users nor Venues!!!
+          if let venue = self.venue {
+            self.foodieObject.deleteChild(venue, from: .local, type: localType, withBlock: nil)  // Don't ever delete venues from the server
+          }
+          
+          // Don't delete Users nor Thumbnail!!!
           
           // Just callback with the error
           callback?(error)
@@ -522,16 +521,20 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
         
         if let moments = self.moments {
           for moment in moments {
-            self.foodieObject.deleteChild(moment, from: location, type: localType, withBlock: nil)
+            self.foodieObject.deleteChild(moment, from: location, type: localType, withBlock: callback)
             childOperationPending = true
           }
         }
         
         if let markups = self.markups {
           for markup in markups {
-            self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: nil)
+            self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: callback)
             childOperationPending = true
           }
+        }
+        
+        if let venue = self.venue {
+          self.foodieObject.deleteChild(venue, from: .local, type: localType, withBlock: callback)  // Don't ever delete venues from the server
         }
         
         if !childOperationPending {

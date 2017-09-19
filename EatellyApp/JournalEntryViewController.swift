@@ -46,7 +46,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   fileprivate var momentViewController = MomentCollectionViewController()
   fileprivate var markupMoment: FoodieMoment? = nil
   fileprivate let activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-  fileprivate let saveOperationQueue = OperationQueue()
+  fileprivate let saveOperationQueue = FoodieGlobal.storyPreSaveOperationQueue  // Temporary until Foodie Object Model is self-sufficient in dealing with mulitple queued operations
   
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
@@ -94,7 +94,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     view.addSubview(activityView)
 
     // This will cause a save to both Local Cache and Server
-    let journalSaveOperation = JournalSaveOperation(on: journal) { (error) in
+    let journalSaveOperation = JournalSaveOperation(on: journal) { error in
       
       if let error = error {
         CCLog.warning("Save Story to Server Failed with Error: \(error)")
@@ -102,7 +102,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       } else {
         
         // Now removing it from Draft
-        journal.deleteRecursive(from: .local, type: .draft) { (error) in
+        journal.deleteRecursive(from: .local, type: .draft) { error in
           FoodieJournal.removeCurrent()
           self.workingJournal = nil
           
@@ -111,12 +111,12 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
             self.activityView.stopAnimating()
             self.activityView.removeFromSuperview()
             UIApplication.shared.endIgnoringInteractionEvents()
-          }
-          
-          // Pop-up Alert Dialog and then Dismiss
-          CCLog.info("Story Posted!")
-          AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
-            self.vcDismiss()
+            
+            // Pop-up Alert Dialog and then Dismiss
+            CCLog.info("Story Posted!")
+            AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
+              self.vcDismiss()
+            }
           }
         }
       }
@@ -421,6 +421,9 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     CCLog.warning("JournalEntryViewController.didReceiveMemoryWarning")
   }
   
+  deinit {
+    CCLog.warning("JournalEntryViewController getting deinitialized")
+  }
   
   // Pre-Save Operations Child Class
   class PreSaveOperation: AsyncOperation {
@@ -480,7 +483,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
             return
           }
 
-          CCLog.debug("Completed pre-saving \(foodieObject.foodieObjectType()) to Server")
+          CCLog.debug("Completed Pre-Saving \(foodieObject.foodieObjectType()) to Server")
           self.callback?(nil)
           self.finished()
         }

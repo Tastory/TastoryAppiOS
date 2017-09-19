@@ -138,16 +138,32 @@ extension MomentCollectionViewController {
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath) as! MomentCollectionViewCell
     guard let momentArray = workingJournal.moments else {
-      CCLog.debug("No Moments for workingJournal")
+      CCLog.warning("No Moments for workingStory \(workingJournal.getUniqueIdentifier())")
       return cell
     }
     
     if indexPath.row >= momentArray.count {
-      CCLog.assert("indexPath.row >= momentArray.count")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
+        CCLog.assert("Moment Array for Story \(self.workingJournal.getUniqueIdentifier()) index out of range - indexPath.row \(indexPath.row) >= momentArray.count \(momentArray.count)")
+      }
       return cell
     }
     
     let moment = momentArray[indexPath.row]
+    
+    guard let thumbnailObj = moment.thumbnailObj else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
+        CCLog.assert("No Thumbnail Object for Moment \(moment.getUniqueIdentifier())")
+      }
+      return cell
+    }
+    
+    guard let thumbnailFileName = moment.thumbnailFileName else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
+        CCLog.assert("No Thumbnail Filename for Moment \(moment.getUniqueIdentifier())")
+      }
+      return cell
+    }
     
     // TODO: Download the moment if not in memory
 //    moment.fetchIfNeededInBackground { (object, error) in
@@ -188,17 +204,18 @@ extension MomentCollectionViewController {
 //      }
 //    }
     
-    // TODO: Download the thumbnail if not in memory
-    var thumbnail: UIImage?
-//    if moment.thumbnailObj?.imageMemoryBuffer == nil
-//    {
-//      do {
-//        try moment.thumbnailObj?.imageMemoryBuffer = Data(contentsOf: FoodieFile.Constants.DocumentFolderUrl.appendingPathComponent(moment.thumbnailFileName!))
-//      } catch {
-//        // TODO handle error
-//      }
-//    }
-    
+    // TODO: Download the thumbnail here if not a local draft?
+    if thumbnailObj.imageMemoryBuffer == nil {
+      do {
+        try thumbnailObj.imageMemoryBuffer = Data(contentsOf: FoodieFile.Constants.DraftStoryMediaFolderUrl.appendingPathComponent(thumbnailFileName))
+      } catch {
+        AlertDialog.present(from: self, title: "File Read Error", message: "Cannot read image file from local flash storage") { action in
+          CCLog.assert("Cannot read image file \(thumbnailFileName)")
+        }
+        return cell
+      }
+    }
+
     thumbnail = UIImage(data: moment.thumbnailObj!.imageMemoryBuffer!)
     cell.momentThumb.image = thumbnail
   

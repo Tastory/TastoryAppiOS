@@ -61,7 +61,8 @@ struct FoodieGlobal {
   
   // MARK: - Public Static Variable
   static var foursquareSession: Session { return Session.sharedSession() }
-
+  static var storyPreSaveOperationQueue = OperationQueue()
+  
   
   // MARK: - Public Static Functions
   static func foursquareInitialize() {

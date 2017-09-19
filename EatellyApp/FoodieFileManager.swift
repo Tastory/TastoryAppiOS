@@ -108,7 +108,7 @@ class FoodieFile {
     static let S3BucketKey = "eatelly-dev-howard"
     static let CloudFrontUrl = URL(string: "https://d1axaetmqd29cm.cloudfront.net/")!
     static let DraftStoryMediaFolderUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieObject.LocalType.draft.rawValue, isDirectory: true)
-    static let CleanCrashLogFolderUrl = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("CleanCrashLog", isDirectory: true)
+    static let CleanCrashLogFolderUrl = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("CleanCrashLog", isDirectory: true)  // Cleanroom Logger will be responsible for creating this directory
     static let CacheFoodieMediaFolderUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieObject.LocalType.cache.rawValue, isDirectory: true)
     static let AwsRetryCount = FoodieGlobal.Constants.DefaultServerRequestRetryCount
     static let AwsRetryDelay = FoodieGlobal.Constants.DefaultServerRequestRetryDelay
@@ -186,6 +186,14 @@ class FoodieFile {
     fileManager = FileManager.default
     transferManager = AWSS3TransferManager.default()
     downloadsSession = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: nil)
+    
+    // Create some local directories
+    do {
+      try self.fileManager.createDirectory(at: Constants.DraftStoryMediaFolderUrl, withIntermediateDirectories: true, attributes: nil)
+      try self.fileManager.createDirectory(at: Constants.CacheFoodieMediaFolderUrl, withIntermediateDirectories: true, attributes: nil)
+    } catch {
+      CCLog.fatal("Cannot create required directories - \(error.localizedDescription)")
+    }
   }
   
   
@@ -275,7 +283,7 @@ class FoodieFile {
 
         // We are in success-land!
         let timeDifference = downloadEndTime - downloadStartTime
-        //try? self.fileManager.removeItem(at: localFileURL)  // TODO: If the file already exists, really shouldn't call this anyways.
+        //try? self.fileManager.removeItem(at: localFileURL)  // TODO: If the file already exists, really shouldn't have called this anyways.
         
         do {
           let fileAttribute = try self.fileManager.attributesOfItem(atPath: tempURL.path)
@@ -283,7 +291,6 @@ class FoodieFile {
           let avgDownloadSpeed = Float(fileSizeKb)/timeDifference.seconds  // KB/s
           
           CCLog.verbose("Download of \(fileName) of size \(fileSizeKb/1000.0) MB took \(timeDifference.milliSeconds) ms at \(avgDownloadSpeed) kB/s")
-          
           try self.fileManager.copyItem(at: tempURL, to: localFileURL)
         } catch {
           CCLog.assert("Failed to move file from URLSessionDownload temp to local Documents folder. Erorr = \(error.localizedDescription)")
@@ -398,6 +405,31 @@ class FoodieFile {
   }
   
   
+  func deleteAll(from localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+
+    var returnError: Error? = nil
+    var directoryUrl: URL!
+
+    switch localType {
+    case .cache:
+      directoryUrl = Constants.CacheFoodieMediaFolderUrl
+    case .draft:
+      directoryUrl = Constants.DraftStoryMediaFolderUrl
+    }
+    
+    do {
+      for contentUrl in try fileManager.contentsOfDirectory(at: directoryUrl, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) {
+        try fileManager.removeItem(at: contentUrl)
+      }
+    } catch {
+      CCLog.warning("DeleteAll resulted in Exception - \(error.localizedDescription)")
+      returnError = error
+    }
+    
+    callback?(returnError)
+  }
+  
+  
   func checkIfExists(in localType: FoodieObject.LocalType, for fileName: String) -> Bool {
     let filePath = FoodieFile.getFileURL(for: localType, with: fileName).path
     return fileManager.isReadableFile(atPath: filePath)
@@ -438,6 +470,12 @@ class FoodieS3Object {
   var foodieFileName: String?
   
   
+  // MARK: - Public Static Functions
+  static func deleteAll(from localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+  }
+  
+  
   // MARK: - Public Instance Functions  
   init(withState operationState: FoodieObject.OperationStates) {
     foodieObject = FoodieObject(withState: operationState)
@@ -457,7 +495,7 @@ class FoodieS3Object {
       CCLog.fatal("FoodieS3Object has no foodieFileName")
     }
     
-    CCLog.debug("Retrieve \(fileName) from \(localType.rawValue)")
+    CCLog.debug("Retrieve \(fileName) from \(localType)")
     FoodieFile.manager.retrieve(from: localType, with: fileName, withBlock: callback)
   }
   
@@ -497,7 +535,7 @@ class FoodieS3Object {
     
     // Check if the file already exist. If so just assume it's the right file
     if !FoodieFile.manager.checkIfExists(in: localType, for: fileName) {
-      CCLog.debug("Save Buffer as \(fileName) to \(localType.rawValue)")
+      CCLog.debug("Save Buffer as \(fileName) to \(localType)")
       FoodieFile.manager.save(to: localType, from: buffer, with: fileName, withBlock: callback)
     } else {
       CCLog.debug("File \(fileName) already exist. Skipping Save")
@@ -513,7 +551,7 @@ class FoodieS3Object {
     
     // Check if the file already exist. If so just assume it's the right file
     if !FoodieFile.manager.checkIfExists(in: localType, for: fileName) {
-      CCLog.debug("Move to \(localType.rawValue) as \(fileName) from \(url.absoluteString)")
+      CCLog.debug("Move to \(localType) as \(fileName) from \(url.absoluteString)")
       FoodieFile.manager.moveFile(from: url, to: localType, with: fileName, withBlock: callback)
     } else {
       CCLog.debug("File \(fileName) already exist. Skipping Move")
@@ -531,7 +569,7 @@ class FoodieS3Object {
       if let error = error as? FoodieFile.ErrorCode {
         switch error {
         case .awsS3FileDoesntExistError:
-          CCLog.debug("File \(fileName) does not exist on S3. Saving from \(localType.rawValue)")
+          CCLog.debug("File \(fileName) does not exist on S3. Saving from \(localType)")
           FoodieFile.manager.saveToS3(from: localType, with: fileName, withBlock: callback)
           return
           
@@ -554,7 +592,7 @@ class FoodieS3Object {
     }
     
     if FoodieFile.manager.checkIfExists(in: localType, for: fileName) {
-      CCLog.debug("Delete \(fileName) from \(localType.rawValue)")
+      CCLog.debug("Delete \(fileName) from \(localType)")
       FoodieFile.manager.delete(from: localType, with: fileName, withBlock: callback)
     } else {
       CCLog.debug("File \(fileName) already not found from \(localType). Skipping Delete")
