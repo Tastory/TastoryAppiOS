@@ -89,15 +89,15 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // This is the Initilizer Parse will call upon Query or Retrieves
   override init() {
-    super.init(withState: .notAvailable)
+    super.init()
     foodieObject.delegate = self
     // mediaObj = FoodieMedia()  // retrieve() will take care of this. Don't set this here.
   }
   
   
   // This is the Initializer we will call internally
-  init(withState operationState: FoodieObject.OperationStates, foodieMedia: FoodieMedia) {
-    super.init(withState: operationState)
+  init(foodieMedia: FoodieMedia) {
+    super.init()
     foodieObject.delegate = self
     mediaObj = foodieMedia
     
@@ -146,11 +146,11 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       
       if self.mediaObj == nil, let fileName = self.mediaFileName,
         let typeString = self.mediaType, let type = FoodieMediaType(rawValue: typeString) {
-        self.mediaObj = FoodieMedia(withState: .notAvailable, for: fileName, localType: localType, mediaType: type)
+        self.mediaObj = FoodieMedia(for: fileName, localType: localType, mediaType: type)
       }
       
       if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
-        self.thumbnailObj = FoodieMedia(withState: .notAvailable, for: fileName, localType: localType, mediaType: .photo)
+        self.thumbnailObj = FoodieMedia(for: fileName, localType: localType, mediaType: .photo)
       }
       callback?(error)  // Callback regardless
     }

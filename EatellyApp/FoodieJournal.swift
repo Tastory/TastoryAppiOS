@@ -100,7 +100,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       CCLog.assert("Attempted to create a new currentJournal but currentJournal != nil")
     }
     
-    currentJournal = FoodieJournal(withState: .objectModified)
+    currentJournal = FoodieJournal()
     CCLog.debug("New Current Journal created. Session FoodieObject ID = \(currentJournal!.getUniqueIdentifier())")
 
     guard let current = currentJournal else {
@@ -127,14 +127,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   // This is the Initilizer Parse will call upon Query or Retrieves
   override init() {
-    super.init(withState: .notAvailable)
-    foodieObject.delegate = self
-  }
-  
-  
-  // This is the Initializer we will call internally
-  override init(withState operationState: FoodieObject.OperationStates) {
-    super.init(withState: operationState)
+    super.init()
     foodieObject.delegate = self
   }
   
@@ -366,7 +359,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
       if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
-        self.thumbnailObj = FoodieMedia(withState: .notAvailable, for: fileName, localType: localType, mediaType: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
+        self.thumbnailObj = FoodieMedia(for: fileName, localType: localType, mediaType: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
       }
       callback?(error)  // Callback regardless
     }

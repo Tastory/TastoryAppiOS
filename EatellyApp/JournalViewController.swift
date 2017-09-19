@@ -381,7 +381,7 @@ class JournalViewController: UIViewController {
     fetchSomeMoment(from: momentIndex)
     
     if moment.foodieObject.checkRetrieved(ifFalseSetDelegate: self) {
-      if moment.foodieObject.operationState == .objectSynced {
+      if moment.foodieObject.retrieveState == .objectSynced {
         DispatchQueue.main.async { [weak self] in self?.displayMoment(moment) }
       } else {
         // Seems moment is not available. Move on to the next one

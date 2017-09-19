@@ -128,7 +128,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
           
           // Create a 'Others' category
           otherCategoryID = UUID().uuidString  // It doesn't matter that a new one is generated each time, as long as it's the same everytime
-          let others = FoodieCategory(withState: .objectModified)
+          let others = FoodieCategory()
           others.foursquareCategoryID = otherCategoryID
           others.name = "Other"
           others.pluralName = "Others"
@@ -171,7 +171,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Private Static Functions
   private static func convertRecursive(from dictionary: [String : Any], forLevel level: Int) -> FoodieCategory? {
-    let foodieCategory = FoodieCategory(withState: .objectModified)
+    let foodieCategory = FoodieCategory()
     guard let id = dictionary["id"] as? String else {
       CCLog.assert("Received dictionary with no ID")
       return nil
@@ -223,16 +223,8 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Public Instance Functions
   
-  // This is the Initilizer Parse will call upon Query or Retrieves
   override init() {
-    super.init(withState: .notAvailable)
-    foodieObject.delegate = self
-  }
-  
-  
-  // This is the Initializer we will call internally
-  override init(withState operationState: FoodieObject.OperationStates) {
-    super.init(withState: operationState)
+    super.init()
     foodieObject.delegate = self
   }
 

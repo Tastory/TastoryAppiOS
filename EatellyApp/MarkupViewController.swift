@@ -253,7 +253,7 @@ class MarkupViewController: UIViewController {
     // TODO: Don't let user click save (Gray it out until Thumbnail creation completed)
     
     // Initializing with Media Object also initialize foodieFileName and mediaType
-    let momentObj = FoodieMoment(withState: .objectModified, foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
+    let momentObj = FoodieMoment(foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
 
     momentObj.set(location: mediaLocation)
     momentObj.playSound = soundOn
@@ -269,7 +269,7 @@ class MarkupViewController: UIViewController {
         for jotLabel in jotLabels {
           CCLog.verbose("Jot Label #\(index) serialized")
           
-          let markup = FoodieMarkup(withState: .objectModified)
+          let markup = FoodieMarkup()
           markup.data = jotLabel
           markup.dataType = FoodieMarkup.dataTypes.jotLabel.rawValue
           if let jotLabelText = jotLabel[kText] as? String {
@@ -286,7 +286,7 @@ class MarkupViewController: UIViewController {
       if let drawViewDictionary = jotDictionary[kDrawView] as? NSDictionary {
         CCLog.verbose("Jot DrawView serialized")
         
-        let markup = FoodieMarkup(withState: .objectModified)
+        let markup = FoodieMarkup()
         markup.data = drawViewDictionary
         markup.dataType = FoodieMarkup.dataTypes.jotDrawView.rawValue
         markup.keyword = nil
@@ -703,7 +703,7 @@ class MarkupViewController: UIViewController {
       return
     }
     
-    thumbnailObject = FoodieMedia(withState: .objectModified, for: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), localType: .draft, mediaType: .photo)
+    thumbnailObject = FoodieMedia(for: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), localType: .draft, mediaType: .photo)
     
     thumbnailObject!.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
     //CGImageRelease(thumbnailCgImage)

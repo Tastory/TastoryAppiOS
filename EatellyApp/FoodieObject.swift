@@ -71,25 +71,11 @@ class FoodieObject {
   typealias SimpleErrorBlock = (Error?) -> Void
   
   
-  enum OperationStates: String {
+  enum RetrieveStates: String {
     case notAvailable       = "notAvailable"
     case pendingRetrieval   = "pendingRetrieval"
     case retrieving         = "retrieving"
-    
     case objectSynced       = "objectSynced"
-    case objectModified     = "objectModified"
-    case savingToLocal      = "savingToLocal"
-    case savedToLocal       = "savedToLocal"
-    case savingToServer     = "savingToServer"
-    case savedToServer      = "savedToServer"
-    case saveError          = "saveError"
-    
-    case pendingDelete      = "pendingDelete"
-    case deletingFromLocal  = "deletingFromLocal"
-    case deletedFromLocal   = "deletedFromLocal"
-    case deletingFromServer = "deletingFromServer"
-    case deletedFromServer  = "deletedFromServer"
-    case deleteError        = "deleteError"
   }
   
   
@@ -148,20 +134,19 @@ class FoodieObject {
   }
   
   
+  
   // MARK: - Public Instance Variables
   weak var delegate: FoodieObjectDelegate?
   weak var waitOnRetrieveDelegate: FoodieObjectWaitOnRetrieveDelegate?
-  var operationState: OperationStates { return protectedOperationState }
-  var operationError: Error? { return protectedOperationError }
   
 
+  
   // MARK: - Private Instance Variables
-  fileprivate var operationStateMutex = SwiftMutex.create()
-  fileprivate var protectedOperationState: OperationStates = .notAvailable  // If this is not explicitly initiated, would be because it's from Parse, hence notAvailable.
-  fileprivate var protectedOperationError: Error?  // Need specific Error object class?
+  fileprivate(set) var operationError: Error? = nil
+  fileprivate var retrieveStateMutex = SwiftMutex.create()
+  fileprivate(set) var retrieveState: RetrieveStates = .notAvailable
   fileprivate var outstandingChildOperationsMutex = SwiftMutex.create()
   fileprivate var outstandingChildOperations = 0
-  fileprivate var criticalMutex = SwiftMutex.create()
   
   
   
@@ -178,60 +163,28 @@ class FoodieObject {
   }
   
   
+  
   // MARK: - Public Instance Functions
-  
-  init(withState operationState: OperationStates) {
-    protectedOperationState = operationState
-    protectedOperationError = nil
-  }
-  
   
   // Reset outstandingChildOperations
   func resetOutstandingChildOperations() { outstandingChildOperations = 0 }
   
   
-  // Function to mark memory modified
-  func markModified() {
-    SwiftMutex.lock(&operationStateMutex)  // TODO-Performance: To be removed? Otherwise make sure this never gets executed in Main Thread?
-    // TODO: State transition sanity checks?
-    protectedOperationState = .objectModified
-    SwiftMutex.unlock(&operationStateMutex)
-  }
-  
-  
   // Function to mark pending retrieval
   func markPendingRetrieval() {
     
-    SwiftMutex.lock(&operationStateMutex)  // TODO-Performance: To be removed? Otherwise make sure this never gets executed in Main Thread?
+    SwiftMutex.lock(&retrieveStateMutex)  // TODO-Performance: To be removed? Otherwise make sure this never gets executed in Main Thread?
     
-    switch protectedOperationState {
+    switch retrieveState {
     case .notAvailable:
-      protectedOperationState = .pendingRetrieval
+      retrieveState = .pendingRetrieval
       
     case .objectSynced, .pendingRetrieval, .retrieving:
       // Expected states to do nothing on
       break
-      
-    default:
-      CCLog.verbose("FoodieObject.markPendingRetrieval() attempted from operationState = \(protectedOperationState.rawValue)")
-      //CCLog.assert("FoodieObject.markPendingRetrieval. Invalid state transition")
     }
     
-    SwiftMutex.unlock(&operationStateMutex)
-  }
-
-  
-  func retrievesCompletedFromAllChildren(withBlock callback: SimpleErrorBlock?) {
-    
-    // If children all came back and there is error, unwind state and call callback
-    if protectedOperationError != nil {
-      callback?(operationError)
-    }
-      
-    // If children all came back and no error, just call the callback
-    else {
-      callback?(nil)
-    }
+    SwiftMutex.unlock(&retrieveStateMutex)
   }
   
   
@@ -248,7 +201,7 @@ class FoodieObject {
     child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways) { error in
       if let error = error {
         CCLog.warning("retrieveChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(error.localizedDescription)")
-        self.protectedOperationError = error
+        self.operationError = error
       }
       
       // This needs to be critical section or race condition between many childrens' completion can occur
@@ -259,7 +212,7 @@ class FoodieObject {
       SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
       
       if !childOperationsPending {
-        self.retrievesCompletedFromAllChildren(withBlock: callback)
+        callback?(self.operationError)
       }
     }
   }
@@ -278,44 +231,6 @@ class FoodieObject {
     }
   }
   
-
-  // Function for state transition when all saves have completed
-  func saveCompleteStateTransition(to location: StorageLocation) {
-    
-    // State Transition for Save Error
-    if protectedOperationError != nil {
-      
-      if (location == .local) {
-        // Dial back the state
-        protectedOperationState = .objectModified
-        
-      } else if (location == .both) {
-        // Dial back the state
-        protectedOperationState = .savedToLocal
-        
-      } else {
-        // Unexpected state combination
-        CCLog.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
-      }
-    }
-      
-    // State Transition for Success
-    else {
-      if (location == .local) {
-        // Dial back the state
-        protectedOperationState = .savedToLocal
-        
-      } else if (location == .both) {
-        // Dial back the state
-        protectedOperationState = .objectSynced
-        
-      } else {
-        // Unexpected state combination
-        CCLog.assert("Unexpected state combination for Error. Location: \(location), State: \(operationState)")
-      }
-    }
-  }
-  
   
   // Function when all child saves have completed
   func savesCompletedFromAllChildren(to location: StorageLocation, type localType: LocalType, withBlock callback: SimpleErrorBlock?) {
@@ -324,8 +239,7 @@ class FoodieObject {
     }
     
     // If children all came back and there is error, unwind state and call callback
-    if protectedOperationError != nil {
-      saveCompleteStateTransition(to: location)
+    if operationError != nil {
       callback?(operationError)
     }
       
@@ -334,59 +248,11 @@ class FoodieObject {
       saveObject(to: location, type: localType) { error in
         if let error = error {
           CCLog.warning("Saving Object \(delegate.foodieObjectType()) \(delegate.getUniqueIdentifier()) to \(location), \(localType) Failed - \(error.localizedDescription)")
-          self.protectedOperationError = error
+          self.operationError = error
         }
-        // State transition accordingly and call callback
-        self.saveCompleteStateTransition(to: location)
-        callback?(self.protectedOperationError)
+        callback?(self.operationError)
       }
     }
-  }
-  
-  
-  // Function for state transition at the beginning of saveRecursive
-  func saveStateTransition(to location: StorageLocation) -> (success: Bool?, error: LocalizedError?) {
-
-    return (nil, nil)  // saveStateTransition is going to be removed anyways
-//    // Is save even allowed? Return false here if illegal state transition. Otherwise do state transition
-//    switch operationState {
-//    case .savingToLocal, .savingToServer:
-//      // Save already occuring, another save not allowed
-//      return (false, ErrorCode(.saveStateTransitionSaveAlreadyInProgress))
-//    default:
-//      break
-//    }
-//    
-//    // Location dependent state transitions
-//    switch location {
-//    case .local:
-//      switch operationState {
-//      case .objectSynced:
-//        // No child object needs saving. Callback success in background
-//        return (true, nil)
-//      case .objectModified:
-//        protectedOperationState = .savingToLocal
-//      default:
-//        CCLog.assert("Illegal State Transition. Save to Local attempt not from .objectModified state. Current State = \(operationState)")
-//        return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
-//      }
-//      
-//    case .server:
-//      switch operationState {
-//      case .objectSynced:
-//        // No child object needs saving. Callback success in background
-//        return (true, nil)
-//      case .savedToLocal:
-//        protectedOperationState = .savingToServer
-//      default:
-//        CCLog.assert("Illegal State Transition. Save to Sever attempt not from .savedToLocal state. Current State = \(operationState)")
-//        return (false, ErrorCode(.saveStateTransitionIllegalStateTransition))
-//      }
-//    default:
-//    break
-//    }
-//    
-//    return (nil, nil)
   }
   
   
@@ -405,7 +271,7 @@ class FoodieObject {
     child.saveRecursive(to: location, type: localType) { error in
       if let error = error {
         CCLog.warning("saveChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(error.localizedDescription)")
-        self.protectedOperationError = error
+        self.operationError = error
       }
       
       // This needs to be critical section or race condition between many childrens' completion can occur
@@ -444,26 +310,26 @@ class FoodieObject {
     CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Delete Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
     
     // Lock here is in case that if the first operation competes and calls back before even the 2nd op's deleteChild goes out
-    SwiftMutex.lock(&self.criticalMutex)
+    SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     self.outstandingChildOperations += 1
-    SwiftMutex.unlock(&self.criticalMutex)
+    SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
     
     // Delete Recursive for each children
     child.deleteRecursive(from: location, type: localType) { error in
       if let error = error {
         CCLog.warning("deleteChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(error.localizedDescription)")
-        self.protectedOperationError = error
+        self.operationError = error
       }
 
       // This needs to be critical section or race condition between many childrens' completion can occur
       var childOperationsPending = true
-      SwiftMutex.lock(&self.criticalMutex)
+      SwiftMutex.lock(&self.outstandingChildOperationsMutex)
       self.outstandingChildOperations -= 1
       if self.outstandingChildOperations == 0 { childOperationsPending = false }
-      SwiftMutex.unlock(&self.criticalMutex)
+      SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
       
       if !childOperationsPending {
-        callback?(self.protectedOperationError)
+        callback?(self.operationError)
       }
     }
   }
@@ -489,15 +355,15 @@ class FoodieObject {
     
     var needRetrieval = false
     
-    SwiftMutex.lock(&operationStateMutex)
+    SwiftMutex.lock(&retrieveStateMutex)
     
-    if operationState == .pendingRetrieval {
-      protectedOperationState = .retrieving
+    if retrieveState == .pendingRetrieval {
+      retrieveState = .retrieving
       needRetrieval = true
-      SwiftMutex.unlock(&operationStateMutex)
+      SwiftMutex.unlock(&retrieveStateMutex)
       
     } else {
-      SwiftMutex.unlock(&operationStateMutex)
+      SwiftMutex.unlock(&retrieveStateMutex)
       return false  // Nothing pending, just return false
     }
     
@@ -508,14 +374,14 @@ class FoodieObject {
       delegateObj.retrieveRecursive(from: .both, type: .cache, forceAnyways: false) { error in
         
         // Move forward state if success, backwards if failed
-        SwiftMutex.lock(&self.operationStateMutex)
+        SwiftMutex.lock(&self.retrieveStateMutex)
         
         if error == nil {
-          self.protectedOperationState = .objectSynced
+          self.retrieveState = .objectSynced
         } else {
-          self.protectedOperationState = .notAvailable
+          self.retrieveState = .notAvailable
         }
-        SwiftMutex.unlock(&self.operationStateMutex)
+        SwiftMutex.unlock(&self.retrieveStateMutex)
         
         callback?(error)
         self.waitOnRetrieveDelegate?.retrieved(for: delegateObj)
@@ -530,19 +396,17 @@ class FoodieObject {
   func checkRetrieved(ifFalseSetDelegate delegate: FoodieObjectWaitOnRetrieveDelegate) -> Bool {
     
     var retrieved = false
-    SwiftMutex.lock(&operationStateMutex)
+    SwiftMutex.lock(&retrieveStateMutex)
     
-    switch operationState {
+    switch retrieveState {
     case .pendingRetrieval, .retrieving:
       waitOnRetrieveDelegate = delegate
       retrieved = false
     case .notAvailable, .objectSynced:
       retrieved = true
-    default:
-      CCLog.warning("FoodieObject.checkRetrieved() state unexpected")
     }
     
-    SwiftMutex.unlock(&operationStateMutex)
+    SwiftMutex.unlock(&retrieveStateMutex)
     return retrieved
   }
   

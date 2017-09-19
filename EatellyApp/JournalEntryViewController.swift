@@ -376,7 +376,6 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
           
           // This is a new Moment. Let's add it to the Journal!
           workingJournal.add(moment: moment)
-          workingJournal.foodieObject.markModified()
           
           // If there wasn't any moments before, we got to make this the default thumbnail for the Journal
           // Got to do this also when removing moments!!!
@@ -613,8 +612,6 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
           CCLog.assert("More than 1 Venue returned from Parse for a single Foursquare Venue ID")
         }
         venueToUpdate = queriedVenues[0]
-        venueToUpdate.foodieObject.markModified()
-        // Do we have to fetch the rest of the Venue before we update and overwrite?
       }
 
       // Let's set the Journal <=> Venue relationship right away

@@ -68,16 +68,10 @@ class FoodiePFObject: PFObject {
   
   
   // MARK: - Public Instance Functions
+  
   override init() {
     super.init()
-    CCLog.debug("FoodiePFObject.init() called with no initial state specified. Defaulting to .notAvailable")
-    foodieObject = FoodieObject(withState: .notAvailable)
-  }
-  
-  
-  init(withState operationState: FoodieObject.OperationStates) {
-    super.init()
-    foodieObject = FoodieObject(withState: operationState)
+    foodieObject = FoodieObject()
   }
   
   

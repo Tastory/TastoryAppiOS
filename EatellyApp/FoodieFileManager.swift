@@ -477,9 +477,7 @@ class FoodieS3Object {
   
   
   // MARK: - Public Instance Functions  
-  init(withState operationState: FoodieObject.OperationStates) {
-    foodieObject = FoodieObject(withState: operationState)
-  }
+  init() { foodieObject = FoodieObject() }
 
   
   func checkIfExists(in localType: FoodieObject.LocalType) -> Bool {

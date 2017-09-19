@@ -435,7 +435,6 @@ class MapViewController: UIViewController {
             return
           }
           
-          journal.foodieObject.markModified()
           FoodieJournal.setCurrentJournal(to: journal)
           self.draftButton?.isHidden = false
         }
@@ -670,7 +669,7 @@ extension MapViewController: CameraReturnDelegate {
       } else if let journal = FoodieJournal.currentJournal {
         workingJournal = journal
       } else {
-        workingJournal = FoodieJournal(withState: .objectModified)
+        workingJournal = FoodieJournal()
       }
       
       viewController.workingJournal = workingJournal!

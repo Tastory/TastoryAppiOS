@@ -45,19 +45,15 @@ class FoodieMedia: FoodieS3Object {
   // MARK: - Public Instance Functions
   
   // This is the Initilizer Parse will call upon Query or Retrieves
-  init() {
-    super.init(withState: .notAvailable)
+  override init() {
+    super.init()
     foodieObject.delegate = self
   }
   
   
   // This is the Initializer we will call internally
-  init(withState operationState: FoodieObject.OperationStates,
-       for fileName: String,
-       localType: FoodieObject.LocalType,
-       mediaType: FoodieMediaType) {
-    
-    super.init(withState: operationState)
+  init(for fileName: String, localType: FoodieObject.LocalType, mediaType: FoodieMediaType) {
+    super.init()
     foodieObject.delegate = self
     self.foodieFileName = fileName
     self.mediaType = mediaType

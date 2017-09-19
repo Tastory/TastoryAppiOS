@@ -235,7 +235,7 @@ class FoodieVenue: FoodiePFObject  {
             for venue: [String: AnyObject] in venues {
               
               // From Foursquare Developer's documentation, it is possible to not have anything but a name. Keep that in mind
-              let foodieVenue = FoodieVenue(withState: .objectModified)
+              let foodieVenue = FoodieVenue()
               
               guard let id = venue["id"] as? String else {
                 if let name = venue["name"] as? String {
@@ -658,17 +658,8 @@ class FoodieVenue: FoodiePFObject  {
 
   
   // MARK: - Public Instance Functions
-  
-  // This is the Initilizer Parse will call upon Query or Retrieves
   override init() {
-    super.init(withState: .notAvailable)
-    foodieObject.delegate = self
-  }
-  
-  
-  // This is the Initializer we will call internally
-  override init(withState operationState: FoodieObject.OperationStates) {
-    super.init(withState: operationState)
+    super.init()
     foodieObject.delegate = self
   }
   
