@@ -192,7 +192,7 @@ class FoodieObject {
     guard let delegate = delegate else {
       CCLog.fatal("delegate = nil. Unable to proceed.")
     }
-    CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Retrieve Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
+    CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType)")
     
     SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
@@ -210,6 +210,8 @@ class FoodieObject {
       self.outstandingChildOperations -= 1
       if self.outstandingChildOperations == 0 { childOperationsPending = false }
       SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
+      
+      CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieved child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType)")
       
       if !childOperationsPending {
         callback?(self.operationError)

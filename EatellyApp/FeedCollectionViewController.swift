@@ -17,9 +17,11 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
+  
   // MARK: - Private Instance Variable
   var journalQuery: FoodieQuery!
   var journalArray = [FoodieJournal]()
+  
   
   
   // MARK: - IBActions
@@ -28,6 +30,7 @@ class FeedCollectionViewController: UICollectionViewController {
     FoodiePrefetch.global.removeAllPrefetchWork()
     dismiss(animated: true, completion: nil)
   }
+  
   
   
   // MARK: - View Controller Lifecycle Functions
@@ -57,6 +60,7 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
+  
   // MARK: - Public Instance Functions
 //  func queryResultCallback(objectArray: [AnyObject]?, error: Error?) {
 //  
@@ -76,6 +80,7 @@ class FeedCollectionViewController: UICollectionViewController {
 //  }
   
   
+  
   // MARK: - Private Instance Functions
   
   // Generic error dialog box to the user on internal errors
@@ -93,6 +98,7 @@ class FeedCollectionViewController: UICollectionViewController {
     }
   }
   
+  
   fileprivate func fetchErrorDialog() {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "EatellyApp",
@@ -106,6 +112,7 @@ class FeedCollectionViewController: UICollectionViewController {
       self.present(alertController, animated: true, completion: nil)
     }
   }
+  
   
   fileprivate func internalErrorDialog() {
     if self.presentedViewController == nil {
@@ -133,8 +140,8 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
-  // MARK: - UICollectionViewDataSource
   
+  // MARK: - UICollectionViewDataSource
   override func numberOfSections(in collectionView: UICollectionView) -> Int {
     return 1
   }
@@ -159,19 +166,19 @@ class FeedCollectionViewController: UICollectionViewController {
     
     FoodiePrefetch.global.blockPrefetching()
     
-    journal.selfRetrieval { journalError in
+    journal.retrieveDigest(from: .both, type: .cache) { error in
       
       FoodiePrefetch.global.unblockPrefetching()
       
-      if let error = journalError {
+      if let error = error {
         self.fetchErrorDialog()
-        CCLog.assert("Journal.selfRetrieval() callback with error: \(error.localizedDescription)")
+        CCLog.assert("Journal.retrieveDigest() callback with error: \(error.localizedDescription)")
         return
       }
       
       guard let thumbnailObject = journal.thumbnailObj else {
         self.fetchErrorDialog()
-        CCLog.assert("Journal.selfRetrieval callback with thumbnailObj = nil")
+        CCLog.assert("Journal.retrieveDigest callback with thumbnailObj = nil")
         return
       }
       
@@ -224,9 +231,7 @@ class FeedCollectionViewController: UICollectionViewController {
 
   
   // MARK: - UICollectionViewDataSource
-  
   override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-    
     guard let feedCell = cell as? FeedCollectionViewCell else {
       internalErrorDialog()
       CCLog.assert("Cannot cast cell as FeedCollectionViewCell")

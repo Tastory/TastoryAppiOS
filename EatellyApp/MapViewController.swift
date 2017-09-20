@@ -351,10 +351,10 @@ class MapViewController: UIViewController {
     }
     
     for story in stories {
-      story.selfRetrieval { error in
+      story.retrieveDigest(from: .both, type: .cache) { error in
         if let error = error {
           AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story Digest - \(error.localizedDescription)") { action in
-            CCLog.assert("Failed to retrieve Story Digest via story.selfRetrieval. Error - \(error.localizedDescription)")
+            CCLog.assert("Failed to retrieve Story Digest via story.retrieveDigest. Error - \(error.localizedDescription)")
           }
           return
         }

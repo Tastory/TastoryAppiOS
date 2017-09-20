@@ -39,20 +39,20 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   // MARK: Error Types Definition
   enum ErrorCode: LocalizedError {
     
-    case selfRetrievalJournalNilThumbnail
-    case selfRetrievalJournalNilVenue
-    case selfRetrievalThumbnailNilImage
+    case retrieveDigestJournalNilThumbnail
+    case retrieveDigestJournalNilVenue
+    case retrieveDigestThumbnailNilImage
     case contentRetrieveMomentArrayNil
     case contentRetrieveObjectNilNotMoment
     
     var errorDescription: String? {
       switch self {
-      case .selfRetrievalJournalNilThumbnail:
-        return NSLocalizedString("selfRetrieval() Journal retrieved with thumbnailFileName = nil", comment: "Error description for an exception error code")
-      case .selfRetrievalJournalNilVenue:
-        return NSLocalizedString("selfRetrieval() Journal retrieved with venue = nil", comment: "Error description for an exception error code")
-      case .selfRetrievalThumbnailNilImage:
-        return NSLocalizedString("selfRetrieval() Thumbnail retrieved with imageMemoryBuffer = nil", comment: "Error description for an exception error code")
+      case .retrieveDigestJournalNilThumbnail:
+        return NSLocalizedString("retrieveDigest() Journal retrieved with thumbnailFileName = nil", comment: "Error description for an exception error code")
+      case .retrieveDigestJournalNilVenue:
+        return NSLocalizedString("retrieveDigest() Journal retrieved with venue = nil", comment: "Error description for an exception error code")
+      case .retrieveDigestThumbnailNilImage:
+        return NSLocalizedString("retrieveDigest() Thumbnail retrieved with imageMemoryBuffer = nil", comment: "Error description for an exception error code")
       case .contentRetrieveMomentArrayNil:
         return NSLocalizedString("journal.contentRetrieve momentArray = nil unexpected", comment: "Error description for an exception error code")
       case .contentRetrieveObjectNilNotMoment:
@@ -123,6 +123,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
+  
   // MARK: - Public Instance Functions
   
   // This is the Initilizer Parse will call upon Query or Retrieves
@@ -186,54 +187,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   
-  // MARK: - Journal specific Retrieval algorithms
-  
-  // Function to retrieve the Journal minus the Moments
-  func selfRetrieval(withBlock callback: FoodieObject.SimpleErrorBlock?) {
-    
-    // Do we still need to fetch the Journal?
-    retrieve(from: .both, type: .cache, forceAnyways: false) { error in
-      
-      if let error = error {
-        CCLog.assert("Journal.retrieve() callback with error: \(error.localizedDescription)")
-        callback?(error)
-        return
-      }
-      
-      guard let thumbnailObject = self.thumbnailObj else {
-        CCLog.assert("Unexpected, thumbnailObject = nil")
-        callback?(ErrorCode.selfRetrievalJournalNilThumbnail)
-        return
-      }
-      
-      guard let venue = self.venue else {
-        CCLog.assert("Unexpected, venue = nil")
-        callback?(ErrorCode.selfRetrievalJournalNilVenue)
-        return
-      }
-      
-      thumbnailObject.retrieveRecursive(from: .both, type: .cache) { error in
-        
-        if let error = error {
-          CCLog.warning("Thumbnail.retrieve() callback with error: \(error.localizedDescription)")
-          callback?(error)
-          return
-        }
-        
-        venue.retrieveRecursive(from: .both, type: .cache) { error in
-          if let error = error {
-            CCLog.warning("Venue.retrieve() callback with error: \(error.localizedDescription)")
-            callback?(error)
-            return
-          }
-          
-          // Both retrieved, we can now callback!
-          callback?(nil)
-        }
-      }
-    }
-  }
-  
+  // MARK: - Children Moments Retrieval Algorithms
   
   // Function to mark Moments and Media to retrieve, and then kick off the retrieval state machine
   func contentRetrievalRequest(fromMoment startNumber: Int, forUpTo numberOfMoments: Int, withBlock callback: FoodieObject.SimpleErrorBlock? = nil) {
@@ -348,9 +302,90 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
+  
+  
+  // MARK: - Foodie Digest Conceptual Sub-Object
+  
+  // Function to retrieve the Digest (Story minus the Moments)
+  func retrieveDigest(from location: FoodieObject.StorageLocation,
+                      type localType: FoodieObject.LocalType,
+                      forceAnyways: Bool = false,
+                      withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    // Retrieve self first, then retrieve children afterwards
+    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      
+      if let error = error {
+        CCLog.assert("Story.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      guard let thumbnail = self.thumbnailObj else {
+        CCLog.assert("Story retrieved but thumbnailObj = nil")
+        callback?(error)
+        return
+      }
+      
+      guard let venue = self.venue else {
+        CCLog.assert("Story retrieved but venue = nil")
+        callback?(error)
+        return
+      }
+      
+      self.foodieObject.resetOutstandingChildOperations()
+      
+      // Got through all sanity check, calling children's retrieveRecursive
+      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      
+      self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      
+      if let markups = self.markups {
+        for markup in markups {
+          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+        }
+      }
+      
+      // Do we need to retrieve User?
+    }
+  }
+  
+  
+  // Function to save the Digest (Story minus the Moments)
+  func saveDigest(to location: FoodieObject.StorageLocation,
+                  type localType: FoodieObject.LocalType,
+                  withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    self.foodieObject.resetOutstandingChildOperations()
+    var childOperationPending = false
+    
+    // Need to make sure all children recursive saved before proceeding
+    
+    // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
+    // We are not gonna save the User here either
+    
+    if let markups = markups {
+      for markup in markups {
+        foodieObject.saveChild(markup, to: location, type: localType, withBlock: callback)
+        childOperationPending = true
+      }
+    }
+    
+    if let venue = venue {
+      foodieObject.saveChild(venue, to: location, type: localType, withBlock: callback)
+      childOperationPending = true
+    }
+    
+    if !childOperationPending {
+      DispatchQueue.global(qos: .userInitiated).async {
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
+    }
+  }
+  
+  
 
   // MARK: - Foodie Object Delegate Conformance
-  
   fileprivate func retrieve(from location: FoodieObject.StorageLocation,
                             type localType: FoodieObject.LocalType,
                             forceAnyways: Bool,
@@ -418,18 +453,14 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                      type localType: FoodieObject.LocalType,
                      withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
-    // Do state transition for this save. Early return if no save needed, or if illegal state transition
-//    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
-//    
-//    if let earlySuccess = earlyReturnStatus.success {
-//      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-//      return
-//    }
-//
     self.foodieObject.resetOutstandingChildOperations()
     var childOperationPending = false
     
-    // Need to make sure all children FoodieRecursives saved before proceeding
+    // Need to make sure all children recursive saved before proceeding
+    
+    // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
+    // We are not gonna save the User here either
+    
     if let moments = moments {
       for moment in moments {
         foodieObject.saveChild(moment, to: location, type: localType, withBlock: callback)
@@ -437,20 +468,12 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       }
     }
     
-    // This is just a pointer to the existing thumbnail on the Moment, do we need to re-save? Or create a seperate Thumbnail?
-//    if let thumbnail = thumbnailObj {
-//      foodieObject.saveChild(thumbnail, to: location, withName: name, withBlock: callback)
-//      childOperationPending = true
-//    }
-    
-    if let hasMarkups = markups {
-      for markup in hasMarkups {
+    if let markups = markups {
+      for markup in markups {
         foodieObject.saveChild(markup, to: location, type: localType, withBlock: callback)
         childOperationPending = true
       }
     }
-    
-    // Do we need to save User? Is User considered modified?
     
     if let venue = venue {
       foodieObject.saveChild(venue, to: location, type: localType, withBlock: callback)
@@ -565,10 +588,10 @@ extension FoodieJournal: FoodiePrefetchDelegate {
       
       if journal.thumbnailObj == nil {
         // No Thumbnail Object, so assume the Journal itself needs to be retrieved
-        CCLog.verbose("doPrefetch journal.selfRetrieval")
-        journal.selfRetrieval() { error in
+        CCLog.verbose("doPrefetch journal.retrieveDigest")
+        journal.retrieveDigest(from: .both, type: .cache) { error in
           if let journalError = error {
-            CCLog.assert("On prefetch, Journal.selfRetrieval() callback with error: \(journalError.localizedDescription)")
+            CCLog.assert("On prefetch, Journal.retrieveDigest() callback with error: \(journalError.localizedDescription)")
           }
           callback?(context)
         }

@@ -166,15 +166,15 @@ class FoodiePFObject: PFObject {
           CCLog.warning("fetchFromLocalDatastore failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
         }
       }
-    
+      
       // No Object or No Data Available
       else if localObject == nil || self.isDataAvailable == false {
         CCLog.debug("fetchFromLocalDatastore did not return Data Available & Object for \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())")
       }
-
+      
       // If not in Local Datastore, retrieved from Server
       CCLog.debug("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) In Background")
-      self.fetchInBackground { serverObject, serverError in
+      self.fetchIfNeededInBackground { serverObject, serverError in
         if let error = serverError {
           CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
         } else {

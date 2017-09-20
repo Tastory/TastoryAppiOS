@@ -51,6 +51,7 @@ class FoodieVenue: FoodiePFObject  {
   @NSManaged var venueRating: Double  // Placeholder
   
   
+  
   // MARK: - Types & Enumerations
   typealias VenueErrorBlock = (FoodieVenue?, Error?) -> Void
   typealias VenueArrayErrorBlock = ([FoodieVenue]?, Geocode?, Error?) -> Void
@@ -65,6 +66,7 @@ class FoodieVenue: FoodiePFObject  {
     var name: String?
     var displayName: String?
   }
+  
   
   
   // MARK: - Error Types Definition
@@ -101,6 +103,7 @@ class FoodieVenue: FoodiePFObject  {
   }
   
   
+  
   // MARK: - Private Constants
   private struct Constants {
     static let FoursquareSearchResultsLimit = 20  // 20 Venues at a time is more than enough?
@@ -109,6 +112,7 @@ class FoodieVenue: FoodiePFObject  {
     static let FoursquareGetDetailsRetryCount = 5  // More retries, shorter delay
     static let FoursquareGetDetailsRetryDelay = 1.0
   }
+  
   
   
   // MARK: - Public Static Functions
@@ -146,6 +150,7 @@ class FoodieVenue: FoodiePFObject  {
   static func getHoursFromFoursquare(forVenueID venueID: String, withBlock callback: HoursErrorBlock?) {
     getHoursFromFoursquareCommon(for: nil, with: venueID, withBlock: callback)
   }
+  
   
   
   // MARK: - Private Static Functions
@@ -511,6 +516,7 @@ class FoodieVenue: FoodiePFObject  {
     }
   }
   
+  
   private static func getHoursFromFoursquareCommon(for venue: FoodieVenue?, with venueID: String, withBlock callback: HoursErrorBlock?) {
     
     let session = FoodieGlobal.foursquareSession
@@ -727,6 +733,7 @@ extension FoodieVenue: FoodieObjectDelegate {
     return "FoodieVenue"
   }
 }
+
 
 
 extension FoodieVenue: PFSubclassing {

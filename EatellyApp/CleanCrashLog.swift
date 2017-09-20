@@ -39,7 +39,7 @@ class CCLog {
     
     // Create a recorder for logging to stdout & stderr and add a configuration that references it
     let stderr = StandardStreamsLogRecorder(formatters: [XcodePlusLogFormatter(timestampString: timestampString)])
-    configs.append(BasicLogConfiguration(minimumSeverity: Constant.stdoutMinSeverity, recorders: [stderr]))
+    configs.append(BasicLogConfiguration(minimumSeverity: Constant.stdoutMinSeverity, recorders: [stderr], synchronousMode: true))
     
     // Create a configuration for a 15-day rotating log directory
     let fileCfg = RotatingLogFileConfiguration(minimumSeverity: Constant.rotatingMinSeverity,

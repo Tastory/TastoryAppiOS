@@ -79,6 +79,8 @@ extension FoodieMarkup: FoodieObjectDelegate {
   }
 }
 
+
+
 extension FoodieMarkup: PFSubclassing {
   static func parseClassName() -> String {
     return "FoodieMarkup"
