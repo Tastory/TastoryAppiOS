@@ -13,7 +13,6 @@ import Foundation
 // Abstract Class for Foodie Objects based on PFObject
 class FoodiePFObject: PFObject {
   
-  
   // MARK: - Public Instance Variables
   var foodieObject: FoodieObject!
   
@@ -92,20 +91,29 @@ class FoodiePFObject: PFObject {
 
     // See if this is in local
     CCLog.debug("Fetching \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) from \(localType) In Background")
-    fetchFromLocalDatastoreInBackground { localObject, localError in  // Fetch does not distinguish from where (draft vs cache)
-      guard let error = localError else {
-        callback?(nil)  // This is actually success case here! localError is nil!
+    fetchFromLocalDatastoreInBackground { object, error in  // Fetch does not distinguish from where (draft vs cache)
+      
+      // Error Cases
+      if let error = error {
+        let nsError = error as NSError
+        if nsError.domain == PFParseErrorDomain && nsError.code == PFErrorCode.errorCacheMiss.rawValue {
+          CCLog.debug("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) from Local Datastore cache miss")
+        } else {
+          CCLog.warning("fetchFromLocalDatastore failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
+        }
+        callback?(error)
         return
       }
       
-      let nsError = error as NSError
-      if nsError.domain == PFParseErrorDomain && nsError.code == PFErrorCode.errorCacheMiss.rawValue {
-        CCLog.debug("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) from Local Datastore cache miss")
-      } else {
-        CCLog.warning("fetchFromLocalDatastore failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
+      // No Object or No Data Available
+      else if object == nil || self.isDataAvailable == false {
+        CCLog.debug("fetchFromLocalDatastore did not return Data Available & Object for \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())")
+        callback?(PFErrorCode.errorCacheMiss as? Error)
+        return
       }
       
-      callback?(localError)
+      // Finally the Good Case
+      callback?(nil)
     }
   }
   
@@ -142,16 +150,26 @@ class FoodiePFObject: PFObject {
     // See if this is in local cache
     CCLog.debug("Fetch \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) from Local Datastore In Background")
     fetchFromLocalDatastoreInBackground { localObject, localError in  // Fetch does not distinguish from where (draft vs cache)
-      guard let error = localError else {
-        callback?(nil)  // This is actually success case here! localError is nil!
+      
+      if localError == nil, localObject != nil, self.isDataAvailable == true {
+        // This is good case, just return here!
+        callback?(nil)
         return
       }
-
-      let nsError = error as NSError
-      if nsError.domain == PFParseErrorDomain && nsError.code == PFErrorCode.errorCacheMiss.rawValue {
-        CCLog.debug("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) from Local Datastore Cache miss")
-      } else {
-        CCLog.warning("fetchFromLocalDatastore failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
+      
+      // Error Cases
+      if let error = localError {
+        let nsError = error as NSError
+        if nsError.domain == PFParseErrorDomain && nsError.code == PFErrorCode.errorCacheMiss.rawValue {
+          CCLog.debug("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) from Local Datastore cache miss")
+        } else {
+          CCLog.warning("fetchFromLocalDatastore failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
+        }
+      }
+    
+      // No Object or No Data Available
+      else if localObject == nil || self.isDataAvailable == false {
+        CCLog.debug("fetchFromLocalDatastore did not return Data Available & Object for \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())")
       }
 
       // If not in Local Datastore, retrieved from Server
