@@ -378,12 +378,20 @@ class MarkupViewController: UIViewController {
                           comment: "Button to discard current Journal in alert dialog box to warn user",
                           style: .destructive) { action in
                             
-      // Delete all traces of this unPosted Story
-      journal.deleteRecursive(from: .both, type: .draft) { error in
+      // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
+      FoodieObject.deleteAll(from: .draft) { error in
         if let error = error {
-          CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
+          CCLog.warning("Deleting All Drafts resulted in Error - \(error.localizedDescription)")
+        }
+        
+        // Delete all traces of this unPosted Story
+        journal.deleteRecursive(from: .both, type: .draft) { error in
+          if let error = error {
+            CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
+          }
         }
       }
+      
       FoodieJournal.removeCurrent()
       
       // We don't add Moments here, we let the Journal Entry View decide what to do with it

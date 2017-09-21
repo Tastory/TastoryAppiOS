@@ -94,7 +94,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     view.addSubview(activityView)
 
     // This will cause a save to both Local Cache and Server
-    let journalSaveOperation = JournalSaveOperation(on: journal) { error in
+    journal.saveRecursive(to: .both, type: .cache) { error in
       
       if let error = error {
         CCLog.warning("Save Story to Server Failed with Error: \(error)")
@@ -121,12 +121,6 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
         }
       }
     }
-    
-    // Make double sure that Journal Save won't occur until all the Pre Saves have completed
-    for preSaveOperation in PreSaveOperation.pendingOperations {
-      journalSaveOperation.addDependency(preSaveOperation)
-    }
-    saveOperationQueue.addOperation(journalSaveOperation)
   }
   
 
@@ -138,8 +132,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     
     CCLog.info("User edited Title of Story")
     journal.title = text
-    let journalPreSaveOperation = PreSaveOperation(on: journal, with: nil, withBlock: nil)
-    saveOperationQueue.addOperation(journalPreSaveOperation)
+    preSave(nil, withBlock: nil)
   }
   
 
@@ -151,8 +144,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     
     CCLog.info("User edited Author of Story")
     journal.authorText = text
-    let journalPreSaveOperation = PreSaveOperation(on: journal, with: nil, withBlock: nil)
-    saveOperationQueue.addOperation(journalPreSaveOperation)
+    preSave(nil, withBlock: nil)
   }
   
   
@@ -164,8 +156,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     
     CCLog.info("User edited Link of Story")
     journal.journalURL = text
-    let journalPreSaveOperation = PreSaveOperation(on: journal, with: nil, withBlock: nil)
-    saveOperationQueue.addOperation(journalPreSaveOperation)
+    preSave(nil, withBlock: nil)
   }
   
   
@@ -217,12 +208,52 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   }
   
   
+  fileprivate func preSave(_ object: FoodieObjectDelegate?, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    CCLog.debug("Pre-Save Operation Started")
+    
+    guard let journal = workingJournal else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
+      CCLog.fatal("No Working Journal on Pre Save")
+    }
+    
+    // Save Journal to Local
+    journal.saveDigest(to: .local, type: .draft) { error in
+      
+      if let error = error {
+        CCLog.warning("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      CCLog.debug("Completed pre-saving Journal to Local")
+      
+      guard let object = object else {
+        CCLog.debug("No Foodie Object supplied on preSave(), skipping Object Server save")
+        callback?(nil)
+        return
+      }
+      
+      object.saveRecursive(to: .both, type: .draft) { error in
+        
+        if let error = error {
+          CCLog.warning("\(object.foodieObjectType()) pre-save to local & server resulted in error - \(error.localizedDescription)")
+          callback?(error)
+          return
+        }
+        
+        CCLog.debug("Completed Pre-Saving \(object.foodieObjectType()) to Server")
+        callback?(nil)
+      }
+    }
+  }
+
+
   // MARK: - Public Instace Functions
-  
+
   func keyboardDismiss() {
     self.view.endEditing(true)
   }
-  
+
   func vcDismiss() {
     // TODO: Data Passback through delegate?
     dismiss(animated: true, completion: nil)
@@ -385,13 +416,12 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
             workingJournal.thumbnailObj = moment.thumbnailObj
           }
           
-          let momentPreSaveOperation = PreSaveOperation(on: workingJournal, with: moment) { (error) in
+          preSave(moment) { (error) in
             if error != nil {  // Error code should've already been printed to the Debug log from preSave()
               AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .internalTryAgain)
             }
             self.returnedMoment = nil  // We should be in a state where whom is the returned Moment should no longer matter
           }
-          saveOperationQueue.addOperation(momentPreSaveOperation)
         }
       } else {
         CCLog.debug("No Moment returned on viewWillAppear")
@@ -425,93 +455,62 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   }
   
   // Pre-Save Operations Child Class
-  class PreSaveOperation: AsyncOperation {
-    
-    static var pendingOperations = [PreSaveOperation]()
-    
-    var journal: FoodieJournal
-    var foodieObject: FoodieObjectDelegate?
-    var callback: ((Error?) -> Void)?
-    
-    init(on journal: FoodieJournal, with foodieObject: FoodieObjectDelegate?, withBlock callback: ((Error?) -> Void)?) {
-      self.journal = journal
-      self.foodieObject = foodieObject
-      self.callback = callback
-
-      super.init()
-      
-      PreSaveOperation.pendingOperations.append(self)
-    }
-    
-    override func finished() {
-      guard let index = PreSaveOperation.pendingOperations.index(of: self) else {
-        CCLog.fatal("Cannot find index for Pre Save Operation in Pending List")
-      }
-      PreSaveOperation.pendingOperations.remove(at: index)
-      super.finished()
-    }
-    
-    override func main() {
-      
-      CCLog.debug("Pre-Save Operation Started")
-      
-      // Save Journal to Local
-      journal.saveDigest(to: .local, type: .draft) { error in  // TODO: Should really change to save Digest to Local instead
-
-        if let error = error {
-          CCLog.warning("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
-          self.callback?(error)
-          self.finished()
-          return
-        }
-        CCLog.debug("Completed pre-saving Journal to Local")
-      
-        guard let foodieObject = self.foodieObject else {
-          CCLog.debug("No Foodie Object supplied on preSave(), skipping Object Server save")
-          self.callback?(nil)
-          self.finished()
-          return
-        }
-
-        foodieObject.saveRecursive(to: .both, type: .draft) { error in
-
-          if let error = error {
-            CCLog.warning("\(foodieObject.foodieObjectType()) pre-save to local & server resulted in error - \(error.localizedDescription)")
-            self.callback?(error)
-            self.finished()
-            return
-          }
-
-          CCLog.debug("Completed Pre-Saving \(foodieObject.foodieObjectType()) to Server")
-          self.callback?(nil)
-          self.finished()
-        }
-      }
-    }
-  }
+//  class PreSaveOperation: AsyncOperation {
+//    
+//    static var pendingOperations = [PreSaveOperation]()
+//    
+//    var journal: FoodieJournal
+//    var foodieObject: FoodieObjectDelegate?
+//    var callback: ((Error?) -> Void)?
+//    
+//    init(on journal: FoodieJournal, with foodieObject: FoodieObjectDelegate?, withBlock callback: ((Error?) -> Void)?) {
+//      self.journal = journal
+//      self.foodieObject = foodieObject
+//      self.callback = callback
+//
+//      super.init()
+//      
+//      PreSaveOperation.pendingOperations.append(self)
+//    }
+//    
+//    override func finished() {
+//      guard let index = PreSaveOperation.pendingOperations.index(of: self) else {
+//        CCLog.fatal("Cannot find index for Pre Save Operation in Pending List")
+//      }
+//      PreSaveOperation.pendingOperations.remove(at: index)
+//      super.finished()
+//    }
+//    
+//    override func main() {
+//      preSave(foodieObject) { error in
+//        self.callback?(error)
+//        self.finished()
+//      }
+//    }
+//  }
   
   // Journal Save Operation Child Class
-  class JournalSaveOperation: AsyncOperation {
-  
-    var journal: FoodieJournal
-    var error: Error?
-    var callback: ((Error?) -> Void)?
-    
-    init(on journal: FoodieJournal, withBlock callback: ((Error?) -> Void)?) {
-      self.journal = journal
-      self.callback = callback
-      super.init()
-    }
-    
-    override func main() {
-      CCLog.debug ("Journal Save Operation Started")
-      
-      journal.saveRecursive(to: .both, type: .cache) { error in
-        self.callback?(error)
-        self.finished()
-      }
-    }
-  }
+//  class JournalSaveOperation: AsyncOperation {
+//  
+//    var journal: FoodieJournal
+//    var error: Error?
+//    var callback: ((Error?) -> Void)?
+//    
+//    init(on journal: FoodieJournal, withBlock callback: ((Error?) -> Void)?) {
+//      self.journal = journal
+//      self.callback = callback
+//      super.init()
+//    }
+//    
+//    override func main() {
+//      CCLog.debug ("Journal Save Operation Started")
+//      
+//      journal.saveRecursive(to: .both, type: .cache) { error in
+//        self.callback?(error)
+//        self.finished()
+//      }
+//    }
+//  }
 }
 
 
@@ -645,14 +644,13 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
             self.updateStoryEntryMap(withCoordinate: CLLocationCoordinate2DMake(latitude, longitude), span: Constants.venueDelta, venueName: venueToUpdate.name)
           }
           
-          // Pre-save the Venue
-          let venuePreSaveOperation = PreSaveOperation(on: journal, with: venueToUpdate) { (error) in
+          // Pre-save only the Journal to Local only
+          self.preSave(nil) { (error) in
             if error != nil {  // preSave should have logged the error, so skipping that here.
               AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain)
               return
             }
           }
-          self.saveOperationQueue.addOperation(venuePreSaveOperation)
         }
       }
     }
