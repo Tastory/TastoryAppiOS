@@ -29,9 +29,9 @@ class MarkupViewController: UIViewController {
   
   // MARK: - Constants
   struct Constants {
-    static let SizeSliderMaxFont: Float = 128.0
-    static let SizeSliderMinFont: Float = 12.0
-    static let SizeSliderDefaultFont: Float = 48.0
+    static let SizeSliderMaxFont: Float = 64.0
+    static let SizeSliderMinFont: Float = 10.0
+    static let SizeSliderDefaultFont: Float = 36.0
   }
   
   let FontChoiceArray: [String] = [
