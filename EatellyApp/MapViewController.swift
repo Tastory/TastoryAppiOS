@@ -412,23 +412,23 @@ class MapViewController: UIViewController {
       FoodieQuery.getFirstStory(from: .draft) { (object, error) in
         
         if let error = error {
-          CCLog.debug("No pinned draft Stories found in Local Datastore - \(error.localizedDescription)")
-          return
-        }
-        
-        guard let journal = object as? FoodieJournal else {
-          FoodieObject.deleteAll(from: .draft) { error in
-            if let error = error {
-              CCLog.warning("Delete All resulted in Error - \(error.localizedDescription)")
+          FoodieObject.deleteAll(from: .draft) { deleteError in
+            if let deleteError = deleteError {
+              CCLog.warning("Delete All resulted in Error - \(deleteError.localizedDescription)")
             }
             AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { action in
-              CCLog.assert("Retrieve pinned Journal from Local Datastore is nil or not a FoodieJournal. Clearing Draft Pin and Directory")
+              CCLog.assert("Getting Draft Story resulted in Error. Clearing Draft Pin and Directory - \(error.localizedDescription)")
             }
           }
           return
         }
         
-        journal.retrieveRecursive(from: .local, type: .draft, forceAnyways: false) { error in
+        guard let story = object as? FoodieJournal else {
+          CCLog.info("No Story found from Draft")
+          return
+        }
+         
+        story.retrieveRecursive(from: .local, type: .draft, forceAnyways: false) { error in
           
           if let retrieveError = error {
             FoodieObject.deleteAll(from: .draft) { error in
@@ -436,13 +436,13 @@ class MapViewController: UIViewController {
                 CCLog.warning("Delete All resulted in Error - \(deleteError.localizedDescription)")
               }
               AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { action in
-                CCLog.assert("Retrieve Recursive on Draft Story \(journal.getUniqueIdentifier()) resulted in error. Clearing Draft Pin and Directory - \(retrieveError.localizedDescription)")
+                CCLog.assert("Retrieve Recursive on Draft Story \(story.getUniqueIdentifier()) resulted in error. Clearing Draft Pin and Directory - \(retrieveError.localizedDescription)")
               }
             }
             return
           }
           
-          FoodieJournal.setCurrentJournal(to: journal)
+          FoodieJournal.setCurrentJournal(to: story)
           self.draftButton?.isHidden = false
         }
       }

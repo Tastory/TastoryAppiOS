@@ -219,14 +219,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                                    type localType: FoodieObject.LocalType,
                                    withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
-    // Do state transition for this save. Early return if no save needed, or if illegal state transition
-    //    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
-    //
-    //    if let earlySuccess = earlyReturnStatus.success {
-    //      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-    //      return
-    //    }
-    
     foodieObject.resetOutstandingChildOperations()
     var childOperationPending = false
     
@@ -250,9 +242,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     if !childOperationPending {
       CCLog.assert("No child saves pending. Then why is this even saved?")
-      DispatchQueue.global(qos: .userInitiated).async {
-        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-      }
+      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
     }
   }
   
@@ -334,14 +324,15 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   override init() {
     super.init()
     foodieObject.delegate = self
+    asyncOperationQueue.maxConcurrentOperationCount = 1
+    
     // mediaObj = FoodieMedia()  // retrieve() will take care of this. Don't set this here.
   }
   
   
   // This is the Initializer we will call internally
-  init(foodieMedia: FoodieMedia) {
-    super.init()
-    foodieObject.delegate = self
+  convenience init(foodieMedia: FoodieMedia) {
+    self.init()
     mediaObj = foodieMedia
     
     // didSet does not get called in initialization context...

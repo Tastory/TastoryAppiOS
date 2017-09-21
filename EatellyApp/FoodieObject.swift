@@ -11,6 +11,15 @@ import Foundation
  
 protocol FoodieObjectDelegate: class {
 
+  /********************************************************************************************************************
+   *
+   *  Make sure no function directly calls 'callback?()' !!!
+   *  The recursive callers always expects the callback to be called async from an equal or lower priority thread.
+   *  If the first child returns a callback immediately, it's possible for outstanding to prematurely hit == 0, 
+   *  This triggers pre-mature, and also duplicate, parent callbacks.
+   *
+   ********************************************************************************************************************/
+  
   static func deleteAll(from localType: FoodieObject.LocalType,
                         withBlock callback: FoodieObject.SimpleErrorBlock?)
   
@@ -203,7 +212,7 @@ class FoodieObject {
     
     child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways) { error in
       if let error = error {
-        CCLog.warning("retrieveChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(error.localizedDescription)")
+        CCLog.warning("retrieveChild on \(child.foodieObjectType())(\(child.getUniqueIdentifier())) failed with Error \(error.localizedDescription)")
         self.operationError = error
       }
       
@@ -246,7 +255,9 @@ class FoodieObject {
     
     // If children all came back and there is error, unwind state and call callback
     if operationError != nil {
-      callback?(operationError)
+      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+        callback?(self.operationError)
+      }
     }
       
     // If children all came back and no error, Save yourself!
@@ -276,7 +287,7 @@ class FoodieObject {
     // Save Recursive for each children. Call saveCompletionFromChild when done and without errors
     child.saveRecursive(to: location, type: localType) { error in
       if let error = error {
-        CCLog.warning("saveChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(error.localizedDescription)")
+        CCLog.warning("saveChild on \(child.foodieObjectType())(\(child.getUniqueIdentifier())) failed with Error \(error.localizedDescription)")
         self.operationError = error
       }
       
@@ -323,7 +334,7 @@ class FoodieObject {
     // Delete Recursive for each children
     child.deleteRecursive(from: location, type: localType) { error in
       if let error = error {
-        CCLog.warning("deleteChild on \(child.foodieObjectType()) with session ID \(child.getUniqueIdentifier()) failed with Error \(error.localizedDescription)")
+        CCLog.warning("deleteChild on \(child.foodieObjectType())(\(child.getUniqueIdentifier())) failed with Error \(error.localizedDescription)")
         self.operationError = error
       }
 

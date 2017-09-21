@@ -86,7 +86,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
     let categoriesRetry = SwiftRetry()
     categoriesRetry.start("get Categories from Foursquare", withCountOf: Constants.FoursquareSearchRetryCount) {
       // Get Foursquare Categories with async response handling in block
-      let categoriesTask = session.venues.categories { (result) in
+      let categoriesTask = session.venues.categories { result in
         
         guard let statusCode = result.HTTPSTatusCode, let httpStatusCode = HTTPStatusCode(rawValue: statusCode) else {
           CCLog.warning("No valid HTTP Status Code on Foursquare Search")

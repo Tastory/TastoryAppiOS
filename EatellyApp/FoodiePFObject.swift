@@ -90,22 +90,22 @@ class FoodiePFObject: PFObject {
     
     // See if this is already in memory, if so no need to do anything
     if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
-      CCLog.debug("\(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()). Data Available and not Forcing Anyways. Calling back with nil")
+      CCLog.debug("\(delegate.foodieObjectType())(\(getUniqueIdentifier())) Data Available and not Forcing Anyways. Calling back with nil")
       DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }  // Calling back in a different thread, because sometimes we might still be in main thread all the way from the caller
       return
     }
 
     // See if this is in local
-    CCLog.debug("Fetching \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) from \(localType) In Background")
+    CCLog.debug("Fetching \(delegate.foodieObjectType())(\(getUniqueIdentifier())) from \(localType) In Background")
     fetchFromLocalDatastoreInBackground { object, error in  // Fetch does not distinguish from where (draft vs cache)
       
       // Error Cases
       if let error = error {
         let nsError = error as NSError
         if nsError.domain == PFParseErrorDomain && nsError.code == PFErrorCode.errorCacheMiss.rawValue {
-          CCLog.debug("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) from Local Datastore cache miss")
+          CCLog.debug("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) from Local Datastore cache miss")
         } else {
-          CCLog.warning("fetchFromLocalDatastore failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
+          CCLog.warning("fetchFromLocalDatastore failed on \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) with error: \(error.localizedDescription)")
         }
         callback?(error)
         return
@@ -113,7 +113,7 @@ class FoodiePFObject: PFObject {
       
       // No Object or No Data Available
       else if object == nil || self.isDataAvailable == false {
-        CCLog.debug("fetchFromLocalDatastore did not return Data Available & Object for \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())")
+        CCLog.debug("fetchFromLocalDatastore did not return Data Available & Object for \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))")
         callback?(PFErrorCode.errorCacheMiss as? Error)
         return
       }
@@ -137,19 +137,19 @@ class FoodiePFObject: PFObject {
     
     // See if this is already in memory, if so no need to do anything
     if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
-      CCLog.debug("\(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()). Data Available and not Forcing Anyways. Calling back with nil")
+      CCLog.debug("\(delegate.foodieObjectType())(\(getUniqueIdentifier())) Data Available and not Forcing Anyways. Calling back with nil")
       DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }  // Calling back in a different thread, because sometimes we might still be in main thread all the way from the caller
       return
     }
     
     // If force anyways, try to fetch
     else if forceAnyways {
-      CCLog.debug("Forced to fetch \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) In Background")
+      CCLog.debug("Forced to fetch \(delegate.foodieObjectType())(\(getUniqueIdentifier())) In Background")
       
-      fetchRetry.start("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())", withCountOf: Constants.ParseRetryCount) {
+      fetchRetry.start("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) {
         self.fetchInBackground() { object, error in  // This fetch only comes from Server
           if let error = error {
-            CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
+            CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) with error: \(error.localizedDescription)")
             if fetchRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
           }
           // Return if got what's wanted
@@ -160,11 +160,11 @@ class FoodiePFObject: PFObject {
     }
     
     // See if this is in local cache
-    CCLog.debug("Fetch \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) from Local Datastore In Background")
+    CCLog.debug("Fetch \(delegate.foodieObjectType())(\(getUniqueIdentifier())) from Local Datastore In Background")
     fetchFromLocalDatastoreInBackground { localObject, localError in  // Fetch does not distinguish from where (draft vs cache)
       
       if localError == nil, localObject != nil, self.isDataAvailable == true {
-        CCLog.verbose("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) form Local Datastore Error: \(localError?.localizedDescription ?? "Nil"), localObject: \(localObject != nil ? "True" : "False"), DataAvailable: \(self.isDataAvailable ? "True" : "False")")
+        CCLog.verbose("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) form Local Datastore Error: \(localError?.localizedDescription ?? "Nil"), localObject: \(localObject != nil ? "True" : "False"), DataAvailable: \(self.isDataAvailable ? "True" : "False")")
         callback?(nil)
         return
       }
@@ -173,28 +173,28 @@ class FoodiePFObject: PFObject {
       if let error = localError {
         let nsError = error as NSError
         if nsError.domain == PFParseErrorDomain && nsError.code == PFErrorCode.errorCacheMiss.rawValue {
-          CCLog.debug("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) from Local Datastore cache miss")
+          CCLog.debug("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) from Local Datastore cache miss")
         } else {
-          CCLog.warning("fetchFromLocalDatastore failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
+          CCLog.warning("fetchFromLocalDatastore failed on \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) with error: \(error.localizedDescription)")
         }
       }
       
       // No Object or No Data Available
       else if localObject == nil || self.isDataAvailable == false {
-        CCLog.debug("fetchFromLocalDatastore did not return Data Available & Object for \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())")
+        CCLog.debug("fetchFromLocalDatastore did not return Data Available & Object for \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))")
       }
       
       // If not in Local Datastore, retrieved from Server
-      CCLog.debug("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) In Background")
+      CCLog.debug("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) In Background")
       
       
-      fetchRetry.start("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())", withCountOf: Constants.ParseRetryCount) {
+      fetchRetry.start("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) {
         self.fetchIfNeededInBackground { serverObject, serverError in
           if let error = serverError {
-            CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
+            CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())), with error: \(error.localizedDescription)")
             if fetchRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
           } else {
-            CCLog.debug("Pin \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) to Name '\(localType)'")
+            CCLog.debug("Pin \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) to Name '\(localType)'")
             self.pinInBackground(withName: localType.rawValue) { (success, error) in FoodiePFObject.booleanToSimpleErrorCallback(success, error, nil) }
           }
           // Return if got what's wanted
@@ -212,7 +212,7 @@ class FoodiePFObject: PFObject {
     }
     
     // TODO: Maybe wanna track for Parse that only 1 Save on the top is necessary
-    CCLog.debug("Pin \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) to Local with Name \(localType)")
+    CCLog.debug("Pin \(delegate.foodieObjectType())(\(getUniqueIdentifier())) to Local with Name \(localType)")
     pinInBackground(withName: localType.rawValue) { success, error in FoodiePFObject.booleanToSimpleErrorCallback(success, error, callback) }
   }
   
@@ -223,7 +223,7 @@ class FoodiePFObject: PFObject {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
     
-    CCLog.debug("Pin \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) with Name \(localType)")
+    CCLog.debug("Pin \(delegate.foodieObjectType())(\(getUniqueIdentifier())) with Name \(localType)")
     pinInBackground(withName: localType.rawValue) { (success, error) in
       
       guard success || error == nil else {
@@ -231,10 +231,10 @@ class FoodiePFObject: PFObject {
         return
       }
       
-      CCLog.debug("Save \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) in background")
+      CCLog.debug("Save \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) in background")
       
       let saveRetry = SwiftRetry()
-      saveRetry.start("Save \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())", withCountOf: Constants.ParseRetryCount) {
+      saveRetry.start("Save \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) {
         
         self.saveInBackground { success, error in
           if !success || error != nil {
@@ -253,7 +253,7 @@ class FoodiePFObject: PFObject {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
     
-    CCLog.debug("Delete \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) from Local with Name \(localType)")
+    CCLog.debug("Delete \(delegate.foodieObjectType())(\(getUniqueIdentifier())) from Local with Name \(localType)")
     unpinInBackground(withName: localType.rawValue) { success, error in FoodiePFObject.booleanToSimpleErrorCallback(success, error, callback) }
   }
   
@@ -264,10 +264,10 @@ class FoodiePFObject: PFObject {
     }
     
     // TODO: Delete should also unpin across all namespaces
-    CCLog.debug("Delete \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) in Background")
+    CCLog.debug("Delete \(delegate.foodieObjectType())(\(getUniqueIdentifier())) in Background")
     
     let deleteRetry = SwiftRetry()
-    deleteRetry.start("Delete \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier())", withCountOf: Constants.ParseRetryCount) {
+    deleteRetry.start("Delete \(delegate.foodieObjectType())(\(getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) {
       
       self.deleteInBackground { success, error in
         if !success || error != nil {

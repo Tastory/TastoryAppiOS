@@ -94,20 +94,20 @@ class CCLog {
   // Assertion will halt (crash) on development. Behavior similar to warning on release
   static func assert(_ description: String, function: String = #function, file: String = #file, line: Int = #line) {
     Log.error?.message(description, function: function, filePath: file, fileLine: line)
-    #if DEBUG
-    DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 1.0) {
+    #if DEBUG  // TODO: -  Crash in current thread after sleep if Xcode is connected
+    DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 0.8) {
       Crashlytics.sharedInstance().crash()  // Wait for logging to flush before Crashing
       assertionFailure("\(description), \(file), \(function), \(line)")  // This will never get called
     }
-    sleep(3)  // This just merely prevents this thread from proceeding, but also relinquish processor resources to other threads
+    sleep(1)  // This just merely prevents this thread from proceeding, but also relinquish processor resources to other threads
     #endif
   }
 
   // This is Fatal and will never return, Development or Production
   static func fatal(_ description: String, function: String = #function, file: String = #file, line: Int = #line) -> Never {
     Log.error?.message(description, function: function, filePath: file, fileLine: line)
-    sleep(3) // Sleep this thread and wait for logging to flush before going Fatal
-    Crashlytics.sharedInstance().crash()
+    sleep(1) // Sleep this thread and wait for logging to flush before going Fatal
+    Crashlytics.sharedInstance().crash()  // TODO: -  Crash in current thread after sleep if Xcode is connected
     fatalError("\(description), \(file), \(function), \(line)")  // This won't actually get called
   }
 }

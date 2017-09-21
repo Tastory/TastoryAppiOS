@@ -104,11 +104,13 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
       
     case .video:
-      if checkIfExists(in: localType) {
-        self.videoLocalBufferUrl = FoodieFile.getFileURL(for: .cache, with: fileName)
-        callback?(nil)
-      } else {
-        callback?(ErrorCode.retreiveFileDoesNotExist)
+      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+        if self.checkIfExists(in: localType) {
+          self.videoLocalBufferUrl = FoodieFile.getFileURL(for: .cache, with: fileName)
+          callback?(nil)
+        } else {
+          callback?(ErrorCode.retreiveFileDoesNotExist)
+        }
       }
     }
   }
@@ -187,7 +189,9 @@ extension FoodieMedia: FoodieObjectDelegate {
     case .video:
       guard !checkIfExists(in: .cache) else {
         self.videoLocalBufferUrl = FoodieFile.getFileURL(for: .cache, with: fileName)
-        callback?(nil)
+        DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+          callback?(nil)
+        }
         return
       }
       retrieveFromServerToLocal() { (error) in
@@ -232,24 +236,27 @@ extension FoodieMedia: FoodieObjectDelegate {
       CCLog.fatal("Retrieve not allowed when Media has no MediaType")
     }
     
-    switch type {
-    case .photo:
-      guard let memoryBuffer = imageMemoryBuffer else {
-        callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
-        return
-      }
-      save(buffer: memoryBuffer, to: localType, withBlock: callback)
+    DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
       
-    case .video:
-      guard let videoUrl = videoLocalBufferUrl else {
-        callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
-        return
-      }
-      move(url: videoUrl, to: localType) { error in
-        if error == nil {
-          self.videoLocalBufferUrl = FoodieFile.getFileURL(for: localType, with: fileName)
+      switch type {
+      case .photo:
+        guard let memoryBuffer = self.imageMemoryBuffer else {
+          callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
+          return
         }
-        callback?(error)
+        self.save(buffer: memoryBuffer, to: localType, withBlock: callback)
+        
+      case .video:
+        guard let videoUrl = self.videoLocalBufferUrl else {
+          callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
+          return
+        }
+        self.copy(url: videoUrl, to: localType) { error in
+          if error == nil {
+            self.videoLocalBufferUrl = FoodieFile.getFileURL(for: localType, with: fileName)
+          }
+          callback?(error)
+        }
       }
     }
   }
@@ -276,17 +283,7 @@ extension FoodieMedia: FoodieObjectDelegate {
                      type localType: FoodieObject.LocalType,
                      withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
-    // Do state transition for this save. Early return if no save needed, or if illegal state transition
-    //    let earlyReturnStatus = foodieObject.saveStateTransition(to: location)
-    //
-    //    if let earlySuccess = earlyReturnStatus.success {
-    //      DispatchQueue.global(qos: .userInitiated).async { callback?(earlySuccess, earlyReturnStatus.error) }
-    //      return
-    //    }
-    
-    DispatchQueue.global(qos: .userInitiated).async { /*[unowned self] in */
-      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-    }
+    self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
   }
   
   

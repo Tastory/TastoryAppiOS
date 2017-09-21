@@ -287,9 +287,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
     
     if !childOperationPending {
-      DispatchQueue.global(qos: .userInitiated).async {
-        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-      }
+      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
     }
   }
   
@@ -372,9 +370,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
     
     if !childOperationPending {
-      DispatchQueue.global(qos: .userInitiated).async {
-        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-      }
+      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
     }
   }
   
@@ -460,6 +456,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   override init() {
     super.init()
     foodieObject.delegate = self
+    asyncOperationQueue.maxConcurrentOperationCount = 1
   }
   
   

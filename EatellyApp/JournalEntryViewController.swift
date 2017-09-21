@@ -46,7 +46,6 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   fileprivate var momentViewController = MomentCollectionViewController()
   fileprivate var markupMoment: FoodieMoment? = nil
   fileprivate let activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-  fileprivate let saveOperationQueue = FoodieGlobal.storyPreSaveOperationQueue  // Temporary until Foodie Object Model is self-sufficient in dealing with mulitple queued operations
   
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
@@ -97,11 +96,18 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     journal.saveRecursive(to: .both, type: .cache) { error in
       
       if let error = error {
-        CCLog.warning("Save Story to Server Failed with Error: \(error)")
-        AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
+        // Remove the spinner and resume user interaction
+        DispatchQueue.main.async {
+          self.activityView.stopAnimating()
+          self.activityView.removeFromSuperview()
+          UIApplication.shared.endIgnoringInteractionEvents()
+          
+          CCLog.warning("Save Story to Server Failed with Error: \(error)")
+          AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
+        }
       } else {
         
-        // Now removing it from Draft
+        // Now removing it from Draft - only if upload to server is a total success
         journal.deleteRecursive(from: .local, type: .draft) { error in
           FoodieJournal.removeCurrent()
           self.workingJournal = nil
@@ -320,9 +326,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     previousSwipeRecognizer.direction = .right
     previousSwipeRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(previousSwipeRecognizer)
-    
-    // Setup the Save Operation Queue
-    saveOperationQueue.maxConcurrentOperationCount = 1
+
     
     // TODO: Do we need to download the Journal itself first? How can we tell?
   }
@@ -454,63 +458,6 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     CCLog.warning("JournalEntryViewController getting deinitialized")
   }
   
-  // Pre-Save Operations Child Class
-//  class PreSaveOperation: AsyncOperation {
-//    
-//    static var pendingOperations = [PreSaveOperation]()
-//    
-//    var journal: FoodieJournal
-//    var foodieObject: FoodieObjectDelegate?
-//    var callback: ((Error?) -> Void)?
-//    
-//    init(on journal: FoodieJournal, with foodieObject: FoodieObjectDelegate?, withBlock callback: ((Error?) -> Void)?) {
-//      self.journal = journal
-//      self.foodieObject = foodieObject
-//      self.callback = callback
-//
-//      super.init()
-//      
-//      PreSaveOperation.pendingOperations.append(self)
-//    }
-//    
-//    override func finished() {
-//      guard let index = PreSaveOperation.pendingOperations.index(of: self) else {
-//        CCLog.fatal("Cannot find index for Pre Save Operation in Pending List")
-//      }
-//      PreSaveOperation.pendingOperations.remove(at: index)
-//      super.finished()
-//    }
-//    
-//    override func main() {
-//      preSave(foodieObject) { error in
-//        self.callback?(error)
-//        self.finished()
-//      }
-//    }
-//  }
-  
-  // Journal Save Operation Child Class
-//  class JournalSaveOperation: AsyncOperation {
-//  
-//    var journal: FoodieJournal
-//    var error: Error?
-//    var callback: ((Error?) -> Void)?
-//    
-//    init(on journal: FoodieJournal, withBlock callback: ((Error?) -> Void)?) {
-//      self.journal = journal
-//      self.callback = callback
-//      super.init()
-//    }
-//    
-//    override func main() {
-//      CCLog.debug ("Journal Save Operation Started")
-//      
-//      journal.saveRecursive(to: .both, type: .cache) { error in
-//        self.callback?(error)
-//        self.finished()
-//      }
-//    }
-//  }
 }
 
 
@@ -584,7 +531,7 @@ extension JournalEntryViewController: UITextFieldDelegate {
 extension JournalEntryViewController: VenueTableReturnDelegate {
   func venueSearchComplete(venue: FoodieVenue) {
     
-    guard let journal = workingJournal else {
+    guard let _ = workingJournal else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
       CCLog.fatal("No Working Journal after Venue Search Completes")
     }

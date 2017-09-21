@@ -85,18 +85,22 @@ class JournalViewController: UIViewController {
   
   // MARK: - IBActions
   @IBAction func tapForward(_ sender: UITapGestureRecognizer) {
+    CCLog.info("User tapped Forward")
     displayNextMoment()
   }
 
   @IBAction func tapBackward(_ sender: UITapGestureRecognizer) {
+    CCLog.info("User tapped Backward")
     displayPreviousMoment()
   }
   
   @IBAction func swipeDown(_ sender: UISwipeGestureRecognizer) {
+    CCLog.info("User swiped Down")
     cleanUpAndDismiss()
   }
   
   @IBAction func swipeUp(_ sender: UISwipeGestureRecognizer) {
+    CCLog.info("User swiped Up")
     
     guard let journal = viewingJournal else {
       internalErrorDialog()
@@ -139,17 +143,10 @@ class JournalViewController: UIViewController {
       return
     }
     
+    CCLog.info("User pressed Paused/Resume. isPaused = \(isPaused), photoTimer.isValid = \(photoTimer != nil ? String(photoTimer!.isValid) : "None"), avPlayer.rate = \(avPlayer!.rate), mediaType = \(mediaType)")
+    
     if let photoTimer = photoTimer {
-      
-      // Sanity check invalid combos
-      guard photoTimer.isValid == !isPaused, mediaType == .photo else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.assert("JournalVC has Valid PhotoTimer but Media Type not of Photo, or isPaused == true")
-          self.cleanUpAndDismiss()
-        }
-        return
-      }
-      
+
       if photoTimer.isValid {
         // Photo is 'playing'. Pause photo timer
         photoTimeRemaining = photoTimer.fireDate.timeIntervalSinceNow
@@ -165,15 +162,6 @@ class JournalViewController: UIViewController {
         resumeStateTrack()
       }
     } else {
-      
-      // Sanity check invalid combos
-      guard (avPlayer!.rate == 0.0) == isPaused, mediaType == .video else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.assert("JournalVC avPlayer.rate and isPaused mismatches. Or MediaType not of Video")
-          self.cleanUpAndDismiss()
-        }
-        return
-      }
       
       if avPlayer!.rate != 0.0 {
         // Video is playing. Pause the video
@@ -365,6 +353,8 @@ class JournalViewController: UIViewController {
       
       jotDictionary[kLabels] = labelDictionary
       jotViewController.unserialize(jotDictionary)
+      
+      pauseResumeButton.isHidden = false
     }
   }
   
@@ -401,6 +391,7 @@ class JournalViewController: UIViewController {
   
   
   fileprivate func stopVideoTimerAndObservers(for moment: FoodieMoment) {
+    pauseResumeButton.isHidden = true
     avPlayer?.pause()
     photoTimer?.invalidate()
     photoTimer = nil
@@ -539,6 +530,7 @@ class JournalViewController: UIViewController {
     view.insertSubview(blurView, belowSubview: tapGestureStackView)
     view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
     soundButton.isHidden = true
+    pauseResumeButton.isHidden = true
     activityIndicator.startAnimating()
   }
   

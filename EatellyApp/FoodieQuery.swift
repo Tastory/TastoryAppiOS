@@ -47,6 +47,7 @@ class FoodieQuery {
     
     case cannotCreatePFQuery
     case noPFQueryToPerformAnotherSearch
+    case getFirstResultedInMoreThanOne
     
     var errorDescription: String? {
       switch self {
@@ -54,6 +55,8 @@ class FoodieQuery {
         return NSLocalizedString("Cannot create PFQuery, unable to perform the Query", comment: "Error description for a FoodieQuery error code")
       case .noPFQueryToPerformAnotherSearch:
         return NSLocalizedString("No initial PFQuery created, so cannot get another batch of query results", comment: "Error description for a FoodieQuery error code")
+      case .getFirstResultedInMoreThanOne:
+        return NSLocalizedString("Not expecting more than 1 Story when getting first from Draft", comment: "Error description for a FoodieQuery error code")
       }
     }
     
@@ -96,10 +99,20 @@ class FoodieQuery {
   
   
   // MARK: - Public Static Functions
+  
   static func getFirstStory(from localType: FoodieObject.LocalType, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
     let query = FoodieJournal.query()!
     query.fromPin(withName: localType.rawValue)  // the Pin Name is just the Local Type String value
-    query.getFirstObjectInBackground(block: callback)
+    query.findObjectsInBackground { (objects, error) in
+      if let objects = objects, (objects.count > 1 || objects.count < 0), error == nil {
+        CCLog.warning("Expecting 0 or 1 Story in Draft at this point. Got \(objects.count) instead")
+        callback?(nil, ErrorCode.getFirstResultedInMoreThanOne)
+      } else if let objects = objects, objects.count == 1 {
+        callback?(objects[0], error)
+      } else {
+        callback?(nil, error)
+      }
+    }
   }
   
   

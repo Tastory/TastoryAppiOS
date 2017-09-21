@@ -38,11 +38,12 @@ class FoodieFile {
   // MARK: - Error Types Definition
   enum ErrorCode: LocalizedError {
     
-    case fileManagerMoveItemLocalFailed
+    case fileManagerCopyItemLocalFailed
     case fileManagerMoveItemFromDownloadToLocalFailed
     case fileManagerReadLocalNoFile
     case fileManagerReadLocalFailed
     case fileManagerSaveLocalFailed
+    case fileManagerRemoveItemLocalFailed
     case urlSessionDownloadError
     case urlSessionDownloadNotUrlError
     case urlSessionDownloadHttpResponseNil
@@ -58,8 +59,8 @@ class FoodieFile {
     
     var errorDescription: String? {
       switch self {
-      case .fileManagerMoveItemLocalFailed:
-        return NSLocalizedString("FileManager.moveItem failed", comment: "Error description for an exception error code")
+      case .fileManagerCopyItemLocalFailed:
+        return NSLocalizedString("FileManager.copyItem failed", comment: "Error description for an exception error code")
       case .fileManagerMoveItemFromDownloadToLocalFailed:
         return NSLocalizedString("FileManager.moveItem for URLSessionDownload failed", comment: "Error description for an exception error code")
       case .fileManagerReadLocalNoFile:
@@ -68,6 +69,8 @@ class FoodieFile {
         return NSLocalizedString("Data(contentsOf:) failed", comment: "Error description for an exception error code")
       case .fileManagerSaveLocalFailed:
         return NSLocalizedString("Data.write failed", comment: "Error description for an exception error code")
+      case .fileManagerRemoveItemLocalFailed:
+        return NSLocalizedString("FileManager.removeItem failed", comment: "Error description for an exception error code")
       case .urlSessionDownloadError:
         return NSLocalizedString("DownloadSession.downloadTask Error", comment: "Error description for an exception error code")
       case .urlSessionDownloadNotUrlError:
@@ -283,7 +286,6 @@ class FoodieFile {
 
         // We are in success-land!
         let timeDifference = downloadEndTime - downloadStartTime
-        //try? self.fileManager.removeItem(at: localFileURL)  // TODO: If the file already exists, really shouldn't have called this anyways.
         
         do {
           let fileAttribute = try self.fileManager.attributesOfItem(atPath: tempURL.path)
@@ -291,7 +293,7 @@ class FoodieFile {
           let avgDownloadSpeed = Float(fileSizeKb)/timeDifference.seconds  // KB/s
           
           CCLog.verbose("Download of \(fileName) of size \(fileSizeKb/1000.0) MB took \(timeDifference.milliSeconds) ms at \(avgDownloadSpeed) kB/s")
-          try self.fileManager.copyItem(at: tempURL, to: localFileURL)
+          try self.fileManager.moveItem(at: tempURL, to: localFileURL)
         } catch {
           CCLog.assert("Failed to move file from URLSessionDownload temp to local Documents folder. Erorr = \(error.localizedDescription)")
           callback?(ErrorCode.fileManagerMoveItemFromDownloadToLocalFailed)
@@ -320,16 +322,21 @@ class FoodieFile {
   }
   
   
-  func moveFile(from url: URL, to localType: FoodieObject.LocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
-    DispatchQueue.global(qos: .userInitiated).async {
+  func copyFile(from url: URL, to localType: FoodieObject.LocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
       do {
-        try self.fileManager.moveItem(at: url, to: FoodieFile.getFileURL(for: localType, with: fileName))
+        try self.fileManager.copyItem(at: url, to: FoodieFile.getFileURL(for: localType, with: fileName))
+        
+        // This is a little hacky.... Delete file after copy to Draft, assuming that the file was in Tmp
+        if localType == .draft {
+          try self.fileManager.removeItem(at: url)
+        }
       } catch {
-        CCLog.assert("Failed to move media file to local Documents folder \(error.localizedDescription)")
-        callback?(ErrorCode.fileManagerMoveItemLocalFailed)
+        CCLog.assert("Failed to copy media file to local Documents folder \(error.localizedDescription)")
+        callback?(ErrorCode.fileManagerCopyItemLocalFailed)
         return
       }
-      // Move local completed successfully!!
+      // Copy local completed successfully!!
       callback?(nil)
     }
   }
@@ -338,49 +345,58 @@ class FoodieFile {
   func saveToS3(from localType: FoodieObject.LocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     guard let uploadRequest = AWSS3TransferManagerUploadRequest() else {
-      CCLog.assert("AWSS3TransferManagerUploadRequest() returned nil")
-      callback?(ErrorCode.awsS3TransferManagerUploadRequestNil)
+      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+        CCLog.assert("AWSS3TransferManagerUploadRequest() returned nil")
+        callback?(ErrorCode.awsS3TransferManagerUploadRequestNil)
+      }
       return
     }
     uploadRequest.bucket = Constants.S3BucketKey
     uploadRequest.key = fileName
     uploadRequest.body = FoodieFile.getFileURL(for: localType, with: fileName)
 
-    transferManager.upload(uploadRequest).continueWith(executor: AWSExecutor.mainThread()) { (task:AWSTask<AnyObject>) -> Any? in
-      
-      if let error = task.error as NSError? {
-        if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
-          switch code {
-          case .cancelled:
-            CCLog.debug("AWS Transfer Upload with Key \(uploadRequest.key!) cancelled")
-            callback?(ErrorCode.awsS3TransferUploadCancelled)
-          case .paused:
-            CCLog.fatal("Pause is not well understood and not currently supported. Pulling a Fatal condition for now")
-          default:
+    let saveRetry = SwiftRetry()
+    saveRetry.start("save file '\(fileName)' to S3", withCountOf: Constants.AwsRetryCount) {
+      self.transferManager.upload(uploadRequest).continueWith(executor: AWSExecutor.mainThread()) { (task:AWSTask<AnyObject>) -> Any? in
+        
+        if let error = task.error as NSError? {
+          if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
+            switch code {
+            case .cancelled:
+              CCLog.debug("AWS Transfer Upload with Key \(uploadRequest.key!) cancelled")
+              callback?(ErrorCode.awsS3TransferUploadCancelled)
+            case .paused:
+              CCLog.fatal("Pause is not well understood and not currently supported. Pulling a Fatal condition for now")
+            default:
+              CCLog.warning("AWS Transfer Upload with Key \(String(describing: uploadRequest.key)) resulted in Error: \(error)")
+              if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
+                callback?(ErrorCode.awsS3TransferUploadUnknownError)
+              }
+            }
+          } else {
             CCLog.warning("AWS Transfer Upload with Key \(String(describing: uploadRequest.key)) resulted in Error: \(error)")
-            callback?(ErrorCode.awsS3TransferUploadUnknownError)
+            if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
+              callback?(ErrorCode.awsS3TransferUploadUnknownError)
+            }
           }
-        } else {
-          CCLog.warning("AWS Transfer Upload with Key \(String(describing: uploadRequest.key)) resulted in Error: \(error)")
-          callback?(ErrorCode.awsS3TransferUploadUnknownError)
+          return nil
         }
+        // TODO: might be useful to store in parse for tracking the version
+        CCLog.debug("AWS Transfer Upload completed for Key \(uploadRequest.key!)")
+        callback?(nil)
         return nil
       }
-      // TODO: might be useful to store in parse for tracking the version
-      CCLog.debug("AWS Transfer Upload completed for Key \(uploadRequest.key!)")
-      callback?(nil)
-      return nil
     }
   }
   
   
   func delete(from localType: FoodieObject.LocalType, with fileName: String, withBlock callback: FoodieObject.SimpleErrorBlock?) {
-    DispatchQueue.global(qos: .userInitiated).async {
+    DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
       do {
         try self.fileManager.removeItem(at: FoodieFile.getFileURL(for: localType, with: fileName))
       } catch {
         CCLog.warning("Failed to delete media file from local Documents foler \(error.localizedDescription)")
-        callback?(ErrorCode.fileManagerMoveItemLocalFailed)
+        callback?(ErrorCode.fileManagerRemoveItemLocalFailed)
       }
       // Delete local completed successfully!!
       callback?(nil)
@@ -393,14 +409,22 @@ class FoodieFile {
     delRequest.bucket = Constants.S3BucketKey
     delRequest.key = fileName
     
-    let deleteTask = s3Handler.deleteObject(delRequest)
-    deleteTask.continueWith() { (task: AWSTask<AWSS3DeleteObjectOutput>) -> Any? in
-      if let error = task.error as NSError? {
-        callback?(error)
+    let deleteRetry = SwiftRetry()
+    deleteRetry.start("delete file '\(fileName)' from S3", withCountOf: Constants.AwsRetryCount) {
+      
+      let deleteTask = self.s3Handler.deleteObject(delRequest)
+      deleteTask.continueWith() { (task: AWSTask<AWSS3DeleteObjectOutput>) -> Any? in
+        
+        if let error = task.error as NSError? {
+          if !deleteRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
+            callback?(error)
+          }
+        } else {
+          // Successfully deleted
+          callback?(nil)
+        }
+        return nil
       }
-      // Successfully deleted
-      callback?(nil)
-      return nil
     }
   }
   
@@ -417,16 +441,18 @@ class FoodieFile {
       directoryUrl = Constants.DraftStoryMediaFolderUrl
     }
     
-    do {
-      for contentUrl in try fileManager.contentsOfDirectory(at: directoryUrl, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) {
-        try fileManager.removeItem(at: contentUrl)
+    DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+      do {
+        for contentUrl in try self.fileManager.contentsOfDirectory(at: directoryUrl, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) {
+          try self.fileManager.removeItem(at: contentUrl)
+        }
+      } catch {
+        CCLog.warning("DeleteAll resulted in Exception - \(error.localizedDescription)")
+        returnError = error
       }
-    } catch {
-      CCLog.warning("DeleteAll resulted in Exception - \(error.localizedDescription)")
-      returnError = error
+      
+      callback?(returnError)
     }
-    
-    callback?(returnError)
   }
   
   
@@ -536,24 +562,28 @@ class FoodieS3Object {
       CCLog.debug("Save Buffer as \(fileName) to \(localType)")
       FoodieFile.manager.save(to: localType, from: buffer, with: fileName, withBlock: callback)
     } else {
-      CCLog.debug("File \(fileName) already exist. Skipping Save")
-      callback?(nil)
+      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+        CCLog.debug("File \(fileName) already exist. Skipping Save")
+        callback?(nil)
+      }
     }
   }
 
   
-  func move(url: URL, to localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func copy(url: URL, to localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
     guard let fileName = foodieFileName else {
       CCLog.fatal("FoodieS3Object has no foodieFileName")
     }
     
     // Check if the file already exist. If so just assume it's the right file
     if !FoodieFile.manager.checkIfExists(in: localType, for: fileName) {
-      CCLog.debug("Move to \(localType) as \(fileName) from \(url.absoluteString)")
-      FoodieFile.manager.moveFile(from: url, to: localType, with: fileName, withBlock: callback)
+      CCLog.debug("Copy to \(localType) as \(fileName) from \(url.absoluteString)")
+      FoodieFile.manager.copyFile(from: url, to: localType, with: fileName, withBlock: callback)
     } else {
-      CCLog.debug("File \(fileName) already exist. Skipping Move")
-      callback?(nil)
+      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+        CCLog.debug("File \(fileName) already exist. Skipping Copy")
+        callback?(nil)
+      }
     }
   }
   
@@ -593,8 +623,9 @@ class FoodieS3Object {
       CCLog.debug("Delete \(fileName) from \(localType)")
       FoodieFile.manager.delete(from: localType, with: fileName, withBlock: callback)
     } else {
-      CCLog.debug("File \(fileName) already not found from \(localType). Skipping Delete")
-      callback?(nil)
+      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+        CCLog.debug("File \(fileName) already not found from \(localType). Skipping Delete")
+        callback?(nil)}
     }
   }
   
