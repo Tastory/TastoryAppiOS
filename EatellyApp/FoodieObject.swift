@@ -192,10 +192,13 @@ class FoodieObject {
     guard let delegate = delegate else {
       CCLog.fatal("delegate = nil. Unable to proceed.")
     }
-    CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType)")
+    
     
     SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
+    #if DEBUG
+    CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Outstanding: \(outstandingChildOperations)")
+    #endif
     SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
     
     child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways) { error in
@@ -208,10 +211,11 @@ class FoodieObject {
       var childOperationsPending = true
       SwiftMutex.lock(&self.outstandingChildOperationsMutex)
       self.outstandingChildOperations -= 1
+      #if DEBUG
+      CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieved child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Outstanding: \(self.outstandingChildOperations)")
+      #endif
       if self.outstandingChildOperations == 0 { childOperationsPending = false }
       SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
-      
-      CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieved child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType)")
       
       if !childOperationsPending {
         callback?(self.operationError)

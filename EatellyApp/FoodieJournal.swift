@@ -36,6 +36,82 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   
+  // MARK: - Types & Enums
+  enum OperationType: String {
+    case retrieveStory
+    case saveStory
+    case deleteStory
+    case retrieveDigest
+    case saveDigest
+  }
+  
+  
+  // Journal Async Operation Child Class
+  class JournalAsyncOperation: AsyncOperation {
+    
+    var operationType: OperationType
+    var journal: FoodieJournal
+    var location: FoodieObject.StorageLocation
+    var localType: FoodieObject.LocalType
+    var forceAnyways: Bool
+    var error: Error?
+    var callback: ((Error?) -> Void)?
+    
+    init(on operationType: OperationType,
+         for journal: FoodieJournal,
+         to location: FoodieObject.StorageLocation,
+         type localType: FoodieObject.LocalType,
+         forceAnyways: Bool = false,
+         withBlock callback: ((Error?) -> Void)?) {
+      
+      self.operationType = operationType
+      self.journal = journal
+      self.location = location
+      self.localType = localType
+      self.forceAnyways = forceAnyways
+      self.callback = callback
+      super.init()
+    }
+    
+    override func main() {
+      CCLog.debug ("Journal Async \(operationType) Operation for \(journal.getUniqueIdentifier()) Started")
+      
+      switch operationType {
+      case .retrieveStory:
+        journal.retrieveOpRecursive(from: location, type: localType, forceAnyways: forceAnyways) { error in
+          self.callback?(error)
+          self.finished()
+        }
+        
+      case .saveStory:
+        journal.saveOpRecursive(to: location, type: localType) { error in
+          self.callback?(error)
+          self.finished()
+        }
+        
+      case .deleteStory:
+        journal.deleteOpRecursive(from: location, type: localType) { error in
+          self.callback?(error)
+          self.finished()
+        }
+        
+      case .retrieveDigest:
+        journal.retrieveOpDigest(from: location, type: localType, forceAnyways: forceAnyways) { error in
+          self.callback?(error)
+          self.finished()
+        }
+      
+      case .saveDigest:
+        journal.saveOpDigest(to: location, type: localType) { error in
+          self.callback?(error)
+          self.finished()
+        }
+      }
+    }
+  }
+  
+  
+  
   // MARK: Error Types Definition
   enum ErrorCode: LocalizedError {
     
@@ -87,6 +163,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
 
   
   // MARK: - Private Instance Variables
+  fileprivate var asyncOperationQueue = OperationQueue()
   fileprivate var contentRetrievalMutex = SwiftMutex.create()
   fileprivate var contentRetrievalInProg = false
   fileprivate var contentRetrievalPending = false
@@ -121,6 +198,259 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     currentJournal = journal
     CCLog.debug("Current Journal set. Session FoodieObject ID = \(journal.getUniqueIdentifier())")
   }
+  
+  
+  
+  // MARK: - Private Instance Functions
+  
+  fileprivate func retrieve(from location: FoodieObject.StorageLocation,
+                            type localType: FoodieObject.LocalType,
+                            forceAnyways: Bool,
+                            withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      
+      if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
+        self.thumbnailObj = FoodieMedia(for: fileName, localType: localType, mediaType: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
+      }
+      callback?(error)  // Callback regardless
+    }
+  }
+  
+  
+  fileprivate func retrieveOpDigest(from location: FoodieObject.StorageLocation,
+                                type localType: FoodieObject.LocalType,
+                                forceAnyways: Bool = false,
+                                withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    // Retrieve self first, then retrieve children afterwards
+    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      
+      if let error = error {
+        CCLog.assert("Story.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      guard let thumbnail = self.thumbnailObj else {
+        CCLog.assert("Story retrieved but thumbnailObj = nil")
+        callback?(error)
+        return
+      }
+      
+      guard let venue = self.venue else {
+        CCLog.assert("Story retrieved but venue = nil")
+        callback?(error)
+        return
+      }
+      
+      self.foodieObject.resetOutstandingChildOperations()
+      
+      // Got through all sanity check, calling children's retrieveRecursive
+      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      
+      self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      
+      if let markups = self.markups {
+        for markup in markups {
+          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+        }
+      }
+      
+      // Do we need to retrieve User?
+    }
+  }
+  
+  
+  fileprivate func saveOpDigest(to location: FoodieObject.StorageLocation,
+                            type localType: FoodieObject.LocalType,
+                            withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    self.foodieObject.resetOutstandingChildOperations()
+    var childOperationPending = false
+    
+    // Need to make sure all children recursive saved before proceeding
+    
+    // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
+    // We are not gonna save the User here either
+    
+    if let markups = markups {
+      for markup in markups {
+        foodieObject.saveChild(markup, to: location, type: localType, withBlock: callback)
+        childOperationPending = true
+      }
+    }
+    
+    if let venue = venue {
+      foodieObject.saveChild(venue, to: location, type: localType, withBlock: callback)
+      childOperationPending = true
+    }
+    
+    if !childOperationPending {
+      DispatchQueue.global(qos: .userInitiated).async {
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
+    }
+  }
+  
+  
+  fileprivate func retrieveOpRecursive(from location: FoodieObject.StorageLocation,
+                                   type localType: FoodieObject.LocalType,
+                                   forceAnyways: Bool = false,
+                                   withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    // Retrieve self first, then retrieve children afterwards
+    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      
+      if let error = error {
+        CCLog.assert("Journal.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      guard let thumbnail = self.thumbnailObj else {
+        CCLog.assert("Unexpected Journal.retrieve() resulted in self.thumbnailObj = nil")
+        callback?(error)
+        return
+      }
+      
+      self.foodieObject.resetOutstandingChildOperations()
+      
+      // Got through all sanity check, calling children's retrieveRecursive
+      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      
+      if let moments = self.moments {
+        for moment in moments {
+          self.foodieObject.retrieveChild(moment, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+        }
+      }
+      
+      if let markups = self.markups {
+        for markup in markups {
+          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+        }
+      }
+      
+      // Do we need to retrieve User?
+      
+      if let venue = self.venue {
+        self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      }
+    }
+  }
+  
+  
+  fileprivate func saveOpRecursive(to location: FoodieObject.StorageLocation,
+                               type localType: FoodieObject.LocalType,
+                               withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    self.foodieObject.resetOutstandingChildOperations()
+    var childOperationPending = false
+    
+    // Need to make sure all children recursive saved before proceeding
+    
+    // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
+    // We are not gonna save the User here either
+    
+    if let moments = moments {
+      for moment in moments {
+        foodieObject.saveChild(moment, to: location, type: localType, withBlock: callback)
+        childOperationPending = true
+      }
+    }
+    
+    if let markups = markups {
+      for markup in markups {
+        foodieObject.saveChild(markup, to: location, type: localType, withBlock: callback)
+        childOperationPending = true
+      }
+    }
+    
+    if let venue = venue {
+      foodieObject.saveChild(venue, to: location, type: localType, withBlock: callback)
+      childOperationPending = true
+    }
+    
+    if !childOperationPending {
+      DispatchQueue.global(qos: .userInitiated).async {
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
+    }
+  }
+  
+  
+  fileprivate func deleteOpRecursive(from location: FoodieObject.StorageLocation,
+                                     type localType: FoodieObject.LocalType,
+                                     withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    // Retrieve the Journal (only) to guarentee access to the childrens
+    retrieve(from: location, type: localType, forceAnyways: false) { error in
+      
+      if let error = error {
+        CCLog.assert("Journal.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      // Delete self first before deleting children
+      self.foodieObject.deleteObject(from: location, type: localType) { error in
+        
+        if let error = error {
+          CCLog.warning("Deleting self resulted in error: \(error.localizedDescription)")
+          
+          // Do best effort delete of all children
+          if let moments = self.moments {
+            for moment in moments {
+              self.foodieObject.deleteChild(moment, from: location, type: localType, withBlock: nil)
+            }
+          }
+          
+          if let markups = self.markups {
+            for markup in markups {
+              self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: nil)
+            }
+          }
+          
+          if let venue = self.venue {
+            self.foodieObject.deleteChild(venue, from: .local, type: localType, withBlock: nil)  // Don't ever delete venues from the server
+          }
+          
+          // Don't delete Users nor Thumbnail!!!
+          
+          // Just callback with the error
+          callback?(error)
+          return
+        }
+        
+        self.foodieObject.resetOutstandingChildOperations()
+        var childOperationPending = false
+        
+        if let moments = self.moments {
+          for moment in moments {
+            self.foodieObject.deleteChild(moment, from: location, type: localType, withBlock: callback)
+            childOperationPending = true
+          }
+        }
+        
+        if let markups = self.markups {
+          for markup in markups {
+            self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: callback)
+            childOperationPending = true
+          }
+        }
+        
+        if let venue = self.venue {
+          self.foodieObject.deleteChild(venue, from: .local, type: localType, withBlock: callback)  // Don't ever delete venues from the server
+        }
+        
+        if !childOperationPending {
+          CCLog.assert("No child deletes pending. Is this okay?")
+          callback?(error)
+        }
+      }
+    }
+  }
+
   
   
   
@@ -313,43 +643,9 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                       withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
     CCLog.verbose("Retrieve Digest of Story \(getUniqueIdentifier())")
-    
-    // Retrieve self first, then retrieve children afterwards
-    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
-      
-      if let error = error {
-        CCLog.assert("Story.retrieve() resulted in error: \(error.localizedDescription)")
-        callback?(error)
-        return
-      }
-      
-      guard let thumbnail = self.thumbnailObj else {
-        CCLog.assert("Story retrieved but thumbnailObj = nil")
-        callback?(error)
-        return
-      }
-      
-      guard let venue = self.venue else {
-        CCLog.assert("Story retrieved but venue = nil")
-        callback?(error)
-        return
-      }
-      
-      self.foodieObject.resetOutstandingChildOperations()
-      
-      // Got through all sanity check, calling children's retrieveRecursive
-      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
-      
-      self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
-      
-      if let markups = self.markups {
-        for markup in markups {
-          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
-        }
-      }
-      
-      // Do we need to retrieve User?
-    }
+
+    let retrieveDigestOperation = JournalAsyncOperation(on: .retrieveDigest, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    asyncOperationQueue.addOperation(retrieveDigestOperation)
   }
   
   
@@ -360,50 +656,13 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Save Digest of Story \(getUniqueIdentifier())")
     
-    self.foodieObject.resetOutstandingChildOperations()
-    var childOperationPending = false
-    
-    // Need to make sure all children recursive saved before proceeding
-    
-    // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
-    // We are not gonna save the User here either
-    
-    if let markups = markups {
-      for markup in markups {
-        foodieObject.saveChild(markup, to: location, type: localType, withBlock: callback)
-        childOperationPending = true
-      }
-    }
-    
-    if let venue = venue {
-      foodieObject.saveChild(venue, to: location, type: localType, withBlock: callback)
-      childOperationPending = true
-    }
-    
-    if !childOperationPending {
-      DispatchQueue.global(qos: .userInitiated).async {
-        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-      }
-    }
+    let saveDigestOperation = JournalAsyncOperation(on: .saveDigest, for: self, to: location, type: localType, withBlock: callback)
+    asyncOperationQueue.addOperation(saveDigestOperation)
   }
   
   
 
   // MARK: - Foodie Object Delegate Conformance
-  fileprivate func retrieve(from location: FoodieObject.StorageLocation,
-                            type localType: FoodieObject.LocalType,
-                            forceAnyways: Bool,
-                            withBlock callback: FoodieObject.SimpleErrorBlock?) {
-    
-    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
-      
-      if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
-        self.thumbnailObj = FoodieMedia(for: fileName, localType: localType, mediaType: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
-      }
-      callback?(error)  // Callback regardless
-    }
-  }
-  
   
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
@@ -413,44 +672,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Retrieve Recursive for Story \(getUniqueIdentifier())")
     
-    // Retrieve self first, then retrieve children afterwards
-    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
-      
-      if let error = error {
-        CCLog.assert("Journal.retrieve() resulted in error: \(error.localizedDescription)")
-        callback?(error)
-        return
-      }
-      
-      guard let thumbnail = self.thumbnailObj else {
-        CCLog.assert("Unexpected Journal.retrieve() resulted in self.thumbnailObj = nil")
-        callback?(error)
-        return
-      }
-      
-      self.foodieObject.resetOutstandingChildOperations()
-      
-      // Got through all sanity check, calling children's retrieveRecursive
-      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
-      
-      if let moments = self.moments {
-        for moment in moments {
-          self.foodieObject.retrieveChild(moment, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
-        }
-      }
-      
-      if let markups = self.markups {
-        for markup in markups {
-          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
-        }
-      }
-      
-      // Do we need to retrieve User?
-      
-      if let venue = self.venue {
-        self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
-      }
-    }
+    let retrieveOperation = JournalAsyncOperation(on: .retrieveStory, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    asyncOperationQueue.addOperation(retrieveOperation)
   }
   
   
@@ -461,38 +684,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Save Recursive for Story \(getUniqueIdentifier())")
     
-    self.foodieObject.resetOutstandingChildOperations()
-    var childOperationPending = false
-    
-    // Need to make sure all children recursive saved before proceeding
-    
-    // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
-    // We are not gonna save the User here either
-    
-    if let moments = moments {
-      for moment in moments {
-        foodieObject.saveChild(moment, to: location, type: localType, withBlock: callback)
-        childOperationPending = true
-      }
-    }
-    
-    if let markups = markups {
-      for markup in markups {
-        foodieObject.saveChild(markup, to: location, type: localType, withBlock: callback)
-        childOperationPending = true
-      }
-    }
-    
-    if let venue = venue {
-      foodieObject.saveChild(venue, to: location, type: localType, withBlock: callback)
-      childOperationPending = true
-    }
-    
-    if !childOperationPending {
-      DispatchQueue.global(qos: .userInitiated).async {
-        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-      }
-    }
+    let saveOperation = JournalAsyncOperation(on: .saveStory, for: self, to: location, type: localType, withBlock: callback)
+    asyncOperationQueue.addOperation(saveOperation)
   }
  
   
@@ -503,72 +696,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Delete Recursive for Story \(getUniqueIdentifier())")
     
-    // Retrieve the Journal (only) to guarentee access to the childrens
-    retrieve(from: location, type: localType, forceAnyways: false) { error in
-      
-      if let error = error {
-        CCLog.assert("Journal.retrieve() resulted in error: \(error.localizedDescription)")
-        callback?(error)
-        return
-      }
-      
-      // Delete self first before deleting children
-      self.foodieObject.deleteObject(from: location, type: localType) { error in
-        
-        if let error = error {
-          CCLog.warning("Deleting self resulted in error: \(error.localizedDescription)")
-          
-          // Do best effort delete of all children
-          if let moments = self.moments {
-            for moment in moments {
-              self.foodieObject.deleteChild(moment, from: location, type: localType, withBlock: nil)
-            }
-          }
-          
-          if let markups = self.markups {
-            for markup in markups {
-              self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: nil)
-            }
-          }
-          
-          if let venue = self.venue {
-            self.foodieObject.deleteChild(venue, from: .local, type: localType, withBlock: nil)  // Don't ever delete venues from the server
-          }
-          
-          // Don't delete Users nor Thumbnail!!!
-          
-          // Just callback with the error
-          callback?(error)
-          return
-        }
-        
-        self.foodieObject.resetOutstandingChildOperations()
-        var childOperationPending = false
-        
-        if let moments = self.moments {
-          for moment in moments {
-            self.foodieObject.deleteChild(moment, from: location, type: localType, withBlock: callback)
-            childOperationPending = true
-          }
-        }
-        
-        if let markups = self.markups {
-          for markup in markups {
-            self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: callback)
-            childOperationPending = true
-          }
-        }
-        
-        if let venue = self.venue {
-          self.foodieObject.deleteChild(venue, from: .local, type: localType, withBlock: callback)  // Don't ever delete venues from the server
-        }
-        
-        if !childOperationPending {
-          CCLog.assert("No child deletes pending. Is this okay?")
-          callback?(error)
-        }
-      }
-    }
+    let deleteOperation = JournalAsyncOperation(on: .deleteStory, for: self, to: location, type: localType, withBlock: callback)
+    asyncOperationQueue.addOperation(deleteOperation)
   }
   
   

@@ -90,9 +90,9 @@ struct SwiftMutex {
 //      }
       
       // Record whose the lock holder
-//      lockHoldingFunction = function
-//      lockHoldingFile = file
-//      lockHoldingLine = line
+      lockHoldingFunction = function
+      lockHoldingFile = file
+      lockHoldingLine = line
     }
     
     func unlock() {
@@ -107,9 +107,9 @@ struct SwiftMutex {
 //        heldtimer = nil
 //      }
       // Remove lock hold tracking variables
-//      lockHoldingFile = ""
-//      lockHoldingFunction = ""
-//      lockHoldingLine = 0
+      lockHoldingFile = ""
+      lockHoldingFunction = ""
+      lockHoldingLine = 0
     }
   }
   
