@@ -456,7 +456,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       CCLog.debug("Pre-Save Operation Started")
       
       // Save Journal to Local
-      journal.saveRecursive(to: .local, type: .draft) { error in  // TODO: Should really change to save Digest to Local instead
+      journal.saveDigest(to: .local, type: .draft) { error in  // TODO: Should really change to save Digest to Local instead
 
         if let error = error {
           CCLog.warning("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
