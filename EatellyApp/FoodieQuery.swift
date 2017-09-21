@@ -33,6 +33,15 @@ class FoodieQuery {
   }
   
   
+  
+  // MARK: - Constants
+  struct Constants {
+    static let QueryRetryCount = 5
+    static let QueryRetryDelaySeconds: Double = 0.5
+  }
+  
+  
+  
   // MARK: Error Types Definition
   enum ErrorCode: LocalizedError {
     
@@ -306,11 +315,15 @@ class FoodieQuery {
     pfInnerQuery = innerQuery
     
     // Do the actual search!
-    pfQuery!.findObjectsInBackground { (objects, error) in
-      if let journals = objects as? [FoodieJournal] {
-        callback?(journals, error)
-      } else {
-        callback?(nil, error)
+    let queryRetry = SwiftRetry()
+    queryRetry.start("query and search for Story", withCountOf: Constants.QueryRetryCount) {
+      self.pfQuery!.findObjectsInBackground { (objects, error) in
+        if let journals = objects as? [FoodieJournal] {
+          callback?(journals, error)
+        } else {
+          if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .userInitiated) { return }
+          callback?(nil, error)
+        }
       }
     }
   }
@@ -328,11 +341,15 @@ class FoodieQuery {
     pfQuery = query
     
     // Do the actual search!
-    pfQuery!.findObjectsInBackground { (objects, error) in
-      if let journals = objects as? [FoodieVenue] {
-        callback?(journals, error)
-      } else {
-        callback?(nil, error)
+    let queryRetry = SwiftRetry()
+    queryRetry.start("query and search for Venue", withCountOf: Constants.QueryRetryCount) {
+      self.pfQuery!.findObjectsInBackground { (objects, error) in
+        if let journals = objects as? [FoodieVenue] {
+          callback?(journals, error)
+        } else {
+          if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .userInitiated) { return }
+          callback?(nil, error)
+        }
       }
     }
   }
@@ -351,11 +368,15 @@ class FoodieQuery {
     query.limit = limit
     
     // Do the actual search!
-    query.findObjectsInBackground { (objects, error) in
-      if let journals = objects as? [FoodieJournal] {
-        callback?(journals, error)
-      } else {
-        callback?(nil, error)
+    let queryRetry = SwiftRetry()
+    queryRetry.start("query and search for next Stories", withCountOf: Constants.QueryRetryCount) {
+      query.findObjectsInBackground { (objects, error) in
+        if let journals = objects as? [FoodieJournal] {
+          callback?(journals, error)
+        } else {
+          if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .userInitiated) { return }
+          callback?(nil, error)
+        }
       }
     }
   }
@@ -374,11 +395,15 @@ class FoodieQuery {
     query.limit = limit
     
     // Do the actual search!
-    query.findObjectsInBackground { (objects, error) in
-      if let journals = objects as? [FoodieVenue] {
-        callback?(journals, error)
-      } else {
-        callback?(nil, error)
+    let queryRetry = SwiftRetry()
+    queryRetry.start("query and search for next Venues", withCountOf: Constants.QueryRetryCount) {
+      query.findObjectsInBackground { (objects, error) in
+        if let journals = objects as? [FoodieVenue] {
+          callback?(journals, error)
+        } else {
+          if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .userInitiated) { return }
+          callback?(nil, error)
+        }
       }
     }
   }

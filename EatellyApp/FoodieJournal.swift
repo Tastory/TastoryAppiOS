@@ -312,6 +312,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                       forceAnyways: Bool = false,
                       withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
+    CCLog.verbose("Retrieve Digest of Story \(getUniqueIdentifier())")
+    
     // Retrieve self first, then retrieve children afterwards
     retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
@@ -355,6 +357,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func saveDigest(to location: FoodieObject.StorageLocation,
                   type localType: FoodieObject.LocalType,
                   withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    CCLog.verbose("Save Digest of Story \(getUniqueIdentifier())")
     
     self.foodieObject.resetOutstandingChildOperations()
     var childOperationPending = false
@@ -407,6 +411,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                          forceAnyways: Bool = false,
                          withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
+    CCLog.verbose("Retrieve Recursive for Story \(getUniqueIdentifier())")
+    
     // Retrieve self first, then retrieve children afterwards
     retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
@@ -453,6 +459,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                      type localType: FoodieObject.LocalType,
                      withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
+    CCLog.verbose("Save Recursive for Story \(getUniqueIdentifier())")
+    
     self.foodieObject.resetOutstandingChildOperations()
     var childOperationPending = false
     
@@ -492,6 +500,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
                        withBlock callback: FoodieObject.SimpleErrorBlock?) {
+    
+    CCLog.verbose("Delete Recursive for Story \(getUniqueIdentifier())")
     
     // Retrieve the Journal (only) to guarentee access to the childrens
     retrieve(from: location, type: localType, forceAnyways: false) { error in

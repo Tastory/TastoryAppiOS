@@ -17,11 +17,14 @@ class MapViewController: UIViewController {
   enum ErrorCode: LocalizedError {
     
     case mapQueryExceededMaxLat
+    case queryNilStory
     
     var errorDescription: String? {
       switch self {
       case .mapQueryExceededMaxLat:
         return NSLocalizedString("Exceeded allowed maximum number of degrees latitude for map query", comment: "Error description for a Map View Controller Query")
+      case .queryNilStory:
+        return NSLocalizedString("Create Story Query & Search returned no errors but nil Story Array", comment: "Error description for a Map View Controller Query")
       }
     }
     
@@ -35,18 +38,18 @@ class MapViewController: UIViewController {
   
   // MARK: - Class Constants
   fileprivate struct Constants {
-    static let defaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
+    static let DefaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
                                                               longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
-    static let defaultMaxDelta: CLLocationDegrees = 0.05
-    static let defaultMinDelta: CLLocationDegrees = 0.005
+    static let DefaultMaxDelta: CLLocationDegrees = 0.05
+    static let DefaultMinDelta: CLLocationDegrees = 0.005
     
-    static let queryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
+    static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
   }
 
   
 
   // MARK: - Instance Variables
-  fileprivate var currentMapDelta = Constants.defaultMaxDelta
+  fileprivate var currentMapDelta = Constants.DefaultMaxDelta
   fileprivate var locationWatcher: LocationWatch.Context?
   fileprivate var lastLocation: CLLocationCoordinate2D? = nil
   fileprivate var lastMapDelta: CLLocationDegrees? = nil
@@ -132,10 +135,10 @@ class MapViewController: UIViewController {
     if let mapView = mapView { currentMapDelta = mapView.region.span.latitudeDelta }
     
     // Take the lesser of current or default max latitude degrees
-    currentMapDelta = min(currentMapDelta, Constants.defaultMaxDelta)
+    currentMapDelta = min(currentMapDelta, Constants.DefaultMaxDelta)
 
     // Take the greater of current or default min latitude degrees
-    currentMapDelta = max(currentMapDelta, Constants.defaultMinDelta)
+    currentMapDelta = max(currentMapDelta, Constants.DefaultMinDelta)
 
     // Start updating location again
     locationWatcher?.resume()
@@ -291,7 +294,7 @@ class MapViewController: UIViewController {
     CCLog.verbose("Query Location Rectangle SouthWest - (\(southWestCoordinate.latitude), \(southWestCoordinate.longitude)), NorthEast - (\(northEastCoordinate.latitude), \(northEastCoordinate.longitude))")
     
     // We are going to limit search to a maximum of 1 degree of of Latitude (approximately 111km)
-    guard (northEastCoordinate.latitude - southWestCoordinate.latitude) < Constants.queryMaxLatDelta else {
+    guard (northEastCoordinate.latitude - southWestCoordinate.latitude) < Constants.QueryMaxLatDelta else {
       callback?(nil, ErrorCode.mapQueryExceededMaxLat)
       return
     }
@@ -334,7 +337,7 @@ class MapViewController: UIViewController {
       guard let journalArray = journals else {
         self.queryErrorDialog()
         CCLog.assert("Create Journal Query & Search returned with nil Journal Array")
-        callback?(nil, nil)  // TODO: - Return a real error fucking
+        callback?(nil, ErrorCode.queryNilStory)
         return
       }
       
@@ -359,6 +362,10 @@ class MapViewController: UIViewController {
           return
         }
       
+        if let venue = story.venue, venue.isDataAvailable == false {
+          CCLog.fatal("Venue \(venue.getUniqueIdentifier()) returned with no Data Available")
+        }
+        
         guard let title = story.title, let venue = story.venue, let location = venue.location else {
           CCLog.warning("No Title, Venue or Location to Story. Skipping Story")
           return
@@ -449,8 +456,8 @@ class MapViewController: UIViewController {
     FoodiePrefetch.global.removeAllPrefetchWork()
     
     // Provide a default Map Region incase Location Update is slow or user denies authorization
-    let startMapLocation: CLLocationCoordinate2D = lastLocation ?? Constants.defaultCLCoordinate2D
-    let startMapDelta: CLLocationDegrees = lastMapDelta ?? Constants.defaultMaxDelta
+    let startMapLocation: CLLocationCoordinate2D = lastLocation ?? Constants.DefaultCLCoordinate2D
+    let startMapDelta: CLLocationDegrees = lastMapDelta ?? Constants.DefaultMaxDelta
     
     let region = MKCoordinateRegion(center: startMapLocation,
                                     span: MKCoordinateSpan(latitudeDelta: startMapDelta, longitudeDelta: startMapDelta))
@@ -602,7 +609,7 @@ extension MapViewController: UITextFieldDelegate {
 
       } else if let coordinate = placemarks[0].location?.coordinate {
         // Determine region via placemark.location.coordinate and default max delta if clRegion is not available
-        region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: Constants.defaultMaxDelta, longitudeDelta: Constants.defaultMaxDelta))
+        region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: Constants.DefaultMaxDelta, longitudeDelta: Constants.DefaultMaxDelta))
 
       } else if let clRegion = placemarks[0].region as? CLCircularRegion {
         // Determine region via placemarks.region as fall back

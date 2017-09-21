@@ -37,12 +37,12 @@ class SwiftRetry {
       return false
     }
     
-    if retryCount <= 1 {
-      CCLog.verbose("All \(initialRetryCount) retry attempts of \(requestName) exhausted")
+    if retryCount <= 0 {
+      CCLog.warning("All \(initialRetryCount) retry attempts of \(requestName) exhausted")
       self.retryRequest = nil  // Make sure we break the reference cycle
       return false
     } else {
-      CCLog.verbose("Retrying \(requestName) #\(initialRetryCount - retryCount + 1)/\(initialRetryCount)")
+      CCLog.info("Retrying \(requestName) #\(initialRetryCount - retryCount + 1)/\(initialRetryCount)")
       self.retryCount = retryCount - 1
       
       if delaySeconds != 0 {

@@ -13,6 +13,12 @@ import Foundation
 // Abstract Class for Foodie Objects based on PFObject
 class FoodiePFObject: PFObject {
   
+  // MARK: - Constants
+  struct Constants {
+    static let ParseRetryCount: Int = 5
+    static let ParseRetryDelaySeconds: Double = 0.5
+  }
+  
   // MARK: - Public Instance Variables
   var foodieObject: FoodieObject!
   
@@ -123,6 +129,8 @@ class FoodiePFObject: PFObject {
                                    type localType: FoodieObject.LocalType,
                                    withBlock callback: FoodieObject.SimpleErrorBlock?) {
     
+    let fetchRetry = SwiftRetry()
+    
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
@@ -137,12 +145,16 @@ class FoodiePFObject: PFObject {
     // If force anyways, try to fetch
     else if forceAnyways {
       CCLog.debug("Forced to fetch \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) In Background")
-      fetchInBackground() { object, error in  // This fetch only comes from Server
-        if let error = error {
-          CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
+      
+      fetchRetry.start("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())", withCountOf: Constants.ParseRetryCount) {
+        self.fetchInBackground() { object, error in  // This fetch only comes from Server
+          if let error = error {
+            CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
+            if fetchRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
+          }
+          // Return if got what's wanted
+          callback?(error)
         }
-        // Return if got what's wanted
-        callback?(error)
       }
       return
     }
@@ -152,7 +164,7 @@ class FoodiePFObject: PFObject {
     fetchFromLocalDatastoreInBackground { localObject, localError in  // Fetch does not distinguish from where (draft vs cache)
       
       if localError == nil, localObject != nil, self.isDataAvailable == true {
-        // This is good case, just return here!
+        CCLog.verbose("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) form Local Datastore Error: \(localError?.localizedDescription ?? "Nil"), localObject: \(localObject != nil ? "True" : "False"), DataAvailable: \(self.isDataAvailable ? "True" : "False")")
         callback?(nil)
         return
       }
@@ -174,15 +186,20 @@ class FoodiePFObject: PFObject {
       
       // If not in Local Datastore, retrieved from Server
       CCLog.debug("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) In Background")
-      self.fetchIfNeededInBackground { serverObject, serverError in
-        if let error = serverError {
-          CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
-        } else {
-          CCLog.debug("Pin \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) to Name '\(localType)'")
-          self.pinInBackground(withName: localType.rawValue) { (success, error) in FoodiePFObject.booleanToSimpleErrorCallback(success, error, nil) }
+      
+      
+      fetchRetry.start("Fetch \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())", withCountOf: Constants.ParseRetryCount) {
+        self.fetchIfNeededInBackground { serverObject, serverError in
+          if let error = serverError {
+            CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()), with error: \(error.localizedDescription)")
+            if fetchRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
+          } else {
+            CCLog.debug("Pin \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) to Name '\(localType)'")
+            self.pinInBackground(withName: localType.rawValue) { (success, error) in FoodiePFObject.booleanToSimpleErrorCallback(success, error, nil) }
+          }
+          // Return if got what's wanted
+          callback?(serverError)
         }
-        // Return if got what's wanted
-        callback?(serverError)
       }
     }
   }
@@ -215,7 +232,17 @@ class FoodiePFObject: PFObject {
       }
       
       CCLog.debug("Save \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier()) in background")
-      self.saveInBackground { success, error in FoodiePFObject.booleanToSimpleErrorCallback(success, error, callback) }
+      
+      let saveRetry = SwiftRetry()
+      saveRetry.start("Save \(delegate.foodieObjectType()), Session ID: \(self.getUniqueIdentifier())", withCountOf: Constants.ParseRetryCount) {
+        
+        self.saveInBackground { success, error in
+          if !success || error != nil {
+            if saveRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
+          }
+          FoodiePFObject.booleanToSimpleErrorCallback(success, error, callback)
+        }
+      }
     }
   }
   
@@ -238,7 +265,17 @@ class FoodiePFObject: PFObject {
     
     // TODO: Delete should also unpin across all namespaces
     CCLog.debug("Delete \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier()) in Background")
-    deleteInBackground { success, error in FoodiePFObject.booleanToSimpleErrorCallback(success, error, callback) }
+    
+    let deleteRetry = SwiftRetry()
+    deleteRetry.start("Delete \(delegate.foodieObjectType()), Session ID: \(getUniqueIdentifier())", withCountOf: Constants.ParseRetryCount) {
+      
+      self.deleteInBackground { success, error in
+        if !success || error != nil {
+          if deleteRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
+        }
+        FoodiePFObject.booleanToSimpleErrorCallback(success, error, callback)
+      }
+    }
   }
   
   
