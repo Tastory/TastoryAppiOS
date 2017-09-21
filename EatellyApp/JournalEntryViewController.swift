@@ -234,6 +234,8 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     dismiss(animated: true, completion: nil)
   }
 
+  // TODO renabale when modify is ready 
+  /*
   func handleTap(_ sender: UIGestureRecognizer)
   {
      let point = sender.location(in: momentViewController.collectionView)
@@ -256,6 +258,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
      self.present(viewController, animated: true)
      }
   }
+  */
 
   
   // MARK: - View Controller Life Cycle
@@ -271,8 +274,9 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     momentViewController.workingJournal = workingJournal
     momentViewController.momentHeight = Constants.momentHeight
 
-    let tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTap:")
-    momentViewController.collectionView?.addGestureRecognizer(tapRecognizer)
+    // TODO re enable when modify moment is ready 
+    //let tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTap:")
+    //momentViewController.collectionView?.addGestureRecognizer(tapRecognizer)
  
     self.addChildViewController(momentViewController)
     momentViewController.didMove(toParentViewController: self)
