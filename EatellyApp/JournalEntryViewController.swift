@@ -16,7 +16,7 @@ import MapKit
 import CoreLocation
 
 
-class JournalEntryViewController: UITableViewController {
+class JournalEntryViewController: UITableViewController, UIGestureRecognizerDelegate {
   
   // MARK: - Private Static Constants
   fileprivate struct Constants {
@@ -47,7 +47,6 @@ class JournalEntryViewController: UITableViewController {
   fileprivate var markupMoment: FoodieMoment? = nil
   fileprivate let activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
   fileprivate let saveOperationQueue = OperationQueue()
-  
   
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
@@ -100,7 +99,15 @@ class JournalEntryViewController: UITableViewController {
         CCLog.warning("Save Story to Server Failed with Error: \(error)")
         AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
       } else {
-        
+        // delete moments from pending delete list
+        for moment in journal.pendingDeleteMomentList {
+          moment.deleteRecursive(withName: nil) { (success, error) in
+            if let error = error {
+              CCLog.warning("Failed to delete moments from pending delete moment lists: \(error)")
+            }
+          }
+        }
+
         // TODO: What we really should do is to move this from a workingJournal/User Document space, into the Cache space.
         FoodieJournal.unpinAllObjectsInBackground(withName: FoodieGlobal.Constants.SavedDraftPinName)
         FoodieJournal.removeCurrent()
@@ -226,7 +233,30 @@ class JournalEntryViewController: UITableViewController {
     // TODO: Data Passback through delegate?
     dismiss(animated: true, completion: nil)
   }
-  
+
+  func handleTap(_ sender: UIGestureRecognizer)
+  {
+     let point = sender.location(in: momentViewController.collectionView)
+
+     if let indexPath = momentViewController.collectionView!.indexPathForItem(at: point) {
+     guard let momentArray = workingJournal?.moments else {
+     CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
+     }
+
+     if(indexPath.row >= momentArray.count)
+     {
+     CCLog.fatal("Moment selection is out of bound")
+     }
+
+     let moment = momentArray[indexPath.row]
+     let storyboard = UIStoryboard(name: "Main", bundle: nil)
+     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+     viewController.mediaObj = moment.mediaObj
+     //viewController.markupReturnDelegate = self
+     self.present(viewController, animated: true)
+     }
+  }
+
   
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
@@ -240,7 +270,10 @@ class JournalEntryViewController: UITableViewController {
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
     momentViewController.workingJournal = workingJournal
     momentViewController.momentHeight = Constants.momentHeight
-    
+
+    let tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTap:")
+    momentViewController.collectionView?.addGestureRecognizer(tapRecognizer)
+ 
     self.addChildViewController(momentViewController)
     momentViewController.didMove(toParentViewController: self)
     

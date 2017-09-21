@@ -873,40 +873,34 @@
                                     <rect key="frame" x="0.0" y="0.0" width="100" height="222"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="znA-BN-xwr">
-                                            <rect key="frame" x="0.0" y="0.0" width="100" height="222"/>
-                                            <color key="tintColor" red="0.9169090741" green="0.0" blue="0.09406216178" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </button>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oF2-s4-G9T">
+                                            <rect key="frame" x="-8" y="0.0" width="139" height="222"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        </imageView>
                                         <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cSh-jl-knJ">
-                                            <rect key="frame" x="0.0" y="9" width="100" height="222"/>
-                                            <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BCS-cR-mdn">
-                                                    <rect key="frame" x="71" y="0.0" width="29" height="30"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <rect key="contentStretch" x="1" y="0.0" width="1" height="1"/>
-                                                    <state key="normal" title="X"/>
-                                                    <connections>
-                                                        <action selector="deleteMomentButton:" destination="5yf-rk-zGg" eventType="touchUpInside" id="fUt-VL-L6V"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
+                                            <rect key="frame" x="-8" y="0.0" width="116" height="222"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BCS-cR-mdn">
+                                            <rect key="frame" x="90" y="0.0" width="29" height="30"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <rect key="contentStretch" x="1" y="0.0" width="1" height="1"/>
+                                            <state key="normal" title="X"/>
+                                            <connections>
+                                                <action selector="deleteMomentButton:" destination="5yf-rk-zGg" eventType="touchUpInside" id="nSU-Cb-ikV"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                 </view>
                                 <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="cSh-jl-knJ" secondAttribute="bottom" id="4Vf-eT-xnb"/>
-                                    <constraint firstAttribute="bottom" secondItem="znA-BN-xwr" secondAttribute="bottom" id="6VQ-AG-CAJ"/>
-                                    <constraint firstItem="znA-BN-xwr" firstAttribute="leading" secondItem="5yf-rk-zGg" secondAttribute="leading" id="B2C-ae-bmk"/>
-                                    <constraint firstItem="znA-BN-xwr" firstAttribute="top" secondItem="5yf-rk-zGg" secondAttribute="top" id="UwF-zc-g6V"/>
                                     <constraint firstAttribute="trailing" secondItem="cSh-jl-knJ" secondAttribute="trailing" id="W7m-QQ-hOR"/>
-                                    <constraint firstAttribute="trailing" secondItem="znA-BN-xwr" secondAttribute="trailing" id="aTV-yd-wcF"/>
                                     <constraint firstItem="cSh-jl-knJ" firstAttribute="top" secondItem="5yf-rk-zGg" secondAttribute="top" id="eQS-Jn-sxO"/>
                                     <constraint firstItem="cSh-jl-knJ" firstAttribute="leading" secondItem="5yf-rk-zGg" secondAttribute="leading" id="vp1-1V-DA0"/>
                                 </constraints>
                                 <connections>
-                                    <outlet property="momentButton" destination="znA-BN-xwr" id="L6c-OB-ZbU"/>
+                                    <outlet property="momentThumb" destination="oF2-s4-G9T" id="FtQ-lr-s6d"/>
                                     <outlet property="thumbFrameView" destination="cSh-jl-knJ" id="DPu-5k-f0e"/>
                                 </connections>
                             </collectionViewCell>
@@ -923,7 +917,6 @@
                             <outlet property="dataSource" destination="mqr-nw-IyY" id="eTY-oM-TWy"/>
                             <outlet property="delegate" destination="mqr-nw-IyY" id="3cw-ym-o9Y"/>
                             <outletCollection property="gestureRecognizers" destination="V4H-Gh-Xpw" appends="YES" id="Jmz-U7-QBT"/>
-                            <outletCollection property="gestureRecognizers" destination="NeE-ZQ-0mh" appends="YES" id="FvJ-X7-DBb"/>
                         </connections>
                     </collectionView>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
@@ -935,11 +928,6 @@
                         <action selector="longPressAction:" destination="mqr-nw-IyY" id="EXW-KV-WbS"/>
                     </connections>
                 </pongPressGestureRecognizer>
-                <tapGestureRecognizer id="NeE-ZQ-0mh">
-                    <connections>
-                        <action selector="tapAction:" destination="mqr-nw-IyY" id="soz-cf-GWq"/>
-                    </connections>
-                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="2461.5999999999999" y="-946.32683658170924"/>
         </scene>

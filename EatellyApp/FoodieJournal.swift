@@ -82,8 +82,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   var thumbnailObj: FoodieMedia?
   var selfPrefetchContext: FoodiePrefetch.Context?
   var contentPrefetchContext: FoodiePrefetch.Context?
-
-
+  var pendingDeleteMomentList: Array<FoodieMoment> = Array()
   
   // MARK: - Private Instance Variables
   fileprivate var contentRetrievalMutex = SwiftMutex.create()
