@@ -275,11 +275,14 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
             CCLog.assert("Deleting a moment from an out of bound index")
           }
+          return
         }
 
         if(momentArray.count == 1)
         {
-          AlertDialog.present(from: self, title: "Delete Error", message: "Each story must contain at least one moment")
+          AlertDialog.present(from: self, title: "Delete Error", message: "Each story must contain at least one moment") { action in
+            CCLog.info("User tried to remove the last Moment from Story")
+          }
           return
         }
 
