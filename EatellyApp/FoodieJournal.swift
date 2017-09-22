@@ -14,6 +14,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Parse PFObject keys
   // If new objects or external types are added here, check if save and delete algorithms needs updating
   @NSManaged var moments: Array<FoodieMoment>? // A FoodieMoment Photo or Video
+  @NSManaged var pendingDeleteMomentList: Array<FoodieMoment>?
   @NSManaged var thumbnailFileName: String? // URL for the thumbnail media. Needs to go with the thumbnail object.
   @NSManaged var type: Int // Really enum for the thumbnail type. Allow videos in the future?
   @NSManaged var aspectRatio: Double
@@ -82,7 +83,6 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   var thumbnailObj: FoodieMedia?
   var selfPrefetchContext: FoodiePrefetch.Context?
   var contentPrefetchContext: FoodiePrefetch.Context?
-
 
   
   // MARK: - Private Instance Variables

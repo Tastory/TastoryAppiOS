@@ -8,16 +8,26 @@
 
 import UIKit
 
+protocol MomentCollectionViewCellDelegate: class {
+  func deleteMoment(sourceCell cell: MomentCollectionViewCell)
+}
+
+
 class MomentCollectionViewCell: UICollectionViewCell {
-  @IBOutlet weak var momentButton: UIButton!
+  @IBOutlet weak var momentThumb: UIImageView!
   @IBOutlet weak var thumbFrameView: UIView!
-  
+  weak var delegate: MomentCollectionViewCellDelegate?
+
   private struct Constants {
     static let thumbnailFrameLineWidth: CGFloat = 10.0
   }
-  
+
+  @IBAction func deleteMomentButton(_ sender: UIButton) {
+    delegate?.deleteMoment(sourceCell: self)
+  }
+
   var thumbFrameLayer = ThumbnailFrameLayer()
-  
+
   func createFrameLayer() {
     thumbFrameLayer = ThumbnailFrameLayer(frame: bounds) // bounds.insetBy(dx: bounds.maxX*Constants.thumbnailFrameInsetPct,
                                                          //       dy: bounds.maxY*Constants.thumbnailFrameInsetPct))

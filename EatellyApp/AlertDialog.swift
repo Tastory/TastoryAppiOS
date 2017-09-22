@@ -46,9 +46,31 @@ struct AlertDialog {
     DispatchQueue.main.async { vc.present(alertController, animated: true, completion: nil) }
     }
   }
-  
-  
+
   static func standardPresent(from vc: UIViewController, title: StdTitle, message: StdMsg, completion handler: ((UIAlertAction) -> Void)? = nil) {
     AlertDialog.present(from: vc, title: title.rawValue, message: message.rawValue, completion: handler)
+  }
+
+  static func presentConfirm(from vc: UIViewController, title: String, message: String, completion handler: ((UIAlertAction) -> Void)? = nil) {
+    if vc.presentedViewController == nil {
+      let vcTitle = vc.title ?? "untitled ViewController"
+      let confirmButton =
+        UIKit.UIAlertAction(title: "Confirm",
+                            comment: "Confirm action as presented from \(vcTitle)",
+                            style: .destructive,
+                            handler: handler)
+      let alertController =
+        UIAlertController(title: title,
+                          titleComment: "Confirm Dialog title to warn user as presented from \(vcTitle)",
+                          message: message,
+                          messageComment: "Confirm Dialog message to warn user as presented from \(vcTitle)",
+                          preferredStyle: .alert)
+
+      alertController.addAction(confirmButton)
+      alertController.addAlertAction(title: "Cancel",
+                                     comment: "Alert Dialog box button to cancel",
+                                     style: .cancel)
+      DispatchQueue.main.async { vc.present(alertController, animated: true, completion: nil) }
+    }
   }
 }

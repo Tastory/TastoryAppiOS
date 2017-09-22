@@ -31,53 +31,56 @@ class MomentCollectionViewController: UICollectionViewController {
   fileprivate var momentWidthDefault: CGFloat!
   fileprivate var momentSizeDefault: CGSize!
 
-
   // MARK: - IBActions
   @IBAction func longPressAction(_ lpgr: UILongPressGestureRecognizer) {
     let point = lpgr.location(in: self.collectionView)
 
     if let indexPath = collectionView!.indexPathForItem(at: point) {
-      let cell = collectionView!.cellForItem(at: indexPath) as! MomentCollectionViewCell
-
-      guard let momentArray = workingJournal.moments else {
-        CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
-      }
-      
-      // Clear the last thumbnail selection if any
-      if workingJournal.thumbnailFileName != nil {
-        var momentArrayIndex = 0
-        for moment in momentArray {
-          if workingJournal.thumbnailFileName == moment.thumbnailFileName {
-            let oldIndexPath = IndexPath(row: momentArrayIndex, section: indexPath.section)
-            
-            // If the oldIndexPath is same as the pressed indexPath, nothing to do here really.
-            if oldIndexPath != indexPath {
-              if let oldCell = collectionView!.cellForItem(at: oldIndexPath) as? MomentCollectionViewCell {
-                oldCell.thumbFrameView.isHidden = true
-              } else {
-                collectionView!.reloadItems(at: [oldIndexPath])
-              }
-            }
-            break
-          }
-          momentArrayIndex += 1
-        }
-      }
-      
-      // Long Press detected on a Moment Thumbnail. Set that as the Journal Thumbnail
-      // TODO: Do we need to factor out thumbnail operations?
-      workingJournal.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
-      workingJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObj
-      
-      // Unhide the Thumbnail Frame to give feedback to user that this is the Journal Thumbnail
-      cell.thumbFrameView.isHidden = false
-      
+      setThumbnail(at: indexPath)
     } else {
       // Ignore, not long pressing on a valid Moment Thumbnail
     }
   }
-  
-  
+
+  // MARK: - Private Instance Functions
+  fileprivate func setThumbnail(at indexPath: IndexPath)
+  {
+    let cell = collectionView!.cellForItem(at: indexPath) as! MomentCollectionViewCell
+
+    guard let momentArray = workingJournal.moments else {
+      CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
+    }
+
+    // Clear the last thumbnail selection if any
+    if workingJournal.thumbnailFileName != nil {
+      var momentArrayIndex = 0
+      for moment in momentArray {
+        if workingJournal.thumbnailFileName == moment.thumbnailFileName {
+          let oldIndexPath = IndexPath(row: momentArrayIndex, section: indexPath.section)
+
+          // If the oldIndexPath is same as the pressed indexPath, nothing to do here really.
+          if oldIndexPath != indexPath {
+            if let oldCell = collectionView!.cellForItem(at: oldIndexPath) as? MomentCollectionViewCell {
+              oldCell.thumbFrameView.isHidden = true
+            } else {
+              collectionView!.reloadItems(at: [oldIndexPath])
+            }
+          }
+          break
+        }
+        momentArrayIndex += 1
+      }
+    }
+
+    // Long Press detected on a Moment Thumbnail. Set that as the Journal Thumbnail
+    // TODO: Do we need to factor out thumbnail operations?
+    workingJournal.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
+    workingJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObj
+
+    // Unhide the Thumbnail Frame to give feedback to user that this is the Journal Thumbnail
+    cell.thumbFrameView.isHidden = false
+  }
+
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -134,7 +137,6 @@ extension MomentCollectionViewController {
 
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath) as! MomentCollectionViewCell
-    
     guard let momentArray = workingJournal.moments else {
       CCLog.debug("No Moments for workingJournal")
       return cell
@@ -197,7 +199,7 @@ extension MomentCollectionViewController {
       }
     }
     thumbnail = UIImage(data: moment.thumbnailObj!.imageMemoryBuffer!)
-    cell.momentButton.setImage(thumbnail, for: .normal)
+    cell.momentThumb.image = thumbnail
   
     // Should Thumbnail frame be hidden?
     cell.createFrameLayer()
@@ -206,6 +208,9 @@ extension MomentCollectionViewController {
     } else {
       cell.thumbFrameView.isHidden = true
     }
+
+    cell.delegate = self
+
     return cell
   }
 
@@ -241,5 +246,81 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
     }
     let moment = momentArray[indexPath.row]
     return CGSize(width: momentHeight!/CGFloat(moment.aspectRatio), height: momentHeight!)
+  }
+}
+
+extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
+
+  func deleteMoment(sourceCell cell: MomentCollectionViewCell) {
+
+    // make sure you get confirmation from user before deleting 
+  AlertDialog.presentConfirm(from: self, title: "Deleting a moment", message: "Do you want to delete this moment?"){ action in
+
+      guard let collectionView = self.collectionView else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.assert("collection view is nil")
+        }
+        return
+      }
+
+      if let indexPath = collectionView.indexPath(for: cell) {
+        guard let momentArray = self.workingJournal.moments else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            CCLog.assert("No Moments for workingJournal")
+          }
+          return
+        }
+
+        if indexPath.item >= momentArray.count {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            CCLog.assert("Deleting a moment from an out of bound index")
+          }
+        }
+
+        if(momentArray.count == 1)
+        {
+          AlertDialog.present(from: self, title: "Delete Error", message: "Each story must contain at least one moment")
+          return
+        }
+
+        let moment = momentArray[indexPath.item]
+
+        // if the deleted item is the one with the thumnail, select next in the list
+        if self.workingJournal.thumbnailFileName == moment.thumbnailFileName {
+
+          var rowIdx = indexPath.row + 1
+          if(rowIdx >= momentArray.count)
+          {
+            rowIdx = indexPath.row - 1
+          }
+
+          // row is the index of the moment array
+          self.setThumbnail(at: IndexPath(row: rowIdx, section: indexPath.section))
+        }
+
+        self.workingJournal.moments?.remove(at: indexPath.item)
+        moment.deleteRecursive(withName: FoodieGlobal.Constants.SavedDraftPinName) { (success, error) in
+          if let error = error {
+            CCLog.warning("Failed to delete moments from pending delete moment lists: \(error)")
+          }
+        }
+
+        //TODO pre-save this journal 
+        // cant access JournalEntryVC from this controller not sure how to presave like we do in
+        // journal entry view controller.
+
+        // there seems to be a few seconds delay when not refreshing from the main thread
+        DispatchQueue.main.async {
+          collectionView.reloadData()
+        }
+      }
+    }
+  }
+}
+
+//TODO need to figure a better way to return from moment markup back to journalentry VC 
+extension MomentCollectionViewController: MarkupReturnDelegate {
+  func markupComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
+    self.dismiss(animated: true, completion: nil)
   }
 }
