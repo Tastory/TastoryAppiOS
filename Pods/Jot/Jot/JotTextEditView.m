@@ -276,12 +276,12 @@
 	
     BOOL result = YES;
     NSUInteger actualTextLength = (textView.text.length - range.length);
-    if ((actualTextLength + text.length) > 70) {
+    if ((actualTextLength + text.length) > 200) {
         result = NO;
     }
     if (!result) {
-        if (actualTextLength < 70) {
-            NSString *newText = [self cutText:text toLength:(70 - actualTextLength)];
+        if (actualTextLength < 200) {
+            NSString *newText = [self cutText:text toLength:(200 - actualTextLength)];
             if (nil != newText) {
                 UITextRange *textRange = textView.selectedTextRange;
                 dispatch_async(dispatch_get_main_queue(), ^{
