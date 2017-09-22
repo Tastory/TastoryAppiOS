@@ -42,7 +42,8 @@ class MomentCollectionViewController: UICollectionViewController {
     }
   }
 
-  func setThumbnail(at indexPath: IndexPath)
+  // MARK: - Private Instance Functions
+  fileprivate func setThumbnail(at indexPath: IndexPath)
   {
     let cell = collectionView!.cellForItem(at: indexPath) as! MomentCollectionViewCell
 
@@ -256,16 +257,24 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
   AlertDialog.presentConfirm(from: self, title: "Deleting a moment", message: "Do you want to delete this moment?"){ action in
 
       guard let collectionView = self.collectionView else {
-        CCLog.fatal("collection view is nil")
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.assert("collection view is nil")
+        }
+        return
       }
 
       if let indexPath = collectionView.indexPath(for: cell) {
         guard let momentArray = self.workingJournal.moments else {
-          CCLog.fatal("No Moments for workingJournal")
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            CCLog.assert("No Moments for workingJournal")
+          }
+          return
         }
 
         if indexPath.item >= momentArray.count {
-          CCLog.fatal("Deleting a moment from an out of bound index")
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            CCLog.assert("Deleting a moment from an out of bound index")
+          }
         }
 
         if(momentArray.count == 1)
@@ -289,8 +298,17 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
           self.setThumbnail(at: IndexPath(row: rowIdx, section: indexPath.section))
         }
 
-        self.workingJournal.pendingDeleteMomentList.append(moment)
         self.workingJournal.moments?.remove(at: indexPath.item)
+        moment.deleteRecursive(withName: FoodieGlobal.Constants.SavedDraftPinName) { (success, error) in
+          if let error = error {
+            CCLog.warning("Failed to delete moments from pending delete moment lists: \(error)")
+          }
+        }
+
+        //TODO pre-save this journal 
+        // cant access JournalEntryVC from this controller not sure how to presave like we do in
+        // journal entry view controller.
+
         // there seems to be a few seconds delay when not refreshing from the main thread
         DispatchQueue.main.async {
           collectionView.reloadData()

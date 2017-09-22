@@ -99,15 +99,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
         CCLog.warning("Save Story to Server Failed with Error: \(error)")
         AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
       } else {
-        // delete moments from pending delete list
-        for moment in journal.pendingDeleteMomentList {
-          moment.deleteRecursive(withName: nil) { (success, error) in
-            if let error = error {
-              CCLog.warning("Failed to delete moments from pending delete moment lists: \(error)")
-            }
-          }
-        }
-
+ 
         // TODO: What we really should do is to move this from a workingJournal/User Document space, into the Cache space.
         FoodieJournal.unpinAllObjectsInBackground(withName: FoodieGlobal.Constants.SavedDraftPinName)
         FoodieJournal.removeCurrent()
@@ -234,7 +226,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     dismiss(animated: true, completion: nil)
   }
 
-  // TODO renabale when modify is ready 
+  // TODO re-enable when modify is ready
   /*
   func handleTap(_ sender: UIGestureRecognizer)
   {
@@ -274,7 +266,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     momentViewController.workingJournal = workingJournal
     momentViewController.momentHeight = Constants.momentHeight
 
-    // TODO re enable when modify moment is ready 
+    // TODO re enable when modify moment is ready
     //let tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTap:")
     //momentViewController.collectionView?.addGestureRecognizer(tapRecognizer)
  

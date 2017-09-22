@@ -885,7 +885,7 @@
                                             <rect key="frame" x="90" y="0.0" width="29" height="30"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <rect key="contentStretch" x="1" y="0.0" width="1" height="1"/>
-                                            <state key="normal" title="X"/>
+                                            <state key="normal" title="x"/>
                                             <connections>
                                                 <action selector="deleteMomentButton:" destination="5yf-rk-zGg" eventType="touchUpInside" id="nSU-Cb-ikV"/>
                                             </connections>
