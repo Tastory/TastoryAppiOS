@@ -216,8 +216,7 @@ extension MomentCollectionViewController {
       }
     }
 
-    thumbnail = UIImage(data: moment.thumbnailObj!.imageMemoryBuffer!)
-    cell.momentThumb.image = thumbnail
+    cell.momentThumb.image = UIImage(data: moment.thumbnailObj!.imageMemoryBuffer!)
   
     // Should Thumbnail frame be hidden?
     cell.createFrameLayer()
@@ -272,7 +271,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
   func deleteMoment(sourceCell cell: MomentCollectionViewCell) {
 
     // make sure you get confirmation from user before deleting 
-  AlertDialog.presentConfirm(from: self, title: "Deleting a moment", message: "Do you want to delete this moment?"){ action in
+    AlertDialog.presentConfirm(from: self, title: "Deleting a moment", message: "Do you want to delete this moment?"){ action in
 
       guard let collectionView = self.collectionView else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
@@ -282,21 +281,22 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
       }
 
       if let indexPath = collectionView.indexPath(for: cell) {
-        guard let momentArray = self.workingJournal.moments else {
+        
+        guard let moments = self.workingJournal.moments else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
             CCLog.assert("No Moments for workingJournal")
           }
           return
         }
 
-        if indexPath.item >= momentArray.count {
+        if indexPath.item >= moments.count {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
             CCLog.assert("Deleting a moment from an out of bound index")
           }
           return
         }
 
-        if(momentArray.count == 1)
+        if(moments.count == 1)
         {
           AlertDialog.present(from: self, title: "Delete Error", message: "Each story must contain at least one moment") { action in
             CCLog.info("User tried to remove the last Moment from Story")
@@ -304,13 +304,13 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
           return
         }
 
-        let moment = momentArray[indexPath.item]
+        let moment = moments[indexPath.item]
 
         // if the deleted item is the one with the thumnail, select next in the list
         if self.workingJournal.thumbnailFileName == moment.thumbnailFileName {
 
           var rowIdx = indexPath.row + 1
-          if(rowIdx >= momentArray.count)
+          if(rowIdx >= moments.count)
           {
             rowIdx = indexPath.row - 1
           }
@@ -318,17 +318,24 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
           // row is the index of the moment array
           self.setThumbnail(at: IndexPath(row: rowIdx, section: indexPath.section))
         }
-
-        self.workingJournal.moments?.remove(at: indexPath.item)
-        moment.deleteRecursive(withName: FoodieGlobal.Constants.SavedDraftPinName) { (success, error) in
+ 
+        // Delete the Moment
+        self.workingJournal.moments!.remove(at: indexPath.item)
+        
+        moment.deleteRecursive(from: .both, type: .draft) { error in
           if let error = error {
             CCLog.warning("Failed to delete moments from pending delete moment lists: \(error)")
           }
         }
 
-        //TODO pre-save this journal 
-        // cant access JournalEntryVC from this controller not sure how to presave like we do in
-        // journal entry view controller.
+        // Pre-save the Story now that it's changed
+        self.workingJournal.saveDigest(to: .local, type: .draft) { error in
+          if let error = error {
+            AlertDialog.present(from: self, title: "Pre-Save Failed!", message: "Problem saving Story to Local Draft! Quitting or backgrounding the app might cause lost of the current Story under Draft!") { action in
+              CCLog.assert("Pre-Saving Story to Draft Local Store Failed - \(error.localizedDescription)")
+            }
+          }
+        }
 
         // there seems to be a few seconds delay when not refreshing from the main thread
         DispatchQueue.main.async {
