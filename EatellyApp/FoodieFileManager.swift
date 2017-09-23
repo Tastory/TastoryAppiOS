@@ -210,11 +210,11 @@ class FoodieFile {
         let nsError = error as NSError
 
         if nsError.domain == NSCocoaErrorDomain && nsError.code == NSFileReadNoSuchFileError {
-          CCLog.info("No file '\(fileName) in local directory")
+          CCLog.info("No file '\(fileName) in local \(localType)")
           callback?(nil, ErrorCode.fileManagerReadLocalNoFile)
           return
         } else {
-          CCLog.warning("Failed to read file \(fileName) from local Documents folder \(error.localizedDescription)")
+          CCLog.warning("Failed to read file \(fileName) from local \(localType) - \(error.localizedDescription)")
           callback?(nil, ErrorCode.fileManagerReadLocalFailed)
           return
         }
@@ -233,7 +233,7 @@ class FoodieFile {
     
     let retrieveRetry = SwiftRetry()
     retrieveRetry.start("retrieve file '\(fileName)' from CloudFront", withCountOf: Constants.AwsRetryCount) {
-      CCLog.verbose("Retrieving from \(serverFileURL.absoluteString)")
+      CCLog.verbose("Retrieving from \(serverFileURL.absoluteString) for downloading \(fileName)")
       
       // Let's time the download!
       let downloadStartTime = PrecisionTime.now()
@@ -241,19 +241,19 @@ class FoodieFile {
         let downloadEndTime = PrecisionTime.now()
         
         guard let httpResponse = response as? HTTPURLResponse else {
-          CCLog.assert("Unexpected. Did not receive HTTPURLResponse type or response = nil")
+          CCLog.assert("Did not receive HTTPURLResponse type or response = nil for downloading \(fileName)")
           callback?(ErrorCode.urlSessionDownloadHttpResponseNil)
           return
         }
         
         guard let httpStatusCode = HTTPStatusCode(rawValue: httpResponse.statusCode) else {
-          CCLog.warning("Download HTTPURLResponse.statusCode is invalid")
+          CCLog.warning("HTTPURLResponse.statusCode is invalid for downloading \(fileName)")
           callback?(ErrorCode.urlSessionDownloadHttpResponseFailed)
           return
         }
         
         if  httpStatusCode != HTTPStatusCode.ok {
-          CCLog.warning("Download HTTPURLResponse.statusCode = \(httpResponse.statusCode)")
+          CCLog.warning("HTTPURLResponse.statusCode = \(httpResponse.statusCode) for downloading \(fileName)")
           if !retrieveRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                           after: Constants.AwsRetryDelay,
                                                           withQoS: .userInitiated) {
@@ -264,12 +264,12 @@ class FoodieFile {
         
         if let downloadError = error {
           guard let urlError = downloadError as? URLError else {
-            CCLog.assert("Download error is not URLError type - \(downloadError.localizedDescription)")
+            CCLog.assert("Download of \(fileName) from S3 resulted in error not of URLError type - \(downloadError.localizedDescription)")
             callback?(ErrorCode.urlSessionDownloadNotUrlError)
             return
           }
           
-          CCLog.warning("Download error: \(downloadError.localizedDescription)")
+          CCLog.warning("Download of \(fileName) from S3 resulted in error - \(downloadError.localizedDescription)")
           if !retrieveRetry.attemptRetryBasedOnURLError(urlError,
                                                           after: Constants.AwsRetryDelay,
                                                           withQoS: .userInitiated) {
@@ -279,25 +279,35 @@ class FoodieFile {
         }
         
         guard let tempURL = url else {
-          CCLog.assert("Unexpected. Local url = nil")
+          CCLog.assert("Download of \(fileName) from S3 resulted in url = nil")
           callback?(ErrorCode.urlSessionDownloadTempUrlNil)
           return
         }
 
         // We are in success-land!
-        let timeDifference = downloadEndTime - downloadStartTime
-        
+        #if DEBUG
         do {
+          let timeDifference = downloadEndTime - downloadStartTime
           let fileAttribute = try self.fileManager.attributesOfItem(atPath: tempURL.path)
           let fileSizeKb = Float(fileAttribute[FileAttributeKey.size] as! Int)/1000.0
           let avgDownloadSpeed = Float(fileSizeKb)/timeDifference.seconds  // KB/s
-          
           CCLog.verbose("Download of \(fileName) of size \(fileSizeKb/1000.0) MB took \(timeDifference.milliSeconds) ms at \(avgDownloadSpeed) kB/s")
+        } catch {
+          CCLog.warning("Failed to get File Attribute for \(fileName)")
+        }
+        #endif
+        
+        do {
           try self.fileManager.moveItem(at: tempURL, to: localFileURL)
         } catch {
-          CCLog.assert("Failed to move file from URLSessionDownload temp to local Documents folder. Erorr = \(error.localizedDescription)")
-          callback?(ErrorCode.fileManagerMoveItemFromDownloadToLocalFailed)
-          return
+          let nsError = error as NSError
+          if nsError.domain == NSCocoaErrorDomain, nsError.code == NSFileWriteFileExistsError {
+            CCLog.debug("File \(fileName) already exist in \(localType) after S3 download completion")
+          } else {
+            CCLog.assert("Failed to move file from URLSessionDownload temp to \(localType) as \(fileName). Error = \(error.localizedDescription)")
+            callback?(error)
+            return
+          }
         }
         callback?(nil)
       }
@@ -312,7 +322,7 @@ class FoodieFile {
       do {
         try buffer.write(to: FoodieFile.getFileURL(for: localType, with: fileName))
       } catch {
-        CCLog.assert("Failed to write media data to local Documents folder \(error.localizedDescription)")
+        CCLog.assert("Failed to write media data to \(localType) as \(fileName)")
         callback?(ErrorCode.fileManagerSaveLocalFailed)
         return
       }
@@ -332,7 +342,7 @@ class FoodieFile {
           try self.fileManager.removeItem(at: url)
         }
       } catch {
-        CCLog.assert("Failed to copy media file to local Documents folder \(error.localizedDescription)")
+        CCLog.assert("Failed to copy from \(url.absoluteString) to \(localType) as \(fileName)")
         callback?(ErrorCode.fileManagerCopyItemLocalFailed)
         return
       }
@@ -363,18 +373,18 @@ class FoodieFile {
           if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
             switch code {
             case .cancelled:
-              CCLog.debug("AWS Transfer Upload with Key \(uploadRequest.key!) cancelled")
+              CCLog.debug("S3 upload for \(fileName) cancelled")
               callback?(ErrorCode.awsS3TransferUploadCancelled)
             case .paused:
-              CCLog.fatal("Pause is not well understood and not currently supported. Pulling a Fatal condition for now")
+              CCLog.fatal("S3 upload for \(fileName) paused. Pause is not currently supported")
             default:
-              CCLog.warning("AWS Transfer Upload with Key \(String(describing: uploadRequest.key)) resulted in Error: \(error)")
+              CCLog.warning("S3 upload for \(fileName) resulted in Error - \(error)")
               if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
                 callback?(ErrorCode.awsS3TransferUploadUnknownError)
               }
             }
           } else {
-            CCLog.warning("AWS Transfer Upload with Key \(String(describing: uploadRequest.key)) resulted in Error: \(error)")
+            CCLog.warning("S3 upload for \(fileName) resulted in Error - \(error)")
             if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
               callback?(ErrorCode.awsS3TransferUploadUnknownError)
             }
@@ -382,7 +392,7 @@ class FoodieFile {
           return nil
         }
         // TODO: might be useful to store in parse for tracking the version
-        CCLog.debug("AWS Transfer Upload completed for Key \(uploadRequest.key!)")
+        CCLog.debug("AWS S3 Transfer Upload completed for \(fileName)")
         callback?(nil)
         return nil
       }
@@ -395,7 +405,7 @@ class FoodieFile {
       do {
         try self.fileManager.removeItem(at: FoodieFile.getFileURL(for: localType, with: fileName))
       } catch {
-        CCLog.warning("Failed to delete media file from local Documents foler \(error.localizedDescription)")
+        CCLog.warning("Failed to delete \(fileName) from \(localType)")
         callback?(ErrorCode.fileManagerRemoveItemLocalFailed)
       }
       // Delete local completed successfully!!
@@ -415,8 +425,9 @@ class FoodieFile {
       let deleteTask = self.s3Handler.deleteObject(delRequest)
       deleteTask.continueWith() { (task: AWSTask<AWSS3DeleteObjectOutput>) -> Any? in
         
-        if let error = task.error as NSError? {
+        if let error = task.error {
           if !deleteRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
+            CCLog.warning("S3 delete for \(fileName) resulted in Error - \(error)")
             callback?(error)
           }
         } else {
@@ -447,7 +458,7 @@ class FoodieFile {
           try self.fileManager.removeItem(at: contentUrl)
         }
       } catch {
-        CCLog.warning("DeleteAll resulted in Exception - \(error.localizedDescription)")
+        CCLog.warning("DeleteAll from \(localType) resulted in Exception - \(error.localizedDescription)")
         returnError = error
       }
       
@@ -469,11 +480,13 @@ class FoodieFile {
     let task = s3Handler.headObject(objRequest)
     task.continueWith() { (task:AWSTask<AWSS3HeadObjectOutput>) -> Any? in
       if let error = task.error as NSError? {
-        if error.domain == AWSS3ErrorDomain {  // TODO: - Please make sure there are no silent fall through case. It can cause missing callback, then the whole app will f'ck up. Currently there is no time-out catch mechanism. If all our code works correctly, and the lower layer guarentees 1 response for every request, time-out at a level as high as our app shouldn't need one
-          // didnt find the object
+        if error.domain == AWSS3ErrorDomain { // Can't nail down what the error code is really enumerated to.... , error.code == AWSS3ErrorType.noSuchKey || error.code == AWSS3ErrorType.unknown {
           callback?(ErrorCode.awsS3FileDoesntExistError)
-          return nil
+        } else {
+          CCLog.warning("Check S3 if \(fileName) exists resulted in Error - \(error.localizedDescription)")
+          callback?(error)
         }
+        return nil
       }
       // found object
       callback?(nil)

@@ -77,7 +77,7 @@ class FoodiePrefetch {
       
       SwiftMutex.unlock(&workQueueMutex)
       CCLog.verbose("prefetchNextIfNoBlock, doPrefetch")
-      delegate.doPrefetch(on: objectToFetch, for: workingContext){ context in
+      delegate.doPrefetch(on: objectToFetch, for: workingContext) { context in
         
         // Prefetch completes. Remove if not already removed
         self.removePrefetchWork(for: context)
