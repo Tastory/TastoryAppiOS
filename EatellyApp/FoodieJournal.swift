@@ -520,7 +520,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func contentRetrievalRequest(fromMoment startNumber: Int, forUpTo numberOfMoments: Int, withBlock callback: FoodieObject.SimpleErrorBlock? = nil) {
     
     guard let momentArray = moments else {
-      CCLog.assert("journal.contentRetrieve momentArray = nil. Journal with 0 moment is invalid")
+      CCLog.assert("contentRetrieveRequest for \(foodieObjectType())(\(getUniqueIdentifier())) has moments = nil.")
       callback?(ErrorCode.contentRetrieveMomentArrayNil)
       return
     }
@@ -548,11 +548,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     SwiftMutex.lock(&contentRetrievalMutex)  // TODO-Performance: Move to OperationQueue to eliminate chance of blocking main thread
     
     if contentRetrievalInProg {
-      CCLog.verbose("Content Retrieval already in progress")
+      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) already in progress")
       contentRetrievalPending = true
       contentRetrievalPendingCallback = callback
     } else {
-      CCLog.verbose("Content Retrieval begins")
+      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) begins")
       contentRetrievalInProg = true
       executeStateMachine = true
     }
@@ -570,7 +570,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func contentRetrievalStateMachine(momentIndex: Int, withError firstError: Error?, withBlock callback: FoodieObject.SimpleErrorBlock? = nil) {
     
     guard let momentArray = moments else {
-      CCLog.assert("journal.contentRetrieve momentArray = nil unexpected")
+      CCLog.assert("contentRetrieveStateMachine for \(foodieObjectType())(\(getUniqueIdentifier())) has moments = nil")
       callback?(ErrorCode.contentRetrieveMomentArrayNil)
       return
     }
@@ -588,7 +588,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
         
         if let err = error {
           // TODO: How do we signal a background task error? Get whatever top of the presenting stack and push an error dialoge box on it?
-          CCLog.warning("journal.contentRetrieve moment.retrieveIfPending returned error = \(err.localizedDescription)")
+          CCLog.warning("\(self.foodieObjectType())(\(self.getUniqueIdentifier)) retrieve content of Type \(moment.foodieObjectType())(\(moment.getUniqueIdentifier())) resulted in Error = \(err.localizedDescription)")
           if currentError == nil { currentError = err }
           self.contentRetrievalStateMachine(momentIndex: momentIndex+1, withError: currentError, withBlock: callback)
           return
@@ -613,11 +613,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     SwiftMutex.lock(&contentRetrievalMutex)  // TODO-Performance: Move to OperationQueue to eliminate chance of blocking main thread
     
     if contentRetrievalPending {
-      CCLog.verbose("Content Retrieval was pending. Initiate another round of Content Retrieval")
+      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) was pending. Initiate another round of Content Retrieval")
       contentRetrievalPending = false
       executeStateMachine = true
     } else {
-      CCLog.verbose("Content Retrieval completes!")
+      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) completes!")
       contentRetrievalInProg = false
     }
     
@@ -724,10 +724,10 @@ extension FoodieJournal: FoodiePrefetchDelegate {
       
       if journal.thumbnailObj == nil {
         // No Thumbnail Object, so assume the Journal itself needs to be retrieved
-        CCLog.verbose("doPrefetch journal.retrieveDigest")
+        CCLog.verbose("doPrefetch retrieveDigest for \(foodieObjectType())(\(getUniqueIdentifier()))")
         journal.retrieveDigest(from: .both, type: .cache) { error in
           if let journalError = error {
-            CCLog.assert("On prefetch, Journal.retrieveDigest() callback with error: \(journalError.localizedDescription)")
+            CCLog.assert("On prefetch, retrieveDigest for \(self.foodieObjectType())(\(self.getUniqueIdentifier())) callback with error: \(journalError.localizedDescription)")
           }
           callback?(context)
         }
@@ -735,7 +735,7 @@ extension FoodieJournal: FoodiePrefetchDelegate {
       } else {
         journal.contentRetrievalRequest(fromMoment: 0, forUpTo: Constants.MomentsToBufferAtATime) { error in
           if let journalError = error {
-            CCLog.assert("On prefetch, Journal.contentRetrieval() callback with error: \(journalError.localizedDescription)")
+            CCLog.assert("On prefetch, contentRetrievalRequest for \(self.foodieObjectType())(\(self.getUniqueIdentifier())) callback with error: \(journalError.localizedDescription)")
           }
           callback?(context)
         }
