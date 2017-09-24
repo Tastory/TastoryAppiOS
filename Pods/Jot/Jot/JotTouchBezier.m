@@ -31,7 +31,7 @@ NSUInteger const kJotDrawStepsPerBezier = 30;
 		self.endPoint = endPoint;
 		self.controlPoint1 = controlPoint1;
 		self.controlPoint2 = controlPoint2;
-        self.outputScaleFactor = scaleFactor;
+    self.outputScaleFactor = scaleFactor;
 		[self generatePath];
 	}
 	return self;
@@ -136,28 +136,28 @@ NSUInteger const kJotDrawStepsPerBezier = 30;
 
 #pragma mark - Serialization
 
-- (NSMutableDictionary*)serialize {
-	NSMutableDictionary *dic = [super serialize];
-  dic[kPointA] = @{ kPointX: @(self.startPoint.x), kPointY: @(self.startPoint.y) };
-  dic[kPointB] = @{ kPointX: @(self.endPoint.x), kPointY: @(self.endPoint.y) };
-	dic[kPointAControl] = @{ kPointX: @(self.controlPoint1.x), kPointY: @(self.controlPoint1.y) };
-	dic[kPointBControl] = @{ kPointX: @(self.controlPoint2.x), kPointY: @(self.controlPoint2.y) };
-	dic[kStrokeStartWidth]	= @(self.startWidth);
-	dic[kStrokeEndWidth]	= self.constantWidth?@(self.startWidth):@(self.endWidth);
-  dic[kOutputScaleFactor]	= @(self.outputScaleFactor);
+- (NSMutableDictionary*)serialize:(CGFloat)ratioForAspectFitAgainstiPhone6 {
+  NSMutableDictionary *dic = [super serialize:ratioForAspectFitAgainstiPhone6];
+  dic[kPointA] = @{ kPointX: @(self.startPoint.x / ratioForAspectFitAgainstiPhone6), kPointY: @(self.startPoint.y / ratioForAspectFitAgainstiPhone6) };
+  dic[kPointB] = @{ kPointX: @(self.endPoint.x / ratioForAspectFitAgainstiPhone6), kPointY: @(self.endPoint.y / ratioForAspectFitAgainstiPhone6) };
+	dic[kPointAControl] = @{ kPointX: @(self.controlPoint1.x / ratioForAspectFitAgainstiPhone6), kPointY: @(self.controlPoint1.y / ratioForAspectFitAgainstiPhone6) };
+	dic[kPointBControl] = @{ kPointX: @(self.controlPoint2.x / ratioForAspectFitAgainstiPhone6), kPointY: @(self.controlPoint2.y / ratioForAspectFitAgainstiPhone6) };
+	dic[kStrokeStartWidth]	= @(self.startWidth / ratioForAspectFitAgainstiPhone6);
+	dic[kStrokeEndWidth]	= self.constantWidth?@(self.startWidth / ratioForAspectFitAgainstiPhone6):@(self.endWidth / ratioForAspectFitAgainstiPhone6);
+  dic[kOutputScaleFactor]	= @(self.outputScaleFactor / ratioForAspectFitAgainstiPhone6);
 	
 	return dic;
 }
 
-- (void)unserialize:(NSDictionary*)dictionary {
-	[super unserialize:dictionary];
+- (void)unserialize:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6 {
+  [super unserialize:dictionary on:ratioForAspectFitAgainstiPhone6];
 	if (dictionary[kPointA]) {
     NSDictionary *center = dictionary[kPointA];
     NSNumber *numberX = center[kPointX];
     NSNumber *numberY = center[kPointY];
     CGPoint tempPoint;
-    tempPoint.x = numberX.doubleValue;
-    tempPoint.y = numberY.doubleValue;
+    tempPoint.x = numberX.doubleValue * ratioForAspectFitAgainstiPhone6;
+    tempPoint.y = numberY.doubleValue * ratioForAspectFitAgainstiPhone6;
     
     self.startPoint = tempPoint;
 	}
@@ -166,8 +166,8 @@ NSUInteger const kJotDrawStepsPerBezier = 30;
     NSNumber *numberX = center[kPointX];
     NSNumber *numberY = center[kPointY];
     CGPoint tempPoint;
-    tempPoint.x = numberX.doubleValue;
-    tempPoint.y = numberY.doubleValue;
+    tempPoint.x = numberX.doubleValue * ratioForAspectFitAgainstiPhone6;
+    tempPoint.y = numberY.doubleValue * ratioForAspectFitAgainstiPhone6;
     
     self.endPoint = tempPoint;
 	}
@@ -176,8 +176,8 @@ NSUInteger const kJotDrawStepsPerBezier = 30;
     NSNumber *numberX = center[kPointX];
     NSNumber *numberY = center[kPointY];
     CGPoint tempPoint;
-    tempPoint.x = numberX.doubleValue;
-    tempPoint.y = numberY.doubleValue;
+    tempPoint.x = numberX.doubleValue * ratioForAspectFitAgainstiPhone6;
+    tempPoint.y = numberY.doubleValue * ratioForAspectFitAgainstiPhone6;
     
     self.controlPoint1 = tempPoint;
 	}
@@ -186,22 +186,22 @@ NSUInteger const kJotDrawStepsPerBezier = 30;
     NSNumber *numberX = center[kPointX];
     NSNumber *numberY = center[kPointY];
     CGPoint tempPoint;
-    tempPoint.x = numberX.doubleValue;
-    tempPoint.y = numberY.doubleValue;
+    tempPoint.x = numberX.doubleValue * ratioForAspectFitAgainstiPhone6;
+    tempPoint.y = numberY.doubleValue * ratioForAspectFitAgainstiPhone6;
     
     self.controlPoint2 = tempPoint;
 	}
 	[self generatePath];
 	
 	if (dictionary[kStrokeStartWidth]) {
-		self.startWidth = [dictionary[kStrokeStartWidth] floatValue];
+		self.startWidth = [dictionary[kStrokeStartWidth] floatValue] * ratioForAspectFitAgainstiPhone6;
 	}
 	if (dictionary[kStrokeEndWidth]) {
-		self.endWidth = [dictionary[kStrokeEndWidth] floatValue];
+		self.endWidth = [dictionary[kStrokeEndWidth] floatValue] * ratioForAspectFitAgainstiPhone6;
 	}
-    if (dictionary[kOutputScaleFactor]) {
-        self.outputScaleFactor = [dictionary[kOutputScaleFactor] floatValue];
-    }
+  if (dictionary[kOutputScaleFactor]) {
+    self.outputScaleFactor = [dictionary[kOutputScaleFactor] floatValue] * ratioForAspectFitAgainstiPhone6;
+  }
 	self.constantWidth = (self.startWidth == self.endWidth);
 }
 

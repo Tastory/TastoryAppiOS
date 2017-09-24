@@ -177,13 +177,13 @@
  *
  *  @return the object, as a NSArray
  */
-- (NSArray*)serialize;
+- (NSArray*)serialize:(CGFloat)ratioForAspectFitAgainstiPhone6;
 
 /**
  *  Unserialize the draw view from an array
  *
  *  @param the NSArray representing the object
  */
-- (void)unserialize:(NSArray*)array;
+- (void)unserialize:(NSArray*)array on:(CGFloat)ratioForAspectFitAgainstiPhone6;
 
 @end

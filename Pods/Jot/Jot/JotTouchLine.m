@@ -49,24 +49,24 @@
 
 #pragma mark - Serialization
 
-- (NSMutableDictionary*)serialize {
-	NSMutableDictionary *dic = [super serialize];
-	dic[kPointA] = @{ kPointX: @(self.pointA.x), kPointY: @(self.pointA.y) };
-	dic[kPointB] = @{ kPointX: @(self.pointB.x), kPointY: @(self.pointB.y) };
-	dic[kStrokeWidth] = @(self.strokeWidth);
+- (NSMutableDictionary*)serialize:(CGFloat)ratioForAspectFitAgainstiPhone6 {
+  NSMutableDictionary *dic = [super serialize:ratioForAspectFitAgainstiPhone6];
+	dic[kPointA] = @{ kPointX: @(self.pointA.x / ratioForAspectFitAgainstiPhone6), kPointY: @(self.pointA.y / ratioForAspectFitAgainstiPhone6) };
+	dic[kPointB] = @{ kPointX: @(self.pointB.x / ratioForAspectFitAgainstiPhone6), kPointY: @(self.pointB.y / ratioForAspectFitAgainstiPhone6) };
+	dic[kStrokeWidth] = @(self.strokeWidth / ratioForAspectFitAgainstiPhone6);
 	dic[kIsDashed] = @(self.dashed);
 	return dic;
 }
 
-- (void)unserialize:(NSDictionary*)dictionary {
-	[super unserialize:dictionary];
+- (void)unserialize:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6 {
+  [super unserialize:dictionary on:ratioForAspectFitAgainstiPhone6];
 	if (dictionary[kPointA]) {
     NSDictionary *center = dictionary[kPointA];
     NSNumber *numberX = center[kPointX];
     NSNumber *numberY = center[kPointY];
     CGPoint tempPoint;
-    tempPoint.x = numberX.doubleValue;
-    tempPoint.y = numberY.doubleValue;
+    tempPoint.x = numberX.doubleValue * ratioForAspectFitAgainstiPhone6;
+    tempPoint.y = numberY.doubleValue * ratioForAspectFitAgainstiPhone6;
     
     self.pointA = tempPoint;
 	}
@@ -75,13 +75,13 @@
     NSNumber *numberX = center[kPointX];
     NSNumber *numberY = center[kPointY];
     CGPoint tempPoint;
-    tempPoint.x = numberX.doubleValue;
-    tempPoint.y = numberY.doubleValue;
+    tempPoint.x = numberX.doubleValue * ratioForAspectFitAgainstiPhone6;
+    tempPoint.y = numberY.doubleValue * ratioForAspectFitAgainstiPhone6;
     
     self.pointB = tempPoint;
 	}
 	if (dictionary[kStrokeWidth]) {
-		self.strokeWidth = [dictionary[kStrokeWidth] floatValue];
+		self.strokeWidth = [dictionary[kStrokeWidth] floatValue]  * ratioForAspectFitAgainstiPhone6;
 	}
 	if (dictionary[kIsDashed]) {
 		self.dashed = [dictionary[kIsDashed] boolValue];

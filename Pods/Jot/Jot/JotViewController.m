@@ -20,6 +20,10 @@ NSString const* kDrawView = @"DrawView";
 NSString const* kLabels = @"Labels";
 NSString const* kDate = @"Date";
 
+static const CGFloat iPhone6WidthPoints = 375.0;
+static const CGFloat iPhone6HeightPoints = 667.0;
+
+
 @interface JotViewController () <UIGestureRecognizerDelegate, JotTextEditViewDelegate, JotDrawingContainerDelegate, JotDrawViewDelegate>
 
 @property (nonatomic, strong) UITapGestureRecognizer *tapRecognizer;
@@ -61,6 +65,7 @@ NSString const* kDate = @"Date";
         _drawingStrokeWidth = self.drawView.strokeWidth;
         _textEditingInsets = self.textEditView.textEditingInsets;
         _initialTextInsets = self.textView.initialTextInsets;
+        _ratioForAspectFitAgainstiPhone6 = 1.0;  // Assume this is an iPhone 6 until told otherwise?
         _state = JotViewStateDisabled;
         
         self.textEditView.textAlignment = NSTextAlignmentLeft;
@@ -84,6 +89,17 @@ NSString const* kDate = @"Date";
 {
     self.textEditView.delegate = nil;
     self.drawingContainer.delegate = nil;
+}
+
+- (void)setupRatioForAspectFitOnWindowWidth:(CGFloat)widthPoints andHeight:(CGFloat)heightPoints {
+  CGFloat windowAspectRatio = heightPoints/widthPoints;
+  CGFloat iPhone6AspectRatio = iPhone6HeightPoints/iPhone6WidthPoints;
+  
+  if (windowAspectRatio >= iPhone6AspectRatio) {
+    self.ratioForAspectFitAgainstiPhone6 = widthPoints/iPhone6WidthPoints;
+  } else if (windowAspectRatio < iPhone6AspectRatio) {
+    self.ratioForAspectFitAgainstiPhone6 = heightPoints/iPhone6HeightPoints;
+  }
 }
 
 - (void)setupForImageView:(UIImageView *)imageView {
@@ -250,6 +266,11 @@ NSString const* kDate = @"Date";
 	self.textEditView.clipBoundsToEditingInsets = clipBoundsToEditingInsets;
 }
 
+- (void)setRatioForAspectFitAgainstiPhone6:(CGFloat)ratioForAspectFitAgainstiPhone6
+{
+  _ratioForAspectFitAgainstiPhone6 = ratioForAspectFitAgainstiPhone6;
+}
+
 - (void)setDrawingColor:(UIColor *)drawingColor
 {
     if (_drawingColor != drawingColor) {
@@ -364,7 +385,7 @@ NSString const* kDate = @"Date";
           [self.textView selectLabelAtPosition:touch];
           
           if ([self.delegate respondsToSelector:@selector(jotViewController:didSelectLabel:)]) {
-            [self.delegate jotViewController:self didSelectLabel:[label serialize]];
+            [self.delegate jotViewController:self didSelectLabel:[label serialize:_ratioForAspectFitAgainstiPhone6]];
           }
         }
         self.textEditView.textString = label.text;
@@ -494,8 +515,8 @@ NSString const* kDate = @"Date";
 #pragma mark - Serialization
 
 - (NSDictionary*)serialize {
-	NSDictionary *drawView = [self.drawView serialize];
-	NSArray *labels = [self.textView serialize];
+  NSDictionary *drawView = [self.drawView serialize:_ratioForAspectFitAgainstiPhone6];
+  NSArray *labels = [self.textView serialize:_ratioForAspectFitAgainstiPhone6];
 	return @{kDrawView: drawView,
 			 kLabels: labels,
 			 kDate: [NSDate date]};
@@ -503,11 +524,11 @@ NSString const* kDate = @"Date";
 
 - (void)unserialize:(NSDictionary*)dictionary {
 	if (dictionary[kDrawView]) {
-		[self.drawView unserialize:dictionary[kDrawView]];
+    [self.drawView unserialize:dictionary[kDrawView] on:_ratioForAspectFitAgainstiPhone6];
     [self.drawView refreshBitmap];
 	}
 	if (dictionary[kLabels]) {
-		[self.textView unserialize:dictionary[kLabels]];
+    [self.textView unserialize:dictionary[kLabels] on:_ratioForAspectFitAgainstiPhone6];
 	}
 }
 

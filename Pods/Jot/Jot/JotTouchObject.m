@@ -47,17 +47,17 @@ NSString *const kPointY = @"kPointY";
 
 #pragma mark - Serialization
 
-+ (instancetype)fromSerialized:(NSDictionary*)dictionary {
++ (instancetype)fromSerialized:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6{
 	NSString *className = dictionary[kType];
 	JotTouchObject *object = nil;
 	if (className) {
 		object = [NSClassFromString(className) new];
-		[object unserialize:dictionary];
+    [object unserialize:dictionary on:ratioForAspectFitAgainstiPhone6];
 	}
 	return object;
 }
 
-- (NSMutableDictionary*)serialize {
+- (NSMutableDictionary*)serialize:(CGFloat)ratioForAspectFitAgainstiPhone6 {
 	NSMutableDictionary *dic = [NSMutableDictionary new];
 	dic[kType] = NSStringFromClass(self.class);
   
@@ -71,7 +71,7 @@ NSString *const kPointY = @"kPointY";
 	return dic;
 }
 
-- (void)unserialize:(NSDictionary*)dictionary {
+- (void)unserialize:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6{
   
   if (dictionary[kColor]) {
     NSDictionary *color = dictionary[kColor];

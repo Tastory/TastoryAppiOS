@@ -344,23 +344,23 @@ NSString const* kUndoArray = @"UndoArray";
 
 #pragma mark - Serialization
 
-- (NSDictionary*)serialize {
+- (NSDictionary*)serialize:(CGFloat)ratioForAspectFitAgainstiPhone6 {
 	NSMutableArray *objects = [NSMutableArray new];
 	// only save the not undoed objects
 	NSUInteger pathArrayUndoedCount = [self.undoArray[self.undoIndex] integerValue];
 	for (int i=0; i < pathArrayUndoedCount; i++) {
 		JotTouchObject *touchObject = self.pathsArray[i];
-		[objects addObject:[touchObject serialize]];
+    [objects addObject:[touchObject serialize:ratioForAspectFitAgainstiPhone6]];
 	}
 	return @{kObjects: objects,
 			 kUndoArray: [self.undoArray subarrayWithRange:NSMakeRange(0, self.undoIndex+1)]};
 }
 
-- (void)unserialize:(NSDictionary*)dictionary {
+- (void)unserialize:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6 {
 	if (dictionary[kObjects]) {
 		NSArray *objects = dictionary[kObjects];
 		for (NSDictionary *objectDic in objects) {
-			JotTouchObject *touchObject = [JotTouchObject fromSerialized:objectDic];
+      JotTouchObject *touchObject = [JotTouchObject fromSerialized:objectDic on:ratioForAspectFitAgainstiPhone6];
 			[self.pathsArray addObject:touchObject];
 		}
 		if (dictionary[kUndoArray]) {

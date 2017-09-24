@@ -58,33 +58,33 @@
 
 #pragma mark - Serialization
 
-- (NSMutableDictionary*)serialize {
-	NSMutableDictionary *dic = [super serialize];
-	dic[kPoint] = @{ kPointX: @(self.point.x), kPointY: @(self.point.y) };
-	dic[kStrokeWidth] = @(self.strokeWidth);
-  dic[kOutputScaleFactor] = @(self.outputScaleFactor);
+- (NSMutableDictionary*)serialize:(CGFloat)ratioForAspectFitAgainstiPhone6 {
+  NSMutableDictionary *dic = [super serialize:ratioForAspectFitAgainstiPhone6];
+	dic[kPoint] = @{ kPointX: @(self.point.x / ratioForAspectFitAgainstiPhone6), kPointY: @(self.point.y / ratioForAspectFitAgainstiPhone6) };
+	dic[kStrokeWidth] = @(self.strokeWidth / ratioForAspectFitAgainstiPhone6);
+  dic[kOutputScaleFactor] = @(self.outputScaleFactor / ratioForAspectFitAgainstiPhone6);
 	return dic;
 }
 
-- (void)unserialize:(NSDictionary*)dictionary {
-	[super unserialize:dictionary];
+- (void)unserialize:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6{
+  [super unserialize:dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6];
 
 	if (dictionary[kPoint]) {
     NSDictionary *center = dictionary[kPoint];
     NSNumber *numberX = center[kPointX];
     NSNumber *numberY = center[kPointY];
     CGPoint tempPoint;
-    tempPoint.x = numberX.doubleValue;
-    tempPoint.y = numberY.doubleValue;
+    tempPoint.x = numberX.doubleValue * ratioForAspectFitAgainstiPhone6;
+    tempPoint.y = numberY.doubleValue * ratioForAspectFitAgainstiPhone6;
     
     self.point = tempPoint;
 	}
 	if (dictionary[kStrokeWidth]) {
-		self.strokeWidth = [dictionary[kStrokeWidth] floatValue];
+		self.strokeWidth = [dictionary[kStrokeWidth] floatValue] * ratioForAspectFitAgainstiPhone6;
 	}
-    if (dictionary[kOutputScaleFactor]) {
-        self.outputScaleFactor = [dictionary[kOutputScaleFactor] floatValue];
-    }
+  if (dictionary[kOutputScaleFactor]) {
+    self.outputScaleFactor = [dictionary[kOutputScaleFactor] floatValue] * ratioForAspectFitAgainstiPhone6;
+  }
 }
 
 @end

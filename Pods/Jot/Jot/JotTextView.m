@@ -354,18 +354,18 @@
 
 #pragma mark - Serialization
 
-- (NSArray*)serialize {
+- (NSArray*)serialize:(CGFloat)ratioForAspectFitAgainstiPhone6 {
 	NSMutableArray *labels = [NSMutableArray new];
 
 	for (JotLabel *label in self.labels) {
-		[labels addObject:[label serialize]];
+    [labels addObject:[label serialize:ratioForAspectFitAgainstiPhone6]];
 	}
 	return labels;
 }
 
-- (void)unserialize:(NSArray*)array {
+- (void)unserialize:(NSArray*)array on:(CGFloat)ratioForAspectFitAgainstiPhone6{
 	for (NSDictionary *labelDic in array) {
-		JotLabel *label = [JotLabel fromSerialized:labelDic];
+    JotLabel *label = [JotLabel fromSerialized:labelDic on:ratioForAspectFitAgainstiPhone6];
     label.initialTextInsets = self.initialTextInsets;
 		[self.labels addObject:label];
 		[self addSubview:label];
