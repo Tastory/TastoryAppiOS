@@ -589,8 +589,10 @@
                                 <rect key="frame" x="293" y="15" width="30" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" name="TimesNewRomanPS-BoldMT" family="Times New Roman" pointSize="28"/>
+                                <size key="titleShadowOffset" width="2" height="2"/>
                                 <state key="normal" title="T">
                                     <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <color key="titleShadowColor" red="1" green="1" blue="1" alpha="0.59999999999999998" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="textButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hEs-po-5DG"/>
