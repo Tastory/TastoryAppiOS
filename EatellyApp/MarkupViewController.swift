@@ -426,7 +426,11 @@ class MarkupViewController: UIViewController {
     delegate.markupComplete(markedupMoment: markedUpMoment, suggestedJournal: suggestedJournal)
   }
 
-  
+  func displayJotMarkups(dictionary: [AnyHashable: Any])
+  {
+    jotViewController.unserialize(dictionary)
+  }
+
   // MARK: - Private Instance Functions
   private func getNextFont(size: CGFloat) -> UIFont {
     fontArrayIndex += 1

@@ -14,6 +14,7 @@
 import UIKit
 import MapKit
 import CoreLocation
+import Jot
 
 
 class JournalEntryViewController: UITableViewController, UIGestureRecognizerDelegate {
@@ -273,9 +274,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     dismiss(animated: true, completion: nil)
   }
 
-  // TODO re-enable when modify is ready
-  /*
-  func handleTap(_ sender: UIGestureRecognizer)
+  func editMoment(_ sender: UIGestureRecognizer)
   {
      let point = sender.location(in: momentViewController.collectionView)
 
@@ -284,20 +283,84 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
      CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
      }
 
+      let moment = momentArray[indexPath.row]
+      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+      viewController.mediaObj = moment.mediaObj
+      viewController.markupReturnDelegate = self
+
+
      if(indexPath.row >= momentArray.count)
      {
-     CCLog.fatal("Moment selection is out of bound")
+      AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+        CCLog.fatal("Moment selection is out of bound")
+      }
      }
 
-     let moment = momentArray[indexPath.row]
-     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-     viewController.mediaObj = moment.mediaObj
-     //viewController.markupReturnDelegate = self
-     self.present(viewController, animated: true)
+      if let markups = moment.markups {
+        var jotDictionary = [AnyHashable: Any]()
+        var labelDictionary: [NSDictionary]?
+
+        for markup in markups {
+
+          if !markup.isDataAvailable {
+            AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+              CCLog.fatal("Markup not available even tho Moment deemed Loaded")
+            }
+          }
+
+          guard let dataType = markup.dataType else {
+            AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+              CCLog.assert("Unexpected markup.dataType = nil")
+            }
+            return
+          }
+
+          guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
+            AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+              CCLog.assert("markup.dataType did not actually translate into valid type")
+            }
+            return
+          }
+
+          switch markupType {
+
+          case .jotLabel:
+            guard let labelData = markup.data else {
+              AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+                CCLog.assert("Unexpected markup.data = nil when dataType == .jotLabel")
+              }
+              return
+            }
+
+            if labelDictionary == nil {
+              labelDictionary = [labelData]
+            } else {
+              labelDictionary!.append(labelData)
+            }
+
+          case .jotDrawView:
+            guard let drawViewDictionary = markup.data else {
+              AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+                CCLog.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
+              }
+              return
+            }
+
+            jotDictionary[kDrawView] = drawViewDictionary
+          }
+        }
+        
+        jotDictionary[kLabels] = labelDictionary
+        viewController.displayJotMarkups(dictionary: jotDictionary)
+      }
+
+      // duplicate moment and delete moment 
+
+
+      self.present(viewController, animated: true)
      }
   }
-  */
 
   
   // MARK: - View Controller Life Cycle
@@ -313,9 +376,8 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     momentViewController.workingJournal = workingJournal
     momentViewController.momentHeight = Constants.momentHeight
 
-    // TODO re enable when modify moment is ready
-    //let tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTap:")
-    //momentViewController.collectionView?.addGestureRecognizer(tapRecognizer)
+    let tapRecognizer = UITapGestureRecognizer(target: self, action: "editMoment:")
+    momentViewController.collectionView?.addGestureRecognizer(tapRecognizer)
  
     self.addChildViewController(momentViewController)
     momentViewController.didMove(toParentViewController: self)
@@ -609,6 +671,12 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
         }
       }
     }
+  }
+}
+
+extension JournalEntryViewController: MarkupReturnDelegate {
+  func markupComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
+    self.dismiss(animated: true, completion: nil)
   }
 }
 

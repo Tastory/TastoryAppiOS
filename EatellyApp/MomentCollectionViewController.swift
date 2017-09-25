@@ -345,10 +345,3 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
     }
   }
 }
-
-//TODO need to figure a better way to return from moment markup back to journalentry VC 
-extension MomentCollectionViewController: MarkupReturnDelegate {
-  func markupComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
-    self.dismiss(animated: true, completion: nil)
-  }
-}
