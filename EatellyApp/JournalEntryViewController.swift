@@ -160,8 +160,16 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       return
     }
     
+    var validHttpText = text
+    let lowercaseText = text.lowercased()
+    
+    if !lowercaseText.hasPrefix("http://") && !lowercaseText.hasPrefix("https://") {
+      validHttpText = "http://" + text
+      linkTextField?.text = validHttpText
+    }
+    
     CCLog.info("User edited Link of Story")
-    journal.journalURL = text
+    journal.journalURL = validHttpText
     preSave(nil, withBlock: nil)
   }
   

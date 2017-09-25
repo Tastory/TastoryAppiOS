@@ -795,7 +795,7 @@
                                                     <rect key="frame" x="12" y="8" width="355" height="27.5"/>
                                                     <nil key="textColor"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits" keyboardType="URL"/>
+                                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="URL"/>
                                                     <connections>
                                                         <action selector="editedLink:" destination="YxI-Mg-cNr" eventType="editingDidEnd" id="nk7-uO-Tdy"/>
                                                     </connections>
