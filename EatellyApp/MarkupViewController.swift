@@ -529,7 +529,9 @@ class MarkupViewController: UIViewController {
     jotViewController.fitOriginalFontSizeToViewWidth = true
     jotViewController.textAlignment = .left
     jotViewController.drawingColor = UIColor.cyan
-    
+    jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
+                                             andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
+
     addChildViewController(jotViewController)
     view.addSubview(jotViewController.view)
     view.sendSubview(toBack: jotViewController.view)

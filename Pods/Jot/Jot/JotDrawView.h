@@ -196,13 +196,13 @@ extern NSString const* kUndoArray;
  *
  *  @return the object, as a NSDictionary
  */
-- (NSDictionary*)serialize;
+- (NSDictionary*)serialize:(CGFloat)ratioForAspectFitAgainstiPhone6;
 
 /**
  *  Unserialize the draw view from a dictionary
  *
  *  @param the NSDictionary representing the object
  */
-- (void)unserialize:(NSDictionary*)dictionary;
+- (void)unserialize:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6;
 
 @end

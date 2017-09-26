@@ -188,11 +188,26 @@ typedef NS_ENUM(NSUInteger, JotViewState){
  */
 @property (nonatomic, assign) BOOL clipBoundsToEditingInsets;
 
+/**
+ *  Ratio so coordinates and sizes will serialize and deserialize to a common window size.
+ *  The common window size is defined to be the full screen size fo the iPhone 6 in Points.
+ *  aka. 375x667. The ratio is calculated from dividing the target screen size by the iPhone 6 
+ *  screen size. If the aspect ratio of the screen sizes differs, the calculation is done with 
+ *  the assumption of trying to best Aspect Fit a 16:9 rectangular window into the current device.
+ */
+@property (nonatomic, assign) CGFloat ratioForAspectFitAgainstiPhone6;
 
 @property (nonatomic, strong, readonly) JotDrawingContainer *drawingContainer;
 
 @property (nonatomic, strong, readonly) JotTextEditView *textEditView;
 
+/**
+ * This setups ratioForAspectFitAgainstiPhone6 based on the current window width and height in
+ * points as reported by the calling entity. See description on ratioForAspectFitAgainstiPhone6 for
+ * details.
+ */
+- (void)setupRatioForAspectFitOnWindowWidth:(CGFloat)widthPoints andHeight:(CGFloat)heightPoints;
+  
 /**
  *  This setup will prepare the view for any scaling done by the content display mode
  *  of the UIImageView so the rendered output is scaled properly.

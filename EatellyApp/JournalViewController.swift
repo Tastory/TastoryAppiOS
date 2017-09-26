@@ -505,6 +505,8 @@ class JournalViewController: UIViewController {
     
     // This section setups the JotViewController with default initial values
     jotViewController.state = JotViewState.disabled
+    jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
+                                             andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
 //    jotViewController.delegate = self
 //    jotViewController.textColor = UIColor.black
 //    jotViewController.font = UIFont.boldSystemFont(ofSize: 64.0)

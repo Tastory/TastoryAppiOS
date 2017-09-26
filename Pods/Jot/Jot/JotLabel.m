@@ -42,6 +42,7 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
 		_scale = 1;
 		_unscaledFrame = self.frame;
     
+    // Create a little background placeholder for the label
     self.layer.backgroundColor = [[UIColor colorWithWhite:0.0 alpha:0.0] CGColor];
     self.layer.cornerRadius = 5.0;
 	}
@@ -142,13 +143,13 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
 
 #pragma mark - Serialization
 
-+ (instancetype)fromSerialized:(NSDictionary*)dictionary {
++ (instancetype)fromSerialized:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6{
 	JotLabel *label = [JotLabel new];
-	[label unserialize:dictionary];
+  [label unserialize:dictionary on:ratioForAspectFitAgainstiPhone6];
 	return label;
 }
 
-- (NSMutableDictionary*)serialize {
+- (NSMutableDictionary*)serialize:(CGFloat)ratioForAspectFitAgainstiPhone6 {
 	NSMutableDictionary *dic = [NSMutableDictionary new];
 	dic[kText] = self.text;  // NSString
 	dic[kFontName] = self.font.fontName;  // NSString
@@ -163,9 +164,9 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
   
   dic[kTextColor] = @{ kLabelColorRed: @(colorRed), kLabelColorGreen: @(colorGreen), kLabelColorBlue: @(colorBlue), kLabelColorAlpha: @(colorAlpha) };
 	dic[kAlignment] = @(self.textAlignment);  // NSTextAlignment enum raw Int
-  dic[kCenter] = @{ kLabelPointX: @(self.center.x), kLabelPointY: @(self.center.y) };
+  dic[kCenter] = @{ kLabelPointX: @(self.center.x / ratioForAspectFitAgainstiPhone6), kLabelPointY: @(self.center.y / ratioForAspectFitAgainstiPhone6) };  // Only need to move the points and change the size (scale). Don't need to touch Font sizing
 	dic[kRotation] = @(atan2f(self.transform.b, self.transform.a)); // Tan 2 Float?
-	dic[kScale] = @(self.scale);  // CGFloat
+	dic[kScale] = @(self.scale / ratioForAspectFitAgainstiPhone6);  // Only need to move the points and change the size (scale). Don't need to touch Font sizing
 	dic[kFitWidth] = @(self.fitOriginalFontSizeToViewWidth);  // Bool
   
   CGFloat bgWhiteValue;
@@ -176,7 +177,7 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
 	return dic;
 }
 
-- (void)unserialize:(NSDictionary*)dictionary {
+- (void)unserialize:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6 {
 	if (dictionary[kText]) {
 		self.text = dictionary[kText];
 	}
@@ -207,8 +208,8 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
     NSNumber *numberX = center[kLabelPointX];
     NSNumber *numberY = center[kLabelPointY];
     CGPoint centerPoint;
-    centerPoint.x = numberX.doubleValue;
-    centerPoint.y = numberY.doubleValue;
+    centerPoint.x = numberX.doubleValue * ratioForAspectFitAgainstiPhone6;  // Only need to move the points and change the size (scale). Don't need to touch Font sizing
+    centerPoint.y = numberY.doubleValue * ratioForAspectFitAgainstiPhone6;  // Only need to move the points and change the size (scale). Don't need to touch Font sizing
     
     self.center = centerPoint;
 	}
@@ -216,7 +217,7 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
 		self.transform = CGAffineTransformMakeRotation([dictionary[kRotation] floatValue]);
 	}
 	if (dictionary[kScale]) {
-		self.scale = [dictionary[kScale] floatValue];
+    self.scale = [dictionary[kScale] floatValue] * ratioForAspectFitAgainstiPhone6;  // Only need to move the points and change the size (scale). Don't need to touch Font sizing
 	}
 	if ([dictionary[kFitWidth] boolValue]) {
 		self.fitOriginalFontSizeToViewWidth = YES;
