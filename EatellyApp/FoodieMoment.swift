@@ -355,7 +355,16 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       self.markups = [markup]
     }
   }
-  
+
+  // Function to clear all Markups
+  func clearMarkups()
+  {
+    if self.markups != nil {
+      self.markups!.removeAll()
+    } else {
+      self.markups = []
+    }
+  }
   
   // Function to set Moment Locations
   func set(location: CLLocation?) {

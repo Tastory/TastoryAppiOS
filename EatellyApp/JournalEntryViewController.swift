@@ -47,8 +47,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   fileprivate var momentViewController = MomentCollectionViewController()
   fileprivate var markupMoment: FoodieMoment? = nil
   fileprivate let activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-  fileprivate var lastEditedMomentIdx: Int = -1
-  
+
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var venueButton: UIButton?
@@ -296,9 +295,6 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
       viewController.markupReturnDelegate = self
 
-
-      lastEditedMomentIdx = indexPath.row
-
       if let markups = moment.markups {
         var jotDictionary = [AnyHashable: Any]()
         var labelDictionary: [NSDictionary]?
@@ -364,6 +360,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
         }
 
         viewController.mediaObj = mediaObj
+        viewController.editMomentObj = moment
         self.present(viewController, animated: true)
       }
      }
@@ -475,10 +472,15 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
         if markupMoment != nil {
           // So there is a Moment under markup. The returned Moment should match this.
           if returnedMoment === markupMoment {
-            
-            // TODO: Gotta do a Moment Replace operation. See Foodie Object Model
-            // Probably replace the Moment in Memory. Set the right flags so Pre-Upload will do the right things
-            
+
+            // save to local
+            moment.saveRecursive(to: .local, type: .draft) { (error) in
+              if(error != nil) {
+                AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+                  CCLog.assert("Error saving moment into local caused by:  \(error)")
+                }
+              }
+            }
           } else {
             AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain)
             CCLog.assert("returnedMoment expected to match markupMoment")
@@ -683,105 +685,10 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
 extension JournalEntryViewController: MarkupReturnDelegate {
   func markupComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
 
+    self.returnedMoment = markedupMoment
+    self.markupMoment = markedupMoment
 
-    guard let mediaObj = markedupMoment.mediaObj else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.assert("Nil media object in moment")
-      }
-      return
-    }
-
-    guard let mediaFileName = mediaObj.foodieFileName else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.assert("Media file name doesn't exists")
-      }
-      return
-    }
-
-    guard let mediaType = mediaObj.mediaType else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.assert("Unknown media type")
-      }
-      return
-    }
-
-    var newFileName = FoodieFile.newPhotoFileName()
-    let newMediaObj = FoodieMedia(for: newFileName, localType: .draft, mediaType: mediaType)
-
-    if(mediaType  == .video) {
-      newFileName = FoodieFile.newVideoFileName()
-      newMediaObj.videoLocalBufferUrl = FoodieFile.getFileURL(for: .draft, with: newFileName)
-    }
-
-    // duplicate moment and delete moment
-    FoodieFile.manager.copyFile(
-      from: FoodieFile.getFileURL(for: .draft, with: mediaFileName),
-      to: .draft,
-      with: newFileName) { (error) in
-        if (error != nil) {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-            CCLog.assert("Error copying moment media")
-          }
-        }
-
-        // load new file location into buffer
-        if(mediaType == .photo) {
-
-          var uiimage: UIImage?
-
-          do {
-            try uiimage = UIImage(data: Data(contentsOf: FoodieFile.getFileURL(for: .draft, with: newFileName)))
-          }
-          catch {
-            CCLog.verbose("Error info: \(error)")
-
-            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-              CCLog.assert("Failed to load image from URL")
-            }
-          }
-
-          guard let loadedImage = uiimage else {
-            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-              CCLog.assert("Failed to unwrap UIImage")
-            }
-            return
-          }
-
-          newMediaObj.imageMemoryBuffer = UIImageJPEGRepresentation(loadedImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
-        }
-
-        // delete existing moment 
-
-        guard let workingJournal = self.workingJournal else {
-          AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
-            CCLog.fatal("Working journal is nil")
-          }
-          return
-        }
-
-        guard var momentArray = workingJournal.moments else {
-          AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
-            CCLog.fatal("No Moments in working journal")
-          }
-          return
-        }
-
-        if(self.lastEditedMomentIdx >= momentArray.count || self.lastEditedMomentIdx <= 0)
-        {
-          AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
-            CCLog.fatal("Moment selection is out of bound")
-          }
-        }
-
-        momentArray.remove(at: self.lastEditedMomentIdx)
-        self.returnedMoment = markedupMoment
-        self.markupMoment = markedupMoment
-
-        DispatchQueue.main.async {
-          self.dismiss(animated: true, completion: nil)
-        }
-        //momentArray.insert(markedupMoment, at: self.lastEditedMomentIdx)
-    }
+    dismiss(animated: true, completion: nil)
   }
 }
 

@@ -47,8 +47,8 @@ class MarkupViewController: UIViewController {
   var mediaObj: FoodieMedia?
   var mediaLocation: CLLocation?
   var markupReturnDelegate: MarkupReturnDelegate?
+  var editMomentObj: FoodieMoment?
 
-  
   // MARK: - Private Instance Variables
   fileprivate var avPlayer: AVQueuePlayer?
   fileprivate var avPlayerLayer: AVPlayerLayer?
@@ -253,14 +253,22 @@ class MarkupViewController: UIViewController {
     // TODO: Don't let user click save (Gray it out until Thumbnail creation completed)
     
     // Initializing with Media Object also initialize foodieFileName and mediaType
-    let momentObj = FoodieMoment(foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
+    var momentObj: FoodieMoment
+
+    // reuse moment for edits
+    if(editMomentObj != nil) {
+      momentObj = editMomentObj!
+    } else {
+      momentObj = FoodieMoment(foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
+    }
 
     momentObj.set(location: mediaLocation)
     momentObj.playSound = soundOn
     
     // Setting the Thumbnail Object also initializes the thumbnailFileName
     momentObj.thumbnailObj = thumbnailObject
-    
+
+    momentObj.clearMarkups()
     // Serialize the Jot Markup into Foodie Markups
     if let jotDictionary = jotViewController.serialize() {
 
@@ -321,6 +329,11 @@ class MarkupViewController: UIViewController {
     // Implementing Scenario 1 for now. Scenario TBD
     // What this is trying to do is to display a selection dialog on whether to add to the Current Journal, or Save to a new one
     if let journal = FoodieJournal.currentJournal {
+      if(editMomentObj != nil)
+      {
+        // skip the selection of adding to current or not
+        self.cleanupAndReturn(markedUpMoment: momentObj, suggestedJournal: journal)
+      }
       displayJournalSelection(
         newJournalHandler: { UIAlertAction -> Void in self.showJournalDiscardDialog(moment: momentObj) },
         addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoment: momentObj, suggestedJournal: journal) }
