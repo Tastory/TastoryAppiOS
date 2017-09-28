@@ -10,6 +10,67 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Root View Controller-->
+        <scene sceneID="r7f-iY-Fh7">
+            <objects>
+                <viewController storyboardIdentifier="RootViewController" id="r8A-E3-4xQ" customClass="RootViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="ol9-6T-3Em"/>
+                        <viewControllerLayoutGuide type="bottom" id="dU9-Dx-WPv"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="y2k-IU-Ekh">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TastryTempLoginBg4k" translatesAutoresizingMaskIntoConstraints="NO" id="trS-uE-7SE">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                            </imageView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="vRZ-ec-eAf">
+                                <rect key="frame" x="63" y="102" width="288" height="533"/>
+                                <subviews>
+                                    <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PtW-hr-Es1">
+                                        <rect key="frame" x="0.0" y="0.0" width="288" height="100"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="100" id="R3E-zZ-oMC"/>
+                                        </constraints>
+                                    </view>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TASTRY" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7O6-FF-8vl">
+                                        <rect key="frame" x="0.0" y="110" width="288" height="75"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="75" id="0sZ-ey-INs"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="64"/>
+                                        <color key="textColor" white="1" alpha="0.90000000000000002" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ggg-5V-ke5">
+                                        <rect key="frame" x="0.0" y="195" width="288" height="338"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </view>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="533" id="5qb-Wp-nLP"/>
+                                    <constraint firstAttribute="width" constant="288" id="D8Y-qY-drh"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="trS-uE-7SE" firstAttribute="leading" secondItem="y2k-IU-Ekh" secondAttribute="leading" id="2Hi-Nd-huC"/>
+                            <constraint firstItem="dU9-Dx-WPv" firstAttribute="top" secondItem="trS-uE-7SE" secondAttribute="bottom" id="7Bo-7k-tI2"/>
+                            <constraint firstItem="vRZ-ec-eAf" firstAttribute="centerX" secondItem="y2k-IU-Ekh" secondAttribute="centerX" id="Oqe-Ml-gXr"/>
+                            <constraint firstItem="trS-uE-7SE" firstAttribute="top" secondItem="y2k-IU-Ekh" secondAttribute="top" id="sfu-Wd-tEb"/>
+                            <constraint firstAttribute="trailing" secondItem="trS-uE-7SE" secondAttribute="trailing" id="wRY-OY-vo4"/>
+                            <constraint firstItem="vRZ-ec-eAf" firstAttribute="centerY" secondItem="y2k-IU-Ekh" secondAttribute="centerY" id="woo-Cx-DZt"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gk8-hG-rpq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-438" y="204"/>
+        </scene>
         <!--Log In View Controller-->
         <scene sceneID="cYh-zV-tCI">
             <objects>

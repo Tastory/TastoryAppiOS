@@ -41,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     error = nil
     
     // Launch Root View Controller
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "RootViewController") as! RootViewController
     viewController.startupError = error
     window = UIWindow(frame: UIScreen.main.bounds)
