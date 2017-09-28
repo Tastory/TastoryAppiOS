@@ -3,49 +3,49 @@
     {
       "size" : "20x20",
       "idiom" : "iphone",
-      "filename" : "FoodNoteIcon40.png",
+      "filename" : "TastryTempIcon40.png",
       "scale" : "2x"
     },
     {
       "size" : "20x20",
       "idiom" : "iphone",
-      "filename" : "FoodNoteIcon60.png",
+      "filename" : "TastryTempIcon60.png",
       "scale" : "3x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "FoodNoteIcon58.png",
+      "filename" : "TastryTempIcon58.png",
       "scale" : "2x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "FoodNoteIcon87.png",
+      "filename" : "TastryTempIcon87.png",
       "scale" : "3x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "FoodNoteIcon80.png",
+      "filename" : "TastryTempIcon80.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "FoodNoteIcon120-1.png",
+      "filename" : "TastryTempIcon120.png",
       "scale" : "3x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "FoodNoteIcon120.png",
+      "filename" : "TastryTempIcon120-1.png",
       "scale" : "2x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "FoodNoteIcon180.png",
+      "filename" : "TastryTempIcon180.png",
       "scale" : "3x"
     }
   ],

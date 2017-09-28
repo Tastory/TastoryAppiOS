@@ -42,8 +42,8 @@ class RootViewController: UIViewController {
     if let error = startupError as? FoodieGlobal.ErrorCode, error == .startupFoursquareCategoryError {
       offlineErrorDialog()
     } else {
-      let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverViewController")
+      let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
+      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "LogInViewController")
       self.present(viewController, animated: true)
     }
   }
