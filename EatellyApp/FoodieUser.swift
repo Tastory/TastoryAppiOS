@@ -65,13 +65,15 @@ class FoodieUser: PFUser {
   // MARK: - Error Types Definition
   enum ErrorCode: LocalizedError {
     
+    case loginFoodieUserNil
+    
     case usernameIsEmpty
     case usernameTooShort(Int)
     case usernameTooLong(Int)
     case usernameContainsSpace
     case usernameContainsSymbol(String)
     case usernameContainsSeq
-    case usernameContainsSuffix
+    case usernameContainsSuffix(String)
     case usernameReserved
     
     case emailIsEmpty
@@ -88,6 +90,8 @@ class FoodieUser: PFUser {
     
     var errorDescription: String? {
       switch self {
+      case .loginFoodieUserNil:
+        return NSLocalizedString("User returned by login is nil", comment: "Error message upon Login")
       case .usernameIsEmpty:
         return NSLocalizedString("Username is empty", comment: "Error message when Login/ Sign Up fails due to Username problems")
       case .usernameTooShort(let minLength):
@@ -96,13 +100,13 @@ class FoodieUser: PFUser {
         return NSLocalizedString("Username is longer than maximum length of \(maxLength)", comment: "Error message when Login/Sign Up fails due to Username problems")
       case .usernameContainsSpace:
         return NSLocalizedString("Username contains space", comment: "Error message when Login/ Sign Up fails due to Username problems")
-      case .usernameConstainsSymbol(let allowedSymbols):
+      case .usernameContainsSymbol(let allowedSymbols):
         return NSLocalizedString("Username can only contain symbols of \(allowedSymbols)", comment: "Error message when Login/ Sign Up fails due to Username problems")
       case .usernameContainsSeq:
         return NSLocalizedString("Username contains reserved sequence", comment: "Error message when Login/ Sign Up fails due to Username problems")
-      case usernameContainsSuffix(let suffix):
+      case .usernameContainsSuffix(let suffix):
         return NSLocalizedString("Username contains reserved suffix of \(suffix)", comment: "Error message when Login/ Sign Up fails due to Username problems")
-      case usernameReserved:
+      case .usernameReserved:
         return NSLocalizedString("Username reserved", comment: "Error message when Login/ Sign Up fails due to Username problems")
         
       case .emailIsEmpty:
@@ -139,14 +143,34 @@ class FoodieUser: PFUser {
   
   // MARK: - Public Static Functions
   
-  static func initialize() {
+  static func enableAutoGuestUser() {
     PFUser.enableAutomaticUser()
+  }
+  
+  
+  static func logIn(for username: String, using password: String, withBlock callback: UserErrorBlock?) {
+    PFUser.logInWithUsername(inBackground: username, password: password) { (user, error) in
+      
+      if let error = error {
+        callback?(nil, error)
+        return
+      }
+      
+      guard let foodieUser = user as? FoodieUser else {
+        CCLog.warning("User returned by Parse for username: '\(username)' is not of FoodieUser type or nil")
+        callback?(nil, ErrorCode.loginFoodieUserNil)
+        return
+      }
+      
+      callback?(foodieUser, nil)
+    }
   }
   
   
   static func logOut(withBlock callback: SimpleErrorBlock?) {
     PFUser.logOutInBackground(block: callback)
   }
+  
   
   static func checkUserAvailFor(username: String, withBlock callback: BooleanErrorBlock?) {
     guard let userQuery = PFUser.query() else {
@@ -204,7 +228,7 @@ class FoodieUser: PFUser {
       return .usernameTooShort(Constants.MinUsernameLength)
     }
     
-    if username.characters.count > Cosntants.MaxUsernameLength {
+    if username.characters.count > Constants.MaxUsernameLength {
       return .usernameTooLong(Constants.MaxUsernameLength)
     }
     
@@ -213,17 +237,18 @@ class FoodieUser: PFUser {
     }
     
     if let alphaRange = username.rangeOfCharacter(from: CharacterSet.alphanumerics) {
-      let remainingName = username
+      var remainingName = username
       remainingName.removeSubrange(alphaRange)
       
-      let allowedSymbols = ""
+      var allowedSymbols = ""
       for allowedSymbol in Restriction.AllowedUsernameSymbols {
         remainingName = remainingName.replacingOccurrences(of: allowedSymbol, with: "")
         allowedSymbols += allowedSymbol + " "
       }
- 
+      
       if remainingName.characters.count > 0 {
-        return .usernameContainsSymbol(allowedSymbols.dropLast())
+        allowedSymbols.remove(at: allowedSymbols.index(before: allowedSymbols.endIndex))
+        return .usernameContainsSymbol(allowedSymbols)
       }
     }
     
@@ -286,7 +311,7 @@ class FoodieUser: PFUser {
     }
     
     for sequence in Restriction.RsvdPasswordSeqs {
-      if password.lowercased().contain(sequence.lowercased()) {
+      if password.lowercased().contains(sequence.lowercased()) {
         return .passwordContainsSeq(sequence)
       }
     }
@@ -298,42 +323,42 @@ class FoodieUser: PFUser {
   func signUp(withBlock callback: SimpleErrorBlock?) {
     
     guard let username = username else {
-      DispatchQueue.global(qos: .userInitiated) {
+      DispatchQueue.global(qos: .userInitiated).async {
         callback?(ErrorCode.usernameIsEmpty)
       }
       return
     }
     
     guard let email = email else {
-      DispatchQueue.global(qos: .userInitiated) {
+      DispatchQueue.global(qos: .userInitiated).async {
         callback?(ErrorCode.emailIsEmpty)
       }
       return
     }
     
     guard let password = password else {
-      DispatchQueue.global(qos: .userInitiated) {
+      DispatchQueue.global(qos: .userInitiated).async {
         callback?(ErrorCode.passwordIsEmpty)
       }
       return
     }
     
-    if let error = checkValidFor(username) {
-      DispatchQueue.global(qos: .userInitiated) {
+    if let error = checkValidFor(username: username) {
+      DispatchQueue.global(qos: .userInitiated).async {
         callback?(error)
       }
       return
     }
     
     if !checkValidFor(email: email) {
-      DispatchQueue.global(qos: .userInitiated) {
+      DispatchQueue.global(qos: .userInitiated).async {
         callback?(ErrorCode.emailIsInvalid)
       }
       return
     }
     
-    if let error = checkValidFor(password) {
-      DispatchQueue.global(qos: .userInitiated) {
+    if let error = checkValidFor(password: password) {
+      DispatchQueue.global(qos: .userInitiated).async {
         callback?(error)
       }
       return
@@ -342,26 +367,6 @@ class FoodieUser: PFUser {
     self.signUpInBackground { (success, error) in
       FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
     }
-  }
-  
-  
-  func logIn(for username: String, using password: String, withBlock callback: UserErrorBlock?) {
-    
-    guard let username = username else {
-      DispatchQueue.global(qos: .userInitiated) {
-        callback?(nil, ErrorCode.usernameIsEmpty)
-      }
-      return
-    }
-    
-    guard let password = password else {
-      DispatchQueue.global(qos: .userInitiated) {
-        callback?(nil, ErrorCode.passwordIsEmpty)
-      }
-      return
-    }
-    
-    PFUser.logInWithUsername(inBackground: username, password: password, block: callback)
   }
   
   

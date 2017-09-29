@@ -157,7 +157,7 @@ class FoodieObject {
   
   // MARK: - Public Static Functions
   static func initialize() {
-    PFObject.configure()
+    FoodiePFObject.configure()
   }
   
   

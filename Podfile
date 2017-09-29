@@ -16,7 +16,6 @@ target 'EatellyApp' do
   pod 'Fabric'
   pod 'Crashlytics'
   pod 'RATreeView'
-  pod 'Navajo-Swift'
 
   target 'EatellyAppTests' do
     inherit! :search_paths

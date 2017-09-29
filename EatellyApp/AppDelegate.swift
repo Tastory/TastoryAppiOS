@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     CCLog.initializeReporting()
     
     // Enable Automatic User
-    FoodieUser.initialize()
+    FoodieUser.enableAutoGuestUser()
     
     // Initialize FoodieObject Database
     FoodieObject.initialize()

@@ -1,6 +1,0 @@
-framework module Navajo_Swift {
-  umbrella header "Navajo-Swift-umbrella.h"
-
-  export *
-  module * { export * }
-}

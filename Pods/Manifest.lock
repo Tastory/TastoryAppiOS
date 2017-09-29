@@ -12,7 +12,6 @@ PODS:
   - Jot (0.2.0):
     - Masonry (~> 1.0.2)
   - Masonry (1.0.2)
-  - Navajo-Swift (1.0.0)
   - Parse (1.15.2):
     - Bolts/Tasks (~> 1.8)
   - QuadratTouch (1.1.3)
@@ -26,7 +25,6 @@ DEPENDENCIES:
   - Fabric
   - HTTPStatusCodes (~> 3.1.2)
   - Jot (from `https://github.com/biscottigelato/Jot.git`)
-  - Navajo-Swift
   - Parse
   - QuadratTouch (from `https://github.com/Constantine-Fry/das-quadrat.git`, branch `develop`)
   - RATreeView
@@ -57,12 +55,11 @@ SPEC CHECKSUMS:
   HTTPStatusCodes: 88155ba36826366a898a7b4f34d311f49083d546
   Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
-  Navajo-Swift: b5ccdf31f5b21e4944a418c5dfe891c8e571f7c7
   Parse: 7daa8804b876d250a65420534c97d2d786c3b0b4
   QuadratTouch: 9e311cbd4f0573b58cafe6783df1fa7ce2458afa
   RATreeView: 380cde0090cfde21dc6ac29137f49d3b768fdd28
   SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
 
-PODFILE CHECKSUM: 1a42bdcad1f7b6afd98cb1a0cde6736a85724571
+PODFILE CHECKSUM: affb0d402f1062a09d4ea530e01727d9332c7403
 
 COCOAPODS: 1.2.0
