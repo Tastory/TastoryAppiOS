@@ -21,41 +21,41 @@ protocol FoodieObjectDelegate: class {
    ********************************************************************************************************************/
   
   static func deleteAll(from localType: FoodieObject.LocalType,
-                        withBlock callback: FoodieObject.SimpleErrorBlock?)
+                        withBlock callback: SimpleErrorBlock?)
   
   func retrieve(from localType: FoodieObject.LocalType,
                 forceAnyways: Bool,
-                withBlock callback: FoodieObject.SimpleErrorBlock?)
+                withBlock callback: SimpleErrorBlock?)
   
   func retrieveFromLocalThenServer(forceAnyways: Bool,
                                    type: FoodieObject.LocalType,
-                                   withBlock callback: FoodieObject.SimpleErrorBlock?)
+                                   withBlock callback: SimpleErrorBlock?)
   
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool,
-                         withBlock callback: FoodieObject.SimpleErrorBlock?)
+                         withBlock callback: SimpleErrorBlock?)
   
   
   func save(to localType: FoodieObject.LocalType,
-            withBlock callback: FoodieObject.SimpleErrorBlock?)
+            withBlock callback: SimpleErrorBlock?)
   
   func saveToLocalNServer(type localType: FoodieObject.LocalType,
-                          withBlock callback: FoodieObject.SimpleErrorBlock?)
+                          withBlock callback: SimpleErrorBlock?)
   
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
-                     withBlock callback: FoodieObject.SimpleErrorBlock?)
+                     withBlock callback: SimpleErrorBlock?)
   
   
   func delete(from localType: FoodieObject.LocalType,
-              withBlock callback: FoodieObject.SimpleErrorBlock?)
+              withBlock callback: SimpleErrorBlock?)
   
-  func deleteFromLocalNServer(withBlock callback: FoodieObject.SimpleErrorBlock?)  // Always whacks all
+  func deleteFromLocalNServer(withBlock callback: SimpleErrorBlock?)  // Always whacks all
   
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
-                       withBlock callback: FoodieObject.SimpleErrorBlock?)
+                       withBlock callback: SimpleErrorBlock?)
   
   
   func getUniqueIdentifier() -> String
@@ -75,10 +75,6 @@ protocol FoodieObjectWaitOnRetrieveDelegate: class {
 class FoodieObject {
   
   // MARK: - Types & Enumerations
-  typealias BooleanErrorBlock = (Bool, Error?) -> Void
-  typealias RetrievedObjectBlock = (Any?, Error?) -> Void
-  typealias SimpleErrorBlock = (Error?) -> Void
-  
   
   enum RetrieveStates: String {
     case notAvailable       = "notAvailable"
@@ -161,7 +157,7 @@ class FoodieObject {
   
   // MARK: - Public Static Functions
   static func initialize() {
-    FoodiePFObject.configure()
+    PFObject.configure()
   }
   
   

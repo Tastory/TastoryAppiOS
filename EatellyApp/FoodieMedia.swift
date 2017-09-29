@@ -73,7 +73,7 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   func retrieve(from localType: FoodieObject.LocalType,
                 forceAnyways: Bool,
-                withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                withBlock callback: SimpleErrorBlock?) {
     
     guard let fileName = foodieFileName else {
       CCLog.fatal("FoodieMedia has no foodieFileName")
@@ -118,7 +118,7 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   func retrieveFromLocalThenServer(forceAnyways: Bool,
                                    type localType: FoodieObject.LocalType,
-                                   withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                                   withBlock callback: SimpleErrorBlock?) {
     
     guard let fileName = foodieFileName else {
       CCLog.fatal("FoodieMedia has no foodieFileName")
@@ -213,7 +213,7 @@ extension FoodieMedia: FoodieObjectDelegate {
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
-                         withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                         withBlock callback: SimpleErrorBlock?) {
     
     // Retrieve self. This object have no children
     switch location {
@@ -226,7 +226,7 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   
   // Function to save this media object to local.
-  func save(to localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func save(to localType: FoodieObject.LocalType, withBlock callback: SimpleErrorBlock?) {
     
     guard let fileName = foodieFileName else {
       CCLog.fatal("FoodieMedia has no foodieFileName")
@@ -263,7 +263,7 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   
   // Function to Save to both Local & Server
-  func saveToLocalNServer(type localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func saveToLocalNServer(type localType: FoodieObject.LocalType, withBlock callback: SimpleErrorBlock?) {
     // Save to Local first, then Server.
     save(to: localType) { error in
       
@@ -281,7 +281,7 @@ extension FoodieMedia: FoodieObjectDelegate {
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
-                     withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                     withBlock callback: SimpleErrorBlock?) {
     
     self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
   }
@@ -290,7 +290,7 @@ extension FoodieMedia: FoodieObjectDelegate {
   // Trigger recursive delete against all child objects.
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
-                       withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                       withBlock callback: SimpleErrorBlock?) {
     
     CCLog.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
     

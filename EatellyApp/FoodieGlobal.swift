@@ -11,6 +11,12 @@ import QuadratTouch
 
 
 // MARK: - Types & Enums
+typealias BooleanErrorBlock = (Bool, Error?) -> Void
+typealias AnyErrorBlock = (Any?, Error?) -> Void
+typealias SimpleErrorBlock = (Error?) -> Void
+typealias UserErrorBlock = (FoodieUser?, Error?) -> Void
+
+
 enum FoodieMediaType: String {
   case photo = "image/jpeg"
   case video = "video/mp4"
@@ -64,6 +70,20 @@ struct FoodieGlobal {
   
   
   // MARK: - Public Static Functions
+  static func booleanToSimpleErrorCallback(_ success: Bool, _ error: Error?, function: String = #function, file: String = #file, line: Int = #line, _ callback: SimpleErrorBlock?) {
+    #if DEBUG  // Do this sanity check low and never need to worry about it again
+      if (success && error != nil) || (!success && error == nil) {
+        CCLog.fatal("Parse layer come back with Success and Error mismatch")
+      }
+    #endif
+    
+    if !success {
+      CCLog.warning("\(function) Failed with Error - \(error!.localizedDescription) on line \(line) of \((file as NSString).lastPathComponent)")
+    }
+    callback?(error)
+  }
+  
+  
   static func foursquareInitialize() {
     if !foursquareInitialized {
       let foursquareSessionQueue = OperationQueue()

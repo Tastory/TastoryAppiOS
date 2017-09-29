@@ -9,12 +9,13 @@
 import UIKit
 
 class SignUpViewController: UIViewController {
-
   
-  // MARK: - Public Global Variable
+  
+  // MARK: - Public Instance Variable
   
   var username: String?
   var password: String?
+  
   
   
   // MARK: - IBOutlet
@@ -35,42 +36,82 @@ class SignUpViewController: UIViewController {
     }
   }
   
-  @IBOutlet weak var confirmPwdField: UITextField!
+  @IBOutlet weak var hideShowPwdButton: UIButton!
+  
+  @IBOutlet weak var warningLabel: UILabel!
   
   
   
   // MARK: - IBAction
   
   @IBAction func signUpAction(_ sender: UIButton) {
+    
+    guard let username = usernameField.text else {
+      AlertDialog.present(from: self, title: "Username Empty", message: "Please enter a username to sign up") { action in
+        CCLog.info("No username when Sign Up pressed")
+      }
+      return
+    }
+    
+    guard let email = emailField.text else {
+      AlertDialog.present(from: self, title: "E-mail Empty", message: "Please enter a valid e-mail address to sign up") { action in
+        CCLog.info("No e-mail address when Sign Up pressed")
+      }
+      return
+    }
+    
+    guard let password = passwordField.text else {
+      AlertDialog.present(from: self, title: "Password Empty", message: "Please enter a password to sign up") { action in
+        CCLog.info("No password when Sign Up pressed")
+      }
+      return
+    }
   }
+  
+  
+  
+  @IBAction func hideShowPwdAction(_ sender: UIButton) {
+  }
+  
+  
+  
   
   @IBAction func exitAction(_ sender: UIButton) {
     dismiss(animated: true, completion: nil)
   }
   
   
+  
   // MARK: - View Controller Lifecycle
   
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+  override func viewDidLoad() {
+    super.viewDidLoad()
     
+    // Do any additional setup after loading the view.
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    usernameField.becomeFirstResponder()
+  }
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    // Dispose of any resources that can be recreated.
+  }
+}
 
-    /*
-    // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
+// MARK: - Protocol Conformance for UITextFieldDelegate
+
+extension SignUpViewController: UITextFieldDelegate {
+  func textFieldDidEndEditing(_ textField: UITextField) {
+    //code
+  }
+  
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    //code
+    return true
+  }
 }

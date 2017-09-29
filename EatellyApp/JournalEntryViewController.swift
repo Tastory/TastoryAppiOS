@@ -235,7 +235,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   }
   
   
-  fileprivate func preSave(_ object: FoodieObjectDelegate?, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  fileprivate func preSave(_ object: FoodieObjectDelegate?, withBlock callback: SimpleErrorBlock?) {
     
     CCLog.debug("Pre-Save Operation Started")
     

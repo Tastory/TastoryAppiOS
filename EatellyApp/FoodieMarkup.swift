@@ -39,7 +39,7 @@ extension FoodieMarkup: FoodieObjectDelegate {
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
-                         withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                         withBlock callback: SimpleErrorBlock?) {
     
     // Retrieve self. This object have no children
     foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
@@ -49,7 +49,7 @@ extension FoodieMarkup: FoodieObjectDelegate {
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
-                     withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                     withBlock callback: SimpleErrorBlock?) {
 
     self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
   }
@@ -57,7 +57,7 @@ extension FoodieMarkup: FoodieObjectDelegate {
   
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
-                       withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                       withBlock callback: SimpleErrorBlock?) {
 
     // Delete self. For now, this object has no children
     foodieObject.deleteObject(from: location, type: localType, withBlock: callback)

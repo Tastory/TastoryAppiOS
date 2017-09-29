@@ -154,7 +154,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   fileprivate func retrieve(from location: FoodieObject.StorageLocation,
                             type localType: FoodieObject.LocalType,
                             forceAnyways: Bool,
-                            withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                            withBlock callback: SimpleErrorBlock?) {
     
     foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
@@ -175,7 +175,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   fileprivate func retrieveOpRecursive(from location: FoodieObject.StorageLocation,
                                        type localType: FoodieObject.LocalType,
                                        forceAnyways: Bool = false,
-                                       withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                                       withBlock callback: SimpleErrorBlock?) {
     
     // Retrieve self first, then retrieve children afterwards
     retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
@@ -217,7 +217,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   fileprivate func saveOpRecursive(to location: FoodieObject.StorageLocation,
                                    type localType: FoodieObject.LocalType,
-                                   withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                                   withBlock callback: SimpleErrorBlock?) {
     
     foodieObject.resetOutstandingChildOperations()
     var childOperationPending = false
@@ -250,7 +250,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // Trigger recursive saves against all child objects.
   fileprivate func deleteOpRecursive(from location: FoodieObject.StorageLocation,
                                      type localType: FoodieObject.LocalType,
-                                     withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                                     withBlock callback: SimpleErrorBlock?) {
     
     // Retrieve the Moment (only) to guarentee access to the childrens
     retrieve(from: location, type: localType, forceAnyways: false) { error in
@@ -383,7 +383,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
-                         withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                         withBlock callback: SimpleErrorBlock?) {
     
     CCLog.verbose("Retrieve Recursive for Moment \(getUniqueIdentifier())")
     
@@ -395,7 +395,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
-                     withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                     withBlock callback: SimpleErrorBlock?) {
     
     CCLog.verbose("Save Recursive for Moment \(getUniqueIdentifier())")
     
@@ -407,7 +407,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // Trigger recursive delete against all child objects.
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
-                       withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                       withBlock callback: SimpleErrorBlock?) {
     
     CCLog.verbose("Delete Recursive for Moment \(getUniqueIdentifier())")
     

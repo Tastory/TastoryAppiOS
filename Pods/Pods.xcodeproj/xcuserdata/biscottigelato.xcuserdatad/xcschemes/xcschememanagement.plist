@@ -54,10 +54,20 @@
 			<key>orderHint</key>
 			<integer>14</integer>
 		</dict>
+		<key>Navajo-Swift.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>11</integer>
+		</dict>
 		<key>Parse.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>6</integer>
+		</dict>
+		<key>ParseUI.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>10</integer>
 		</dict>
 		<key>Pods-EatellyApp.xcscheme</key>
 		<dict>
@@ -117,6 +127,11 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>015AAC4618F33550E8C400890E3DCF90</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>06E2463E18860775710BDED29E5FDFA2</key>
 		<dict>
 			<key>primary</key>
@@ -143,6 +158,11 @@
 			<true/>
 		</dict>
 		<key>3C7AFCE3258BC1D59D5A375DDB10FABC</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>3D488A53614AF24E7AE16345CAD82FFE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -203,6 +223,11 @@
 			<true/>
 		</dict>
 		<key>6434A2A1332B3C22D84519F588EF16CE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>728F14C69782BB1BC3366CEF2301B518</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -343,6 +368,16 @@
 			<true/>
 		</dict>
 		<key>E170DF91626C1F0EA2E72CBAC30F568D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E5BC9289E2D8796CCD53E4EF862B2429</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E92FFAA6CBBE88F7573FE29F7714A344</key>
 		<dict>
 			<key>primary</key>
 			<true/>

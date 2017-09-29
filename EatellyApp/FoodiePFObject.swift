@@ -24,22 +24,6 @@ class FoodiePFObject: PFObject {
   
   
   
-  // MARK: - Private Static Functions
-  private static func booleanToSimpleErrorCallback(_ success: Bool, _ error: Error?, function: String = #function, file: String = #file, line: Int = #line, _ callback: FoodieObject.SimpleErrorBlock?) {
-    #if DEBUG  // Do this sanity check low and never need to worry about it again
-      if (success && error != nil) || (!success && error == nil) {
-        CCLog.fatal("Parse layer come back with Success and Error mismatch")
-      }
-    #endif
-    
-    if !success {
-      CCLog.warning("\(function) Failed with Error - \(error!.localizedDescription) on line \(line) of \((file as NSString).lastPathComponent)")
-    }
-    callback?(error)
-  }
-  
-  
-  
   // MARK: - Public Static Functions
   static func configure() {
     Parse.enableLocalDatastore()
@@ -54,19 +38,19 @@ class FoodiePFObject: PFObject {
     
     // For Parse Subclassing
     // FoodieObject is an Abstract! Don't Register!!
-    FoodieUser.registerSubclass()
     FoodieJournal.registerSubclass()
     FoodieVenue.registerSubclass()
     FoodieCategory.registerSubclass()
     FoodieMoment.registerSubclass()
     FoodieMarkup.registerSubclass()
-    FoodieHistory.registerSubclass()
+    FoodieRole.registerSubclass()
+    FoodieUser.registerSubclass()
   }
   
   
-  static func deleteAll(from localType: FoodieObject.LocalType, withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  static func deleteAll(from localType: FoodieObject.LocalType, withBlock callback: SimpleErrorBlock?) {
     unpinAllObjectsInBackground(withName: localType.rawValue) { success, error in
-      booleanToSimpleErrorCallback(success, error, callback)
+      FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
     }
   }
   
@@ -82,7 +66,7 @@ class FoodiePFObject: PFObject {
   
   func retrieve(from localType: FoodieObject.LocalType,  // At the Fetch stage, Parse doesn't care any more
                 forceAnyways: Bool,
-                withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                withBlock callback: SimpleErrorBlock?) {
     
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
@@ -127,7 +111,7 @@ class FoodiePFObject: PFObject {
   // At the Fetch stage, Parse doesn't care about Draft vs Cache anymore. But this always saves a copy back into Cache if ultimately retrieved from Server
   func retrieveFromLocalThenServer(forceAnyways: Bool,
                                    type localType: FoodieObject.LocalType,
-                                   withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                                   withBlock callback: SimpleErrorBlock?) {
     
     let fetchRetry = SwiftRetry()
     
@@ -195,7 +179,7 @@ class FoodiePFObject: PFObject {
             if fetchRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
           } else {
             CCLog.debug("Pin \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) to Name '\(localType)'")
-            self.pinInBackground(withName: localType.rawValue) { (success, error) in FoodiePFObject.booleanToSimpleErrorCallback(success, error, nil) }
+            self.pinInBackground(withName: localType.rawValue) { (success, error) in FoodieGlobal.booleanToSimpleErrorCallback(success, error, nil) }
           }
           // Return if got what's wanted
           callback?(serverError)
@@ -206,19 +190,19 @@ class FoodiePFObject: PFObject {
   
   
   func save(to localType: FoodieObject.LocalType,
-            withBlock callback: FoodieObject.SimpleErrorBlock?) {
+            withBlock callback: SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
     
     // TODO: Maybe wanna track for Parse that only 1 Save on the top is necessary
     CCLog.debug("Pin \(delegate.foodieObjectType())(\(getUniqueIdentifier())) to Local with Name \(localType)")
-    pinInBackground(withName: localType.rawValue) { success, error in FoodiePFObject.booleanToSimpleErrorCallback(success, error, callback) }
+    pinInBackground(withName: localType.rawValue) { success, error in FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback) }
   }
   
   
   func saveToLocalNServer(type localType: FoodieObject.LocalType,
-                          withBlock callback: FoodieObject.SimpleErrorBlock?) {
+                          withBlock callback: SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
@@ -227,7 +211,7 @@ class FoodiePFObject: PFObject {
     pinInBackground(withName: localType.rawValue) { (success, error) in
       
       guard success || error == nil else {
-        FoodiePFObject.booleanToSimpleErrorCallback(success, error, callback)
+        FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
         return
       }
       
@@ -240,7 +224,7 @@ class FoodiePFObject: PFObject {
           if !success || error != nil {
             if saveRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
           }
-          FoodiePFObject.booleanToSimpleErrorCallback(success, error, callback)
+          FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
         }
       }
     }
@@ -248,17 +232,17 @@ class FoodiePFObject: PFObject {
   
   
   func delete(from localType: FoodieObject.LocalType,
-              withBlock callback: FoodieObject.SimpleErrorBlock?) {
+              withBlock callback: SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
     
     CCLog.debug("Delete \(delegate.foodieObjectType())(\(getUniqueIdentifier())) from Local with Name \(localType)")
-    unpinInBackground(withName: localType.rawValue) { success, error in FoodiePFObject.booleanToSimpleErrorCallback(success, error, callback) }
+    unpinInBackground(withName: localType.rawValue) { success, error in FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback) }
   }
   
   
-  func deleteFromLocalNServer(withBlock callback: FoodieObject.SimpleErrorBlock?) {
+  func deleteFromLocalNServer(withBlock callback: SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
@@ -273,7 +257,7 @@ class FoodiePFObject: PFObject {
         if !success || error != nil {
           if deleteRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
         }
-        FoodiePFObject.booleanToSimpleErrorCallback(success, error, callback)
+        FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
       }
     }
   }

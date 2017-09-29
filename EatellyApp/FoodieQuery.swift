@@ -100,7 +100,7 @@ class FoodieQuery {
   
   // MARK: - Public Static Functions
   
-  static func getFirstStory(from localType: FoodieObject.LocalType, withBlock callback: FoodieObject.RetrievedObjectBlock?) {
+  static func getFirstStory(from localType: FoodieObject.LocalType, withBlock callback: AnyErrorBlock?) {
     let query = FoodieJournal.query()!
     query.fromPin(withName: localType.rawValue)  // the Pin Name is just the Local Type String value
     query.findObjectsInBackground { (objects, error) in
