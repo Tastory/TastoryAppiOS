@@ -439,9 +439,72 @@ class MarkupViewController: UIViewController {
     delegate.markupComplete(markedupMoment: markedUpMoment, suggestedJournal: suggestedJournal)
   }
 
-  func displayJotMarkups(dictionary: [AnyHashable: Any])
+  func displayJotMarkups()
   {
-    jotViewController.unserialize(dictionary)
+    guard let moment = editMomentObj else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.fatal("Cant display jot markups when the edit moment object is nil")
+      }
+      return
+    }
+
+    if let markups = moment.markups {
+      var jotDictionary = [AnyHashable: Any]()
+      var labelDictionary: [NSDictionary]?
+
+      for markup in markups {
+
+        if !markup.isDataAvailable {
+          AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+            CCLog.fatal("Markup not available even tho Moment deemed Loaded")
+          }
+        }
+
+        guard let dataType = markup.dataType else {
+          AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+            CCLog.assert("Unexpected markup.dataType = nil")
+          }
+          return
+        }
+
+        guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
+          AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+            CCLog.assert("markup.dataType did not actually translate into valid type")
+          }
+          return
+        }
+
+        switch markupType {
+
+        case .jotLabel:
+          guard let labelData = markup.data else {
+            AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+              CCLog.assert("Unexpected markup.data = nil when dataType == .jotLabel")
+            }
+            return
+          }
+
+          if labelDictionary == nil {
+            labelDictionary = [labelData]
+          } else {
+            labelDictionary!.append(labelData)
+          }
+
+        case .jotDrawView:
+          guard let drawViewDictionary = markup.data else {
+            AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+              CCLog.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
+            }
+            return
+          }
+
+          jotDictionary[kDrawView] = drawViewDictionary
+        }
+      }
+
+      jotDictionary[kLabels] = labelDictionary
+      jotViewController.unserialize(jotDictionary)
+    }
   }
 
   // MARK: - Private Instance Functions

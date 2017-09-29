@@ -14,7 +14,6 @@
 import UIKit
 import MapKit
 import CoreLocation
-import Jot
 
 
 class JournalEntryViewController: UITableViewController, UIGestureRecognizerDelegate {
@@ -276,97 +275,45 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
 
   func editMoment(_ sender: UIGestureRecognizer)
   {
-     let point = sender.location(in: momentViewController.collectionView)
+    let point = sender.location(in: momentViewController.collectionView)
 
-     if let indexPath = momentViewController.collectionView!.indexPathForItem(at: point) {
-      guard let momentArray = workingJournal?.moments else {
-        CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
+    guard let indexPath = momentViewController.collectionView!.indexPathForItem(at: point) else {
+      // invalid index path selected just return
+      return
+    }
+
+    guard let momentArray = workingJournal?.moments else {
+      CCLog.fatal("No moments in current working journal.")
+    }
+
+    if(indexPath.row >= momentArray.count)
+    {
+      AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+        CCLog.fatal("Moment selection is out of bound")
       }
+    }
 
-      if(indexPath.row >= momentArray.count)
-      {
-        AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
-          CCLog.fatal("Moment selection is out of bound")
-        }
+    let moment = momentArray[indexPath.row]
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+    viewController.markupReturnDelegate = self
+
+    guard let mediaObj = moment.mediaObj else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Nil media object in moment")
       }
+      return
+    }
 
-      let moment = momentArray[indexPath.row]
-      let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-      viewController.markupReturnDelegate = self
+    viewController.mediaObj = mediaObj
+    viewController.editMomentObj = moment
+    viewController.displayJotMarkups()
 
-      if let markups = moment.markups {
-        var jotDictionary = [AnyHashable: Any]()
-        var labelDictionary: [NSDictionary]?
+    self.present(viewController, animated: true)
 
-        for markup in markups {
-
-          if !markup.isDataAvailable {
-            AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
-              CCLog.fatal("Markup not available even tho Moment deemed Loaded")
-            }
-          }
-
-          guard let dataType = markup.dataType else {
-            AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
-              CCLog.assert("Unexpected markup.dataType = nil")
-            }
-            return
-          }
-
-          guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
-            AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
-              CCLog.assert("markup.dataType did not actually translate into valid type")
-            }
-            return
-          }
-
-          switch markupType {
-
-          case .jotLabel:
-            guard let labelData = markup.data else {
-              AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
-                CCLog.assert("Unexpected markup.data = nil when dataType == .jotLabel")
-              }
-              return
-            }
-
-            if labelDictionary == nil {
-              labelDictionary = [labelData]
-            } else {
-              labelDictionary!.append(labelData)
-            }
-
-          case .jotDrawView:
-            guard let drawViewDictionary = markup.data else {
-              AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
-                CCLog.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
-              }
-              return
-            }
-
-            jotDictionary[kDrawView] = drawViewDictionary
-          }
-        }
-        
-        jotDictionary[kLabels] = labelDictionary
-        viewController.displayJotMarkups(dictionary: jotDictionary)
-
-        guard let mediaObj = moment.mediaObj else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-            CCLog.assert("Nil media object in moment")
-          }
-          return
-        }
-
-        viewController.mediaObj = mediaObj
-        viewController.editMomentObj = moment
-        self.present(viewController, animated: true)
-      }
-     }
   }
 
-  
+
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -380,7 +327,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     momentViewController.workingJournal = workingJournal
     momentViewController.momentHeight = Constants.momentHeight
 
-    let tapRecognizer = UITapGestureRecognizer(target: self, action: "editMoment:")
+    let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(editMoment(_:)))
     momentViewController.collectionView?.addGestureRecognizer(tapRecognizer)
  
     self.addChildViewController(momentViewController)
@@ -476,7 +423,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
             // save to local
             moment.saveRecursive(to: .local, type: .draft) { (error) in
               if(error != nil) {
-                AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+                AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
                   CCLog.assert("Error saving moment into local caused by:  \(error)")
                 }
               }
