@@ -38,13 +38,19 @@ class RootViewController: UIViewController {
   }
   
   override func viewDidAppear(_ animated: Bool) {
-    
+
     if let error = startupError as? FoodieGlobal.ErrorCode, error == .startupFoursquareCategoryError {
       offlineErrorDialog()
     } else {
-      let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "LogInViewController")
-      self.present(viewController, animated: true)
+      if FoodieUser.getCurrent() != nil {  // Might want to double check the ObjectID before going too far
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverViewController")
+        self.present(viewController, animated: true, completion: nil)
+      } else {
+        let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
+        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "LogInViewController")
+        self.present(viewController, animated: true)
+      }
     }
   }
   

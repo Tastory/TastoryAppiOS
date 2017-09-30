@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     CCLog.initializeReporting()
     
     // Enable Automatic User
-    FoodieUser.enableAutoGuestUser()
+    //FoodieUser.enableAutoGuestUser()
     
     // Initialize FoodieObject Database
     FoodieObject.initialize()
@@ -36,9 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Initialize Das Quadrat
     FoodieGlobal.foursquareInitialize()
     FoodieCategory.getFromFoursquare(withBlock: nil)  // Let the fetch happen in the background
-    
-    // Initialize Location Watch manager
-    LocationWatch.global = LocationWatch()
 
     // TODO: - Any Startup Test we want to do that we should use to block Startup?
     error = nil

@@ -45,7 +45,7 @@ class FoodieUser: PFUser {
   
   var isEmailVerified: Bool {
     guard let emailVerified = object(forKey: "emailVerified") as? Bool else {
-      CCLog.assert("Cannot get PFUser key \"emailVerified\"")
+      CCLog.warning("Cannot get PFUser key \"emailVerified\"")
       return false
     }
     return emailVerified
@@ -89,6 +89,11 @@ class FoodieUser: PFUser {
     case passwordContainsEmail
     case passwordContainsSeq(String)
     case passwordContainsRepeat
+    
+    case getUserForEmailNone
+    case getUserForEmailTooMany
+    case reverificationEmailNil
+    
     
     var errorDescription: String? {
       switch self {
@@ -134,6 +139,14 @@ class FoodieUser: PFUser {
         return NSLocalizedString("Password cannot contain sequence '\(sequence)'", comment: "Error message when Login/Sign Up fails due to Password problems")
       case .passwordContainsRepeat:
         return NSLocalizedString("Password cannot contain consecutive repeating characters", comment: "Error message when Login/Sign Up fails due to Password problems")
+        
+      case .getUserForEmailNone:
+        return NSLocalizedString("No FoodieUser amongst Objects returned, or Objects is nil", comment: "Error message when getting Users through E-mail results in problem")
+      case .getUserForEmailTooMany:
+        return NSLocalizedString("More than 1 FoodieUser in Objects returned", comment: "Error message when getting Users through E-mail results in problem")
+        
+      case .reverificationEmailNil:
+        return NSLocalizedString("No Email for account to reverify on", comment: "Error message when trying to reverify an E-mail address")
       }
     }
     
@@ -177,7 +190,12 @@ class FoodieUser: PFUser {
   
   
   static func getCurrent() -> FoodieUser? {
-    return PFUser.current() as? FoodieUser
+    if let currentUser = PFUser.current() {
+      CCLog.verbose("Automatically signed-in to cached user with username - \(currentUser.username!)")
+      return currentUser as? FoodieUser
+    } else {
+      return nil
+    }
   }
   
   
@@ -335,6 +353,54 @@ class FoodieUser: PFUser {
   }
   
   
+  static func getUserFor(email: String, withBlock callback: AnyErrorBlock?) {
+    guard let userQuery = PFUser.query() else {
+      CCLog.assert("Cannot create a query from PFUser")
+      return
+    }
+    
+    userQuery.whereKey("email", equalTo: email)
+    userQuery.findObjectsInBackground { (objects, error) in
+
+      if let error = error {
+        let nsError = error as NSError
+        if nsError.domain == PFParseErrorDomain, nsError.code == PFErrorCode.errorObjectNotFound.rawValue {
+          CCLog.verbose("User with E-mail \(email) not found")
+          callback?(nil, nil)
+          return
+        } else {
+          CCLog.warning("Find user with e-mail: \(email) resulted in error - \(error)")
+          callback?(nil, error)  // Indeterminate. Let the Sign Up process finalize whether the username is indeed available
+          return
+        }
+      }
+      
+      guard let users = objects as? [FoodieUser] else {
+        CCLog.warning("Find user with e-mail: \(email) resulted in no FoodieUsers")
+        callback?(nil, ErrorCode.getUserForEmailNone)
+        return
+      }
+      
+      guard users.count == 1 else {
+        CCLog.warning("Find user with e-mail: \(email) resulted in more than 1 FoodieUsers")
+        callback?(nil, ErrorCode.getUserForEmailTooMany)
+        return
+      }
+      
+      callback?(users[0] as Any, nil)
+    }
+  }
+  
+  
+  static func resetPassword(with email: String, withBlock callback: SimpleErrorBlock?) {
+    PFUser.requestPasswordResetForEmail(inBackground: email) { (success, error) in
+      FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
+    }
+  }
+  
+  
+  
+  // MARK: - Public Instance Functions
   func signUp(withBlock callback: SimpleErrorBlock?) {
     
     guard let username = username else {
@@ -387,6 +453,24 @@ class FoodieUser: PFUser {
   
   func logOut(withBlock callback: SimpleErrorBlock?) {
     FoodieUser.logOut(withBlock: callback)
+  }
+  
+  
+  func resendEmailVerification(withBlock callback: SimpleErrorBlock?) {
+    guard let email = email else {
+      CCLog.assert("No E-mail address for accoung with username: \(username ?? "")")
+      DispatchQueue.global(qos: .userInitiated).async {
+        callback?(ErrorCode.reverificationEmailNil)
+      }
+      return
+    }
+    let unverifiedEmail = email
+    self.email = ""
+    self.email = unverifiedEmail
+    
+    saveInBackground { (success, error) in
+      FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
+    }
   }
   
   

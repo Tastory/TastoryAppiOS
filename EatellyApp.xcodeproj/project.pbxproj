@@ -17,6 +17,7 @@
 		8C1089331EADC13700457E66 /* MomentFooterReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */; };
 		8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */; };
 		8C14E2891F7F188E001CC869 /* FoodiePermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C14E2881F7F188E001CC869 /* FoodiePermission.swift */; };
+		8C14E28B1F7F42FD001CC869 /* EmailResetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C14E28A1F7F42FD001CC869 /* EmailResetViewController.swift */; };
 		8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */; };
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
 		8C1C71F41ECD7A4B00D2E4F8 /* FoodieFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */; };
@@ -113,6 +114,7 @@
 		8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentFooterReusableView.swift; path = EatellyApp/MomentFooterReusableView.swift; sourceTree = "<group>"; };
 		8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentCollectionViewController.swift; sourceTree = "<group>"; };
 		8C14E2881F7F188E001CC869 /* FoodiePermission.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePermission.swift; sourceTree = "<group>"; };
+		8C14E28A1F7F42FD001CC869 /* EmailResetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailResetViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButton.swift; path = EatellyApp/CameraButton.swift; sourceTree = "<group>"; };
 		8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFileManager.swift; sourceTree = "<group>"; };
@@ -379,6 +381,7 @@
 				8CE49EB81F64D334007278C1 /* Annotation */,
 				8C0590481EC65B0000027E91 /* RootViewController.swift */,
 				8C1FF1301F7CA6C10062312C /* LogInViewController.swift */,
+				8C14E28A1F7F42FD001CC869 /* EmailResetViewController.swift */,
 				8C1FF1321F7CA7240062312C /* SignUpViewController.swift */,
 				8CF858651F7ED8A000C46614 /* IntroViewController.swift */,
 				8C0590461EC653DF00027E91 /* DiscoverViewController.swift */,
@@ -831,6 +834,7 @@
 				8C1FF1331F7CA7240062312C /* SignUpViewController.swift in Sources */,
 				8C5C4DDE1EFEEDEC008C83EC /* FoodiePrefetch.swift in Sources */,
 				8C900D331F60C0E50058BDFE /* CategoryTableViewController.swift in Sources */,
+				8C14E28B1F7F42FD001CC869 /* EmailResetViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -113,7 +113,17 @@ class SignUpViewController: UIViewController {
         }
       } else {
         let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
-        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "IntroViewController")
+        
+        guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "IntroViewController") as? IntroViewController else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("ViewController initiated not of IntroViewController Class!!")
+          }
+          return
+        }
+        
+        viewController.firstLabelText = "Please make sure you confirm your E-mail so you can start posting"
+        viewController.secondLabelText = "For now, you can start by checking out what Tasty Stories are around you~"
+        viewController.enableResend = true
         self.present(viewController, animated: true)
       }
     }

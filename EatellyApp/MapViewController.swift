@@ -397,6 +397,9 @@ class MapViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    // Initialize Location Watch manager
+    LocationWatch.global = LocationWatch()
+    
     // Do any additional setup after loading the view.
     mapView?.delegate = self
     panGestureRecognizer?.delegate = self
