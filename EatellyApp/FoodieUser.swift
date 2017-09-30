@@ -43,15 +43,6 @@ class FoodieUser: PFUser {
   @NSManaged var momentsViewed: Int
   
   
-  var isEmailVerified: Bool {
-    guard let emailVerified = object(forKey: "emailVerified") as? Bool else {
-      CCLog.warning("Cannot get PFUser key \"emailVerified\"")
-      return false
-    }
-    return emailVerified
-  }
-  
-  
   // MARK: - Constants
   struct Constants {
     static let MinUsernameLength = 3
@@ -93,6 +84,7 @@ class FoodieUser: PFUser {
     case getUserForEmailNone
     case getUserForEmailTooMany
     case reverificationEmailNil
+    case reverficiationVerified
     
     
     var errorDescription: String? {
@@ -147,6 +139,8 @@ class FoodieUser: PFUser {
         
       case .reverificationEmailNil:
         return NSLocalizedString("No Email for account to reverify on", comment: "Error message when trying to reverify an E-mail address")
+      case .reverficiationVerified:
+        return NSLocalizedString("Reverfication requested for E-mail already verified", comment: "Error message when trying to reverify an E-mail address")
       }
     }
     
@@ -154,6 +148,41 @@ class FoodieUser: PFUser {
       self = errorCode
       CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
     }
+  }
+  
+  
+  // MARK: - Public Static Variables
+  static var current: FoodieUser? { return PFUser.current() as? FoodieUser }
+
+  
+  static var isCurrentRegistered: Bool {
+    if let currentUser = current, currentUser.isRegistered {
+      return true
+    } else {
+      return false
+    }
+  }
+  
+  
+  static var isCurrentEmailVerified: Bool {
+    if let currentUser = current, currentUser.isEmailVerified {
+      return true
+    } else {
+      return false
+    }
+  }
+  
+  
+  
+  // MARK: - Public Instance Variables
+  var isRegistered: Bool { return objectId != nil }
+  
+  var isEmailVerified: Bool {
+    guard let emailVerified = object(forKey: "emailVerified") as? Bool else {
+      CCLog.warning("Cannot get PFUser key \"emailVerified\"")
+      return false
+    }
+    return isRegistered && emailVerified
   }
   
   
@@ -186,16 +215,6 @@ class FoodieUser: PFUser {
   
   static func logOut(withBlock callback: SimpleErrorBlock?) {
     PFUser.logOutInBackground(block: callback)
-  }
-  
-  
-  static func getCurrent() -> FoodieUser? {
-    if let currentUser = PFUser.current() {
-      CCLog.verbose("Automatically signed-in to cached user with username - \(currentUser.username!)")
-      return currentUser as? FoodieUser
-    } else {
-      return nil
-    }
   }
   
   
@@ -464,6 +483,13 @@ class FoodieUser: PFUser {
       }
       return
     }
+    
+    if isEmailVerified {
+      CCLog.info("Tried to resend E-mail verification when the E-mail address \(email) is already verified")
+      callback?(ErrorCode.reverficiationVerified)
+      return
+    }
+    
     let unverifiedEmail = email
     self.email = ""
     self.email = unverifiedEmail

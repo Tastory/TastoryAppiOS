@@ -69,6 +69,7 @@ class MapViewController: UIViewController {
   @IBOutlet weak var locationField: UITextField!
   @IBOutlet weak var categoryField: UITextField!
   @IBOutlet weak var draftButton: UIButton!
+  @IBOutlet weak var cameraButton: UIButton!
 
   
   
@@ -202,6 +203,28 @@ class MapViewController: UIViewController {
       }
       
       self.launchFeed(withJournalArray: journals, withJournalQuery: query)
+    }
+  }
+  
+  
+  @IBAction func logOutAction(_ sender: UIButton) {
+    
+    FoodieUser.logOut { error in
+      if let error = error {
+        AlertDialog.present(from: self, title: "Log Out Error", message: error.localizedDescription) { action in
+          CCLog.assert("Log Out Failed - \(error.localizedDescription)")
+        }
+      }
+      
+      // Proceed to dismiss regardless
+      guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let window = appDelegate.window, let rootViewController = window.rootViewController else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("Cannot get AppDelegate.window.rootViewController!!!!")
+        }
+        return
+      }
+      
+      rootViewController.dismiss(animated: true, completion: nil)
     }
   }
   
@@ -398,7 +421,7 @@ class MapViewController: UIViewController {
     super.viewDidLoad()
     
     // Initialize Location Watch manager
-    LocationWatch.global = LocationWatch()
+    LocationWatch.initializeGlobal()
     
     // Do any additional setup after loading the view.
     mapView?.delegate = self
@@ -481,10 +504,22 @@ class MapViewController: UIViewController {
     }
     
     // Don't bother showing the Draft Button if there's no Draft
-    if FoodieJournal.currentJournal == nil {
-      draftButton?.isHidden = true
-    } else {
-      draftButton?.isHidden = false
+    draftButton.isHidden = FoodieJournal.currentJournal == nil
+    
+    // Don't allow user to go to the Camera and thus Story composition unless they are logged-in with E-mail verified
+    cameraButton.isHidden = true
+    
+    // But we should refresh the user before determining for good
+    if let user = FoodieUser.current, user.isRegistered {
+      user.retrieve { error in
+        if let error = error {
+          AlertDialog.present(from: self, title: "User Update Error", message: "Problem retrieving the most updated user profile. Some user attributes might be outdated") { action in
+            CCLog.warning("Failed retrieving the user object - \(error.localizedDescription)")
+          }
+        } else if user.isEmailVerified {
+          self.cameraButton.isHidden = false
+        }
+      }
     }
   }
   

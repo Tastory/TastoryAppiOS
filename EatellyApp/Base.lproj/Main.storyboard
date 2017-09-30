@@ -119,6 +119,13 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xAk-Bi-Jwa">
+                                <rect key="frame" x="294" y="597" width="55" height="30"/>
+                                <state key="normal" title="Log Out"/>
+                                <connections>
+                                    <action selector="logOutAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xvd-Ia-v6Q"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -132,6 +139,8 @@
                             <constraint firstItem="0wJ-kE-Bqf" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="PUi-hX-qEd"/>
                             <constraint firstItem="wze-6b-mmH" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="Pc1-vs-3jg"/>
                             <constraint firstItem="wze-6b-mmH" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="SYN-7k-ggT"/>
+                            <constraint firstItem="xAk-Bi-Jwa" firstAttribute="centerY" secondItem="aSA-Ws-aTZ" secondAttribute="centerY" id="Vqn-S9-Y6V"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="xAk-Bi-Jwa" secondAttribute="trailing" constant="10" id="WC6-Ib-yNg"/>
                             <constraint firstItem="wze-6b-mmH" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="aog-CI-cwG"/>
                             <constraint firstItem="wze-6b-mmH" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="dz1-w5-8kP"/>
                             <constraint firstItem="5l3-RR-AbH" firstAttribute="leading" secondItem="udl-HT-366" secondAttribute="trailing" constant="8" id="hJb-q9-ef2"/>
@@ -144,6 +153,7 @@
                     </view>
                     <connections>
                         <outlet property="buttonStackView" destination="srX-2D-hwk" id="D6b-b5-ux5"/>
+                        <outlet property="cameraButton" destination="m1j-Ft-7un" id="5xu-my-dGT"/>
                         <outlet property="categoryField" destination="wze-6b-mmH" id="7Ji-iN-Yq3"/>
                         <outlet property="doubleTapGestureRecognizer" destination="gtB-Zu-pZ4" id="qyu-HN-IhQ"/>
                         <outlet property="draftButton" destination="1zZ-dd-fcW" id="xkV-cw-rjf"/>

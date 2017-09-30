@@ -10,6 +10,7 @@ import UIKit
 
 class RootViewController: UIViewController {
   
+  
   // MARK: - Public Instance Variables
   var startupError: Error? = nil
   
@@ -37,14 +38,14 @@ class RootViewController: UIViewController {
     CCLog.info("Main Thread ID Checkpoint")
   }
   
+  
   override func viewDidAppear(_ animated: Bool) {
-
     if let error = startupError as? FoodieGlobal.ErrorCode, error == .startupFoursquareCategoryError {
       offlineErrorDialog()
     } else {
-      if FoodieUser.getCurrent() != nil {  // Might want to double check the ObjectID before going too far
+      if let currentUser = FoodieUser.current, currentUser.objectId != nil {  // Might want to double check the ObjectID before going too far
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverViewController")
+        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")
         self.present(viewController, animated: true, completion: nil)
       } else {
         let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
@@ -53,6 +54,7 @@ class RootViewController: UIViewController {
       }
     }
   }
+  
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()

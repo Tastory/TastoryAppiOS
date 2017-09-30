@@ -119,9 +119,14 @@ class LogInViewController: UIViewController {
   
   
   @IBAction func guestLogInAction(_ sender: UIButton) {
+    // Force a log-out if there is a user logged-in
+    if FoodieUser.current != nil {
+      FoodieUser.logOut(withBlock: nil)
+    }
+    
     AlertDialog.present(from: self, title: "Guest Login", message: "You will not be able to post as a Guest. We highly encourage you to sign-up and log-in for the best experience!") { action in
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverViewController")
+      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")
       self.present(viewController, animated: true)
     }
   }
@@ -135,7 +140,26 @@ class LogInViewController: UIViewController {
   
   // MARK: - Private Instance Function
   private func logIn(for username: String, using password: String) {
+    
+    view.endEditing(true)
+    
+    let blurEffect = UIBlurEffect(style: .light)
+    let blurEffectView = UIVisualEffectView(effect: blurEffect)
+    blurEffectView.frame = view.bounds
+    blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    view.addSubview(blurEffectView)
+    
+    let activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+    activityView.center = self.view.center
+    activityView.startAnimating()
+    view.addSubview(activityView)
+    
     FoodieUser.logIn(for: username, using: password) { (user, error) in
+      
+      // Remove the blur view and activity spinner
+      blurEffectView.removeFromSuperview()
+      activityView.removeFromSuperview()
+      
       if let error = error {
         AlertDialog.present(from: self, title: "Login Failed", message: error.localizedDescription) { action in
           CCLog.warning("Login with \(username) failed - \(error.localizedDescription)")
@@ -193,6 +217,11 @@ class LogInViewController: UIViewController {
     facebookButton.layer.cornerRadius = 5.0
   }
 
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    view.endEditing(true)
+  }
+  
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()

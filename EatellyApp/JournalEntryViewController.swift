@@ -45,7 +45,6 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   fileprivate var placeholderLabel = UILabel()
   fileprivate var momentViewController = MomentCollectionViewController()
   fileprivate var markupMoment: FoodieMoment? = nil
-  fileprivate let activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
   fileprivate var selectedViewCell: MomentCollectionViewCell?
 
   // MARK: - IBOutlets
@@ -87,8 +86,16 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     
     CCLog.info("User pressed 'Post Story'")
     
+    view.endEditing(true)
+    
     // Block out user inputs until save completes - aka. No more Pre Saves are possible. Yay!
-    UIApplication.shared.beginIgnoringInteractionEvents()
+    let blurEffect = UIBlurEffect(style: .light)
+    let blurEffectView = UIVisualEffectView(effect: blurEffect)
+    blurEffectView.frame = view.bounds
+    blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    view.addSubview(blurEffectView)
+    
+    let activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
     activityView.center = self.view.center
     activityView.startAnimating()
     view.addSubview(activityView)
@@ -97,11 +104,10 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     journal.saveRecursive(to: .both, type: .cache) { error in
       
       if let error = error {
-        // Remove the spinner and resume user interaction
         DispatchQueue.main.async {
-          self.activityView.stopAnimating()
-          self.activityView.removeFromSuperview()
-          UIApplication.shared.endIgnoringInteractionEvents()
+          // Remove the blur view and activity spinner
+          blurEffectView.removeFromSuperview()
+          activityView.removeFromSuperview()
           
           CCLog.warning("Save Story to Server Failed with Error: \(error)")
           AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
@@ -113,11 +119,10 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
           FoodieJournal.removeCurrent()
           self.workingJournal = nil
           
-          // Remove the spinner and resume user interaction
           DispatchQueue.main.async {
-            self.activityView.stopAnimating()
-            self.activityView.removeFromSuperview()
-            UIApplication.shared.endIgnoringInteractionEvents()
+            // Remove the blur view and activity spinner
+            blurEffectView.removeFromSuperview()
+            activityView.removeFromSuperview()
             
             // Pop-up Alert Dialog and then Dismiss
             CCLog.info("Story Posted!")

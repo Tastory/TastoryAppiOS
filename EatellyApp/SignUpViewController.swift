@@ -123,7 +123,7 @@ class SignUpViewController: UIViewController {
         
         viewController.firstLabelText = "Please make sure you confirm your E-mail so you can start posting"
         viewController.secondLabelText = "For now, you can start by checking out what Tasty Stories are around you~"
-        viewController.enableResend = true
+        viewController.enableResend = false
         self.present(viewController, animated: true)
       }
     }
@@ -145,6 +145,11 @@ class SignUpViewController: UIViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     usernameField.becomeFirstResponder()
+  }
+  
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    view.endEditing(true)
   }
   
   

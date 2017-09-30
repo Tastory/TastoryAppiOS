@@ -78,8 +78,8 @@ class LocationWatch: NSObject {
   }
   
   
-  // MARK: - Public Static Variables
-  static var global: LocationWatch!
+  // MARK: - Read Only Static Variables
+  fileprivate(set) static var global: LocationWatch!
   
   
   // MARK: - Private Instance Variables
@@ -88,6 +88,16 @@ class LocationWatch: NSObject {
   fileprivate var locationUpdating = false
   fileprivate var errorMode = false
   fileprivate var currentLocation: CLLocation?
+  
+  
+  // MARK: - Public Static Functions
+  static func initializeGlobal() {
+    if global == nil {
+      global = LocationWatch()
+    } else {
+      CCLog.warning("Attempt to initialize Global more than once detected")
+    }
+  }
   
   
   // MARK: - Private Instance Functions
@@ -121,6 +131,7 @@ class LocationWatch: NSObject {
   
   // MARK: - Public Static Functions
   func get(withBlock callback: @escaping LocationErrorBlock) {
+    
     let watcher = Context()
     watcher.callback = callback
     watcher.continuous = false
@@ -134,6 +145,7 @@ class LocationWatch: NSObject {
   }
   
   func start(butPaused: Bool = false, withBlock callback: @escaping LocationErrorBlock) -> Context {
+
     let watcher = Context()
     watcher.callback = callback
     watcher.continuous = true
@@ -149,6 +161,7 @@ class LocationWatch: NSObject {
       DispatchQueue.global(qos: .utility).async { watcher.callback(location, nil) }
     }
     manager.startUpdatingLocation()
+    
     return watcher
   }
 
@@ -157,6 +170,7 @@ class LocationWatch: NSObject {
   }
   
   func resume(_ watcher: Context) {
+
     watcher.state = .started
     if let location = currentLocation {
       DispatchQueue.global(qos: .utility).async { watcher.callback(location, nil) }
@@ -165,6 +179,7 @@ class LocationWatch: NSObject {
   }
   
   func stop(_ watcher: Context) {
+
     watcher.state = .stopped
     watcherDLL.remove(watcher)
     
@@ -179,6 +194,7 @@ class LocationWatch: NSObject {
 extension LocationWatch: CLLocationManagerDelegate {
   
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+
     errorMode = false  // Clear Error mode upon a Successful Location Update
     if !locations.isEmpty {
       currentLocation = locations[0]

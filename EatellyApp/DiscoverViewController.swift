@@ -20,7 +20,7 @@ class DiscoverViewController: UIViewController {
     
     // TODO: Factor out all View Controller creation and presentation? code for state restoration purposes
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")  // This is a dangerous implementation. If a child view gets dismissed, this actually gets called immediately, and presents the child view again.
     self.present(viewController, animated: true)
   }
   
