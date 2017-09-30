@@ -307,7 +307,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
 
     viewController.mediaObj = mediaObj
     viewController.editMomentObj = moment
-    viewController.displayJotMarkups()
+
 
     self.present(viewController, animated: true)
 

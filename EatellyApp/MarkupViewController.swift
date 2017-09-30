@@ -439,12 +439,11 @@ class MarkupViewController: UIViewController {
     delegate.markupComplete(markedupMoment: markedUpMoment, suggestedJournal: suggestedJournal)
   }
 
-  func displayJotMarkups()
+  // MARK: - Private Instance Functions
+  private func displayJotMarkups()
   {
     guard let moment = editMomentObj else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.fatal("Cant display jot markups when the edit moment object is nil")
-      }
+      // if you just take a picture with the camera there will be no editMomentObj for sure
       return
     }
 
@@ -507,7 +506,6 @@ class MarkupViewController: UIViewController {
     }
   }
 
-  // MARK: - Private Instance Functions
   private func getNextFont(size: CGFloat) -> UIFont {
     fontArrayIndex += 1
     if fontArrayIndex >= FontChoiceArray.count { fontArrayIndex = 0 }
@@ -617,7 +615,9 @@ class MarkupViewController: UIViewController {
     view.sendSubview(toBack: jotViewController.view)
     jotViewController.didMove(toParentViewController: self)
     jotViewController.view.frame = view.bounds
-    
+
+    // load up jotdata 
+    displayJotMarkups()
     
     // This section is for initiating the background Image or Video
     if mediaObj == nil {
