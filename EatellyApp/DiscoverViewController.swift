@@ -27,6 +27,6 @@ class DiscoverViewController: UIViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    CCLog.warning("DiscoverViewController.didReceiveMemoryWarning")
+    CCLog.warning("didReceiveMemoryWarning")
   }
 }

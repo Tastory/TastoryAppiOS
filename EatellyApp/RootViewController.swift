@@ -51,6 +51,6 @@ class RootViewController: UIViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    CCLog.warning("RootViewController.didReceiveMemoryWarning")
+    CCLog.warning("didReceiveMemoryWarning")
   }
 }

@@ -16,6 +16,7 @@
 		8C1089311EADC11B00457E66 /* MomentHeaderReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */; };
 		8C1089331EADC13700457E66 /* MomentFooterReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */; };
 		8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */; };
+		8C14E2891F7F188E001CC869 /* FoodiePermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C14E2881F7F188E001CC869 /* FoodiePermission.swift */; };
 		8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */; };
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
 		8C1C71F41ECD7A4B00D2E4F8 /* FoodieFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */; };
@@ -75,6 +76,7 @@
 		8CE49EBA1F64D36B007278C1 /* StoryMapAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */; };
 		8CE6B8871EA9864800D454A9 /* JournalEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */; };
 		8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */; };
+		8CF858661F7ED8A000C46614 /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF858651F7ED8A000C46614 /* IntroViewController.swift */; };
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */; };
 		C24F69651EB85B0300A0DB7B /* JournalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69641EB85B0300A0DB7B /* JournalViewController.swift */; };
 /* End PBXBuildFile section */
@@ -110,6 +112,7 @@
 		8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentHeaderReusableView.swift; path = EatellyApp/MomentHeaderReusableView.swift; sourceTree = "<group>"; };
 		8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentFooterReusableView.swift; path = EatellyApp/MomentFooterReusableView.swift; sourceTree = "<group>"; };
 		8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentCollectionViewController.swift; sourceTree = "<group>"; };
+		8C14E2881F7F188E001CC869 /* FoodiePermission.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePermission.swift; sourceTree = "<group>"; };
 		8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraButton.swift; path = EatellyApp/CameraButton.swift; sourceTree = "<group>"; };
 		8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFileManager.swift; sourceTree = "<group>"; };
@@ -176,6 +179,7 @@
 		8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryMapAnnotation.swift; sourceTree = "<group>"; };
 		8CE6B8861EA9864800D454A9 /* JournalEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JournalEntryViewController.swift; sourceTree = "<group>"; };
 		8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MomentCollectionViewCell.swift; path = EatellyApp/MomentCollectionViewCell.swift; sourceTree = "<group>"; };
+		8CF858651F7ED8A000C46614 /* IntroViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroViewController.swift; sourceTree = "<group>"; };
 		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		8F79C24EFE6638BAF27C86D4 /* Pods-EatellyAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EatellyAppUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-EatellyAppUITests/Pods-EatellyAppUITests.release.xcconfig"; sourceTree = "<group>"; };
 		C24F69641EB85B0300A0DB7B /* JournalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JournalViewController.swift; sourceTree = "<group>"; };
@@ -275,6 +279,7 @@
 				8C0590501EC7E6A400027E91 /* FoodieMedia.swift */,
 				8C8986791E933E2E00B62306 /* FoodieUser.swift */,
 				8C1FF1341F7DA1760062312C /* FoodieRole.swift */,
+				8C14E2881F7F188E001CC869 /* FoodiePermission.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -375,6 +380,7 @@
 				8C0590481EC65B0000027E91 /* RootViewController.swift */,
 				8C1FF1301F7CA6C10062312C /* LogInViewController.swift */,
 				8C1FF1321F7CA7240062312C /* SignUpViewController.swift */,
+				8CF858651F7ED8A000C46614 /* IntroViewController.swift */,
 				8C0590461EC653DF00027E91 /* DiscoverViewController.swift */,
 				8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */,
 				C24F69641EB85B0300A0DB7B /* JournalViewController.swift */,
@@ -779,9 +785,11 @@
 				8CE49EB31F638162007278C1 /* ArrowLayer.swift in Sources */,
 				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */,
 				8C1ED6F41F5DEC2500A8CC94 /* AsyncOperation.swift in Sources */,
+				8CF858661F7ED8A000C46614 /* IntroViewController.swift in Sources */,
 				8C841B4B1F6244700002A5A2 /* CategoryTableViewCell.swift in Sources */,
 				8C0590511EC7E6A400027E91 /* FoodieMedia.swift in Sources */,
 				8C8986721E91982E00B62306 /* FoodieJournal.swift in Sources */,
+				8C14E2891F7F188E001CC869 /* FoodiePermission.swift in Sources */,
 				8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */,
 				8C8986701E91981C00B62306 /* FoodieMarkup.swift in Sources */,
 				C24F69651EB85B0300A0DB7B /* JournalViewController.swift in Sources */,

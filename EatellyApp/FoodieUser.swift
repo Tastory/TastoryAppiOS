@@ -58,6 +58,7 @@ class FoodieUser: PFUser {
     static let MaxUsernameLength = 20
     static let MinPasswordLength = 8
     static let MaxPasswordLength = 32
+    static let MinEmailLength = 6
   }
 
   
@@ -87,6 +88,7 @@ class FoodieUser: PFUser {
     case passwordContainsUsername
     case passwordContainsEmail
     case passwordContainsSeq(String)
+    case passwordContainsRepeat
     
     var errorDescription: String? {
       switch self {
@@ -99,13 +101,13 @@ class FoodieUser: PFUser {
       case .usernameTooLong(let maxLength):
         return NSLocalizedString("Username is longer than maximum length of \(maxLength)", comment: "Error message when Login/Sign Up fails due to Username problems")
       case .usernameContainsSpace:
-        return NSLocalizedString("Username contains space", comment: "Error message when Login/ Sign Up fails due to Username problems")
+        return NSLocalizedString("Username contains space", comment: "Error message when Login/Sign Up fails due to Username problems")
       case .usernameContainsSymbol(let allowedSymbols):
-        return NSLocalizedString("Username can only contain symbols of \(allowedSymbols)", comment: "Error message when Login/ Sign Up fails due to Username problems")
+        return NSLocalizedString("Username can only contain symbols of \(allowedSymbols)", comment: "Error message when Login/Sign Up fails due to Username problems")
       case .usernameContainsSeq:
-        return NSLocalizedString("Username contains reserved sequence", comment: "Error message when Login/ Sign Up fails due to Username problems")
+        return NSLocalizedString("Username contains reserved sequence", comment: "Error message when Login/Sign Up fails due to Username problems")
       case .usernameContainsSuffix(let suffix):
-        return NSLocalizedString("Username contains reserved suffix of \(suffix)", comment: "Error message when Login/ Sign Up fails due to Username problems")
+        return NSLocalizedString("Username contains reserved suffix of '\(suffix)'", comment: "Error message when Login/Sign Up fails due to Username problems")
       case .usernameReserved:
         return NSLocalizedString("Username reserved", comment: "Error message when Login/ Sign Up fails due to Username problems")
         
@@ -117,19 +119,21 @@ class FoodieUser: PFUser {
         return NSLocalizedString("E-mail address is invalid", comment: "Error message when Sign Up fails")
         
       case .passwordIsEmpty:
-        return NSLocalizedString("Password is empty", comment: "Error message when Login/ Sign Up fails due to Password problems")
+        return NSLocalizedString("Password is empty", comment: "Error message when Login/Sign Up fails due to Password problems")
       case .passwordTooShort(let minLength):
-        return NSLocalizedString("Password is short than minimum length of \(minLength)", comment: "Error message when Login/ Sign Up fails due to Password problems")
+        return NSLocalizedString("Password is shorter than minimum length of \(minLength)", comment: "Error message when Login/Sign Up fails due to Password problems")
       case .passwordTooLong(let maxLength):
-        return NSLocalizedString("Password is longer than maximum length of \(maxLength)", comment: "Error message when Login/ Sign Up fails due to Password problems")
+        return NSLocalizedString("Password is longer than maximum length of \(maxLength)", comment: "Error message when Login/Sign Up fails due to Password problems")
       case .passwordContainsNoLetters:
-        return NSLocalizedString("Password needs to be contain letters", comment: "Error message when Login/ Sign Up fails due to Password problems")
+        return NSLocalizedString("Password needs to contain alphabets", comment: "Error message when Login/Sign Up fails due to Password problems")
       case .passwordContainsUsername:
-        return NSLocalizedString("Password cannot contain the username", comment: "Error message when Login/ Sign Up fails due to Password problems")
+        return NSLocalizedString("Password cannot contain the username", comment: "Error message when Login/Sign Up fails due to Password problems")
       case .passwordContainsEmail:
-        return NSLocalizedString("Password cannot contain the E-mail address", comment: "Error message when Login/ Sign Up fails due to Password problems")
+        return NSLocalizedString("Password cannot contain the E-mail address", comment: "Error message when Login/Sign Up fails due to Password problems")
       case .passwordContainsSeq(let sequence):
-        return NSLocalizedString("Password cannot contain sequence \(sequence)", comment: "Error message when Login/ Sign Up fails due to Password problems")
+        return NSLocalizedString("Password cannot contain sequence '\(sequence)'", comment: "Error message when Login/Sign Up fails due to Password problems")
+      case .passwordContainsRepeat:
+        return NSLocalizedString("Password cannot contain consecutive repeating characters", comment: "Error message when Login/Sign Up fails due to Password problems")
       }
     }
     
@@ -172,6 +176,11 @@ class FoodieUser: PFUser {
   }
   
   
+  static func getCurrent() -> FoodieUser? {
+    return PFUser.current() as? FoodieUser
+  }
+  
+  
   static func checkUserAvailFor(username: String, withBlock callback: BooleanErrorBlock?) {
     guard let userQuery = PFUser.query() else {
       CCLog.assert("Cannot create a query from PFUser")
@@ -182,9 +191,16 @@ class FoodieUser: PFUser {
     userQuery.getFirstObjectInBackground { (object, error) in
       
       if let error = error {
-        CCLog.warning("Get first user with username: \(username) resulted in error - \(error)")
-        callback?(true, error)  // Indeterminate. Let the Sign Up process finalize whether the username is indeed available
-        return
+        let nsError = error as NSError
+        if nsError.domain == PFParseErrorDomain, nsError.code == PFErrorCode.errorObjectNotFound.rawValue {
+          CCLog.verbose("User with username \(username) not found")
+          callback?(true, nil)
+          return
+        } else {
+          CCLog.warning("Get first user with username: \(username) resulted in error - \(error)")
+          callback?(true, error)  // Indeterminate. Let the Sign Up process finalize whether the username is indeed available
+          return
+        }
       }
       
       guard object is PFUser else {
@@ -207,9 +223,16 @@ class FoodieUser: PFUser {
     userQuery.getFirstObjectInBackground { (object, error) in
       
       if let error = error {
-        CCLog.warning("Get first user with e-mail: \(email) resulted in error - \(error)")
-        callback?(true, error)  // Indeterminate. Let the Sign Up process finalize whether the username is indeed available
-        return
+        let nsError = error as NSError
+        if nsError.domain == PFParseErrorDomain, nsError.code == PFErrorCode.errorObjectNotFound.rawValue {
+          CCLog.verbose("User with E-mail \(email) not found")
+          callback?(true, nil)
+          return
+        } else {
+          CCLog.warning("Get first user with e-mail: \(email) resulted in error - \(error)")
+          callback?(true, error)  // Indeterminate. Let the Sign Up process finalize whether the username is indeed available
+          return
+        }
       }
       
       guard object is PFUser else {
@@ -222,7 +245,7 @@ class FoodieUser: PFUser {
   }
   
   
-  func checkValidFor(username: String) -> ErrorCode? {
+  static func checkValidFor(username: String) -> ErrorCode? {
     
     if username.characters.count < Constants.MinUsernameLength {
       return .usernameTooShort(Constants.MinUsernameLength)
@@ -236,20 +259,8 @@ class FoodieUser: PFUser {
       return .usernameContainsSpace
     }
     
-    if let alphaRange = username.rangeOfCharacter(from: CharacterSet.alphanumerics) {
-      var remainingName = username
-      remainingName.removeSubrange(alphaRange)
-      
-      var allowedSymbols = ""
-      for allowedSymbol in Restriction.AllowedUsernameSymbols {
-        remainingName = remainingName.replacingOccurrences(of: allowedSymbol, with: "")
-        allowedSymbols += allowedSymbol + " "
-      }
-      
-      if remainingName.characters.count > 0 {
-        allowedSymbols.remove(at: allowedSymbols.index(before: allowedSymbols.endIndex))
-        return .usernameContainsSymbol(allowedSymbols)
-      }
+    if username.range(of: Restriction.RsvdUsernameCharRegex, options: .regularExpression) != nil {
+      return .usernameContainsSymbol(Restriction.AllowedUsernameSymbols)
     }
     
     for sequence in Restriction.RsvdUsernameSeqs {
@@ -274,14 +285,14 @@ class FoodieUser: PFUser {
   }
   
   
-  func checkValidFor(email: String) -> Bool {
+  static func checkValidFor(email: String) -> Bool {
     let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
     let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
     return emailTest.evaluate(with: email)
   }
   
   
-  func checkValidFor(password: String) -> ErrorCode? {
+  static func checkValidFor(password: String, username: String?, email: String?) -> ErrorCode? {
     
     if password.characters.count < Constants.MinPasswordLength {
       return .passwordTooShort(Constants.MinPasswordLength)
@@ -316,6 +327,10 @@ class FoodieUser: PFUser {
       }
     }
     
+    if password.range(of: "(.)\\1{2,}", options: .regularExpression) != nil {  // Catches repeat of over 2 times for any character
+      return .passwordContainsRepeat
+    }
+    
     return nil
   }
   
@@ -343,21 +358,21 @@ class FoodieUser: PFUser {
       return
     }
     
-    if let error = checkValidFor(username: username) {
+    if let error = FoodieUser.checkValidFor(username: username) {
       DispatchQueue.global(qos: .userInitiated).async {
         callback?(error)
       }
       return
     }
     
-    if !checkValidFor(email: email) {
+    if !FoodieUser.checkValidFor(email: email) {
       DispatchQueue.global(qos: .userInitiated).async {
         callback?(ErrorCode.emailIsInvalid)
       }
       return
     }
     
-    if let error = checkValidFor(password: password) {
+    if let error = FoodieUser.checkValidFor(password: password, username: username, email: email) {
       DispatchQueue.global(qos: .userInitiated).async {
         callback?(error)
       }
@@ -408,7 +423,8 @@ extension FoodieUser {
     
     static let RsvdUsernameSuffix = [".js", ".json", ".css", ".html", ".htm", ".xml", ".jpg", ".jpeg", ".h264", ".png", ".gif", ".bmp", ".ico", ".tif", ".tiff", ".woff", "swift", ".m", ".h", ".c", ".mov", ".avi", ".log", ".txt", ".doc", ".xls", ".ppt", ".pdf", ".mp3", ".wav", ".wma", ".pkg", ".rpm", ".rar", ".tar", ".gz", ".zip", ".bin", ".dmg", ".iso", ".csv", ".dat", ".sql", ".php", ".py", ".bat", ".cgi", ".pl", ".com", ".net", ".co", ".org", ".exe", ".jar", ".ttf", ".ai", ".ps", ".psd", ".cgi", ".js", ".rss", ".xhtml", ".asp", ".aspx", ".key", ".pptx", ".class", ".cpp", ".sh", ".vb", ".docx", ".xlsx", ".cfg", ".dll", ".sys", ".tmp", ".msi", ".ini", ".3g2", ".3gp", ".m4v", ".mkv", ".mpg", ".mpeg", ".wmv", ".rtf"]
     
-    static let AllowedUsernameSymbols = ["-", "_", ".", ":", "^", "=", "|"]
+    static let RsvdUsernameCharRegex = "[^0-9a-zA-ZÀ-ÿ\\-_=|:.]"
+    static let AllowedUsernameSymbols = "-_=|:."
     
     static let RsvdPasswordSeqs = ["abc", "123", "tastry", "password"]
   }

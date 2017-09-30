@@ -197,7 +197,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    CCLog.warning("CameraViewController.didReceiveMemoryWarning")
+    CCLog.warning("didReceiveMemoryWarning")
   }
   
   

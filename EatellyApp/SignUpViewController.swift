@@ -45,7 +45,37 @@ class SignUpViewController: UIViewController {
   // MARK: - IBAction
   
   @IBAction func signUpAction(_ sender: UIButton) {
-    
+    signUp()
+  }
+  
+  
+  @IBAction func hideShowPwdAction(_ sender: UIButton) {
+    if passwordField.isSecureTextEntry {
+      passwordField.isSecureTextEntry = false
+      hideShowPwdButton.setTitle("Hide", for: .normal)
+      hideShowPwdButton.setTitleColor(UIColor.init(colorLiteralRed: 0.2, green: 0.2, blue: 0.2, alpha: 1.0), for: .normal)
+    } else {
+      passwordField.isSecureTextEntry = true
+      hideShowPwdButton.setTitle("Show", for: .normal)
+      hideShowPwdButton.setTitleColor(UIColor.init(colorLiteralRed: 0.8, green: 0.8, blue: 0.8, alpha: 1.0), for: .normal)
+    }
+  }
+  
+  
+  @IBAction func exitAction(_ sender: UIButton) {
+    view.endEditing(true)
+    dismiss(animated: true, completion: nil)
+  }
+  
+  
+  @IBAction func tapGestureAction(_ sender: UITapGestureRecognizer) {
+    view.endEditing(true)
+  }
+  
+  
+  
+  // MARK: - Private Static Functions
+  fileprivate func signUp() {
     guard let username = usernameField.text else {
       AlertDialog.present(from: self, title: "Username Empty", message: "Please enter a username to sign up") { action in
         CCLog.info("No username when Sign Up pressed")
@@ -66,18 +96,27 @@ class SignUpViewController: UIViewController {
       }
       return
     }
-  }
-  
-  
-  
-  @IBAction func hideShowPwdAction(_ sender: UIButton) {
-  }
-  
-  
-  
-  
-  @IBAction func exitAction(_ sender: UIButton) {
-    dismiss(animated: true, completion: nil)
+    
+    let user = FoodieUser()
+    user.username = username
+    user.email = email
+    user.password = password
+    
+    // Don't bother with checking whether things are available. Sign-up to find out
+    // SignUp also checks for username/e-mail/password validity
+    user.signUp { error in
+      
+      // Handle all known error cases
+      if let error = error {
+        AlertDialog.present(from: self, title: "Sign Up Failed", message: "\(error.localizedDescription)") { action in
+          CCLog.info("Sign Up Failed - \(error.localizedDescription)")
+        }
+      } else {
+        let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
+        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "IntroViewController")
+        self.present(viewController, animated: true)
+      }
+    }
   }
   
   
@@ -87,17 +126,22 @@ class SignUpViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    // Do any additional setup after loading the view.
+    usernameField.delegate = self
+    emailField.delegate = self
+    passwordField.delegate = self
   }
+  
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     usernameField.becomeFirstResponder()
   }
   
+  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
+    
+    CCLog.warning("didReceiveMemoryWarning")
   }
 }
 
@@ -107,11 +151,85 @@ class SignUpViewController: UIViewController {
 
 extension SignUpViewController: UITextFieldDelegate {
   func textFieldDidEndEditing(_ textField: UITextField) {
-    //code
+    
+    switch textField {
+    case usernameField:
+      warningLabel.text = ""
+      guard let textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinUsernameLength else {
+        return  // No text, nothing to see here
+      }
+      
+      if let error = FoodieUser.checkValidFor(username: textString) {
+        warningLabel.text = "✖︎ " + error.localizedDescription
+        return
+      }
+      
+      FoodieUser.checkUserAvailFor(username: textString) { (success, error) in
+        DispatchQueue.main.async {
+          if let error = error {
+            CCLog.warning("checkUserAvailFor username: (\(textString)) Failed - \(error.localizedDescription)")
+          } else if !success {
+            self.warningLabel.text = "✖︎ " + "Username '\(textString)' is not available"
+          }
+        }
+      }
+      
+    case emailField:
+      warningLabel.text = ""
+      guard let textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinEmailLength else {
+        return  // No yet an E-mail, nothing to see here
+      }
+      
+//      if !FoodieUser.checkValidFor(email: textString) {
+//        warningLabel.text = "Address entered is not of valid E-mail address format"
+//        return
+//      }
+      
+      FoodieUser.checkUserAvailFor(email: textString) { (success, error) in
+        DispatchQueue.main.async {
+          if let error = error {
+            CCLog.warning("checkUserAvailFor E-mail: (\(textString)) Failed - \(error.localizedDescription)")
+          } else if !success {
+            self.warningLabel.text = "✖︎ " + "E-mail address \(textString) is already signed up"
+          }
+        }
+      }
+      
+    case passwordField:
+      warningLabel.text = ""
+      guard let textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinPasswordLength else {
+        return  // Not yet a password, nothing to see here
+      }
+      
+      if let error = FoodieUser.checkValidFor(password: textString, username: usernameField.text, email: emailField.text) {
+        warningLabel.text = "✖︎ " + error.localizedDescription
+        return
+      }
+    
+    default:
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("There is no other text fields in this switch-case")
+      }
+    }
   }
   
+  
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-    //code
+    switch textField {
+    case usernameField:
+      emailField.becomeFirstResponder()
+    case emailField:
+      passwordField.becomeFirstResponder()
+    case passwordField:
+      passwordField.resignFirstResponder()
+      signUp()
+    default:
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("There is no other text fields in this switch-case")
+      }
+    }
     return true
   }
 }
+
+

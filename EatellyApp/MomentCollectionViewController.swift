@@ -112,7 +112,7 @@ class MomentCollectionViewController: UICollectionViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    CCLog.warning("MomentCollectionViewController.didReceiveMemoryWarning")
+    CCLog.warning("didReceiveMemoryWarning")
   }
 }
 

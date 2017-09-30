@@ -56,7 +56,7 @@ class FeedCollectionViewController: UICollectionViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    CCLog.warning("FeedCollectionViewController.didReceiveMemoryWarning")
+    CCLog.warning("didReceiveMemoryWarning")
   }
   
   

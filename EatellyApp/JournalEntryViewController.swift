@@ -550,14 +550,11 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
-    CCLog.warning("JournalEntryViewController.didReceiveMemoryWarning")
-  }
-  
-  deinit {
-    CCLog.warning("JournalEntryViewController getting deinitialized")
+    CCLog.warning("didReceiveMemoryWarning")
   }
   
 }
+
 
 
 // MARK: - Table View Data Source
