@@ -46,7 +46,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   fileprivate var momentViewController = MomentCollectionViewController()
   fileprivate var markupMoment: FoodieMoment? = nil
   fileprivate let activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-  
+
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var venueButton: UIButton?
@@ -273,33 +273,47 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     dismiss(animated: true, completion: nil)
   }
 
-  // TODO re-enable when modify is ready
-  /*
-  func handleTap(_ sender: UIGestureRecognizer)
+  func editMoment(_ sender: UIGestureRecognizer)
   {
-     let point = sender.location(in: momentViewController.collectionView)
+    let point = sender.location(in: momentViewController.collectionView)
 
-     if let indexPath = momentViewController.collectionView!.indexPathForItem(at: point) {
-     guard let momentArray = workingJournal?.moments else {
-     CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
-     }
+    guard let indexPath = momentViewController.collectionView!.indexPathForItem(at: point) else {
+      // invalid index path selected just return
+      return
+    }
 
-     if(indexPath.row >= momentArray.count)
-     {
-     CCLog.fatal("Moment selection is out of bound")
-     }
+    guard let momentArray = workingJournal?.moments else {
+      CCLog.fatal("No moments in current working journal.")
+    }
 
-     let moment = momentArray[indexPath.row]
-     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-     viewController.mediaObj = moment.mediaObj
-     //viewController.markupReturnDelegate = self
-     self.present(viewController, animated: true)
-     }
+    if(indexPath.row >= momentArray.count)
+    {
+      AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+        CCLog.fatal("Moment selection is out of bound")
+      }
+    }
+
+    let moment = momentArray[indexPath.row]
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+    viewController.markupReturnDelegate = self
+
+    guard let mediaObj = moment.mediaObj else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Nil media object in moment")
+      }
+      return
+    }
+
+    viewController.mediaObj = mediaObj
+    viewController.editMomentObj = moment
+
+
+    self.present(viewController, animated: true)
+
   }
-  */
 
-  
+
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -313,9 +327,8 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     momentViewController.workingJournal = workingJournal
     momentViewController.momentHeight = Constants.momentHeight
 
-    // TODO re enable when modify moment is ready
-    //let tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTap:")
-    //momentViewController.collectionView?.addGestureRecognizer(tapRecognizer)
+    let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(editMoment(_:)))
+    momentViewController.collectionView?.addGestureRecognizer(tapRecognizer)
  
     self.addChildViewController(momentViewController)
     momentViewController.didMove(toParentViewController: self)
@@ -338,7 +351,6 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     
     // TODO: Do we need to download the Journal itself first? How can we tell?
   }
-  
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
@@ -407,10 +419,15 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
         if markupMoment != nil {
           // So there is a Moment under markup. The returned Moment should match this.
           if returnedMoment === markupMoment {
-            
-            // TODO: Gotta do a Moment Replace operation. See Foodie Object Model
-            // Probably replace the Moment in Memory. Set the right flags so Pre-Upload will do the right things
-            
+
+            // save to local
+            moment.saveRecursive(to: .local, type: .draft) { (error) in
+              if(error != nil) {
+                AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
+                  CCLog.assert("Error saving moment into local caused by:  \(error)")
+                }
+              }
+            }
           } else {
             AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain)
             CCLog.assert("returnedMoment expected to match markupMoment")
@@ -609,6 +626,16 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
         }
       }
     }
+  }
+}
+
+extension JournalEntryViewController: MarkupReturnDelegate {
+  func markupComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
+
+    self.returnedMoment = markedupMoment
+    self.markupMoment = markedupMoment
+
+    dismiss(animated: true, completion: nil)
   }
 }
 

@@ -47,8 +47,8 @@ class MarkupViewController: UIViewController {
   var mediaObj: FoodieMedia?
   var mediaLocation: CLLocation?
   var markupReturnDelegate: MarkupReturnDelegate?
+  var editMomentObj: FoodieMoment?
 
-  
   // MARK: - Private Instance Variables
   fileprivate var avPlayer: AVQueuePlayer?
   fileprivate var avPlayerLayer: AVPlayerLayer?
@@ -253,14 +253,22 @@ class MarkupViewController: UIViewController {
     // TODO: Don't let user click save (Gray it out until Thumbnail creation completed)
     
     // Initializing with Media Object also initialize foodieFileName and mediaType
-    let momentObj = FoodieMoment(foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
+    var momentObj: FoodieMoment
+
+    // reuse moment for edits
+    if(editMomentObj != nil) {
+      momentObj = editMomentObj!
+    } else {
+      momentObj = FoodieMoment(foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
+    }
 
     momentObj.set(location: mediaLocation)
     momentObj.playSound = soundOn
     
     // Setting the Thumbnail Object also initializes the thumbnailFileName
     momentObj.thumbnailObj = thumbnailObject
-    
+
+    momentObj.clearMarkups()
     // Serialize the Jot Markup into Foodie Markups
     if let jotDictionary = jotViewController.serialize() {
 
@@ -321,6 +329,11 @@ class MarkupViewController: UIViewController {
     // Implementing Scenario 1 for now. Scenario TBD
     // What this is trying to do is to display a selection dialog on whether to add to the Current Journal, or Save to a new one
     if let journal = FoodieJournal.currentJournal {
+      if(editMomentObj != nil)
+      {
+        // skip the selection of adding to current or not
+        self.cleanupAndReturn(markedUpMoment: momentObj, suggestedJournal: journal)
+      }
       displayJournalSelection(
         newJournalHandler: { UIAlertAction -> Void in self.showJournalDiscardDialog(moment: momentObj) },
         addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoment: momentObj, suggestedJournal: journal) }
@@ -426,8 +439,73 @@ class MarkupViewController: UIViewController {
     delegate.markupComplete(markedupMoment: markedUpMoment, suggestedJournal: suggestedJournal)
   }
 
-  
   // MARK: - Private Instance Functions
+  private func displayJotMarkups()
+  {
+    guard let moment = editMomentObj else {
+      // if you just take a picture with the camera there will be no editMomentObj for sure
+      return
+    }
+
+    if let markups = moment.markups {
+      var jotDictionary = [AnyHashable: Any]()
+      var labelDictionary: [NSDictionary]?
+
+      for markup in markups {
+
+        if !markup.isDataAvailable {
+          AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+            CCLog.fatal("Markup not available even tho Moment deemed Loaded")
+          }
+        }
+
+        guard let dataType = markup.dataType else {
+          AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+            CCLog.assert("Unexpected markup.dataType = nil")
+          }
+          return
+        }
+
+        guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
+          AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+            CCLog.assert("markup.dataType did not actually translate into valid type")
+          }
+          return
+        }
+
+        switch markupType {
+
+        case .jotLabel:
+          guard let labelData = markup.data else {
+            AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+              CCLog.assert("Unexpected markup.data = nil when dataType == .jotLabel")
+            }
+            return
+          }
+
+          if labelDictionary == nil {
+            labelDictionary = [labelData]
+          } else {
+            labelDictionary!.append(labelData)
+          }
+
+        case .jotDrawView:
+          guard let drawViewDictionary = markup.data else {
+            AlertDialog.present(from: self, title: "EatellyApp", message: "Error displaying media. Please try again") { action in
+              CCLog.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
+            }
+            return
+          }
+
+          jotDictionary[kDrawView] = drawViewDictionary
+        }
+      }
+
+      jotDictionary[kLabels] = labelDictionary
+      jotViewController.unserialize(jotDictionary)
+    }
+  }
+
   private func getNextFont(size: CGFloat) -> UIFont {
     fontArrayIndex += 1
     if fontArrayIndex >= FontChoiceArray.count { fontArrayIndex = 0 }
@@ -537,7 +615,9 @@ class MarkupViewController: UIViewController {
     view.sendSubview(toBack: jotViewController.view)
     jotViewController.didMove(toParentViewController: self)
     jotViewController.view.frame = view.bounds
-    
+
+    // load up jotdata 
+    displayJotMarkups()
     
     // This section is for initiating the background Image or Video
     if mediaObj == nil {
