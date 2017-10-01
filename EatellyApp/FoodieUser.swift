@@ -83,8 +83,11 @@ class FoodieUser: PFUser {
     
     case getUserForEmailNone
     case getUserForEmailTooMany
+    
     case reverificationEmailNil
     case reverficiationVerified
+    
+    case checkVerificationNoProperty
     
     
     var errorDescription: String? {
@@ -141,6 +144,8 @@ class FoodieUser: PFUser {
         return NSLocalizedString("No Email for account to reverify on", comment: "Error message when trying to reverify an E-mail address")
       case .reverficiationVerified:
         return NSLocalizedString("Reverfication requested for E-mail already verified", comment: "Error message when trying to reverify an E-mail address")
+      case .checkVerificationNoProperty:
+        return NSLocalizedString("User has no status for whether E-mail is verified", comment: "Error message when trying to check E-mail verfiication status")
       }
     }
     
@@ -153,39 +158,11 @@ class FoodieUser: PFUser {
   
   // MARK: - Public Static Variables
   static var current: FoodieUser? { return PFUser.current() as? FoodieUser }
-
-  
-  static var isCurrentRegistered: Bool {
-    if let currentUser = current, currentUser.isRegistered {
-      return true
-    } else {
-      return false
-    }
-  }
-  
-  
-  static var isCurrentEmailVerified: Bool {
-    if let currentUser = current, currentUser.isEmailVerified {
-      return true
-    } else {
-      return false
-    }
-  }
-  
   
   
   // MARK: - Public Instance Variables
   var isRegistered: Bool { return objectId != nil }
-  
-  var isEmailVerified: Bool {
-    guard let emailVerified = object(forKey: "emailVerified") as? Bool else {
-      CCLog.warning("Cannot get PFUser key \"emailVerified\"")
-      return false
-    }
-    return isRegistered && emailVerified
-  }
-  
-  
+
   
   // MARK: - Public Static Functions
   
@@ -475,6 +452,25 @@ class FoodieUser: PFUser {
   }
   
   
+  func checkIfEmailVerified(withBlock callback: BooleanErrorBlock?) {
+    retrieve(forceAnyways: true) { error in
+      if let error = error {
+        CCLog.warning("Error retrieving PFUser details - \(error.localizedDescription)")
+        callback?(false, error)
+        return
+      }
+    
+      guard let emailVerified = self.object(forKey: "emailVerified") as? Bool else {
+        CCLog.warning("Cannot get PFUser key 'emailVerified'")
+        callback?(false, ErrorCode.checkVerificationNoProperty)
+        return
+      }
+      
+      callback?(emailVerified, nil)
+    }
+  }
+  
+  
   func resendEmailVerification(withBlock callback: SimpleErrorBlock?) {
     guard let email = email else {
       CCLog.assert("No E-mail address for accoung with username: \(username ?? "")")
@@ -484,25 +480,35 @@ class FoodieUser: PFUser {
       return
     }
     
-    if isEmailVerified {
-      CCLog.info("Tried to resend E-mail verification when the E-mail address \(email) is already verified")
-      callback?(ErrorCode.reverficiationVerified)
-      return
-    }
-    
-    let unverifiedEmail = email
-    self.email = ""
-    self.email = unverifiedEmail
-    
-    saveInBackground { (success, error) in
-      FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
+    checkIfEmailVerified { (verified, error) in
+      if verified {
+        CCLog.info("Tried to resend E-mail verification when the E-mail address \(email) is already verified")
+        callback?(ErrorCode.reverficiationVerified)
+        return
+        
+      } else {
+        let unverifiedEmail = email
+        self.email = ""
+        self.email = unverifiedEmail
+        
+        self.saveInBackground { (success, error) in
+          FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
+        }
+      }
     }
   }
   
   
-  func retrieve(withBlock callback: SimpleErrorBlock?) {
-    self.fetchIfNeededInBackground { (_, error) in
-      callback?(error)
+  func retrieve(forceAnyways: Bool = false, withBlock callback: SimpleErrorBlock?) {
+    
+    if forceAnyways {
+      self.fetchInBackground { (_, error) in
+        callback?(error)
+      }
+    } else {
+      self.fetchIfNeededInBackground { (_, error) in
+        callback?(error)
+      }
     }
   }
   

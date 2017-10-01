@@ -60,25 +60,32 @@ class IntroViewController: UIViewController {
         return
       }
       
-      if !currentUser.isEmailVerified {
-        currentUser.resendEmailVerification { error in
-          
-          if let error = error {
+      currentUser.resendEmailVerification { error in
+        
+        if let error = error as? FoodieUser.ErrorCode {
+          switch error {
+          case .reverficiationVerified:
+            CCLog.info("User \(username) tried to request E-mail verification when \(email) already verified")
+            AlertDialog.present(from: self, title: "Resend Error", message: "The E-mail address \(email) have already been verified.") { action in
+              self.presentDiscoverVC()
+            }
+            
+          default:
             CCLog.warning("Failed resending E-mail verification to \(email) - \(error.localizedDescription)")
             AlertDialog.present(from: self, title: "Resend Failed", message: error.localizedDescription) { action in
               self.presentDiscoverVC()
             }
-          } else {
-            CCLog.info("E-mail verificaiton resent to \(email)")
-            AlertDialog.present(from: self, title: "Verification Resent!", message: "Please check your E-mail and confirm your address!") { action in
-              self.presentDiscoverVC()
-            }
           }
-        }
-      } else {
-        CCLog.info("User \(username) tried to request E-mail verification when \(email) already verified")
-        AlertDialog.present(from: self, title: "Resend Error", message: "The E-mail address \(email) have already been verified.") { action in
-          self.presentDiscoverVC()
+        } else if let error = error {
+          CCLog.warning("Failed resending E-mail verification to \(email) - \(error.localizedDescription)")
+          AlertDialog.present(from: self, title: "Resend Failed", message: error.localizedDescription) { action in
+            self.presentDiscoverVC()
+          }
+        } else {
+          CCLog.info("E-mail verificaiton resent to \(email)")
+          AlertDialog.present(from: self, title: "Verification Resent!", message: "Please check your E-mail and confirm your address!") { action in
+            self.presentDiscoverVC()
+          }
         }
       }
     } else {

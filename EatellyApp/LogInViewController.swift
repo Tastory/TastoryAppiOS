@@ -188,25 +188,33 @@ class LogInViewController: UIViewController {
       return
     }
     
-    if user.isEmailVerified {
-      if welcome {
-        viewController.firstLabelText = "Welcome Back~"
-        if let fullName = user.fullName {
-          viewController.secondLabelText = fullName + "!"
-        } else if let username = user.username {
-          viewController.secondLabelText = username + "!"
+    user.checkIfEmailVerified { (verified, error) in
+      DispatchQueue.main.async {
+        if let error = error {
+          AlertDialog.present(from: self, title: "Email Status Error", message: error.localizedDescription) { action in
+            CCLog.warning("Error getting E-mail Status - \(error.localizedDescription)")
+          }
+        } else if verified {
+          if welcome {
+            viewController.firstLabelText = "Welcome Back~"
+            if let fullName = user.fullName {
+              viewController.secondLabelText = fullName + "!"
+            } else if let username = user.username {
+              viewController.secondLabelText = username + "!"
+            } else {
+              CCLog.fatal("No username for FoodieUser!!")
+            }
+            viewController.enableResend = false
+          }
         } else {
-          CCLog.fatal("No username for FoodieUser!!")
+          viewController.firstLabelText = "It seems you have not verified your E-mail. You will not be able to post"
+          viewController.secondLabelText = "For now, you can start by checking out what Tasty Stories are around you~"
+          viewController.enableResend = true
         }
-        viewController.enableResend = false
+        
+        self.present(viewController, animated: true, completion: nil)
       }
-    } else {
-      viewController.firstLabelText = "It seems you have not verified your E-mail. You will not be able to post"
-      viewController.secondLabelText = "For now, you can start by checking out what Tasty Stories are around you~"
-      viewController.enableResend = true
     }
-    
-    self.present(viewController, animated: true, completion: nil)
   }
   
   

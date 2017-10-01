@@ -511,12 +511,12 @@ class MapViewController: UIViewController {
     
     // But we should refresh the user before determining for good
     if let user = FoodieUser.current, user.isRegistered {
-      user.retrieve { error in
+      user.checkIfEmailVerified { verified, error in
         if let error = error {
           AlertDialog.present(from: self, title: "User Update Error", message: "Problem retrieving the most updated user profile. Some user attributes might be outdated") { action in
             CCLog.warning("Failed retrieving the user object - \(error.localizedDescription)")
           }
-        } else if user.isEmailVerified {
+        } else if verified {
           self.cameraButton.isHidden = false
         }
       }
