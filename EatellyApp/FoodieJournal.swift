@@ -22,7 +22,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var markups: Array<FoodieMarkup>? // Array of PFObjects as FoodieMarkup for the thumbnail
   
   @NSManaged var title: String? // Title for the Journal
-  @NSManaged var author: FoodieUser? // Pointer to the user that authored this Moment
+  @NSManaged var author: String? // Username of the author
   @NSManaged var venue: FoodieVenue? // Pointer to the Restaurant object
   @NSManaged var authorText: String? // Placeholder before real user ability is added
   @NSManaged var journalURL: String? // URL to the Journal article
@@ -266,6 +266,12 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                             type localType: FoodieObject.LocalType,
                             withBlock callback: SimpleErrorBlock?) {
     
+    // We should always make sure we fill in the author for a Journal
+    guard let currentUser = FoodieUser.current, let username = currentUser.username else {
+      CCLog.fatal("No Current User or Username when trying to do saveOpRecursive on a Story")
+    }
+    author = username
+    
     self.foodieObject.resetOutstandingChildOperations()
     var childOperationPending = false
     
@@ -342,13 +348,17 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                                type localType: FoodieObject.LocalType,
                                withBlock callback: SimpleErrorBlock?) {
     
+    // We should always make sure we fill in the author for a Journal
+    guard let currentUser = FoodieUser.current, let username = currentUser.username else {
+      CCLog.fatal("No Current User or Username when trying to do saveOpRecursive on a Story")
+    }
+    author = username
+    
     self.foodieObject.resetOutstandingChildOperations()
     var childOperationPending = false
     
     // Need to make sure all children recursive saved before proceeding
-    
     // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
-    // We are not gonna save the User here either
     
     if let moments = moments {
       for moment in moments {

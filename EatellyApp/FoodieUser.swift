@@ -453,20 +453,28 @@ class FoodieUser: PFUser {
   
   
   func checkIfEmailVerified(withBlock callback: BooleanErrorBlock?) {
-    retrieve(forceAnyways: true) { error in
-      if let error = error {
-        CCLog.warning("Error retrieving PFUser details - \(error.localizedDescription)")
-        callback?(false, error)
-        return
-      }
     
-      guard let emailVerified = self.object(forKey: "emailVerified") as? Bool else {
-        CCLog.warning("Cannot get PFUser key 'emailVerified'")
-        callback?(false, ErrorCode.checkVerificationNoProperty)
-        return
-      }
+    if let emailVerified = self.object(forKey: "emailVerified") as? Bool, emailVerified {
+      DispatchQueue.global(qos: .userInitiated).async { callback?(true, nil) }
+      return  // Early return if it's true
+    
+    // Otherwise, let's double check against the server
+    } else {
+      retrieve(forceAnyways: true) { error in
+        if let error = error {
+          CCLog.warning("Error retrieving PFUser details - \(error.localizedDescription)")
+          callback?(false, error)
+          return
+        }
       
-      callback?(emailVerified, nil)
+        guard let emailVerified = self.object(forKey: "emailVerified") as? Bool else {
+          CCLog.warning("Cannot get PFUser key 'emailVerified'")
+          callback?(false, ErrorCode.checkVerificationNoProperty)
+          return
+        }
+        
+        callback?(emailVerified, nil)
+      }
     }
   }
   

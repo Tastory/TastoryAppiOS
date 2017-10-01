@@ -223,6 +223,11 @@ class LogInViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     facebookButton.layer.cornerRadius = 5.0
+    
+    // Gonna wipe all previous user state if you ever get here
+    if FoodieJournal.currentJournal != nil {
+      FoodieJournal.removeCurrent()
+    }
   }
 
   
