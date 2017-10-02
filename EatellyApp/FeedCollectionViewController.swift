@@ -33,54 +33,6 @@ class FeedCollectionViewController: UICollectionViewController {
   
   
   
-  // MARK: - View Controller Lifecycle Functions
-  override func viewDidLoad() {
-    super.viewDidLoad()
-
-    // Uncomment the following line to preserve selection between presentations
-    // self.clearsSelectionOnViewWillAppear = false
-    
-    CCLog.verbose("journalArray.count = \(journalArray.count)")
-    
-    // Turn on CollectionView prefetching
-    collectionView?.prefetchDataSource = self
-    collectionView?.isPrefetchingEnabled = true
-  }
-  
-  
-  override func viewDidAppear(_ animated: Bool) {
-    FoodiePrefetch.global.unblockPrefetching()
-  }
-  
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
-  }
-  
-  
-  
-  // MARK: - Public Instance Functions
-//  func queryResultCallback(objectArray: [AnyObject]?, error: Error?) {
-//  
-//    guard let journalArray = objectArray as? [FoodieJournal] else {
-//      queryErrorDialog()
-//      CCLog.assert("queryResultCallback() did not return an array of Foodie Journals")
-//      return
-//    }
-//    numberOfItemsQueried += journalArray.count
-//    CCLog.verbose("\(journalArray.count) Journals returned. Total Journals retrieved at \(numberOfItemsQueried)")
-//    
-//    for journal in journalArray {
-//      journalArray.append(journal)
-//    }
-//    
-//    collectionView?.reloadData()
-//  }
-  
-  
-  
   // MARK: - Private Instance Functions
   
   // Generic error dialog box to the user on internal errors
@@ -129,6 +81,9 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
+  
+  // MARK: - Public Instance Functions
+  
   func viewJournal(_ sender: UIButton) {
     // Stop all prefetches
     FoodiePrefetch.global.blockPrefetching()
@@ -137,6 +92,38 @@ class FeedCollectionViewController: UICollectionViewController {
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalViewController") as! JournalViewController
     viewController.viewingJournal = journalArray[sender.tag]
     self.present(viewController, animated: true)
+  }
+  
+  
+  
+  // MARK: - View Controller Lifecycle Functions
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    // Uncomment the following line to preserve selection between presentations
+    // self.clearsSelectionOnViewWillAppear = false
+    
+    CCLog.verbose("journalArray.count = \(journalArray.count)")
+    
+    // Apply a Background to the CollectionView
+    collectionView?.backgroundView = UIImageView(image: UIImage(named: "TastryTempBgWhite"))
+    
+    // Turn on CollectionView prefetching
+    collectionView?.prefetchDataSource = self
+    collectionView?.isPrefetchingEnabled = true
+  }
+  
+  
+  override func viewDidAppear(_ animated: Bool) {
+    FoodiePrefetch.global.unblockPrefetching()
+  }
+  
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    
+    CCLog.warning("didReceiveMemoryWarning")
   }
   
   
