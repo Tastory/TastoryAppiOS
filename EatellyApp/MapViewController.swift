@@ -338,27 +338,13 @@ class MapViewController: UIViewController {
     storyQuery!.setLimit(to: FoodieGlobal.Constants.JournalFeedPaginationCount)
     _ = storyQuery!.addArrangement(type: .creationTime, direction: .descending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
 
-    // Put up blur view and activity spinner before performing query
-    // TODO: We should factor these out so they can be used everywhere
-    // See https://stackoverflow.com/questions/28785715/how-to-display-an-activity-indicator-with-text-on-ios-8-with-swift
-    
-    let blurEffect = UIBlurEffect(style: .light)
-    let blurEffectView = UIVisualEffectView(effect: blurEffect)
-    blurEffectView.frame = view.bounds
-    blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    view.addSubview(blurEffectView)
-    
-    let activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
-    activityView.center = self.view.center
-    activityView.startAnimating()
-    view.addSubview(activityView)
+    let blurSpinner = BlurSpinWait()
+    blurSpinner.apply(to: self.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
     
     // Actually do the Query
     storyQuery!.initJournalQueryAndSearch { (journals, error) in
       
-      // Remove the blur view and activity spinner
-      blurEffectView.removeFromSuperview()
-      activityView.removeFromSuperview()
+      blurSpinner.remove()
       
       if let err = error {
         self.queryErrorDialog()
@@ -445,8 +431,8 @@ class MapViewController: UIViewController {
     // If current journal is nil, double check and see if there are any in Local Datastore
     if FoodieJournal.currentJournal == nil {
       
-      if let currentUser = FoodieUser.current, let username = currentUser.username {
-        FoodieQuery.getFirstStory(byAuthor: username, from: .draft) { (object, error) in
+      if let currentUser = FoodieUser.current {
+        FoodieQuery.getFirstStory(byAuthor: currentUser, from: .draft) { (object, error) in
           
           if let error = error {
             FoodieObject.deleteAll(from: .draft) { deleteError in

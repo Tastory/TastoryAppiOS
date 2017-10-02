@@ -50,7 +50,6 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var venueButton: UIButton?
-  @IBOutlet weak var authorTextField: UITextField!
   @IBOutlet weak var linkTextField: UITextField?
   @IBOutlet weak var tagsTextView: UITextView?
 
@@ -74,6 +73,11 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       CCLog.fatal("No Working Journal when user pressed Post Story")
     }
     
+    guard let currentUser = FoodieUser.current else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
+      CCLog.fatal("No Current User Logged In")
+    }
+    
     guard journal.title != nil && journal.venue != nil else {
       AlertDialog.present(from: self, title: "Required Fields Empty", message: "The Title and Venue are essential to a Story!")
       return
@@ -87,42 +91,39 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     CCLog.info("User pressed 'Post Story'")
     
     view.endEditing(true)
-    
-    // Block out user inputs until save completes - aka. No more Pre Saves are possible. Yay!
-    let blurEffect = UIBlurEffect(style: .light)
-    let blurEffectView = UIVisualEffectView(effect: blurEffect)
-    blurEffectView.frame = view.bounds
-    blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    view.addSubview(blurEffectView)
-    
-    let activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
-    activityView.center = self.view.center
-    activityView.startAnimating()
-    view.addSubview(activityView)
+    let blurSpinner = BlurSpinWait()
+    blurSpinner.apply(to: self.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
 
     // This will cause a save to both Local Cache and Server
     journal.saveRecursive(to: .both, type: .cache) { error in
       
       if let error = error {
-        DispatchQueue.main.async {
-          // Remove the blur view and activity spinner
-          blurEffectView.removeFromSuperview()
-          activityView.removeFromSuperview()
-          
-          CCLog.warning("Save Story to Server Failed with Error: \(error)")
-          AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
-        }
+        blurSpinner.remove()
+        CCLog.warning("Save Story to Server Failed with Error: \(error)")
+        AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
       } else {
         
-        // Now removing it from Draft - only if upload to server is a total success
-        journal.deleteRecursive(from: .local, type: .draft) { error in
-          FoodieJournal.removeCurrent()
-          self.workingJournal = nil
+        // Add this Story to the User's authored list
+        currentUser.addAuthoredStory(journal) { error in
           
-          DispatchQueue.main.async {
-            // Remove the blur view and activity spinner
-            blurEffectView.removeFromSuperview()
-            activityView.removeFromSuperview()
+          if let error = error {
+            // Best effort remove the Story from Server & Cache in this case
+            journal.deleteRecursive(from: .both, type: .cache, withBlock: nil)
+            
+            blurSpinner.remove()
+            CCLog.warning("Add Story to User List Failed with Error: \(error)")
+            AlertDialog.present(from: self, title: "Add Story to User Failed", message: error.localizedDescription)
+          }
+        
+          // Now removing it from Draft - only if upload to server is a total success
+          journal.deleteRecursive(from: .local, type: .draft) { error in
+            if let error = error {
+              CCLog.warning("Deleting Journal from Local Draft Failed with Error: \(error)")
+            }
+            
+            FoodieJournal.removeCurrent()
+            self.workingJournal = nil
+            blurSpinner.remove()
             
             // Pop-up Alert Dialog and then Dismiss
             CCLog.info("Story Posted!")
@@ -144,18 +145,6 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     
     CCLog.info("User edited Title of Story")
     journal.title = text
-    preSave(nil, withBlock: nil)
-  }
-  
-
-  @IBAction func editedAuthor(_ sender: UITextField) {
-    guard let text = sender.text, let journal = workingJournal, text != journal.authorText else {
-      // Nothing changed, don't do anything
-      return
-    }
-    
-    CCLog.info("User edited Author of Story")
-    journal.authorText = text
     preSave(nil, withBlock: nil)
   }
   
@@ -414,7 +403,6 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     momentViewController.didMove(toParentViewController: self)
     
     titleTextField?.delegate = self
-    authorTextField?.delegate = self
     linkTextField?.delegate = self
     tagsTextView?.delegate = self
     
@@ -447,10 +435,6 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       } else {
         venueButton?.setTitle("Venue", for: .normal)
         venueButton?.setTitleColor(Constants.placeholderColor, for: .normal)
-      }
-
-      if let authorText = workingJournal.authorText {
-        authorTextField?.text = authorText
       }
       
       if let storyURL = workingJournal.journalURL {

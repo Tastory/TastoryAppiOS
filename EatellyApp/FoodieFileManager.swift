@@ -511,7 +511,7 @@ class FoodieS3Object {
   
   // MARK: - Public Static Functions
   static func deleteAll(from localType: FoodieObject.LocalType, withBlock callback: SimpleErrorBlock?) {
-    
+    FoodieFile.manager.deleteAll(from: localType, withBlock: callback)
   }
   
   

@@ -25,14 +25,15 @@ class FoodieUser: PFUser {
   
   // User Properties
   @NSManaged var roleLevel: Int
-  @NSManaged var authoredStoryIds: Array<String>?
+  //@NSManaged var authoredStories: PFRelation<PFObject>
   
   // History & Bookmarks
-  @NSManaged var historyStoryIds: Array<String>?
-  @NSManaged var bookmarkStoryIds: Array<String>?
+  //@NSManaged var historyStories: PFRelation<PFObject>
+  //@NSManaged var bookmarkStories: PFRelation<PFObject>
   
   // Social Connections
-  @NSManaged var followingUserIds: Array<String>?
+  //@NSManaged var followingUsers: PFRelation<PFObject>
+  //@NSManaged var followerUsers: PFRelation<PFObject>
   
   // User Settings
   @NSManaged var saveOriginalsToLibrary: Bool
@@ -426,6 +427,7 @@ class FoodieUser: PFUser {
   
   
   // MARK: - Public Instance Functions
+  
   func signUp(withBlock callback: SimpleErrorBlock?) {
     
     guard let username = username else {
@@ -576,6 +578,8 @@ class FoodieUser: PFUser {
   }
   
   
+  // MARK: - Basic CRUD ~ Retrieve/Save/Delete
+  
   func retrieve(forceAnyways: Bool = false, withBlock callback: SimpleErrorBlock?) {
     
     if forceAnyways {
@@ -602,6 +606,109 @@ class FoodieUser: PFUser {
       FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
     }
   }
+  
+  
+  
+  // MARK: - Properties Manipulation Functions
+  
+  // Force Queries to be done out of the FoodieQuery class?
+  
+  func addAuthoredStory(_ story: FoodieJournal, withBlock callback: SimpleErrorBlock?) {
+    // Do a retrieve before adding
+    retrieve(forceAnyways: true) { error in
+      if let error = error {
+        CCLog.warning("Retreive for add authored story failed - \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      let relation = self.relation(forKey: "authoredStories")
+      relation.add(story)
+      
+      self.save { error in
+        if let error = error {
+          CCLog.warning("Save for add authored story failed - \(error.localizedDescription)")
+        }
+        callback?(error)
+      }
+    }
+  }
+  
+  func removeAuthoredStory(_ story: FoodieJournal, withBlock callback: SimpleErrorBlock?) {
+    // Do a retrieve before adding
+    retrieve(forceAnyways: true) { error in
+      if let error = error {
+        CCLog.warning("Retreive for add authored story failed - \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      let relation = self.relation(forKey: "authoredStories")
+      relation.remove(story)
+      
+      self.save { error in
+        if let error = error {
+          CCLog.warning("Save for add authored story failed - \(error.localizedDescription)")
+        }
+        callback?(error)
+      }
+    }
+  }
+  
+//  func addHistoryStory(_ story: FoodieJournal) {
+//    if historyStories == nil {
+//      historyStories = PFRelation<FoodieJournal>()
+//    }
+//    historyStories!.add(story)
+//  }
+//  
+//  func removeHistoryStory(_ story: FoodieJournal) {
+//    guard let historyStories = authoredStories else {
+//      CCLog.fatal("Cannot remove from a nil historyStories relation")
+//    }
+//    historyStories.remove(story)
+//  }
+//  
+//  func addBookmarkStory(_ story: FoodieJournal) {
+//    if bookmarkStories == nil {
+//      bookmarkStories = PFRelation<FoodieJournal>()
+//    }
+//    bookmarkStories!.add(story)
+//  }
+//  
+//  func removeBookmarkStory(_ story: FoodieJournal) {
+//    guard let bookmarkStories = bookmarkStories else {
+//      CCLog.fatal("Cannot remove from a nil bookmarkStories relation")
+//    }
+//    bookmarkStories.remove(story)
+//  }
+//  
+//  func addFollowingUser(_ user: FoodieUser) {
+//    if followingUsers == nil {
+//      followingUsers = PFRelation<FoodieUser>()
+//    }
+//    followingUsers!.add(user)
+//  }
+//  
+//  func removeFollowingUser(_ user: FoodieUser) {
+//    guard let followingUsers = followingUsers else {
+//      CCLog.fatal("Cannot remove from a nil followingUsers relation")
+//    }
+//    followingUsers.remove(user)
+//  }
+//  
+//  func addFollowerUser(_ user: FoodieUser) {
+//    if followerUsers == nil {
+//      followerUsers = PFRelation<FoodieUser>()
+//    }
+//    followerUsers!.add(user)
+//  }
+//  
+//  func removeFollowerUser(_ user: FoodieUser) {
+//    guard let followerUsers = followerUsers else {
+//      CCLog.fatal("Cannot remove from a nil followerUsers relation")
+//    }
+//    followerUsers.remove(user)
+//  }
 }
 
 

@@ -22,9 +22,8 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var markups: Array<FoodieMarkup>? // Array of PFObjects as FoodieMarkup for the thumbnail
   
   @NSManaged var title: String? // Title for the Journal
-  @NSManaged var author: String? // Username of the author
   @NSManaged var venue: FoodieVenue? // Pointer to the Restaurant object
-  @NSManaged var authorText: String? // Placeholder before real user ability is added
+  @NSManaged var author: FoodieUser?  // Pointer? To the Authoring User
   @NSManaged var journalURL: String? // URL to the Journal article
   @NSManaged var tags: Array<String>? // Array of Strings, unstructured
 
@@ -267,10 +266,10 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                             withBlock callback: SimpleErrorBlock?) {
     
     // We should always make sure we fill in the author for a Journal
-    guard let currentUser = FoodieUser.current, let username = currentUser.username else {
-      CCLog.fatal("No Current User or Username when trying to do saveOpRecursive on a Story")
+    guard let currentUser = FoodieUser.current else {
+      CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
     }
-    author = username
+    author = currentUser
     
     self.foodieObject.resetOutstandingChildOperations()
     var childOperationPending = false
@@ -349,10 +348,10 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                                withBlock callback: SimpleErrorBlock?) {
     
     // We should always make sure we fill in the author for a Journal
-    guard let currentUser = FoodieUser.current, let username = currentUser.username else {
-      CCLog.fatal("No Current User or Username when trying to do saveOpRecursive on a Story")
+    guard let currentUser = FoodieUser.current else {
+      CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
     }
-    author = username
+    author = currentUser
     
     self.foodieObject.resetOutstandingChildOperations()
     var childOperationPending = false
@@ -397,6 +396,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
         callback?(error)
         return
       }
+      self.author = nil
       
       // Delete self first before deleting children
       self.foodieObject.deleteObject(from: location, type: localType) { error in

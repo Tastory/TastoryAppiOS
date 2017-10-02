@@ -44,14 +44,21 @@ class RootViewController: UIViewController {
       offlineErrorDialog()
     } else {
       if let currentUser = FoodieUser.current, currentUser.objectId != nil {
-        // Make sure the right permissions are assigned to objects since we are assuming a User
-        FoodiePermission.setDefaultObjectPermission(for: currentUser)
         
-        // Lets just jump directly into the Main view!
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")
-        self.present(viewController, animated: true, completion: nil)
-        
+        // Get an updated copy of User before proceeding
+        currentUser.retrieve(forceAnyways: true) { error in
+          if let error = error {
+            CCLog.warning("Retrieve latest copy of Current User failed with Error - \(error.localizedDescription)")
+          }
+          
+          // Make sure the right permissions are assigned to objects since we are assuming a User
+          FoodiePermission.setDefaultObjectPermission(for: currentUser)
+          
+          // Lets just jump directly into the Main view!
+          let storyboard = UIStoryboard(name: "Main", bundle: nil)
+          let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")
+          self.present(viewController, animated: true, completion: nil)
+        }
       } else {
         // Resetting permissions back to global default since we don't know whose gonna be logged'in
         FoodiePermission.setDefaultGlobalObjectPermission()

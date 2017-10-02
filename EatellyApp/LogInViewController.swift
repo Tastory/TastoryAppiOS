@@ -143,22 +143,12 @@ class LogInViewController: UIViewController {
     
     view.endEditing(true)
     
-    let blurEffect = UIBlurEffect(style: .light)
-    let blurEffectView = UIVisualEffectView(effect: blurEffect)
-    blurEffectView.frame = view.bounds
-    blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    view.addSubview(blurEffectView)
-    
-    let activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
-    activityView.center = self.view.center
-    activityView.startAnimating()
-    view.addSubview(activityView)
+    let blurSpinner = BlurSpinWait()
+    blurSpinner.apply(to: self.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
     
     FoodieUser.logIn(for: username, using: password) { (user, error) in
       
-      // Remove the blur view and activity spinner
-      blurEffectView.removeFromSuperview()
-      activityView.removeFromSuperview()
+      blurSpinner.remove()
       
       if let error = error {
         AlertDialog.present(from: self, title: "Login Failed", message: error.localizedDescription) { action in
