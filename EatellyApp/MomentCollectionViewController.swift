@@ -45,40 +45,7 @@ class MomentCollectionViewController: UICollectionViewController {
   // MARK: - Private Instance Functions
   fileprivate func setThumbnail(at indexPath: IndexPath)
   {
-    let cell = collectionView!.cellForItem(at: indexPath) as! MomentCollectionViewCell
 
-    guard let momentArray = workingJournal.moments else {
-      CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
-    }
-
-    // Clear the last thumbnail selection if any
-    if workingJournal.thumbnailFileName != nil {
-      var momentArrayIndex = 0
-      for moment in momentArray {
-        if workingJournal.thumbnailFileName == moment.thumbnailFileName {
-          let oldIndexPath = IndexPath(row: momentArrayIndex, section: indexPath.section)
-
-          // If the oldIndexPath is same as the pressed indexPath, nothing to do here really.
-          if oldIndexPath != indexPath {
-            if let oldCell = collectionView!.cellForItem(at: oldIndexPath) as? MomentCollectionViewCell {
-              oldCell.thumbFrameView.isHidden = true
-            } else {
-              collectionView!.reloadItems(at: [oldIndexPath])
-            }
-          }
-          break
-        }
-        momentArrayIndex += 1
-      }
-    }
-
-    // Long Press detected on a Moment Thumbnail. Set that as the Journal Thumbnail
-    // TODO: Do we need to factor out thumbnail operations?
-    workingJournal.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
-    workingJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObj
-
-    // Unhide the Thumbnail Frame to give feedback to user that this is the Journal Thumbnail
-    cell.thumbFrameView.isHidden = false
   }
 
   // MARK: - View Controller Life Cycle
@@ -227,7 +194,6 @@ extension MomentCollectionViewController {
     }
 
     cell.delegate = self
-
     return cell
   }
 
@@ -245,6 +211,21 @@ extension MomentCollectionViewController {
       CCLog.fatal("Unrecognized Kind '\(kind)' for Supplementary Element")
     }
     return reusableView
+  }
+
+  override func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+    guard var momentArray = workingJournal.moments else {
+      CCLog.debug("No Moments for workingJournal")
+      return
+    }
+
+    if sourceIndexPath.item >= momentArray.count {
+      CCLog.assert("sourceIndexPath.item >= momentArray.count ")
+      return
+    }
+
+    let temp = workingJournal.moments!.remove(at: sourceIndexPath.item)
+    workingJournal.moments!.insert(temp, at: destinationIndexPath.item)
   }
 }
 

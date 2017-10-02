@@ -46,6 +46,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   fileprivate var momentViewController = MomentCollectionViewController()
   fileprivate var markupMoment: FoodieMoment? = nil
   fileprivate let activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+  fileprivate var selectedViewCell: MomentCollectionViewCell?
 
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
@@ -200,7 +201,63 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       return nil
     }
   }
-  
+
+
+  func setThumbnail(_ sender: UIGestureRecognizer) {
+
+    let point = sender.location(in: momentViewController.collectionView)
+
+    guard let indexPath = momentViewController.collectionView!.indexPathForItem(at: point) else {
+      // invalid index path selected just return
+      return
+    }
+
+    guard let collectionView = momentViewController.collectionView else {
+      CCLog.assert("Error unwrapping collectionView from moment view controller is nil")
+      return
+    }
+
+    guard let currentJournal = workingJournal else {
+      CCLog.assert("working journal is nil")
+      return
+    }
+
+    guard let momentArray = currentJournal.moments else {
+      CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
+    }
+
+    let cell = collectionView.cellForItem(at: indexPath) as! MomentCollectionViewCell
+
+    // Clear the last thumbnail selection if any
+    if currentJournal.thumbnailFileName != nil {
+      var momentArrayIndex = 0
+      for moment in momentArray {
+        if currentJournal.thumbnailFileName == moment.thumbnailFileName {
+          let oldIndexPath = IndexPath(row: momentArrayIndex, section: indexPath.section)
+
+          // If the oldIndexPath is same as the pressed indexPath, nothing to do here really.
+          if oldIndexPath != indexPath {
+            if let oldCell = collectionView.cellForItem(at: oldIndexPath) as? MomentCollectionViewCell {
+              oldCell.thumbFrameView.isHidden = true
+            } else {
+              collectionView.reloadItems(at: [oldIndexPath])
+            }
+          }
+          break
+        }
+        momentArrayIndex += 1
+      }
+    }
+
+    // Long Press detected on a Moment Thumbnail. Set that as the Journal Thumbnail
+    // TODO: Do we need to factor out thumbnail operations?
+    currentJournal.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
+    currentJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObj
+
+    // Unhide the Thumbnail Frame to give feedback to user that this is the Journal Thumbnail
+    cell.thumbFrameView.isHidden = false
+  }
+
   fileprivate func updateStoryEntryMap(withCoordinate coordinate: CLLocationCoordinate2D, span: CLLocationDegrees, venueName: String? = nil) {
     let region = MKCoordinateRegion(center: coordinate,
                                     span: MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span))
@@ -308,11 +365,59 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     viewController.mediaObj = mediaObj
     viewController.editMomentObj = moment
 
-
     self.present(viewController, animated: true)
-
+    
   }
 
+  func reorderMoment(_ gesture: UILongPressGestureRecognizer) {
+
+    guard let collectionView = momentViewController.collectionView else {
+      CCLog.assert("Error unwrapping the collectionView from moment view controller is nil")
+      return
+    }
+
+    switch(gesture.state) {
+
+    case UIGestureRecognizerState.began:
+      guard let selectedIndexPath = collectionView.indexPathForItem(at: gesture.location(in: collectionView)) else {
+        break
+      }
+      collectionView.beginInteractiveMovementForItem(at: selectedIndexPath)
+      selectedViewCell = collectionView.cellForItem(at: selectedIndexPath) as? MomentCollectionViewCell
+
+      guard let selectedCell = selectedViewCell else {
+        CCLog.assert("Can't get momentCollectionViewCell from collection view")
+        return
+      }
+
+      selectedCell.wobble()
+    case UIGestureRecognizerState.changed:
+      collectionView.updateInteractiveMovementTargetPosition(gesture.location(in: gesture.view!))
+    case UIGestureRecognizerState.ended:
+      collectionView.endInteractiveMovement()
+
+      if(selectedViewCell != nil) {
+        selectedViewCell!.stopWobble()
+
+        guard let journal = workingJournal else {
+          CCLog.assert("workingJournal is nil")
+          return
+        }
+
+        // Pre-save the Story now that it's changed
+        journal.saveDigest(to: .local, type: .draft) { error in
+          if let error = error {
+            AlertDialog.present(from: self, title: "Pre-Save Failed!", message: "Problem saving Story to Local Draft! Quitting or backgrounding the app might cause lost of the current Story under Draft!") { action in
+              CCLog.assert("Pre-Saving Story to Draft Local Store Failed - \(error.localizedDescription)")
+            }
+          }
+        }
+      }
+
+    default:
+      collectionView.cancelInteractiveMovement()
+    }
+  }
 
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
@@ -327,9 +432,23 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     momentViewController.workingJournal = workingJournal
     momentViewController.momentHeight = Constants.momentHeight
 
-    let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(editMoment(_:)))
-    momentViewController.collectionView?.addGestureRecognizer(tapRecognizer)
- 
+    guard let collectionView = momentViewController.collectionView else {
+      CCLog.fatal("collection view from momentViewController is nil")
+    }
+
+    let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(setThumbnail(_:)))
+    tapRecognizer.numberOfTapsRequired = 1
+    collectionView.addGestureRecognizer(tapRecognizer)
+
+    let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(editMoment(_:)))
+    doubleTapRecognizer.numberOfTapsRequired = 2
+    collectionView.addGestureRecognizer(doubleTapRecognizer)
+
+    tapRecognizer.require(toFail: doubleTapRecognizer)
+
+    let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(reorderMoment(_:)))
+    collectionView.addGestureRecognizer(longPressGesture)
+
     self.addChildViewController(momentViewController)
     momentViewController.didMove(toParentViewController: self)
     
@@ -348,7 +467,6 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     previousSwipeRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(previousSwipeRecognizer)
 
-    
     // TODO: Do we need to download the Journal itself first? How can we tell?
   }
   
