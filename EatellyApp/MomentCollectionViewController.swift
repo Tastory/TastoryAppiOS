@@ -31,39 +31,38 @@ class MomentCollectionViewController: UICollectionViewController {
   fileprivate var momentWidthDefault: CGFloat!
   fileprivate var momentSizeDefault: CGSize!
 
-  // MARK: - IBActions
-  @IBAction func longPressAction(_ lpgr: UILongPressGestureRecognizer) {
-    let point = lpgr.location(in: self.collectionView)
+  // MARK: - Public Instance Functions
+  func setThumbnail(_ indexPath: IndexPath) {
 
-    if let indexPath = collectionView!.indexPathForItem(at: point) {
-      setThumbnail(at: indexPath)
-    } else {
-      // Ignore, not long pressing on a valid Moment Thumbnail
+    guard let currentJournal = workingJournal else {
+      CCLog.assert("working journal is nil")
+      return
     }
-  }
 
-  // MARK: - Private Instance Functions
-  fileprivate func setThumbnail(at indexPath: IndexPath)
-  {
-    let cell = collectionView!.cellForItem(at: indexPath) as! MomentCollectionViewCell
-
-    guard let momentArray = workingJournal.moments else {
+    guard let momentArray = currentJournal.moments else {
       CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
     }
 
+    guard let myCollectionView = collectionView else {
+      CCLog.assert("Error unwrapping collectionView from moment view controller is nil")
+      return
+    }
+
+    let cell = myCollectionView.cellForItem(at: indexPath) as! MomentCollectionViewCell
+
     // Clear the last thumbnail selection if any
-    if workingJournal.thumbnailFileName != nil {
+    if currentJournal.thumbnailFileName != nil {
       var momentArrayIndex = 0
       for moment in momentArray {
-        if workingJournal.thumbnailFileName == moment.thumbnailFileName {
+        if currentJournal.thumbnailFileName == moment.thumbnailFileName {
           let oldIndexPath = IndexPath(row: momentArrayIndex, section: indexPath.section)
 
           // If the oldIndexPath is same as the pressed indexPath, nothing to do here really.
           if oldIndexPath != indexPath {
-            if let oldCell = collectionView!.cellForItem(at: oldIndexPath) as? MomentCollectionViewCell {
+            if let oldCell = myCollectionView.cellForItem(at: oldIndexPath) as? MomentCollectionViewCell {
               oldCell.thumbFrameView.isHidden = true
             } else {
-              collectionView!.reloadItems(at: [oldIndexPath])
+              myCollectionView.reloadItems(at: [oldIndexPath])
             }
           }
           break
@@ -72,10 +71,11 @@ class MomentCollectionViewController: UICollectionViewController {
       }
     }
 
+
     // Long Press detected on a Moment Thumbnail. Set that as the Journal Thumbnail
     // TODO: Do we need to factor out thumbnail operations?
-    workingJournal.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
-    workingJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObj
+    currentJournal.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
+    currentJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObj
 
     // Unhide the Thumbnail Frame to give feedback to user that this is the Journal Thumbnail
     cell.thumbFrameView.isHidden = false
@@ -227,7 +227,6 @@ extension MomentCollectionViewController {
     }
 
     cell.delegate = self
-
     return cell
   }
 
@@ -245,6 +244,21 @@ extension MomentCollectionViewController {
       CCLog.fatal("Unrecognized Kind '\(kind)' for Supplementary Element")
     }
     return reusableView
+  }
+
+  override func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+    guard var momentArray = workingJournal.moments else {
+      CCLog.debug("No Moments for workingJournal")
+      return
+    }
+
+    if sourceIndexPath.item >= momentArray.count {
+      CCLog.assert("sourceIndexPath.item >= momentArray.count ")
+      return
+    }
+
+    let temp = workingJournal.moments!.remove(at: sourceIndexPath.item)
+    workingJournal.moments!.insert(temp, at: destinationIndexPath.item)
   }
 }
 
@@ -316,7 +330,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
           }
 
           // row is the index of the moment array
-          self.setThumbnail(at: IndexPath(row: rowIdx, section: indexPath.section))
+          self.setThumbnail(IndexPath(row: rowIdx, section: indexPath.section))
         }
  
         // Delete the Moment

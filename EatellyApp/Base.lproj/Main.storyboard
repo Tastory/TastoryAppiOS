@@ -945,18 +945,12 @@
                         <connections>
                             <outlet property="dataSource" destination="mqr-nw-IyY" id="eTY-oM-TWy"/>
                             <outlet property="delegate" destination="mqr-nw-IyY" id="3cw-ym-o9Y"/>
-                            <outletCollection property="gestureRecognizers" destination="V4H-Gh-Xpw" appends="YES" id="Jmz-U7-QBT"/>
                         </connections>
                     </collectionView>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="375" height="222"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BGe-7r-hOK" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="V4H-Gh-Xpw">
-                    <connections>
-                        <action selector="longPressAction:" destination="mqr-nw-IyY" id="EXW-KV-WbS"/>
-                    </connections>
-                </pongPressGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="2431" y="-927"/>
         </scene>
