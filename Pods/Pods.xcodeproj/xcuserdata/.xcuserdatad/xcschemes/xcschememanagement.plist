@@ -44,17 +44,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-EatellyApp.xcscheme</key>
+		<key>Pods-TastryApp.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-EatellyAppTests.xcscheme</key>
+		<key>Pods-TastryAppTests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-EatellyAppUITests.xcscheme</key>
+		<key>Pods-TastryAppUITests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

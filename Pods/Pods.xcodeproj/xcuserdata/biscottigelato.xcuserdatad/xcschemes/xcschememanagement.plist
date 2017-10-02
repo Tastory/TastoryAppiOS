@@ -69,17 +69,17 @@
 			<key>orderHint</key>
 			<integer>10</integer>
 		</dict>
-		<key>Pods-EatellyApp.xcscheme</key>
+		<key>Pods-TastryApp.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
-		<key>Pods-EatellyAppTests.xcscheme</key>
+		<key>Pods-TastryAppTests.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>2</integer>
 		</dict>
-		<key>Pods-EatellyAppUITests.xcscheme</key>
+		<key>Pods-TastryAppUITests.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>3</integer>
@@ -142,12 +142,32 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>129E77C811020F9E12515ACCB9C75F55</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>1AE39BF99F07CDDFB7ABA096E3445946</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>1CCF88551DD59407691267C3FBFDD257</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>22F7C7EFF368458AFDF324AC08A8980B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2E8EA3D1E53A3EBC160236A431155F0B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>36257ADE10690266146935EBC5BF8FB6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -302,6 +322,11 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>B459D5A8E8953258DF26F6974A0CBD7A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>BD7B78695629488C3A6FC4D4ECBD84A7</key>
 		<dict>
 			<key>primary</key>
@@ -398,6 +423,11 @@
 			<true/>
 		</dict>
 		<key>F957EABCA56BD8F5B626798CC7B344D3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FB07951636DEF1B646380078540B4AA7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
