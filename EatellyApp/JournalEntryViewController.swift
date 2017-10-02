@@ -211,51 +211,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       // invalid index path selected just return
       return
     }
-
-    guard let collectionView = momentViewController.collectionView else {
-      CCLog.assert("Error unwrapping collectionView from moment view controller is nil")
-      return
-    }
-
-    guard let currentJournal = workingJournal else {
-      CCLog.assert("working journal is nil")
-      return
-    }
-
-    guard let momentArray = currentJournal.moments else {
-      CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
-    }
-
-    let cell = collectionView.cellForItem(at: indexPath) as! MomentCollectionViewCell
-
-    // Clear the last thumbnail selection if any
-    if currentJournal.thumbnailFileName != nil {
-      var momentArrayIndex = 0
-      for moment in momentArray {
-        if currentJournal.thumbnailFileName == moment.thumbnailFileName {
-          let oldIndexPath = IndexPath(row: momentArrayIndex, section: indexPath.section)
-
-          // If the oldIndexPath is same as the pressed indexPath, nothing to do here really.
-          if oldIndexPath != indexPath {
-            if let oldCell = collectionView.cellForItem(at: oldIndexPath) as? MomentCollectionViewCell {
-              oldCell.thumbFrameView.isHidden = true
-            } else {
-              collectionView.reloadItems(at: [oldIndexPath])
-            }
-          }
-          break
-        }
-        momentArrayIndex += 1
-      }
-    }
-
-    // Long Press detected on a Moment Thumbnail. Set that as the Journal Thumbnail
-    // TODO: Do we need to factor out thumbnail operations?
-    currentJournal.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
-    currentJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObj
-
-    // Unhide the Thumbnail Frame to give feedback to user that this is the Journal Thumbnail
-    cell.thumbFrameView.isHidden = false
+    momentViewController.setThumbnail(indexPath)
   }
 
   fileprivate func updateStoryEntryMap(withCoordinate coordinate: CLLocationCoordinate2D, span: CLLocationDegrees, venueName: String? = nil) {

@@ -31,21 +31,54 @@ class MomentCollectionViewController: UICollectionViewController {
   fileprivate var momentWidthDefault: CGFloat!
   fileprivate var momentSizeDefault: CGSize!
 
-  // MARK: - IBActions
-  @IBAction func longPressAction(_ lpgr: UILongPressGestureRecognizer) {
-    let point = lpgr.location(in: self.collectionView)
+  // MARK: - Public Instance Functions
+  func setThumbnail(_ indexPath: IndexPath) {
 
-    if let indexPath = collectionView!.indexPathForItem(at: point) {
-      setThumbnail(at: indexPath)
-    } else {
-      // Ignore, not long pressing on a valid Moment Thumbnail
+    guard let currentJournal = workingJournal else {
+      CCLog.assert("working journal is nil")
+      return
     }
-  }
 
-  // MARK: - Private Instance Functions
-  fileprivate func setThumbnail(at indexPath: IndexPath)
-  {
+    guard let momentArray = currentJournal.moments else {
+      CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
+    }
 
+    guard let myCollectionView = collectionView else {
+      CCLog.assert("Error unwrapping collectionView from moment view controller is nil")
+      return
+    }
+
+    let cell = myCollectionView.cellForItem(at: indexPath) as! MomentCollectionViewCell
+
+    // Clear the last thumbnail selection if any
+    if currentJournal.thumbnailFileName != nil {
+      var momentArrayIndex = 0
+      for moment in momentArray {
+        if currentJournal.thumbnailFileName == moment.thumbnailFileName {
+          let oldIndexPath = IndexPath(row: momentArrayIndex, section: indexPath.section)
+
+          // If the oldIndexPath is same as the pressed indexPath, nothing to do here really.
+          if oldIndexPath != indexPath {
+            if let oldCell = myCollectionView.cellForItem(at: oldIndexPath) as? MomentCollectionViewCell {
+              oldCell.thumbFrameView.isHidden = true
+            } else {
+              myCollectionView.reloadItems(at: [oldIndexPath])
+            }
+          }
+          break
+        }
+        momentArrayIndex += 1
+      }
+    }
+
+
+    // Long Press detected on a Moment Thumbnail. Set that as the Journal Thumbnail
+    // TODO: Do we need to factor out thumbnail operations?
+    currentJournal.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
+    currentJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObj
+
+    // Unhide the Thumbnail Frame to give feedback to user that this is the Journal Thumbnail
+    cell.thumbFrameView.isHidden = false
   }
 
   // MARK: - View Controller Life Cycle
@@ -297,7 +330,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
           }
 
           // row is the index of the moment array
-          self.setThumbnail(at: IndexPath(row: rowIdx, section: indexPath.section))
+          self.setThumbnail(IndexPath(row: rowIdx, section: indexPath.section))
         }
  
         // Delete the Moment
