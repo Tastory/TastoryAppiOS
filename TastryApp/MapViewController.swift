@@ -526,9 +526,16 @@ class MapViewController: UIViewController {
     if let user = FoodieUser.current, user.isRegistered {
       user.checkIfEmailVerified { verified, error in
         if let error = error {
-          AlertDialog.present(from: self, title: "User Update Error", message: "Problem retrieving the most updated user profile. Some user attributes might be outdated") { action in
-            CCLog.warning("Failed retrieving the user object - \(error.localizedDescription)")
+          
+          switch error {
+          case FoodieUser.ErrorCode.checkVerificationNoProperty:
+            break  // This is normal if a user have just Signed-up
+          default:
+            AlertDialog.present(from: self, title: "User Update Error", message: "Problem retrieving the most updated user profile. Some user attributes might be outdated") { action in
+              CCLog.warning("Failed retrieving the user object - \(error.localizedDescription)")
+            }
           }
+
         } else if verified {
           DispatchQueue.main.async {
             self.cameraButton.isHidden = false

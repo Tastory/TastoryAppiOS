@@ -29,16 +29,13 @@ class BlurSpinWait {
   }
   
   func remove() {
-  
-    guard let blurEffectView = blurEffectView else {
-      CCLog.fatal("blurEffectView = nil")
-    }
-    
-    guard let activityView = activityView else {
-      CCLog.fatal("activityView = nil")
-    }
-    
     DispatchQueue.main.async {
+      guard let blurEffectView = self.blurEffectView else {
+        CCLog.fatal("blurEffectView = nil")
+      }
+      guard let activityView = self.activityView else {
+        CCLog.fatal("activityView = nil")
+      }
       blurEffectView.removeFromSuperview()
       activityView.removeFromSuperview()
     }
