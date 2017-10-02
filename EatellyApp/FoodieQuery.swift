@@ -69,7 +69,8 @@ class FoodieQuery {
   
   // MARK: - Private Instance Variables
   private var pfQuery: PFQuery<PFObject>?
-  private var pfInnerQuery: PFQuery<PFObject>?
+  private var pfVenueSubQuery: PFQuery<PFObject>?
+  private var pfAuthorsSubQuery: PFQuery<PFObject>?
   
   private var foursquareVenueID: String?
   
@@ -89,6 +90,13 @@ class FoodieQuery {
   
   // Parameters for filtering by Price
   private var priceTiers: [Int]?
+  
+  // Parameters for filtering by Author(s). This is ORed with the Role(s) filter
+  private var authors: [FoodieUser]?
+  
+  // Parameters for filtering by Role(s), inclusive. This is ORed with Author(s) filter
+  private var minRoleLevel: FoodieRole.Level?
+  private var maxRoleLevel: FoodieRole.Level?
   
   // Constraining Parameters
   private var skip: Int = 0
@@ -147,9 +155,22 @@ class FoodieQuery {
     
   }
   
+  
   func addFoursquareVenueIdFilter(id: String) {
     foursquareVenueID = id
   }
+  
+  
+  func addRoleFilter(min: FoodieRole.Level?, max: FoodieRole.Level?) {
+    minRoleLevel = min
+    maxRoleLevel = max
+  }
+  
+  
+  func addAuthorsFilter(users: [FoodieUser]) {
+    authors = users
+  }
+  
   
   func setSkip(to value: Int) {
     skip = value
@@ -283,10 +304,10 @@ class FoodieQuery {
       }
     }
     
-    if let hourOpen = hourOpen {
-      addedQueryMetric = true
-      CCLog.assert("Hours based query not implemented yet!")
-    }
+//    if let hourOpen = hourOpen {
+//      addedQueryMetric = true
+//      CCLog.assert("Hours based query not implemented yet!")
+//    }
     
     return addedQueryMetric ? query : nil
   }
@@ -302,16 +323,63 @@ class FoodieQuery {
   }
   
   
+  func setupAuthorORedQuery() -> PFQuery<PFObject>? {
+    
+    var userQueryEnabled = false
+    var roleQueryEnabled = false
+    
+    guard let usersSubQuery = FoodieUser.query() else {
+      CCLog.fatal("Cannot create a PFQuery object from FoodieUser")
+    }
+    
+    guard let roleSubQuery = FoodieUser.query() else {
+      CCLog.fatal("Cannot create a PFQuery object from FoodieUser")
+    }
+    
+    if let users = authors, users.count > 0 {
+      var authorUsernames = [String]()
+      for user in users {
+        guard let username = user.username else {
+          CCLog.fatal("User in Author list does not contain a Username")
+        }
+        authorUsernames.append(username)
+      }
+      usersSubQuery.whereKey("username", containedIn: authorUsernames)
+      userQueryEnabled = true
+    }
+    
+
+    if let maxRoleLevel = maxRoleLevel {
+      roleSubQuery.whereKey("roleLevel", lessThanOrEqualTo: maxRoleLevel.rawValue)
+      roleQueryEnabled = true
+    }
+      
+    if let minRoleLevel = minRoleLevel {
+      roleSubQuery.whereKey("roleLevel", greaterThanOrEqualTo: minRoleLevel.rawValue)
+      roleQueryEnabled = true
+    }
+      
+    if userQueryEnabled && roleQueryEnabled {
+      return PFQuery.orQuery(withSubqueries: [usersSubQuery, roleSubQuery])
+    } else if userQueryEnabled {
+      return usersSubQuery
+    } else if roleQueryEnabled {
+      return roleSubQuery
+    } else {
+      return nil
+    }
+  }
+  
+  
   func initJournalQueryAndSearch(withBlock callback: JournalsErrorBlock?) {
-    // This is the Outer Query
+    
     guard var outerQuery = FoodieJournal.query() else {
       CCLog.assert("Cannot create a PFQuery object from FoodieJournal")
       callback?(nil, ErrorCode.cannotCreatePFQuery)
       return
     }
     
-    // This is the Inner Query
-    guard let innerQuery = FoodieVenue.query() else {
+    guard let venueSubQuery = FoodieVenue.query() else {
       CCLog.assert("Cannot create a PFQuery object from FoodieJournal")
       callback?(nil, ErrorCode.cannotCreatePFQuery)
       return
@@ -319,14 +387,20 @@ class FoodieQuery {
     
     outerQuery = setupCommonQuery(for: outerQuery)
     
+    // If there's any User filtering criteria, create a relational query
+    if let authorsSubQuery = setupAuthorORedQuery() {
+      outerQuery.whereKey("author", matchesQuery: authorsSubQuery)
+      pfAuthorsSubQuery = authorsSubQuery
+    }
+    
     // If there's any Venue filtering criteria, create a relational query
-    if let innerQuery = setupVenueQuery(for: innerQuery) {
-      outerQuery.whereKey("venue", matchesQuery: innerQuery)
+    if let venueSubQuery = setupVenueQuery(for: venueSubQuery) {
+      outerQuery.whereKey("venue", matchesQuery: venueSubQuery)
+      pfVenueSubQuery = venueSubQuery
     }
   
     // Keep track of the Query objects
     pfQuery = outerQuery
-    pfInnerQuery = innerQuery
     
     // Do the actual search!
     let queryRetry = SwiftRetry()

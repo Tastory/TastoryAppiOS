@@ -102,9 +102,13 @@ class SignUpViewController: UIViewController {
     user.email = email
     user.password = password
     
+    let blurSpinner = BlurSpinWait()
+    blurSpinner.apply(to: view, blurStyle: .dark, spinnerStyle: .whiteLarge)
+    
     // Don't bother with checking whether things are available. Sign-up to find out
     // SignUp also checks for username/e-mail/password validity
     user.signUp { error in
+      blurSpinner.remove()
       
       // Handle all known error cases
       if let error = error {

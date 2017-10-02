@@ -701,6 +701,7 @@ extension FoodieVenue: FoodieObjectDelegate {
                      type localType: FoodieObject.LocalType,
                      withBlock callback: SimpleErrorBlock?) {
     
+    self.setPermission(to: FoodiePermission.getLimitedUserWriteObjectPermission())
     self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
   }
   

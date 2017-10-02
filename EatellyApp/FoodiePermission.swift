@@ -73,6 +73,14 @@ class FoodiePermission : PFACL {
   }
   
   
+  static func getLimitedUserWriteObjectPermission() -> FoodiePermission {
+    let permission = FoodiePermission()
+    permission.getPublicReadAccess = true
+    permission.setWriteAccess(true, forRoleWithName: FoodieRole.Level.limitedUser.name)
+    return permission
+  }
+  
+  
   static func getDefaultUserPermission(for user: FoodieUser) -> FoodiePermission {
     let userPermission = FoodiePermission(user: user as PFUser) // For surely able to convert to PFUser object because FoodieUser is a sublcass of PFUser
     userPermission.getPublicReadAccess = true

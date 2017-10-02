@@ -222,7 +222,10 @@ class MapViewController: UIViewController {
   // MARK: - Class Private Functions
 
   fileprivate func logOutAndDismiss() {
+    let blurSpinner = BlurSpinWait()
+    blurSpinner.apply(to: view, blurStyle: .prominent, spinnerStyle: .whiteLarge)
     FoodieUser.logOutAndDeleteDraft { error in
+      blurSpinner.remove()
       if let error = error {
         AlertDialog.present(from: self, title: "Log Out Error", message: error.localizedDescription) { action in
           CCLog.assert("Log Out Failed - \(error.localizedDescription)")
@@ -334,6 +337,14 @@ class MapViewController: UIViewController {
     
     storyQuery = FoodieQuery()
     storyQuery!.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
+    
+    // Add Filter so only Post by Users > Limited User && Posts by Yourself can be seen
+    storyQuery!.addRoleFilter(min: .user, max: nil)
+    
+    if let currentUser = FoodieUser.current, currentUser.isRegistered {
+      storyQuery!.addAuthorsFilter(users: [currentUser])
+    }
+    
     storyQuery!.setSkip(to: 0)
     storyQuery!.setLimit(to: FoodieGlobal.Constants.JournalFeedPaginationCount)
     _ = storyQuery!.addArrangement(type: .creationTime, direction: .descending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order

@@ -162,10 +162,24 @@ class FoodieUser: PFUser {
   // MARK: - Public Static Variables
   static var current: FoodieUser? { return PFUser.current() as? FoodieUser }
   
+  static var isCurrentRegistered: Bool {
+    guard let current = current else {
+      return false
+    }
+  
+    if current.isRegistered {
+      return true
+    } else {
+      return false
+    }
+  }
+  
+  
   
   // MARK: - Public Instance Variables
   var isRegistered: Bool { return objectId != nil }
 
+  
   
   // MARK: - Public Static Functions
   

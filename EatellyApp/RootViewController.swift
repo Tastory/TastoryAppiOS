@@ -43,7 +43,7 @@ class RootViewController: UIViewController {
     if let error = startupError as? FoodieGlobal.ErrorCode, error == .startupFoursquareCategoryError {
       offlineErrorDialog()
     } else {
-      if let currentUser = FoodieUser.current, currentUser.objectId != nil {
+      if let currentUser = FoodieUser.current, currentUser.isRegistered {
         
         // Get an updated copy of User before proceeding
         currentUser.retrieve(forceAnyways: true) { error in

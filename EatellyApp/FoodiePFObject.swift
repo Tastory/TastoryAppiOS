@@ -267,6 +267,11 @@ class FoodiePFObject: PFObject {
   }
   
   
+  func setPermission(to permission: FoodiePermission) {
+    self.acl = permission as PFACL
+  }
+  
+  
   func getUniqueIdentifier() -> String {
     return String(describing: UnsafeRawPointer(Unmanaged.passUnretained(self).toOpaque()))
   }
