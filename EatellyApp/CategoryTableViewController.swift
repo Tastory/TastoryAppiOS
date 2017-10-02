@@ -13,7 +13,7 @@ import RATreeView
 protocol CategoryTableReturnDelegate {
   func categorySearchComplete(category: FoodieCategory?)
   
-  // 2. Lets make selecting a category actually pass the category back to the JournalEntryVC
+  // 2. Lets make selecting a category actually pass the category back to the StoryEntryVC
   // 3. Lets make it so one can pass in a FoodieCategory as a suggested Category and auto initiate a search
 }
 

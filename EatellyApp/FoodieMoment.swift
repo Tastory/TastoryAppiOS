@@ -49,7 +49,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  // Journal Async Operation Child Class
+  // Story Async Operation Child Class
   class MomentAsyncOperation: AsyncOperation {
     
     var operationType: OperationType
@@ -346,7 +346,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
            to position: Int? = nil) {
     
     if position != nil {
-      CCLog.assert("FoodieJournal.add(to position:) not yet implemented. Adding to 'end' position")
+      CCLog.assert("FoodieStory.add(to position:) not yet implemented. Adding to 'end' position")
     }
     
     if self.markups != nil {

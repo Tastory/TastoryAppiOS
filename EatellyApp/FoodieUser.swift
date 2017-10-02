@@ -216,7 +216,7 @@ class FoodieUser: PFUser {
   
   static func logOutAndDeleteDraft(withBlock callback: SimpleErrorBlock?) {
     
-    if let story = FoodieJournal.currentJournal {
+    if let story = FoodieStory.currentStory {
       // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
       FoodieObject.deleteAll(from: .draft) { error in
         if let error = error {
@@ -227,7 +227,7 @@ class FoodieUser: PFUser {
           if let error = error {
             CCLog.warning("Problem deleting Draft from Both - \(error.localizedDescription)")
           }
-          FoodieJournal.removeCurrent()
+          FoodieStory.removeCurrent()
           FoodiePermission.setDefaultGlobalObjectPermission()
           PFUser.logOutInBackground(block: callback)
         }
@@ -627,7 +627,7 @@ class FoodieUser: PFUser {
   
   // Force Queries to be done out of the FoodieQuery class?
   
-  func addAuthoredStory(_ story: FoodieJournal, withBlock callback: SimpleErrorBlock?) {
+  func addAuthoredStory(_ story: FoodieStory, withBlock callback: SimpleErrorBlock?) {
     // Do a retrieve before adding
     retrieve(forceAnyways: true) { error in
       if let error = error {
@@ -648,7 +648,7 @@ class FoodieUser: PFUser {
     }
   }
   
-  func removeAuthoredStory(_ story: FoodieJournal, withBlock callback: SimpleErrorBlock?) {
+  func removeAuthoredStory(_ story: FoodieStory, withBlock callback: SimpleErrorBlock?) {
     // Do a retrieve before adding
     retrieve(forceAnyways: true) { error in
       if let error = error {
@@ -668,28 +668,28 @@ class FoodieUser: PFUser {
     }
   }
   
-//  func addHistoryStory(_ story: FoodieJournal) {
+//  func addHistoryStory(_ story: FoodieStory) {
 //    if historyStories == nil {
-//      historyStories = PFRelation<FoodieJournal>()
+//      historyStories = PFRelation<FoodieStory>()
 //    }
 //    historyStories!.add(story)
 //  }
 //  
-//  func removeHistoryStory(_ story: FoodieJournal) {
+//  func removeHistoryStory(_ story: FoodieStory) {
 //    guard let historyStories = authoredStories else {
 //      CCLog.fatal("Cannot remove from a nil historyStories relation")
 //    }
 //    historyStories.remove(story)
 //  }
 //  
-//  func addBookmarkStory(_ story: FoodieJournal) {
+//  func addBookmarkStory(_ story: FoodieStory) {
 //    if bookmarkStories == nil {
-//      bookmarkStories = PFRelation<FoodieJournal>()
+//      bookmarkStories = PFRelation<FoodieStory>()
 //    }
 //    bookmarkStories!.add(story)
 //  }
 //  
-//  func removeBookmarkStory(_ story: FoodieJournal) {
+//  func removeBookmarkStory(_ story: FoodieStory) {
 //    guard let bookmarkStories = bookmarkStories else {
 //      CCLog.fatal("Cannot remove from a nil bookmarkStories relation")
 //    }

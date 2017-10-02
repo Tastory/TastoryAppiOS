@@ -128,7 +128,7 @@ class FoodieObject {
       case .deleteRetryError:
         return NSLocalizedString("Delete Foodie Object failed with 2 attempts", comment: "Error description for an exception error code")
       case .retrievePinnedObjectError:
-        return NSLocalizedString("Failed to retrieve journal", comment: "Error description for an exception error code")
+        return NSLocalizedString("Failed to retrieve story", comment: "Error description for an exception error code")
       }
     }
   

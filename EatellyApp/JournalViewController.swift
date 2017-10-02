@@ -1,5 +1,5 @@
 //
-//  JournalViewController.swift
+//  StoryViewController.swift
 //  EatellyApp
 //
 //  Created by Howard Lee on 2017-04-23.
@@ -11,7 +11,7 @@ import AVFoundation
 import SafariServices
 import Jot
 
-class JournalViewController: UIViewController {
+class StoryViewController: UIViewController {
   
   // MARK: - Constants
   struct Constants {
@@ -21,7 +21,7 @@ class JournalViewController: UIViewController {
   
   
   // MARK: - Public Instance Variables
-  var viewingJournal: FoodieJournal? {
+  var viewingStory: FoodieStory? {
     didSet {
       fetchSomeMoment(from: 0)
     }
@@ -44,12 +44,12 @@ class JournalViewController: UIViewController {
   func internalErrorDialog() {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "EatellyApp",
-                                              titleComment: "Alert diaglogue title when a Journal View internal error occured",
+                                              titleComment: "Alert diaglogue title when a Story View internal error occured",
                                               message: "An internal error has occured. Please try again",
-                                              messageComment: "Alert dialog message when a Journal View internal error occured",
+                                              messageComment: "Alert dialog message when a Story View internal error occured",
                                               preferredStyle: .alert)
       alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for generic JournalView errors",
+                                     comment: "Button in alert dialog box for generic StoryView errors",
                                      style: .default)
       self.present(alertController, animated: true, completion: nil)
     }
@@ -59,12 +59,12 @@ class JournalViewController: UIViewController {
   fileprivate func displayErrorDialog() {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "EatellyApp",
-                                              titleComment: "Alert diaglogue title when Journal View has problem displaying photo or video",
+                                              titleComment: "Alert diaglogue title when Story View has problem displaying photo or video",
                                               message: "Error displaying media. Please try again",
-                                              messageComment: "Alert dialog message when Journal View has problem displaying photo or video",
+                                              messageComment: "Alert dialog message when Story View has problem displaying photo or video",
                                               preferredStyle: .alert)
       alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for error when displaying photo or video in JournalView",
+                                     comment: "Button in alert dialog box for error when displaying photo or video in StoryView",
                                      style: .default)
       
       self.present(alertController, animated: true, completion: nil)
@@ -102,13 +102,13 @@ class JournalViewController: UIViewController {
   @IBAction func swipeUp(_ sender: UISwipeGestureRecognizer) {
     CCLog.info("User swiped Up")
     
-    guard let journal = viewingJournal else {
+    guard let story = viewingStory else {
       internalErrorDialog()
-      CCLog.assert("Unexpected, viewingJournal = nil")
+      CCLog.assert("Unexpected, viewingStory = nil")
       return
     }
     
-    if let journalLinkString = journal.journalURL, let journalLinkUrl = URL(string: journalLinkString) {
+    if let storyLinkString = story.storyURL, let storyLinkUrl = URL(string: storyLinkString) {
       
       guard let moment = currentMoment else {
         internalErrorDialog()
@@ -120,7 +120,7 @@ class JournalViewController: UIViewController {
       avPlayer!.pause()
       stopVideoTimerAndObservers(for: moment)
       
-      let safariViewController = SFSafariViewController(url: journalLinkUrl)
+      let safariViewController = SFSafariViewController(url: storyLinkUrl)
       safariViewController.delegate = self
       
       let transition = CATransition()
@@ -137,7 +137,7 @@ class JournalViewController: UIViewController {
     
     guard let currentMoment = currentMoment, let mediaObject = currentMoment.mediaObj, let mediaType = mediaObject.mediaType else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.assert("No Current Moment, Media Object, or Media Type for JournalVC when trying to pause/reumse")
+        CCLog.assert("No Current Moment, Media Object, or Media Type for StoryVC when trying to pause/reumse")
         self.cleanUpAndDismiss()
       }
       return
@@ -198,19 +198,19 @@ class JournalViewController: UIViewController {
   // MARK: - Private Instance Functions
   
   fileprivate func fetchSomeMoment(from momentNumber: Int) {
-    guard let journal = viewingJournal else {
-      CCLog.fatal("Unexpected, no Journal being viewed by Journal View Controller")
+    guard let story = viewingStory else {
+      CCLog.fatal("Unexpected, no Story being viewed by Story View Controller")
     }
     
-    guard let moments = journal.moments else {
+    guard let moments = story.moments else {
       internalErrorDialog()
-      CCLog.assert("Unexpected, journalmoments = nil")
+      CCLog.assert("Unexpected, storymoments = nil")
       return
     }
     
     // Start pre-fetching if Moment array is not empty
     if !moments.isEmpty {
-      journal.contentRetrievalRequest(fromMoment: momentNumber, forUpTo: Constants.MomentsToBufferAtATime)
+      story.contentRetrievalRequest(fromMoment: momentNumber, forUpTo: Constants.MomentsToBufferAtATime)
     }
   }
   
@@ -361,11 +361,11 @@ class JournalViewController: UIViewController {
   
   fileprivate func displayMomentIfLoaded(for moment: FoodieMoment) {
     
-    guard let journal = viewingJournal else {
-      CCLog.fatal("Unexpected, no Journal being viewed by Journal View Controller")
+    guard let story = viewingStory else {
+      CCLog.fatal("Unexpected, no Story being viewed by Story View Controller")
     }
     
-    let momentIndex = journal.getIndexOf(moment)
+    let momentIndex = story.getIndexOf(moment)
     
     // Fetch this and a few more moments regardless
     fetchSomeMoment(from: momentIndex)
@@ -426,15 +426,15 @@ class JournalViewController: UIViewController {
   // Display the next Moment based on what the current Moment is
   func displayNextMoment() {
     
-    guard let journal = viewingJournal else {
+    guard let story = viewingStory else {
       internalErrorDialog()
-      CCLog.assert("Unexpected, viewingJournal = nil")
+      CCLog.assert("Unexpected, viewingStory = nil")
       return
     }
     
-    guard let moments = journal.moments else {
+    guard let moments = story.moments else {
       internalErrorDialog()
-      CCLog.assert("Unexpected, viewingJournal.moments = nil")
+      CCLog.assert("Unexpected, viewingStory.moments = nil")
       return
     }
     
@@ -448,7 +448,7 @@ class JournalViewController: UIViewController {
     stopVideoTimerAndObservers(for: moment)
     
     // Figure out what is the next moment and display it
-    let nextIndex = journal.getIndexOf(moment) + 1
+    let nextIndex = story.getIndexOf(moment) + 1
     
     if nextIndex == moments.count {
       cleanUpAndDismiss()
@@ -461,15 +461,15 @@ class JournalViewController: UIViewController {
   // Display the previous Moment based on what the current Moment is
   func displayPreviousMoment() {
     
-    guard let journal = viewingJournal else {
+    guard let story = viewingStory else {
       internalErrorDialog()
-      CCLog.assert("Unexpected, viewingJournal = nil")
+      CCLog.assert("Unexpected, viewingStory = nil")
       return
     }
     
-    guard let moments = journal.moments else {
+    guard let moments = story.moments else {
       internalErrorDialog()
-      CCLog.assert("Unexpected, viewingJournal.moments = nil")
+      CCLog.assert("Unexpected, viewingStory.moments = nil")
       return
     }
     
@@ -483,7 +483,7 @@ class JournalViewController: UIViewController {
     stopVideoTimerAndObservers(for: moment)
     
     // Figure out what is the previous moment is and display it
-    let index = journal.getIndexOf(moment)
+    let index = story.getIndexOf(moment)
     
     if index == 0 {
       cleanUpAndDismiss()
@@ -538,15 +538,15 @@ class JournalViewController: UIViewController {
   
   
   override func viewDidAppear(_ animated: Bool) {
-    guard let journal = viewingJournal else {
+    guard let story = viewingStory else {
       internalErrorDialog()
-      CCLog.assert("Unexpected viewingJournal = nil")
+      CCLog.assert("Unexpected viewingStory = nil")
       return
     }
     
-    guard let moments = journal.moments, !moments.isEmpty else {
+    guard let moments = story.moments, !moments.isEmpty else {
       internalErrorDialog()
-      CCLog.assert("Unexpected viewingJournal.moments = nil or empty")
+      CCLog.assert("Unexpected viewingStory.moments = nil or empty")
       return
     }
     
@@ -560,7 +560,7 @@ class JournalViewController: UIViewController {
   
   
   override func viewDidDisappear(_ animated: Bool) {
-    CCLog.verbose("JournalViewController disappearing")
+    CCLog.verbose("StoryViewController disappearing")
   }
   
   
@@ -574,7 +574,7 @@ class JournalViewController: UIViewController {
 
 // MARK: - Foodie Moment Wait On Content Delegate Conformance
 
-extension JournalViewController: FoodieObjectWaitOnRetrieveDelegate {
+extension StoryViewController: FoodieObjectWaitOnRetrieveDelegate {
   
   func retrieved(for object: FoodieObjectDelegate) {
     guard let moment = object as? FoodieMoment else {
@@ -589,7 +589,7 @@ extension JournalViewController: FoodieObjectWaitOnRetrieveDelegate {
 
 // MARK: - Safari View Controller Did Finish Delegate Conformance
 
-extension JournalViewController: SFSafariViewControllerDelegate {
+extension StoryViewController: SFSafariViewControllerDelegate {
   
   func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
     let transition = CATransition()

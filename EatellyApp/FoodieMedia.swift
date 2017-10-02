@@ -292,7 +292,7 @@ extension FoodieMedia: FoodieObjectDelegate {
                        type localType: FoodieObject.LocalType,
                        withBlock callback: SimpleErrorBlock?) {
     
-    CCLog.verbose("FoodieJournal.deleteRecursive \(getUniqueIdentifier())")
+    CCLog.verbose("FoodieStory.deleteRecursive \(getUniqueIdentifier())")
     
     // Delete itself first
     foodieObject.deleteObject(from: location, type: localType, withBlock: callback)

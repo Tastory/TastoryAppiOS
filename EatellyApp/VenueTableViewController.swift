@@ -15,7 +15,7 @@ protocol VenueTableReturnDelegate {
   
   // TODO: - Complete the input and output of data to/from VenueTableViewController
   // 1. Lets put the address of each venue location underneath each
-  // 2. Lets make selecting a venue actually pass the venue back to the JournalEntryVC
+  // 2. Lets make selecting a venue actually pass the venue back to the StoryEntryVC
   // 3. Lets make it so one can pass in a FoodieVenue as a suggested Venue and auto initiate a search
 }
 

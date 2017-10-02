@@ -9,8 +9,8 @@
 import UIKit
 
 class FeedCollectionViewCell: UICollectionViewCell {
-  @IBOutlet weak var journalButton: UIButton!
-  @IBOutlet weak var journalTitle: UILabel!
+  @IBOutlet weak var storyButton: UIButton!
+  @IBOutlet weak var storyTitle: UILabel!
   @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
   
   var cellStatusMutex = SwiftMutex.create()
@@ -19,7 +19,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
   
   override func prepareForReuse() {
     super.prepareForReuse()
-    journalButton?.setImage(nil, for: .normal)
-    journalButton?.removeTarget(nil, action: nil, for: .allEvents)
+    storyButton?.setImage(nil, for: .normal)
+    storyButton?.removeTarget(nil, action: nil, for: .allEvents)
   }
 }

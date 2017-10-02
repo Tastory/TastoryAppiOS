@@ -17,7 +17,7 @@ import MobileCoreServices
 
 
 protocol CameraReturnDelegate {
-  func captureComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?)
+  func captureComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?)
 }
 
 
@@ -369,13 +369,13 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
 
 
 extension CameraViewController: MarkupReturnDelegate {
-  func markupComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
+  func markupComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
     guard let delegate = cameraReturnDelegate else {
       internalErrorDialog()
       CCLog.assert("Unexpected, cameraReturnDelegate = nil")
       return
     }
-    delegate.captureComplete(markedupMoment: markedupMoment, suggestedJournal: suggestedJournal)
+    delegate.captureComplete(markedupMoment: markedupMoment, suggestedStory: suggestedStory)
   }
 }
 

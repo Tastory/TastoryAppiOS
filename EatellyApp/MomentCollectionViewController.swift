@@ -24,7 +24,7 @@ class MomentCollectionViewController: UICollectionViewController {
 
 
   // MARK: - Public Instance Variables
-  var workingJournal: FoodieJournal!
+  var workingStory: FoodieStory!
 
 
   // MARK: - Private Instance Variables
@@ -34,12 +34,12 @@ class MomentCollectionViewController: UICollectionViewController {
   // MARK: - Public Instance Functions
   func setThumbnail(_ indexPath: IndexPath) {
 
-    guard let currentJournal = workingJournal else {
-      CCLog.assert("working journal is nil")
+    guard let currentStory = workingStory else {
+      CCLog.assert("working story is nil")
       return
     }
 
-    guard let momentArray = currentJournal.moments else {
+    guard let momentArray = currentStory.moments else {
       CCLog.fatal("No Moments but Moment Thumbnail long pressed? What?")
     }
 
@@ -51,10 +51,10 @@ class MomentCollectionViewController: UICollectionViewController {
     let cell = myCollectionView.cellForItem(at: indexPath) as! MomentCollectionViewCell
 
     // Clear the last thumbnail selection if any
-    if currentJournal.thumbnailFileName != nil {
+    if currentStory.thumbnailFileName != nil {
       var momentArrayIndex = 0
       for moment in momentArray {
-        if currentJournal.thumbnailFileName == moment.thumbnailFileName {
+        if currentStory.thumbnailFileName == moment.thumbnailFileName {
           let oldIndexPath = IndexPath(row: momentArrayIndex, section: indexPath.section)
 
           // If the oldIndexPath is same as the pressed indexPath, nothing to do here really.
@@ -72,12 +72,12 @@ class MomentCollectionViewController: UICollectionViewController {
     }
 
 
-    // Long Press detected on a Moment Thumbnail. Set that as the Journal Thumbnail
+    // Long Press detected on a Moment Thumbnail. Set that as the Story Thumbnail
     // TODO: Do we need to factor out thumbnail operations?
-    currentJournal.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
-    currentJournal.thumbnailObj = momentArray[indexPath.row].thumbnailObj
+    currentStory.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
+    currentStory.thumbnailObj = momentArray[indexPath.row].thumbnailObj
 
-    // Unhide the Thumbnail Frame to give feedback to user that this is the Journal Thumbnail
+    // Unhide the Thumbnail Frame to give feedback to user that this is the Story Thumbnail
     cell.thumbFrameView.isHidden = false
   }
 
@@ -127,7 +127,7 @@ extension MomentCollectionViewController {
 
   override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
-    if let moments = workingJournal.moments {
+    if let moments = workingStory.moments {
       return moments.count
     } else {
       return 10
@@ -137,14 +137,14 @@ extension MomentCollectionViewController {
 
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath) as! MomentCollectionViewCell
-    guard let momentArray = workingJournal.moments else {
-      CCLog.warning("No Moments for workingStory \(workingJournal.getUniqueIdentifier())")
+    guard let momentArray = workingStory.moments else {
+      CCLog.warning("No Moments for workingStory \(workingStory.getUniqueIdentifier())")
       return cell
     }
     
     if indexPath.row >= momentArray.count {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
-        CCLog.assert("Moment Array for Story \(self.workingJournal.getUniqueIdentifier()) index out of range - indexPath.row \(indexPath.row) >= momentArray.count \(momentArray.count)")
+        CCLog.assert("Moment Array for Story \(self.workingStory.getUniqueIdentifier()) index out of range - indexPath.row \(indexPath.row) >= momentArray.count \(momentArray.count)")
       }
       return cell
     }
@@ -220,7 +220,7 @@ extension MomentCollectionViewController {
   
     // Should Thumbnail frame be hidden?
     cell.createFrameLayer()
-    if workingJournal.thumbnailFileName != nil, workingJournal.thumbnailFileName == moment.thumbnailFileName {
+    if workingStory.thumbnailFileName != nil, workingStory.thumbnailFileName == moment.thumbnailFileName {
       cell.thumbFrameView.isHidden = false
     } else {
       cell.thumbFrameView.isHidden = true
@@ -247,8 +247,8 @@ extension MomentCollectionViewController {
   }
 
   override func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-    guard var momentArray = workingJournal.moments else {
-      CCLog.debug("No Moments for workingJournal")
+    guard let momentArray = workingStory.moments else {
+      CCLog.debug("No Moments for workingStory")
       return
     }
 
@@ -257,8 +257,8 @@ extension MomentCollectionViewController {
       return
     }
 
-    let temp = workingJournal.moments!.remove(at: sourceIndexPath.item)
-    workingJournal.moments!.insert(temp, at: destinationIndexPath.item)
+    let temp = workingStory.moments!.remove(at: sourceIndexPath.item)
+    workingStory.moments!.insert(temp, at: destinationIndexPath.item)
   }
 }
 
@@ -267,8 +267,8 @@ extension MomentCollectionViewController {
 extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    guard let momentArray = workingJournal.moments else {
-      CCLog.debug("No Moments for workingJournal")
+    guard let momentArray = workingStory.moments else {
+      CCLog.debug("No Moments for workingStory")
       return momentSizeDefault
     }
     if indexPath.row >= momentArray.count {
@@ -296,9 +296,9 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
 
       if let indexPath = collectionView.indexPath(for: cell) {
         
-        guard let moments = self.workingJournal.moments else {
+        guard let moments = self.workingStory.moments else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-            CCLog.assert("No Moments for workingJournal")
+            CCLog.assert("No Moments for workingStory")
           }
           return
         }
@@ -321,7 +321,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
         let moment = moments[indexPath.item]
 
         // if the deleted item is the one with the thumnail, select next in the list
-        if self.workingJournal.thumbnailFileName == moment.thumbnailFileName {
+        if self.workingStory.thumbnailFileName == moment.thumbnailFileName {
 
           var rowIdx = indexPath.row + 1
           if(rowIdx >= moments.count)
@@ -334,7 +334,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
         }
  
         // Delete the Moment
-        self.workingJournal.moments!.remove(at: indexPath.item)
+        self.workingStory.moments!.remove(at: indexPath.item)
         
         moment.deleteRecursive(from: .both, type: .draft) { error in
           if let error = error {
@@ -343,7 +343,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
         }
 
         // Pre-save the Story now that it's changed
-        self.workingJournal.saveDigest(to: .local, type: .draft) { error in
+        self.workingStory.saveDigest(to: .local, type: .draft) { error in
           if let error = error {
             AlertDialog.present(from: self, title: "Pre-Save Failed!", message: "Problem saving Story to Local Draft! Quitting or backgrounding the app might cause lost of the current Story under Draft!") { action in
               CCLog.assert("Pre-Saving Story to Draft Local Store Failed - \(error.localizedDescription)")

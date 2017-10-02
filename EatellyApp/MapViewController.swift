@@ -55,7 +55,7 @@ class MapViewController: UIViewController {
   fileprivate var lastMapDelta: CLLocationDegrees? = nil
   fileprivate var searchCategory: FoodieCategory?
   fileprivate var storyQuery: FoodieQuery?
-  fileprivate var storyArray = [FoodieJournal]()
+  fileprivate var storyArray = [FoodieStory]()
   
   
   
@@ -96,19 +96,19 @@ class MapViewController: UIViewController {
   }
   
   
-  @IBAction func launchDraftJournal(_ sender: Any) {
-    // This is used for viewing the draft journal to be used with update journal later
-    // Hid the button due to problems with empty draft journal and saving an empty journal is problematic
+  @IBAction func launchDraftStory(_ sender: Any) {
+    // This is used for viewing the draft story to be used with update story later
+    // Hid the button due to problems with empty draft story and saving an empty story is problematic
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as! StoryEntryViewController
 
-    if(FoodieJournal.currentJournal == nil)
+    if(FoodieStory.currentStory == nil)
     {
-      viewController.workingJournal =  FoodieJournal.newCurrent()
+      viewController.workingStory =  FoodieStory.newCurrent()
     }
     else
     {
-      viewController.workingJournal = FoodieJournal.currentJournal
+      viewController.workingStory = FoodieStory.currentStory
     }
     self.present(viewController, animated: true)
   }
@@ -151,7 +151,7 @@ class MapViewController: UIViewController {
     // Kill all Pre-fetches
     FoodiePrefetch.global.removeAllPrefetchWork()
     
-    performQuery { journals, error in
+    performQuery { storys, error in
       if let error = error {
         if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
           AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
@@ -163,20 +163,20 @@ class MapViewController: UIViewController {
         return
       }
       
-      guard let journals = journals else {
+      guard let storys = storys else {
         AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
           CCLog.assert("Story Query resulted in nil")
         }
         return
       }
       
-      self.displayAnnotations(onStories: journals)
+      self.displayAnnotations(onStories: storys)
     }
   }
   
   
   @IBAction func showFeed(_ sender: UIButton) {
-    performQuery { journals, error in
+    performQuery { storys, error in
       if let error = error {
         if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
           AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
@@ -188,7 +188,7 @@ class MapViewController: UIViewController {
         return
       }
       
-      guard let journals = journals else {
+      guard let storys = storys else {
         AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
           CCLog.assert("Story Query resulted in storyArray = nil")
         }
@@ -202,13 +202,14 @@ class MapViewController: UIViewController {
         return
       }
       
-      self.launchFeed(withJournalArray: journals, withJournalQuery: query)
+      self.displayAnnotations(onStories: storys)
+      self.launchFeed(withStoryArray: storys, withStoryQuery: query)
     }
   }
   
   
   @IBAction func logOutAction(_ sender: UIButton) {
-    if FoodieJournal.currentJournal != nil {
+    if FoodieStory.currentStory != nil {
       AlertDialog.presentConfirm(from: self, title: "Log Out", message: "Are you sure you want to log out? You will lose your unsaved draft if you log out") { action in
         self.logOutAndDismiss()
       }
@@ -314,7 +315,7 @@ class MapViewController: UIViewController {
   }
   
   
-  fileprivate func performQuery(withBlock callback: FoodieQuery.JournalsErrorBlock?) {
+  fileprivate func performQuery(withBlock callback: FoodieQuery.StorysErrorBlock?) {
     
     guard let mapRect = mapView?.visibleMapRect else {
       locationErrorDialog(message: "Invalid Map View. Search Location Undefined", comment: "Alert dialog message when mapView is nil when user attempted to perform Search")
@@ -346,38 +347,38 @@ class MapViewController: UIViewController {
     }
     
     storyQuery!.setSkip(to: 0)
-    storyQuery!.setLimit(to: FoodieGlobal.Constants.JournalFeedPaginationCount)
+    storyQuery!.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)
     _ = storyQuery!.addArrangement(type: .creationTime, direction: .descending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
 
     let blurSpinner = BlurSpinWait()
     blurSpinner.apply(to: self.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
     
     // Actually do the Query
-    storyQuery!.initJournalQueryAndSearch { (journals, error) in
+    storyQuery!.initStoryQueryAndSearch { (storys, error) in
       
       blurSpinner.remove()
       
       if let err = error {
         self.queryErrorDialog()
-        CCLog.assert("Create Journal Query & Search failed with error: \(err.localizedDescription)")
+        CCLog.assert("Create Story Query & Search failed with error: \(err.localizedDescription)")
         callback?(nil, err)
         return
       }
       
-      guard let journalArray = journals else {
+      guard let storyArray = storys else {
         self.queryErrorDialog()
-        CCLog.assert("Create Journal Query & Search returned with nil Journal Array")
+        CCLog.assert("Create Story Query & Search returned with nil Story Array")
         callback?(nil, ErrorCode.queryNilStory)
         return
       }
       
-      self.storyArray = journalArray
-      callback?(journalArray, nil)
+      self.storyArray = storyArray
+      callback?(storyArray, nil)
     }
   }
   
   
-  fileprivate func displayAnnotations(onStories stories: [FoodieJournal]) {
+  fileprivate func displayAnnotations(onStories stories: [FoodieStory]) {
 
     DispatchQueue.main.async {
       self.mapView.removeAnnotations(self.mapView.annotations)
@@ -403,7 +404,7 @@ class MapViewController: UIViewController {
         
         DispatchQueue.main.async {
           let annotation = StoryMapAnnotation(title: title,
-                                              journal: story,
+                                              story: story,
                                               coordinate: CLLocationCoordinate2D(latitude: location.latitude,
                                                                                  longitude: location.longitude))
           self.mapView.addAnnotation(annotation)
@@ -413,11 +414,11 @@ class MapViewController: UIViewController {
   }
   
   
-  fileprivate func launchFeed(withJournalArray journals: [FoodieJournal], withJournalQuery query: FoodieQuery) {
+  fileprivate func launchFeed(withStoryArray storys: [FoodieStory], withStoryQuery query: FoodieQuery) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FeedCollectionViewController") as! FeedCollectionViewController
-    viewController.journalQuery = query
-    viewController.journalArray = journals
+    viewController.storyQuery = query
+    viewController.storyArray = storys
     viewController.restorationClass = nil
     self.present(viewController, animated: true)
   }
@@ -439,8 +440,8 @@ class MapViewController: UIViewController {
     locationField?.delegate = self
     categoryField?.delegate = self
     
-    // If current journal is nil, double check and see if there are any in Local Datastore
-    if FoodieJournal.currentJournal == nil {
+    // If current story is nil, double check and see if there are any in Local Datastore
+    if FoodieStory.currentStory == nil {
       
       if let currentUser = FoodieUser.current {
         FoodieQuery.getFirstStory(byAuthor: currentUser, from: .draft) { (object, error) in
@@ -457,7 +458,7 @@ class MapViewController: UIViewController {
             return
           }
           
-          guard let story = object as? FoodieJournal else {
+          guard let story = object as? FoodieStory else {
             CCLog.info("No Story found from Draft")
             return
           }
@@ -476,7 +477,7 @@ class MapViewController: UIViewController {
               return
             }
             
-            FoodieJournal.setCurrentJournal(to: story)
+            FoodieStory.setCurrentStory(to: story)
             
             DispatchQueue.main.async {
               self.draftButton.isHidden = false
@@ -516,7 +517,7 @@ class MapViewController: UIViewController {
     }
     
     // Don't bother showing the Draft Button if there's no Draft
-    draftButton.isHidden = FoodieJournal.currentJournal == nil
+    draftButton.isHidden = FoodieStory.currentStory == nil
     
     // Don't allow user to go to the Camera and thus Story composition unless they are logged-in with E-mail verified
     cameraButton.isHidden = true
@@ -571,6 +572,13 @@ extension MapViewController: UITextFieldDelegate {
 
     if textField === categoryField {
       return true
+    }
+    
+    // DEBUG: Forces a Crash!!!!!
+    if let text = textField.text {
+      if text == "CrashRightNow" {
+        CCLog.fatal("CrashRightNow Force Crash Triggered!!!")
+      }
     }
     
     guard let location = textField.text, let region = mapView?.region else {
@@ -716,22 +724,22 @@ extension MapViewController: UITextFieldDelegate {
 
 
 extension MapViewController: CameraReturnDelegate {
-  func captureComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
+  func captureComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
     DispatchQueue.main.async {  // UI Work. We don't know which thread we might be in, so guarentee execute in Main thread
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalEntryViewController") as! JournalEntryViewController
+      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as! StoryEntryViewController
       
-      var workingJournal: FoodieJournal?
+      var workingStory: FoodieStory?
       
-      if let journal = suggestedJournal {
-        workingJournal = journal
-      } else if let journal = FoodieJournal.currentJournal {
-        workingJournal = journal
+      if let story = suggestedStory {
+        workingStory = story
+      } else if let story = FoodieStory.currentStory {
+        workingStory = story
       } else {
-        workingJournal = FoodieJournal()
+        workingStory = FoodieStory()
       }
       
-      viewController.workingJournal = workingJournal!
+      viewController.workingStory = workingStory!
       viewController.returnedMoment = markedupMoment
       
       self.dismiss(animated: true) { /*[unowned self] in*/
@@ -758,12 +766,12 @@ extension MapViewController: CategoryTableReturnDelegate {
 extension MapViewController: MKMapViewDelegate {
   
   class StoryButton: UIButton {
-    var story: FoodieJournal?
+    var story: FoodieStory?
   }
   
   func storyCalloutTapped(sender: StoryButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalViewController") as! JournalViewController
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
     
     guard let story = sender.story else {
       AlertDialog.present(from: self, title: "Story Load Error", message: "No Story was loaded for this location! Please try another one!") { action in
@@ -772,7 +780,7 @@ extension MapViewController: MKMapViewDelegate {
       return
     }
     
-    viewController.viewingJournal = story
+    viewController.viewingStory = story
     self.present(viewController, animated: true)
   }
   
@@ -793,7 +801,7 @@ extension MapViewController: MKMapViewDelegate {
       view.canShowCallout = true
     }
     
-    if let thumbnail = annotation.journal.thumbnailObj, let imageData = thumbnail.imageMemoryBuffer {
+    if let thumbnail = annotation.story.thumbnailObj, let imageData = thumbnail.imageMemoryBuffer {
       
       let screenSize = UIScreen.main.bounds
       
@@ -810,7 +818,7 @@ extension MapViewController: MKMapViewDelegate {
       titleLabel.isUserInteractionEnabled = false  // This is so that all the clicks go straight thru to the button at the back
       titleLabel.translatesAutoresizingMaskIntoConstraints = false
       
-      if let venueName = annotation.journal.venue?.name {
+      if let venueName = annotation.story.venue?.name {
         annotation.title = "@ "
         if venueName.characters.count < 22 {
           annotation.title! += venueName
@@ -825,7 +833,7 @@ extension MapViewController: MKMapViewDelegate {
       let thumbnailButton = StoryButton()
       thumbnailButton.setImage(UIImage(data: imageData), for: .normal)
       thumbnailButton.translatesAutoresizingMaskIntoConstraints = false
-      thumbnailButton.story = annotation.journal
+      thumbnailButton.story = annotation.story
       thumbnailButton.addTarget(self, action: #selector(storyCalloutTapped(sender:)), for: .touchUpInside)
       
       calloutAccView.addSubview(thumbnailButton)
@@ -847,7 +855,7 @@ extension MapViewController: MKMapViewDelegate {
 
     } else {
       AlertDialog.present(from: self, title: "Story Retrieval Error", message: "No Thumbnail for Story!") { action in
-        CCLog.warning("No Thumbnail for Story in Map View. Thumbnail filename - \(annotation.journal.thumbnailFileName ?? "Filename Not Found")")
+        CCLog.warning("No Thumbnail for Story in Map View. Thumbnail filename - \(annotation.story.thumbnailFileName ?? "Filename Not Found")")
       }
     }
     return view
@@ -859,13 +867,13 @@ extension MapViewController: MKMapViewDelegate {
       CCLog.warning("No StoryMapAnnotation associated with Annotation View")
       return
     }
-    let story = annotation.journal
+    let story = annotation.story
     story.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: story, on: story)
   }
   
   
   func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-    guard let annotation = view.annotation as? StoryMapAnnotation, let context = annotation.journal.contentPrefetchContext else {
+    guard let annotation = view.annotation as? StoryMapAnnotation, let context = annotation.story.contentPrefetchContext else {
       CCLog.warning("No PrefetchContext associated with Story, or no StoryMapAnnotation associated with Annotation View")
       return
     }

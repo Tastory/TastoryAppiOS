@@ -19,8 +19,8 @@ class FeedCollectionViewController: UICollectionViewController {
   
   
   // MARK: - Private Instance Variable
-  var journalQuery: FoodieQuery!
-  var journalArray = [FoodieJournal]()
+  var storyQuery: FoodieQuery!
+  var storyArray = [FoodieStory]()
   
   
   
@@ -84,13 +84,13 @@ class FeedCollectionViewController: UICollectionViewController {
   
   // MARK: - Public Instance Functions
   
-  func viewJournal(_ sender: UIButton) {
+  func viewStory(_ sender: UIButton) {
     // Stop all prefetches
     FoodiePrefetch.global.blockPrefetching()
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "JournalViewController") as! JournalViewController
-    viewController.viewingJournal = journalArray[sender.tag]
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
+    viewController.viewingStory = storyArray[sender.tag]
     self.present(viewController, animated: true)
   }
   
@@ -104,7 +104,7 @@ class FeedCollectionViewController: UICollectionViewController {
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = false
     
-    CCLog.verbose("journalArray.count = \(journalArray.count)")
+    CCLog.verbose("storyArray.count = \(storyArray.count)")
     
     // Apply a Background to the CollectionView
     collectionView?.backgroundView = UIImageView(image: UIImage(named: "TastryTempBgWhite"))
@@ -135,7 +135,7 @@ class FeedCollectionViewController: UICollectionViewController {
   
   
   override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return journalArray.count
+    return storyArray.count
   }
   
   
@@ -143,9 +143,9 @@ class FeedCollectionViewController: UICollectionViewController {
     let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.reuseIdentifier, for: indexPath) as! FeedCollectionViewCell
     
     // Configure the cell
-    let journal = journalArray[indexPath.row]
-    reusableCell.journalButton.tag = indexPath.row
-    reusableCell.journalButton.addTarget(self, action: #selector(viewJournal(_:)), for: .touchUpInside)
+    let story = storyArray[indexPath.row]
+    reusableCell.storyButton.tag = indexPath.row
+    reusableCell.storyButton.addTarget(self, action: #selector(viewStory(_:)), for: .touchUpInside)
     reusableCell.activityIndicator.isHidden = false
     reusableCell.activityIndicator.startAnimating()
     
@@ -153,19 +153,19 @@ class FeedCollectionViewController: UICollectionViewController {
     
     FoodiePrefetch.global.blockPrefetching()
     
-    journal.retrieveDigest(from: .both, type: .cache) { error in
+    story.retrieveDigest(from: .both, type: .cache) { error in
       
       FoodiePrefetch.global.unblockPrefetching()
       
       if let error = error {
         self.fetchErrorDialog()
-        CCLog.assert("Journal.retrieveDigest() callback with error: \(error.localizedDescription)")
+        CCLog.assert("Story.retrieveDigest() callback with error: \(error.localizedDescription)")
         return
       }
       
-      guard let thumbnailObject = journal.thumbnailObj else {
+      guard let thumbnailObject = story.thumbnailObj else {
         self.fetchErrorDialog()
-        CCLog.assert("Journal.retrieveDigest callback with thumbnailObj = nil")
+        CCLog.assert("Story.retrieveDigest callback with thumbnailObj = nil")
         return
       }
       
@@ -180,8 +180,8 @@ class FeedCollectionViewController: UICollectionViewController {
         
         if let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionViewCell {
           // CCLog.verbose("cellForItem(at:) DispatchQueue.main for cell #\(indexPath.row)")
-          cell.journalTitle?.text = self.journalArray[indexPath.row].title
-          cell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+          cell.storyTitle?.text = self.storyArray[indexPath.row].title
+          cell.storyButton?.setImage(UIImage(data: thumbnailData), for: .normal)
           cell.activityIndicator.isHidden = true
           cell.activityIndicator.stopAnimating()
           
@@ -194,8 +194,8 @@ class FeedCollectionViewController: UICollectionViewController {
           
         } else {
           // This is an out of view prefetch?
-          reusableCell.journalTitle?.text = self.journalArray[indexPath.row].title
-          reusableCell.journalButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+          reusableCell.storyTitle?.text = self.storyArray[indexPath.row].title
+          reusableCell.storyButton?.setImage(UIImage(data: thumbnailData), for: .normal)
           reusableCell.activityIndicator.isHidden = true
           reusableCell.activityIndicator.stopAnimating()
           
@@ -208,8 +208,8 @@ class FeedCollectionViewController: UICollectionViewController {
         }
         
         if letsPrefetch {
-          let journal = self.journalArray[indexPath.row]
-          journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
+          let story = self.storyArray[indexPath.row]
+          story.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: story, on: story)
         }
       }
     }
@@ -234,15 +234,15 @@ class FeedCollectionViewController: UICollectionViewController {
     SwiftMutex.unlock(&feedCell.cellStatusMutex)
     
     if letsPrefetch {
-      let journal = self.journalArray[indexPath.row]
-      journal.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
+      let story = self.storyArray[indexPath.row]
+      story.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: story, on: story)
     }
   }
   
   override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
     CCLog.verbose("collectionView didEndDisplayingCell indexPath.row = \(indexPath.row)")
-    let journal = journalArray[indexPath.row]
-    if let context = journal.contentPrefetchContext {
+    let story = storyArray[indexPath.row]
+    if let context = story.contentPrefetchContext {
       FoodiePrefetch.global.removePrefetchWork(for: context)
     }
   }
@@ -254,16 +254,16 @@ extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
   func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
     for indexPath in indexPaths {
       CCLog.verbose("collectionView prefetchItemsAt indexPath.row = \(indexPath.row)")
-      let journal = journalArray[indexPath.row]
-      journal.selfPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: journal, on: journal)
+      let story = storyArray[indexPath.row]
+      story.selfPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: story, on: story)
     }
   }
   
   func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
     for indexPath in indexPaths {
       CCLog.verbose("collectionView cancelPrefetchingForItemsAt indexPath.row = \(indexPath.row)")
-      let journal = journalArray[indexPath.row]
-      if let context = journal.selfPrefetchContext {
+      let story = storyArray[indexPath.row]
+      if let context = story.selfPrefetchContext {
         FoodiePrefetch.global.removePrefetchWork(for: context)
       }
     }

@@ -30,7 +30,7 @@ class FoodieVenue: FoodiePFObject  {
   @NSManaged var state: String?
   @NSManaged var postalCode: String?
   @NSManaged var country: String?
-  @NSManaged var location: PFGeoPoint?  // Geolocation of the Journal entry
+  @NSManaged var location: PFGeoPoint?  // Geolocation of the Story entry
 
   // Hour Information (Machine Readable only)  // For human readable string, query Foursquare
   @NSManaged var hours: Array<Array<NSDictionary>>?  // Array of hours indexed by day of the week. Each day is an array of Dictionary, where key is either open, or close with an Int value.
@@ -45,7 +45,7 @@ class FoodieVenue: FoodiePFObject  {
   
   // Analytics
   @NSManaged var venueViewed: Int
-  @NSManaged var journalsViewed: Int
+  @NSManaged var storysViewed: Int
   @NSManaged var momentsViewed: Int
   @NSManaged var venueURLViewed: Int
   @NSManaged var venueRating: Double  // Placeholder

@@ -11,12 +11,12 @@ import MapKit
 
 class StoryMapAnnotation: NSObject, MKAnnotation {
   var title: String?
-  let journal: FoodieJournal
+  let story: FoodieStory
   let coordinate: CLLocationCoordinate2D
   
-  init(title: String, journal: FoodieJournal, coordinate: CLLocationCoordinate2D) {
+  init(title: String, story: FoodieStory, coordinate: CLLocationCoordinate2D) {
     self.title = title
-    self.journal = journal
+    self.story = story
     self.coordinate = coordinate
     
     super.init()

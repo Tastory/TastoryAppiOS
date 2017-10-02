@@ -1,13 +1,13 @@
 //
-//  JournalEntryViewController.swift
+//  StoryEntryViewController.swift
 //  EatellyApp
 //
 //  Created by Howard Lee on 2017-03-26.
 //  Copyright © 2017 Eatelly. All rights reserved.
 //
-//  This is a reusable Journal Entry View Controller
-//  Input  - journalUnderEdit: Journal that this View Controller should be working on
-//           newOrEdit: Is this a local Journal that's being drafted, or an existing Journal that's being edited?
+//  This is a reusable Story Entry View Controller
+//  Input  - storyUnderEdit: Story that this View Controller should be working on
+//           newOrEdit: Is this a local Story that's being drafted, or an existing Story that's being edited?
 //  Output - Save or Discard will have different action depending on if this is Drafting or Editing mode
 //
 
@@ -16,7 +16,7 @@ import MapKit
 import CoreLocation
 
 
-class JournalEntryViewController: UITableViewController, UIGestureRecognizerDelegate {
+class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelegate {
   
   // MARK: - Private Static Constants
   fileprivate struct Constants {
@@ -37,7 +37,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   
   
   // MARK: - Public Instance Variable
-  var workingJournal: FoodieJournal?
+  var workingStory: FoodieStory?
   var returnedMoment: FoodieMoment?
   
   
@@ -59,18 +59,18 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as! VenueTableViewController
     viewController.delegate = self
-    viewController.suggestedVenue = workingJournal?.venue
+    viewController.suggestedVenue = workingStory?.venue
     
     // Average the locations of the Moments to create a location suggestion on where to search for a Venue
     viewController.suggestedLocation = averageLocationOfMoments()
     self.present(viewController, animated: true)
   }
   
-  @IBAction func testSaveJournal(_ sender: UIButton) {
+  @IBAction func testSaveStory(_ sender: UIButton) {
 
-    guard let journal = workingJournal else {
+    guard let story = workingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
-      CCLog.fatal("No Working Journal when user pressed Post Story")
+      CCLog.fatal("No Working Story when user pressed Post Story")
     }
     
     guard let currentUser = FoodieUser.current else {
@@ -78,12 +78,12 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       CCLog.fatal("No Current User Logged In")
     }
     
-    guard journal.title != nil && journal.venue != nil else {
+    guard story.title != nil && story.venue != nil else {
       AlertDialog.present(from: self, title: "Required Fields Empty", message: "The Title and Venue are essential to a Story!")
       return
     }
     
-    guard let moments = journal.moments, !moments.isEmpty else {
+    guard let moments = story.moments, !moments.isEmpty else {
       AlertDialog.present(from: self, title: "Story has No Moments", message: "Add some Moments to make this an interesting Story!")
       return
     }
@@ -95,7 +95,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     blurSpinner.apply(to: self.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
 
     // This will cause a save to both Local Cache and Server
-    journal.saveRecursive(to: .both, type: .cache) { error in
+    story.saveRecursive(to: .both, type: .cache) { error in
       
       if let error = error {
         blurSpinner.remove()
@@ -104,11 +104,11 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       } else {
         
         // Add this Story to the User's authored list
-        currentUser.addAuthoredStory(journal) { error in
+        currentUser.addAuthoredStory(story) { error in
           
           if let error = error {
             // Best effort remove the Story from Server & Cache in this case
-            journal.deleteRecursive(from: .both, type: .cache, withBlock: nil)
+            story.deleteRecursive(from: .both, type: .cache, withBlock: nil)
             
             blurSpinner.remove()
             CCLog.warning("Add Story to User List Failed with Error: \(error)")
@@ -116,13 +116,13 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
           }
         
           // Now removing it from Draft - only if upload to server is a total success
-          journal.deleteRecursive(from: .local, type: .draft) { error in
+          story.deleteRecursive(from: .local, type: .draft) { error in
             if let error = error {
-              CCLog.warning("Deleting Journal from Local Draft Failed with Error: \(error)")
+              CCLog.warning("Deleting Story from Local Draft Failed with Error: \(error)")
             }
             
-            FoodieJournal.removeCurrent()
-            self.workingJournal = nil
+            FoodieStory.removeCurrent()
+            self.workingStory = nil
             blurSpinner.remove()
             
             // Pop-up Alert Dialog and then Dismiss
@@ -138,19 +138,19 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
   
 
   @IBAction func editedTitle(_ sender: UITextField) {
-    guard let text = sender.text, let journal = workingJournal, text != journal.title else {
+    guard let text = sender.text, let story = workingStory, text != story.title else {
       // Nothing changed, don't do anything
       return
     }
     
     CCLog.info("User edited Title of Story")
-    journal.title = text
+    story.title = text
     preSave(nil, withBlock: nil)
   }
   
   
   @IBAction func editedLink(_ sender: UITextField) {
-    guard let text = sender.text, let journal = workingJournal, text != journal.journalURL else {
+    guard let text = sender.text, let story = workingStory, text != story.storyURL else {
       // Nothing changed, don't do anything
       return
     }
@@ -164,7 +164,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     }
     
     CCLog.info("User edited Link of Story")
-    journal.journalURL = validHttpText
+    story.storyURL = validHttpText
     preSave(nil, withBlock: nil)
   }
   
@@ -176,7 +176,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     var sumLatitude: Double?
     var sumLongitude: Double?
     
-    guard let moments = workingJournal?.moments, !moments.isEmpty else {
+    guard let moments = workingStory?.moments, !moments.isEmpty else {
       return nil
     }
     
@@ -233,20 +233,20 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     
     CCLog.debug("Pre-Save Operation Started")
     
-    guard let journal = workingJournal else {
+    guard let story = workingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
-      CCLog.fatal("No Working Journal on Pre Save")
+      CCLog.fatal("No Working Story on Pre Save")
     }
     
-    // Save Journal to Local
-    journal.saveDigest(to: .local, type: .draft) { error in
+    // Save Story to Local
+    story.saveDigest(to: .local, type: .draft) { error in
       
       if let error = error {
-        CCLog.warning("Journal pre-save to Local resulted in error - \(error.localizedDescription)")
+        CCLog.warning("Story pre-save to Local resulted in error - \(error.localizedDescription)")
         callback?(error)
         return
       }
-      CCLog.debug("Completed pre-saving Journal to Local")
+      CCLog.debug("Completed pre-saving Story to Local")
       
       guard let object = object else {
         CCLog.debug("No Foodie Object supplied on preSave(), skipping Object Server save")
@@ -289,8 +289,8 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       return
     }
 
-    guard let momentArray = workingJournal?.moments else {
-      CCLog.fatal("No moments in current working journal.")
+    guard let momentArray = workingStory?.moments else {
+      CCLog.fatal("No moments in current working story.")
     }
 
     if(indexPath.row >= momentArray.count)
@@ -349,13 +349,13 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
       if(selectedViewCell != nil) {
         selectedViewCell!.stopWobble()
 
-        guard let journal = workingJournal else {
-          CCLog.assert("workingJournal is nil")
+        guard let story = workingStory else {
+          CCLog.assert("workingStory is nil")
           return
         }
 
         // Pre-save the Story now that it's changed
-        journal.saveDigest(to: .local, type: .draft) { error in
+        story.saveDigest(to: .local, type: .draft) { error in
           if let error = error {
             AlertDialog.present(from: self, title: "Pre-Save Failed!", message: "Problem saving Story to Local Draft! Quitting or backgrounding the app might cause lost of the current Story under Draft!") { action in
               CCLog.assert("Pre-Saving Story to Draft Local Store Failed - \(error.localizedDescription)")
@@ -379,7 +379,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
-    momentViewController.workingJournal = workingJournal
+    momentViewController.workingStory = workingStory
     momentViewController.momentHeight = Constants.momentHeight
 
     guard let collectionView = momentViewController.collectionView else {
@@ -416,20 +416,20 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
     previousSwipeRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(previousSwipeRecognizer)
 
-    // TODO: Do we need to download the Journal itself first? How can we tell?
+    // TODO: Do we need to download the Story itself first? How can we tell?
   }
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     
-    if let workingJournal = workingJournal {
+    if let workingStory = workingStory {
       
       // Update all the fields here?
-      if let title = workingJournal.title {
+      if let title = workingStory.title {
         titleTextField?.text = title
       }
       
-      if let venueName = workingJournal.venue?.name {
+      if let venueName = workingStory.venue?.name {
         venueButton?.setTitle(venueName, for: .normal)
         venueButton?.setTitleColor(.black, for: .normal)
       } else {
@@ -437,11 +437,11 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
         venueButton?.setTitleColor(Constants.placeholderColor, for: .normal)
       }
       
-      if let storyURL = workingJournal.journalURL {
+      if let storyURL = workingStory.storyURL {
         linkTextField?.text = storyURL
       }
       
-      if let tags = workingJournal.tags, !tags.isEmpty {
+      if let tags = workingStory.tags, !tags.isEmpty {
         // TODO: Deal with tags here?
       } else {
         placeholderLabel = UILabel(frame: CGRect(x: 5, y: 7, width: 49, height: 19))
@@ -454,9 +454,9 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
 
       // Lets update the map location to the top here
       // If there's a Venue, use that location first. Usually if a venue have been freshly selected, it wouldn't have been confirmed in time. So another update is done in venueSearchComplete()
-      if let latitude = workingJournal.venue?.location?.latitude,
-        let longitude = workingJournal.venue?.location?.longitude {
-        updateStoryEntryMap(withCoordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: Constants.venueDelta, venueName: workingJournal.venue?.name)
+      if let latitude = workingStory.venue?.location?.latitude,
+        let longitude = workingStory.venue?.location?.longitude {
+        updateStoryEntryMap(withCoordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: Constants.venueDelta, venueName: workingStory.venue?.name)
       }
       
       // Otherwise use the average location of the Moments
@@ -484,10 +484,10 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
           if returnedMoment === markupMoment {
 
             // save to local
-            moment.saveRecursive(to: .local, type: .draft) { (error) in
-              if(error != nil) {
+            moment.saveRecursive(to: .local, type: .draft) { error in
+              if let error = error {
                 AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
-                  CCLog.assert("Error saving moment into local caused by:  \(error)")
+                  CCLog.assert("Error saving moment into local caused by: \(error.localizedDescription)")
                 }
               }
             }
@@ -497,15 +497,15 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
           }
         } else {
           
-          // This is a new Moment. Let's add it to the Journal!
-          workingJournal.add(moment: moment)
+          // This is a new Moment. Let's add it to the Story!
+          workingStory.add(moment: moment)
           
-          // If there wasn't any moments before, we got to make this the default thumbnail for the Journal
+          // If there wasn't any moments before, we got to make this the default thumbnail for the Story
           // Got to do this also when removing moments!!!
-          if workingJournal.moments!.count == 1 {
+          if workingStory.moments!.count == 1 {
             // TODO: Do we need to factor out thumbnail operations?
-            workingJournal.thumbnailFileName = moment.thumbnailFileName
-            workingJournal.thumbnailObj = moment.thumbnailObj
+            workingStory.thumbnailFileName = moment.thumbnailFileName
+            workingStory.thumbnailObj = moment.thumbnailObj
           }
           
           preSave(moment) { (error) in
@@ -547,7 +547,7 @@ class JournalEntryViewController: UITableViewController, UIGestureRecognizerDele
 
 
 // MARK: - Table View Data Source
-extension JournalEntryViewController {
+extension StoryEntryViewController {
   
   override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     switch section {
@@ -578,7 +578,7 @@ extension JournalEntryViewController {
 
 
 // MARK: - Scroll View Delegate
-extension JournalEntryViewController {
+extension StoryEntryViewController {
   
   override func scrollViewDidScroll(_ scrollView: UIScrollView) {
     let currentOffset = scrollView.contentOffset.y
@@ -596,7 +596,7 @@ extension JournalEntryViewController {
 
 
 // MARK: - Tags TextView Delegate
-extension JournalEntryViewController: UITextViewDelegate {
+extension StoryEntryViewController: UITextViewDelegate {
   func textViewDidChange(_ textView: UITextView) {
     placeholderLabel.isHidden = !textView.text.isEmpty
   }
@@ -604,7 +604,7 @@ extension JournalEntryViewController: UITextViewDelegate {
 
 
 // MARK: - Text Fields' Delegate
-extension JournalEntryViewController: UITextFieldDelegate {
+extension StoryEntryViewController: UITextFieldDelegate {
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     textField.resignFirstResponder()
     return true
@@ -613,12 +613,12 @@ extension JournalEntryViewController: UITextFieldDelegate {
 
 
 // MARK: - Venue Table Return Delegate
-extension JournalEntryViewController: VenueTableReturnDelegate {
+extension StoryEntryViewController: VenueTableReturnDelegate {
   func venueSearchComplete(venue: FoodieVenue) {
     
-    guard let _ = workingJournal else {
+    guard let _ = workingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
-      CCLog.fatal("No Working Journal after Venue Search Completes")
+      CCLog.fatal("No Working Story after Venue Search Completes")
     }
     
     // Query Parse to see if the Venue already exist
@@ -645,8 +645,8 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
         venueToUpdate = queriedVenues[0]
       }
 
-      // Let's set the Journal <=> Venue relationship right away
-      self.workingJournal?.venue = venueToUpdate
+      // Let's set the Story <=> Venue relationship right away
+      self.workingStory?.venue = venueToUpdate
       
       // Do a full Venue Fetch from Foursquare
       venueToUpdate.getDetailsFromFoursquare { (_, error) in
@@ -676,7 +676,7 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
             self.updateStoryEntryMap(withCoordinate: CLLocationCoordinate2DMake(latitude, longitude), span: Constants.venueDelta, venueName: venueToUpdate.name)
           }
           
-          // Pre-save only the Journal to Local only
+          // Pre-save only the Story to Local only
           self.preSave(nil) { (error) in
             if error != nil {  // preSave should have logged the error, so skipping that here.
               AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain)
@@ -689,8 +689,8 @@ extension JournalEntryViewController: VenueTableReturnDelegate {
   }
 }
 
-extension JournalEntryViewController: MarkupReturnDelegate {
-  func markupComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?) {
+extension StoryEntryViewController: MarkupReturnDelegate {
+  func markupComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
 
     self.returnedMoment = markedupMoment
     self.markupMoment = markedupMoment

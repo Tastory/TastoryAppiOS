@@ -1,5 +1,5 @@
 //
-//  FoodieJournal.swift
+//  FoodieStory.swift
 //  Eatelly
 //
 //  Created by Howard Lee on 2017-04-02.
@@ -9,7 +9,7 @@
 
 import Parse
 
-class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
+class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Parse PFObject keys
   // If new objects or external types are added here, check if save and delete algorithms needs updating
@@ -21,13 +21,13 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var width: Int
   @NSManaged var markups: Array<FoodieMarkup>? // Array of PFObjects as FoodieMarkup for the thumbnail
   
-  @NSManaged var title: String? // Title for the Journal
+  @NSManaged var title: String? // Title for the Story
   @NSManaged var venue: FoodieVenue? // Pointer to the Restaurant object
   @NSManaged var author: FoodieUser?  // Pointer? To the Authoring User
-  @NSManaged var journalURL: String? // URL to the Journal article
+  @NSManaged var storyURL: String? // URL to the Story article
   @NSManaged var tags: Array<String>? // Array of Strings, unstructured
 
-  @NSManaged var journalRating: Double // TODO: Placeholder for later rev
+  @NSManaged var storyRating: Double // TODO: Placeholder for later rev
   @NSManaged var views: Int
   @NSManaged var clickthroughs: Int
   
@@ -45,11 +45,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  // Journal Async Operation Child Class
-  class JournalAsyncOperation: AsyncOperation {
+  // Story Async Operation Child Class
+  class StoryAsyncOperation: AsyncOperation {
     
     var operationType: OperationType
-    var journal: FoodieJournal
+    var story: FoodieStory
     var location: FoodieObject.StorageLocation
     var localType: FoodieObject.LocalType
     var forceAnyways: Bool
@@ -57,14 +57,14 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     var callback: ((Error?) -> Void)?
     
     init(on operationType: OperationType,
-         for journal: FoodieJournal,
+         for story: FoodieStory,
          to location: FoodieObject.StorageLocation,
          type localType: FoodieObject.LocalType,
          forceAnyways: Bool = false,
          withBlock callback: ((Error?) -> Void)?) {
       
       self.operationType = operationType
-      self.journal = journal
+      self.story = story
       self.location = location
       self.localType = localType
       self.forceAnyways = forceAnyways
@@ -73,35 +73,35 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     }
     
     override func main() {
-      CCLog.debug ("Journal Async \(operationType) Operation for \(journal.getUniqueIdentifier()) Started")
+      CCLog.debug ("Story Async \(operationType) Operation for \(story.getUniqueIdentifier()) Started")
       
       switch operationType {
       case .retrieveStory:
-        journal.retrieveOpRecursive(from: location, type: localType, forceAnyways: forceAnyways) { error in
+        story.retrieveOpRecursive(from: location, type: localType, forceAnyways: forceAnyways) { error in
           self.callback?(error)
           self.finished()
         }
         
       case .saveStory:
-        journal.saveOpRecursive(to: location, type: localType) { error in
+        story.saveOpRecursive(to: location, type: localType) { error in
           self.callback?(error)
           self.finished()
         }
         
       case .deleteStory:
-        journal.deleteOpRecursive(from: location, type: localType) { error in
+        story.deleteOpRecursive(from: location, type: localType) { error in
           self.callback?(error)
           self.finished()
         }
         
       case .retrieveDigest:
-        journal.retrieveOpDigest(from: location, type: localType, forceAnyways: forceAnyways) { error in
+        story.retrieveOpDigest(from: location, type: localType, forceAnyways: forceAnyways) { error in
           self.callback?(error)
           self.finished()
         }
       
       case .saveDigest:
-        journal.saveOpDigest(to: location, type: localType) { error in
+        story.saveOpDigest(to: location, type: localType) { error in
           self.callback?(error)
           self.finished()
         }
@@ -114,24 +114,24 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   // MARK: Error Types Definition
   enum ErrorCode: LocalizedError {
     
-    case retrieveDigestJournalNilThumbnail
-    case retrieveDigestJournalNilVenue
+    case retrieveDigestStoryNilThumbnail
+    case retrieveDigestStoryNilVenue
     case retrieveDigestThumbnailNilImage
     case contentRetrieveMomentArrayNil
     case contentRetrieveObjectNilNotMoment
     
     var errorDescription: String? {
       switch self {
-      case .retrieveDigestJournalNilThumbnail:
-        return NSLocalizedString("retrieveDigest() Journal retrieved with thumbnailFileName = nil", comment: "Error description for an exception error code")
-      case .retrieveDigestJournalNilVenue:
-        return NSLocalizedString("retrieveDigest() Journal retrieved with venue = nil", comment: "Error description for an exception error code")
+      case .retrieveDigestStoryNilThumbnail:
+        return NSLocalizedString("retrieveDigest() Story retrieved with thumbnailFileName = nil", comment: "Error description for an exception error code")
+      case .retrieveDigestStoryNilVenue:
+        return NSLocalizedString("retrieveDigest() Story retrieved with venue = nil", comment: "Error description for an exception error code")
       case .retrieveDigestThumbnailNilImage:
         return NSLocalizedString("retrieveDigest() Thumbnail retrieved with imageMemoryBuffer = nil", comment: "Error description for an exception error code")
       case .contentRetrieveMomentArrayNil:
-        return NSLocalizedString("journal.contentRetrieve momentArray = nil unexpected", comment: "Error description for an exception error code")
+        return NSLocalizedString("story.contentRetrieve momentArray = nil unexpected", comment: "Error description for an exception error code")
       case .contentRetrieveObjectNilNotMoment:
-        return NSLocalizedString("journal.contentRetrieve moment.retrieveIfPending returned nil or non-FoodieMoment object", comment: "Error description for an exception error code")
+        return NSLocalizedString("story.contentRetrieve moment.retrieveIfPending returned nil or non-FoodieMoment object", comment: "Error description for an exception error code")
       }
     }
     
@@ -151,7 +151,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Public Read-Only Static Variables
-  fileprivate(set) static var currentJournal: FoodieJournal?
+  fileprivate(set) static var currentStory: FoodieStory?
   
   
   
@@ -171,31 +171,31 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Public Static Functions
-  static func newCurrent() -> FoodieJournal {
-    if currentJournal != nil {
-      CCLog.assert("Attempted to create a new currentJournal but currentJournal != nil")
+  static func newCurrent() -> FoodieStory {
+    if currentStory != nil {
+      CCLog.assert("Attempted to create a new currentStory but currentStory != nil")
     }
     
-    currentJournal = FoodieJournal()
-    CCLog.debug("New Current Journal created. Session FoodieObject ID = \(currentJournal!.getUniqueIdentifier())")
+    currentStory = FoodieStory()
+    CCLog.debug("New Current Story created. Session FoodieObject ID = \(currentStory!.getUniqueIdentifier())")
 
-    guard let current = currentJournal else {
-      CCLog.fatal("Just created a new FoodieJournal but currentJournal still nil")
+    guard let current = currentStory else {
+      CCLog.fatal("Just created a new FoodieStory but currentStory still nil")
     }
     return current
   }
   
   
   static func removeCurrent() {
-    if currentJournal == nil { CCLog.assert("CurrentJournal is already nil") }
-    CCLog.debug("Current Journal Nil'd")
-    currentJournal = nil
+    if currentStory == nil { CCLog.assert("CurrentStory is already nil") }
+    CCLog.debug("Current Story Nil'd")
+    currentStory = nil
   }
   
   
-  static func setCurrentJournal(to journal: FoodieJournal) {
-    currentJournal = journal
-    CCLog.debug("Current Journal set. Session FoodieObject ID = \(journal.getUniqueIdentifier())")
+  static func setCurrentStory(to story: FoodieStory) {
+    currentStory = story
+    CCLog.debug("Current Story set. Session FoodieObject ID = \(story.getUniqueIdentifier())")
   }
   
   
@@ -265,7 +265,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                             type localType: FoodieObject.LocalType,
                             withBlock callback: SimpleErrorBlock?) {
     
-    // We should always make sure we fill in the author for a Journal
+    // We should always make sure we fill in the author for a Story
     guard let currentUser = FoodieUser.current else {
       CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
     }
@@ -306,13 +306,13 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
       if let error = error {
-        CCLog.assert("Journal.retrieve() resulted in error: \(error.localizedDescription)")
+        CCLog.assert("Story.retrieve() resulted in error: \(error.localizedDescription)")
         callback?(error)
         return
       }
       
       guard let thumbnail = self.thumbnailObj else {
-        CCLog.assert("Unexpected Journal.retrieve() resulted in self.thumbnailObj = nil")
+        CCLog.assert("Unexpected Story.retrieve() resulted in self.thumbnailObj = nil")
         callback?(error)
         return
       }
@@ -347,7 +347,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                                type localType: FoodieObject.LocalType,
                                withBlock callback: SimpleErrorBlock?) {
     
-    // We should always make sure we fill in the author for a Journal
+    // We should always make sure we fill in the author for a Story
     guard let currentUser = FoodieUser.current else {
       CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
     }
@@ -388,11 +388,11 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
                                      type localType: FoodieObject.LocalType,
                                      withBlock callback: SimpleErrorBlock?) {
     
-    // Retrieve the Journal (only) to guarentee access to the childrens
+    // Retrieve the Story (only) to guarentee access to the childrens
     retrieve(from: location, type: localType, forceAnyways: false) { error in
       
       if let error = error {
-        CCLog.assert("Journal.retrieve() resulted in error: \(error.localizedDescription)")
+        CCLog.assert("Story.retrieve() resulted in error: \(error.localizedDescription)")
         callback?(error)
         return
       }
@@ -470,12 +470,12 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  // Function to add Moment to Journal. If no position specified, add to end of array
+  // Function to add Moment to Story. If no position specified, add to end of array
   func add(moment: FoodieMoment,
            to position: Int? = nil) {
     
     if position != nil {
-      CCLog.assert("FoodieJournal.add(to position:) not yet implemented. Adding to 'end' position")
+      CCLog.assert("FoodieStory.add(to position:) not yet implemented. Adding to 'end' position")
     }
     
     // Temporary Code?
@@ -507,7 +507,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
   func getIndexOf(_ moment: FoodieMoment) -> Int {
 
     guard let momentArray = moments else {
-      CCLog.fatal("journal.getIndexOf() has moments = nil. Invalid")
+      CCLog.fatal("story.getIndexOf() has moments = nil. Invalid")
     }
     
     var index = 0
@@ -518,7 +518,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
       index += 1
     }
     
-    CCLog.assert("journal.getIndexOf() cannot find Moment from Moment Array")
+    CCLog.assert("story.getIndexOf() cannot find Moment from Moment Array")
     return momentArray.count  // This is error case
   }
   
@@ -651,7 +651,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Retrieve Digest of Story \(getUniqueIdentifier())")
 
-    let retrieveDigestOperation = JournalAsyncOperation(on: .retrieveDigest, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    let retrieveDigestOperation = StoryAsyncOperation(on: .retrieveDigest, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
     asyncOperationQueue.addOperation(retrieveDigestOperation)
   }
   
@@ -663,7 +663,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Save Digest of Story \(getUniqueIdentifier())")
     
-    let saveDigestOperation = JournalAsyncOperation(on: .saveDigest, for: self, to: location, type: localType, withBlock: callback)
+    let saveDigestOperation = StoryAsyncOperation(on: .saveDigest, for: self, to: location, type: localType, withBlock: callback)
     asyncOperationQueue.addOperation(saveDigestOperation)
   }
   
@@ -679,7 +679,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Retrieve Recursive for Story \(getUniqueIdentifier())")
     
-    let retrieveOperation = JournalAsyncOperation(on: .retrieveStory, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    let retrieveOperation = StoryAsyncOperation(on: .retrieveStory, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
     asyncOperationQueue.addOperation(retrieveOperation)
   }
   
@@ -691,7 +691,7 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Save Recursive for Story \(getUniqueIdentifier())")
     
-    let saveOperation = JournalAsyncOperation(on: .saveStory, for: self, to: location, type: localType, withBlock: callback)
+    let saveOperation = StoryAsyncOperation(on: .saveStory, for: self, to: location, type: localType, withBlock: callback)
     asyncOperationQueue.addOperation(saveOperation)
   }
  
@@ -703,26 +703,26 @@ class FoodieJournal: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Delete Recursive for Story \(getUniqueIdentifier())")
     
-    let deleteOperation = JournalAsyncOperation(on: .deleteStory, for: self, to: location, type: localType, withBlock: callback)
+    let deleteOperation = StoryAsyncOperation(on: .deleteStory, for: self, to: location, type: localType, withBlock: callback)
     asyncOperationQueue.addOperation(deleteOperation)
   }
   
   
   func foodieObjectType() -> String {
-    return "FoodieJournal"
+    return "FoodieStory"
   }
 }
 
 
 // MARK: - Parse Subclass Conformance
-extension FoodieJournal: PFSubclassing {
+extension FoodieStory: PFSubclassing {
   static func parseClassName() -> String {
-    return "FoodieJournal"
+    return "FoodieStory"
   }
 }
 
 
-extension FoodieJournal: FoodiePrefetchDelegate {
+extension FoodieStory: FoodiePrefetchDelegate {
   
   func removePrefetchContexts() {
     selfPrefetchContext = nil
@@ -730,22 +730,22 @@ extension FoodieJournal: FoodiePrefetchDelegate {
   }
   
   func doPrefetch(on objectToFetch: AnyObject, for context: FoodiePrefetch.Context, withBlock callback: FoodiePrefetch.PrefetchCompletionBlock? = nil) {
-    if let journal = objectToFetch as? FoodieJournal {
+    if let story = objectToFetch as? FoodieStory {
       
-      if journal.thumbnailObj == nil {
-        // No Thumbnail Object, so assume the Journal itself needs to be retrieved
+      if story.thumbnailObj == nil {
+        // No Thumbnail Object, so assume the Story itself needs to be retrieved
         CCLog.verbose("doPrefetch retrieveDigest for \(foodieObjectType())(\(getUniqueIdentifier()))")
-        journal.retrieveDigest(from: .both, type: .cache) { error in
-          if let journalError = error {
-            CCLog.assert("On prefetch, retrieveDigest for \(self.foodieObjectType())(\(self.getUniqueIdentifier())) callback with error: \(journalError.localizedDescription)")
+        story.retrieveDigest(from: .both, type: .cache) { error in
+          if let storyError = error {
+            CCLog.assert("On prefetch, retrieveDigest for \(self.foodieObjectType())(\(self.getUniqueIdentifier())) callback with error: \(storyError.localizedDescription)")
           }
           callback?(context)
         }
         
       } else {
-        journal.contentRetrievalRequest(fromMoment: 0, forUpTo: Constants.MomentsToBufferAtATime) { error in
-          if let journalError = error {
-            CCLog.assert("On prefetch, contentRetrievalRequest for \(self.foodieObjectType())(\(self.getUniqueIdentifier())) callback with error: \(journalError.localizedDescription)")
+        story.contentRetrievalRequest(fromMoment: 0, forUpTo: Constants.MomentsToBufferAtATime) { error in
+          if let storyError = error {
+            CCLog.assert("On prefetch, contentRetrievalRequest for \(self.foodieObjectType())(\(self.getUniqueIdentifier())) callback with error: \(storyError.localizedDescription)")
           }
           callback?(context)
         }

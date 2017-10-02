@@ -38,7 +38,7 @@ class FoodiePFObject: PFObject {
     
     // For Parse Subclassing
     // FoodieObject is an Abstract! Don't Register!!
-    FoodieJournal.registerSubclass()
+    FoodieStory.registerSubclass()
     FoodieVenue.registerSubclass()
     FoodieCategory.registerSubclass()
     FoodieMoment.registerSubclass()

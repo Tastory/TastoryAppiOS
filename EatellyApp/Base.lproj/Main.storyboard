@@ -65,7 +65,7 @@
                                         <rect key="frame" x="154" y="0.0" width="35" height="30"/>
                                         <state key="normal" title="Draft"/>
                                         <connections>
-                                            <action selector="launchDraftJournal:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Jkt-FL-eJj"/>
+                                            <action selector="launchDraftStory:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Kpk-L1-VSN"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
@@ -308,8 +308,8 @@
                                 </constraints>
                                 <connections>
                                     <outlet property="activityIndicator" destination="i2G-50-vAv" id="kAX-X9-pgh"/>
-                                    <outlet property="journalButton" destination="Ex6-Ee-5zY" id="73K-nw-Tn2"/>
-                                    <outlet property="journalTitle" destination="HVl-kq-EgA" id="9rt-Tp-Ej1"/>
+                                    <outlet property="storyButton" destination="Ex6-Ee-5zY" id="Ll0-mc-gaZ"/>
+                                    <outlet property="storyTitle" destination="HVl-kq-EgA" id="tFA-qp-cXO"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
@@ -329,10 +329,10 @@
             </objects>
             <point key="canvasLocation" x="-428" y="9"/>
         </scene>
-        <!--Journal View Controller-->
+        <!--Story View Controller-->
         <scene sceneID="ooy-sj-8sY">
             <objects>
-                <viewController storyboardIdentifier="JournalViewController" id="l2J-hP-Z7q" customClass="JournalViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="StoryViewController" id="l2J-hP-Z7q" customClass="StoryViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Tof-66-bGy"/>
                         <viewControllerLayoutGuide type="bottom" id="On6-b9-DFl"/>
@@ -686,10 +686,10 @@
             </objects>
             <point key="canvasLocation" x="1021.6" y="-666.11694152923542"/>
         </scene>
-        <!--Journal Entry View Controller-->
+        <!--Story Entry View Controller-->
         <scene sceneID="MEV-Xi-0JN">
             <objects>
-                <tableViewController storyboardIdentifier="JournalEntryViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="YxI-Mg-cNr" customClass="JournalEntryViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="StoryEntryViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="YxI-Mg-cNr" customClass="StoryEntryViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="KCt-sK-dka">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -810,7 +810,7 @@
                                                     <rect key="frame" x="152" y="10" width="71" height="30"/>
                                                     <state key="normal" title="Post Story"/>
                                                     <connections>
-                                                        <action selector="testSaveJournal:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="c6x-PA-Y3x"/>
+                                                        <action selector="testSaveStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="X7u-d7-f2o"/>
                                                     </connections>
                                                 </button>
                                             </subviews>

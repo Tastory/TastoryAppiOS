@@ -8,9 +8,9 @@
 //  This is a reusable (Image/Video) Markup View Controller created based on the Swifty Cam - https://github.com/Awalz/SwiftyCam
 //  Input  - photoToMarkup:    Photo to be Marked-up. Either this or videoToMarkupURL should be set, not both
 //         - videoToMarkupURL: URL of the video to be Marked-up. Either this or photoToMarkup shoudl be set, not both
-//  Output - Will save marked-up Moment to user selected Journal, set Current Journal if needed before popping itself and the 
-//           Camera View Controller from the View Controller stack. If JournalEntryViewController is not already what's remaining
-//           on the stack, will set relevant JournalEntryViewController inputs and push it onto the View Controller stack
+//  Output - Will save marked-up Moment to user selected Story, set Current Story if needed before popping itself and the 
+//           Camera View Controller from the View Controller stack. If StoryEntryViewController is not already what's remaining
+//           on the stack, will set relevant StoryEntryViewController inputs and push it onto the View Controller stack
 //
 
 import UIKit
@@ -21,7 +21,7 @@ import Jot
 
 
 protocol MarkupReturnDelegate {
-  func markupComplete(markedupMoment: FoodieMoment, suggestedJournal: FoodieJournal?)
+  func markupComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?)
 }
 
 
@@ -323,25 +323,25 @@ class MarkupViewController: UIViewController {
     momentObj.aspectRatio = aspectRatio
 
     // Keep in mind there are 2 scenarios here. 
-    // 1. We are working on the Current Draft Journal
-    // 2. We are editing on some random Journal
+    // 1. We are working on the Current Draft Story
+    // 2. We are editing on some random Story
     
     // Implementing Scenario 1 for now. Scenario TBD
-    // What this is trying to do is to display a selection dialog on whether to add to the Current Journal, or Save to a new one
-    if let journal = FoodieJournal.currentJournal {
+    // What this is trying to do is to display a selection dialog on whether to add to the Current Story, or Save to a new one
+    if let story = FoodieStory.currentStory {
       if(editMomentObj != nil)
       {
         // skip the selection of adding to current or not
-        self.cleanupAndReturn(markedUpMoment: momentObj, suggestedJournal: journal)
+        self.cleanupAndReturn(markedUpMoment: momentObj, suggestedStory: story)
       }
-      displayJournalSelection(
-        newJournalHandler: { UIAlertAction -> Void in self.showJournalDiscardDialog(moment: momentObj) },
-        addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoment: momentObj, suggestedJournal: journal) }
+      displayStorySelection(
+        newStoryHandler: { UIAlertAction -> Void in self.showStoryDiscardDialog(moment: momentObj) },
+        addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoment: momentObj, suggestedStory: story) }
       )
     }
     else {
-      // Just return a new Current Journal
-      self.cleanupAndReturn(markedUpMoment: momentObj, suggestedJournal: FoodieJournal.newCurrent())
+      // Just return a new Current Story
+      self.cleanupAndReturn(markedUpMoment: momentObj, suggestedStory: FoodieStory.newCurrent())
     }
     
     // TODO: - Scenario 2 - We are editing an existing Story, not the Current Draft Story
@@ -350,18 +350,18 @@ class MarkupViewController: UIViewController {
   
   // MARK - Public Instance Functions
   
-  func displayJournalSelection( newJournalHandler: @escaping (UIAlertAction) -> Void, addToCurrentHandler: @escaping (UIAlertAction) -> Void) {
-    // Display Action Sheet to ask user if they want to add this Moment to current Journal, or a new one, or Cancel
-    // Create a button and associated Callback for adding the Moment to a new Journal
+  func displayStorySelection( newStoryHandler: @escaping (UIAlertAction) -> Void, addToCurrentHandler: @escaping (UIAlertAction) -> Void) {
+    // Display Action Sheet to ask user if they want to add this Moment to current Story, or a new one, or Cancel
+    // Create a button and associated Callback for adding the Moment to a new Story
     let addToNewButton =
-      UIAlertAction(title: "New Journal",
-                    comment: "Button for adding to a New Journal in Save Moment action sheet",
+      UIAlertAction(title: "New Story",
+                    comment: "Button for adding to a New Story in Save Moment action sheet",
                     style: .default,
-                    handler: newJournalHandler)
-    // Create a button with associated Callback for adding the Moment to the current Journal
+                    handler: newStoryHandler)
+    // Create a button with associated Callback for adding the Moment to the current Story
     let addToCurrentButton =
-      UIAlertAction(title: "Current Journal",
-                    comment: "Button for adding to a Current Journal in Save Moment action sheet",
+      UIAlertAction(title: "Current Story",
+                    comment: "Button for adding to a Current Story in Save Moment action sheet",
                     style: .default,
                     handler: addToCurrentHandler)
 
@@ -378,17 +378,17 @@ class MarkupViewController: UIViewController {
     self.present(actionSheet, animated: true, completion: nil)
   }
 
-  func showJournalDiscardDialog(moment: FoodieMoment) {
+  func showStoryDiscardDialog(moment: FoodieMoment) {
     
-    guard let journal = FoodieJournal.currentJournal else {
+    guard let story = FoodieStory.currentStory else {
       AlertDialog.standardPresent(from: self, title: .genericDeleteError, message: .internalTryAgain)
-      CCLog.fatal("Discard current Journal but no current Journal")
+      CCLog.fatal("Discard current Story but no current Story")
     }
     
-    // Create a button and associated Callback for discarding the previous current Journal and make a new one
+    // Create a button and associated Callback for discarding the previous current Story and make a new one
     let discardButton =
       UIKit.UIAlertAction(title: "Discard",
-                          comment: "Button to discard current Journal in alert dialog box to warn user",
+                          comment: "Button to discard current Story in alert dialog box to warn user",
                           style: .destructive) { action in
                             
       // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
@@ -398,36 +398,36 @@ class MarkupViewController: UIViewController {
         }
         
         // Delete all traces of this unPosted Story
-        journal.deleteRecursive(from: .both, type: .draft) { error in
+        story.deleteRecursive(from: .both, type: .draft) { error in
           if let error = error {
             CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
           }
         }
       }
       
-      FoodieJournal.removeCurrent()
+      FoodieStory.removeCurrent()
       
-      // We don't add Moments here, we let the Journal Entry View decide what to do with it
-      self.cleanupAndReturn(markedUpMoment: moment, suggestedJournal: FoodieJournal.newCurrent())
+      // We don't add Moments here, we let the Story Entry View decide what to do with it
+      self.cleanupAndReturn(markedUpMoment: moment, suggestedStory: FoodieStory.newCurrent())
     }
     
     let alertController =
       UIAlertController(title: "Discard & Overwrite",
                         titleComment: "Dialog title to warn user on discard and overwrite",
-                        message: "Are you sure you want to discard and overwrite the current Journal?",
+                        message: "Are you sure you want to discard and overwrite the current Story?",
                         messageComment: "Dialog message to warn user on discard and overwrite",
                         preferredStyle: .alert)
     
     alertController.addAction(discardButton)
     alertController.addAlertAction(title: "Cancel",
-                                   comment: "Alert Dialog box button to cancel discarding and overwritting of current Journal",
+                                   comment: "Alert Dialog box button to cancel discarding and overwritting of current Story",
                                    style: .cancel)
 
     // Present the Discard dialog box to the user
     self.present(alertController, animated: true, completion: nil)
   }
 
-  func cleanupAndReturn(markedUpMoment: FoodieMoment, suggestedJournal: FoodieJournal ){
+  func cleanupAndReturn(markedUpMoment: FoodieMoment, suggestedStory: FoodieStory ){
     // Stop if there might be video looping
     self.avPlayer?.pause()  // TODO: - Do we need to free the avPlayer memory or something?
     
@@ -436,7 +436,7 @@ class MarkupViewController: UIViewController {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
       CCLog.fatal("Unexpected. markupReturnDelegate became nil. Unable to proceed")
     }
-    delegate.markupComplete(markedupMoment: markedUpMoment, suggestedJournal: suggestedJournal)
+    delegate.markupComplete(markedupMoment: markedUpMoment, suggestedStory: suggestedStory)
   }
 
   // MARK: - Private Instance Functions
@@ -552,7 +552,7 @@ class MarkupViewController: UIViewController {
     if self.presentedViewController == nil {
       let alertController = UIAlertController(title: "EatellyApp",
                                               titleComment: "Alert diaglogue title when Markup Image view has problem saving",
-                                              message: "Error saving Journal. Please try again",
+                                              message: "Error saving Story. Please try again",
                                               messageComment: "Alert dialog message when Markup Image view has problem saving",
                                               preferredStyle: .alert)
       alertController.addAlertAction(title: "OK",
