@@ -156,10 +156,6 @@ class FoodieObject {
   
   
   // MARK: - Public Static Functions
-  static func initialize() {
-    FoodiePFObject.configure()
-  }
-  
   
   static func deleteAll(from localType: LocalType, withBlock callback: SimpleErrorBlock?) {
     FoodiePFObject.deleteAll(from: localType) { error in

@@ -121,7 +121,7 @@ class LogInViewController: UIViewController {
   @IBAction func guestLogInAction(_ sender: UIButton) {
     // Force a log-out if there is a user logged-in
     if FoodieUser.current != nil {
-      FoodieUser.logOut(withBlock: nil)
+      FoodieUser.logOutAndDeleteDraft(withBlock: nil)
     }
     
     AlertDialog.present(from: self, title: "Guest Login", message: "You will not be able to post as a Guest. We highly encourage you to sign-up and log-in for the best experience!") { action in

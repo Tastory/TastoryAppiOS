@@ -43,11 +43,20 @@ class RootViewController: UIViewController {
     if let error = startupError as? FoodieGlobal.ErrorCode, error == .startupFoursquareCategoryError {
       offlineErrorDialog()
     } else {
-      if let currentUser = FoodieUser.current, currentUser.objectId != nil {  // Might want to double check the ObjectID before going too far
+      if let currentUser = FoodieUser.current, currentUser.objectId != nil {
+        // Make sure the right permissions are assigned to objects since we are assuming a User
+        FoodiePermission.setDefaultObjectPermission(for: currentUser)
+        
+        // Lets just jump directly into the Main view!
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")
         self.present(viewController, animated: true, completion: nil)
+        
       } else {
+        // Resetting permissions back to global default since we don't know whose gonna be logged'in
+        FoodiePermission.setDefaultGlobalObjectPermission()
+        
+        // Jump to the Login/Signup Screen!
         let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
         let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "LogInViewController")
         self.present(viewController, animated: true)

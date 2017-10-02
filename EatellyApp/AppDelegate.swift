@@ -21,21 +21,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     CCLog.initializeLogging()
     CCLog.initializeReporting()
     
-    // Enable Automatic User
-    //FoodieUser.enableAutoGuestUser()
-    
-    // Initialize FoodieObject Database
-    FoodieObject.initialize()
-    
-    // Create S3 Manager singleton
-    FoodieFile.manager = FoodieFile()
-    
-    // Create Prefetch Manager singleton
-    FoodiePrefetch.global = FoodiePrefetch()
-    
-    // Initialize Das Quadrat
-    FoodieGlobal.foursquareInitialize()
-    FoodieCategory.getFromFoursquare(withBlock: nil)  // Let the fetch happen in the background
+    // Initialize Foodie Model
+    FoodieGlobal.initialize()
 
     // TODO: - Any Startup Test we want to do that we should use to block Startup?
     error = nil

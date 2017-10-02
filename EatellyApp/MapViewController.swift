@@ -208,14 +208,9 @@ class MapViewController: UIViewController {
   
   
   @IBAction func logOutAction(_ sender: UIButton) {
-    if let journal = FoodieJournal.currentJournal {
+    if FoodieJournal.currentJournal != nil {
       AlertDialog.presentConfirm(from: self, title: "Log Out", message: "Are you sure you want to log out? You will lose your unsaved draft if you log out") { action in
-        journal.deleteRecursive(from: .both, type: .draft) { error in
-          if let error = error {
-            CCLog.warning("Problem deleting Draft from Both - \(error.localizedDescription)")
-          }
-          self.logOutAndDismiss()
-        }
+        self.logOutAndDismiss()
       }
     } else {
       self.logOutAndDismiss()
@@ -227,7 +222,7 @@ class MapViewController: UIViewController {
   // MARK: - Class Private Functions
 
   fileprivate func logOutAndDismiss() {
-    FoodieUser.logOut { error in
+    FoodieUser.logOutAndDeleteDraft { error in
       if let error = error {
         AlertDialog.present(from: self, title: "Log Out Error", message: error.localizedDescription) { action in
           CCLog.assert("Log Out Failed - \(error.localizedDescription)")

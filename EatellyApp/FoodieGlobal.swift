@@ -70,6 +70,30 @@ struct FoodieGlobal {
   
   
   // MARK: - Public Static Functions
+  
+  static func initialize() {
+    
+    // This contains Parse.initialize, must come other Parse containing classes
+    FoodiePFObject.configure()
+    
+    // Enable Automatic User
+    FoodieUser.configure(enableAutoUser: false)
+    
+    // Set Default Permissions
+    FoodiePermission.setDefaultGlobalObjectPermission()
+    
+    // Create S3 Manager singleton
+    FoodieFile.manager = FoodieFile()
+    
+    // Create Prefetch Manager singleton
+    FoodiePrefetch.global = FoodiePrefetch()
+    
+    // Initialize Das Quadrat
+    FoodieGlobal.foursquareInitialize()
+    FoodieCategory.getFromFoursquare(withBlock: nil)  // Let the fetch happen in the background
+  }
+  
+  
   static func booleanToSimpleErrorCallback(_ success: Bool, _ error: Error?, function: String = #function, file: String = #file, line: Int = #line, _ callback: SimpleErrorBlock?) {
     #if DEBUG  // Do this sanity check low and never need to worry about it again
       if (success && error != nil) || (!success && error == nil) {

@@ -43,8 +43,6 @@ class FoodiePFObject: PFObject {
     FoodieCategory.registerSubclass()
     FoodieMoment.registerSubclass()
     FoodieMarkup.registerSubclass()
-    FoodieRole.registerSubclass()
-    FoodieUser.registerSubclass()
   }
   
   
@@ -257,7 +255,13 @@ class FoodiePFObject: PFObject {
         if !success || error != nil {
           if deleteRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
         }
-        FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
+        
+        // Each call actually goes through a booleanToSimpleErrorCallback(). So will do a CCLog.warning natively. Should just brute force deletes regardless
+        FoodieGlobal.booleanToSimpleErrorCallback(success, error) { error in
+          self.delete(from: .draft) { error in
+            self.delete(from: .cache, withBlock: callback)
+          }
+        }
       }
     }
   }

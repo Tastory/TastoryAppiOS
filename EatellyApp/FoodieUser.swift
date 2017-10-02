@@ -23,15 +23,16 @@ class FoodieUser: PFUser {
   @NSManaged var biography: String?
   @NSManaged var url: String?
   
+  // User Properties
+  @NSManaged var roleLevel: Int
+  @NSManaged var authoredStoryIds: Array<String>?
+  
   // History & Bookmarks
-  @NSManaged var storyHistory: Array<FoodieJournal>?
-  @NSManaged var storyBookmarks: Array<FoodieJournal>?
+  @NSManaged var historyStoryIds: Array<String>?
+  @NSManaged var bookmarkStoryIds: Array<String>?
   
   // Social Connections
-  @NSManaged var following: Array<FoodieUser>?
-  
-  // Role
-  @NSManaged var roleLevel: Int
+  @NSManaged var followingUserIds: Array<String>?
   
   // User Settings
   @NSManaged var saveOriginalsToLibrary: Bool
@@ -41,6 +42,7 @@ class FoodieUser: PFUser {
   // Analytics
   @NSManaged var storiesViewed: Int
   @NSManaged var momentsViewed: Int
+  
   
   
   // MARK: - Constants
@@ -166,8 +168,13 @@ class FoodieUser: PFUser {
   
   // MARK: - Public Static Functions
   
-  static func enableAutoGuestUser() {
-    PFUser.enableAutomaticUser()
+  static func configure(enableAutoUser: Bool) {
+
+    FoodieUser.registerSubclass()
+    
+    if enableAutoUser {
+      PFUser.enableAutomaticUser()
+    }
   }
   
   
@@ -185,13 +192,35 @@ class FoodieUser: PFUser {
         return
       }
       
+      // Update the Default Permission before calling back
+      FoodiePermission.setDefaultObjectPermission(for: foodieUser)
       callback?(foodieUser, nil)
     }
   }
   
   
-  static func logOut(withBlock callback: SimpleErrorBlock?) {
-    PFUser.logOutInBackground(block: callback)
+  static func logOutAndDeleteDraft(withBlock callback: SimpleErrorBlock?) {
+    
+    if let story = FoodieJournal.currentJournal {
+      // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
+      FoodieObject.deleteAll(from: .draft) { error in
+        if let error = error {
+          CCLog.warning("Deleting All Drafts resulted in Error - \(error.localizedDescription)")
+        }
+        
+        story.deleteRecursive(from: .both, type: .draft) { error in
+          if let error = error {
+            CCLog.warning("Problem deleting Draft from Both - \(error.localizedDescription)")
+          }
+          FoodieJournal.removeCurrent()
+          FoodiePermission.setDefaultGlobalObjectPermission()
+          PFUser.logOutInBackground(block: callback)
+        }
+      }
+    } else {
+      FoodiePermission.setDefaultGlobalObjectPermission()
+      PFUser.logOutInBackground(block: callback)
+    }
   }
   
   
@@ -441,14 +470,54 @@ class FoodieUser: PFUser {
       return
     }
     
+    // Set role of the user first before trying to figure out ACL
+    self.roleLevel = FoodieRole.Level.limitedUser.rawValue
+    
+    // Now try to Sign Up!
     self.signUpInBackground { (success, error) in
-      FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
+      FoodieGlobal.booleanToSimpleErrorCallback(success, error) { error in
+        
+        if let error = error {
+          CCLog.warning("Failed Signing Up in Background due to Error - \(error.localizedDescription)")
+          callback?(error)
+          return
+        }
+        
+        // Sign Up was successful. Try to add the user to the agreed upon role
+        guard let level = FoodieRole.Level(rawValue: self.roleLevel) else {
+          CCLog.fatal("Unrecognized roleLevel value")
+        }
+        
+        FoodieRole.addUser(self, to: level) { error in
+          
+          if let error = error {
+            CCLog.warning("Failed to add User to Role database. Please contact an Administrator - \(error.localizedDescription)")
+            
+            // Best effort delete of the user
+            self.delete(withBlock: nil)
+            callback?(error)
+            return
+          }
+          
+          // Set default Foodie User ACL attribute
+          self.acl = FoodiePermission.getDefaultUserPermission(for: self) as PFACL
+          
+          // Save the change in User ACL
+          self.save  { error in
+            if error != nil {
+              // Total Sign Up Success Finally! Let's change the default ACL to the user class before calling back.
+              FoodiePermission.setDefaultObjectPermission(for: self)
+            }
+            callback?(error)
+          }
+        }
+      }
     }
   }
   
   
-  func logOut(withBlock callback: SimpleErrorBlock?) {
-    FoodieUser.logOut(withBlock: callback)
+  func logOutAndDeleteDraft(withBlock callback: SimpleErrorBlock?) {
+    FoodieUser.logOutAndDeleteDraft(withBlock: callback)
   }
   
   
