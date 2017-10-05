@@ -776,7 +776,7 @@ extension MapViewController: MKMapViewDelegate {
     var story: FoodieStory?
   }
   
-  func storyCalloutTapped(sender: StoryButton) {
+  @objc func storyCalloutTapped(sender: StoryButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
     
@@ -821,7 +821,7 @@ extension MapViewController: MKMapViewDelegate {
       titleLabel.textColor = UIColor.white
       titleLabel.textAlignment = .center
       titleLabel.numberOfLines = 3
-      titleLabel.backgroundColor = UIColor(colorLiteralRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.2)
+      titleLabel.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.2)
       titleLabel.isUserInteractionEnabled = false  // This is so that all the clicks go straight thru to the button at the back
       titleLabel.translatesAutoresizingMaskIntoConstraints = false
       
@@ -831,7 +831,7 @@ extension MapViewController: MKMapViewDelegate {
           annotation.title! += venueName
         } else {
           let index = venueName.index(venueName.startIndex, offsetBy: 22)
-          annotation.title! += venueName.substring(to: index)
+          annotation.title! += venueName[..<index]
           annotation.title! += "..."
         }
       } else { annotation.title = " " }

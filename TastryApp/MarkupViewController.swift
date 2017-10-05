@@ -771,7 +771,7 @@ class MarkupViewController: UIViewController {
         return
       }
       
-      let avTracks = asset.tracks(withMediaType: AVMediaTypeVideo)
+      let avTracks = asset.tracks(withMediaType: AVMediaType.video)
       
       if avTracks.count != 1 {
         internalErrorDialog()

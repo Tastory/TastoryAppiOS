@@ -105,7 +105,7 @@ class VenueTableViewController: UIViewController {
   
   
   // Working along with venueSearchComplete(), this call is Thread Safe
-  func fullVenueSearch() {
+  @objc func fullVenueSearch() {
     DispatchQueue.global(qos: .userInitiated).async {
       
       // In general, don't have mutexes locking the main thread please
