@@ -631,7 +631,7 @@ class FoodieUser: PFUser {
     // Do a retrieve before adding
     retrieve(forceAnyways: true) { error in
       if let error = error {
-        CCLog.warning("Retreive for add authored story failed - \(error.localizedDescription)")
+        CCLog.warning("Retrieve for add authored story failed - \(error.localizedDescription)")
         callback?(error)
         return
       }
@@ -652,7 +652,7 @@ class FoodieUser: PFUser {
     // Do a retrieve before adding
     retrieve(forceAnyways: true) { error in
       if let error = error {
-        CCLog.warning("Retreive for add authored story failed - \(error.localizedDescription)")
+        CCLog.warning("Retrieve for add authored story failed - \(error.localizedDescription)")
         callback?(error)
         return
       }
