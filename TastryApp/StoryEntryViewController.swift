@@ -197,7 +197,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   }
 
 
-  func setThumbnail(_ sender: UIGestureRecognizer) {
+  @objc func setThumbnail(_ sender: UIGestureRecognizer) {
 
     let point = sender.location(in: momentViewController.collectionView)
 
@@ -271,16 +271,16 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
   // MARK: - Public Instace Functions
 
-  func keyboardDismiss() {
+  @objc func keyboardDismiss() {
     self.view.endEditing(true)
   }
 
-  func vcDismiss() {
+  @objc func vcDismiss() {
     // TODO: Data Passback through delegate?
     dismiss(animated: true, completion: nil)
   }
 
-  func editMoment(_ sender: UIGestureRecognizer)
+  @objc func editMoment(_ sender: UIGestureRecognizer)
   {
     let point = sender.location(in: momentViewController.collectionView)
 
@@ -319,7 +319,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     
   }
 
-  func reorderMoment(_ gesture: UILongPressGestureRecognizer) {
+  @objc func reorderMoment(_ gesture: UILongPressGestureRecognizer) {
 
     guard let collectionView = momentViewController.collectionView else {
       CCLog.assert("Error unwrapping the collectionView from moment view controller is nil")

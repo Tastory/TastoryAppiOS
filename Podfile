@@ -6,16 +6,16 @@ target 'TastryApp' do
   use_frameworks!
 
   # Pods for TastryApp
-  pod 'Parse'
-  pod 'SwiftyCam'
-  pod 'AWSS3'
-  pod 'AWSCognito'
-  pod 'Jot', :git => 'https://github.com/biscottigelato/Jot.git'
-  pod 'QuadratTouch', :git => 'https://github.com/Constantine-Fry/das-quadrat.git', :branch => 'develop'
-  pod 'HTTPStatusCodes', '~> 3.1.2'
-  pod 'Fabric'
-  pod 'Crashlytics'
-  pod 'RATreeView'
+  pod 'Parse', :inhibit_warnings => true
+  pod 'SwiftyCam', :inhibit_warnings => true
+  pod 'AWSS3', :inhibit_warnings => true
+  pod 'AWSCognito', :inhibit_warnings => true
+  pod 'Jot', :git => 'https://github.com/biscottigelato/Jot.git', :inhibit_warnings => true
+  pod 'QuadratTouch', :git => 'https://github.com/Constantine-Fry/das-quadrat.git', :branch => 'develop', :inhibit_warnings => true
+  pod 'HTTPStatusCodes', '~> 3.1.2', :inhibit_warnings => true
+  pod 'Fabric', :inhibit_warnings => true
+  pod 'Crashlytics', :inhibit_warnings => true
+  pod 'RATreeView', :inhibit_warnings => true
 
   target 'TastryAppTests' do
     inherit! :search_paths

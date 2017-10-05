@@ -424,7 +424,7 @@ class StoryViewController: UIViewController {
   // MARK: - Public Instance Functions
   
   // Display the next Moment based on what the current Moment is
-  func displayNextMoment() {
+  @objc func displayNextMoment() {
     
     guard let story = viewingStory else {
       internalErrorDialog()

@@ -594,7 +594,7 @@ class FoodieVenue: FoodiePFObject  {
                 // Foursquare represents next day with a '+' symbol in front...
                 if end.characters[end.characters.startIndex] == "+" {
                   let index = end.index(end.startIndex, offsetBy: 1)
-                  let endSubstring = end.substring(from: index)
+                  let endSubstring = end[..<index]
                   guard let endInt = Int(endSubstring) else {
                     break
                   }

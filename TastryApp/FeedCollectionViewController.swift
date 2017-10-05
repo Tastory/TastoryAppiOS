@@ -84,7 +84,7 @@ class FeedCollectionViewController: UICollectionViewController {
   
   // MARK: - Public Instance Functions
   
-  func viewStory(_ sender: UIButton) {
+  @objc func viewStory(_ sender: UIButton) {
     // Stop all prefetches
     FoodiePrefetch.global.blockPrefetching()
     

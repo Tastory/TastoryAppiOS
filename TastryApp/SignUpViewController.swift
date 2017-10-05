@@ -53,11 +53,11 @@ class SignUpViewController: UIViewController {
     if passwordField.isSecureTextEntry {
       passwordField.isSecureTextEntry = false
       hideShowPwdButton.setTitle("Hide", for: .normal)
-      hideShowPwdButton.setTitleColor(UIColor.init(colorLiteralRed: 0.2, green: 0.2, blue: 0.2, alpha: 1.0), for: .normal)
+      hideShowPwdButton.setTitleColor(UIColor(red: 0.2, green: 0.2, blue: 0.2, alpha: 1.0), for: .normal)
     } else {
       passwordField.isSecureTextEntry = true
       hideShowPwdButton.setTitle("Show", for: .normal)
-      hideShowPwdButton.setTitleColor(UIColor.init(colorLiteralRed: 0.8, green: 0.8, blue: 0.8, alpha: 1.0), for: .normal)
+      hideShowPwdButton.setTitleColor(UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0), for: .normal)
     }
   }
   
