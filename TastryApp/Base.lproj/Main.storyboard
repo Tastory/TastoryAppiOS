@@ -27,12 +27,23 @@
                     <view key="view" contentMode="scaleToFill" id="LBP-5m-fDI">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TastryTempBgWhite" translatesAutoresizingMaskIntoConstraints="NO" id="iE3-U8-Mip">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            </imageView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="iE3-U8-Mip" secondAttribute="trailing" id="1mT-gZ-m3t"/>
+                            <constraint firstItem="DOH-8e-bbT" firstAttribute="top" secondItem="iE3-U8-Mip" secondAttribute="bottom" id="Gr5-t2-dM9"/>
+                            <constraint firstItem="iE3-U8-Mip" firstAttribute="top" secondItem="LBP-5m-fDI" secondAttribute="top" id="eJW-qw-Czx"/>
+                            <constraint firstItem="iE3-U8-Mip" firstAttribute="leading" secondItem="LBP-5m-fDI" secondAttribute="leading" id="jGi-Kc-WYJ"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ngF-kL-ExG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1162" y="-666"/>
+            <point key="canvasLocation" x="-1162.4000000000001" y="-666.11694152923542"/>
         </scene>
         <!--Map View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -332,7 +343,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-428" y="9"/>
+            <point key="canvasLocation" x="-1162" y="18"/>
         </scene>
         <!--Story View Controller-->
         <scene sceneID="ooy-sj-8sY">
@@ -1096,4 +1107,7 @@
             <point key="canvasLocation" x="297" y="-1352"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="TastryTempBgWhite" width="375" height="700"/>
+    </resources>
 </document>

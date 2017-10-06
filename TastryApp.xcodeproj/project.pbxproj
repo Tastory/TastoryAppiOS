@@ -27,7 +27,6 @@
 		8C1ED6EE1F5D15A300A8CC94 /* AddMomentLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6E91F5D15A300A8CC94 /* AddMomentLayer.swift */; };
 		8C1ED6EF1F5D15A300A8CC94 /* CameraButtonLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6EA1F5D15A300A8CC94 /* CameraButtonLayer.swift */; };
 		8C1ED6F01F5D15A300A8CC94 /* CameraButtonRingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6EB1F5D15A300A8CC94 /* CameraButtonRingLayer.swift */; };
-		8C1ED6F11F5D15A300A8CC94 /* CameraCrossLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6EC1F5D15A300A8CC94 /* CameraCrossLayer.swift */; };
 		8C1ED6F21F5D15A300A8CC94 /* ThumbnailFrameLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6ED1F5D15A300A8CC94 /* ThumbnailFrameLayer.swift */; };
 		8C1ED6F41F5DEC2500A8CC94 /* AsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6F31F5DEC2500A8CC94 /* AsyncOperation.swift */; };
 		8C1ED7001F5E2BF700A8CC94 /* CleanroomLogger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C1ED6FF1F5E2BF700A8CC94 /* CleanroomLogger.framework */; };
@@ -76,6 +75,7 @@
 		8CE6B8871EA9864800D454A9 /* StoryEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */; };
 		8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */; };
 		8CEEB1CD1F821FA1008E91BD /* BlurSpinWait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CEEB1CC1F821FA1008E91BD /* BlurSpinWait.swift */; };
+		8CF44DA61F86F422007E905A /* CameraCrossLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF44DA51F86F422007E905A /* CameraCrossLayer.swift */; };
 		8CF858661F7ED8A000C46614 /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF858651F7ED8A000C46614 /* IntroViewController.swift */; };
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */; };
 		C24F69651EB85B0300A0DB7B /* StoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69641EB85B0300A0DB7B /* StoryViewController.swift */; };
@@ -181,6 +181,7 @@
 		8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryEntryViewController.swift; sourceTree = "<group>"; };
 		8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentCollectionViewCell.swift; sourceTree = "<group>"; };
 		8CEEB1CC1F821FA1008E91BD /* BlurSpinWait.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlurSpinWait.swift; sourceTree = "<group>"; };
+		8CF44DA51F86F422007E905A /* CameraCrossLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCrossLayer.swift; sourceTree = "<group>"; };
 		8CF858651F7ED8A000C46614 /* IntroViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroViewController.swift; sourceTree = "<group>"; };
 		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		9837F6E6016D51C9060037BC /* Pods_TastryApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TastryApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -387,10 +388,10 @@
 				8CF858651F7ED8A000C46614 /* IntroViewController.swift */,
 				8C0590461EC653DF00027E91 /* DiscoverViewController.swift */,
 				8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */,
+				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
 				C24F69641EB85B0300A0DB7B /* StoryViewController.swift */,
 				8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */,
 				8C9AD0611E8F615D005F337E /* MarkupViewController.swift */,
-				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
 				8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */,
 				8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */,
 				8C3254A41F40240900895572 /* VenueTableViewController.swift */,
@@ -402,10 +403,10 @@
 		8CD328DA1E8B2BD600E5254F /* Layers */ = {
 			isa = PBXGroup;
 			children = (
+				8CF44DA51F86F422007E905A /* CameraCrossLayer.swift */,
 				8C1ED6E91F5D15A300A8CC94 /* AddMomentLayer.swift */,
 				8C1ED6EA1F5D15A300A8CC94 /* CameraButtonLayer.swift */,
 				8C1ED6EB1F5D15A300A8CC94 /* CameraButtonRingLayer.swift */,
-				8C1ED6EC1F5D15A300A8CC94 /* CameraCrossLayer.swift */,
 				8CE49EB41F64C8E8007278C1 /* PickerSquareLayer.swift */,
 				8CE49EB21F638162007278C1 /* ArrowLayer.swift */,
 				8C1ED6ED1F5D15A300A8CC94 /* ThumbnailFrameLayer.swift */,
@@ -779,6 +780,7 @@
 			files = (
 				8C2F79731F4E23F700851334 /* LocationWatch.swift in Sources */,
 				8C2F796F1F4C0D9A00851334 /* SwiftRetry.swift in Sources */,
+				8CF44DA61F86F422007E905A /* CameraCrossLayer.swift in Sources */,
 				8C1089311EADC11B00457E66 /* MomentHeaderReusableView.swift in Sources */,
 				8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */,
 				8CEEB1CD1F821FA1008E91BD /* BlurSpinWait.swift in Sources */,
@@ -832,7 +834,6 @@
 				8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */,
 				8C1D4E221EDCEC9A00939B2C /* FeedCollectionViewController.swift in Sources */,
 				8C7CE2881F36B92A00DEFCBE /* FoodieQuery.swift in Sources */,
-				8C1ED6F11F5D15A300A8CC94 /* CameraCrossLayer.swift in Sources */,
 				8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */,
 				8CC48D601EFC81CD003A0FC9 /* PrecisionTime.swift in Sources */,
 				8C05904B1EC6671400027E91 /* UIStoryboard+Extension.swift in Sources */,
