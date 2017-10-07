@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="TimesNewRomanBold.ttf">
+            <string>TimesNewRomanPS-BoldMT</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--Discover View Controller-->
         <scene sceneID="rnU-Po-hAl">
             <objects>
-                <viewController storyboardIdentifier="DiscoverViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="rfP-Xi-Fc9" customClass="DiscoverViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DiscoverViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="rfP-Xi-Fc9" customClass="DiscoverViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="CzA-PB-le3"/>
                         <viewControllerLayoutGuide type="bottom" id="DOH-8e-bbT"/>
@@ -32,7 +37,7 @@
         <!--Map View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController storyboardIdentifier="MapViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="BYZ-38-t0r" customClass="MapViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MapViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="BYZ-38-t0r" customClass="MapViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -58,7 +63,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes"/>
                             </textField>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="srX-2D-hwk" customClass="PassthruStackView" customModule="EatellyApp" customModuleProvider="target">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="srX-2D-hwk" customClass="PassthruStackView" customModule="TastryApp" customModuleProvider="target">
                                 <rect key="frame" x="16" y="445" width="343" height="182"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1zZ-dd-fcW">
@@ -257,7 +262,7 @@
         <!--Feed Collection View Controller-->
         <scene sceneID="1WN-B5-zBj">
             <objects>
-                <collectionViewController storyboardIdentifier="FeedCollectionViewController" id="HNg-5k-U9d" customClass="FeedCollectionViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController storyboardIdentifier="FeedCollectionViewController" id="HNg-5k-U9d" customClass="FeedCollectionViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="Ut2-ec-XIU">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -270,7 +275,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FeedCell" id="iOA-sb-ZC0" customClass="FeedCollectionViewCell" customModule="EatellyApp" customModuleProvider="target">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FeedCell" id="iOA-sb-ZC0" customClass="FeedCollectionViewCell" customModule="TastryApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="187" height="333"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -332,7 +337,7 @@
         <!--Story View Controller-->
         <scene sceneID="ooy-sj-8sY">
             <objects>
-                <viewController storyboardIdentifier="StoryViewController" id="l2J-hP-Z7q" customClass="StoryViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="StoryViewController" id="l2J-hP-Z7q" customClass="StoryViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Tof-66-bGy"/>
                         <viewControllerLayoutGuide type="bottom" id="On6-b9-DFl"/>
@@ -469,7 +474,7 @@
         <!--Camera View Controller-->
         <scene sceneID="wzA-2G-nOi">
             <objects>
-                <viewController storyboardIdentifier="CameraViewController" id="ImI-Ed-QdP" customClass="CameraViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CameraViewController" id="ImI-Ed-QdP" customClass="CameraViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="qt8-oB-J2w"/>
                         <viewControllerLayoutGuide type="bottom" id="ld9-ET-76c"/>
@@ -478,7 +483,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="30k-mM-bOe" customClass="CameraButton" customModule="EatellyApp" customModuleProvider="target">
+                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="30k-mM-bOe" customClass="CameraButton" customModule="TastryApp" customModuleProvider="target">
                                 <rect key="frame" x="147.5" y="579" width="80" height="80"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <gestureRecognizers/>
@@ -491,7 +496,7 @@
                                     <outletCollection property="gestureRecognizers" destination="Hy8-pD-3IZ" appends="YES" id="UAK-Dg-gGw"/>
                                 </connections>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kxo-zQ-usi" customClass="ExitButton" customModule="EatellyApp" customModuleProvider="target">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kxo-zQ-usi" customClass="ExitButton" customModule="TastryApp" customModuleProvider="target">
                                 <rect key="frame" x="16" y="599" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="kxo-zQ-usi" secondAttribute="height" multiplier="1:1" id="HhG-Lw-YHk"/>
@@ -501,7 +506,7 @@
                                     <action selector="exitPressed:" destination="ImI-Ed-QdP" eventType="touchUpInside" id="i5Y-3I-IEc"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hPs-qT-rXL" customClass="ImagePickerButton" customModule="EatellyApp" customModuleProvider="target">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hPs-qT-rXL" customClass="ImagePickerButton" customModule="TastryApp" customModuleProvider="target">
                                 <rect key="frame" x="319" y="599" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="ZMe-kb-yeB"/>
@@ -540,7 +545,7 @@
         <!--Markup View Controller-->
         <scene sceneID="H9q-fk-uJF">
             <objects>
-                <viewController storyboardIdentifier="MarkupViewController" id="3Lz-hF-LGR" customClass="MarkupViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MarkupViewController" id="3Lz-hF-LGR" customClass="MarkupViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Wru-2j-ls2"/>
                         <viewControllerLayoutGuide type="bottom" id="NR8-oP-KZt"/>
@@ -567,8 +572,8 @@
                                     <action selector="soundButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="dkQ-EQ-R1s"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KrM-3z-Z5X" customClass="ExitButton" customModule="EatellyApp" customModuleProvider="target">
-                                <rect key="frame" x="10" y="10" width="40" height="40"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KrM-3z-Z5X" customClass="ExitButton" customModule="TastryApp" customModuleProvider="target">
+                                <rect key="frame" x="10" y="30" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="4py-wd-BeH"/>
                                     <constraint firstAttribute="width" secondItem="KrM-3z-Z5X" secondAttribute="height" multiplier="1:1" id="pSH-Qf-XE1"/>
@@ -689,7 +694,7 @@
         <!--Story Entry View Controller-->
         <scene sceneID="MEV-Xi-0JN">
             <objects>
-                <tableViewController storyboardIdentifier="StoryEntryViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="YxI-Mg-cNr" customClass="StoryEntryViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="StoryEntryViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="YxI-Mg-cNr" customClass="StoryEntryViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="KCt-sK-dka">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -698,10 +703,10 @@
                             <tableViewSection headerTitle="Stretch Map Section Header" id="3jh-aS-0if">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="k4v-QV-gqg">
-                                        <rect key="frame" x="0.0" y="56" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="k4v-QV-gqg" id="Ttp-6L-HRV">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Title" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="p0e-OO-Rl9">
@@ -727,10 +732,10 @@
                             <tableViewSection headerTitle="Moment Collection View Header" id="z8v-Ul-vTt">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="SCo-b3-SGy">
-                                        <rect key="frame" x="0.0" y="156" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="155.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SCo-b3-SGy" id="mrM-YN-vc8">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kwj-i7-hiS">
@@ -754,10 +759,10 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="fmt-nK-hLv">
-                                        <rect key="frame" x="0.0" y="200" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="199.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fmt-nK-hLv" id="BJ3-IR-B5A">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Link" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Sdu-9R-pbJ">
@@ -783,10 +788,10 @@
                             <tableViewSection id="ixb-yl-Lax">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="133" id="qWC-Q9-gqR">
-                                        <rect key="frame" x="0.0" y="280" width="375" height="133"/>
+                                        <rect key="frame" x="0.0" y="279.5" width="375" height="133"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="qWC-Q9-gqR" id="QYD-OH-Fjz">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="132"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="132.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ijC-Vt-3Fq">
@@ -800,16 +805,17 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="50" id="3yk-tP-0Df">
-                                        <rect key="frame" x="0.0" y="413" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="412.5" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3yk-tP-0Df" id="qUP-ce-gSk">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cGu-Cc-dGg">
-                                                    <rect key="frame" x="152" y="10" width="71" height="30"/>
-                                                    <state key="normal" title="Post Story"/>
+                                                    <rect key="frame" x="160.5" y="10" width="54" height="30"/>
+                                                    <state key="normal" title="Preview"/>
                                                     <connections>
+                                                        <action selector="previewStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="o7I-XZ-21l"/>
                                                         <action selector="testSaveStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="X7u-d7-f2o"/>
                                                     </connections>
                                                 </button>
@@ -817,6 +823,27 @@
                                             <constraints>
                                                 <constraint firstItem="cGu-Cc-dGg" firstAttribute="centerY" secondItem="qUP-ce-gSk" secondAttribute="centerY" id="1Zy-SZ-zQR"/>
                                                 <constraint firstItem="cGu-Cc-dGg" firstAttribute="centerX" secondItem="qUP-ce-gSk" secondAttribute="centerX" id="9y7-lc-HTj"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="50" id="h0k-d4-baO">
+                                        <rect key="frame" x="0.0" y="462.5" width="375" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="h0k-d4-baO" id="VTA-zz-bRw">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KSd-8F-IhC">
+                                                    <rect key="frame" x="152" y="10" width="71" height="30"/>
+                                                    <state key="normal" title="Post Story"/>
+                                                    <connections>
+                                                        <action selector="testSaveStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="VtK-Hx-fQq"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="KSd-8F-IhC" firstAttribute="centerY" secondItem="VTA-zz-bRw" secondAttribute="centerY" id="TJl-ez-XSP"/>
+                                                <constraint firstItem="KSd-8F-IhC" firstAttribute="centerX" secondItem="VTA-zz-bRw" secondAttribute="centerX" id="l61-Bq-Wrw"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -842,8 +869,8 @@
         <!--Moment Collection View Controller-->
         <scene sceneID="Sf3-nA-ZH6">
             <objects>
-                <collectionViewController storyboardIdentifier="MomentCollectionViewController" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceHorizontal="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="TGu-A1-lSP">
+                <collectionViewController storyboardIdentifier="MomentCollectionViewController" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceHorizontal="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="TGu-A1-lSP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="222"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -855,7 +882,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentCell" id="5yf-rk-zGg" customClass="MomentCollectionViewCell" customModule="EatellyApp" customModuleProvider="target">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentCell" id="5yf-rk-zGg" customClass="MomentCollectionViewCell" customModule="TastryApp" customModuleProvider="target">
                                 <rect key="frame" x="124" y="0.0" width="124" height="222"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -900,11 +927,11 @@
                                 </connections>
                             </collectionViewCell>
                         </cells>
-                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentHeader" id="DfJ-30-c0L" customClass="MomentHeaderReusableView" customModule="EatellyApp" customModuleProvider="target">
+                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentHeader" id="DfJ-30-c0L" customClass="MomentHeaderReusableView" customModule="TastryApp" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </collectionReusableView>
-                        <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentFooter" id="CkJ-Jk-m6B" customClass="MomentFooterReusableView" customModule="EatellyApp" customModuleProvider="target">
+                        <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentFooter" id="CkJ-Jk-m6B" customClass="MomentFooterReusableView" customModule="TastryApp" customModuleProvider="target">
                             <rect key="frame" x="248" y="0.0" width="124" height="222"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </collectionReusableView>
@@ -923,7 +950,7 @@
         <!--Venue Table View Controller-->
         <scene sceneID="Xa7-M7-Itt">
             <objects>
-                <viewController storyboardIdentifier="VenueTableViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="WW3-dq-N2V" customClass="VenueTableViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="VenueTableViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="WW3-dq-N2V" customClass="VenueTableViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="fcv-Pk-Bo1"/>
                         <viewControllerLayoutGuide type="bottom" id="Yue-H4-T8S"/>
@@ -963,7 +990,7 @@
                                 </prototypes>
                             </tableView>
                             <stackView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="y57-UU-pr5">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="108"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="132"/>
                                 <subviews>
                                     <view opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="375" placeholderIntrinsicHeight="20" translatesAutoresizingMaskIntoConstraints="NO" id="NzM-Iv-Gfw">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="20"/>
@@ -973,11 +1000,11 @@
                                         </constraints>
                                     </view>
                                     <searchBar opaque="NO" contentMode="redraw" text="" placeholder="Venue name to search" translatesAutoresizingMaskIntoConstraints="NO" id="qJC-s3-KyN">
-                                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="20" width="375" height="56"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </searchBar>
                                     <searchBar opaque="NO" contentMode="redraw" text="" placeholder="Location to search near" translatesAutoresizingMaskIntoConstraints="NO" id="X26-2v-yRG">
-                                        <rect key="frame" x="0.0" y="64" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="76" width="375" height="56"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </searchBar>
                                 </subviews>
@@ -1017,7 +1044,7 @@
         <!--Category Table View Controller-->
         <scene sceneID="r9j-Iu-ATn">
             <objects>
-                <viewController storyboardIdentifier="CategoryTableViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="MUc-1H-WcJ" userLabel="Category Table View Controller" customClass="CategoryTableViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CategoryTableViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="MUc-1H-WcJ" userLabel="Category Table View Controller" customClass="CategoryTableViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="2S4-0h-dJb"/>
                         <viewControllerLayoutGuide type="bottom" id="Gau-O1-hVX"/>
@@ -1027,7 +1054,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="dp8-CM-2Vn">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="76"/>
                                 <subviews>
                                     <view opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="375" placeholderIntrinsicHeight="20" translatesAutoresizingMaskIntoConstraints="NO" id="8ur-XQ-hy3">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="20"/>
@@ -1037,7 +1064,7 @@
                                         </constraints>
                                     </view>
                                     <searchBar opaque="NO" contentMode="redraw" text="" placeholder="Category to search" translatesAutoresizingMaskIntoConstraints="NO" id="biv-RP-Mpe" userLabel="Category Search Bar">
-                                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="20" width="375" height="56"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </searchBar>
                                 </subviews>

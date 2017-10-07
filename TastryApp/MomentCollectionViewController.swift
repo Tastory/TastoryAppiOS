@@ -25,13 +25,18 @@ class MomentCollectionViewController: UICollectionViewController {
 
   // MARK: - Public Instance Variables
   var workingStory: FoodieStory!
-
+  var cameraDelegate: CameraDelegate!
 
   // MARK: - Private Instance Variables
   fileprivate var momentWidthDefault: CGFloat!
   fileprivate var momentSizeDefault: CGSize!
 
   // MARK: - Public Instance Functions
+  @objc func openCamera(_ sender: UIGestureRecognizer) {
+    cameraDelegate.openCamera()
+  }
+
+
   func setThumbnail(_ indexPath: IndexPath) {
 
     guard let currentStory = workingStory else {
@@ -240,6 +245,10 @@ extension MomentCollectionViewController {
       reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.headerElementReuseId, for: indexPath)
     case UICollectionElementKindSectionFooter:
       reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.footerElementReuseId, for: indexPath)
+      let triggerCamera = UITapGestureRecognizer(target: self, action: #selector(openCamera(_:)))
+      triggerCamera.numberOfTapsRequired = 1
+      reusableView.addGestureRecognizer(triggerCamera)
+
     default:
       CCLog.fatal("Unrecognized Kind '\(kind)' for Supplementary Element")
     }
