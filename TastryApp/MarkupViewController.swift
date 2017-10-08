@@ -25,7 +25,7 @@ protocol MarkupReturnDelegate {
 }
 
 
-class MarkupViewController: UIViewController {
+class MarkupViewController: TransitableViewController {
   
   // MARK: - Constants
   struct Constants {

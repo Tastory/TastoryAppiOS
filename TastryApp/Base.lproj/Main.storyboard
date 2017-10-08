@@ -702,6 +702,24 @@
             </objects>
             <point key="canvasLocation" x="1021.6" y="-666.11694152923542"/>
         </scene>
+        <!--Story Composition View Controller-->
+        <scene sceneID="hr8-zp-Vvh">
+            <objects>
+                <viewController storyboardIdentifier="StoryCompositionViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="qja-VH-rV7" customClass="StoryCompositionViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Exz-C7-zzX"/>
+                        <viewControllerLayoutGuide type="bottom" id="Fyy-j4-4sk"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="I8o-dP-osX">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VB6-Kf-XJB" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1688.8" y="-666.11694152923542"/>
+        </scene>
         <!--Story Entry View Controller-->
         <scene sceneID="MEV-Xi-0JN">
             <objects>
@@ -875,7 +893,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6pB-Nr-PsL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1736.8" y="-591.45427286356824"/>
+            <point key="canvasLocation" x="2362" y="-666"/>
         </scene>
         <!--Moment Collection View Controller-->
         <scene sceneID="Sf3-nA-ZH6">
@@ -956,7 +974,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BGe-7r-hOK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2431" y="-927"/>
+            <point key="canvasLocation" x="3063" y="-1005"/>
         </scene>
         <!--Venue Table View Controller-->
         <scene sceneID="Xa7-M7-Itt">
@@ -1050,7 +1068,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2461.5999999999999" y="-463.71814092953525"/>
+            <point key="canvasLocation" x="3062" y="-491"/>
         </scene>
         <!--Category Table View Controller-->
         <scene sceneID="r9j-Iu-ATn">

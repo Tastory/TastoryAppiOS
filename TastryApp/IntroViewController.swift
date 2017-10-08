@@ -8,7 +8,7 @@
 
 import UIKit
 
-class IntroViewController: UIViewController {
+class IntroViewController: TransitableViewController {
   
   // MARK: - Public Instance Function
   var firstLabelText: String?

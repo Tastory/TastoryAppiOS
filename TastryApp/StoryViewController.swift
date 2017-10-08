@@ -11,7 +11,7 @@ import AVFoundation
 import SafariServices
 import Jot
 
-class StoryViewController: UIViewController {
+class StoryViewController: TransitableViewController {
   
   // MARK: - Constants
   struct Constants {

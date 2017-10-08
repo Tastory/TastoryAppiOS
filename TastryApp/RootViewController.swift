@@ -10,7 +10,6 @@ import UIKit
 
 class RootViewController: UIViewController {
   
-  
   // MARK: - Public Instance Variables
   var startupError: Error? = nil
   
@@ -57,7 +56,7 @@ class RootViewController: UIViewController {
           // Lets just jump directly into the Main view!
           let storyboard = UIStoryboard(name: "Main", bundle: nil)
           let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")
-          self.present(viewController, animated: true, completion: nil)
+          self.present(viewController, animated: false, completion: nil)
         }
       } else {
         // Resetting permissions back to global default since we don't know whose gonna be logged'in
@@ -66,7 +65,7 @@ class RootViewController: UIViewController {
         // Jump to the Login/Signup Screen!
         let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
         let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "LogInViewController")
-        self.present(viewController, animated: true)
+        self.present(viewController, animated: false)
       }
     }
   }

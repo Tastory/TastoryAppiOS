@@ -12,13 +12,13 @@ import UIKit
 class FeedCollectionViewController: UICollectionViewController {
   
   // MARK: - Private Class Constants
-  fileprivate struct Constants {
+  private struct Constants {
     static let reuseIdentifier = "FeedCell"
   }
   
   
   
-  // MARK: - Private Instance Variable
+  // MARK: - Public Instance Variable
   var storyQuery: FoodieQuery!
   var storyArray = [FoodieStory]()
   
@@ -30,57 +30,8 @@ class FeedCollectionViewController: UICollectionViewController {
     FoodiePrefetch.global.removeAllPrefetchWork()
     dismiss(animated: true, completion: nil)
   }
-  
-  
-  
-  // MARK: - Private Instance Functions
-  
-  // Generic error dialog box to the user on internal errors
-  fileprivate func queryErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when a Feed Collection View query error occurred",
-                                              message: "A query error has occured. Please try again",
-                                              messageComment: "Alert dialog message when a Feed Collection View query error occurred",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for generic Feed Collection View errors",
-                                     style: .default)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-  
-  
-  fileprivate func fetchErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when a Feed Collection View fetch error occurred",
-                                              message: "A fetch error has occured. Please try again",
-                                              messageComment: "Alert dialog message when a Feed Collection View fetch error occurred",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for generic Feed Collection View errors",
-                                     style: .default)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-  
-  
-  fileprivate func internalErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when a Feed Collection View internal error occured",
-                                              message: "An internal error has occured. Please try again",
-                                              messageComment: "Alert dialog message when a Feed Collection View internal error occured",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for generic Feed Collection View errors",
-                                     style: .default)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-  
-  
+
+
   
   // MARK: - Public Instance Functions
   
@@ -97,17 +48,10 @@ class FeedCollectionViewController: UICollectionViewController {
   
   
   // MARK: - View Controller Lifecycle Functions
-  
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    // Uncomment the following line to preserve selection between presentations
-    // self.clearsSelectionOnViewWillAppear = false
-    
-    CCLog.verbose("storyArray.count = \(storyArray.count)")
-    
-    // Apply a Background to the CollectionView
-    collectionView?.backgroundView = UIImageView(image: UIImage(named: "TastryTempBgWhite"))
+    CCLog.verbose("StoryArray.count = \(storyArray.count)")
     
     // Turn on CollectionView prefetching
     collectionView?.prefetchDataSource = self
@@ -115,9 +59,11 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
+  
   override func viewDidAppear(_ animated: Bool) {
     FoodiePrefetch.global.unblockPrefetching()
   }
+  
   
   
   override func didReceiveMemoryWarning() {
@@ -134,9 +80,11 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
+  
   override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     return storyArray.count
   }
+  
   
   
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -158,20 +106,23 @@ class FeedCollectionViewController: UICollectionViewController {
       FoodiePrefetch.global.unblockPrefetching()
       
       if let error = error {
-        self.fetchErrorDialog()
-        CCLog.assert("Story.retrieveDigest() callback with error: \(error.localizedDescription)")
+        AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story - \(error.localizedDescription)") { action in
+          CCLog.assert("Story.retrieveDigest() callback with error: \(error.localizedDescription)")
+        }
         return
       }
       
       guard let thumbnailObject = story.thumbnailObj else {
-        self.fetchErrorDialog()
-        CCLog.assert("Story.retrieveDigest callback with thumbnailObj = nil")
+        AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Cover Media") { action in
+          CCLog.assert("Story.retrieveDigest callback with thumbnailObj = nil")
+        }
         return
       }
       
       guard let thumbnailData = thumbnailObject.imageMemoryBuffer else {
-        self.internalErrorDialog()
-        CCLog.assert("Unexpected, thumbnailObject.imageMemoryBuffer = nil")
+        AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Cover Media") { action in
+          CCLog.assert("Unexpected, thumbnailObject.imageMemoryBuffer = nil")
+        }
         return
       }
       
@@ -220,8 +171,9 @@ class FeedCollectionViewController: UICollectionViewController {
   // MARK: - UICollectionViewDataSource
   override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
     guard let feedCell = cell as? FeedCollectionViewCell else {
-      internalErrorDialog()
-      CCLog.assert("Cannot cast cell as FeedCollectionViewCell")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Cannot cast cell as FeedCollectionViewCell")
+      }
       return
     }
     

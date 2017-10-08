@@ -11,7 +11,7 @@ import MapKit
 import CoreLocation
 
 
-class MapViewController: UIViewController {
+class MapViewController: TransitableViewController {
 
   // MARK: Error Types Definition
   enum ErrorCode: LocalizedError {
@@ -100,7 +100,7 @@ class MapViewController: UIViewController {
     // This is used for viewing the draft story to be used with update story later
     // Hid the button due to problems with empty draft story and saving an empty story is problematic
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as! StoryEntryViewController
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as! StoryCompositionViewController
 
     if(FoodieStory.currentStory == nil)
     {
@@ -110,6 +110,8 @@ class MapViewController: UIViewController {
     {
       viewController.workingStory = FoodieStory.currentStory
     }
+    
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   
@@ -721,12 +723,6 @@ extension MapViewController: UITextFieldDelegate {
       return false
     }
   }
-
-//  let userInfo = notification.userInfo!
-//  let keyboardHeight = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue().height
-//  let duration = userInfo[UIKeyboardAnimationDurationUserInfoKey] as! Double
-//  let curve = userInfo[UIKeyboardAnimationCurveUserInfoKey] as! UInt
-//  let moveUp = (notification.name == UIKeyboardWillShowNotification)
 }
 
 
@@ -734,7 +730,7 @@ extension MapViewController: CameraReturnDelegate {
   func captureComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
     DispatchQueue.main.async {  // UI Work. We don't know which thread we might be in, so guarentee execute in Main thread
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as! StoryEntryViewController
+      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as! StoryCompositionViewController
       
       var workingStory: FoodieStory?
       
@@ -750,6 +746,7 @@ extension MapViewController: CameraReturnDelegate {
       viewController.returnedMoment = markedupMoment
       
       self.dismiss(animated: true) { /*[unowned self] in*/
+        viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
         self.present(viewController, animated: true)
       }
     }

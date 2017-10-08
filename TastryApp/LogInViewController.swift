@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LogInViewController: UIViewController {
+class LogInViewController: TransitableViewController {
   
   
   // MARK: - IBOutlet
@@ -92,6 +92,7 @@ class LogInViewController: UIViewController {
     
     viewController.username = usernameField.text
     viewController.password = passwordField.text
+    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   

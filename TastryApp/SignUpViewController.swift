@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SignUpViewController: UIViewController {
+class SignUpViewController: TransitableViewController {
   
   
   // MARK: - Public Instance Variable

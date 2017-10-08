@@ -18,7 +18,7 @@ protocol CategoryTableReturnDelegate {
 }
 
 
-class CategoryTableViewController: UIViewController {
+class CategoryTableViewController: TransitableViewController {
 
   // MARK: - Constants
   struct Constants {

@@ -42,12 +42,12 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   // MARK: - Public Instance Variable
   var workingStory: FoodieStory?
   var returnedMoment: FoodieMoment?
-  
+  var markupMoment: FoodieMoment? = nil
+  var containerVC: MarkupReturnDelegate?
   
   // MARK: - Private Instance Variables
   fileprivate var placeholderLabel = UILabel()
   fileprivate var momentViewController = MomentCollectionViewController()
-  fileprivate var markupMoment: FoodieMoment? = nil
   fileprivate var selectedViewCell: MomentCollectionViewCell?
 
   // MARK: - IBOutlets
@@ -62,6 +62,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as! VenueTableViewController
     viewController.delegate = self
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     viewController.suggestedVenue = workingStory?.venue
     
     // Average the locations of the Moments to create a location suggestion on where to search for a Venue
@@ -88,7 +89,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
       CCLog.fatal("No Current User Logged In")
     }
     
-    guard story.title != nil && story.venue != nil else {
+    guard let title = story.title, title != "", story.venue != nil else {
       AlertDialog.present(from: self, title: "Required Fields Empty", message: "The Title and Venue are essential to a Story!")
       return
     }
@@ -281,6 +282,11 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
       CCLog.fatal("No moments in current working story.")
     }
 
+    guard let markupReturnVC = containerVC else {
+      CCLog.fatal("Story Entry VC does not have a Container VC")
+    }
+    
+    
     if(indexPath.row >= momentArray.count)
     {
       AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { action in
@@ -291,7 +297,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     let moment = momentArray[indexPath.row]
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-    viewController.markupReturnDelegate = self
+    viewController.markupReturnDelegate = markupReturnVC
 
     guard let mediaObj = moment.mediaObj else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
@@ -708,15 +714,7 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
   }
 }
 
-extension StoryEntryViewController: MarkupReturnDelegate {
-  func markupComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
 
-    self.returnedMoment = markedupMoment
-    self.markupMoment = markedupMoment
-
-    dismiss(animated: true, completion: nil)
-  }
-}
 
 extension StoryEntryViewController: CameraReturnDelegate {
   func captureComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {

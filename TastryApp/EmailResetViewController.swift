@@ -8,7 +8,7 @@
 
 import UIKit
 
-class EmailResetViewController: UIViewController {
+class EmailResetViewController: TransitableViewController {
   
   
   // MARK: - Public Instance Variable
