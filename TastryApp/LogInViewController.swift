@@ -92,7 +92,7 @@ class LogInViewController: TransitableViewController {
     
     viewController.username = usernameField.text
     viewController.password = passwordField.text
-    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   
@@ -110,6 +110,7 @@ class LogInViewController: TransitableViewController {
     if let logInText = usernameField.text, FoodieUser.checkValidFor(email: logInText) {
       viewController.emailAddress = logInText
     }
+    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   
@@ -127,7 +128,13 @@ class LogInViewController: TransitableViewController {
     
     AlertDialog.present(from: self, title: "Guest Login", message: "You will not be able to post as a Guest. We highly encourage you to sign-up and log-in for the best experience!") { action in
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")
+      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController") as? MapViewController else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("ViewController initiated not of MapViewController Class!!")
+        }
+        return
+      }
+      viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
       self.present(viewController, animated: true)
     }
   }
@@ -207,6 +214,7 @@ class LogInViewController: TransitableViewController {
           viewController.enableResend = true
         }
         
+        viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
         self.present(viewController, animated: true, completion: nil)
       }
     }
@@ -229,12 +237,4 @@ class LogInViewController: TransitableViewController {
   override func viewWillDisappear(_ animated: Bool) {
     view.endEditing(true)
   }
-  
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
-  }
-  
 }

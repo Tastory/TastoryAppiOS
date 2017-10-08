@@ -213,12 +213,7 @@ class VenueTableViewController: TransitableViewController {
   override func viewDidLayoutSubviews() {
     venueTableView.contentInset = UIEdgeInsetsMake(stackView.bounds.height, 0.0, 0.0, 0.0)  // This is so the Table View can be translucent underneath the Stack View of Search Bars
   }
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
-  }
+
 }
 
 

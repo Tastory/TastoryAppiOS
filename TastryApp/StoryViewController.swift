@@ -551,13 +551,6 @@ class StoryViewController: TransitableViewController {
     super.viewDidDisappear(animated)
     cleanUp()
   }
-  
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
-  }
 }
 
 

@@ -47,10 +47,4 @@ class DiscoverFeedViewController: TransitableViewController {
     viewController.didMove(toParentViewController: self)
     feedCollectionViewController = viewController
   }
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
-  }
 }

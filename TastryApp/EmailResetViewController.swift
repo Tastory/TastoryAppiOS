@@ -65,11 +65,4 @@ class EmailResetViewController: TransitableViewController {
   override func viewWillDisappear(_ animated: Bool) {
     view.endEditing(true)
   }
-  
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    CCLog.warning("didReceiveMemoryWarning")
-  }
-  
 }

@@ -128,6 +128,7 @@ class SignUpViewController: TransitableViewController {
         viewController.firstLabelText = "Please make sure you confirm your E-mail so you can start posting"
         viewController.secondLabelText = "For now, you can start by checking out what Tasty Stories are around you~"
         viewController.enableResend = false
+        viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
         self.present(viewController, animated: true)
       }
     }
@@ -154,13 +155,6 @@ class SignUpViewController: TransitableViewController {
   
   override func viewWillDisappear(_ animated: Bool) {
     view.endEditing(true)
-  }
-  
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
   }
 }
 

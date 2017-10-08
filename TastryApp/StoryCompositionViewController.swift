@@ -50,11 +50,6 @@ class StoryCompositionViewController: TransitableViewController {
     viewController.didMove(toParentViewController: self)
     staticTableViewController = viewController
   }
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
-  }
 }
 
 extension StoryCompositionViewController: MarkupReturnDelegate {

@@ -33,7 +33,24 @@ class TransitableViewController: UIViewController {
   
   @objc func panGestureAction(_ panGesture: UIPanGestureRecognizer) {
     guard let dismissDirection = dismissDirection else {
-      CCLog.fatal("No Dimiss Direction even tho dragGestureRecognizer is set")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("No Dimiss Direction even tho dragGestureRecognizer is set")
+      }
+      return
+    }
+    
+    guard let animator = animator else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("No Animator even tho dragGestureRecognizer is set")
+      }
+      return
+    }
+    
+    guard let interactor = interactor else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("No Interactor even tho dragGestureRecognizer is set")
+      }
+      return
     }
     
     let gestureTranslation = panGesture.translation(in: view)
@@ -95,13 +112,13 @@ class TransitableViewController: UIViewController {
 
     switch panGesture.state {
     case .began:
-      interactor?.hasStarted = true
-      animator?.dismissDirection = .stay
+      interactor.hasStarted = true
+      animator.dismissDirection = .stay
       dismiss(animated: true, completion: nil)
 
     case .changed:
       view.frame.origin = frameTranslation
-      interactor?.update(CGFloat(progress))
+      interactor.update(CGFloat(progress))
       
     case .ended:
       if directionalVelocity >= Constants.DragVelocityToDismiss {
@@ -110,7 +127,7 @@ class TransitableViewController: UIViewController {
           self.view.frame.origin = CGPoint(x: self.view.frame.origin.x + (CGFloat(duration) * frameVelocity.x),
                                            y: self.view.frame.origin.y + (CGFloat(duration) * frameVelocity.y))
         }, completion: { isCompleted in
-          self.interactor?.finish()
+          interactor.finish()
         })
         break
         
@@ -119,9 +136,9 @@ class TransitableViewController: UIViewController {
       }
       
     default:
-      self.interactor?.hasStarted = false
-      self.interactor?.cancel()
-      animator?.dismissDirection = dismissDirection
+      interactor.hasStarted = false
+      interactor.cancel()
+      animator.dismissDirection = dismissDirection
       UIView.animate(withDuration: 0.2, animations: {
         self.view.frame.origin = CGPoint.zero
       }, completion: { isCompleted in
@@ -161,6 +178,7 @@ class TransitableViewController: UIViewController {
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
+    //CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidLoad")
     if let dragGestureRecognizer = dragGestureRecognizer {
       view.addGestureRecognizer(dragGestureRecognizer)
     }
@@ -168,26 +186,31 @@ class TransitableViewController: UIViewController {
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    print("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillAppear")
+    //CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillAppear")
   }
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    print("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidAppear")
+    //CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidAppear")
   }
   
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
-    print("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillDisappear")
+    //CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillDisappear")
   }
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    print("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidDisappear")
+    //CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidDisappear")
+  }
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    CCLog.warning("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") didReceiveMemoryWarning")
   }
   
   deinit {
-    print("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") deinit")
+    //CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") deinit")
   }
 }
 

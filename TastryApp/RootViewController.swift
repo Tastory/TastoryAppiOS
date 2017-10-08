@@ -55,7 +55,13 @@ class RootViewController: UIViewController {
           
           // Lets just jump directly into the Main view!
           let storyboard = UIStoryboard(name: "Main", bundle: nil)
-          let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")
+          guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController") as? MapViewController else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+              CCLog.fatal("ViewController initiated not of MapViewController Class!!")
+            }
+            return
+          }
+          viewController.setTransition(presentTowards: .left, dismissTowards: .right)
           self.present(viewController, animated: false, completion: nil)
         }
       } else {
@@ -64,7 +70,13 @@ class RootViewController: UIViewController {
         
         // Jump to the Login/Signup Screen!
         let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
-        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "LogInViewController")
+        guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "LogInViewController") as? LogInViewController else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("ViewController initiated not of LogInViewController Class!!")
+          }
+          return
+        }
+        viewController.setTransition(presentTowards: .left, dismissTowards: .right)
         self.present(viewController, animated: false)
       }
     }

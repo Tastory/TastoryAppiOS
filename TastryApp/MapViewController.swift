@@ -243,7 +243,8 @@ class MapViewController: TransitableViewController {
         return
       }
       
-      rootViewController.dismiss(animated: true, completion: nil)
+      // Animated dismissal of 2+ VCs is super weird. So no.
+      rootViewController.dismiss(animated: false, completion: nil)
     }
   }
   
@@ -558,13 +559,6 @@ class MapViewController: TransitableViewController {
     lastLocation = mapView?.centerCoordinate
     lastMapDelta = mapView?.region.span.latitudeDelta
   }
-  
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
-  }
 }
 
 
@@ -717,6 +711,7 @@ extension MapViewController: UITextFieldDelegate {
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
       let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CategoryTableViewController") as! CategoryTableViewController
       viewController.delegate = self
+      viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
       self.present(viewController, animated: true)
       return false
       
@@ -787,6 +782,7 @@ extension MapViewController: MKMapViewDelegate {
     }
     
     viewController.viewingStory = story
+    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   

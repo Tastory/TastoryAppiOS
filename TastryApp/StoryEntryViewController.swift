@@ -62,11 +62,11 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as! VenueTableViewController
     viewController.delegate = self
-    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     viewController.suggestedVenue = workingStory?.venue
     
     // Average the locations of the Moments to create a location suggestion on where to search for a Venue
     viewController.suggestedLocation = averageLocationOfMoments()
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   
@@ -309,7 +309,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     viewController.mediaObj = mediaObj
     viewController.editMomentObj = moment
     viewController.addToExistingStoryOnly = true
-
+    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: false)
     self.present(viewController, animated: true)
     
   }

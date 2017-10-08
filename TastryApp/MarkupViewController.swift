@@ -806,12 +806,6 @@ class MarkupViewController: TransitableViewController {
     view.endEditing(true)  // Force clear the keyboard
   }
   
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
-  }
-  
   
   override var prefersStatusBarHidden: Bool {
     return true
