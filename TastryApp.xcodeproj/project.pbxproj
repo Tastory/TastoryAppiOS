@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		29421A9ED1630C24163C5213 /* Pods_TastryApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9837F6E6016D51C9060037BC /* Pods_TastryApp.framework */; };
 		8C030E4A1F88A42400B93EAC /* StoryCompositionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C030E491F88A42400B93EAC /* StoryCompositionViewController.swift */; };
-		8C0590471EC653DF00027E91 /* DiscoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590461EC653DF00027E91 /* DiscoverViewController.swift */; };
+		8C0590471EC653DF00027E91 /* DiscoverFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590461EC653DF00027E91 /* DiscoverFeedViewController.swift */; };
 		8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590481EC65B0000027E91 /* RootViewController.swift */; };
 		8C05904B1EC6671400027E91 /* UIStoryboard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */; };
 		8C0590511EC7E6A400027E91 /* FoodieMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590501EC7E6A400027E91 /* FoodieMedia.swift */; };
@@ -110,7 +110,7 @@
 		17F360FAB38094392D222249 /* Pods-TastryAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastryAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TastryAppTests/Pods-TastryAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4B3DBF493BCE72101729EF1C /* Pods_TastryAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TastryAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C030E491F88A42400B93EAC /* StoryCompositionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCompositionViewController.swift; sourceTree = "<group>"; };
-		8C0590461EC653DF00027E91 /* DiscoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverViewController.swift; sourceTree = "<group>"; };
+		8C0590461EC653DF00027E91 /* DiscoverFeedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverFeedViewController.swift; sourceTree = "<group>"; };
 		8C0590481EC65B0000027E91 /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+Extension.swift"; sourceTree = "<group>"; };
 		8C0590501EC7E6A400027E91 /* FoodieMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMedia.swift; sourceTree = "<group>"; };
@@ -395,7 +395,7 @@
 				8C14E28A1F7F42FD001CC869 /* EmailResetViewController.swift */,
 				8C1FF1321F7CA7240062312C /* SignUpViewController.swift */,
 				8CF858651F7ED8A000C46614 /* IntroViewController.swift */,
-				8C0590461EC653DF00027E91 /* DiscoverViewController.swift */,
+				8C0590461EC653DF00027E91 /* DiscoverFeedViewController.swift */,
 				8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */,
 				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
 				C24F69641EB85B0300A0DB7B /* StoryViewController.swift */,
@@ -812,7 +812,7 @@
 				8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */,
 				8C1ED6F01F5D15A300A8CC94 /* CameraButtonRingLayer.swift in Sources */,
 				8CE0DE1D1F89B12800F258E5 /* TransitionAnimator.swift in Sources */,
-				8C0590471EC653DF00027E91 /* DiscoverViewController.swift in Sources */,
+				8C0590471EC653DF00027E91 /* DiscoverFeedViewController.swift in Sources */,
 				8C1ED6EE1F5D15A300A8CC94 /* AddMomentLayer.swift in Sources */,
 				8CE49EB31F638162007278C1 /* ArrowLayer.swift in Sources */,
 				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */,

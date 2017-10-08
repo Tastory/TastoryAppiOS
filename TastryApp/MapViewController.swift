@@ -418,10 +418,10 @@ class MapViewController: TransitableViewController {
   
   fileprivate func launchFeed(withStoryArray storys: [FoodieStory], withStoryQuery query: FoodieQuery) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FeedCollectionViewController") as! FeedCollectionViewController
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverFeedViewController") as! DiscoverFeedViewController
     viewController.storyQuery = query
     viewController.storyArray = storys
-    viewController.restorationClass = nil
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   
@@ -492,6 +492,7 @@ class MapViewController: TransitableViewController {
   
   
   override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     
     // Kill all Pre-fetches
     FoodiePrefetch.global.removeAllPrefetchWork()
@@ -549,6 +550,7 @@ class MapViewController: TransitableViewController {
   
   
   override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
     // Don't even know when we'll be back. Let the GPS stop if no one else is using it
     locationWatcher?.stop()
     

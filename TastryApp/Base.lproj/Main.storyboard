@@ -16,10 +16,10 @@
         </array>
     </customFonts>
     <scenes>
-        <!--Discover View Controller-->
+        <!--Discover Feed View Controller-->
         <scene sceneID="rnU-Po-hAl">
             <objects>
-                <viewController storyboardIdentifier="DiscoverViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="rfP-Xi-Fc9" customClass="DiscoverViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DiscoverFeedViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="rfP-Xi-Fc9" customClass="DiscoverFeedViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="CzA-PB-le3"/>
                         <viewControllerLayoutGuide type="bottom" id="DOH-8e-bbT"/>
@@ -332,16 +332,10 @@
                         <connections>
                             <outlet property="dataSource" destination="HNg-5k-U9d" id="bFn-ma-Brt"/>
                             <outlet property="delegate" destination="HNg-5k-U9d" id="ay1-Bj-o4C"/>
-                            <outletCollection property="gestureRecognizers" destination="Fdk-6Y-6PU" appends="YES" id="Hn0-dA-xGs"/>
                         </connections>
                     </collectionView>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Cgs-s6-Dbf" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <swipeGestureRecognizer direction="right" id="Fdk-6Y-6PU">
-                    <connections>
-                        <action selector="rightSwipeAction:" destination="HNg-5k-U9d" id="wUk-jX-heR"/>
-                    </connections>
-                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-1162" y="18"/>
         </scene>
@@ -373,7 +367,7 @@
                                 <blurEffect style="light"/>
                             </visualEffectView>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="PSs-bH-oOZ">
-                                <rect key="frame" x="177" y="323" width="20" height="20"/>
+                                <rect key="frame" x="177.5" y="323.5" width="20" height="20"/>
                             </activityIndicatorView>
                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="De9-KV-Mtr" userLabel="Tap Gesture Stack">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -400,6 +394,10 @@
                                         </connections>
                                     </view>
                                 </subviews>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="zih-Ot-OhF" appends="YES" id="G84-GW-6BW"/>
+                                </connections>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7rC-KB-BnZ">
                                 <rect key="frame" x="329" y="617" width="30" height="30"/>
@@ -442,10 +440,6 @@
                             <constraint firstAttribute="trailing" secondItem="3Gc-Ev-vmE" secondAttribute="trailing" id="uPp-NK-myt"/>
                             <constraint firstItem="lU5-U1-CUM" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="vnj-nw-zOS"/>
                         </constraints>
-                        <connections>
-                            <outletCollection property="gestureRecognizers" destination="17T-uz-Ki4" appends="YES" id="h5e-pI-kLG"/>
-                            <outletCollection property="gestureRecognizers" destination="Qe3-ah-fti" appends="YES" id="TYJ-Iw-hb1"/>
-                        </connections>
                     </view>
                     <connections>
                         <outlet property="activityIndicator" destination="PSs-bH-oOZ" id="ltb-9Q-KVm"/>
@@ -453,6 +447,7 @@
                         <outlet property="pauseResumeButton" destination="7rC-KB-BnZ" id="qTD-9Q-iCi"/>
                         <outlet property="photoView" destination="3Gc-Ev-vmE" id="tiQ-hZ-B0K"/>
                         <outlet property="soundButton" destination="t4S-lT-gBv" id="ZDG-D8-Ify"/>
+                        <outlet property="swipeUpGestureRecognizer" destination="zih-Ot-OhF" id="VT9-68-H4H"/>
                         <outlet property="tapBackwardsWidth" destination="JVf-9n-aH0" id="NCS-Gv-0hn"/>
                         <outlet property="tapGestureStackView" destination="De9-KV-Mtr" id="a6F-Rd-dNf"/>
                         <outlet property="videoView" destination="nnO-KA-kth" id="Cmy-Ry-tDy"/>
@@ -469,14 +464,9 @@
                         <action selector="tapBackward:" destination="l2J-hP-Z7q" id="dmU-VL-El7"/>
                     </connections>
                 </tapGestureRecognizer>
-                <swipeGestureRecognizer direction="down" id="17T-uz-Ki4" userLabel="Swipe Down Gesture Recognizer">
+                <swipeGestureRecognizer direction="up" id="zih-Ot-OhF">
                     <connections>
-                        <action selector="swipeDown:" destination="l2J-hP-Z7q" id="1W5-EY-8aK"/>
-                    </connections>
-                </swipeGestureRecognizer>
-                <swipeGestureRecognizer direction="up" id="Qe3-ah-fti" userLabel="Swipe Up Gesture Recognizer">
-                    <connections>
-                        <action selector="swipeUp:" destination="l2J-hP-Z7q" id="6A0-jU-Eyy"/>
+                        <action selector="swipeUp:" destination="l2J-hP-Z7q" id="fxh-ue-qO8"/>
                     </connections>
                 </swipeGestureRecognizer>
             </objects>

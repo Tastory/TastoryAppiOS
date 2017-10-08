@@ -17,22 +17,11 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
-  
   // MARK: - Public Instance Variable
   var storyQuery: FoodieQuery!
   var storyArray = [FoodieStory]()
-  
-  
-  
-  // MARK: - IBActions
-  @IBAction func rightSwipeAction(_ sender: UISwipeGestureRecognizer) {
-    // Stop all prefetches
-    FoodiePrefetch.global.removeAllPrefetchWork()
-    dismiss(animated: true, completion: nil)
-  }
 
 
-  
   // MARK: - Public Instance Functions
   
   @objc func viewStory(_ sender: UIButton) {
@@ -42,6 +31,7 @@ class FeedCollectionViewController: UICollectionViewController {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
     viewController.viewingStory = storyArray[sender.tag]
+    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   
@@ -59,11 +49,16 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
-  
   override func viewDidAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     FoodiePrefetch.global.unblockPrefetching()
   }
   
+  
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    FoodiePrefetch.global.removeAllPrefetchWork()
+  }
   
   
   override func didReceiveMemoryWarning() {

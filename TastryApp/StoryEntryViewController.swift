@@ -161,7 +161,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   
   
   @IBAction func editedLink(_ sender: UITextField) {
-    guard let text = sender.text, let story = workingStory, text != story.storyURL else {
+    guard let text = sender.text, let story = workingStory, text != story.storyURL, text != "" else {
       // Nothing changed, don't do anything
       return
     }
@@ -462,7 +462,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         venueButton?.setTitleColor(Constants.placeholderColor, for: .normal)
       }
       
-      if let storyURL = workingStory.storyURL {
+      if let storyURL = workingStory.storyURL, storyURL != "" {
         linkTextField?.text = storyURL
       }
       
@@ -548,6 +548,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   }
   
   override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
     view.endEditing(true)
   }
   

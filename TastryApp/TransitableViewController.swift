@@ -165,6 +165,30 @@ class TransitableViewController: UIViewController {
       view.addGestureRecognizer(dragGestureRecognizer)
     }
   }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    print("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillAppear")
+  }
+  
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    print("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidAppear")
+  }
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    print("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillDisappear")
+  }
+  
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    print("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidDisappear")
+  }
+  
+  deinit {
+    print("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") deinit")
+  }
 }
 
 
