@@ -33,7 +33,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   
   // MARK: Public Instance Variables
   var cameraReturnDelegate: CameraReturnDelegate?
-  var showAddToJournalSelection = true
+  var addToExistingStoryOnly = true
 
   // MARK: - Private Instance Variables
   fileprivate var crossLayer = CameraCrossLayer()
@@ -289,7 +289,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     viewController.mediaObj = mediaObject
     viewController.mediaLocation = captureLocation
     viewController.markupReturnDelegate = self
-    viewController.showAddToJournalSelection = showAddToJournalSelection
+    viewController.addToExistingStoryOnly = addToExistingStoryOnly
     self.present(viewController, animated: true)
   }
   
@@ -331,7 +331,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       viewController.mediaObj = mediaObject
       viewController.mediaLocation = captureLocation
       viewController.markupReturnDelegate = self
-      viewController.showAddToJournalSelection = showAddToJournalSelection
+      viewController.addToExistingStoryOnly = addToExistingStoryOnly
       self.present(viewController, animated: true)
       
     } else {

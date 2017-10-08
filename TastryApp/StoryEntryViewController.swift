@@ -302,7 +302,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
     viewController.mediaObj = mediaObj
     viewController.editMomentObj = moment
-    viewController.showAddToJournalSelection = false
+    viewController.addToExistingStoryOnly = false
 
     self.present(viewController, animated: true)
     
@@ -740,7 +740,7 @@ extension StoryEntryViewController: CameraDelegate {
   func openCamera() {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
-    viewController.showAddToJournalSelection = false
+    viewController.addToExistingStoryOnly = false
     viewController.cameraReturnDelegate = self
     self.present(viewController, animated: true)
   }
