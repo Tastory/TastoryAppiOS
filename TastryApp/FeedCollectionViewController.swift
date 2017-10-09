@@ -13,17 +13,23 @@ class FeedCollectionViewController: UICollectionViewController {
   
   // MARK: - Private Class Constants
   private struct Constants {
-    static let reuseIdentifier = "FeedCell"
+    static let ReuseIdentifier = "FeedCell"
+    static let DefaultColumns: CGFloat = 2.0
+    static let DefaultPadding: CGFloat = 1.0
   }
+  
   
   
   // MARK: - Public Instance Variable
   var storyQuery: FoodieQuery!
   var storyArray = [FoodieStory]()
+  var columns: CGFloat = Constants.DefaultColumns
+  var padding: CGFloat = Constants.DefaultPadding
+  var cellAspectRatio: CGFloat = FoodieGlobal.Constants.DefaultMomentAspectRatio
 
-
-  // MARK: - Public Instance Functions
   
+  
+  // MARK: - Public Instance Functions
   @objc func viewStory(_ sender: UIButton) {
     // Stop all prefetches
     FoodiePrefetch.global.blockPrefetching()
@@ -40,9 +46,8 @@ class FeedCollectionViewController: UICollectionViewController {
   // MARK: - View Controller Lifecycle Functions
   override func viewDidLoad() {
     super.viewDidLoad()
-    
     CCLog.verbose("StoryArray.count = \(storyArray.count)")
-    
+
     // Turn on CollectionView prefetching
     collectionView?.prefetchDataSource = self
     collectionView?.isPrefetchingEnabled = true
@@ -83,7 +88,7 @@ class FeedCollectionViewController: UICollectionViewController {
   
   
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.reuseIdentifier, for: indexPath) as! FeedCollectionViewCell
+    let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.ReuseIdentifier, for: indexPath) as! FeedCollectionViewCell
     
     // Configure the cell
     let story = storyArray[indexPath.row]
@@ -142,6 +147,7 @@ class FeedCollectionViewController: UICollectionViewController {
           // This is an out of view prefetch?
           reusableCell.storyTitle?.text = self.storyArray[indexPath.row].title
           reusableCell.storyButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+          reusableCell.storyButton?.imageView?.contentMode = .scaleAspectFill
           reusableCell.activityIndicator.isHidden = true
           reusableCell.activityIndicator.stopAnimating()
           
@@ -161,9 +167,8 @@ class FeedCollectionViewController: UICollectionViewController {
     }
     return reusableCell
   }
-
   
-  // MARK: - UICollectionViewDataSource
+  
   override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
     guard let feedCell = cell as? FeedCollectionViewCell else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
@@ -186,6 +191,7 @@ class FeedCollectionViewController: UICollectionViewController {
     }
   }
   
+  
   override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
     CCLog.verbose("collectionView didEndDisplayingCell indexPath.row = \(indexPath.row)")
     let story = storyArray[indexPath.row]
@@ -194,7 +200,29 @@ class FeedCollectionViewController: UICollectionViewController {
     }
   }
 }
+
+
+extension FeedCollectionViewController: UICollectionViewDelegateFlowLayout {
   
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    let width = (collectionView.frame.width - (columns + 1) * padding) / columns
+    let height = width * cellAspectRatio
+    return CGSize(width: width, height: height)
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+    return UIEdgeInsetsMake(padding, padding, padding, padding)
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+    return padding
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+    return padding
+  }
+}
+
   
 extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
   

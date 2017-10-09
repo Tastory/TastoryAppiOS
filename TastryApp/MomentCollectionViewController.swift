@@ -280,16 +280,19 @@ extension MomentCollectionViewController {
 extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    guard let momentArray = workingStory.moments else {
-      CCLog.debug("No Moments for workingStory")
-      return momentSizeDefault
-    }
-    if indexPath.row >= momentArray.count {
-      CCLog.assert("indexPath.row >= momentArray.count")
-      return momentSizeDefault
-    }
-    let moment = momentArray[indexPath.row]
-    return CGSize(width: momentHeight!/CGFloat(moment.aspectRatio), height: momentHeight!)
+//    guard let momentArray = workingStory.moments else {
+//      CCLog.debug("No Moments for workingStory")
+//      return momentSizeDefault
+//    }
+//    if indexPath.row >= momentArray.count {
+//      CCLog.assert("indexPath.row >= momentArray.count")
+//      return momentSizeDefault
+//    }
+//    let moment = momentArray[indexPath.row]
+    
+    let height = collectionView.frame.height
+    let width = height / FoodieGlobal.Constants.DefaultMomentAspectRatio
+    return CGSize(width: width, height: height)
   }
 }
 
