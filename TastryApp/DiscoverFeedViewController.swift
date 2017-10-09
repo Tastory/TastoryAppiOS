@@ -36,7 +36,6 @@ class DiscoverFeedViewController: TransitableViewController {
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FeedCollectionViewController") as? FeedCollectionViewController else {
       CCLog.fatal("Cannot cast FeedCollectionViewController from Storyboard to FeedCollectionViewController")
     }
-    
     viewController.storyQuery = storyQuery
     viewController.storyArray = storyArray
     

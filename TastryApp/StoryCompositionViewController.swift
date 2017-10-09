@@ -35,7 +35,10 @@ class StoryCompositionViewController: TransitableViewController {
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as? StoryEntryViewController else {
-      CCLog.fatal("Cannot cast StoryEntryViewController from Storyboard to StoryEntryViewController")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of StoryEntryViewController Class!!")
+      }
+      return
     }
     
     viewController.workingStory = workingStory

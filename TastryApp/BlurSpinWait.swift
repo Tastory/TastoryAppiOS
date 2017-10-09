@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 class BlurSpinWait {
   
   var blurEffectView: UIVisualEffectView? = nil

@@ -60,7 +60,12 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   // MARK: - IBActions
   @IBAction func venueClicked(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as! VenueTableViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as? VenueTableViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of VenueTableViewController Class!!")
+      }
+      return
+    }
     viewController.delegate = self
     viewController.suggestedVenue = workingStory?.venue
     
@@ -296,7 +301,12 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
     let moment = momentArray[indexPath.row]
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
+      }
+      return
+    }
     viewController.markupReturnDelegate = markupReturnVC
 
     guard let mediaObj = moment.mediaObj else {

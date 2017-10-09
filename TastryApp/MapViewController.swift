@@ -70,7 +70,9 @@ class MapViewController: TransitableViewController {
   @IBOutlet weak var categoryField: UITextField!
   @IBOutlet weak var draftButton: UIButton!
   @IBOutlet weak var cameraButton: UIButton!
-
+  @IBOutlet weak var logoutButton: UIButton!
+  @IBOutlet weak var profileButton: UIButton!
+  
   
   
   // MARK: - IBActions
@@ -100,7 +102,12 @@ class MapViewController: TransitableViewController {
     // This is used for viewing the draft story to be used with update story later
     // Hid the button due to problems with empty draft story and saving an empty story is problematic
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as! StoryCompositionViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")
+      }
+      return
+    }
 
     if(FoodieStory.currentStory == nil)
     {
@@ -118,7 +125,12 @@ class MapViewController: TransitableViewController {
   
   @IBAction func launchCamera(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as? CameraViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of CameraViewController Class!!")
+      }
+      return
+    }
     viewController.cameraReturnDelegate = self
     self.present(viewController, animated: true)
   }
@@ -211,43 +223,26 @@ class MapViewController: TransitableViewController {
   
   
   @IBAction func logOutAction(_ sender: UIButton) {
-    if FoodieStory.currentStory != nil {
-      AlertDialog.presentConfirm(from: self, title: "Log Out", message: "Are you sure you want to log out? You will lose your unsaved draft if you log out") { action in
-        self.logOutAndDismiss()
+    LogOutDismiss.askDiscardIfNeeded(from: self)
+  }
+  
+  
+  @IBAction func profileAction(_ sender: UIButton) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of ProfileViewController Class!!")
       }
-    } else {
-      self.logOutAndDismiss()
+      return
     }
+    viewController.user = FoodieUser.current
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    self.present(viewController, animated: true)
   }
   
   
   
   // MARK: - Class Private Functions
-
-  fileprivate func logOutAndDismiss() {
-    let blurSpinner = BlurSpinWait()
-    blurSpinner.apply(to: view, blurStyle: .prominent, spinnerStyle: .whiteLarge)
-    FoodieUser.logOutAndDeleteDraft { error in
-      blurSpinner.remove()
-      if let error = error {
-        AlertDialog.present(from: self, title: "Log Out Error", message: error.localizedDescription) { action in
-          CCLog.assert("Log Out Failed - \(error.localizedDescription)")
-        }
-      }
-      
-      // Proceed to dismiss regardless
-      guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let window = appDelegate.window, let rootViewController = window.rootViewController else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.fatal("Cannot get AppDelegate.window.rootViewController!!!!")
-        }
-        return
-      }
-      
-      // Animated dismissal of 2+ VCs is super weird. So no.
-      rootViewController.dismiss(animated: false, completion: nil)
-    }
-  }
-  
   
   // Generic error dialog box to the user on internal errors
   fileprivate func internalErrorDialog() {
@@ -419,7 +414,12 @@ class MapViewController: TransitableViewController {
   
   fileprivate func launchFeed(withStoryArray storys: [FoodieStory], withStoryQuery query: FoodieQuery) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverFeedViewController") as! DiscoverFeedViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverFeedViewController") as? DiscoverFeedViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of DiscoverFeedViewController Class!!")
+      }
+      return
+    }
     viewController.storyQuery = query
     viewController.storyArray = storys
     viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
@@ -525,6 +525,8 @@ class MapViewController: TransitableViewController {
     
     // Don't allow user to go to the Camera and thus Story composition unless they are logged-in with E-mail verified
     cameraButton.isHidden = true
+    logoutButton.isHidden = false
+    profileButton.isHidden = true
     
     // But we should refresh the user before determining for good
     if let user = FoodieUser.current, user.isRegistered {
@@ -543,6 +545,8 @@ class MapViewController: TransitableViewController {
         } else if verified {
           DispatchQueue.main.async {
             self.cameraButton.isHidden = false
+            self.logoutButton.isHidden = true
+            self.profileButton.isHidden = false
           }
         }
       }
@@ -709,7 +713,12 @@ extension MapViewController: UITextFieldDelegate {
     } else if textField == categoryField {
       
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CategoryTableViewController") as! CategoryTableViewController
+      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CategoryTableViewController") as? CategoryTableViewController else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("ViewController initiated not of CategoryTableViewController Class!!")
+        }
+        return false
+      }
       viewController.delegate = self
       viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
       self.present(viewController, animated: true)
@@ -727,8 +736,12 @@ extension MapViewController: CameraReturnDelegate {
   func captureComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
     DispatchQueue.main.async {  // UI Work. We don't know which thread we might be in, so guarentee execute in Main thread
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as! StoryCompositionViewController
-      
+      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")
+        }
+        return
+      }
       var workingStory: FoodieStory?
       
       if let story = suggestedStory {
@@ -772,7 +785,12 @@ extension MapViewController: MKMapViewDelegate {
   
   @objc func storyCalloutTapped(sender: StoryButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of StoryViewController Class!!")
+      }
+      return
+    }
     
     guard let story = sender.story else {
       AlertDialog.present(from: self, title: "Story Load Error", message: "No Story was loaded for this location! Please try another one!") { action in

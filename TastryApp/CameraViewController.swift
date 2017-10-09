@@ -285,7 +285,12 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))  // TOOD: Is this main thread? If so do this conversion else where? Not like the user can do anything else tho? Pop-up a spinner instead?
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
+      }
+      return
+    }
     viewController.mediaObj = mediaObject
     viewController.mediaLocation = captureLocation
     viewController.markupReturnDelegate = self
@@ -327,7 +332,12 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       mediaObject.videoLocalBufferUrl = url
       
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
+        }
+        return
+      }
       viewController.mediaObj = mediaObject
       viewController.mediaLocation = captureLocation
       viewController.markupReturnDelegate = self
@@ -437,7 +447,12 @@ extension CameraViewController: UIImagePickerControllerDelegate {
     }
 
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
+      }
+      return
+    }
     viewController.mediaObj = mediaObject
     viewController.markupReturnDelegate = self
     self.present(viewController, animated: true)

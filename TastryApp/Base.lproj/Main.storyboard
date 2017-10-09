@@ -46,6 +46,52 @@
             </objects>
             <point key="canvasLocation" x="-1162.4000000000001" y="-666.11694152923542"/>
         </scene>
+        <!--Profile View Controller-->
+        <scene sceneID="jPv-fG-6wa">
+            <objects>
+                <viewController storyboardIdentifier="ProfileViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Mls-rg-2Ue" customClass="ProfileViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="nVh-C3-nXK"/>
+                        <viewControllerLayoutGuide type="bottom" id="RGF-2i-MDL"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="IWZ-hZ-UC9">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lJy-T9-lHq">
+                                <rect key="frame" x="0.0" y="44" width="375" height="623"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BOa-s9-47I">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                <items>
+                                    <navigationItem title="Title" id="lRZ-Yq-HyG">
+                                        <barButtonItem key="leftBarButtonItem" title="Back" id="FRk-w6-855"/>
+                                        <barButtonItem key="rightBarButtonItem" title="Logout" id="ord-9A-wYs">
+                                            <connections>
+                                                <action selector="logOutAction:" destination="Mls-rg-2Ue" id="ByZ-BO-tSK"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="BOa-s9-47I" secondAttribute="trailing" id="6oB-JJ-ZYs"/>
+                            <constraint firstItem="lJy-T9-lHq" firstAttribute="top" secondItem="BOa-s9-47I" secondAttribute="bottom" id="IXw-ag-wWZ"/>
+                            <constraint firstItem="RGF-2i-MDL" firstAttribute="top" secondItem="lJy-T9-lHq" secondAttribute="bottom" id="iBt-tG-G7e"/>
+                            <constraint firstItem="BOa-s9-47I" firstAttribute="leading" secondItem="IWZ-hZ-UC9" secondAttribute="leading" id="n1Y-QR-t01"/>
+                            <constraint firstAttribute="trailing" secondItem="lJy-T9-lHq" secondAttribute="trailing" id="tgW-7A-Vkl"/>
+                            <constraint firstItem="BOa-s9-47I" firstAttribute="top" secondItem="IWZ-hZ-UC9" secondAttribute="top" id="upW-68-heL"/>
+                            <constraint firstItem="lJy-T9-lHq" firstAttribute="leading" secondItem="IWZ-hZ-UC9" secondAttribute="leading" id="znS-6o-FlJ"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="D8H-kQ-saV" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-140" y="-666.11694152923542"/>
+        </scene>
         <!--Map View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
@@ -76,7 +122,7 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes"/>
                             </textField>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="srX-2D-hwk" customClass="PassthruStackView" customModule="TastryApp" customModuleProvider="target">
-                                <rect key="frame" x="16" y="445" width="343" height="182"/>
+                                <rect key="frame" x="16" y="455" width="343" height="182"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1zZ-dd-fcW">
                                         <rect key="frame" x="154" y="0.0" width="35" height="30"/>
@@ -137,15 +183,23 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xAk-Bi-Jwa">
-                                <rect key="frame" x="294" y="597" width="55" height="30"/>
+                                <rect key="frame" x="294" y="607" width="55" height="30"/>
                                 <state key="normal" title="Log Out"/>
                                 <connections>
-                                    <action selector="logOutAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xvd-Ia-v6Q"/>
+                                    <action selector="logOutAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="77B-XM-jf3"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A3t-Ta-aKO">
+                                <rect key="frame" x="305" y="607" width="44" height="30"/>
+                                <state key="normal" title="Profile"/>
+                                <connections>
+                                    <action selector="profileAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LLt-lz-SBf"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="A3t-Ta-aKO" firstAttribute="centerY" secondItem="aSA-Ws-aTZ" secondAttribute="centerY" id="ABZ-hW-u1i"/>
                             <constraint firstItem="udl-HT-366" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="AjM-2n-kAG"/>
                             <constraint firstItem="wze-6b-mmH" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="DsH-mi-lOt"/>
                             <constraint firstItem="5l3-RR-AbH" firstAttribute="leading" secondItem="udl-HT-366" secondAttribute="trailing" constant="8" id="HIb-xO-Xqa"/>
@@ -162,8 +216,9 @@
                             <constraint firstItem="wze-6b-mmH" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="dz1-w5-8kP"/>
                             <constraint firstItem="5l3-RR-AbH" firstAttribute="leading" secondItem="udl-HT-366" secondAttribute="trailing" constant="8" id="hJb-q9-ef2"/>
                             <constraint firstItem="5l3-RR-AbH" firstAttribute="top" secondItem="wze-6b-mmH" secondAttribute="bottom" constant="8" id="ia3-SC-mrH"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="srX-2D-hwk" secondAttribute="bottom" constant="40" id="lDU-su-0gR"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="srX-2D-hwk" secondAttribute="bottom" constant="30" id="lDU-su-0gR"/>
                             <constraint firstAttribute="trailingMargin" secondItem="srX-2D-hwk" secondAttribute="trailing" id="nhL-m8-gFi"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="A3t-Ta-aKO" secondAttribute="trailing" constant="10" id="oHU-NH-PL3"/>
                             <constraint firstAttribute="trailingMargin" secondItem="0wJ-kE-Bqf" secondAttribute="trailing" id="sre-db-TIA"/>
                             <constraint firstItem="srX-2D-hwk" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="uEb-Hn-WGd"/>
                         </constraints>
@@ -175,9 +230,11 @@
                         <outlet property="doubleTapGestureRecognizer" destination="gtB-Zu-pZ4" id="qyu-HN-IhQ"/>
                         <outlet property="draftButton" destination="1zZ-dd-fcW" id="xkV-cw-rjf"/>
                         <outlet property="locationField" destination="0wJ-kE-Bqf" id="udw-u7-LkJ"/>
+                        <outlet property="logoutButton" destination="xAk-Bi-Jwa" id="sAq-I6-br1"/>
                         <outlet property="mapView" destination="GEi-FU-KP9" id="mQw-t1-e04"/>
                         <outlet property="panGestureRecognizer" destination="mRO-al-sTI" id="9gt-Bc-s7F"/>
                         <outlet property="pinchGestureRecognizer" destination="Ypu-Fg-bIb" id="vsU-G9-HVH"/>
+                        <outlet property="profileButton" destination="A3t-Ta-aKO" id="B2K-m7-Nv7"/>
                         <outlet property="singleTapGestureRecognizer" destination="huL-4O-wj6" id="NS9-RU-fct"/>
                     </connections>
                 </viewController>
@@ -269,7 +326,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-428" y="-666.11694152923542"/>
+            <point key="canvasLocation" x="-1162" y="-1352"/>
         </scene>
         <!--Feed Collection View Controller-->
         <scene sceneID="1WN-B5-zBj">
@@ -487,7 +544,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-428" y="689.5052473763119"/>
+            <point key="canvasLocation" x="-140" y="513"/>
         </scene>
         <!--Camera View Controller-->
         <scene sceneID="wzA-2G-nOi">
@@ -558,7 +615,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="296.80000000000001" y="-666.11694152923542"/>
+            <point key="canvasLocation" x="-140" y="-1862"/>
         </scene>
         <!--Markup View Controller-->
         <scene sceneID="H9q-fk-uJF">
@@ -707,7 +764,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bya-bk-WIy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1021.6" y="-666.11694152923542"/>
+            <point key="canvasLocation" x="647" y="-1863"/>
         </scene>
         <!--Story Composition View Controller-->
         <scene sceneID="hr8-zp-Vvh">
@@ -725,7 +782,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VB6-Kf-XJB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1688.8" y="-666.11694152923542"/>
+            <point key="canvasLocation" x="1439" y="-1863"/>
         </scene>
         <!--Story Entry View Controller-->
         <scene sceneID="MEV-Xi-0JN">
@@ -900,7 +957,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6pB-Nr-PsL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2362" y="-666"/>
+            <point key="canvasLocation" x="2210" y="-1863"/>
         </scene>
         <!--Moment Collection View Controller-->
         <scene sceneID="Sf3-nA-ZH6">
@@ -988,7 +1045,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BGe-7r-hOK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3063" y="-1005"/>
+            <point key="canvasLocation" x="2975" y="-2393"/>
         </scene>
         <!--Venue Table View Controller-->
         <scene sceneID="Xa7-M7-Itt">
@@ -1082,7 +1139,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="3062" y="-491"/>
+            <point key="canvasLocation" x="2974" y="-1863"/>
         </scene>
         <!--Category Table View Controller-->
         <scene sceneID="r9j-Iu-ATn">
@@ -1136,7 +1193,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="297" y="-1352"/>
+            <point key="canvasLocation" x="-1162" y="-2059"/>
         </scene>
     </scenes>
     <resources>
