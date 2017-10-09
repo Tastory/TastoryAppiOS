@@ -197,10 +197,12 @@ class FoodieObject {
     
     SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
-    #if DEBUG
-    CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Outstanding: \(outstandingChildOperations)")
-    #endif
+    let beforeOutstanding = self.outstandingChildOperations
     SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
+    
+    #if DEBUG
+      CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Outstanding: \(beforeOutstanding)")
+    #endif
     
     child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways) { error in
       if let error = error {
@@ -212,11 +214,13 @@ class FoodieObject {
       var childOperationsPending = true
       SwiftMutex.lock(&self.outstandingChildOperationsMutex)
       self.outstandingChildOperations -= 1
-      #if DEBUG
-      CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieved child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Outstanding: \(self.outstandingChildOperations)")
-      #endif
+      let afterOutstanding = self.outstandingChildOperations
       if self.outstandingChildOperations == 0 { childOperationsPending = false }
       SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
+      
+      #if DEBUG
+        CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieved child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Outstanding: \(afterOutstanding)")
+      #endif
       
       if !childOperationsPending {
         callback?(self.operationError)
