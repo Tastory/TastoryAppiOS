@@ -59,14 +59,18 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lJy-T9-lHq">
-                                <rect key="frame" x="0.0" y="44" width="375" height="623"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BOa-s9-47I">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                                 <items>
                                     <navigationItem title="Title" id="lRZ-Yq-HyG">
-                                        <barButtonItem key="leftBarButtonItem" title="Back" id="FRk-w6-855"/>
+                                        <barButtonItem key="leftBarButtonItem" title="Back" id="FRk-w6-855">
+                                            <connections>
+                                                <action selector="backAction:" destination="Mls-rg-2Ue" id="IpE-Q5-fkq"/>
+                                            </connections>
+                                        </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" title="Logout" id="ord-9A-wYs">
                                             <connections>
                                                 <action selector="logOutAction:" destination="Mls-rg-2Ue" id="ByZ-BO-tSK"/>
@@ -79,14 +83,18 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="BOa-s9-47I" secondAttribute="trailing" id="6oB-JJ-ZYs"/>
-                            <constraint firstItem="lJy-T9-lHq" firstAttribute="top" secondItem="BOa-s9-47I" secondAttribute="bottom" id="IXw-ag-wWZ"/>
+                            <constraint firstItem="lJy-T9-lHq" firstAttribute="top" secondItem="nVh-C3-nXK" secondAttribute="bottom" id="IXw-ag-wWZ"/>
                             <constraint firstItem="RGF-2i-MDL" firstAttribute="top" secondItem="lJy-T9-lHq" secondAttribute="bottom" id="iBt-tG-G7e"/>
                             <constraint firstItem="BOa-s9-47I" firstAttribute="leading" secondItem="IWZ-hZ-UC9" secondAttribute="leading" id="n1Y-QR-t01"/>
                             <constraint firstAttribute="trailing" secondItem="lJy-T9-lHq" secondAttribute="trailing" id="tgW-7A-Vkl"/>
-                            <constraint firstItem="BOa-s9-47I" firstAttribute="top" secondItem="IWZ-hZ-UC9" secondAttribute="top" id="upW-68-heL"/>
+                            <constraint firstItem="BOa-s9-47I" firstAttribute="top" secondItem="IWZ-hZ-UC9" secondAttribute="topMargin" id="upW-68-heL"/>
                             <constraint firstItem="lJy-T9-lHq" firstAttribute="leading" secondItem="IWZ-hZ-UC9" secondAttribute="leading" id="znS-6o-FlJ"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="feedContainerView" destination="lJy-T9-lHq" id="XPL-La-dpj"/>
+                        <outlet property="navBar" destination="BOa-s9-47I" id="i92-ez-Oko"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D8H-kQ-saV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -1059,8 +1067,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="249" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="cR5-xA-VN9">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="249" alwaysBounceVertical="YES" keyboardDismissMode="interactive" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="cR5-xA-VN9">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="venueTableCell" textLabel="yzK-Rf-cN6" detailTextLabel="guT-IY-1FO" style="IBUITableViewCellStyleSubtitle" id="6kE-Ri-Lgh">
@@ -1118,7 +1126,7 @@
                             <constraint firstItem="cR5-xA-VN9" firstAttribute="leading" secondItem="1Rh-GL-b2t" secondAttribute="leading" id="XeT-we-cxC"/>
                             <constraint firstAttribute="trailing" secondItem="y57-UU-pr5" secondAttribute="trailing" id="ZI3-ie-VkY"/>
                             <constraint firstAttribute="trailing" secondItem="cR5-xA-VN9" secondAttribute="trailing" id="pmj-UT-NNF"/>
-                            <constraint firstItem="cR5-xA-VN9" firstAttribute="top" secondItem="1Rh-GL-b2t" secondAttribute="top" id="qhi-Mm-uWR"/>
+                            <constraint firstItem="cR5-xA-VN9" firstAttribute="top" secondItem="1Rh-GL-b2t" secondAttribute="topMargin" id="qhi-Mm-uWR"/>
                             <constraint firstAttribute="bottom" secondItem="cR5-xA-VN9" secondAttribute="bottom" id="qwN-S8-UK0"/>
                         </constraints>
                         <connections>

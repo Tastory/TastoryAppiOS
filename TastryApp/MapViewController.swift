@@ -165,7 +165,7 @@ class MapViewController: TransitableViewController {
     // Kill all Pre-fetches
     FoodiePrefetch.global.removeAllPrefetchWork()
     
-    performQuery { storys, error in
+    performQuery { stories, error in
       if let error = error {
         if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
           AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
@@ -177,20 +177,20 @@ class MapViewController: TransitableViewController {
         return
       }
       
-      guard let storys = storys else {
+      guard let stories = stories else {
         AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
           CCLog.assert("Story Query resulted in nil")
         }
         return
       }
       
-      self.displayAnnotations(onStories: storys)
+      self.displayAnnotations(onStories: stories)
     }
   }
   
   
   @IBAction func showFeed(_ sender: UIButton) {
-    performQuery { storys, error in
+    performQuery { stories, error in
       if let error = error {
         if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
           AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
@@ -202,7 +202,7 @@ class MapViewController: TransitableViewController {
         return
       }
       
-      guard let storys = storys else {
+      guard let stories = stories else {
         AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
           CCLog.assert("Story Query resulted in storyArray = nil")
         }
@@ -216,8 +216,8 @@ class MapViewController: TransitableViewController {
         return
       }
       
-      self.displayAnnotations(onStories: storys)
-      self.launchFeed(withStoryArray: storys, withStoryQuery: query)
+      self.displayAnnotations(onStories: stories)
+      self.launchFeed(withStoryArray: stories, withStoryQuery: query)
     }
   }
   
@@ -313,7 +313,7 @@ class MapViewController: TransitableViewController {
   }
   
   
-  fileprivate func performQuery(withBlock callback: FoodieQuery.StorysErrorBlock?) {
+  fileprivate func performQuery(withBlock callback: FoodieQuery.StoriesErrorBlock?) {
     
     guard let mapRect = mapView?.visibleMapRect else {
       locationErrorDialog(message: "Invalid Map View. Search Location Undefined", comment: "Alert dialog message when mapView is nil when user attempted to perform Search")
@@ -352,7 +352,7 @@ class MapViewController: TransitableViewController {
     blurSpinner.apply(to: self.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
     
     // Actually do the Query
-    storyQuery!.initStoryQueryAndSearch { (storys, error) in
+    storyQuery!.initStoryQueryAndSearch { (stories, error) in
       
       blurSpinner.remove()
       
@@ -363,7 +363,7 @@ class MapViewController: TransitableViewController {
         return
       }
       
-      guard let storyArray = storys else {
+      guard let storyArray = stories else {
         self.queryErrorDialog()
         CCLog.assert("Create Story Query & Search returned with nil Story Array")
         callback?(nil, ErrorCode.queryNilStory)
@@ -412,7 +412,7 @@ class MapViewController: TransitableViewController {
   }
   
   
-  fileprivate func launchFeed(withStoryArray storys: [FoodieStory], withStoryQuery query: FoodieQuery) {
+  fileprivate func launchFeed(withStoryArray stories: [FoodieStory], withStoryQuery query: FoodieQuery) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverFeedViewController") as? DiscoverFeedViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
@@ -421,7 +421,7 @@ class MapViewController: TransitableViewController {
       return
     }
     viewController.storyQuery = query
-    viewController.storyArray = storys
+    viewController.storyArray = stories
     viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
@@ -553,6 +553,32 @@ class MapViewController: TransitableViewController {
     }
   }
   
+  
+  override func viewDidAppear(_ animated: Bool) {
+    if storyQuery == nil {
+      // Do an initial query on start
+      performQuery { stories, error in
+        if let error = error {
+          if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
+            AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
+          } else {
+            AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+              CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
+            }
+          }
+          return
+        }
+        
+        guard let stories = stories else {
+          AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
+            CCLog.assert("Story Query resulted in nil")
+          }
+          return
+        }
+        self.displayAnnotations(onStories: stories)
+      }
+    }
+  }
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)

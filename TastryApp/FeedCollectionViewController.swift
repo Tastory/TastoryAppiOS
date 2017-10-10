@@ -22,14 +22,21 @@ class FeedCollectionViewController: UICollectionViewController {
   
   // MARK: - Public Instance Variable
   var storyQuery: FoodieQuery!
-  var storyArray = [FoodieStory]()
+  var scrollViewInset: CGFloat = 0.0
   var columns: CGFloat = Constants.DefaultColumns
   var padding: CGFloat = Constants.DefaultPadding
   var cellAspectRatio: CGFloat = FoodieGlobal.Constants.DefaultMomentAspectRatio
 
+  var storyArray = [FoodieStory]()
+  
   
   
   // MARK: - Public Instance Functions
+  func reloadData() {
+    collectionView?.reloadData()
+  }
+  
+  
   @objc func viewStory(_ sender: UIButton) {
     // Stop all prefetches
     FoodiePrefetch.global.blockPrefetching()
@@ -68,6 +75,11 @@ class FeedCollectionViewController: UICollectionViewController {
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
     FoodiePrefetch.global.removeAllPrefetchWork()
+  }
+  
+  
+  override func viewDidLayoutSubviews() {
+    collectionView?.contentInset = UIEdgeInsetsMake(scrollViewInset, 0.0, 0.0, 0.0)  // This is so the Table View can be translucent underneath the Stack View of Search Bars
   }
   
   
