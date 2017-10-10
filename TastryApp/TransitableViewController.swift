@@ -122,13 +122,20 @@ class TransitableViewController: UIViewController {
       
     case .ended:
       if directionalVelocity >= Constants.DragVelocityToDismiss {
-        let duration = TimeInterval(remainingTranslation/directionalVelocity)
-        UIView.animate(withDuration: duration, animations: {
-          self.view.frame.origin = CGPoint(x: self.view.frame.origin.x + (CGFloat(duration) * frameVelocity.x),
-                                           y: self.view.frame.origin.y + (CGFloat(duration) * frameVelocity.y))
-        }, completion: { isCompleted in
-          interactor.finish()
+        let duration = TimeInterval(1.5*remainingTranslation/directionalVelocity)
+        let endPoint = CGPoint(x: self.view.frame.origin.x + (CGFloat(duration) * frameVelocity.x),
+                               y: self.view.frame.origin.y + (CGFloat(duration) * frameVelocity.y))
+        interactor.finish()
+        UIView.animate(withDuration: duration, delay: TimeInterval(0.0), options: [.curveEaseOut], animations: {
+          self.view.frame.origin = endPoint
         })
+//        // The following code only works in iOS 11 but not on iOS 10. Still a mystery...
+//        UIView.animate(withDuration: duration, animations: {
+//          self.view.frame.origin = endPoint
+//        }, completion: { isCompleted in
+//          CCLog.verbose("PanGesture.State End Animation Completed")
+//          //interactor.finish()
+//        })
         break
         
       } else {
@@ -178,7 +185,7 @@ class TransitableViewController: UIViewController {
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
-    //CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidLoad")
+    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidLoad")
     if let dragGestureRecognizer = dragGestureRecognizer {
       view.addGestureRecognizer(dragGestureRecognizer)
     }
@@ -186,22 +193,22 @@ class TransitableViewController: UIViewController {
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    //CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillAppear")
+    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillAppear")
   }
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    //CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidAppear")
+    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidAppear")
   }
   
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
-    //CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillDisappear")
+    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillDisappear")
   }
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    //CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidDisappear")
+    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidDisappear")
   }
   
   override func didReceiveMemoryWarning() {
@@ -210,7 +217,7 @@ class TransitableViewController: UIViewController {
   }
   
   deinit {
-    //CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") deinit")
+    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") deinit")
   }
 }
 

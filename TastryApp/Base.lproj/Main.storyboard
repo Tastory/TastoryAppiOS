@@ -93,12 +93,12 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="BOa-s9-47I" secondAttribute="trailing" id="6oB-JJ-ZYs"/>
                             <constraint firstItem="lJy-T9-lHq" firstAttribute="top" secondItem="nVh-C3-nXK" secondAttribute="bottom" id="IXw-ag-wWZ"/>
+                            <constraint firstAttribute="trailing" secondItem="BOa-s9-47I" secondAttribute="trailing" id="MTi-hH-HvQ"/>
+                            <constraint firstItem="BOa-s9-47I" firstAttribute="leading" secondItem="IWZ-hZ-UC9" secondAttribute="leading" id="OWw-gt-83Y"/>
+                            <constraint firstItem="BOa-s9-47I" firstAttribute="top" secondItem="nVh-C3-nXK" secondAttribute="bottom" id="g4X-Pa-hRq"/>
                             <constraint firstItem="RGF-2i-MDL" firstAttribute="top" secondItem="lJy-T9-lHq" secondAttribute="bottom" id="iBt-tG-G7e"/>
-                            <constraint firstItem="BOa-s9-47I" firstAttribute="leading" secondItem="IWZ-hZ-UC9" secondAttribute="leading" id="n1Y-QR-t01"/>
                             <constraint firstAttribute="trailing" secondItem="lJy-T9-lHq" secondAttribute="trailing" id="tgW-7A-Vkl"/>
-                            <constraint firstItem="BOa-s9-47I" firstAttribute="top" secondItem="IWZ-hZ-UC9" secondAttribute="topMargin" id="upW-68-heL"/>
                             <constraint firstItem="lJy-T9-lHq" firstAttribute="leading" secondItem="IWZ-hZ-UC9" secondAttribute="leading" id="znS-6o-FlJ"/>
                         </constraints>
                     </view>
