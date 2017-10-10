@@ -656,9 +656,10 @@ class MarkupViewController: TransitableViewController {
         return
       }
       
+      imageView.contentMode = .scaleAspectFill
+      imageView.image = UIImage(data: imageBuffer)
       view.addSubview(imageView)
       view.sendSubview(toBack: imageView)
-      imageView.image = UIImage(data: imageBuffer)
       
     // Loop the video
     } else if mediaType == .video {

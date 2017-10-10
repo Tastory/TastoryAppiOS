@@ -234,6 +234,7 @@ class StoryViewController: TransitableViewController {
         return
       }
       
+      photoView.contentMode = .scaleAspectFill
       photoView.image = UIImage(data: imageBuffer)
       view.insertSubview(photoView, belowSubview: jotViewController.view)
 
