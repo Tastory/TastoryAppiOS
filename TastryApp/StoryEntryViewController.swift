@@ -302,7 +302,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
     viewController.mediaObj = mediaObj
     viewController.editMomentObj = moment
-    viewController.addToExistingStoryOnly = false
+    viewController.addToExistingStoryOnly = true
 
     self.present(viewController, animated: true)
     
@@ -399,7 +399,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
     momentViewController.workingStory = workingStory
     momentViewController.momentHeight = Constants.momentHeight
-    momentViewController.cameraDelegate = self
+    momentViewController.cameraReturnDelegate = self
 
     guard let collectionView = momentViewController.collectionView else {
       CCLog.fatal("collection view from momentViewController is nil")
@@ -723,27 +723,26 @@ extension StoryEntryViewController: CameraReturnDelegate {
     self.returnedMoment = markedupMoment
     self.markupMoment = nil
 
-    guard let collectionView = momentViewController.collectionView else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.fatal("collection view is nil")
+    dismiss(animated: true) {
+      if let workingStory = self.workingStory {
+        guard let collectionView = self.momentViewController.collectionView else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            CCLog.fatal("collection view is nil")
+          }
+          return
+        }
+        guard let moments = workingStory.moments else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            CCLog.fatal("Moments in working journal is nil")
+          }
+          return
+        }
+
+        // this updates the collectionView and must be done when story entry view is visible
+        // NEVER run the following code when collection view is not visible. It will crash!!!!!
+        collectionView.insertItems(at: [IndexPath( item: moments.count - 1, section: 0)])
       }
-      return
     }
-
-    collectionView.reloadData()
-    dismiss(animated: true, completion: nil)
-
   }
 }
-
-extension StoryEntryViewController: CameraDelegate {
-  func openCamera() {
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
-    viewController.addToExistingStoryOnly = false
-    viewController.cameraReturnDelegate = self
-    self.present(viewController, animated: true)
-  }
-}
-
 

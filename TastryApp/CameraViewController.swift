@@ -33,7 +33,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   
   // MARK: Public Instance Variables
   var cameraReturnDelegate: CameraReturnDelegate?
-  var addToExistingStoryOnly = true
+  var addToExistingStoryOnly = false
 
   // MARK: - Private Instance Variables
   fileprivate var crossLayer = CameraCrossLayer()

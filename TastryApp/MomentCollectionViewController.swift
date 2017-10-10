@@ -25,7 +25,7 @@ class MomentCollectionViewController: UICollectionViewController {
 
   // MARK: - Public Instance Variables
   var workingStory: FoodieStory!
-  var cameraDelegate: CameraDelegate!
+  var cameraReturnDelegate: CameraReturnDelegate!
 
   // MARK: - Private Instance Variables
   fileprivate var momentWidthDefault: CGFloat!
@@ -33,7 +33,11 @@ class MomentCollectionViewController: UICollectionViewController {
 
   // MARK: - Public Instance Functions
   @objc func openCamera(_ sender: UIGestureRecognizer) {
-    cameraDelegate.openCamera()
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
+    viewController.addToExistingStoryOnly = true
+    viewController.cameraReturnDelegate = cameraReturnDelegate
+    self.present(viewController, animated: true)
   }
 
 
@@ -360,10 +364,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
           }
         }
 
-        // there seems to be a few seconds delay when not refreshing from the main thread
-        DispatchQueue.main.async {
-          collectionView.reloadData()
-        }
+        collectionView.deleteItems(at: [indexPath] )
       }
     }
   }
