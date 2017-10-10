@@ -558,7 +558,7 @@ class FoodieS3Object {
         CCLog.warning("Retrieve \(fileName) from S3 to Local Cache Failed - \(error.localizedDescription)")
         callback?(nil, error)
       } else {
-        CCLog.debug("Retreive \(fileName) from Local Cache")
+        CCLog.debug("Retrieve \(fileName) from Local Cache")
         FoodieFile.manager.retrieve(from: .cache, with: fileName, withBlock: callback)
       }
     }

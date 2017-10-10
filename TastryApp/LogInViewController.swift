@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LogInViewController: UIViewController {
+class LogInViewController: TransitableViewController {
   
   
   // MARK: - IBOutlet
@@ -32,7 +32,7 @@ class LogInViewController: UIViewController {
   // MARK: - IBAction
   @IBAction func logInAction(_ sender: UIButton) {
     
-    guard let logInText = usernameField.text else {
+    guard var logInText = usernameField.text else {
       AlertDialog.present(from: self, title: "Log In Error", message: "Please enter your Username or E-mail address to log in") { action in
         CCLog.info("No username when Log In pressed")
       }
@@ -45,6 +45,10 @@ class LogInViewController: UIViewController {
       }
       return
     }
+    
+    // Enforce lower case
+    logInText = logInText.lowercased()
+    usernameField.text = logInText
     
     // If the username looks like a valid E-mail, there's no way it can be a regular username
     if FoodieUser.checkValidFor(email: logInText) {
@@ -92,6 +96,7 @@ class LogInViewController: UIViewController {
     
     viewController.username = usernameField.text
     viewController.password = passwordField.text
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   
@@ -109,6 +114,7 @@ class LogInViewController: UIViewController {
     if let logInText = usernameField.text, FoodieUser.checkValidFor(email: logInText) {
       viewController.emailAddress = logInText
     }
+    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   
@@ -126,7 +132,13 @@ class LogInViewController: UIViewController {
     
     AlertDialog.present(from: self, title: "Guest Login", message: "You will not be able to post as a Guest. We highly encourage you to sign-up and log-in for the best experience!") { action in
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")
+      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController") as? MapViewController else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("ViewController initiated not of MapViewController Class!!")
+        }
+        return
+      }
+      viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
       self.present(viewController, animated: true)
     }
   }
@@ -206,6 +218,7 @@ class LogInViewController: UIViewController {
           viewController.enableResend = true
         }
         
+        viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
         self.present(viewController, animated: true, completion: nil)
       }
     }
@@ -228,12 +241,4 @@ class LogInViewController: UIViewController {
   override func viewWillDisappear(_ animated: Bool) {
     view.endEditing(true)
   }
-  
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
-  }
-  
 }

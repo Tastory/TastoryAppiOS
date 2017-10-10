@@ -29,7 +29,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // Launch Root View Controller
     let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "RootViewController") as! RootViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "RootViewController") as? RootViewController else {
+      CCLog.fatal("ViewController initiated not of RootViewController Class!!")
+    }
     viewController.startupError = error
     window = UIWindow(frame: UIScreen.main.bounds)
     window?.rootViewController = viewController

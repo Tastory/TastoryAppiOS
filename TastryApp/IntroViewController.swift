@@ -8,7 +8,7 @@
 
 import UIKit
 
-class IntroViewController: UIViewController {
+class IntroViewController: TransitableViewController {
   
   // MARK: - Public Instance Function
   var firstLabelText: String?
@@ -106,7 +106,13 @@ class IntroViewController: UIViewController {
   // MARK: - Private Instance Function
   private func presentDiscoverVC() {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController")
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController") as? MapViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of MapViewController Class!!")
+      }
+      return
+    }
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
     self.present(viewController, animated: true)
   }
   
@@ -126,12 +132,5 @@ class IntroViewController: UIViewController {
       resendButtonHeight.constant = 0
       goSpacingHeight.constant = 0
     }
-  }
-  
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-
-    CCLog.warning("didReceiveMemoryWarning")
   }
 }

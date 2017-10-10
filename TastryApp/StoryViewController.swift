@@ -11,7 +11,7 @@ import AVFoundation
 import SafariServices
 import Jot
 
-class StoryViewController: UIViewController {
+class StoryViewController: TransitableViewController {
   
   // MARK: - Constants
   struct Constants {
@@ -77,6 +77,7 @@ class StoryViewController: UIViewController {
   @IBOutlet weak var videoView: UIView!
   @IBOutlet weak var blurView: UIVisualEffectView!
   @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+  @IBOutlet weak var swipeUpGestureRecognizer: UISwipeGestureRecognizer!
   @IBOutlet weak var tapGestureStackView: UIStackView!
   @IBOutlet weak var tapBackwardsWidth: NSLayoutConstraint!
   @IBOutlet weak var soundButton: UIButton!
@@ -94,11 +95,6 @@ class StoryViewController: UIViewController {
     displayPreviousMoment()
   }
   
-  @IBAction func swipeDown(_ sender: UISwipeGestureRecognizer) {
-    CCLog.info("User swiped Down")
-    cleanUpAndDismiss()
-  }
-  
   @IBAction func swipeUp(_ sender: UISwipeGestureRecognizer) {
     CCLog.info("User swiped Up")
     
@@ -110,72 +106,21 @@ class StoryViewController: UIViewController {
     
     if let storyLinkString = story.storyURL, let storyLinkUrl = URL(string: storyLinkString) {
       
-      guard let moment = currentMoment else {
-        internalErrorDialog()
-        CCLog.assert("Unexpected currentMoment = nil")
-        return
+      // Pause if playing
+      if !isPaused {
+        pausePlay()
       }
-      
-      // Stop video if a video is playing. Remove Timers & Observers
-      avPlayer!.pause()
-      stopVideoTimerAndObservers(for: moment)
       
       let safariViewController = SFSafariViewController(url: storyLinkUrl)
       safariViewController.delegate = self
-      
-      let transition = CATransition()
-      transition.duration = 0.5
-      transition.type = kCATransitionPush
-      transition.subtype = kCATransitionFromTop
-      view.window!.layer.add(transition, forKey: kCATransition)
-      
-      self.present(safariViewController, animated: false, completion: nil)
+      safariViewController.modalPresentationStyle = .overFullScreen
+      self.present(safariViewController, animated: true, completion: nil)
     }
   }
   
+  
   @IBAction func pausePlayToggle(_ sender: UIButton) {
-    
-    guard let currentMoment = currentMoment, let mediaObject = currentMoment.mediaObj, let mediaType = mediaObject.mediaType else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.assert("No Current Moment, Media Object, or Media Type for StoryVC when trying to pause/reumse")
-        self.cleanUpAndDismiss()
-      }
-      return
-    }
-    
-    CCLog.info("User pressed Paused/Resume. isPaused = \(isPaused), photoTimer.isValid = \(photoTimer != nil ? String(photoTimer!.isValid) : "None"), avPlayer.rate = \(avPlayer!.rate), mediaType = \(mediaType)")
-    
-    if let photoTimer = photoTimer {
-
-      if photoTimer.isValid {
-        // Photo is 'playing'. Pause photo timer
-        photoTimeRemaining = photoTimer.fireDate.timeIntervalSinceNow
-        photoTimer.invalidate()
-        pauseStateTrack()
-        
-      } else {
-        // Photo is 'paused'. Restart photo timer from where left off
-        self.photoTimer = Timer.scheduledTimer(withTimeInterval: photoTimeRemaining,
-                                               repeats: false) { [weak self] timer in
-          self?.displayNextMoment()
-        }
-        resumeStateTrack()
-      }
-    } else {
-      
-      if avPlayer!.rate != 0.0 {
-        // Video is playing. Pause the video
-        avPlayer!.pause()
-        pauseStateTrack()
-      
-      } else {
-        // Video is paused. Restarted the video
-        avPlayer!.play()
-        resumeStateTrack()
-      }
-    }
-    
-    
+    pausePlay()
   }
   
   
@@ -196,6 +141,49 @@ class StoryViewController: UIViewController {
   
   
   // MARK: - Private Instance Functions
+  
+  fileprivate func pausePlay() {
+    guard let currentMoment = currentMoment, let mediaObject = currentMoment.mediaObj, let mediaType = mediaObject.mediaType else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.assert("No Current Moment, Media Object, or Media Type for StoryVC when trying to pause/reumse")
+        self.dismiss(animated: true, completion: nil)
+      }
+      return
+    }
+    
+    CCLog.info("User pressed Paused/Resume. isPaused = \(isPaused), photoTimer.isValid = \(photoTimer != nil ? String(photoTimer!.isValid) : "None"), avPlayer.rate = \(avPlayer!.rate), mediaType = \(mediaType)")
+    
+    if let photoTimer = photoTimer {
+      
+      if photoTimer.isValid {
+        // Photo is 'playing'. Pause photo timer
+        photoTimeRemaining = photoTimer.fireDate.timeIntervalSinceNow
+        photoTimer.invalidate()
+        pauseStateTrack()
+        
+      } else {
+        // Photo is 'paused'. Restart photo timer from where left off
+        self.photoTimer = Timer.scheduledTimer(withTimeInterval: photoTimeRemaining,
+                                               repeats: false) { [weak self] timer in
+                                                self?.displayNextMoment()
+        }
+        resumeStateTrack()
+      }
+    } else {
+      
+      if avPlayer!.rate != 0.0 {
+        // Video is playing. Pause the video
+        avPlayer!.pause()
+        pauseStateTrack()
+        
+      } else {
+        // Video is paused. Restarted the video
+        avPlayer!.play()
+        resumeStateTrack()
+      }
+    }
+  }
+  
   
   fileprivate func fetchSomeMoment(from momentNumber: Int) {
     guard let story = viewingStory else {
@@ -400,13 +388,12 @@ class StoryViewController: UIViewController {
   }
   
   
-  fileprivate func cleanUpAndDismiss() {
+  fileprivate func cleanUp() {
     // TODO: Clean-up before dismissing
     if let moment = currentMoment {
       stopVideoTimerAndObservers(for: moment)
     }
     jotViewController.clearAll()
-    DispatchQueue.main.async { [weak self] in self?.dismiss(animated: true, completion: nil) }
   }
   
   
@@ -451,7 +438,7 @@ class StoryViewController: UIViewController {
     let nextIndex = story.getIndexOf(moment) + 1
     
     if nextIndex == moments.count {
-      cleanUpAndDismiss()
+      dismiss(animated: true, completion: nil)
     } else {
       displayMomentIfLoaded(for: moments[nextIndex])
     }
@@ -486,7 +473,7 @@ class StoryViewController: UIViewController {
     let index = story.getIndexOf(moment)
     
     if index == 0 {
-      cleanUpAndDismiss()
+      dismiss(animated: true, completion: nil)
     } else {
       displayMomentIfLoaded(for: moments[index-1])
     }
@@ -523,21 +510,13 @@ class StoryViewController: UIViewController {
     jotViewController.didMove(toParentViewController: self)
     jotViewController.view.frame = view.bounds
     
+    dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)
     tapBackwardsWidth.constant = UIScreen.main.bounds.width/3.0  // Gotta test this on a different screen size to know if this works
   }
   
   
-  override func viewWillAppear(_ animated: Bool) {
-    // Always display activity indicator and blur layer up front
-    view.insertSubview(blurView, belowSubview: tapGestureStackView)
-    view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
-    soundButton.isHidden = true
-    pauseResumeButton.isHidden = true
-    activityIndicator.startAnimating()
-  }
-  
-  
   override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
     guard let story = viewingStory else {
       internalErrorDialog()
       CCLog.assert("Unexpected viewingStory = nil")
@@ -552,22 +531,25 @@ class StoryViewController: UIViewController {
     
     // If a moment was already in play, just display that again. Otherwise try to display the first moment
     if currentMoment == nil {
+      
+      // Always display activity indicator and blur layer up front
+      view.insertSubview(blurView, belowSubview: tapGestureStackView)
+      view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
+      soundButton.isHidden = true
+      pauseResumeButton.isHidden = true
+      activityIndicator.startAnimating()
+      
       currentMoment = moments[0]
+      displayMomentIfLoaded(for: currentMoment!)
+    } else if isPaused {
+      pausePlay()
     }
-    
-    displayMomentIfLoaded(for: currentMoment!)
   }
   
   
   override func viewDidDisappear(_ animated: Bool) {
-    CCLog.verbose("StoryViewController disappearing")
-  }
-  
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
+    super.viewDidDisappear(animated)
+    cleanUp()
   }
 }
 
@@ -592,10 +574,8 @@ extension StoryViewController: FoodieObjectWaitOnRetrieveDelegate {
 extension StoryViewController: SFSafariViewControllerDelegate {
   
   func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-    let transition = CATransition()
-    transition.duration = 0.5
-    transition.type = kCATransitionPush
-    transition.subtype = kCATransitionFromBottom
-    controller.view.window!.layer.add(transition, forKey: kCATransition)
+    if isPaused {
+      pausePlay()
+    }
   }
 }

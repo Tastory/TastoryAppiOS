@@ -194,7 +194,7 @@ class FoodieUser: PFUser {
   
   
   static func logIn(for username: String, using password: String, withBlock callback: UserErrorBlock?) {
-    PFUser.logInWithUsername(inBackground: username, password: password) { (user, error) in
+    PFUser.logInWithUsername(inBackground: username.lowercased(), password: password) { (user, error) in
       
       if let error = error {
         callback?(nil, error)
@@ -444,14 +444,14 @@ class FoodieUser: PFUser {
   
   func signUp(withBlock callback: SimpleErrorBlock?) {
     
-    guard let username = username else {
+    guard var username = username else {
       DispatchQueue.global(qos: .userInitiated).async {
         callback?(ErrorCode.usernameIsEmpty)
       }
       return
     }
     
-    guard let email = email else {
+    guard var email = email else {
       DispatchQueue.global(qos: .userInitiated).async {
         callback?(ErrorCode.emailIsEmpty)
       }
@@ -485,6 +485,10 @@ class FoodieUser: PFUser {
       }
       return
     }
+    
+    // Enforce lowercase
+    username = username.lowercased()
+    email = email.lowercased()
     
     // Set role of the user first before trying to figure out ACL
     self.roleLevel = FoodieRole.Level.limitedUser.rawValue
@@ -631,7 +635,7 @@ class FoodieUser: PFUser {
     // Do a retrieve before adding
     retrieve(forceAnyways: true) { error in
       if let error = error {
-        CCLog.warning("Retreive for add authored story failed - \(error.localizedDescription)")
+        CCLog.warning("Retrieve for add authored story failed - \(error.localizedDescription)")
         callback?(error)
         return
       }
@@ -652,7 +656,7 @@ class FoodieUser: PFUser {
     // Do a retrieve before adding
     retrieve(forceAnyways: true) { error in
       if let error = error {
-        CCLog.warning("Retreive for add authored story failed - \(error.localizedDescription)")
+        CCLog.warning("Retrieve for add authored story failed - \(error.localizedDescription)")
         callback?(error)
         return
       }

@@ -35,6 +35,9 @@ struct FoodieGlobal {
     static let StoryFeedPaginationCount = 50  // TODO: Need to implement pagination
     static let DefaultServerRequestRetryCount = 3
     static let DefaultServerRequestRetryDelay = 3.0
+    static let DefaultTransitionAnimationDuration: TimeInterval = 0.4
+    static let DefaultTransitionUnderVCAlpha: CGFloat = 0.1
+    static let DefaultMomentAspectRatio: CGFloat = 16/9
   }
   
   

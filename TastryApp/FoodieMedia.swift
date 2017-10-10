@@ -14,13 +14,13 @@ class FoodieMedia: FoodieS3Object {
   // MARK: - Error Types Definition
   enum ErrorCode: LocalizedError {
     
-    case retreiveFileDoesNotExist
+    case retrieveFileDoesNotExist
     case saveToLocalwithNilImageMemoryBuffer
     case saveToLocalwithNilvideoLocalBufferUrl
     
     var errorDescription: String? {
       switch self {
-      case .retreiveFileDoesNotExist:
+      case .retrieveFileDoesNotExist:
         return NSLocalizedString("File for filename does not exist", comment: "Error description for an exception error code")
       case .saveToLocalwithNilImageMemoryBuffer:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, imageMemoryBuffer = nil", comment: "Error description for an exception error code")
@@ -109,7 +109,7 @@ extension FoodieMedia: FoodieObjectDelegate {
           self.videoLocalBufferUrl = FoodieFile.getFileURL(for: .cache, with: fileName)
           callback?(nil)
         } else {
-          callback?(ErrorCode.retreiveFileDoesNotExist)
+          callback?(ErrorCode.retrieveFileDoesNotExist)
         }
       }
     }
@@ -154,7 +154,7 @@ extension FoodieMedia: FoodieObjectDelegate {
             self.videoLocalBufferUrl = FoodieFile.getFileURL(for: localType, with: fileName)
             callback?(nil)
           } else {
-            callback?(ErrorCode.retreiveFileDoesNotExist)
+            callback?(ErrorCode.retrieveFileDoesNotExist)
           }
         }
       }
@@ -202,7 +202,7 @@ extension FoodieMedia: FoodieObjectDelegate {
           self.videoLocalBufferUrl = FoodieFile.getFileURL(for: .cache, with: fileName)
           callback?(nil)
         } else {
-          callback?(ErrorCode.retreiveFileDoesNotExist)
+          callback?(ErrorCode.retrieveFileDoesNotExist)
         }
       }
     }

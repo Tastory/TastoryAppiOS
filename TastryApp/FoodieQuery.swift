@@ -12,7 +12,7 @@ import CoreLocation
 class FoodieQuery {
   
   // MARK: - Types & Enumerations
-  typealias StorysErrorBlock = ([FoodieStory]?, Error?) -> Void
+  typealias StoriesErrorBlock = ([FoodieStory]?, Error?) -> Void
   typealias VenuesErrorBlock = ([FoodieVenue]?, Error?) -> Void
   
   enum LocationType: String {
@@ -371,7 +371,7 @@ class FoodieQuery {
   }
   
   
-  func initStoryQueryAndSearch(withBlock callback: StorysErrorBlock?) {
+  func initStoryQueryAndSearch(withBlock callback: StoriesErrorBlock?) {
     
     guard var outerQuery = FoodieStory.query() else {
       CCLog.assert("Cannot create a PFQuery object from FoodieStory")
@@ -406,8 +406,8 @@ class FoodieQuery {
     let queryRetry = SwiftRetry()
     queryRetry.start("query and search for Story", withCountOf: Constants.QueryRetryCount) {
       self.pfQuery!.findObjectsInBackground { (objects, error) in
-        if let storys = objects as? [FoodieStory] {
-          callback?(storys, error)
+        if let stories = objects as? [FoodieStory] {
+          callback?(stories, error)
         } else {
           if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .userInitiated) { return }
           callback?(nil, error)
@@ -432,8 +432,8 @@ class FoodieQuery {
     let queryRetry = SwiftRetry()
     queryRetry.start("query and search for Venue", withCountOf: Constants.QueryRetryCount) {
       self.pfQuery!.findObjectsInBackground { (objects, error) in
-        if let storys = objects as? [FoodieVenue] {
-          callback?(storys, error)
+        if let stories = objects as? [FoodieVenue] {
+          callback?(stories, error)
         } else {
           if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .userInitiated) { return }
           callback?(nil, error)
@@ -443,7 +443,7 @@ class FoodieQuery {
   }
   
   
-  func getNextStorys(for count: Int, withBlock callback: StorysErrorBlock?) {
+  func getNextStories(for count: Int, withBlock callback: StoriesErrorBlock?) {
     guard let query = pfQuery else {
       CCLog.assert("No initial PFQuery created, so cannot get another batch of query results")
       callback?(nil, ErrorCode.noPFQueryToPerformAnotherSearch)
@@ -459,8 +459,8 @@ class FoodieQuery {
     let queryRetry = SwiftRetry()
     queryRetry.start("query and search for next Stories", withCountOf: Constants.QueryRetryCount) {
       query.findObjectsInBackground { (objects, error) in
-        if let storys = objects as? [FoodieStory] {
-          callback?(storys, error)
+        if let stories = objects as? [FoodieStory] {
+          callback?(stories, error)
         } else {
           if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .userInitiated) { return }
           callback?(nil, error)
@@ -486,8 +486,8 @@ class FoodieQuery {
     let queryRetry = SwiftRetry()
     queryRetry.start("query and search for next Venues", withCountOf: Constants.QueryRetryCount) {
       query.findObjectsInBackground { (objects, error) in
-        if let storys = objects as? [FoodieVenue] {
-          callback?(storys, error)
+        if let stories = objects as? [FoodieVenue] {
+          callback?(stories, error)
         } else {
           if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .userInitiated) { return }
           callback?(nil, error)

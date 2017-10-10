@@ -8,7 +8,7 @@
 
 import UIKit
 
-class EmailResetViewController: UIViewController {
+class EmailResetViewController: TransitableViewController {
   
   
   // MARK: - Public Instance Variable
@@ -65,11 +65,4 @@ class EmailResetViewController: UIViewController {
   override func viewWillDisappear(_ animated: Bool) {
     view.endEditing(true)
   }
-  
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    CCLog.warning("didReceiveMemoryWarning")
-  }
-  
 }

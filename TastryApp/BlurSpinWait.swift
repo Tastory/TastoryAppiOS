@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 class BlurSpinWait {
   
   var blurEffectView: UIVisualEffectView? = nil
@@ -20,11 +21,13 @@ class BlurSpinWait {
       self.blurEffectView!.frame = view.bounds
       self.blurEffectView!.autoresizingMask = [.flexibleWidth, .flexibleHeight]
       view.addSubview(self.blurEffectView!)
+      view.bringSubview(toFront: self.blurEffectView!)
       
       self.activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
       self.activityView!.center = view.center
       self.activityView!.startAnimating()
       view.addSubview(self.activityView!)
+      view.bringSubview(toFront: self.activityView!)
     }
   }
   

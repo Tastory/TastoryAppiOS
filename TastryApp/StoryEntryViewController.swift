@@ -42,12 +42,12 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   // MARK: - Public Instance Variable
   var workingStory: FoodieStory?
   var returnedMoment: FoodieMoment?
-  
+  var markupMoment: FoodieMoment? = nil
+  var containerVC: MarkupReturnDelegate?
   
   // MARK: - Private Instance Variables
   fileprivate var placeholderLabel = UILabel()
   fileprivate var momentViewController = MomentCollectionViewController()
-  fileprivate var markupMoment: FoodieMoment? = nil
   fileprivate var selectedViewCell: MomentCollectionViewCell?
 
   // MARK: - IBOutlets
@@ -60,12 +60,18 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   // MARK: - IBActions
   @IBAction func venueClicked(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as! VenueTableViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as? VenueTableViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of VenueTableViewController Class!!")
+      }
+      return
+    }
     viewController.delegate = self
     viewController.suggestedVenue = workingStory?.venue
     
     // Average the locations of the Moments to create a location suggestion on where to search for a Venue
     viewController.suggestedLocation = averageLocationOfMoments()
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   
@@ -88,7 +94,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
       CCLog.fatal("No Current User Logged In")
     }
     
-    guard story.title != nil && story.venue != nil else {
+    guard let title = story.title, title != "", story.venue != nil else {
       AlertDialog.present(from: self, title: "Required Fields Empty", message: "The Title and Venue are essential to a Story!")
       return
     }
@@ -160,7 +166,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   
   
   @IBAction func editedLink(_ sender: UITextField) {
-    guard let text = sender.text, let story = workingStory, text != story.storyURL else {
+    guard let text = sender.text, let story = workingStory, text != story.storyURL, text != "" else {
       // Nothing changed, don't do anything
       return
     }
@@ -281,6 +287,11 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
       CCLog.fatal("No moments in current working story.")
     }
 
+    guard let markupReturnVC = containerVC else {
+      CCLog.fatal("Story Entry VC does not have a Container VC")
+    }
+    
+    
     if(indexPath.row >= momentArray.count)
     {
       AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { action in
@@ -290,8 +301,13 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
     let moment = momentArray[indexPath.row]
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-    viewController.markupReturnDelegate = self
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
+      }
+      return
+    }
+    viewController.markupReturnDelegate = markupReturnVC
 
     guard let mediaObj = moment.mediaObj else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
@@ -303,7 +319,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     viewController.mediaObj = mediaObj
     viewController.editMomentObj = moment
     viewController.addToExistingStoryOnly = true
-
+    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: false)
     self.present(viewController, animated: true)
     
   }
@@ -456,17 +472,17 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         venueButton?.setTitleColor(Constants.placeholderColor, for: .normal)
       }
       
-      if let storyURL = workingStory.storyURL {
+      if let storyURL = workingStory.storyURL, storyURL != "" {
         linkTextField?.text = storyURL
       }
       
       if let tags = workingStory.tags, !tags.isEmpty {
         // TODO: Deal with tags here?
       } else {
-        placeholderLabel = UILabel(frame: CGRect(x: 5, y: 7, width: 49, height: 19))
+        placeholderLabel = UILabel(frame: CGRect(x: 0, y: 7, width: 50, height: 20))
         placeholderLabel.text = "Tags" // TODO: Localization
         placeholderLabel.textColor = Constants.placeholderColor
-        placeholderLabel.font = UIFont.systemFont(ofSize: 14)
+        placeholderLabel.font = UIFont.systemFont(ofSize: 14.5)
         placeholderLabel.isHidden = !tagsTextView!.text.isEmpty
         tagsTextView?.addSubview(placeholderLabel)  // Remember to remove on the way out. There might be real Tags next time in the TextView
       }
@@ -542,6 +558,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   }
   
   override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
     view.endEditing(true)
   }
   
@@ -708,15 +725,7 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
   }
 }
 
-extension StoryEntryViewController: MarkupReturnDelegate {
-  func markupComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
 
-    self.returnedMoment = markedupMoment
-    self.markupMoment = markedupMoment
-
-    dismiss(animated: true, completion: nil)
-  }
-}
 
 extension StoryEntryViewController: CameraReturnDelegate {
   func captureComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {

@@ -20,7 +20,7 @@ protocol VenueTableReturnDelegate {
 }
 
 
-class VenueTableViewController: UIViewController {
+class VenueTableViewController: TransitableViewController {
   
   // MARK: - Types & Enumerations
   
@@ -59,86 +59,7 @@ class VenueTableViewController: UIViewController {
   @IBAction func rightSwipe(_ sender: UISwipeGestureRecognizer) {
     dismiss(animated: true, completion: nil)
   }
-  
-  
-  // MARK: - Private Instance Functions
-  fileprivate func internalErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when a Venue Table view internal error occured",
-                                              message: "An internal error has occured. Please try again",
-                                              messageComment: "Alert dialog message when a Venue Table view internal error occured",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for generic Venue Table errors",
-                                     style: .default)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-  
-  fileprivate func searchErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when a Venue Table View search error occurred",
-                                              message: "A query error has occured. Please try again",
-                                              messageComment: "Alert dialog message when a Venue Table View search error occurred",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for generic Venue Table View errors",
-                                     style: .default)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-  
-  fileprivate func locationErrorDialog(message: String, comment: String) {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when a Venue Table View location error occured",
-                                              message: message,
-                                              messageComment: comment,
-                                              preferredStyle: .alert)
-      
-      alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for location related Venue Table View errors", style: .cancel)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-  
-  
-  // Working along with venueSearchComplete(), this call is Thread Safe
-  @objc func fullVenueSearch() {
-    DispatchQueue.global(qos: .userInitiated).async {
-      
-      // In general, don't have mutexes locking the main thread please
-      SwiftMutex.lock(&self.searchMutex)
-      guard !self.isVenueSearchUnderWay else {
-        self.isVenueSearchPending = true
-        SwiftMutex.unlock(&self.searchMutex)
-        return
-      }
-      SwiftMutex.unlock(&self.searchMutex)
-      
-      // Search Foursquare based on either
-      //  1. the user supplied location
-      //  2. the suggested Geolocation
-      //  3. the current location
-      var venueNameToSearch = ""
-      if let venueName = self.venueName {
-        venueNameToSearch = venueName
-      }
-      if let nearLocation = self.nearLocation {
-        FoodieVenue.searchFoursquare(for: venueNameToSearch, near: nearLocation, withBlock: self.venueSearchCallback)
-      } else if let suggestedLocation = self.suggestedLocation {
-        FoodieVenue.searchFoursquare(for: venueNameToSearch, at: suggestedLocation, withBlock: self.venueSearchCallback)
-      } else if let currentLocation = self.currentLocation {
-        FoodieVenue.searchFoursquare(for: venueNameToSearch, at: currentLocation, withBlock: self.venueSearchCallback)
-      } else {
-        CCLog.warning("No useful location to base the search on")
-        //AlertDialog.present(from: self, title: "Cannot Determine Location", message: "Please enter a location to perform Venue Search")
-        self.locationSearchBar.placeholder = Constants.defaultLocationPlaceholderText
-        self.locationSearchBar.setNeedsDisplay()
-      }
-    }
-  }
+
   
   fileprivate func venueSearchCallback(_ venueArray: [FoodieVenue]?, _ geocode: FoodieVenue.Geocode?, _ error: Error?) {
     
@@ -193,6 +114,41 @@ class VenueTableViewController: UIViewController {
   
   
   // MARK - Public Instance Functions
+  // Working along with venueSearchComplete(), this call is Thread Safe
+  @objc func fullVenueSearch() {
+    DispatchQueue.global(qos: .userInitiated).async {
+      
+      // In general, don't have mutexes locking the main thread please
+      SwiftMutex.lock(&self.searchMutex)
+      guard !self.isVenueSearchUnderWay else {
+        self.isVenueSearchPending = true
+        SwiftMutex.unlock(&self.searchMutex)
+        return
+      }
+      SwiftMutex.unlock(&self.searchMutex)
+      
+      // Search Foursquare based on either
+      //  1. the user supplied location
+      //  2. the suggested Geolocation
+      //  3. the current location
+      var venueNameToSearch = ""
+      if let venueName = self.venueName {
+        venueNameToSearch = venueName
+      }
+      if let nearLocation = self.nearLocation {
+        FoodieVenue.searchFoursquare(for: venueNameToSearch, near: nearLocation, withBlock: self.venueSearchCallback)
+      } else if let suggestedLocation = self.suggestedLocation {
+        FoodieVenue.searchFoursquare(for: venueNameToSearch, at: suggestedLocation, withBlock: self.venueSearchCallback)
+      } else if let currentLocation = self.currentLocation {
+        FoodieVenue.searchFoursquare(for: venueNameToSearch, at: currentLocation, withBlock: self.venueSearchCallback)
+      } else {
+        CCLog.warning("No useful location to base the search on")
+        //AlertDialog.present(from: self, title: "Cannot Determine Location", message: "Please enter a location to perform Venue Search")
+        self.locationSearchBar.placeholder = Constants.defaultLocationPlaceholderText
+        self.locationSearchBar.setNeedsDisplay()
+      }
+    }
+  }
   
   
   // MARK: - View Controller Lifecycle
@@ -219,7 +175,7 @@ class VenueTableViewController: UIViewController {
     // Whats the odd of the user moving all the time? Saves some battery
     LocationWatch.global.get { (location, error) in
       if let error = error {
-        self.locationErrorDialog(message: "LocationWatch returned error - \(error.localizedDescription)", comment: "Alert Dialogue Message")
+        AlertDialog.standardPresent(from: self, title: .genericLocationError, message: .locationTryAgain)
         CCLog.warning("LocationWatch returned error - \(error.localizedDescription)")
         return
       }
@@ -229,8 +185,10 @@ class VenueTableViewController: UIViewController {
         
         // A Location suggestion based off the Moment have higher search priority. So only update the placeholder text to reflect this if there is no Suggested Location
         if self.suggestedLocation == nil {
-          self.locationSearchBar.placeholder = "Search near Current Location"
-          self.locationSearchBar.setNeedsDisplay()
+          DispatchQueue.main.async {
+            self.locationSearchBar.placeholder = "Search near Current Location"
+            self.locationSearchBar.setNeedsDisplay()
+          }
         }
         
         // With the location updated, we can do another search
@@ -253,14 +211,9 @@ class VenueTableViewController: UIViewController {
   
   
   override func viewDidLayoutSubviews() {
-    venueTableView.contentInset = UIEdgeInsetsMake(stackView.bounds.height, 0.0, 0.0, 0.0)  // This is so the Table View can be translucent underneath the Stack View of Search Bars
+    venueTableView.contentInset = UIEdgeInsetsMake(stackView.bounds.height - UIApplication.shared.statusBarFrame.height, 0.0, 0.0, 0.0)  // This is so the Table View can be translucent underneath the Stack View of Search Bars
   }
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
-  }
+
 }
 
 
@@ -328,8 +281,9 @@ extension VenueTableViewController: UITableViewDataSource {
     let cell = tableView.dequeueReusableCell(withIdentifier: "venueTableCell", for: indexPath)
     
     guard let venueResultArray = venueResultArray else {
-      CCLog.assert("venueResultArray = nil even tho numberOfRowsInSection = \(tableView.numberOfRows(inSection: indexPath.section))")
-      internalErrorDialog()
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("venueResultArray = nil even tho numberOfRowsInSection = \(tableView.numberOfRows(inSection: indexPath.section))")
+      }
       cell.textLabel?.text = ""
       cell.detailTextLabel?.text = ""
       return cell
@@ -376,8 +330,9 @@ extension VenueTableViewController: UITableViewDataSource {
 extension VenueTableViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     guard let venueResultArray = venueResultArray else {
-      CCLog.assert("venueResultArray = nil not expected when user didSelectRowAt \(indexPath.row)")
-      internalErrorDialog()
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("venueResultArray = nil not expected when user didSelectRowAt \(indexPath.row)")
+      }
       return
     }
     

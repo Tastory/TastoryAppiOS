@@ -11,7 +11,7 @@ import MapKit
 import CoreLocation
 
 
-class MapViewController: UIViewController {
+class MapViewController: TransitableViewController {
 
   // MARK: Error Types Definition
   enum ErrorCode: LocalizedError {
@@ -70,7 +70,10 @@ class MapViewController: UIViewController {
   @IBOutlet weak var categoryField: UITextField!
   @IBOutlet weak var draftButton: UIButton!
   @IBOutlet weak var cameraButton: UIButton!
-
+  @IBOutlet weak var logoutButton: UIButton!
+  @IBOutlet weak var profileButton: UIButton!
+  @IBOutlet weak var allStoriesButton: UIButton!
+  
   
   
   // MARK: - IBActions
@@ -100,7 +103,12 @@ class MapViewController: UIViewController {
     // This is used for viewing the draft story to be used with update story later
     // Hid the button due to problems with empty draft story and saving an empty story is problematic
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as! StoryEntryViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")
+      }
+      return
+    }
 
     if(FoodieStory.currentStory == nil)
     {
@@ -110,13 +118,20 @@ class MapViewController: UIViewController {
     {
       viewController.workingStory = FoodieStory.currentStory
     }
+    
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   
   
   @IBAction func launchCamera(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as? CameraViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of CameraViewController Class!!")
+      }
+      return
+    }
     viewController.cameraReturnDelegate = self
     self.present(viewController, animated: true)
   }
@@ -151,7 +166,7 @@ class MapViewController: UIViewController {
     // Kill all Pre-fetches
     FoodiePrefetch.global.removeAllPrefetchWork()
     
-    performQuery { storys, error in
+    performQuery { stories, error in
       if let error = error {
         if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
           AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
@@ -163,20 +178,20 @@ class MapViewController: UIViewController {
         return
       }
       
-      guard let storys = storys else {
+      guard let stories = stories else {
         AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
           CCLog.assert("Story Query resulted in nil")
         }
         return
       }
       
-      self.displayAnnotations(onStories: storys)
+      self.displayAnnotations(onStories: stories)
     }
   }
   
   
   @IBAction func showFeed(_ sender: UIButton) {
-    performQuery { storys, error in
+    performQuery { stories, error in
       if let error = error {
         if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
           AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
@@ -188,7 +203,7 @@ class MapViewController: UIViewController {
         return
       }
       
-      guard let storys = storys else {
+      guard let stories = stories else {
         AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
           CCLog.assert("Story Query resulted in storyArray = nil")
         }
@@ -202,49 +217,66 @@ class MapViewController: UIViewController {
         return
       }
       
-      self.displayAnnotations(onStories: storys)
-      self.launchFeed(withStoryArray: storys, withStoryQuery: query)
+      self.displayAnnotations(onStories: stories)
+      self.launchFeed(withStoryArray: stories, withStoryQuery: query)
+    }
+  }
+  
+  
+  @IBAction func allStories(_ sender: UIButton) {
+    performQuery(onAllUsers: true) { stories, error in
+      if let error = error {
+        if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
+          AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
+        } else {
+          AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+            CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
+          }
+        }
+        return
+      }
+      
+      guard let stories = stories else {
+        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
+          CCLog.assert("Story Query resulted in storyArray = nil")
+        }
+        return
+      }
+      
+      guard let query = self.storyQuery else {
+        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce a Query") { action in
+          CCLog.assert("Story Query resulted in storyQuery = nil")
+        }
+        return
+      }
+      
+      self.displayAnnotations(onStories: stories)
+      self.launchFeed(withStoryArray: stories, withStoryQuery: query)
     }
   }
   
   
   @IBAction func logOutAction(_ sender: UIButton) {
-    if FoodieStory.currentStory != nil {
-      AlertDialog.presentConfirm(from: self, title: "Log Out", message: "Are you sure you want to log out? You will lose your unsaved draft if you log out") { action in
-        self.logOutAndDismiss()
+    LogOutDismiss.askDiscardIfNeeded(from: self)
+  }
+  
+  
+  @IBAction func profileAction(_ sender: UIButton) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of ProfileViewController Class!!")
       }
-    } else {
-      self.logOutAndDismiss()
+      return
     }
+    viewController.user = FoodieUser.current
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    self.present(viewController, animated: true)
   }
   
   
   
   // MARK: - Class Private Functions
-
-  fileprivate func logOutAndDismiss() {
-    let blurSpinner = BlurSpinWait()
-    blurSpinner.apply(to: view, blurStyle: .prominent, spinnerStyle: .whiteLarge)
-    FoodieUser.logOutAndDeleteDraft { error in
-      blurSpinner.remove()
-      if let error = error {
-        AlertDialog.present(from: self, title: "Log Out Error", message: error.localizedDescription) { action in
-          CCLog.assert("Log Out Failed - \(error.localizedDescription)")
-        }
-      }
-      
-      // Proceed to dismiss regardless
-      guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let window = appDelegate.window, let rootViewController = window.rootViewController else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.fatal("Cannot get AppDelegate.window.rootViewController!!!!")
-        }
-        return
-      }
-      
-      rootViewController.dismiss(animated: true, completion: nil)
-    }
-  }
-  
   
   // Generic error dialog box to the user on internal errors
   fileprivate func internalErrorDialog() {
@@ -315,7 +347,7 @@ class MapViewController: UIViewController {
   }
   
   
-  fileprivate func performQuery(withBlock callback: FoodieQuery.StorysErrorBlock?) {
+  fileprivate func performQuery(onAllUsers: Bool = false, withBlock callback: FoodieQuery.StoriesErrorBlock?) {
     
     guard let mapRect = mapView?.visibleMapRect else {
       locationErrorDialog(message: "Invalid Map View. Search Location Undefined", comment: "Alert dialog message when mapView is nil when user attempted to perform Search")
@@ -339,11 +371,13 @@ class MapViewController: UIViewController {
     storyQuery = FoodieQuery()
     storyQuery!.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
     
-    // Add Filter so only Post by Users > Limited User && Posts by Yourself can be seen
-    storyQuery!.addRoleFilter(min: .user, max: nil)
-    
-    if let currentUser = FoodieUser.current, currentUser.isRegistered {
-      storyQuery!.addAuthorsFilter(users: [currentUser])
+    if !onAllUsers {
+      // Add Filter so only Post by Users > Limited User && Posts by Yourself can be seen
+      storyQuery!.addRoleFilter(min: .user, max: nil)
+      
+      if let currentUser = FoodieUser.current, currentUser.isRegistered {
+        storyQuery!.addAuthorsFilter(users: [currentUser])
+      }
     }
     
     storyQuery!.setSkip(to: 0)
@@ -354,7 +388,7 @@ class MapViewController: UIViewController {
     blurSpinner.apply(to: self.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
     
     // Actually do the Query
-    storyQuery!.initStoryQueryAndSearch { (storys, error) in
+    storyQuery!.initStoryQueryAndSearch { (stories, error) in
       
       blurSpinner.remove()
       
@@ -365,7 +399,7 @@ class MapViewController: UIViewController {
         return
       }
       
-      guard let storyArray = storys else {
+      guard let storyArray = stories else {
         self.queryErrorDialog()
         CCLog.assert("Create Story Query & Search returned with nil Story Array")
         callback?(nil, ErrorCode.queryNilStory)
@@ -414,12 +448,17 @@ class MapViewController: UIViewController {
   }
   
   
-  fileprivate func launchFeed(withStoryArray storys: [FoodieStory], withStoryQuery query: FoodieQuery) {
+  fileprivate func launchFeed(withStoryArray stories: [FoodieStory], withStoryQuery query: FoodieQuery) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FeedCollectionViewController") as! FeedCollectionViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverFeedViewController") as? DiscoverFeedViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of DiscoverFeedViewController Class!!")
+      }
+      return
+    }
     viewController.storyQuery = query
-    viewController.storyArray = storys
-    viewController.restorationClass = nil
+    viewController.storyArray = stories
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   
@@ -490,6 +529,7 @@ class MapViewController: UIViewController {
   
   
   override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     
     // Kill all Pre-fetches
     FoodiePrefetch.global.removeAllPrefetchWork()
@@ -521,9 +561,16 @@ class MapViewController: UIViewController {
     
     // Don't allow user to go to the Camera and thus Story composition unless they are logged-in with E-mail verified
     cameraButton.isHidden = true
+    logoutButton.isHidden = false
+    profileButton.isHidden = true
+    allStoriesButton.isHidden = true
     
     // But we should refresh the user before determining for good
     if let user = FoodieUser.current, user.isRegistered {
+      
+      logoutButton.isHidden = true
+      profileButton.isHidden = false
+      
       user.checkIfEmailVerified { verified, error in
         if let error = error {
           
@@ -539,6 +586,10 @@ class MapViewController: UIViewController {
         } else if verified {
           DispatchQueue.main.async {
             self.cameraButton.isHidden = false
+            
+            if user.roleLevel >= FoodieRole.Level.moderator.rawValue {
+              self.allStoriesButton.isHidden = false
+            }
           }
         }
       }
@@ -546,20 +597,40 @@ class MapViewController: UIViewController {
   }
   
   
+  override func viewDidAppear(_ animated: Bool) {
+    if storyQuery == nil {
+      // Do an initial query on start
+      performQuery { stories, error in
+        if let error = error {
+          if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
+            AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
+          } else {
+            AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+              CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
+            }
+          }
+          return
+        }
+        
+        guard let stories = stories else {
+          AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
+            CCLog.assert("Story Query resulted in nil")
+          }
+          return
+        }
+        self.displayAnnotations(onStories: stories)
+      }
+    }
+  }
+  
   override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
     // Don't even know when we'll be back. Let the GPS stop if no one else is using it
     locationWatcher?.stop()
     
     // Keep track of what the location is before we disappear
     lastLocation = mapView?.centerCoordinate
     lastMapDelta = mapView?.region.span.latitudeDelta
-  }
-  
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
   }
 }
 
@@ -711,8 +782,14 @@ extension MapViewController: UITextFieldDelegate {
     } else if textField == categoryField {
       
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CategoryTableViewController") as! CategoryTableViewController
+      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CategoryTableViewController") as? CategoryTableViewController else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("ViewController initiated not of CategoryTableViewController Class!!")
+        }
+        return false
+      }
       viewController.delegate = self
+      viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
       self.present(viewController, animated: true)
       return false
       
@@ -721,12 +798,6 @@ extension MapViewController: UITextFieldDelegate {
       return false
     }
   }
-
-//  let userInfo = notification.userInfo!
-//  let keyboardHeight = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue().height
-//  let duration = userInfo[UIKeyboardAnimationDurationUserInfoKey] as! Double
-//  let curve = userInfo[UIKeyboardAnimationCurveUserInfoKey] as! UInt
-//  let moveUp = (notification.name == UIKeyboardWillShowNotification)
 }
 
 
@@ -734,8 +805,12 @@ extension MapViewController: CameraReturnDelegate {
   func captureComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
     DispatchQueue.main.async {  // UI Work. We don't know which thread we might be in, so guarentee execute in Main thread
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as! StoryEntryViewController
-      
+      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")
+        }
+        return
+      }
       var workingStory: FoodieStory?
       
       if let story = suggestedStory {
@@ -750,6 +825,7 @@ extension MapViewController: CameraReturnDelegate {
       viewController.returnedMoment = markedupMoment
       
       self.dismiss(animated: true) { /*[unowned self] in*/
+        viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
         self.present(viewController, animated: true)
       }
     }
@@ -778,7 +854,12 @@ extension MapViewController: MKMapViewDelegate {
   
   @objc func storyCalloutTapped(sender: StoryButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of StoryViewController Class!!")
+      }
+      return
+    }
     
     guard let story = sender.story else {
       AlertDialog.present(from: self, title: "Story Load Error", message: "No Story was loaded for this location! Please try another one!") { action in
@@ -788,6 +869,7 @@ extension MapViewController: MKMapViewDelegate {
     }
     
     viewController.viewingStory = story
+    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
   
