@@ -25,13 +25,22 @@ class MomentCollectionViewController: UICollectionViewController {
 
   // MARK: - Public Instance Variables
   var workingStory: FoodieStory!
-
+  var cameraReturnDelegate: CameraReturnDelegate!
 
   // MARK: - Private Instance Variables
   fileprivate var momentWidthDefault: CGFloat!
   fileprivate var momentSizeDefault: CGSize!
 
   // MARK: - Public Instance Functions
+  @objc func openCamera(_ sender: UIGestureRecognizer) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
+    viewController.addToExistingStoryOnly = true
+    viewController.cameraReturnDelegate = cameraReturnDelegate
+    self.present(viewController, animated: true)
+  }
+
+
   func setThumbnail(_ indexPath: IndexPath) {
 
     guard let currentStory = workingStory else {
@@ -240,6 +249,10 @@ extension MomentCollectionViewController {
       reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.headerElementReuseId, for: indexPath)
     case UICollectionElementKindSectionFooter:
       reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.footerElementReuseId, for: indexPath)
+      let triggerCamera = UITapGestureRecognizer(target: self, action: #selector(openCamera(_:)))
+      triggerCamera.numberOfTapsRequired = 1
+      reusableView.addGestureRecognizer(triggerCamera)
+
     default:
       CCLog.fatal("Unrecognized Kind '\(kind)' for Supplementary Element")
     }
@@ -351,10 +364,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
           }
         }
 
-        // there seems to be a few seconds delay when not refreshing from the main thread
-        DispatchQueue.main.async {
-          collectionView.reloadData()
-        }
+        collectionView.deleteItems(at: [indexPath] )
       }
     }
   }

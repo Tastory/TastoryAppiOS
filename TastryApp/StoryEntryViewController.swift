@@ -15,6 +15,9 @@ import UIKit
 import MapKit
 import CoreLocation
 
+protocol CameraDelegate {
+  func openCamera()
+}
 
 class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelegate {
   
@@ -29,13 +32,13 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     static let suggestedDelta: CLLocationDegrees = 0.02
     static let venueDelta: CLLocationDegrees = 0.005
   }
-  
-  
+
+
   // MARK: - Private Instance Constants
   fileprivate let sectionOneView = UIView()
   fileprivate let mapView = MKMapView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: Constants.mapHeight))
-  
-  
+
+
   // MARK: - Public Instance Variable
   var workingStory: FoodieStory?
   var returnedMoment: FoodieMoment?
@@ -66,6 +69,13 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     self.present(viewController, animated: true)
   }
   
+  @IBAction func previewStory(_ sender: Any) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
+    viewController.viewingStory = workingStory
+    self.present(viewController, animated: true)
+  }
+
   @IBAction func testSaveStory(_ sender: UIButton) {
 
     guard let story = workingStory else {
@@ -196,18 +206,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     }
   }
 
-
-  @objc func setThumbnail(_ sender: UIGestureRecognizer) {
-
-    let point = sender.location(in: momentViewController.collectionView)
-
-    guard let indexPath = momentViewController.collectionView!.indexPathForItem(at: point) else {
-      // invalid index path selected just return
-      return
-    }
-    momentViewController.setThumbnail(indexPath)
-  }
-
   fileprivate func updateStoryEntryMap(withCoordinate coordinate: CLLocationCoordinate2D, span: CLLocationDegrees, venueName: String? = nil) {
     let region = MKCoordinateRegion(center: coordinate,
                                     span: MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span))
@@ -270,16 +268,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
 
   // MARK: - Public Instace Functions
-
-  @objc func keyboardDismiss() {
-    self.view.endEditing(true)
-  }
-
-  @objc func vcDismiss() {
-    // TODO: Data Passback through delegate?
-    dismiss(animated: true, completion: nil)
-  }
-
   @objc func editMoment(_ sender: UIGestureRecognizer)
   {
     let point = sender.location(in: momentViewController.collectionView)
@@ -314,9 +302,14 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
     viewController.mediaObj = mediaObj
     viewController.editMomentObj = moment
+    viewController.addToExistingStoryOnly = true
 
     self.present(viewController, animated: true)
     
+  }
+
+  @objc func keyboardDismiss() {
+    self.view.endEditing(true)
   }
 
   @objc func reorderMoment(_ gesture: UILongPressGestureRecognizer) {
@@ -369,6 +362,31 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     }
   }
 
+  @objc func setThumbnail(_ sender: UIGestureRecognizer) {
+
+    let point = sender.location(in: momentViewController.collectionView)
+
+    guard let indexPath = momentViewController.collectionView!.indexPathForItem(at: point) else {
+      // invalid index path selected just return
+      return
+    }
+    momentViewController.setThumbnail(indexPath)
+
+    // save journal
+    preSave(nil) { (error) in
+      if error != nil {  // preSave should have logged the error, so skipping that here.
+        AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain)
+        return
+      }
+    }
+
+  }
+
+  @objc func vcDismiss() {
+    // TODO: Data Passback through delegate?
+    dismiss(animated: true, completion: nil)
+  }
+
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -381,6 +399,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
     momentViewController.workingStory = workingStory
     momentViewController.momentHeight = Constants.momentHeight
+    momentViewController.cameraReturnDelegate = self
 
     guard let collectionView = momentViewController.collectionView else {
       CCLog.fatal("collection view from momentViewController is nil")
@@ -696,6 +715,34 @@ extension StoryEntryViewController: MarkupReturnDelegate {
     self.markupMoment = markedupMoment
 
     dismiss(animated: true, completion: nil)
+  }
+}
+
+extension StoryEntryViewController: CameraReturnDelegate {
+  func captureComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
+    self.returnedMoment = markedupMoment
+    self.markupMoment = nil
+
+    dismiss(animated: true) {
+      if let workingStory = self.workingStory {
+        guard let collectionView = self.momentViewController.collectionView else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            CCLog.fatal("collection view is nil")
+          }
+          return
+        }
+        guard let moments = workingStory.moments else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            CCLog.fatal("Moments in working journal is nil")
+          }
+          return
+        }
+
+        // this updates the collectionView and must be done when story entry view is visible
+        // NEVER run the following code when collection view is not visible. It will crash!!!!!
+        collectionView.insertItems(at: [IndexPath( item: moments.count - 1, section: 0)])
+      }
+    }
   }
 }
 

@@ -43,11 +43,12 @@ class MarkupViewController: UIViewController {
   
   
   // MARK: - Public Instance Variables
+  var editMomentObj: FoodieMoment?
   var fontArrayIndex = 0
   var mediaObj: FoodieMedia?
   var mediaLocation: CLLocation?
   var markupReturnDelegate: MarkupReturnDelegate?
-  var editMomentObj: FoodieMoment?
+  var addToExistingStoryOnly = false
 
   // MARK: - Private Instance Variables
   fileprivate var avPlayer: AVQueuePlayer?
@@ -329,15 +330,16 @@ class MarkupViewController: UIViewController {
     // Implementing Scenario 1 for now. Scenario TBD
     // What this is trying to do is to display a selection dialog on whether to add to the Current Story, or Save to a new one
     if let story = FoodieStory.currentStory {
-      if(editMomentObj != nil)
-      {
+      if(addToExistingStoryOnly) {
         // skip the selection of adding to current or not
         self.cleanupAndReturn(markedUpMoment: momentObj, suggestedStory: story)
       }
-      displayStorySelection(
-        newStoryHandler: { UIAlertAction -> Void in self.showStoryDiscardDialog(moment: momentObj) },
-        addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoment: momentObj, suggestedStory: story) }
-      )
+      else {
+        displayStorySelection(
+          newStoryHandler: { UIAlertAction -> Void in self.showStoryDiscardDialog(moment: momentObj) },
+          addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoment: momentObj, suggestedStory: story) }
+        )
+      }
     }
     else {
       // Just return a new Current Story
