@@ -1024,7 +1024,7 @@
 				INFOPLIST_FILE = TastryApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Howard;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Master;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1048,7 +1048,7 @@
 				INFOPLIST_FILE = TastryApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Howard;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Master;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
