@@ -76,14 +76,14 @@ class SignUpViewController: TransitableViewController {
   
   // MARK: - Private Static Functions
   fileprivate func signUp() {
-    guard let username = usernameField.text else {
+    guard var username = usernameField.text else {
       AlertDialog.present(from: self, title: "Username Empty", message: "Please enter a username to sign up") { action in
         CCLog.info("No username when Sign Up pressed")
       }
       return
     }
     
-    guard let email = emailField.text else {
+    guard var email = emailField.text else {
       AlertDialog.present(from: self, title: "E-mail Empty", message: "Please enter a valid e-mail address to sign up") { action in
         CCLog.info("No e-mail address when Sign Up pressed")
       }
@@ -96,6 +96,12 @@ class SignUpViewController: TransitableViewController {
       }
       return
     }
+    
+    // Okay, lower case username and E-mail only.
+    username = username.lowercased()
+    usernameField.text = username
+    email = email.lowercased()
+    emailField.text = email
     
     let user = FoodieUser()
     user.username = username
@@ -168,9 +174,13 @@ extension SignUpViewController: UITextFieldDelegate {
     switch textField {
     case usernameField:
       warningLabel.text = ""
-      guard let textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinUsernameLength else {
+      guard var textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinUsernameLength else {
         return  // No text, nothing to see here
       }
+      
+      // Okay. Lower cased usernames only
+      textString = textString.lowercased()
+      textField.text = textString
       
       if let error = FoodieUser.checkValidFor(username: textString) {
         warningLabel.text = "✖︎ " + error.localizedDescription
@@ -189,9 +199,13 @@ extension SignUpViewController: UITextFieldDelegate {
       
     case emailField:
       warningLabel.text = ""
-      guard let textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinEmailLength else {
+      guard var textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinEmailLength else {
         return  // No yet an E-mail, nothing to see here
       }
+      
+      // Lower cased emails only too
+      textString = textString.lowercased()
+      textField.text = textString
       
 //      if !FoodieUser.checkValidFor(email: textString) {
 //        warningLabel.text = "Address entered is not of valid E-mail address format"

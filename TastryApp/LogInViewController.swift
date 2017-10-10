@@ -32,7 +32,7 @@ class LogInViewController: TransitableViewController {
   // MARK: - IBAction
   @IBAction func logInAction(_ sender: UIButton) {
     
-    guard let logInText = usernameField.text else {
+    guard var logInText = usernameField.text else {
       AlertDialog.present(from: self, title: "Log In Error", message: "Please enter your Username or E-mail address to log in") { action in
         CCLog.info("No username when Log In pressed")
       }
@@ -45,6 +45,10 @@ class LogInViewController: TransitableViewController {
       }
       return
     }
+    
+    // Enforce lower case
+    logInText = logInText.lowercased()
+    usernameField.text = logInText
     
     // If the username looks like a valid E-mail, there's no way it can be a regular username
     if FoodieUser.checkValidFor(email: logInText) {

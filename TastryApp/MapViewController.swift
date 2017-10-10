@@ -72,6 +72,7 @@ class MapViewController: TransitableViewController {
   @IBOutlet weak var cameraButton: UIButton!
   @IBOutlet weak var logoutButton: UIButton!
   @IBOutlet weak var profileButton: UIButton!
+  @IBOutlet weak var allStoriesButton: UIButton!
   
   
   
@@ -222,6 +223,39 @@ class MapViewController: TransitableViewController {
   }
   
   
+  @IBAction func allStories(_ sender: UIButton) {
+    performQuery(onAllUsers: true) { stories, error in
+      if let error = error {
+        if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
+          AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
+        } else {
+          AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+            CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
+          }
+        }
+        return
+      }
+      
+      guard let stories = stories else {
+        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
+          CCLog.assert("Story Query resulted in storyArray = nil")
+        }
+        return
+      }
+      
+      guard let query = self.storyQuery else {
+        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce a Query") { action in
+          CCLog.assert("Story Query resulted in storyQuery = nil")
+        }
+        return
+      }
+      
+      self.displayAnnotations(onStories: stories)
+      self.launchFeed(withStoryArray: stories, withStoryQuery: query)
+    }
+  }
+  
+  
   @IBAction func logOutAction(_ sender: UIButton) {
     LogOutDismiss.askDiscardIfNeeded(from: self)
   }
@@ -313,7 +347,7 @@ class MapViewController: TransitableViewController {
   }
   
   
-  fileprivate func performQuery(withBlock callback: FoodieQuery.StoriesErrorBlock?) {
+  fileprivate func performQuery(onAllUsers: Bool = false, withBlock callback: FoodieQuery.StoriesErrorBlock?) {
     
     guard let mapRect = mapView?.visibleMapRect else {
       locationErrorDialog(message: "Invalid Map View. Search Location Undefined", comment: "Alert dialog message when mapView is nil when user attempted to perform Search")
@@ -337,11 +371,13 @@ class MapViewController: TransitableViewController {
     storyQuery = FoodieQuery()
     storyQuery!.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
     
-    // Add Filter so only Post by Users > Limited User && Posts by Yourself can be seen
-    storyQuery!.addRoleFilter(min: .user, max: nil)
-    
-    if let currentUser = FoodieUser.current, currentUser.isRegistered {
-      storyQuery!.addAuthorsFilter(users: [currentUser])
+    if !onAllUsers {
+      // Add Filter so only Post by Users > Limited User && Posts by Yourself can be seen
+      storyQuery!.addRoleFilter(min: .user, max: nil)
+      
+      if let currentUser = FoodieUser.current, currentUser.isRegistered {
+        storyQuery!.addAuthorsFilter(users: [currentUser])
+      }
     }
     
     storyQuery!.setSkip(to: 0)
@@ -527,9 +563,14 @@ class MapViewController: TransitableViewController {
     cameraButton.isHidden = true
     logoutButton.isHidden = false
     profileButton.isHidden = true
+    allStoriesButton.isHidden = true
     
     // But we should refresh the user before determining for good
     if let user = FoodieUser.current, user.isRegistered {
+      
+      logoutButton.isHidden = true
+      profileButton.isHidden = false
+      
       user.checkIfEmailVerified { verified, error in
         if let error = error {
           
@@ -545,8 +586,10 @@ class MapViewController: TransitableViewController {
         } else if verified {
           DispatchQueue.main.async {
             self.cameraButton.isHidden = false
-            self.logoutButton.isHidden = true
-            self.profileButton.isHidden = false
+            
+            if user.roleLevel >= FoodieRole.Level.moderator.rawValue {
+              self.allStoriesButton.isHidden = false
+            }
           }
         }
       }
