@@ -131,7 +131,6 @@
 		8C1ED6E91F5D15A300A8CC94 /* AddMomentLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddMomentLayer.swift; sourceTree = "<group>"; };
 		8C1ED6EA1F5D15A300A8CC94 /* CameraButtonLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraButtonLayer.swift; sourceTree = "<group>"; };
 		8C1ED6EB1F5D15A300A8CC94 /* CameraButtonRingLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraButtonRingLayer.swift; sourceTree = "<group>"; };
-		8C1ED6EC1F5D15A300A8CC94 /* CameraCrossLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCrossLayer.swift; sourceTree = "<group>"; };
 		8C1ED6ED1F5D15A300A8CC94 /* ThumbnailFrameLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailFrameLayer.swift; sourceTree = "<group>"; };
 		8C1ED6F31F5DEC2500A8CC94 /* AsyncOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncOperation.swift; sourceTree = "<group>"; };
 		8C1ED6FF1F5E2BF700A8CC94 /* CleanroomLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CleanroomLogger.framework; path = Carthage/Build/iOS/CleanroomLogger.framework; sourceTree = "<group>"; };
