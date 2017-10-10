@@ -479,10 +479,10 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
       if let tags = workingStory.tags, !tags.isEmpty {
         // TODO: Deal with tags here?
       } else {
-        placeholderLabel = UILabel(frame: CGRect(x: 5, y: 7, width: 49, height: 19))
+        placeholderLabel = UILabel(frame: CGRect(x: 0, y: 7, width: 50, height: 20))
         placeholderLabel.text = "Tags" // TODO: Localization
         placeholderLabel.textColor = Constants.placeholderColor
-        placeholderLabel.font = UIFont.systemFont(ofSize: 14)
+        placeholderLabel.font = UIFont.systemFont(ofSize: 14.5)
         placeholderLabel.isHidden = !tagsTextView!.text.isEmpty
         tagsTextView?.addSubview(placeholderLabel)  // Remember to remove on the way out. There might be real Tags next time in the TextView
       }
