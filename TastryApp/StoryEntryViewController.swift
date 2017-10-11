@@ -414,7 +414,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
     momentViewController.workingStory = workingStory
-    momentViewController.momentHeight = Constants.momentHeight
+    //momentViewController.momentHeight = Constants.momentHeight
     momentViewController.cameraReturnDelegate = self
 
     guard let collectionView = momentViewController.collectionView else {
@@ -435,7 +435,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     collectionView.addGestureRecognizer(longPressGesture)
 
     self.addChildViewController(momentViewController)
-    momentViewController.didMove(toParentViewController: self)
+    //momentViewController.didMove(toParentViewController: self)
     
     titleTextField?.delegate = self
     linkTextField?.delegate = self
@@ -590,6 +590,8 @@ extension StoryEntryViewController {
     case 0:
       return sectionOneView
     case 1:
+      momentViewController.willMove(toParentViewController: self)
+      //momentViewController.didMove(toParentViewController: self)
       return momentViewController.collectionView! as UIView
     default:
       return nil

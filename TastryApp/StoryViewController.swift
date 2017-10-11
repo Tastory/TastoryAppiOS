@@ -111,6 +111,7 @@ class StoryViewController: TransitableViewController {
         pausePlay()
       }
       
+      CCLog.info("Opening Safari View for \(storyLinkString)")
       let safariViewController = SFSafariViewController(url: storyLinkUrl)
       safariViewController.delegate = self
       safariViewController.modalPresentationStyle = .overFullScreen

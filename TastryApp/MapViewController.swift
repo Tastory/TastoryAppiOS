@@ -553,6 +553,31 @@ class MapViewController: TransitableViewController {
       if let location = location {
         let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: self.currentMapDelta, longitudeDelta: self.currentMapDelta))
         DispatchQueue.main.async { self.mapView?.setRegion(region, animated: true) }
+        
+        // Do an Initial Search near the Current Location
+        if self.storyQuery == nil {
+          // Do an initial query on start
+          self.performQuery { stories, error in
+            if let error = error {
+              if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
+                AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
+              } else {
+                AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+                  CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
+                }
+              }
+              return
+            }
+            
+            guard let stories = stories else {
+              AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
+                CCLog.assert("Story Query resulted in nil")
+              }
+              return
+            }
+            self.displayAnnotations(onStories: stories)
+          }
+        }
       }
     }
     
@@ -596,32 +621,6 @@ class MapViewController: TransitableViewController {
     }
   }
   
-  
-  override func viewDidAppear(_ animated: Bool) {
-    if storyQuery == nil {
-      // Do an initial query on start
-      performQuery { stories, error in
-        if let error = error {
-          if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
-            AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
-          } else {
-            AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
-              CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
-            }
-          }
-          return
-        }
-        
-        guard let stories = stories else {
-          AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
-            CCLog.assert("Story Query resulted in nil")
-          }
-          return
-        }
-        self.displayAnnotations(onStories: stories)
-      }
-    }
-  }
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)

@@ -10,29 +10,24 @@ import UIKit
 
 class MomentCollectionViewController: UICollectionViewController {
 
-  // MARK: - Public Instance Variables
-  var momentHeight: CGFloat?
-
-
+  
   // MARK: - Private Class Constants
   fileprivate struct Constants {
     static let momentCellReuseId = "MomentCell"
     static let headerElementReuseId = "MomentHeader"
     static let footerElementReuseId = "MomentFooter"
-    static let interitemSpacing: CGFloat = 5
+    static let interitemSpacing: CGFloat = 2
+    static let headerFooterToCellWidthRatio: CGFloat = 3/4
   }
 
 
   // MARK: - Public Instance Variables
   var workingStory: FoodieStory!
   var cameraReturnDelegate: CameraReturnDelegate!
-
-  // MARK: - Private Instance Variables
-  fileprivate var momentWidthDefault: CGFloat!
-  fileprivate var momentSizeDefault: CGSize!
+  
 
   // MARK: - Public Instance Functions
-  @objc func openCamera(_ sender: UIGestureRecognizer) {
+  @objc func openCamera() {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
     viewController.addToExistingStoryOnly = true
@@ -90,33 +85,13 @@ class MomentCollectionViewController: UICollectionViewController {
     cell.thumbFrameView.isHidden = false
   }
 
+  
+  
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
-
-    guard let momentHeightUnwrapped = momentHeight else {
-      CCLog.fatal("nil momentHeight in Moment Collection View Controller")
-    }
-//    // Uncomment the following line to preserve selection between presentations
-//    self.clearsSelectionOnViewWillAppear = false
-//    self.automaticallyAdjustsScrollViewInsets = false  // Added in attempt to fix Undefined Layout issue. Not needed anymore
-
-    // Setup Dimension Variables
-    momentWidthDefault = momentHeightUnwrapped/(16/9)
-    momentSizeDefault = CGSize(width: momentWidthDefault, height: momentHeightUnwrapped)
-
-    // Setup the Moment Colleciton Layout
-    // Note: Setting either layout.itemSize or layout.estimatedItemSize will cause crashes
-    let layout = collectionViewLayout as! UICollectionViewFlowLayout
-    layout.minimumLineSpacing = Constants.interitemSpacing
-    layout.minimumInteritemSpacing = Constants.interitemSpacing
-    layout.headerReferenceSize = momentSizeDefault
-    layout.footerReferenceSize = momentSizeDefault
-    layout.sectionInset = UIEdgeInsets(top: 0, left: Constants.interitemSpacing,
-                                       bottom: 0, right: Constants.interitemSpacing)
-    self.collectionView?.contentInset = UIEdgeInsetsMake(0.0, CGFloat(-1.0*momentWidthDefault), 0.0, 0.0)
   }
-  
+
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
@@ -135,11 +110,11 @@ extension MomentCollectionViewController {
 
 
   override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
     if let moments = workingStory.moments {
       return moments.count
     } else {
-      return 10
+      CCLog.assert("No Moments in Working Story")
+      return 0
     }
   }
 
@@ -241,7 +216,6 @@ extension MomentCollectionViewController {
 
 
   override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-
     var reusableView: UICollectionReusableView!
 
     switch kind {
@@ -249,7 +223,7 @@ extension MomentCollectionViewController {
       reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.headerElementReuseId, for: indexPath)
     case UICollectionElementKindSectionFooter:
       reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.footerElementReuseId, for: indexPath)
-      let triggerCamera = UITapGestureRecognizer(target: self, action: #selector(openCamera(_:)))
+      let triggerCamera = UITapGestureRecognizer(target: self, action: #selector(openCamera))
       triggerCamera.numberOfTapsRequired = 1
       reusableView.addGestureRecognizer(triggerCamera)
 
@@ -273,6 +247,15 @@ extension MomentCollectionViewController {
     let temp = workingStory.moments!.remove(at: sourceIndexPath.item)
     workingStory.moments!.insert(temp, at: destinationIndexPath.item)
   }
+  
+  
+  // MARK: - Scroll View Delegate Conformance
+  
+  override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    if scrollView.contentOffset.x <= 0 {
+      openCamera()
+    }
+  }
 }
 
 
@@ -280,21 +263,39 @@ extension MomentCollectionViewController {
 extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//    guard let momentArray = workingStory.moments else {
-//      CCLog.debug("No Moments for workingStory")
-//      return momentSizeDefault
-//    }
-//    if indexPath.row >= momentArray.count {
-//      CCLog.assert("indexPath.row >= momentArray.count")
-//      return momentSizeDefault
-//    }
-//    let moment = momentArray[indexPath.row]
-    
-    let height = collectionView.frame.height
+    let height = collectionView.frame.height - 2*Constants.interitemSpacing
     let width = height / FoodieGlobal.Constants.DefaultMomentAspectRatio
     return CGSize(width: width, height: height)
   }
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+    return Constants.interitemSpacing
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+    return Constants.interitemSpacing
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+    let height = collectionView.frame.height - 2*Constants.interitemSpacing
+    let width = height / FoodieGlobal.Constants.DefaultMomentAspectRatio * Constants.headerFooterToCellWidthRatio
+    
+    // Now we know the width, also set the Collection View Content Inset here
+    collectionView.contentInset = UIEdgeInsetsMake(0.0, -width, 0.0, 0.0)
+    return CGSize(width: width, height: height)
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+    let height = collectionView.frame.height - 2*Constants.interitemSpacing
+    let width = height / FoodieGlobal.Constants.DefaultMomentAspectRatio * Constants.headerFooterToCellWidthRatio
+    return CGSize(width: width, height: height)
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+    return UIEdgeInsetsMake(Constants.interitemSpacing, Constants.interitemSpacing, Constants.interitemSpacing, Constants.interitemSpacing)
+  }
 }
+
 
 extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
 
