@@ -10,10 +10,6 @@ import UIKit
 
 class ThumbnailFrameLayer: CAShapeLayer {
   
-  private struct Constants {
-    static let cornerRadiusPct: CGFloat = 0.05
-  }
-  
   convenience init(frame: CGRect) {
     self.init()
     self.frame = frame
@@ -21,6 +17,6 @@ class ThumbnailFrameLayer: CAShapeLayer {
     fillColor = UIColor.clear.cgColor
     lineCap = kCALineCapRound
     lineJoin = kCALineJoinRound
-    path = UIBezierPath(roundedRect: frame, cornerRadius: frame.width*Constants.cornerRadiusPct).cgPath
+    path = UIBezierPath(roundedRect: frame, cornerRadius: cornerRadius).cgPath
   }
 }

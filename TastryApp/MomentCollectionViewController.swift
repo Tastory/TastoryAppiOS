@@ -222,11 +222,14 @@ extension MomentCollectionViewController {
     case UICollectionElementKindSectionHeader:
       reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.headerElementReuseId, for: indexPath)
     case UICollectionElementKindSectionFooter:
-      reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.footerElementReuseId, for: indexPath)
-      let triggerCamera = UITapGestureRecognizer(target: self, action: #selector(openCamera))
-      triggerCamera.numberOfTapsRequired = 1
-      reusableView.addGestureRecognizer(triggerCamera)
-
+      guard let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.footerElementReuseId, for: indexPath) as? MomentFooterReusableView else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.assert("UICollectionElementKindSectionFooter dequeued is not MomentFooterReusableView")
+        }
+        return reusableView
+      }
+      footerView.addMomentButton.addTarget(self, action: #selector(openCamera), for: .touchUpInside)
+      reusableView = footerView
     default:
       CCLog.fatal("Unrecognized Kind '\(kind)' for Supplementary Element")
     }

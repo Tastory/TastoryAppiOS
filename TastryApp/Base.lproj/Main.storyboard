@@ -393,7 +393,7 @@
                                                         <constraint firstAttribute="height" constant="30" id="8be-tq-kTq"/>
                                                     </constraints>
                                                 </activityIndicatorView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumScaleFactor="0.69999999999999996" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HVl-kq-EgA">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumScaleFactor="0.69999999999999996" translatesAutoresizingMaskIntoConstraints="NO" id="HVl-kq-EgA">
                                                     <rect key="frame" x="0.0" y="266" width="187" height="66.5"/>
                                                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.20118498322147652" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -982,13 +982,13 @@
                         <gestureRecognizers/>
                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="OoU-Aa-vB2">
                             <size key="itemSize" width="124" height="222"/>
-                            <size key="headerReferenceSize" width="124" height="222"/>
-                            <size key="footerReferenceSize" width="124" height="222"/>
+                            <size key="headerReferenceSize" width="94" height="222"/>
+                            <size key="footerReferenceSize" width="94" height="222"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentCell" id="5yf-rk-zGg" customClass="MomentCollectionViewCell" customModule="TastryApp" customModuleProvider="target">
-                                <rect key="frame" x="124" y="0.0" width="124" height="222"/>
+                                <rect key="frame" x="94" y="0.0" width="124" height="222"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
@@ -997,10 +997,6 @@
                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="oF2-s4-G9T">
                                             <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
                                         </imageView>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cSh-jl-knJ">
-                                            <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        </view>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BCS-cR-mdn">
                                             <rect key="frame" x="99" y="0.0" width="25" height="25"/>
                                             <rect key="contentStretch" x="1" y="0.0" width="1" height="1"/>
@@ -1017,6 +1013,10 @@
                                                 <action selector="deleteMomentButton:" destination="5yf-rk-zGg" eventType="touchUpInside" id="nSU-Cb-ikV"/>
                                             </connections>
                                         </button>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cSh-jl-knJ">
+                                            <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
                                     </subviews>
                                 </view>
                                 <gestureRecognizers/>
@@ -1040,12 +1040,68 @@
                             </collectionViewCell>
                         </cells>
                         <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentHeader" id="DfJ-30-c0L" customClass="MomentHeaderReusableView" customModule="TastryApp" customModuleProvider="target">
-                            <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
+                            <rect key="frame" x="0.0" y="0.0" width="94" height="222"/>
                             <autoresizingMask key="autoresizingMask"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="≪" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8iO-QC-YKs">
+                                    <rect key="frame" x="8" y="0.0" width="78" height="222"/>
+                                    <fontDescription key="fontDescription" name="TimesNewRomanPS-BoldMT" family="Times New Roman" pointSize="40"/>
+                                    <color key="textColor" red="1" green="0.20000000000000001" blue="0.066666666669999999" alpha="1" colorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" +" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zjt-5s-v7V">
+                                    <rect key="frame" x="8" y="0.0" width="78" height="222"/>
+                                    <fontDescription key="fontDescription" name="TimesNewRomanPS-BoldMT" family="Times New Roman" pointSize="40"/>
+                                    <color key="textColor" red="1" green="0.20000000000000001" blue="0.086274509803921567" alpha="1" colorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="8iO-QC-YKs" firstAttribute="leading" secondItem="DfJ-30-c0L" secondAttribute="leadingMargin" constant="8" id="4Cb-8p-eMY"/>
+                                <constraint firstItem="Zjt-5s-v7V" firstAttribute="leading" secondItem="DfJ-30-c0L" secondAttribute="leading" constant="8" id="9EB-Yp-4Si"/>
+                                <constraint firstAttribute="trailingMargin" secondItem="8iO-QC-YKs" secondAttribute="trailing" constant="8" id="dnZ-Ym-4vg"/>
+                                <constraint firstItem="8iO-QC-YKs" firstAttribute="bottom" secondItem="DfJ-30-c0L" secondAttribute="bottomMargin" id="fOx-sP-PPd"/>
+                                <constraint firstItem="8iO-QC-YKs" firstAttribute="top" secondItem="DfJ-30-c0L" secondAttribute="topMargin" id="ifJ-Qf-2gJ"/>
+                                <constraint firstItem="Zjt-5s-v7V" firstAttribute="top" secondItem="DfJ-30-c0L" secondAttribute="top" id="nam-FG-Fg7"/>
+                                <constraint firstAttribute="bottom" secondItem="Zjt-5s-v7V" secondAttribute="bottom" id="wH7-zK-d5t"/>
+                                <constraint firstAttribute="trailing" secondItem="Zjt-5s-v7V" secondAttribute="trailing" constant="8" id="yiw-Pk-fXi"/>
+                            </constraints>
                         </collectionReusableView>
-                        <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentFooter" id="CkJ-Jk-m6B" customClass="MomentFooterReusableView" customModule="TastryApp" customModuleProvider="target">
-                            <rect key="frame" x="248" y="0.0" width="124" height="222"/>
+                        <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" tag="-1" contentMode="center" reuseIdentifier="MomentFooter" id="CkJ-Jk-m6B" customClass="MomentFooterReusableView" customModule="TastryApp" customModuleProvider="target">
+                            <rect key="frame" x="218" y="0.0" width="94" height="222"/>
                             <autoresizingMask key="autoresizingMask"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="▢" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8uz-Vu-9QF">
+                                    <rect key="frame" x="24.5" y="89" width="45" height="45"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="45" id="JWt-aE-4n2"/>
+                                        <constraint firstAttribute="width" secondItem="8uz-Vu-9QF" secondAttribute="height" multiplier="1:1" id="yCp-z7-24b"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="45"/>
+                                    <color key="textColor" red="1" green="0.20000000000000001" blue="0.086274509799999996" alpha="1" colorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mX9-Sc-UDA">
+                                    <rect key="frame" x="29.5" y="93.5" width="35" height="35"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" secondItem="mX9-Sc-UDA" secondAttribute="height" multiplier="1:1" id="38H-1b-H9x"/>
+                                        <constraint firstAttribute="height" constant="35" id="iPw-jM-yFM"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="35"/>
+                                    <state key="normal" title="＋">
+                                        <color key="titleColor" red="1" green="0.20000000000000001" blue="0.086274509799999996" alpha="1" colorSpace="calibratedRGB"/>
+                                    </state>
+                                </button>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="8uz-Vu-9QF" firstAttribute="centerX" secondItem="CkJ-Jk-m6B" secondAttribute="centerX" id="UaB-o6-1De"/>
+                                <constraint firstItem="8uz-Vu-9QF" firstAttribute="centerY" secondItem="CkJ-Jk-m6B" secondAttribute="centerY" id="Z55-pV-Bg7"/>
+                                <constraint firstItem="mX9-Sc-UDA" firstAttribute="centerX" secondItem="CkJ-Jk-m6B" secondAttribute="centerX" id="lbt-P0-7hS"/>
+                                <constraint firstItem="mX9-Sc-UDA" firstAttribute="centerY" secondItem="CkJ-Jk-m6B" secondAttribute="centerY" id="wdG-TK-RvY"/>
+                            </constraints>
+                            <connections>
+                                <outlet property="addMomentButton" destination="mX9-Sc-UDA" id="sMW-VK-z4a"/>
+                            </connections>
                         </collectionReusableView>
                         <connections>
                             <outlet property="dataSource" destination="mqr-nw-IyY" id="eTY-oM-TWy"/>
@@ -1057,7 +1113,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BGe-7r-hOK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2975" y="-2393"/>
+            <point key="canvasLocation" x="2973.5999999999999" y="-2393.7031484257873"/>
         </scene>
         <!--Venue Table View Controller-->
         <scene sceneID="Xa7-M7-Itt">

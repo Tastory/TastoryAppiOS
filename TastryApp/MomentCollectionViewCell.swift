@@ -21,6 +21,7 @@ class MomentCollectionViewCell: UICollectionViewCell {
   // MARK: - Private Static Constants
   private struct Constants {
     static let thumbnailFrameLineWidth: CGFloat = 10.0
+    static let thumbnailFrameCornerRadius: CGFloat = 0.0
     static let animationRotateDegrees: CGFloat = 0.5
     static let animationTranslateX: CGFloat = 1.0
     static let animationTranslateY: CGFloat = 1.0
@@ -42,9 +43,9 @@ class MomentCollectionViewCell: UICollectionViewCell {
 
   // MARK: - Public Instace Functions
   func createFrameLayer() {
-    thumbFrameLayer = ThumbnailFrameLayer(frame: bounds) // bounds.insetBy(dx: bounds.maxX*Constants.thumbnailFrameInsetPct,
-                                                         //       dy: bounds.maxY*Constants.thumbnailFrameInsetPct))
+    thumbFrameLayer = ThumbnailFrameLayer(frame: bounds)
     thumbFrameLayer.lineWidth = Constants.thumbnailFrameLineWidth
+    thumbFrameLayer.cornerRadius = Constants.thumbnailFrameCornerRadius
     thumbFrameLayer.strokeColor = FoodieGlobal.Constants.ThemeColor.cgColor
     thumbFrameView.layer.addSublayer(thumbFrameLayer)
   }

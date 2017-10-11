@@ -24,8 +24,6 @@
 		8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F51ED1602F00D2E4F8 /* FoodieGlobal.swift */; };
 		8C1D4E221EDCEC9A00939B2C /* FeedCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */; };
 		8C1D4E241EDCECCD00939B2C /* FeedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */; };
-		8C1D4E261EDCED0800939B2C /* FeedCollectionLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E251EDCED0800939B2C /* FeedCollectionLayout.swift */; };
-		8C1ED6EE1F5D15A300A8CC94 /* AddMomentLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6E91F5D15A300A8CC94 /* AddMomentLayer.swift */; };
 		8C1ED6EF1F5D15A300A8CC94 /* CameraButtonLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6EA1F5D15A300A8CC94 /* CameraButtonLayer.swift */; };
 		8C1ED6F01F5D15A300A8CC94 /* CameraButtonRingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6EB1F5D15A300A8CC94 /* CameraButtonRingLayer.swift */; };
 		8C1ED6F21F5D15A300A8CC94 /* ThumbnailFrameLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6ED1F5D15A300A8CC94 /* ThumbnailFrameLayer.swift */; };
@@ -54,7 +52,7 @@
 		8C8986761E91A72D00B62306 /* FoodieCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986751E91A72D00B62306 /* FoodieCategory.swift */; };
 		8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986791E933E2E00B62306 /* FoodieUser.swift */; };
 		8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89867D1E958B4300B62306 /* FoodieObject.swift */; };
-		8C900D311F5FAAC30058BDFE /* TransparentStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C900D301F5FAAC30058BDFE /* TransparentStackView.swift */; };
+		8C900D311F5FAAC30058BDFE /* PassthruStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C900D301F5FAAC30058BDFE /* PassthruStackView.swift */; };
 		8C900D331F60C0E50058BDFE /* CategoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */; };
 		8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */; };
 		8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0601E8F615D005F337E /* ExitButton.swift */; };
@@ -128,8 +126,6 @@
 		8C1C71F51ED1602F00D2E4F8 /* FoodieGlobal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieGlobal.swift; sourceTree = "<group>"; };
 		8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedCollectionViewController.swift; sourceTree = "<group>"; };
 		8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedCollectionViewCell.swift; sourceTree = "<group>"; };
-		8C1D4E251EDCED0800939B2C /* FeedCollectionLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedCollectionLayout.swift; sourceTree = "<group>"; };
-		8C1ED6E91F5D15A300A8CC94 /* AddMomentLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddMomentLayer.swift; sourceTree = "<group>"; };
 		8C1ED6EA1F5D15A300A8CC94 /* CameraButtonLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraButtonLayer.swift; sourceTree = "<group>"; };
 		8C1ED6EB1F5D15A300A8CC94 /* CameraButtonRingLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraButtonRingLayer.swift; sourceTree = "<group>"; };
 		8C1ED6ED1F5D15A300A8CC94 /* ThumbnailFrameLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailFrameLayer.swift; sourceTree = "<group>"; };
@@ -160,7 +156,7 @@
 		8C8986751E91A72D00B62306 /* FoodieCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieCategory.swift; sourceTree = "<group>"; };
 		8C8986791E933E2E00B62306 /* FoodieUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieUser.swift; sourceTree = "<group>"; };
 		8C89867D1E958B4300B62306 /* FoodieObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieObject.swift; sourceTree = "<group>"; };
-		8C900D301F5FAAC30058BDFE /* TransparentStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransparentStackView.swift; sourceTree = "<group>"; };
+		8C900D301F5FAAC30058BDFE /* PassthruStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassthruStackView.swift; sourceTree = "<group>"; };
 		8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryTableViewController.swift; sourceTree = "<group>"; };
 		8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMoment.swift; sourceTree = "<group>"; };
 		8C9AD0601E8F615D005F337E /* ExitButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExitButton.swift; sourceTree = "<group>"; };
@@ -245,14 +241,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		8C1089381EB00E4500457E66 /* Layouts */ = {
-			isa = PBXGroup;
-			children = (
-				8C1D4E251EDCED0800939B2C /* FeedCollectionLayout.swift */,
-			);
-			name = Layouts;
-			sourceTree = "<group>";
-		};
 		8C1D4E181ED8DEFA00939B2C /* Shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -278,6 +266,15 @@
 				8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		8C7EC5901F8EA7E400C8E80B /* Transitions */ = {
+			isa = PBXGroup;
+			children = (
+				8CE0DE1B1F89B12700F258E5 /* PercentInteractor.swift */,
+				8CE0DE1A1F89B12700F258E5 /* TransitionAnimator.swift */,
+			);
+			name = Transitions;
 			sourceTree = "<group>";
 		};
 		8C9AD05A1E8F60E4005F337E /* Models */ = {
@@ -359,9 +356,7 @@
 		8CD328D71E8B2B4B00E5254F /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				8C1089381EB00E4500457E66 /* Layouts */,
 				8CD328DA1E8B2BD600E5254F /* Layers */,
-				8CF44DAA1F88394B007E905A /* Transitions */,
 				8C1A0D7E1E88F711001DE075 /* CameraButton.swift */,
 				8C9AD0601E8F615D005F337E /* ExitButton.swift */,
 				8CE49EB61F64CA06007278C1 /* ImagePickerButton.swift */,
@@ -370,7 +365,7 @@
 				8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */,
 				8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */,
 				8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */,
-				8C900D301F5FAAC30058BDFE /* TransparentStackView.swift */,
+				8C900D301F5FAAC30058BDFE /* PassthruStackView.swift */,
 				8C841B4A1F6244700002A5A2 /* CategoryTableViewCell.swift */,
 				8C841B481F6242C00002A5A2 /* CategoryTableViewCell.xib */,
 				8CBF558C1E7F7EDF00F4B1CD /* LaunchScreen.storyboard */,
@@ -420,13 +415,13 @@
 		8CD328DA1E8B2BD600E5254F /* Layers */ = {
 			isa = PBXGroup;
 			children = (
-				8CF44DA51F86F422007E905A /* CameraCrossLayer.swift */,
-				8C1ED6E91F5D15A300A8CC94 /* AddMomentLayer.swift */,
 				8C1ED6EA1F5D15A300A8CC94 /* CameraButtonLayer.swift */,
 				8C1ED6EB1F5D15A300A8CC94 /* CameraButtonRingLayer.swift */,
+				8CF44DA51F86F422007E905A /* CameraCrossLayer.swift */,
 				8CE49EB41F64C8E8007278C1 /* PickerSquareLayer.swift */,
-				8CE49EB21F638162007278C1 /* ArrowLayer.swift */,
 				8C1ED6ED1F5D15A300A8CC94 /* ThumbnailFrameLayer.swift */,
+				8CE49EB21F638162007278C1 /* ArrowLayer.swift */,
+				8C7EC5901F8EA7E400C8E80B /* Transitions */,
 			);
 			name = Layers;
 			sourceTree = "<group>";
@@ -437,19 +432,9 @@
 				8CEEB1CC1F821FA1008E91BD /* BlurSpinWait.swift */,
 				8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */,
 				8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */,
-				8CE0DE1B1F89B12700F258E5 /* PercentInteractor.swift */,
-				8CE0DE1A1F89B12700F258E5 /* TransitionAnimator.swift */,
 				8CE0DE1C1F89B12800F258E5 /* TransitableViewController.swift */,
 			);
 			name = Supports;
-			sourceTree = "<group>";
-		};
-		8CF44DAA1F88394B007E905A /* Transitions */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Transitions;
-			path = ..;
 			sourceTree = "<group>";
 		};
 		C134799359005D8F88374E25 /* Pods */ = {
@@ -821,7 +806,6 @@
 				8C1ED6F01F5D15A300A8CC94 /* CameraButtonRingLayer.swift in Sources */,
 				8CE0DE1D1F89B12800F258E5 /* TransitionAnimator.swift in Sources */,
 				8C0590471EC653DF00027E91 /* DiscoverFeedViewController.swift in Sources */,
-				8C1ED6EE1F5D15A300A8CC94 /* AddMomentLayer.swift in Sources */,
 				8CE49EB31F638162007278C1 /* ArrowLayer.swift in Sources */,
 				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */,
 				8C1ED6F41F5DEC2500A8CC94 /* AsyncOperation.swift in Sources */,
@@ -845,7 +829,7 @@
 				8C8986761E91A72D00B62306 /* FoodieCategory.swift in Sources */,
 				8C1FF1351F7DA1760062312C /* FoodieRole.swift in Sources */,
 				8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */,
-				8C900D311F5FAAC30058BDFE /* TransparentStackView.swift in Sources */,
+				8C900D311F5FAAC30058BDFE /* PassthruStackView.swift in Sources */,
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,
 				8CAA44611F8C12D60053CD4F /* LogOutDismiss.swift in Sources */,
 				8CE49EB11F637918007278C1 /* ExpandButton.swift in Sources */,
@@ -861,7 +845,6 @@
 				8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */,
 				8C3254A51F40240900895572 /* VenueTableViewController.swift in Sources */,
 				8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */,
-				8C1D4E261EDCED0800939B2C /* FeedCollectionLayout.swift in Sources */,
 				8C61BCDC1E985D1300DDF248 /* CleanCrashLog.swift in Sources */,
 				8CE0DE1E1F89B12800F258E5 /* PercentInteractor.swift in Sources */,
 				8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */,
