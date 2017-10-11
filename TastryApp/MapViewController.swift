@@ -347,16 +347,23 @@ class MapViewController: TransitableViewController {
   }
   
   
-  fileprivate func performQuery(onAllUsers: Bool = false, withBlock callback: FoodieQuery.StoriesErrorBlock?) {
+  fileprivate func performQuery(onAllUsers: Bool = false, at mapRect: MKMapRect? = nil, withBlock callback: FoodieQuery.StoriesErrorBlock?) {
     
-    guard let mapRect = mapView?.visibleMapRect else {
-      locationErrorDialog(message: "Invalid Map View. Search Location Undefined", comment: "Alert dialog message when mapView is nil when user attempted to perform Search")
-      CCLog.assert("Search w/ Filter cannot be performed when mapView = nil")
-      return
+    var searchMapRect = MKMapRect()
+    
+    if mapRect == nil {
+      guard let visibleMapRect = mapView?.visibleMapRect else {
+        locationErrorDialog(message: "Invalid Map View. Search Location Undefined", comment: "Alert dialog message when mapView is nil when user attempted to perform Search")
+        CCLog.assert("Search w/ Filter cannot be performed when mapView = nil")
+        return
+      }
+      searchMapRect = visibleMapRect
+    } else {
+      searchMapRect = mapRect!
     }
-    
-    let northEastMapPoint = MKMapPointMake(mapRect.origin.x + mapRect.size.width, mapRect.origin.y)
-    let southWestMapPoint = MKMapPointMake(mapRect.origin.x, mapRect.origin.y + mapRect.size.height)
+      
+    let northEastMapPoint = MKMapPointMake(searchMapRect.origin.x + searchMapRect.size.width, searchMapRect.origin.y)
+    let southWestMapPoint = MKMapPointMake(searchMapRect.origin.x, searchMapRect.origin.y + searchMapRect.size.height)
     let northEastCoordinate = MKCoordinateForMapPoint(northEastMapPoint)
     let southWestCoordinate = MKCoordinateForMapPoint(southWestMapPoint)
     
@@ -528,20 +535,17 @@ class MapViewController: TransitableViewController {
   }
   
   
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    
-    // Kill all Pre-fetches
-    FoodiePrefetch.global.removeAllPrefetchWork()
-    
+  private func applyDefaultMapLocation() {
     // Provide a default Map Region incase Location Update is slow or user denies authorization
     let startMapLocation: CLLocationCoordinate2D = lastLocation ?? Constants.DefaultCLCoordinate2D
     let startMapDelta: CLLocationDegrees = lastMapDelta ?? Constants.DefaultMaxDelta
-    
     let region = MKCoordinateRegion(center: startMapLocation,
                                     span: MKCoordinateSpan(latitudeDelta: startMapDelta, longitudeDelta: startMapDelta))
     mapView?.setRegion(region, animated: false)
-    
+  }
+  
+  
+  private func startLocationWatcher() {
     // Start/Restart the Location Watcher
     locationWatcher = LocationWatch.global.start(butPaused: (lastLocation != nil)) { (location, error) in
       if let error = error {
@@ -553,31 +557,75 @@ class MapViewController: TransitableViewController {
       if let location = location {
         let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: self.currentMapDelta, longitudeDelta: self.currentMapDelta))
         DispatchQueue.main.async { self.mapView?.setRegion(region, animated: true) }
+      }
+    }
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    
+    // Kill all Pre-fetches
+    FoodiePrefetch.global.removeAllPrefetchWork()
+    
+    // There should already be pins on the map, do nothing
+    if storyQuery != nil {
+      self.startLocationWatcher()
+    }
+    
+    // No pins on the map, but this is not the first time. Just go to last location
+    else if lastLocation != nil {
+      applyDefaultMapLocation()
+      self.startLocationWatcher()
+    }
+    
+    // First time on the map. Try to get the location, and get an initial query if successful
+    else {
+      LocationWatch.global.get { location, error in
+        if let error = error {
+          AlertDialog.present(from: self, title: "Location Error", message: error.localizedDescription) { _ in
+            CCLog.warning("LocationWatch.get() returned error - \(error.localizedDescription)")
+          }
+          self.applyDefaultMapLocation()
+          self.startLocationWatcher()
+          return
+        }
+        
+        guard let location = location else {
+          AlertDialog.present(from: self, title: "Location Error", message: "Obtained invalid location information") { _ in
+            CCLog.warning("LocationWatch.get() returned locaiton = nil")
+          }
+          self.applyDefaultMapLocation()
+          self.startLocationWatcher()
+          return
+        }
+        
+        // Move the map to the initial location
+        let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: self.currentMapDelta, longitudeDelta: self.currentMapDelta))
+        DispatchQueue.main.async { self.mapView?.setRegion(region, animated: true) }
         
         // Do an Initial Search near the Current Location
-        if self.storyQuery == nil {
-          // Do an initial query on start
-          self.performQuery { stories, error in
-            if let error = error {
-              if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
-                AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
-              } else {
-                AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
-                  CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
-                }
+        self.performQuery(at: region.toMapRect()) { stories, error in
+          if let error = error {
+            if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
+              AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
+            } else {
+              AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+                CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
               }
-              return
             }
-            
-            guard let stories = stories else {
-              AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
-                CCLog.assert("Story Query resulted in nil")
-              }
-              return
-            }
-            self.displayAnnotations(onStories: stories)
+            return
           }
+          
+          guard let stories = stories else {
+            AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
+              CCLog.assert("Story Query resulted in nil")
+            }
+            return
+          }
+          self.displayAnnotations(onStories: stories)
         }
+        
+        self.startLocationWatcher()
       }
     }
     
