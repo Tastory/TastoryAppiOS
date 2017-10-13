@@ -14,6 +14,7 @@ import UIKit
 import Photos
 import SwiftyCam
 import MobileCoreServices
+import TLPhotoPicker
 
 
 protocol CameraReturnDelegate {
@@ -40,6 +41,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   fileprivate var captureLocation: CLLocation? = nil
   fileprivate var captureLocationError: Error? = nil
   fileprivate var locationWatcher: LocationWatch.Context? = nil
+  fileprivate var selectedAssets: [TLPHAsset]? = nil
   
   // MARK: - IBOutlets
   @IBOutlet weak var captureButton: CameraButton?
@@ -50,6 +52,17 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   // MARK: - IBActions
 
   @IBAction func launchImagePicker(_ sender: Any) {
+
+
+    let photoPickerController = TLPhotosPickerViewController()
+    var configure = TLPhotosPickerConfigure()
+    configure.usedCameraButton = false
+    photoPickerController.delegate = self
+    photoPickerController.configure = configure
+   self.present(photoPickerController, animated: false, completion: nil)
+
+
+    /*
     let imagePickerController = UIImagePickerController()
     imagePickerController.sourceType = .photoLibrary
     imagePickerController.delegate = self
@@ -59,7 +72,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     imagePickerController.mediaTypes = ["public.image", "public.movie"]
 
     self.present(imagePickerController, animated: true, completion: nil)
-    
+   */
   }
 
   @IBAction func capturePressed(_ sender: CameraButton) {
@@ -388,6 +401,147 @@ extension CameraViewController: MarkupReturnDelegate {
       return
     }
     delegate.captureComplete(markedupMoment: markedupMoment, suggestedStory: suggestedStory)
+  }
+}
+
+extension CameraViewController: TLPhotosPickerViewControllerDelegate {
+
+  func displayMarkUpController(mediaObj: FoodieMedia) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
+      }
+      return
+    }
+    viewController.mediaObj = mediaObj
+    viewController.markupReturnDelegate = self
+    self.present(viewController, animated: true)
+  }
+
+  func createMoment(from tlphAsset: TLPHAsset, withBlock callback: (FoodieMedia, Error?) -> Void) {
+    guard let selectedAsset = tlphAsset.phAsset else {
+      CCLog.assert("Failed to unwrap phAsset from TLPHAsset")
+      return
+    }
+
+    var mediaObject: FoodieMedia
+
+    switch(tlphAsset.type)
+    {
+    case .photo:
+
+      guard let uiImage = tlphAsset.fullResolutionImage else {
+        CCLog.assert("Failed to unwrap UIImage from TLPHAsset")
+        return
+      }
+
+      mediaObject = FoodieMedia(for: FoodieFile.newPhotoFileName(), localType: .draft, mediaType: .photo)
+      mediaObject.imageMemoryBuffer =
+        UIImageJPEGRepresentation(
+          uiImage,
+          CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+      callback(mediaObject,nil)
+    case .video:
+      let videoName = FoodieFile.newVideoFileName()
+      mediaObject = FoodieMedia(for: videoName, localType: .draft, mediaType: .video)
+
+      selectedAsset.getURL() { (responseURL) in
+        guard let responseURL = responseURL else {
+          CCLog.assert("failed to unwrap responseURL")
+          return
+        }
+
+        // copy video to draft with new name
+        // each copy of the moment will not refer to the samevideo with the same name
+        FoodieFile.manager.copyFile(from: responseURL, to: .draft, with: videoName) { error in
+          mediaObject.videoLocalBufferUrl = FoodieFile.getFileURL(for: .draft, with: videoName)
+          self.displayMarkUpController(mediaObj: mediaObject)
+        }
+      }
+    default:
+      AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { action in
+        CCLog.assert("Media returned from Image Picker is neither a Photo nor a Video")
+      }
+      return
+    }
+  }
+
+  func dismissComplete() {
+
+  }
+
+  func dismissPhotoPicker(withTLPHAssets: [TLPHAsset]) {
+    // use selected order, fullresolution image
+    selectedAssets = withTLPHAssets
+    guard let selectedAssets = selectedAssets else {
+      CCLog.assert("Selected Assets is nil")
+      return
+    }
+
+    if(selectedAssets.count > 0)
+    {
+      if(selectedAssets.count == 1)
+      {
+        let tlphAsset = selectedAssets[0]
+
+        guard let selectedAsset = tlphAsset.phAsset else {
+          CCLog.assert("failed to unwrap phAsset")
+          return
+        }
+
+        selectedAsset.getURL() { (responseURL) in
+          var mediaObject: FoodieMedia
+
+          switch(tlphAsset.type)
+          {
+          case .photo:
+
+            guard let uiImage = tlphAsset.fullResolutionImage else {
+              CCLog.assert("failed to unwrap ui image from TLPH Asset")
+              return
+            }
+
+            mediaObject = FoodieMedia(for: FoodieFile.newPhotoFileName(), localType: .draft, mediaType: .photo)
+            mediaObject.imageMemoryBuffer =
+              UIImageJPEGRepresentation(
+                uiImage,
+                CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+                CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
+              }
+              return
+            }
+            viewController.mediaObj = mediaObject
+            viewController.markupReturnDelegate = self
+            self.present(viewController, animated: true)
+          case .video:
+            let videoName = FoodieFile.newVideoFileName()
+            mediaObject = FoodieMedia(for: videoName, localType: .draft, mediaType: .video)
+
+            guard let responseURL = responseURL else {
+              CCLog.assert("failed to unwrap responseURL")
+              return
+            }
+
+            // copy video to draft with new name
+            // each copy of the moment will not refer to the samevideo with the same name
+            FoodieFile.manager.copyFile(from: responseURL, to: .draft, with: videoName) { error in
+              mediaObject.videoLocalBufferUrl = FoodieFile.getFileURL(for: .draft, with: videoName)
+              self.displayMarkUpController(mediaObj: mediaObject)
+            }
+          default:
+            AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { action in
+              CCLog.assert("Media returned from Image Picker is neither a Photo nor a Video")
+              self.dismiss(animated: true, completion: nil)
+            }
+            return
+          }
+        }
+      }
+    }
   }
 }
 
