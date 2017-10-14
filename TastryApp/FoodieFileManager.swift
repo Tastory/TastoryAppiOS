@@ -245,6 +245,22 @@ class FoodieFile {
       let downloadTask = self.downloadsSession.downloadTask(with: serverFileURL) { (url, response, error) in
         let downloadEndTime = PrecisionTime.now()
         
+        if let error = error {
+          guard let urlError = error as? URLError else {
+            CCLog.assert("Download of \(fileName) from S3 resulted in error not of URLError type - \(error.localizedDescription)")
+            callback?(ErrorCode.urlSessionDownloadNotUrlError)
+            return
+          }
+          
+          CCLog.warning("Download of \(fileName) from S3 resulted in error - \(error.localizedDescription)")
+          if !retrieveRetry.attemptRetryBasedOnURLError(urlError,
+                                                        after: Constants.AwsRetryDelay,
+                                                        withQoS: .userInitiated) {
+            callback?(ErrorCode.urlSessionDownloadError)
+          }
+          return
+        }
+        
         guard let httpResponse = response as? HTTPURLResponse else {
           CCLog.assert("Did not receive HTTPURLResponse type or response = nil for downloading \(fileName)")
           callback?(ErrorCode.urlSessionDownloadHttpResponseNil)
@@ -263,22 +279,6 @@ class FoodieFile {
                                                           after: Constants.AwsRetryDelay,
                                                           withQoS: .userInitiated) {
             callback?(ErrorCode.urlSessionDownloadHttpResponseFailed)
-          }
-          return
-        }
-        
-        if let downloadError = error {
-          guard let urlError = downloadError as? URLError else {
-            CCLog.assert("Download of \(fileName) from S3 resulted in error not of URLError type - \(downloadError.localizedDescription)")
-            callback?(ErrorCode.urlSessionDownloadNotUrlError)
-            return
-          }
-          
-          CCLog.warning("Download of \(fileName) from S3 resulted in error - \(downloadError.localizedDescription)")
-          if !retrieveRetry.attemptRetryBasedOnURLError(urlError,
-                                                          after: Constants.AwsRetryDelay,
-                                                          withQoS: .userInitiated) {
-            callback?(ErrorCode.urlSessionDownloadError)
           }
           return
         }

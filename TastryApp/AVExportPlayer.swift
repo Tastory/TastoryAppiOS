@@ -21,6 +21,13 @@ protocol AVPlayAndExportDelegate {
 
 class AVExportPlayer: NSObject {
   
+  // MARK: - Constants
+  struct Constants {
+    static let ExportRetryCount = 5
+    static let ExportRetryDelay = 1.0
+    static let ExportRetryQoS = DispatchQoS.QoSClass.utility
+  }
+  
   // MARK: - Error Types Definition
   enum ErrorCode: LocalizedError {
     
@@ -83,7 +90,7 @@ class AVExportPlayer: NSObject {
     
     if let avExportSession = avExportSession {
       if avExportSession.status == .completed {
-        CCLog.verbose("Switching Backing to Local")
+        CCLog.verbose("Switching AVAsset URL to completed Output File")
         
         // Swap AVPlayer's backing file to local Cache. It's assumed that the Cache file will always exist if the AVPlayer is still in Memory.
         // If the app quits and a cache clean up occurs, the AVPlayer will get reinitialized next time against the network instead.
@@ -132,75 +139,96 @@ class AVExportPlayer: NSObject {
     }
   }
   
-  
-  func initExportSession(to exportURL: URL, using preset: String = AVAssetExportPreset1280x720, with outputType: AVFileType = .mov) {
+
+  func exportAsync(to exportURL: URL, using preset: String = AVAssetExportPreset1280x720, with outputType: AVFileType = .mov, completion callback: ((Error?) -> Void)? = nil) {
+    
+    guard let avPlayer = self.avPlayer else {
+      CCLog.fatal("avPlayer == nil. Cannot check whether needed to switch AVPlayer backing to Local File")
+    }
+    guard let avPlayerItem = avPlayer.currentItem else {
+      CCLog.fatal("avPlayerItem == nil. Cannot check whether needed to switch AVPlayer backing to Local File")
+    }
     guard let avURLAsset = avURLAsset else {
       CCLog.fatal("avURLAsset == nil. initAVAsset must be called before initExportSession.")
     }
-    guard let avAssetExportSession = AVAssetExportSession(asset: avURLAsset, presetName: preset) else {
-      CCLog.fatal("Unable to create AVAssetExportSession with URL: \(avURLAsset.url) and Preset: \(preset)")
-    }
-    avExportSession = avAssetExportSession
-    avExportSession!.outputURL = exportURL
-    avExportSession!.outputFileType = outputType
-    avExportSession!.timeRange = CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity)
-  }
-  
-  
-  func exportAsynchronously(withBlock callback: ((Error?) -> Void)?) {
-    guard let avExportSession = avExportSession else {
-      CCLog.fatal("Unable to exportAsynchornously. avExportSession = nil")
-    }
     
-    avExportSession.exportAsynchronously {
-      switch avExportSession.status {
+    let playURL = avURLAsset.url
+    
+    let exportRetry = SwiftRetry()
+    exportRetry.start("AVExport Sync to \(playURL.lastPathComponent)", withCountOf: Constants.ExportRetryCount) {
+
+      guard let avAssetExportSession = AVAssetExportSession(asset: avURLAsset, presetName: preset) else {
+        CCLog.fatal("Unable to create AVAssetExportSession with URL: \(playURL) and Preset: \(preset)")
+      }
+      
+      CCLog.verbose("Starting AVExport Asynchronously from \(playURL.absoluteString) to \(exportURL.absoluteString)")
+
+      avAssetExportSession.outputURL = exportURL
+      avAssetExportSession.outputFileType = outputType
+      avAssetExportSession.timeRange = CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity)
+      self.avExportSession = avAssetExportSession
+      
+      avAssetExportSession.exportAsynchronously {
         
-      case .unknown:
-        callback?(ErrorCode.exportAsyncStatusUnknownUnexpected)
+        let bufferDuration = avPlayerItem.preferredForwardBufferDuration
+        let queue = avURLAsset.resourceLoader.delegateQueue ?? DispatchQueue.global(qos: .userInitiated)
         
-      case .waiting:
-        callback?(ErrorCode.exportAsyncStatusWaitingUnexpected)
-        
-      case .exporting:
-        callback?(ErrorCode.exportAsyncStatusExportingUnexpected)
-        
-      case .completed:
-        
-        guard let avPlayer = self.avPlayer else {
-          CCLog.fatal("avPlayer == nil. Cannot check whether needed to switch AVPlayer backing to Local File")
-        }
-        guard let avPlayerItem = avPlayer.currentItem else {
-          CCLog.fatal("avPlayerItem == nil. Cannot check whether needed to switch AVPlayer backing to Local File")
-        }
-        if avPlayer.rate == 0.0, CMTimeCompare(avPlayerItem.currentTime(), kCMTimeZero) == 0 {
-          // The video is not currently being played, so we can just do the switch now
-          self.switchBackingToLocalIfNeeded()
-        }
-        callback?(nil)
-        
-      case .failed:
-        
-        if let error = avExportSession.error {
-          let nsError = error as NSError
-          if nsError.domain == AVFoundationErrorDomain, nsError.code == AVError.operationInterrupted.rawValue {
-            // Operation was interrupted. Lets try to restart
-            CCLog.warning("AV Export Asynchronously was Interrupted. Retrying")
+        switch avAssetExportSession.status {
+          
+        case .unknown:
+          self.initAVPlayer(from: playURL, with: bufferDuration, thru: queue)
+          if !exportRetry.attempt(after: Constants.ExportRetryDelay, withQoS: Constants.ExportRetryQoS) {
+            callback?(ErrorCode.exportAsyncStatusUnknownUnexpected)
+          }
+          
+        case .waiting:
+          self.initAVPlayer(from: playURL, with: bufferDuration, thru: queue)
+          if !exportRetry.attempt(after: Constants.ExportRetryDelay, withQoS: Constants.ExportRetryQoS) {
+            callback?(ErrorCode.exportAsyncStatusWaitingUnexpected)
+          }
+          
+        case .exporting:
+          self.initAVPlayer(from: playURL, with: bufferDuration, thru: queue)
+          if !exportRetry.attempt(after: Constants.ExportRetryDelay, withQoS: Constants.ExportRetryQoS) {
+            callback?(ErrorCode.exportAsyncStatusExportingUnexpected)
+          }
+          
+        case .completed:
+          if avPlayer.rate == 0.0, CMTimeCompare(avPlayerItem.currentTime(), kCMTimeZero) == 0 {
+            // The video is not currently being played, so we can just do the switch now
+            self.switchBackingToLocalIfNeeded()
+          }
+          callback?(nil)
+          
+        case .failed:
+          
+          if let error = avAssetExportSession.error {
             
-            guard let exportURL = avExportSession.outputURL else {
-              CCLog.warning("AVExportSession OutputURL nil. Retry Failed")
-              callback?(avExportSession.error)
+            // Infinite Retries if Interrupted
+            let nsError = error as NSError
+            if nsError.domain == AVFoundationErrorDomain, nsError.code == AVError.operationInterrupted.rawValue {
+              // Operation was interrupted. Lets try to restart
+              CCLog.warning("AV Export Asynchronously was Interrupted. Retrying")
+              self.exportAsync(to: exportURL, completion: callback)
               return
             }
             
-            self.initExportSession(to: exportURL, using: AVAssetExportPreset1280x720, with: AVFileType.mov)
-            self.exportAsynchronously(withBlock: callback)
-            return
+            CCLog.warning("ExportAsynchronously Failed - \(error.localizedDescription)")
+            if let avAssetURL = (self.avPlayer?.currentItem?.asset as? AVURLAsset)?.url {
+              CCLog.warning("AVURLAsset.url = \(avAssetURL.absoluteString)")
+            }
+            CCLog.warning("OutputURL = \(avAssetExportSession.outputURL?.absoluteString ?? "nil")")
+            self.printStatus()
           }
+          
+          self.initAVPlayer(from: playURL, with: bufferDuration, thru: queue)
+          if !exportRetry.attempt(after: Constants.ExportRetryDelay, withQoS: Constants.ExportRetryQoS) {
+            callback?(avAssetExportSession.error)
+          }
+          
+        case .cancelled:
+          callback?(ErrorCode.exportAsyncCancelled)
         }
-        callback?(avExportSession.error)
-        
-      case .cancelled:
-        callback?(ErrorCode.exportAsyncCancelled)
       }
     }
   }
@@ -237,41 +265,39 @@ class AVExportPlayer: NSObject {
     
   func printStatus() {
     guard let avPlayer = avPlayer else { return }
+    guard let avPlayerItem = avPlayer.currentItem else { return }
+    guard let avURLAsset = avPlayerItem.asset as? AVURLAsset else { return }
     
+    CCLog.debug("")
+    CCLog.debug("avPlayer Status = \(avPlayer.status.rawValue)")
+    CCLog.debug("avPlayer Time Control = \(avPlayer.timeControlStatus.rawValue)")
     
-    let avPlayerItem = avPlayer.currentItem!
-    let avURLAsset = avPlayerItem.asset as! AVURLAsset
+    CCLog.debug("avPlayerItem Status = \(avPlayerItem.status.rawValue)")
+    CCLog.debug("avPlayerItem Duration = \(avPlayerItem.duration)")
+    CCLog.debug("avPlayerItem LoadedTimeRanges = \(avPlayerItem.loadedTimeRanges as! [CMTimeRange])")
+    CCLog.debug("avPlayerItem currentTime = \(avPlayerItem.currentTime())")
     
-    CCLog.verbose("")
-    CCLog.verbose("avPlayer Status = \(avPlayer.status.rawValue)")
-    CCLog.verbose("avPlayer Time Control = \(avPlayer.timeControlStatus.rawValue)")
+    CCLog.debug("avPlayerItem isPlaybackLikelyToKeepUp = \(avPlayerItem.isPlaybackLikelyToKeepUp)")
+    CCLog.debug("avPlayerItem isPlaybackBufferEmpty = \(avPlayerItem.isPlaybackBufferEmpty)")
+    CCLog.debug("avPlayerItem isPlaybackBufferFull = \(avPlayerItem.isPlaybackBufferFull)")
     
-    CCLog.verbose("avPlayerItem Status = \(avPlayerItem.status.rawValue)")
-    CCLog.verbose("avPlayerItem Duration = \(avPlayerItem.duration)")
-    CCLog.verbose("avPlayerItem LoadedTimeRanges = \(avPlayerItem.loadedTimeRanges as! [CMTimeRange])")
-    CCLog.verbose("avPlayerItem currentTime = \(avPlayerItem.currentTime())")
-    
-    CCLog.verbose("avPlayerItem isPlaybackLikelyToKeepUp = \(avPlayerItem.isPlaybackLikelyToKeepUp)")
-    CCLog.verbose("avPlayerItem isPlaybackBufferEmpty = \(avPlayerItem.isPlaybackBufferEmpty)")
-    CCLog.verbose("avPlayerItem isPlaybackBufferFull = \(avPlayerItem.isPlaybackBufferFull)")
-    
-    CCLog.verbose("avAsset isPlayable = \(avURLAsset.isPlayable)")
-    CCLog.verbose("avAsset isExportable = \(avURLAsset.isExportable)")
-    CCLog.verbose("avAsset isReadable = \(avURLAsset.isReadable)")
-    CCLog.verbose("avAsset isCompatibleWithSavedPhotosAlbum = \(avURLAsset.isCompatibleWithSavedPhotosAlbum)")
+    CCLog.debug("avAsset isPlayable = \(avURLAsset.isPlayable)")
+    CCLog.debug("avAsset isExportable = \(avURLAsset.isExportable)")
+    CCLog.debug("avAsset isReadable = \(avURLAsset.isReadable)")
+    CCLog.debug("avAsset isCompatibleWithSavedPhotosAlbum = \(avURLAsset.isCompatibleWithSavedPhotosAlbum)")
     
     if let assetCache = avURLAsset.assetCache {
-      CCLog.verbose("avAssetCache isPlayableOffline = \(assetCache.isPlayableOffline)")
+      CCLog.debug("avAssetCache isPlayableOffline = \(assetCache.isPlayableOffline)")
     } else {
-      CCLog.verbose("No Asset Cache")
+      CCLog.debug("No Asset Cache")
     }
     
     guard let avExportSession = avExportSession else { return }
     
-    CCLog.verbose("avAssetExportSession status = \(avExportSession.status.rawValue)")
-    CCLog.verbose("avAssetExportSession progress = \(avExportSession.progress)")
-    CCLog.verbose("avAssetExportSession error = \(avExportSession.error?.localizedDescription ?? "No Error")")
-    CCLog.verbose("")
+    CCLog.debug("avAssetExportSession status = \(avExportSession.status.rawValue)")
+    CCLog.debug("avAssetExportSession progress = \(avExportSession.progress)")
+    CCLog.debug("avAssetExportSession error = \(avExportSession.error?.localizedDescription ?? "nil")")
+    CCLog.debug("")
   }
 }
 

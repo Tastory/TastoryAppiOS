@@ -16,7 +16,8 @@ class FoodieMedia: FoodieS3Object {
     
     case retrieveFileDoesNotExist
     case saveToLocalwithNilImageMemoryBuffer
-    case saveToLocalwithNilvideoExportPlayer
+    case saveToLocalWithNilVideoExportPlayer
+    case saveToLocalVideoExportPlayerHasNoAVURLAsset
     case saveToLocalCompletedWithNoOutputFile
     
     var errorDescription: String? {
@@ -25,8 +26,10 @@ class FoodieMedia: FoodieS3Object {
         return NSLocalizedString("File for filename does not exist", comment: "Error description for an exception error code")
       case .saveToLocalwithNilImageMemoryBuffer:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, imageMemoryBuffer = nil", comment: "Error description for an exception error code")
-      case .saveToLocalwithNilvideoExportPlayer:
+      case .saveToLocalWithNilVideoExportPlayer:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, videoLocalBufferUrl = nil", comment: "Error description for an exception error code")
+      case .saveToLocalVideoExportPlayerHasNoAVURLAsset:
+        return NSLocalizedString("FoodieMedia.saveToLocal failed, videoExportPlayer does not contain AVURLAsset", comment: "Error description for an exception error code")
       case .saveToLocalCompletedWithNoOutputFile:
         return NSLocalizedString("FoodieMedia.saveToLocal completed, but output file not found", comment: "Error description for an exception error code")
       }
@@ -259,8 +262,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       case .video:
         videoExportPlayer = AVExportPlayer()
         videoExportPlayer!.initAVPlayer(from: FoodieFile.getS3URL(for: fileName))
-        videoExportPlayer!.initExportSession(to: FoodieFile.getFileURL(for: .cache, with: fileName))
-        videoExportPlayer!.exportAsynchronously { error in
+        videoExportPlayer!.exportAsync(to: FoodieFile.getFileURL(for: .cache, with: fileName)) { error in
           if let error = error {
             CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
             callback?(error)
@@ -311,8 +313,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
 
       videoExportPlayer!.initAVPlayer(from: FoodieFile.getS3URL(for: fileName))
-      videoExportPlayer!.initExportSession(to: FoodieFile.getFileURL(for: .cache, with: fileName))
-      videoExportPlayer!.exportAsynchronously { error in
+      videoExportPlayer!.exportAsync(to: FoodieFile.getFileURL(for: .cache, with: fileName)) { error in
         if let error = error {
           CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
           callback?(error)
@@ -365,27 +366,38 @@ extension FoodieMedia: FoodieObjectDelegate {
         
       case .video:
         guard let videoExportPlayer = self.videoExportPlayer else {
-          callback?(ErrorCode.saveToLocalwithNilvideoExportPlayer)
+          callback?(ErrorCode.saveToLocalWithNilVideoExportPlayer)
           return
         }
         
-        guard !self.checkIfExists(in: localType) else {
-          CCLog.info("SaveToLocal attempt despite \(FoodieFile.getFileURL(for: localType, with: fileName)) already exists")
-          callback?(nil)
+        guard let sourceURL = (videoExportPlayer.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
+          callback?(ErrorCode.saveToLocalVideoExportPlayerHasNoAVURLAsset)
           return
         }
         
-        videoExportPlayer.initExportSession(to: FoodieFile.getFileURL(for: localType, with: fileName))
-        videoExportPlayer.exportAsynchronously { error in
-          if let error = error {
-            CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
-            callback?(error)
-          } else if self.checkIfExists(in: localType) {
-            callback?(nil)
-          } else {
-            callback?(ErrorCode.saveToLocalCompletedWithNoOutputFile)
+        self.copy(url: sourceURL, to: localType) { error in
+          if error == nil {
+            videoExportPlayer.initAVPlayer(from: FoodieFile.getFileURL(for: localType, with: fileName))
           }
+          callback?(error)
         }
+          
+//        guard !self.checkIfExists(in: localType) else {
+//          CCLog.info("SaveToLocal attempt despite \(FoodieFile.getFileURL(for: localType, with: fileName)) already exists")
+//          callback?(nil)
+//          return
+//        }
+//
+//        videoExportPlayer.exportAsync(to: FoodieFile.getFileURL(for: localType, with: fileName)) { error in
+//          if let error = error {
+//            CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
+//            callback?(error)
+//          } else if self.checkIfExists(in: localType) {
+//            callback?(nil)
+//          } else {
+//            callback?(ErrorCode.saveToLocalCompletedWithNoOutputFile)
+//          }
+//        }
       }
     }
   }

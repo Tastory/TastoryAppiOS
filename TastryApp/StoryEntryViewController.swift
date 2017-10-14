@@ -258,16 +258,32 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         return
       }
       
-      object.saveRecursive(to: .both, type: .draft) { error in
+      // The only reason why this is working is because story.saveDigest actually saves every single child PFObjects also.
+      // Otherwise if a Moment PreSave to .both is stuck waiting for a large media upload and the user kills the app,
+      // the Moment save to Parse Database (and Server) actually takes place after the server save completes...
+      
+      // Okay screw this, add an extra step to save to Local first. Then save to Both. Just to make double sure in case
+      // One day we somehow turn off recursive child saves on Parse
+      object.saveRecursive(to: .local, type: .draft) { error in
         
         if let error = error {
-          CCLog.warning("\(object.foodieObjectType()) pre-save to local & server resulted in error - \(error.localizedDescription)")
+          CCLog.warning("\(object.foodieObjectType()) pre-save to local resulted in error - \(error.localizedDescription)")
           callback?(error)
           return
         }
         
-        CCLog.debug("Completed Pre-Saving \(object.foodieObjectType()) to Server")
-        callback?(nil)
+        CCLog.debug("Completed Pre-Saving \(object.foodieObjectType()) to Local")
+        object.saveRecursive(to: .both, type: .draft) { error in
+          
+          if let error = error {
+            CCLog.warning("\(object.foodieObjectType()) pre-save to local & server resulted in error - \(error.localizedDescription)")
+            callback?(error)
+            return
+          }
+          
+          CCLog.debug("Completed Pre-Saving \(object.foodieObjectType()) to Local & Server")
+          callback?(nil)
+        }
       }
     }
   }

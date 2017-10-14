@@ -95,15 +95,8 @@ class SwiftRetry {
   
   // Attempt retry as appropriate. Otherwise returns False.
   func attemptRetryBasedOnURLError(_ error: URLError, after delaySeconds: Double = 0, withQoS serviceLevel: DispatchQoS.QoSClass = .background) -> Bool {
-    
-//    guard let error = error.errorCode as? URLError.Code else {
-//      CCLog.assert("Error received is not of URLError type")
-//      return false
-//    }
-    
     switch error.code {
-      
-    case .timedOut, .secureConnectionFailed, .requestBodyStreamExhausted, .notConnectedToInternet, .networkConnectionLost, .httpTooManyRedirects, .downloadDecodingFailedMidStream, .downloadDecodingFailedToComplete, .dnsLookupFailed, .cannotLoadFromNetwork, .cannotFindHost, .cannotConnectToHost, .badServerResponse, .backgroundSessionWasDisconnected, .backgroundSessionInUseByAnotherProcess:
+      case .timedOut, .secureConnectionFailed, .requestBodyStreamExhausted, .notConnectedToInternet, .networkConnectionLost, .httpTooManyRedirects, .downloadDecodingFailedMidStream, .downloadDecodingFailedToComplete, .dnsLookupFailed, .cannotLoadFromNetwork, .cannotFindHost, .cannotConnectToHost, .badServerResponse, .backgroundSessionWasDisconnected, .backgroundSessionInUseByAnotherProcess:
       
       if !attempt(after: delaySeconds, withQoS: serviceLevel) {
         CCLog.warning("Retry attempts exhausted. Final URLError - \(error.localizedDescription)")
