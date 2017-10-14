@@ -108,13 +108,13 @@ class SignUpViewController: TransitableViewController {
     user.email = email
     user.password = password
     
-    let blurSpinner = BlurSpinWait()
-    blurSpinner.apply(to: view, blurStyle: .dark, spinnerStyle: .whiteLarge)
+    let activitySpinner = ActivitySpinner(addTo: view)
+    activitySpinner.apply()
     
     // Don't bother with checking whether things are available. Sign-up to find out
     // SignUp also checks for username/e-mail/password validity
     user.signUp { error in
-      blurSpinner.remove()
+      activitySpinner.remove()
       
       // Handle all known error cases
       if let error = error {

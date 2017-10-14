@@ -39,6 +39,8 @@
 		8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */; };
 		8C3254A51F40240900895572 /* VenueTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3254A41F40240900895572 /* VenueTableViewController.swift */; };
 		8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */; };
+		8C4AF66E1F91B1B900AADA5C /* ActivitySpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */; };
+		8C4AF6701F91B1D300AADA5C /* AVExportPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4AF66F1F91B1D300AADA5C /* AVExportPlayer.swift */; };
 		8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5B48501F579D3800C18089 /* SwiftMutex.swift */; };
 		8C5C4DDE1EFEEDEC008C83EC /* FoodiePrefetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5C4DDD1EFEEDEC008C83EC /* FoodiePrefetch.swift */; };
 		8C61BCDC1E985D1300DDF248 /* CleanCrashLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCDB1E985D1300DDF248 /* CleanCrashLog.swift */; };
@@ -79,7 +81,6 @@
 		8CE49EBA1F64D36B007278C1 /* StoryMapAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */; };
 		8CE6B8871EA9864800D454A9 /* StoryEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */; };
 		8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */; };
-		8CEEB1CD1F821FA1008E91BD /* BlurSpinWait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CEEB1CC1F821FA1008E91BD /* BlurSpinWait.swift */; };
 		8CF44DA61F86F422007E905A /* CameraCrossLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF44DA51F86F422007E905A /* CameraCrossLayer.swift */; };
 		8CF858661F7ED8A000C46614 /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF858651F7ED8A000C46614 /* IntroViewController.swift */; };
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */; };
@@ -144,6 +145,8 @@
 		8C3254A41F40240900895572 /* VenueTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenueTableViewController.swift; sourceTree = "<group>"; };
 		8C40B20B1F1466D40030B5B5 /* Jot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jot-Bridging-Header.h"; sourceTree = "<group>"; };
 		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
+		8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivitySpinner.swift; path = "../../../../../Documents/Dev Space/MyPlayground/AVFoundationPlayground/AVFoundationPlayground/ActivitySpinner.swift"; sourceTree = "<group>"; };
+		8C4AF66F1F91B1D300AADA5C /* AVExportPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVExportPlayer.swift; sourceTree = "<group>"; };
 		8C5B48501F579D3800C18089 /* SwiftMutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftMutex.swift; sourceTree = "<group>"; };
 		8C5C4DDD1EFEEDEC008C83EC /* FoodiePrefetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePrefetch.swift; sourceTree = "<group>"; };
 		8C61BCDB1E985D1300DDF248 /* CleanCrashLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CleanCrashLog.swift; sourceTree = "<group>"; };
@@ -191,7 +194,6 @@
 		8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryMapAnnotation.swift; sourceTree = "<group>"; };
 		8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryEntryViewController.swift; sourceTree = "<group>"; };
 		8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentCollectionViewCell.swift; sourceTree = "<group>"; };
-		8CEEB1CC1F821FA1008E91BD /* BlurSpinWait.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlurSpinWait.swift; sourceTree = "<group>"; };
 		8CF44DA51F86F422007E905A /* CameraCrossLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCrossLayer.swift; sourceTree = "<group>"; };
 		8CF858651F7ED8A000C46614 /* IntroViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroViewController.swift; sourceTree = "<group>"; };
 		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
@@ -434,8 +436,9 @@
 		8CE49EB81F64D334007278C1 /* Supports */ = {
 			isa = PBXGroup;
 			children = (
+				8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */,
+				8C4AF66F1F91B1D300AADA5C /* AVExportPlayer.swift */,
 				C29CD1381F93198800A6D53F /* StorySelector.swift */,
-				8CEEB1CC1F821FA1008E91BD /* BlurSpinWait.swift */,
 				8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */,
 				8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */,
 				8CE0DE1C1F89B12800F258E5 /* TransitableViewController.swift */,
@@ -837,7 +840,6 @@
 				8CF44DA61F86F422007E905A /* CameraCrossLayer.swift in Sources */,
 				8C1089311EADC11B00457E66 /* MomentHeaderReusableView.swift in Sources */,
 				8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */,
-				8CEEB1CD1F821FA1008E91BD /* BlurSpinWait.swift in Sources */,
 				8C1ED6F21F5D15A300A8CC94 /* ThumbnailFrameLayer.swift in Sources */,
 				8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */,
 				8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */,
@@ -866,6 +868,7 @@
 				8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */,
 				8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */,
 				8CE0DE1F1F89B12800F258E5 /* TransitableViewController.swift in Sources */,
+				8C4AF6701F91B1D300AADA5C /* AVExportPlayer.swift in Sources */,
 				8C8986761E91A72D00B62306 /* FoodieCategory.swift in Sources */,
 				8C1FF1351F7DA1760062312C /* FoodieRole.swift in Sources */,
 				8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */,
@@ -879,6 +882,7 @@
 				8C1FF1311F7CA6C10062312C /* LogInViewController.swift in Sources */,
 				8C2F79771F4E3E6E00851334 /* ThreadSafeDLL.swift in Sources */,
 				8CE49EB71F64CA06007278C1 /* ImagePickerButton.swift in Sources */,
+				8C4AF66E1F91B1B900AADA5C /* ActivitySpinner.swift in Sources */,
 				8CE49EBA1F64D36B007278C1 /* StoryMapAnnotation.swift in Sources */,
 				8CE6B8871EA9864800D454A9 /* StoryEntryViewController.swift in Sources */,
 				8CE49EB51F64C8E8007278C1 /* PickerSquareLayer.swift in Sources */,

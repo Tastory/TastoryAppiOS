@@ -107,14 +107,14 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     CCLog.info("User pressed 'Post Story'")
     
     view.endEditing(true)
-    let blurSpinner = BlurSpinWait()
-    blurSpinner.apply(to: self.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
+    let activitySpinner = ActivitySpinner(addTo: view)
+    activitySpinner.apply()
 
     // This will cause a save to both Local Cache and Server
     story.saveRecursive(to: .both, type: .cache) { error in
       
       if let error = error {
-        blurSpinner.remove()
+        activitySpinner.remove()
         CCLog.warning("Save Story to Server Failed with Error: \(error)")
         AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
       } else {
@@ -126,7 +126,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
             // Best effort remove the Story from Server & Cache in this case
             story.deleteRecursive(from: .both, type: .cache, withBlock: nil)
             
-            blurSpinner.remove()
+            activitySpinner.remove()
             CCLog.warning("Add Story to User List Failed with Error: \(error)")
             AlertDialog.present(from: self, title: "Add Story to User Failed", message: error.localizedDescription)
           }
@@ -139,7 +139,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
             
             FoodieStory.removeCurrent()
             self.workingStory = nil
-            blurSpinner.remove()
+            activitySpinner.remove()
             
             // Pop-up Alert Dialog and then Dismiss
             CCLog.info("Story Posted!")

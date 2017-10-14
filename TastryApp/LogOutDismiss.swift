@@ -27,11 +27,12 @@ struct LogOutDismiss {
   // MARK: - Private Instance Functions
   
   private static func logOutAndDismiss(from viewController: UIViewController) {
-    let blurSpinner = BlurSpinWait()
-    blurSpinner.apply(to: viewController.view, blurStyle: .prominent, spinnerStyle: .whiteLarge)
+    
+    let activitySpinner = ActivitySpinner(addTo: viewController.view)
+    activitySpinner.apply()
     
     FoodieUser.logOutAndDeleteDraft { error in
-      blurSpinner.remove()
+      activitySpinner.remove()
       if let error = error {
         AlertDialog.present(from: viewController, title: "Log Out Error", message: error.localizedDescription) { action in
           CCLog.assert("Log Out Failed - \(error.localizedDescription)")

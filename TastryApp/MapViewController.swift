@@ -391,13 +391,13 @@ class MapViewController: TransitableViewController {
     storyQuery!.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)
     _ = storyQuery!.addArrangement(type: .creationTime, direction: .descending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
 
-    let blurSpinner = BlurSpinWait()
-    blurSpinner.apply(to: self.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
+    let activitySpinner = ActivitySpinner(addTo: view)
+    activitySpinner.apply()
     
     // Actually do the Query
     storyQuery!.initStoryQueryAndSearch { (stories, error) in
       
-      blurSpinner.remove()
+      activitySpinner.remove()
       
       if let err = error {
         self.queryErrorDialog()

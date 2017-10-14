@@ -155,12 +155,12 @@ class LogInViewController: TransitableViewController {
     
     view.endEditing(true)
     
-    let blurSpinner = BlurSpinWait()
-    blurSpinner.apply(to: self.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
+    let activitySpinner = ActivitySpinner(addTo: view, blurStyle: .prominent)
+    activitySpinner.apply()
     
     FoodieUser.logIn(for: username, using: password) { (user, error) in
       
-      blurSpinner.remove()
+      activitySpinner.remove()
       
       if let error = error {
         AlertDialog.present(from: self, title: "Login Failed", message: error.localizedDescription) { action in
