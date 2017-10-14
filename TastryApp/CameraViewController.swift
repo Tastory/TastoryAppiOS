@@ -347,7 +347,9 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       UISaveVideoAtPathToSavedPhotosAlbum(url.path, nil, nil, nil)
       
       let mediaObject = FoodieMedia(for: FoodieFile.newVideoFileName(), localType: .draft, mediaType: .video)
-      mediaObject.videoLocalBufferUrl = url
+      let avExportPlayer = AVExportPlayer()
+      avExportPlayer.initAVPlayer(from: url)
+      mediaObject.videoExportPlayer = avExportPlayer
       
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
       guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
@@ -597,8 +599,10 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       }
 
       mediaObject = FoodieMedia(for: movieName, localType: .draft, mediaType: .video)
-      mediaObject.videoLocalBufferUrl = URL(fileURLWithPath: moviePath)
-
+      let avExportPlayer = AVExportPlayer()
+      avExportPlayer.initAVPlayer(from: URL(fileURLWithPath: moviePath))
+      mediaObject.videoExportPlayer = avExportPlayer
+      
     case String(kUTTypeImage):
 
       mediaName = FoodieFile.newPhotoFileName()

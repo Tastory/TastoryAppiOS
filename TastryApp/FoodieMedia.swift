@@ -6,10 +6,8 @@
 //  Copyright © 2017 Tastry. All rights reserved.
 //
 
-import AVFoundation
-import Foundation
-import UIKit
 
+import AVFoundation
 
 class FoodieMedia: FoodieS3Object {
   
@@ -18,7 +16,8 @@ class FoodieMedia: FoodieS3Object {
     
     case retrieveFileDoesNotExist
     case saveToLocalwithNilImageMemoryBuffer
-    case saveToLocalwithNilvideoLocalBufferUrl
+    case saveToLocalwithNilvideoExportPlayer
+    case saveToLocalCompletedWithNoOutputFile
     
     var errorDescription: String? {
       switch self {
@@ -26,8 +25,10 @@ class FoodieMedia: FoodieS3Object {
         return NSLocalizedString("File for filename does not exist", comment: "Error description for an exception error code")
       case .saveToLocalwithNilImageMemoryBuffer:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, imageMemoryBuffer = nil", comment: "Error description for an exception error code")
-      case .saveToLocalwithNilvideoLocalBufferUrl:
+      case .saveToLocalwithNilvideoExportPlayer:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, videoLocalBufferUrl = nil", comment: "Error description for an exception error code")
+      case .saveToLocalCompletedWithNoOutputFile:
+        return NSLocalizedString("FoodieMedia.saveToLocal completed, but output file not found", comment: "Error description for an exception error code")
       }
     }
     
@@ -41,7 +42,7 @@ class FoodieMedia: FoodieS3Object {
   
   // MARK: - Public Instance Variable
   var imageMemoryBuffer: Data?
-  var videoLocalBufferUrl: URL?
+  var videoExportPlayer: AVExportPlayer?
   var mediaType: FoodieMediaType?
   var aspectRatio: Double?  // In decimal, width / height, like 16:9 = 16/9 = 1.777...
   var width: Int?  // height = width / aspectRatio
@@ -64,12 +65,14 @@ class FoodieMedia: FoodieS3Object {
     self.foodieFileName = fileName
     self.mediaType = mediaType
     
-    // For videos, determine if the media file already exists in Local cache store
-    if mediaType == .video && FoodieFile.manager.checkIfExists(in: localType, for: fileName) {
-      videoLocalBufferUrl = FoodieFile.getFileURL(for: localType, with: fileName)
-    } else {
-      videoLocalBufferUrl = nil
-    }
+//    // For videos, determine if the media file already exists in Local cache store
+//    if mediaType == .video && FoodieFile.manager.checkIfExists(in: localType, for: fileName) {
+//      videoLocalBufferUrl = FoodieFile.getFileURL(for: localType, with: fileName)
+//
+//      // Get
+//    } else {
+//      videoLocalBufferUrl = nil
+//    }
   }
   
   
@@ -187,7 +190,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     }
     
     // If photo and in memory, or video and in local, just callback
-    if !forceAnyways && (imageMemoryBuffer != nil || videoLocalBufferUrl != nil) {
+    if !forceAnyways && (imageMemoryBuffer != nil || videoExportPlayer != nil) {
       DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }
       return
     }
@@ -209,7 +212,8 @@ extension FoodieMedia: FoodieObjectDelegate {
     case .video:
       DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
         if self.checkIfExists(in: localType) {
-          self.videoLocalBufferUrl = FoodieFile.getFileURL(for: .cache, with: fileName)
+          self.videoExportPlayer = AVExportPlayer()
+          self.videoExportPlayer!.initAVPlayer(from: FoodieFile.getFileURL(for: localType, with: fileName))
           callback?(nil)
         } else {
           callback?(ErrorCode.retrieveFileDoesNotExist)
@@ -231,8 +235,12 @@ extension FoodieMedia: FoodieObjectDelegate {
       CCLog.fatal("Retrieve not allowed when Media has no MediaType")
     }
     
+    guard localType == .cache else {
+      CCLog.fatal("Only allowing Server to Cache, not to Draft")
+    }
+    
     // If photo and in memory, or video and in local, just callback
-    if !forceAnyways && (imageMemoryBuffer != nil || videoLocalBufferUrl != nil) {
+    if !forceAnyways && (imageMemoryBuffer != nil || videoExportPlayer != nil) {
       DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }
       return
       
@@ -249,12 +257,14 @@ extension FoodieMedia: FoodieObjectDelegate {
         }
         
       case .video:
-        retrieveFromServerToLocal() { (error) in
+        videoExportPlayer = AVExportPlayer()
+        videoExportPlayer!.initAVPlayer(from: FoodieFile.getS3URL(for: fileName))
+        videoExportPlayer!.initExportSession(to: FoodieFile.getFileURL(for: .cache, with: fileName))
+        videoExportPlayer!.exportAsynchronously { error in
           if let error = error {
-            CCLog.warning("retrieveFromServerToLocal for video failed with error \(error.localizedDescription)")
+            CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
             callback?(error)
-          } else if self.checkIfExists(in: localType) {
-            self.videoLocalBufferUrl = FoodieFile.getFileURL(for: localType, with: fileName)
+          } else if self.checkIfExists(in: .cache) {
             callback?(nil)
           } else {
             callback?(ErrorCode.retrieveFileDoesNotExist)
@@ -290,19 +300,23 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
       
     case .video:
+      videoExportPlayer = AVExportPlayer()
+      
       guard !checkIfExists(in: .cache) else {
-        self.videoLocalBufferUrl = FoodieFile.getFileURL(for: .cache, with: fileName)
+        self.videoExportPlayer!.initAVPlayer(from: FoodieFile.getFileURL(for: .cache, with: fileName))
         DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
           callback?(nil)
         }
         return
       }
-      retrieveFromServerToLocal() { (error) in
+
+      videoExportPlayer!.initAVPlayer(from: FoodieFile.getS3URL(for: fileName))
+      videoExportPlayer!.initExportSession(to: FoodieFile.getFileURL(for: .cache, with: fileName))
+      videoExportPlayer!.exportAsynchronously { error in
         if let error = error {
-          CCLog.warning("retrieveFromServerToLocal for video failed with error \(error.localizedDescription)")
+          CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
           callback?(error)
         } else if self.checkIfExists(in: .cache) {
-          self.videoLocalBufferUrl = FoodieFile.getFileURL(for: .cache, with: fileName)
           callback?(nil)
         } else {
           callback?(ErrorCode.retrieveFileDoesNotExist)
@@ -350,15 +364,27 @@ extension FoodieMedia: FoodieObjectDelegate {
         self.save(buffer: memoryBuffer, to: localType, withBlock: callback)
         
       case .video:
-        guard let videoUrl = self.videoLocalBufferUrl else {
-          callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
+        guard let videoExportPlayer = self.videoExportPlayer else {
+          callback?(ErrorCode.saveToLocalwithNilvideoExportPlayer)
           return
         }
-        self.copy(url: videoUrl, to: localType) { error in
-          if error == nil {
-            self.videoLocalBufferUrl = FoodieFile.getFileURL(for: localType, with: fileName)
+        
+        guard !self.checkIfExists(in: localType) else {
+          CCLog.info("SaveToLocal attempt despite \(FoodieFile.getFileURL(for: localType, with: fileName)) already exists")
+          callback?(nil)
+          return
+        }
+        
+        videoExportPlayer.initExportSession(to: FoodieFile.getFileURL(for: localType, with: fileName))
+        videoExportPlayer.exportAsynchronously { error in
+          if let error = error {
+            CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
+            callback?(error)
+          } else if self.checkIfExists(in: localType) {
+            callback?(nil)
+          } else {
+            callback?(ErrorCode.saveToLocalCompletedWithNoOutputFile)
           }
-          callback?(error)
         }
       }
     }

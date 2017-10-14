@@ -170,6 +170,11 @@ class FoodieFile {
   }
   
   
+  static func getS3URL(for fileName: String) -> URL {
+    return Constants.CloudFrontUrl.appendingPathComponent(fileName, isDirectory: false)
+  }
+  
+  
   // MARK: - Public Instance Functions
   init() {
     /*

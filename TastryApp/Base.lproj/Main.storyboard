@@ -461,17 +461,6 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lU5-U1-CUM">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="pto-AP-chd">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                </view>
-                                <blurEffect style="light"/>
-                            </visualEffectView>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="PSs-bH-oOZ">
-                                <rect key="frame" x="177.5" y="323.5" width="20" height="20"/>
-                            </activityIndicatorView>
                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="De9-KV-Mtr" userLabel="Tap Gesture Stack">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <subviews>
@@ -524,29 +513,21 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
-                            <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="lU5-U1-CUM" secondAttribute="bottom" id="1F9-XI-fNe"/>
-                            <constraint firstAttribute="trailing" secondItem="lU5-U1-CUM" secondAttribute="trailing" id="3NM-Jd-Az3"/>
                             <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="De9-KV-Mtr" secondAttribute="bottom" id="3gj-SM-eAT"/>
                             <constraint firstItem="De9-KV-Mtr" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="DdX-oD-DPD"/>
                             <constraint firstItem="De9-KV-Mtr" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="Gq5-co-kTu"/>
-                            <constraint firstItem="lU5-U1-CUM" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="L8g-YB-BSJ"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="Md4-SM-fkG"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="OMv-jK-C3v"/>
                             <constraint firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" id="P6T-e5-UJl"/>
-                            <constraint firstItem="PSs-bH-oOZ" firstAttribute="centerY" secondItem="cgZ-7E-g3q" secondAttribute="centerY" id="Uam-5P-WS8"/>
                             <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="3Gc-Ev-vmE" secondAttribute="bottom" id="Vmo-EH-HPg"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="aCi-cl-PK7"/>
-                            <constraint firstItem="PSs-bH-oOZ" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="cb5-so-Nwb"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="efA-ND-dRG"/>
                             <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="bottom" id="fNQ-Yf-4Lf"/>
                             <constraint firstAttribute="trailing" secondItem="De9-KV-Mtr" secondAttribute="trailing" id="uHJ-7z-fEq"/>
                             <constraint firstAttribute="trailing" secondItem="3Gc-Ev-vmE" secondAttribute="trailing" id="uPp-NK-myt"/>
-                            <constraint firstItem="lU5-U1-CUM" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="vnj-nw-zOS"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="activityIndicator" destination="PSs-bH-oOZ" id="ltb-9Q-KVm"/>
-                        <outlet property="blurView" destination="lU5-U1-CUM" id="URy-RV-r5L"/>
                         <outlet property="pauseResumeButton" destination="7rC-KB-BnZ" id="qTD-9Q-iCi"/>
                         <outlet property="photoView" destination="3Gc-Ev-vmE" id="tiQ-hZ-B0K"/>
                         <outlet property="soundButton" destination="t4S-lT-gBv" id="ZDG-D8-Ify"/>

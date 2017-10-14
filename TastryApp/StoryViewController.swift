@@ -30,11 +30,11 @@ class StoryViewController: TransitableViewController {
   
   // MARK: - Private Instance Variables
   fileprivate let jotViewController = JotViewController()
-  fileprivate var avPlayer: AVPlayer?
-  fileprivate var avPlayerLayer: AVPlayerLayer?
-  fileprivate var avPlayerItem: AVPlayerItem?
   fileprivate var photoTimer: Timer?
   fileprivate var currentMoment: FoodieMoment?
+  fileprivate var currentExportPlayer: AVExportPlayer?
+  fileprivate var avPlayerLayer: AVPlayerLayer!
+  fileprivate var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
   fileprivate var soundOn: Bool = true
   fileprivate var isPaused: Bool = false
   fileprivate var photoTimeRemaining: TimeInterval = 0.0
@@ -75,8 +75,6 @@ class StoryViewController: TransitableViewController {
   // MARK: - IBOutlets
   @IBOutlet weak var photoView: UIImageView!
   @IBOutlet weak var videoView: UIView!
-  @IBOutlet weak var blurView: UIVisualEffectView!
-  @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
   @IBOutlet weak var swipeUpGestureRecognizer: UISwipeGestureRecognizer!
   @IBOutlet weak var tapGestureStackView: UIStackView!
   @IBOutlet weak var tapBackwardsWidth: NSLayoutConstraint!
@@ -131,12 +129,20 @@ class StoryViewController: TransitableViewController {
       // Not playing any moment, Sound button should do nothing and just return
       return
     }
+    
+    guard let avPlayer = currentExportPlayer?.avPlayer else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Expected AVExportPlayer")
+      }
+      return
+    }
+    
     soundOn = !soundOn
     
     if playingMoment.playSound && soundOn {
-      avPlayer?.volume = 1.0
+      avPlayer.volume = 1.0
     } else {
-      avPlayer?.volume = 0.0
+      avPlayer.volume = 0.0
     }
   }
   
@@ -152,7 +158,14 @@ class StoryViewController: TransitableViewController {
       return
     }
     
-    CCLog.info("User pressed Paused/Resume. isPaused = \(isPaused), photoTimer.isValid = \(photoTimer != nil ? String(photoTimer!.isValid) : "None"), avPlayer.rate = \(avPlayer!.rate), mediaType = \(mediaType)")
+    guard let avPlayer = currentExportPlayer?.avPlayer else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Expected AVExportPlayer")
+      }
+      return
+    }
+    
+    CCLog.info("User pressed Paused/Resume. isPaused = \(isPaused), photoTimer.isValid = \(photoTimer != nil ? String(photoTimer!.isValid) : "None"), avPlayer.rate = \(avPlayer.rate), mediaType = \(mediaType)")
     
     if let photoTimer = photoTimer {
       
@@ -172,14 +185,14 @@ class StoryViewController: TransitableViewController {
       }
     } else {
       
-      if avPlayer!.rate != 0.0 {
+      if avPlayer.rate != 0.0 {
         // Video is playing. Pause the video
-        avPlayer!.pause()
+        avPlayer.pause()
         pauseStateTrack()
         
       } else {
         // Video is paused. Restarted the video
-        avPlayer!.play()
+        avPlayer.play()
         resumeStateTrack()
       }
     }
@@ -222,9 +235,7 @@ class StoryViewController: TransitableViewController {
     currentMoment = moment
     
     // Remove Blue Layer and Activity Indicator
-    view.sendSubview(toBack: activityIndicator)
-    view.sendSubview(toBack: blurView)
-    activityIndicator.stopAnimating()
+    activitySpinner.remove()
     
     // Try to display the media as by type
     if mediaType == .photo {
@@ -250,41 +261,35 @@ class StoryViewController: TransitableViewController {
       
     } else if mediaType == .video {
       
-      guard let videoURL = mediaObject.videoLocalBufferUrl else {
-        displayErrorDialog()
-        CCLog.assert("Unexpected, mediaObject.videoLocalBufferUrl == nil")
+      guard let videoExportPlayer = mediaObject.videoExportPlayer, let avPlayer = videoExportPlayer.avPlayer else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.assert("MediaObject.videoExportPlayer == nil")
+        }
         return
       }
-      
-      CCLog.verbose("Playing Video with URL: \(videoURL)")
-      
-      avPlayerItem = AVPlayerItem(url: videoURL)
-      
-      // Put a hook in for what to do next after video completes playing
-      NotificationCenter.default.addObserver(self,
-                                             selector: #selector(displayNextMoment),
-                                             name: .AVPlayerItemDidPlayToEndTime,
-                                             object: avPlayerItem)
-      
-      avPlayer!.replaceCurrentItem(with: avPlayerItem)
+
+      currentExportPlayer = videoExportPlayer
+      videoExportPlayer.delegate = self
+      avPlayerLayer.player = avPlayer
       view.insertSubview(videoView, belowSubview: jotViewController.view)
+      activitySpinner.apply(below: tapGestureStackView)
       
       // Should we play sound? Should the sound button be visible?
-      avPlayer!.volume = 0.0
+      avPlayer.volume = 0.0
       
       // Should we show the sound button?
       if moment.playSound {
         soundButton?.isHidden = false
         
         if soundOn {
-          avPlayer!.volume = 1.0
+          avPlayer.volume = 1.0
         }
       } else {
         soundButton?.isHidden = true
       }
       
       // Finally, let's play the Media
-      avPlayer!.play()
+      avPlayer.play()
       
       // No image nor video to work on, Fatal
     } else {
@@ -371,22 +376,21 @@ class StoryViewController: TransitableViewController {
       }
     } else {
       CCLog.verbose("displayMomentIfLoaded: Not yet loaded")
-      
-      view.insertSubview(blurView, belowSubview: tapGestureStackView)
-      view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
+      activitySpinner.apply(below: tapGestureStackView)
       soundButton.isHidden = true
-      activityIndicator.startAnimating()
     }
   }
   
   
   fileprivate func stopVideoTimerAndObservers(for moment: FoodieMoment) {
     pauseResumeButton.isHidden = true
-    avPlayer?.pause()
+    resumeStateTrack()
     photoTimer?.invalidate()
     photoTimer = nil
-    resumeStateTrack()
-    NotificationCenter.default.removeObserver(self)
+    currentExportPlayer?.avPlayer?.pause()
+    currentExportPlayer?.delegate = nil
+    avPlayerLayer.player = nil
+    currentExportPlayer?.layerDisconnected()
   }
   
   
@@ -486,31 +490,20 @@ class StoryViewController: TransitableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    avPlayer = AVPlayer()
-    avPlayer?.allowsExternalPlayback = false
-    avPlayerLayer = AVPlayerLayer(player: avPlayer)
-    avPlayerLayer!.frame = self.view.bounds
-    videoView!.layer.addSublayer(avPlayerLayer!)
+    avPlayerLayer = AVPlayerLayer()
+    avPlayerLayer.frame = self.view.bounds
+    videoView!.layer.addSublayer(avPlayerLayer)
     
-    // This section setups the JotViewController with default initial values
     jotViewController.state = JotViewState.disabled
     jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                              andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
-//    jotViewController.delegate = self
-//    jotViewController.textColor = UIColor.black
-//    jotViewController.font = UIFont.boldSystemFont(ofSize: 64.0)
-//    jotViewController.fontSize = 64.0
-//    jotViewController.textEditingInsets = UIEdgeInsetsMake(12.0, 6.0, 0.0, 6.0)  // Constraint from JotDemo causes conflicts
-//    jotViewController.initialTextInsets = UIEdgeInsetsMake(6.0, 6.0, 6.0, 6.0)  // Constraint from JotDemo causes conflicts
-//    jotViewController.fitOriginalFontSizeToViewWidth = true
-//    jotViewController.textAlignment = .left
-//    jotViewController.drawingColor = UIColor.cyan
-    
     addChildViewController(jotViewController)
     view.addSubview(jotViewController.view)
     view.insertSubview(jotViewController.view, belowSubview: tapGestureStackView)
     jotViewController.didMove(toParentViewController: self)
     jotViewController.view.frame = view.bounds
+    
+    activitySpinner = ActivitySpinner(addTo: view)
     
     dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)
     tapBackwardsWidth.constant = UIScreen.main.bounds.width/3.0  // Gotta test this on a different screen size to know if this works
@@ -535,11 +528,10 @@ class StoryViewController: TransitableViewController {
     if currentMoment == nil {
       
       // Always display activity indicator and blur layer up front
-      view.insertSubview(blurView, belowSubview: tapGestureStackView)
-      view.insertSubview(activityIndicator, belowSubview: tapGestureStackView)
+      
+      activitySpinner.apply(below: tapGestureStackView)
       soundButton.isHidden = true
       pauseResumeButton.isHidden = true
-      activityIndicator.startAnimating()
       
       currentMoment = moments[0]
       displayMomentIfLoaded(for: currentMoment!)
@@ -553,11 +545,16 @@ class StoryViewController: TransitableViewController {
     super.viewDidDisappear(animated)
     cleanUp()
   }
+  
+  
+  override func topViewWillEnterForeground() {
+    super.topViewWillEnterForeground()
+    currentExportPlayer?.avPlayer?.play()
+  }
 }
 
 
 // MARK: - Foodie Moment Wait On Content Delegate Conformance
-
 extension StoryViewController: FoodieObjectWaitOnRetrieveDelegate {
   
   func retrieved(for object: FoodieObjectDelegate) {
@@ -572,12 +569,28 @@ extension StoryViewController: FoodieObjectWaitOnRetrieveDelegate {
 
 
 // MARK: - Safari View Controller Did Finish Delegate Conformance
-
 extension StoryViewController: SFSafariViewControllerDelegate {
   
   func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
     if isPaused {
       pausePlay()
     }
+  }
+}
+
+
+// MARK: - AVPlayAndExportDelegate Conformance
+extension StoryViewController: AVPlayAndExportDelegate {
+ 
+  func avExportPlayer(isLikelyToKeepUp avExportPlayer: AVExportPlayer) {
+    activitySpinner.remove()
+  }
+  
+  func avExportPlayer(isWaitingForData avExportPlayer: AVExportPlayer) {
+    activitySpinner.apply(below: tapGestureStackView)
+  }
+  
+  func avExportPlayer(completedPlaying avExportPlayer: AVExportPlayer) {
+    displayNextMoment()
   }
 }

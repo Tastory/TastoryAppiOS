@@ -646,9 +646,10 @@ class MarkupViewController: TransitableViewController {
       // Make sure the Sound button is shown
       soundButton.isHidden = false
       
-      guard let videoURL = mediaObject.videoLocalBufferUrl else {
-        displayErrorDialog()
-        CCLog.assert("Unexpected, mediaObject.videoLocalBufferUrl == nil")
+      guard let videoURL = (mediaObject.videoExportPlayer?.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("Cannot get at AVURLAsset.url")
+        }
         return
       }
 

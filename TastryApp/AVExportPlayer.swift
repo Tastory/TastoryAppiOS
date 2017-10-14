@@ -11,11 +11,11 @@ import AVFoundation
 
 protocol AVPlayAndExportDelegate {
 
-  func avExportPlayer(isLikelyToKeepUp avXPlayer: AVExportPlayer)
+  func avExportPlayer(isLikelyToKeepUp avExportPlayer: AVExportPlayer)
   
-  func avExportPlayer(isWaitingForData avXPlayer: AVExportPlayer)
+  func avExportPlayer(isWaitingForData avExportPlayer: AVExportPlayer)
   
-  func avExportPlayer(completedPlaying avXPlayer: AVExportPlayer)
+  func avExportPlayer(completedPlaying avExportPlayer: AVExportPlayer)
 }
 
 
@@ -87,30 +87,20 @@ class AVExportPlayer: NSObject {
         
         // Swap AVPlayer's backing file to local Cache. It's assumed that the Cache file will always exist if the AVPlayer is still in Memory.
         // If the app quits and a cache clean up occurs, the AVPlayer will get reinitialized next time against the network instead.
-        guard let avPlayerItem = avPlayer?.currentItem else {
-          CCLog.fatal("Unable to get at avPlayerItem. Cannot switch AVPlayer backing to Local File")
-        }
         guard let exportURL = avExportSession.outputURL else {
           CCLog.fatal("Unable to get at outputURL. Cannot switch AVPlayer backing to Local File")
         }
-        self.initAVAsset(from: exportURL)
-        self.initAVPlayer(with: avPlayerItem.preferredForwardBufferDuration)
+        self.initAVPlayer(from: exportURL)
       }
     }
   }
   
   
   // MARK: - Public Instance Functions
-  func initAVAsset(from playURL: URL) {
+  func initAVPlayer(from playURL: URL, with bufferDuration: TimeInterval = 0.0, thru queue: DispatchQueue = DispatchQueue.global(qos: .userInitiated)) {
     avExportSession = nil  // Always clear the export session before re-creating AVURLAsset
     avURLAsset = AVURLAsset(url: playURL)
-  }
-  
-  
-  func initAVPlayer(with bufferDuration: TimeInterval) {
-    guard let avURLAsset = avURLAsset else {
-      CCLog.fatal("avURLAsset == nil. initAVAsset must be called before initAVPlayer.")
-    }
+    avURLAsset!.resourceLoader.setDelegate(self, queue: queue)  // Must be set before the AVURLAsset is first used
     
     // Clean-up the previous instance of AVPlayer first if there was a previous instance
     if let avPlayer = avPlayer {
@@ -122,7 +112,7 @@ class AVExportPlayer: NSObject {
       }
     }
     
-    let avPlayerItem = AVPlayerItem(asset: avURLAsset)
+    let avPlayerItem = AVPlayerItem(asset: avURLAsset!)
     avPlayerItem.preferredForwardBufferDuration = bufferDuration
     NotificationCenter.default.addObserver(self, selector: #selector(completedPlaying), name: .AVPlayerItemDidPlayToEndTime, object: avPlayerItem)
     
@@ -143,21 +133,13 @@ class AVExportPlayer: NSObject {
   }
   
   
-  func initExportSession(to exportURL: URL, using preset: String /*AVAssetExportPreset*/, with outputType: AVFileType, thru queue: DispatchQueue) {
+  func initExportSession(to exportURL: URL, using preset: String = AVAssetExportPreset1280x720, with outputType: AVFileType = .mov) {
     guard let avURLAsset = avURLAsset else {
       CCLog.fatal("avURLAsset == nil. initAVAsset must be called before initExportSession.")
     }
-    
-//    if avPlayer != nil {
-//      CCLog.fatal("avPlayer not nil. initExportSession must be called before initAVPlayer")
-//    }
-    
-    avURLAsset.resourceLoader.setDelegate(self, queue: DispatchQueue.global(qos: .userInitiated))  // Must be set before the AVURLAsset is first used
-    
     guard let avAssetExportSession = AVAssetExportSession(asset: avURLAsset, presetName: preset) else {
       CCLog.fatal("Unable to create AVAssetExportSession with URL: \(avURLAsset.url) and Preset: \(preset)")
     }
-    
     avExportSession = avAssetExportSession
     avExportSession!.outputURL = exportURL
     avExportSession!.outputFileType = outputType
@@ -210,7 +192,7 @@ class AVExportPlayer: NSObject {
               return
             }
             
-            self.initExportSession(to: exportURL, using: AVAssetExportPreset1280x720, with: AVFileType.mov, thru: DispatchQueue.global(qos: .userInitiated))
+            self.initExportSession(to: exportURL, using: AVAssetExportPreset1280x720, with: AVFileType.mov)
             self.exportAsynchronously(withBlock: callback)
             return
           }
