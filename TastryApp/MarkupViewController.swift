@@ -697,10 +697,6 @@ class MarkupViewController: TransitableViewController {
     }
   }
 
-  override func viewDidAppear(_ animated: Bool) {
-
-  }
-
   override func viewWillDisappear(_ animated: Bool) {
     view.endEditing(true)  // Force clear the keyboard
   }
