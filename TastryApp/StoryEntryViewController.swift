@@ -41,7 +41,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
   // MARK: - Public Instance Variable
   var workingStory: FoodieStory?
-  var returnedMoment: FoodieMoment?
+  var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
   var containerVC: MarkupReturnDelegate?
   
@@ -511,15 +511,15 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
           }
         }
       }
-      
-      // Let's figure out what to do with the returned Moment
-      if let moment = returnedMoment {
+
+      for returnedMoment in returnedMoments {
+        // Let's figure out what to do with the returned Moment
         if markupMoment != nil {
           // So there is a Moment under markup. The returned Moment should match this.
           if returnedMoment === markupMoment {
 
             // save to local
-            moment.saveRecursive(to: .local, type: .draft) { error in
+            returnedMoment.saveRecursive(to: .local, type: .draft) { error in
               if let error = error {
                 AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
                   CCLog.assert("Error saving moment into local caused by: \(error.localizedDescription)")
@@ -531,29 +531,26 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
             CCLog.assert("returnedMoment expected to match markupMoment")
           }
         } else {
-          
+
           // This is a new Moment. Let's add it to the Story!
-          workingStory.add(moment: moment)
-          
+          workingStory.add(moment: returnedMoment)
+
           // If there wasn't any moments before, we got to make this the default thumbnail for the Story
           // Got to do this also when removing moments!!!
           if workingStory.moments!.count == 1 {
             // TODO: Do we need to factor out thumbnail operations?
-            workingStory.thumbnailFileName = moment.thumbnailFileName
-            workingStory.thumbnailObj = moment.thumbnailObj
+            workingStory.thumbnailFileName = returnedMoment.thumbnailFileName
+            workingStory.thumbnailObj = returnedMoment.thumbnailObj
           }
-          
-          preSave(moment) { (error) in
+
+          preSave(returnedMoment) { (error) in
             if error != nil {  // Error code should've already been printed to the Debug log from preSave()
               AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .internalTryAgain)
             }
-            self.returnedMoment = nil  // We should be in a state where whom is the returned Moment should no longer matter
+            //self.returnedMoment = nil  // We should be in a state where whom is the returned Moment should no longer matter
           }
         }
-      } else {
-        CCLog.debug("No Moment returned on viewWillAppear")
       }
-      
     }
   }
   
@@ -569,7 +566,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     placeholderLabel.removeFromSuperview()
     
     // We should clear this so we don't assume that we still have a returned moment
-    returnedMoment = nil
+    returnedMoments.removeAll()
   }
   
   override func didReceiveMemoryWarning() {
@@ -728,8 +725,8 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
 
 
 extension StoryEntryViewController: CameraReturnDelegate {
-  func captureComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
-    self.returnedMoment = markedupMoment
+  func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
+    self.returnedMoments = markedupMoments
     self.markupMoment = nil
 
     dismiss(animated: true) {
