@@ -299,7 +299,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     // TODO: Create error alert dialog box if this save fails.
     UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
 
-    let mediaObject = FoodieMedia(for: FoodieFile.newPhotoFileName(), localType: .draft, mediaType: .photo)
+    let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
     mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))  // TOOD: Is this main thread? If so do this conversion else where? Not like the user can do anything else tho? Pop-up a spinner instead?
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -346,7 +346,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       // TODO: Create error alert dialog box if this save fails.
       UISaveVideoAtPathToSavedPhotosAlbum(url.path, nil, nil, nil)
       
-      let mediaObject = FoodieMedia(for: FoodieFile.newVideoFileName(), localType: .draft, mediaType: .video)
+      let mediaObject = FoodieMedia(for: FoodieFileObject.newVideoFileName(), localType: .draft, mediaType: .video)
       let avExportPlayer = AVExportPlayer()
       avExportPlayer.initAVPlayer(from: url)
       mediaObject.videoExportPlayer = avExportPlayer
@@ -604,9 +604,9 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       mediaObject.videoExportPlayer = avExportPlayer
       
     case String(kUTTypeImage):
-
-      mediaName = FoodieFile.newPhotoFileName()
-
+      
+      mediaName = FoodieFileObject.newPhotoFileName()
+      
       guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
         CCLog.assert("UIImage is not returned from image picker")
         return

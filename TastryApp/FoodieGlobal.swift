@@ -41,59 +41,27 @@ struct FoodieGlobal {
   }
   
   
-  // MARK: - Error Types Definition
-  enum ErrorCode: LocalizedError {
-    
-    case startupFoursquareCategoryError
-    
-    var errorDescription: String? {
-      switch self {
-      case .startupFoursquareCategoryError:
-        return NSLocalizedString("Error acquiring Foursquare Categories on startup", comment: "Error description for an exception error code")
-      }
-    }
-    
-    init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
-      self = errorCode
-      CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
-    }
-  }
-  
-  
-  // MARK: - Private Static Variable
-  private static let FoursquareClientID = "MIDYZC42VW5QCNEYMXZKH1XGEN4NMVRKZRX40SAPRDN3OQHM"
-  private static let FoursquareClientSecret = "2UUA4PGJC5YTMQEUYUISWABLKJA50EUMO51WNVZQXJY1KGWO"
-  private static let foursquareClient = Client(clientID: FoursquareClientID, clientSecret: FoursquareClientSecret, redirectURL: "")
-  private static let foursquareConfiguration = Configuration(client: foursquareClient)
-  private static var foursquareInitialized = false
-  
-  
-  // MARK: - Public Static Variable
-  static var foursquareSession: Session { return Session.sharedSession() }
-  
-  
   // MARK: - Public Static Functions
   
   static func initialize() {
     
     // This contains Parse.initialize, must come other Parse containing classes
-    FoodiePFObject.configure()
+    FoodiePFObject.pfConfigure()
     
     // Enable Automatic User
-    FoodieUser.configure(enableAutoUser: false)
+    FoodieUser.userConfigure(enableAutoUser: false)
     
     // Set Default Permissions
     FoodiePermission.setDefaultGlobalObjectPermission()
     
+    // Initialize Das Quadrat
+    FoodieVenue.venueConfigure()
+    
     // Create S3 Manager singleton
-    FoodieFile.manager = FoodieFile()
+    FoodieFileObject.fileConfigure()
     
     // Create Prefetch Manager singleton
     FoodiePrefetch.global = FoodiePrefetch()
-    
-    // Initialize Das Quadrat
-    FoodieGlobal.foursquareInitialize()
-    FoodieCategory.getFromFoursquare(withBlock: nil)  // Let the fetch happen in the background
   }
   
   
@@ -108,15 +76,5 @@ struct FoodieGlobal {
       CCLog.warning("\(function) Failed with Error - \(error!.localizedDescription) on line \(line) of \((file as NSString).lastPathComponent)")
     }
     callback?(error)
-  }
-  
-  
-  static func foursquareInitialize() {
-    if !foursquareInitialized {
-      let foursquareSessionQueue = OperationQueue()
-      foursquareSessionQueue.qualityOfService = .userInitiated
-      Session.setupSharedSessionWithConfiguration(foursquareConfiguration, completionQueue: foursquareSessionQueue)
-      foursquareInitialized = true
-    }
   }
 }

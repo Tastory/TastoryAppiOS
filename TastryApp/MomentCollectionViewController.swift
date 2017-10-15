@@ -192,7 +192,7 @@ extension MomentCollectionViewController {
     // TODO: Download the thumbnail here if not a local draft?
     if thumbnailObj.imageMemoryBuffer == nil {
       do {
-        try thumbnailObj.imageMemoryBuffer = Data(contentsOf: FoodieFile.Constants.DraftStoryMediaFolderUrl.appendingPathComponent(thumbnailFileName))
+        try thumbnailObj.imageMemoryBuffer = Data(contentsOf: FoodieFileObject.Constants.DraftStoryMediaFolderUrl.appendingPathComponent(thumbnailFileName))
       } catch {
         AlertDialog.present(from: self, title: "File Read Error", message: "Cannot read image file from local flash storage") { action in
           CCLog.assert("Cannot read image file \(thumbnailFileName)")

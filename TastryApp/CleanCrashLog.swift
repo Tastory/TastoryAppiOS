@@ -44,7 +44,7 @@ class CCLog {
     // Create a configuration for a 15-day rotating log directory
     let fileCfg = RotatingLogFileConfiguration(minimumSeverity: Constant.rotatingMinSeverity,
                                                daysToKeep: 15,
-                                               directoryPath: FoodieFile.Constants.CleanCrashLogFolderUrl.path,
+                                               directoryPath: FoodieFileObject.Constants.CleanCrashLogFolderUrl.path,
                                                formatters: [ParsableDelimitLogFormatter(delimiterStyle: .spacedPipe, showTimestamp: true)])
     
     // Crash if the log directory doesn’t exist yet & can’t be created

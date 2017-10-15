@@ -21,7 +21,6 @@
 		8C14E28B1F7F42FD001CC869 /* EmailResetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C14E28A1F7F42FD001CC869 /* EmailResetViewController.swift */; };
 		8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */; };
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
-		8C1C71F41ECD7A4B00D2E4F8 /* FoodieFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */; };
 		8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F51ED1602F00D2E4F8 /* FoodieGlobal.swift */; };
 		8C1D4E221EDCEC9A00939B2C /* FeedCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */; };
 		8C1D4E241EDCECCD00939B2C /* FeedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */; };
@@ -69,6 +68,7 @@
 		8CBF55991E7F7EDF00F4B1CD /* EatellyAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55981E7F7EDF00F4B1CD /* EatellyAppTests.swift */; };
 		8CBF55A41E7F7EDF00F4B1CD /* EatellyAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55A31E7F7EDF00F4B1CD /* EatellyAppUITests.swift */; };
 		8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55B11E80C72200F4B1CD /* MapViewController.swift */; };
+		8CC1101A1F92D07000ACBF9A /* FoodieFileObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */; };
 		8CC48D601EFC81CD003A0FC9 /* PrecisionTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */; };
 		8CE0DE1D1F89B12800F258E5 /* TransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE0DE1A1F89B12700F258E5 /* TransitionAnimator.swift */; };
 		8CE0DE1E1F89B12800F258E5 /* PercentInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE0DE1B1F89B12700F258E5 /* PercentInteractor.swift */; };
@@ -126,7 +126,6 @@
 		8C14E28A1F7F42FD001CC869 /* EmailResetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailResetViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraButton.swift; sourceTree = "<group>"; };
-		8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFileManager.swift; sourceTree = "<group>"; };
 		8C1C71F51ED1602F00D2E4F8 /* FoodieGlobal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieGlobal.swift; sourceTree = "<group>"; };
 		8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedCollectionViewController.swift; sourceTree = "<group>"; };
 		8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -182,6 +181,7 @@
 		8CBF55A31E7F7EDF00F4B1CD /* EatellyAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EatellyAppUITests.swift; sourceTree = "<group>"; };
 		8CBF55A51E7F7EDF00F4B1CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8CBF55B11E80C72200F4B1CD /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodieFileObject.swift; sourceTree = "<group>"; };
 		8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrecisionTime.swift; sourceTree = "<group>"; };
 		8CE0DE1A1F89B12700F258E5 /* TransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionAnimator.swift; sourceTree = "<group>"; };
 		8CE0DE1B1F89B12700F258E5 /* PercentInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PercentInteractor.swift; sourceTree = "<group>"; };
@@ -291,7 +291,7 @@
 				8C5C4DDD1EFEEDEC008C83EC /* FoodiePrefetch.swift */,
 				8C89867D1E958B4300B62306 /* FoodieObject.swift */,
 				8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */,
-				8C1C71F31ECD7A4B00D2E4F8 /* FoodieFileManager.swift */,
+				8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */,
 				8C8986711E91982E00B62306 /* FoodieStory.swift */,
 				8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */,
 				8C89866F1E91981C00B62306 /* FoodieMarkup.swift */,
@@ -862,7 +862,6 @@
 				8C1ED6EF1F5D15A300A8CC94 /* CameraButtonLayer.swift in Sources */,
 				8C1089331EADC13700457E66 /* MomentFooterReusableView.swift in Sources */,
 				8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */,
-				8C1C71F41ECD7A4B00D2E4F8 /* FoodieFileManager.swift in Sources */,
 				8C1D4E241EDCECCD00939B2C /* FeedCollectionViewCell.swift in Sources */,
 				8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */,
 				8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */,
@@ -871,6 +870,7 @@
 				8C10FB4E1F91C43200C26BF6 /* AVExportPlayer.swift in Sources */,
 				8C8986761E91A72D00B62306 /* FoodieCategory.swift in Sources */,
 				8C1FF1351F7DA1760062312C /* FoodieRole.swift in Sources */,
+				8CC1101A1F92D07000ACBF9A /* FoodieFileObject.swift in Sources */,
 				8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */,
 				8C900D311F5FAAC30058BDFE /* PassthruStackView.swift in Sources */,
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,

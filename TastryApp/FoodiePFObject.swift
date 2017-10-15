@@ -19,13 +19,14 @@ class FoodiePFObject: PFObject {
     static let ParseRetryDelaySeconds: Double = 0.5
   }
   
+  
   // MARK: - Public Instance Variables
   var foodieObject: FoodieObject!
   
   
   
   // MARK: - Public Static Functions
-  static func configure() {
+  static func pfConfigure() {
     Parse.enableLocalDatastore()
     
     let configuration = ParseClientConfiguration {

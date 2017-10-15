@@ -81,7 +81,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Public Static Functions
   static func getFromFoursquare(withBlock callback: CategoriesErrorBlock?) {
-    let session = FoodieGlobal.foursquareSession
+    let session = FoodieVenue.foursquareSession
     
     let categoriesRetry = SwiftRetry()
     categoriesRetry.start("get Categories from Foursquare", withCountOf: Constants.FoursquareSearchRetryCount) {

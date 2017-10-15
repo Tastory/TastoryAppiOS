@@ -159,7 +159,7 @@ class FoodieObject {
   
   static func deleteAll(from localType: LocalType, withBlock callback: SimpleErrorBlock?) {
     FoodiePFObject.deleteAll(from: localType) { error in
-      FoodieS3Object.deleteAll(from: localType, withBlock: callback)
+      FoodieFileObject.deleteAll(from: localType, withBlock: callback)
     }
   }
   

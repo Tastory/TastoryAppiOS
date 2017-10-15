@@ -183,7 +183,7 @@ class FoodieUser: PFUser {
   
   // MARK: - Public Static Functions
   
-  static func configure(enableAutoUser: Bool) {
+  static func userConfigure(enableAutoUser: Bool) {
 
     FoodieUser.registerSubclass()
     

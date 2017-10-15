@@ -68,10 +68,10 @@ class FoodieVenue: FoodiePFObject  {
   }
   
   
-  
   // MARK: - Error Types Definition
   enum ErrorCode: LocalizedError {
     
+    case startupFoursquareCategoryError
     case searchFoursquareBothNearAndLocation
     case foursquareFallthrough
     case foursquareHttpStatusFailed
@@ -81,6 +81,8 @@ class FoodieVenue: FoodiePFObject  {
     
     var errorDescription: String? {
       switch self {
+      case .startupFoursquareCategoryError:
+        return NSLocalizedString("Error acquiring Foursquare Categories on startup", comment: "Error description for an exception error code")
       case .searchFoursquareBothNearAndLocation:
         return NSLocalizedString("Both near & location nil or both not nil in Foursquare search common", comment: "Error description for an exception error code")
       case .foursquareFallthrough:
@@ -103,7 +105,6 @@ class FoodieVenue: FoodiePFObject  {
   }
   
   
-  
   // MARK: - Private Constants
   private struct Constants {
     static let FoursquareSearchResultsLimit = 20  // 20 Venues at a time is more than enough?
@@ -114,8 +115,29 @@ class FoodieVenue: FoodiePFObject  {
   }
   
   
+  // MARK: - Private Static Variable
+  private static let FoursquareClientID = "MIDYZC42VW5QCNEYMXZKH1XGEN4NMVRKZRX40SAPRDN3OQHM"
+  private static let FoursquareClientSecret = "2UUA4PGJC5YTMQEUYUISWABLKJA50EUMO51WNVZQXJY1KGWO"
+  private static let foursquareClient = Client(clientID: FoursquareClientID, clientSecret: FoursquareClientSecret, redirectURL: "")
+  private static let foursquareConfiguration = Configuration(client: foursquareClient)
+  private static var foursquareInitialized = false
+  
+  
+  // MARK: - Public Static Variable
+  static var foursquareSession: Session { return Session.sharedSession() }
+  
   
   // MARK: - Public Static Functions
+  static func venueConfigure() {
+    if !foursquareInitialized {
+      let foursquareSessionQueue = OperationQueue()
+      foursquareSessionQueue.qualityOfService = .userInitiated
+      Session.setupSharedSessionWithConfiguration(foursquareConfiguration, completionQueue: foursquareSessionQueue)
+      foursquareInitialized = true
+    }
+    FoodieCategory.getFromFoursquare(withBlock: nil)  // Let the fetch happen in the background
+  }
+  
   static func searchFoursquare(for venueName: String, near location: String, withBlock callback: VenueArrayErrorBlock?) {
     searchFoursquareCommon(for: venueName, near: location, withBlock: callback)
   }
@@ -163,7 +185,7 @@ class FoodieVenue: FoodiePFObject  {
       CCLog.assert("Either both Near & Location are nil, or both are not-nil. This is theoretically impossible.")
     }
     
-    let session = FoodieGlobal.foursquareSession
+    let session = foursquareSession
     var parameters = [Parameter.query:venueName]
     parameters += [Parameter.limit: String(Constants.FoursquareSearchResultsLimit)]
     parameters += [Parameter.intent:"checkin"]
@@ -359,7 +381,7 @@ class FoodieVenue: FoodiePFObject  {
   
   private static func getDetailsFromFoursquareCommon(for venue: FoodieVenue?, with venueID: String, withBlock callback: VenueErrorBlock?) {
     
-    let session = FoodieGlobal.foursquareSession
+    let session = foursquareSession
     let getDetailsRetry = SwiftRetry()
     getDetailsRetry.start("get details from Foursquare for \(venueID)", withCountOf: Constants.FoursquareGetDetailsRetryCount) {
       // Perform Foursquare Venue Details get with async response handling in block
@@ -515,7 +537,7 @@ class FoodieVenue: FoodiePFObject  {
   
   private static func getHoursFromFoursquareCommon(for venue: FoodieVenue?, with venueID: String, withBlock callback: HoursErrorBlock?) {
     
-    let session = FoodieGlobal.foursquareSession
+    let session = foursquareSession
     let getHoursRetry = SwiftRetry()
     getHoursRetry.start("get details from Foursquare for \(venueID)", withCountOf: Constants.FoursquareGetDetailsRetryCount) {
       // Perform Foursquare Venue Details get with async response handling in block
