@@ -58,12 +58,13 @@ class AVExportPlayer: NSObject {
   
   // MARK: - Private Instance Variable
   private var avURLAsset: AVURLAsset?
-  private var avExportSession: AVAssetExportSession?
+  
   private var periodicObserver: Any?
   
   
   // MARK: - Public Instance Variable
   @objc private(set) var avPlayer: AVPlayer?
+  private(set) var avExportSession: AVAssetExportSession?
   private(set) var avExportContext = 0
   
   var delegate: AVPlayAndExportDelegate? {
@@ -227,6 +228,8 @@ class AVExportPlayer: NSObject {
           }
           
         case .cancelled:
+          self.avExportSession = nil
+          self.avPlayer = nil
           callback?(ErrorCode.exportAsyncCancelled)
         }
       }
@@ -234,11 +237,16 @@ class AVExportPlayer: NSObject {
   }
   
   
+  // Caller should always nil their reference to the avExportPlayer so they know there's no buffer
   func cancelExport() {
-    guard let avExportSession = avExportSession else {
-      CCLog.fatal("No avExportSession to cancel on")
+    if let avExportSession = avExportSession {
+      guard let avPlayer = avPlayer else {
+        CCLog.fatal("No avPlayer to cancel on")
+      }
+      
+      avExportSession.cancelExport()
+      avPlayer.pause()
     }
-    avExportSession.cancelExport()
   }
     
     

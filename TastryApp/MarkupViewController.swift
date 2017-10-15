@@ -371,20 +371,27 @@ class MarkupViewController: TransitableViewController {
       UIKit.UIAlertAction(title: "Discard",
                           comment: "Button to discard current Story in alert dialog box to warn user",
                           style: .destructive) { action in
-                            
-      // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
-      FoodieObject.deleteAll(from: .draft) { error in
-        if let error = error {
-          CCLog.warning("Deleting All Drafts resulted in Error - \(error.localizedDescription)")
-        }
-        
-        // Delete all traces of this unPosted Story
+            
+        story.cancelSaveToServerRecursive()
         story.deleteRecursive(from: .both, type: .draft) { error in
           if let error = error {
             CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
           }
         }
-      }
+                            
+//      // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
+//      FoodieObject.deleteAll(from: .draft) { error in
+//        if let error = error {
+//          CCLog.warning("Deleting All Drafts resulted in Error - \(error.localizedDescription)")
+//        }
+//
+//        // Delete all traces of this unPosted Story
+//        story.deleteRecursive(from: .both, type: .draft) { error in
+//          if let error = error {
+//            CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
+//          }
+//        }
+//      }
       
       FoodieStory.removeCurrent()
       

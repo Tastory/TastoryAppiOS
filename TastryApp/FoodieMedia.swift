@@ -210,6 +210,7 @@ extension FoodieMedia: FoodieObjectDelegate {
           self.videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getFileURL(for: localType, with: fileName))
           callback?(nil)
         } else {
+          self.videoExportPlayer = nil
           callback?(ErrorCode.retrieveFileDoesNotExist)
         }
       }
@@ -256,10 +257,12 @@ extension FoodieMedia: FoodieObjectDelegate {
         videoExportPlayer!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName)) { error in
           if let error = error {
             CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
+            self.videoExportPlayer = nil
             callback?(error)
           } else if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
             callback?(nil)
           } else {
+            self.videoExportPlayer = nil
             callback?(ErrorCode.retrieveFileDoesNotExist)
           }
         }
@@ -307,10 +310,12 @@ extension FoodieMedia: FoodieObjectDelegate {
       videoExportPlayer!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName)) { error in
         if let error = error {
           CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
+          self.videoExportPlayer = nil
           callback?(error)
         } else if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
           callback?(nil)
         } else {
+          self.videoExportPlayer = nil
           callback?(ErrorCode.retrieveFileDoesNotExist)
         }
       }
@@ -433,6 +438,9 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   func cancelRetrieveFromServerRecursive() {
     cancelRetrieveFromServer()
+    if let videoExportPlayer = videoExportPlayer {
+      videoExportPlayer.cancelExport()
+    }
   }
   
   

@@ -264,6 +264,7 @@ class StoryViewController: TransitableViewController {
       guard let videoExportPlayer = mediaObject.videoExportPlayer, let avPlayer = videoExportPlayer.avPlayer else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
           CCLog.assert("MediaObject.videoExportPlayer == nil")
+          self.dismiss(animated: true, completion: nil)
         }
         return
       }
@@ -311,12 +312,14 @@ class StoryViewController: TransitableViewController {
         guard let dataType = markup.dataType else {
           displayErrorDialog()
           CCLog.assert("Unexpected markup.dataType = nil")
+          self.dismiss(animated: true, completion: nil)
           return
         }
         
         guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
           displayErrorDialog()
           CCLog.assert("markup.dataType did not actually translate into valid type")
+          self.dismiss(animated: true, completion: nil)
           return
         }
         
@@ -326,6 +329,7 @@ class StoryViewController: TransitableViewController {
           guard let labelData = markup.data else {
             displayErrorDialog()
             CCLog.assert("Unexpected markup.data = nil when dataType == .jotLabel")
+            self.dismiss(animated: true, completion: nil)
             return
           }
           
@@ -339,6 +343,7 @@ class StoryViewController: TransitableViewController {
           guard let drawViewDictionary = markup.data else {
             displayErrorDialog()
             CCLog.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
+            self.dismiss(animated: true, completion: nil)
             return
           }
           

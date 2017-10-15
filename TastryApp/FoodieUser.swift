@@ -184,7 +184,6 @@ class FoodieUser: PFUser {
   // MARK: - Public Static Functions
   
   static func userConfigure(enableAutoUser: Bool) {
-
     FoodieUser.registerSubclass()
     
     if enableAutoUser {
@@ -217,12 +216,13 @@ class FoodieUser: PFUser {
   static func logOutAndDeleteDraft(withBlock callback: SimpleErrorBlock?) {
     
     if let story = FoodieStory.currentStory {
-      // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
-      FoodieObject.deleteAll(from: .draft) { error in
-        if let error = error {
-          CCLog.warning("Deleting All Drafts resulted in Error - \(error.localizedDescription)")
-        }
-        
+//      // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
+//      FoodieObject.deleteAll(from: .draft) { error in
+//        if let error = error {
+//          CCLog.warning("Deleting All Drafts resulted in Error - \(error.localizedDescription)")
+//        }
+      
+        story.cancelSaveToServerRecursive()
         story.deleteRecursive(from: .both, type: .draft) { error in
           if let error = error {
             CCLog.warning("Problem deleting Draft from Both - \(error.localizedDescription)")
@@ -231,7 +231,7 @@ class FoodieUser: PFUser {
           FoodiePermission.setDefaultGlobalObjectPermission()
           PFUser.logOutInBackground(block: callback)
         }
-      }
+//      }
     } else {
       FoodiePermission.setDefaultGlobalObjectPermission()
       PFUser.logOutInBackground(block: callback)

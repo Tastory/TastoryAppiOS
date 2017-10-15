@@ -468,41 +468,47 @@ class FoodieFileObject {
       case .awsS3FileDoesntExistError:
         CCLog.debug("File \(fileName) does not exist on S3. Saving from \(localType)")
         
-        guard let uploadRequest = AWSS3TransferManagerUploadRequest() else {
-          DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
-            CCLog.assert("AWSS3TransferManagerUploadRequest() returned nil")
-            callback?(FileErrorCode.awsS3TransferManagerUploadRequestNil)
-          }
-          return
-        }
-        
         let saveRetry = SwiftRetry()
         saveRetry.start("save file '\(fileName)' to S3", withCountOf: Constants.AwsRetryCount) { [unowned self] in
+          
+          guard let uploadRequest = AWSS3TransferManagerUploadRequest() else {
+            DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+              CCLog.assert("AWSS3TransferManagerUploadRequest() returned nil")
+              callback?(FileErrorCode.awsS3TransferManagerUploadRequestNil)
+            }
+            return
+          }
           
           uploadRequest.bucket = Constants.S3BucketKey
           uploadRequest.key = fileName
           uploadRequest.body = FoodieFileObject.getFileURL(for: localType, with: fileName)
           self.uploadRequest = uploadRequest
         
-          AWSS3TransferManager.default().upload(uploadRequest).continueWith(executor: AWSExecutor.mainThread()) { (task:AWSTask<AnyObject>) -> Any? in
+          AWSS3TransferManager.default().upload(uploadRequest).continueWith(executor: AWSExecutor.mainThread()) { task in
             
             if let error = task.error as NSError? {
               if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
                 switch code {
+                  
                 case .cancelled:
                   CCLog.debug("S3 upload for \(fileName) cancelled")
+                  self.uploadRequest = nil
                   callback?(FileErrorCode.awsS3TransferUploadCancelled)
+                  
                 case .paused:
                   CCLog.fatal("S3 upload for \(fileName) paused. Pause is not currently supported")
+                  
                 default:
                   CCLog.warning("S3 upload for \(fileName) resulted in Error - \(error)")
                   if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
+                    self.uploadRequest = nil
                     callback?(FileErrorCode.awsS3TransferUploadUnknownError)
                   }
                 }
               } else {
                 CCLog.warning("S3 upload for \(fileName) resulted in Error - \(error)")
                 if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
+                  self.uploadRequest = nil
                   callback?(FileErrorCode.awsS3TransferUploadUnknownError)
                 }
               }
@@ -510,6 +516,7 @@ class FoodieFileObject {
             }
             // TODO: might be useful to store in parse for tracking the version
             CCLog.debug("AWS S3 Transfer Upload completed for \(fileName)")
+            self.uploadRequest = nil
             callback?(nil)
             return nil
           }
@@ -518,6 +525,7 @@ class FoodieFileObject {
         
       default:
         CCLog.warning("CheckIfFileExists on S3 for Save returned error - \(error.localizedDescription)")
+        self.uploadRequest = nil
         callback?(error)
         return
       }
@@ -611,18 +619,18 @@ class FoodieFileObject {
   
   func cancelRetrieveFromServer() {
     if let downloadTask = downloadTask {
+      // TODO: - If the Cancel comes in between Retry, it's gonna end bad.
+      // Maybe the right way to do this is to loop the cancel until it's sure it's one that's in progress
       downloadTask.cancel()  // Giving up Resume Data for now
-    } else {
-      CCLog.assert("Cancelling Retrieve when Download Task = nil")
     }
   }
   
   
   func cancelSaveToServer() {
     if let uploadRequest = uploadRequest {
+      // TODO: - If the Cancel comes in between Retry, it's gonna end bad.
+      // Maybe the right way to do this is to loop the cancel until it's sure it's one that's in progress
       uploadRequest.cancel()  // Giving up Resume Data for now
-    } else {
-      CCLog.assert("Cancelling Save when Upload Request = nil")
     }
   }
   
