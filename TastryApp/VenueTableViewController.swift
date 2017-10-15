@@ -116,8 +116,7 @@ class VenueTableViewController: TransitableViewController {
   // MARK - Public Instance Functions
   // Working along with venueSearchComplete(), this call is Thread Safe
   @objc func fullVenueSearch() {
-    DispatchQueue.global(qos: .userInitiated).async {
-      
+    DispatchQueue.main.async {
       // In general, don't have mutexes locking the main thread please
       SwiftMutex.lock(&self.searchMutex)
       guard !self.isVenueSearchUnderWay else {

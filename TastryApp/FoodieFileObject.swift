@@ -232,6 +232,12 @@ class FoodieFileObject {
   }
   
   
+  static func cancelAll() {
+    AWSS3TransferManager.default().cancelAll()
+  }
+  
+  
+  
   // MARK: - Private Instance Functions
   private func retrieveFromCloudfront(to localType: FoodieObject.LocalType, withBlock callback: SimpleErrorBlock?) {
     guard let fileName = foodieFileName else {
@@ -242,7 +248,7 @@ class FoodieFileObject {
     let serverFileURL = Constants.CloudFrontUrl.appendingPathComponent(fileName)
     
     let retrieveRetry = SwiftRetry()
-    retrieveRetry.start("retrieve file '\(fileName)' from CloudFront", withCountOf: Constants.AwsRetryCount) {
+    retrieveRetry.start("retrieve file '\(fileName)' from CloudFront", withCountOf: Constants.AwsRetryCount) { [unowned self] in
       CCLog.verbose("Retrieving from \(serverFileURL.absoluteString) for downloading \(fileName)")
       
       // Let's time the download!
@@ -470,13 +476,14 @@ class FoodieFileObject {
           return
         }
         
-        uploadRequest.bucket = Constants.S3BucketKey
-        uploadRequest.key = fileName
-        uploadRequest.body = FoodieFileObject.getFileURL(for: localType, with: fileName)
-        self.uploadRequest = uploadRequest
-        
         let saveRetry = SwiftRetry()
-        saveRetry.start("save file '\(fileName)' to S3", withCountOf: Constants.AwsRetryCount) {
+        saveRetry.start("save file '\(fileName)' to S3", withCountOf: Constants.AwsRetryCount) { [unowned self] in
+          
+          uploadRequest.bucket = Constants.S3BucketKey
+          uploadRequest.key = fileName
+          uploadRequest.body = FoodieFileObject.getFileURL(for: localType, with: fileName)
+          self.uploadRequest = uploadRequest
+        
           AWSS3TransferManager.default().upload(uploadRequest).continueWith(executor: AWSExecutor.mainThread()) { (task:AWSTask<AnyObject>) -> Any? in
             
             if let error = task.error as NSError? {
@@ -598,6 +605,24 @@ class FoodieFileObject {
           callback?(serverError ?? cacheError ?? draftError)
         }
       }
+    }
+  }
+  
+  
+  func cancelRetrieveFromServer() {
+    if let downloadTask = downloadTask {
+      downloadTask.cancel()  // Giving up Resume Data for now
+    } else {
+      CCLog.assert("Cancelling Retrieve when Download Task = nil")
+    }
+  }
+  
+  
+  func cancelSaveToServer() {
+    if let uploadRequest = uploadRequest {
+      uploadRequest.cancel()  // Giving up Resume Data for now
+    } else {
+      CCLog.assert("Cancelling Save when Upload Request = nil")
     }
   }
   

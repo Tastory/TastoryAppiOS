@@ -54,6 +54,11 @@ class FoodiePFObject: PFObject {
   }
   
   
+  static func cancelAll() {
+    // Nothing to Cancel for PFObjects. Return
+    return
+  }
+  
   
   // MARK: - Public Instance Functions
   
@@ -129,7 +134,7 @@ class FoodiePFObject: PFObject {
     else if forceAnyways {
       CCLog.debug("Forced to fetch \(delegate.foodieObjectType())(\(getUniqueIdentifier())) In Background")
       
-      fetchRetry.start("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) {
+      fetchRetry.start("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) { [unowned self] in
         self.fetchInBackground() { object, error in  // This fetch only comes from Server
           if let error = error {
             CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) with error: \(error.localizedDescription)")
@@ -171,7 +176,7 @@ class FoodiePFObject: PFObject {
       CCLog.debug("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) In Background")
       
       
-      fetchRetry.start("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) {
+      fetchRetry.start("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) { [unowned self] in
         self.fetchIfNeededInBackground { serverObject, serverError in
           if let error = serverError {
             CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())), with error: \(error.localizedDescription)")
@@ -217,7 +222,8 @@ class FoodiePFObject: PFObject {
       CCLog.debug("Save \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) in background")
       
       let saveRetry = SwiftRetry()
-      saveRetry.start("Save \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) {
+      saveRetry.start("Save \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) { [unowned self] in
+        
         self.saveInBackground { success, error in
           if !success || error != nil {
             if saveRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
@@ -249,7 +255,7 @@ class FoodiePFObject: PFObject {
     CCLog.debug("Delete \(delegate.foodieObjectType())(\(getUniqueIdentifier())) in Background")
     
     let deleteRetry = SwiftRetry()
-    deleteRetry.start("Delete \(delegate.foodieObjectType())(\(getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) {
+    deleteRetry.start("Delete \(delegate.foodieObjectType())(\(getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) { [unowned self] in
       
       self.deleteInBackground { success, error in
         if !success || error != nil {

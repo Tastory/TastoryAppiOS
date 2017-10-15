@@ -404,7 +404,7 @@ class FoodieQuery {
     
     // Do the actual search!
     let queryRetry = SwiftRetry()
-    queryRetry.start("query and search for Story", withCountOf: Constants.QueryRetryCount) {
+    queryRetry.start("query and search for Story", withCountOf: Constants.QueryRetryCount) { [unowned self] in
       self.pfQuery!.findObjectsInBackground { (objects, error) in
         if let stories = objects as? [FoodieStory] {
           callback?(stories, error)
@@ -430,7 +430,7 @@ class FoodieQuery {
     
     // Do the actual search!
     let queryRetry = SwiftRetry()
-    queryRetry.start("query and search for Venue", withCountOf: Constants.QueryRetryCount) {
+    queryRetry.start("query and search for Venue", withCountOf: Constants.QueryRetryCount) { [unowned self] in
       self.pfQuery!.findObjectsInBackground { (objects, error) in
         if let stories = objects as? [FoodieVenue] {
           callback?(stories, error)

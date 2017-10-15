@@ -431,6 +431,16 @@ extension FoodieMedia: FoodieObjectDelegate {
   }
   
   
+  func cancelRetrieveFromServerRecursive() {
+    cancelRetrieveFromServer()
+  }
+  
+  
+  func cancelSaveToServerRecursive() {
+    cancelSaveToServer()
+  }
+  
+  
   func foodieObjectType() -> String {
     return "FoodieMedia"
   }

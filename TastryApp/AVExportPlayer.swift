@@ -155,7 +155,7 @@ class AVExportPlayer: NSObject {
     let playURL = avURLAsset.url
     
     let exportRetry = SwiftRetry()
-    exportRetry.start("AVExport Sync to \(playURL.lastPathComponent)", withCountOf: Constants.ExportRetryCount) {
+    exportRetry.start("AVExport Sync to \(playURL.lastPathComponent)", withCountOf: Constants.ExportRetryCount) { [unowned self] in
 
       guard let avAssetExportSession = AVAssetExportSession(asset: avURLAsset, presetName: preset) else {
         CCLog.fatal("Unable to create AVAssetExportSession with URL: \(playURL) and Preset: \(preset)")

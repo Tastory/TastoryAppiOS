@@ -871,7 +871,7 @@ extension MapViewController: CameraReturnDelegate {
       viewController.workingStory = workingStory!
       viewController.returnedMoments = markedupMoments
       
-      self.dismiss(animated: true) { /*[unowned self] in*/
+      self.dismiss(animated: true) {
         viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
         self.present(viewController, animated: true)
       }

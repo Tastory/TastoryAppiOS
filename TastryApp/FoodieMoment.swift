@@ -425,6 +425,40 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
+  func cancelRetrieveFromServerRecursive() {
+    if let media = mediaObj {
+      media.cancelRetrieveFromServerRecursive()
+    }
+    
+    if let markups = markups {
+      for markup in markups {
+        markup.cancelRetrieveFromServerRecursive()
+      }
+    }
+    
+    if let thumbnail = thumbnailObj {
+      thumbnail.cancelRetrieveFromServerRecursive()
+    }
+  }
+  
+  
+  func cancelSaveToServerRecursive() {
+    if let media = mediaObj {
+      media.cancelSaveToServerRecursive()
+    }
+    
+    if let markups = markups {
+      for markup in markups {
+        markup.cancelSaveToServerRecursive()
+      }
+    }
+    
+    if let thumbnail = thumbnailObj {
+      thumbnail.cancelSaveToServerRecursive()
+    }
+  }
+  
+  
   func foodieObjectType() -> String {
     return "FoodieMoment"
   }

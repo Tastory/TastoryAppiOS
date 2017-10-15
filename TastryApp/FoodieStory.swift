@@ -708,6 +708,59 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
+  func cancelRetrieveFromServerRecursive() {
+    // Retrieve the Story (only) to guarentee access to the childrens
+    retrieveFromLocalThenServer(forceAnyways: false, type: .cache) { error in
+      if let error = error {
+        CCLog.assert("Story.retrieve() resulted in error: \(error.localizedDescription)")
+        return
+      }
+      
+      guard let thumbnail = self.thumbnailObj else {
+        CCLog.assert("Unexpected Story.retrieve() resulted in self.thumbnailObj = nil")
+        return
+      }
+
+      thumbnail.cancelRetrieveFromServerRecursive()
+      
+      if let moments = self.moments {
+        for moment in moments {
+          moment.cancelRetrieveFromServerRecursive()
+        }
+      }
+      
+      if let markups = self.markups {
+        for markup in markups {
+          markup.cancelRetrieveFromServerRecursive()
+        }
+      }
+      
+      if let venue = self.venue {
+        venue.cancelRetrieveFromServerRecursive()
+      }
+    }
+  }
+  
+  
+  func cancelSaveToServerRecursive() {
+    if let moments = moments {
+      for moment in moments {
+        moment.cancelSaveToServerRecursive()
+      }
+    }
+    
+    if let markups = markups {
+      for markup in markups {
+        markup.cancelSaveToServerRecursive()
+      }
+    }
+    
+    if let venue = venue {
+      venue.cancelSaveToServerRecursive()
+    }
+  }
+  
+  
   func foodieObjectType() -> String {
     return "FoodieStory"
   }

@@ -738,6 +738,18 @@ extension FoodieVenue: FoodieObjectDelegate {
   }
   
   
+  func cancelRetrieveFromServerRecursive() {
+    // At this point, nothing can be cancelled for Markups
+    return
+  }
+  
+  
+  func cancelSaveToServerRecursive() {
+    // At this point, nothing can be cancelled for Markups
+    return
+  }
+  
+  
   func foodieObjectType() -> String {
     return "FoodieVenue"
   }

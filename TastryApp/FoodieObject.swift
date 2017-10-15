@@ -23,6 +23,8 @@ protocol FoodieObjectDelegate: class {
   static func deleteAll(from localType: FoodieObject.LocalType,
                         withBlock callback: SimpleErrorBlock?)
   
+  static func cancelAll()
+  
   func retrieve(from localType: FoodieObject.LocalType,
                 forceAnyways: Bool,
                 withBlock callback: SimpleErrorBlock?)
@@ -57,6 +59,9 @@ protocol FoodieObjectDelegate: class {
                        type localType: FoodieObject.LocalType,
                        withBlock callback: SimpleErrorBlock?)
   
+  func cancelRetrieveFromServerRecursive()
+  
+  func cancelSaveToServerRecursive()
   
   func getUniqueIdentifier() -> String
   
