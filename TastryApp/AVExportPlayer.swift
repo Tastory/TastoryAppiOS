@@ -240,6 +240,7 @@ class AVExportPlayer: NSObject {
   // Caller should always nil their reference to the avExportPlayer so they know there's no buffer
   func cancelExport() {
     if let avExportSession = avExportSession {
+      CCLog.debug("AVExportPlayer.cancelExport")
       guard let avPlayer = avPlayer else {
         CCLog.fatal("No avPlayer to cancel on")
       }

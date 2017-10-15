@@ -426,6 +426,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   func cancelRetrieveFromServerRecursive() {
+    
+    CCLog.verbose("Cancel Retrieve Recursive for Moment \(getUniqueIdentifier())")
+    
     if let media = mediaObj {
       media.cancelRetrieveFromServerRecursive()
     }
@@ -443,6 +446,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   func cancelSaveToServerRecursive() {
+    
+    CCLog.verbose("Cancel Save Recursive for Moment \(getUniqueIdentifier())")
+    
     if let media = mediaObj {
       media.cancelSaveToServerRecursive()
     }

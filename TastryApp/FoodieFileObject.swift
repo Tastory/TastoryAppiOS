@@ -621,6 +621,7 @@ class FoodieFileObject {
     if let downloadTask = downloadTask {
       // TODO: - If the Cancel comes in between Retry, it's gonna end bad.
       // Maybe the right way to do this is to loop the cancel until it's sure it's one that's in progress
+      CCLog.debug("Download Task Cancel")
       downloadTask.cancel()  // Giving up Resume Data for now
     }
   }
@@ -630,6 +631,7 @@ class FoodieFileObject {
     if let uploadRequest = uploadRequest {
       // TODO: - If the Cancel comes in between Retry, it's gonna end bad.
       // Maybe the right way to do this is to loop the cancel until it's sure it's one that's in progress
+      CCLog.debug("Upload Request Cancel")
       uploadRequest.cancel()  // Giving up Resume Data for now
     }
   }

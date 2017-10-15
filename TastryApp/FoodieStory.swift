@@ -709,6 +709,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   
   func cancelRetrieveFromServerRecursive() {
+    
+    CCLog.verbose("Cancel Retreive Recursive for Story \(getUniqueIdentifier())")
+    
     // Retrieve the Story (only) to guarentee access to the childrens
     retrieveFromLocalThenServer(forceAnyways: false, type: .cache) { error in
       if let error = error {
@@ -743,6 +746,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   
   func cancelSaveToServerRecursive() {
+    
+    CCLog.verbose("Cancel Save Recursive for Story \(getUniqueIdentifier())")
+    
     if let moments = moments {
       for moment in moments {
         moment.cancelSaveToServerRecursive()
