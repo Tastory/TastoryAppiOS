@@ -190,8 +190,7 @@ class FoodieFileObject {
     objRequest.bucket = Constants.S3BucketKey
     objRequest.key = fileName
     
-    let task = AWSS3.default().headObject(objRequest)
-    task.continueWith() { (task:AWSTask<AWSS3HeadObjectOutput>) -> Any? in
+    AWSS3.default().headObject(objRequest).continueWith() { task in
       if let error = task.error as NSError? {
         if error.domain == AWSS3ErrorDomain { // Can't nail down what the error code is really enumerated to.... , error.code == AWSS3ErrorType.noSuchKey || error.code == AWSS3ErrorType.unknown {
           callback?(FileErrorCode.awsS3FileDoesntExistError)
@@ -392,11 +391,11 @@ class FoodieFileObject {
       CCLog.fatal("FoodieFileObject has no foodieFileName")
     }
     
-    // Check if the file already exist. If so just assume it's the right file
-    if !FoodieFileObject.checkIfExists(for: fileName, in: localType) {
-      CCLog.debug("Save Buffer as \(fileName) to \(localType)")
-      
-      DispatchQueue.global(qos: .userInitiated).async {  // Make this an async call as the callback is expected to be not on the main thread
+    DispatchQueue.global(qos: .userInitiated).async {  // Make this an async call as the callback is expected to be not on the main thread
+      // Check if the file already exist. If so just assume it's the right file
+      if !FoodieFileObject.checkIfExists(for: fileName, in: localType) {
+        CCLog.debug("Save Buffer as \(fileName) to \(localType)")
+        
         do {
           try buffer.write(to: FoodieFileObject.getFileURL(for: localType, with: fileName))
         } catch {
@@ -406,9 +405,7 @@ class FoodieFileObject {
         }
         // Save to Local completed successfully!!
         callback?(nil)
-      }
-    } else {
-      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+      } else {
         CCLog.debug("File \(fileName) already exist. Skipping Save")
         callback?(nil)
       }
@@ -421,18 +418,18 @@ class FoodieFileObject {
       CCLog.fatal("FoodieFileObject has no foodieFileName")
     }
     
+    DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
     // Check if the file already exist. If so just assume it's the right file
-    if !FoodieFileObject.checkIfExists(for: fileName, in: localType) {
-      CCLog.debug("Copy to \(localType) as \(fileName) from \(url.absoluteString)")
-      
-      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+      if !FoodieFileObject.checkIfExists(for: fileName, in: localType) {
+        CCLog.debug("Copy to \(localType) as \(fileName) from \(url.absoluteString)")
+        
         do {
           try FileManager.default.copyItem(at: url, to: FoodieFileObject.getFileURL(for: localType, with: fileName))
           
-          // This is a little hacky.... Delete file after copy to Draft, assuming that the file was in Tmp
-          if localType == .draft {
-            try FileManager.default.removeItem(at: url)
-          }
+//          // This is a little hacky.... Delete file after copy to Draft, assuming that the file was in Tmp
+//          if localType == .draft {
+//            try FileManager.default.removeItem(at: url)
+//          }
         } catch {
           CCLog.assert("Failed to copy from \(url.absoluteString) to \(localType) as \(fileName)")
           callback?(FileErrorCode.fileManagerCopyItemLocalFailed)
@@ -440,10 +437,7 @@ class FoodieFileObject {
         }
         // Copy local completed successfully!!
         callback?(nil)
-      }
-      
-    } else {
-      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+      } else {
         CCLog.debug("File \(fileName) already exist. Skipping Copy")
         callback?(nil)
       }
@@ -457,68 +451,68 @@ class FoodieFileObject {
     }
     
     FoodieFileObject.checkIfExistsInS3(for: fileName) { error in
-      if let error = error as? FoodieFileObject.FileErrorCode {
+      
+      guard let error = error as? FoodieFileObject.FileErrorCode else {
+        CCLog.debug("File \(fileName) already exists on S3. Skipping Save")
+        callback?(nil)  // So the File exists. Assume already good and saved otherwise
+        return
+      }
+
+      switch error {
+      case .awsS3FileDoesntExistError:
+        CCLog.debug("File \(fileName) does not exist on S3. Saving from \(localType)")
         
-        switch error {
-        case .awsS3FileDoesntExistError:
-          CCLog.debug("File \(fileName) does not exist on S3. Saving from \(localType)")
-          
-          guard let uploadRequest = AWSS3TransferManagerUploadRequest() else {
-            DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
-              CCLog.assert("AWSS3TransferManagerUploadRequest() returned nil")
-              callback?(FileErrorCode.awsS3TransferManagerUploadRequestNil)
-            }
-            return
+        guard let uploadRequest = AWSS3TransferManagerUploadRequest() else {
+          DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+            CCLog.assert("AWSS3TransferManagerUploadRequest() returned nil")
+            callback?(FileErrorCode.awsS3TransferManagerUploadRequestNil)
           }
-          
-          uploadRequest.bucket = Constants.S3BucketKey
-          uploadRequest.key = fileName
-          uploadRequest.body = FoodieFileObject.getFileURL(for: localType, with: fileName)
-          self.uploadRequest = uploadRequest
-          
-          let saveRetry = SwiftRetry()
-          saveRetry.start("save file '\(fileName)' to S3", withCountOf: Constants.AwsRetryCount) {
-            AWSS3TransferManager.default().upload(uploadRequest).continueWith(executor: AWSExecutor.mainThread()) { (task:AWSTask<AnyObject>) -> Any? in
-              
-              if let error = task.error as NSError? {
-                if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
-                  switch code {
-                  case .cancelled:
-                    CCLog.debug("S3 upload for \(fileName) cancelled")
-                    callback?(FileErrorCode.awsS3TransferUploadCancelled)
-                  case .paused:
-                    CCLog.fatal("S3 upload for \(fileName) paused. Pause is not currently supported")
-                  default:
-                    CCLog.warning("S3 upload for \(fileName) resulted in Error - \(error)")
-                    if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
-                      callback?(FileErrorCode.awsS3TransferUploadUnknownError)
-                    }
-                  }
-                } else {
+          return
+        }
+        
+        uploadRequest.bucket = Constants.S3BucketKey
+        uploadRequest.key = fileName
+        uploadRequest.body = FoodieFileObject.getFileURL(for: localType, with: fileName)
+        self.uploadRequest = uploadRequest
+        
+        let saveRetry = SwiftRetry()
+        saveRetry.start("save file '\(fileName)' to S3", withCountOf: Constants.AwsRetryCount) {
+          AWSS3TransferManager.default().upload(uploadRequest).continueWith(executor: AWSExecutor.mainThread()) { (task:AWSTask<AnyObject>) -> Any? in
+            
+            if let error = task.error as NSError? {
+              if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
+                switch code {
+                case .cancelled:
+                  CCLog.debug("S3 upload for \(fileName) cancelled")
+                  callback?(FileErrorCode.awsS3TransferUploadCancelled)
+                case .paused:
+                  CCLog.fatal("S3 upload for \(fileName) paused. Pause is not currently supported")
+                default:
                   CCLog.warning("S3 upload for \(fileName) resulted in Error - \(error)")
                   if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
                     callback?(FileErrorCode.awsS3TransferUploadUnknownError)
                   }
                 }
-                return nil
+              } else {
+                CCLog.warning("S3 upload for \(fileName) resulted in Error - \(error)")
+                if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
+                  callback?(FileErrorCode.awsS3TransferUploadUnknownError)
+                }
               }
-              // TODO: might be useful to store in parse for tracking the version
-              CCLog.debug("AWS S3 Transfer Upload completed for \(fileName)")
-              callback?(nil)
               return nil
             }
+            // TODO: might be useful to store in parse for tracking the version
+            CCLog.debug("AWS S3 Transfer Upload completed for \(fileName)")
+            callback?(nil)
+            return nil
           }
-          
-          return
-          
-        default:
-          CCLog.warning("CheckIfFileExists on S3 for Save returned error - \(error.localizedDescription)")
-          callback?(error)
-          return
         }
-      } else {
-        CCLog.debug("File \(fileName) already exists on S3. Skipping Save")
-        callback?(nil)  // So the File exists. Assume already good and saved otherwise
+        return
+        
+      default:
+        CCLog.warning("CheckIfFileExists on S3 for Save returned error - \(error.localizedDescription)")
+        callback?(error)
+        return
       }
     }
   }
@@ -529,9 +523,10 @@ class FoodieFileObject {
       CCLog.fatal("Unexpected. FoodieFileObject has no foodieFileName")
     }
     
-    if FoodieFileObject.checkIfExists(for: fileName, in: localType) {
-      CCLog.debug("Delete \(fileName) from \(localType)")
-      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+    DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+      if FoodieFileObject.checkIfExists(for: fileName, in: localType) {
+        CCLog.debug("Delete \(fileName) from \(localType)")
+        
         do {
           try FileManager.default.removeItem(at: FoodieFileObject.getFileURL(for: localType, with: fileName))
         } catch {
@@ -540,11 +535,10 @@ class FoodieFileObject {
         }
         // Delete local completed successfully!!
         callback?(nil)
-      }
-    } else {
-      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+      } else {
         CCLog.debug("File \(fileName) already not found from \(localType). Skipping Delete")
-        callback?(nil)}
+        callback?(nil)
+      }
     }
   }
   
