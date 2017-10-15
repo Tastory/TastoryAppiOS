@@ -849,7 +849,7 @@ extension MapViewController: UITextFieldDelegate {
 
 
 extension MapViewController: CameraReturnDelegate {
-  func captureComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
+  func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
     DispatchQueue.main.async {  // UI Work. We don't know which thread we might be in, so guarentee execute in Main thread
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
       guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
@@ -869,7 +869,7 @@ extension MapViewController: CameraReturnDelegate {
       }
       
       viewController.workingStory = workingStory!
-      viewController.returnedMoment = markedupMoment
+      viewController.returnedMoments = markedupMoments
       
       self.dismiss(animated: true) { /*[unowned self] in*/
         viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)

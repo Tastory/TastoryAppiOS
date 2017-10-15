@@ -21,7 +21,7 @@ import Jot
 
 
 protocol MarkupReturnDelegate {
-  func markupComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?)
+  func markupComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?)
 }
 
 
@@ -335,18 +335,18 @@ class MarkupViewController: TransitableViewController {
     if let story = FoodieStory.currentStory {
       if(addToExistingStoryOnly) {
         // skip the selection of adding to current or not
-        self.cleanupAndReturn(markedUpMoment: momentObj, suggestedStory: story)
+        self.cleanupAndReturn(markedUpMoments: [momentObj], suggestedStory: story)
       }
       else {
         displayStorySelection(
           newStoryHandler: { UIAlertAction -> Void in self.showStoryDiscardDialog(moment: momentObj) },
-          addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoment: momentObj, suggestedStory: story) }
+          addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoments: [momentObj], suggestedStory: story) }
         )
       }
     }
     else {
       // Just return a new Current Story
-      self.cleanupAndReturn(markedUpMoment: momentObj, suggestedStory: FoodieStory.newCurrent())
+      self.cleanupAndReturn(markedUpMoments: [momentObj], suggestedStory: FoodieStory.newCurrent())
     }
     
     // TODO: - Scenario 2 - We are editing an existing Story, not the Current Draft Story
@@ -413,7 +413,7 @@ class MarkupViewController: TransitableViewController {
       FoodieStory.removeCurrent()
       
       // We don't add Moments here, we let the Story Entry View decide what to do with it
-      self.cleanupAndReturn(markedUpMoment: moment, suggestedStory: FoodieStory.newCurrent())
+      self.cleanupAndReturn(markedUpMoments: [moment], suggestedStory: FoodieStory.newCurrent())
     }
     
     let alertController =
@@ -432,7 +432,7 @@ class MarkupViewController: TransitableViewController {
     self.present(alertController, animated: true, completion: nil)
   }
 
-  func cleanupAndReturn(markedUpMoment: FoodieMoment, suggestedStory: FoodieStory ){
+  func cleanupAndReturn(markedUpMoments: [FoodieMoment], suggestedStory: FoodieStory ){
     // Stop if there might be video looping
     self.avPlayer?.pause()  // TODO: - Do we need to free the avPlayer memory or something?
     
@@ -441,7 +441,7 @@ class MarkupViewController: TransitableViewController {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
       CCLog.fatal("Unexpected. markupReturnDelegate became nil. Unable to proceed")
     }
-    delegate.markupComplete(markedupMoment: markedUpMoment, suggestedStory: suggestedStory)
+    delegate.markupComplete(markedupMoments: markedUpMoments, suggestedStory: suggestedStory)
   }
 
   // MARK: - Private Instance Functions
