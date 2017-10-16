@@ -151,7 +151,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Private Instance Functions
 
-  fileprivate func generateThumnail(mediaObject: FoodieMedia) -> FoodieMedia? {
+  fileprivate func generateThumbnail(mediaObject: FoodieMedia) -> FoodieMedia? {
     // Obtain thumbnail, width and aspect ratio ahead of time once view is already loaded
     let thumbnailCgImage: CGImage!
 
@@ -159,6 +159,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     switch mediaObject.mediaType! {
     case .photo:
       guard let imageBuffer = mediaObject.imageMemoryBuffer else {
+        // TODO not sure how we can display a dialog within this model if an error does occur
+        // there used to be display internal dialog here before 
         CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
         return nil
       }
@@ -428,7 +430,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   convenience init(foodieMedia: FoodieMedia) {
     self.init()
     mediaObj = foodieMedia
-    thumbnailObj = generateThumnail(mediaObject: foodieMedia)
+    
+    thumbnailObj = generateThumbnail(mediaObject: foodieMedia)
     thumbnailFileName = thumbnailObj!.foodieFileName
     // didSet does not get called in initialization context...
     mediaFileName = foodieMedia.foodieFileName

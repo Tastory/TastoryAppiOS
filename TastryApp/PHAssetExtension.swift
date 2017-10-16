@@ -10,6 +10,24 @@ import Photos
 
 extension PHAsset {
 
+  // MARK: - Error Types Definition
+  enum ErrorCode: LocalizedError {
+
+    case assetResourceNotFound
+
+    var errorDescription: String? {
+      switch self {
+      case .assetResourceNotFound:
+        return NSLocalizedString("Failed to get asset resource", comment: "Error description for an exception error code")
+      }
+    }
+
+    init(_ errorCode: ErrorCode, file: String = #file, line: Int = #line, column: Int = #column, function: String = #function) {
+      self = errorCode
+      CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
+    }
+  }
+
   func copyMediaFile(withName fileName: String, withBlock callback: @escaping (URL?, Error?) ->Void ) -> Void {
     if self.mediaType != .video {
       CCLog.verbose("Tryping to copy a media that is not a video")
@@ -18,7 +36,7 @@ extension PHAsset {
 
     guard let resource = PHAssetResource.assetResources(for: self).first else {
       CCLog.assert("The asset resource is not available")
-      return
+      callback(nil, ErrorCode.assetResourceNotFound)
     }
 
     let writeURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
@@ -27,28 +45,5 @@ extension PHAsset {
     PHAssetResourceManager.default().writeData(for: resource, toFile: writeURL, options: options, completionHandler: { error in
       callback(writeURL, error)
     })
-  }
-
-  func getURL(completionHandler : @escaping ((_ responseURL : URL?) -> Void)){
-    if self.mediaType == .image {
-      let options: PHContentEditingInputRequestOptions = PHContentEditingInputRequestOptions()
-      options.canHandleAdjustmentData = {(adjustmeta: PHAdjustmentData) -> Bool in
-        return true
-      }
-      self.requestContentEditingInput(with: options, completionHandler: {(contentEditingInput: PHContentEditingInput?, info: [AnyHashable : Any]) -> Void in
-        completionHandler(contentEditingInput!.fullSizeImageURL as URL?)
-      })
-    } else if self.mediaType == .video {
-      let options: PHVideoRequestOptions = PHVideoRequestOptions()
-      options.version = .original
-      PHImageManager.default().requestAVAsset(forVideo: self, options: options, resultHandler: {(asset: AVAsset?, audioMix: AVAudioMix?, info: [AnyHashable : Any]?) -> Void in
-        if let urlAsset = asset as? AVURLAsset {
-          let localVideoUrl: URL = urlAsset.url as URL
-          completionHandler(localVideoUrl)
-        } else {
-          completionHandler(nil)
-        }
-      })
-    }
   }
 }

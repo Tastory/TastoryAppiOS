@@ -61,10 +61,7 @@ class MarkupViewController: TransitableViewController {
   
   fileprivate var thumbnailObject: FoodieMedia?
   fileprivate var mediaObject: FoodieMedia!
-  
-  //fileprivate var mediaWidth: Int?
-  //fileprivate var mediaAspectRatio: Double?
-  
+
   fileprivate var soundOn = true
   
   fileprivate let jotViewController = JotViewController()
@@ -265,9 +262,6 @@ class MarkupViewController: TransitableViewController {
 
     momentObj.set(location: mediaLocation)
     momentObj.playSound = soundOn
-    
-    // Setting the Thumbnail Object also initializes the thumbnailFileName
-    //momentObj.thumbnailObj = thumbnailObject
 
     momentObj.clearMarkups()
     // Serialize the Jot Markup into Foodie Markups
@@ -307,24 +301,6 @@ class MarkupViewController: TransitableViewController {
     } else {
       CCLog.debug("No dictionary returned by jotViewController to serialize into Markup")
     }
-
-    /*
-    // Fill in the width and aspect ratio
-    guard let width = mediaWidth else {
-      saveErrorDialog()
-      CCLog.assert("Unexpected. mediaWidth == nil")
-      return
-    }
-    momentObj.width = width
-    
-    guard let aspectRatio = mediaAspectRatio else {
-      saveErrorDialog()
-      CCLog.assert("Unexpected. mediaAspectRatio == nil")
-      return
-    }
-    momentObj.aspectRatio = aspectRatio
-    */
-
 
     // Keep in mind there are 2 scenarios here. 
     // 1. We are working on the Current Draft Story
