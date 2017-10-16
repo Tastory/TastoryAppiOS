@@ -75,13 +75,17 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     self.present(viewController, animated: true)
   }
   
+  
   @IBAction func previewStory(_ sender: Any) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
     viewController.viewingStory = workingStory
+    viewController.draftPreview = true
+    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
 
+  
   @IBAction func testSaveStory(_ sender: UIButton) {
 
     guard let story = workingStory else {

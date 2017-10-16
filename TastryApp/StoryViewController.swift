@@ -20,11 +20,8 @@ class StoryViewController: TransitableViewController {
   
   
   // MARK: - Public Instance Variables
-  var viewingStory: FoodieStory? {
-    didSet {
-      // Start Fetching Moment?
-    }
-  }
+  var draftPreview: Bool = false
+  var viewingStory: FoodieStory?
   
   
   // MARK: - Private Instance Variables
@@ -325,9 +322,13 @@ class StoryViewController: TransitableViewController {
     })
     
     if shouldRetrieveMoment {
-      // TODO: - Execute this against the High Priority FoodieFetch Queue
-      moment.retrieveRecursive(from: .both, type: .cache) { error in
-        // TODO: - Complete this against the High Priority FoodieFetch Queue
+      if draftPreview {
+        moment.retrieveRecursive(from: .local, type: .draft, withCompletion: nil)
+      } else {
+        // TODO: - Execute this against the High Priority FoodieFetch Queue
+        moment.retrieveRecursive(from: .both, type: .cache) { error in
+          // TODO: - Complete this against the High Priority FoodieFetch Queue
+        }
       }
     }
   }

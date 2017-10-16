@@ -920,17 +920,38 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KSd-8F-IhC">
-                                                    <rect key="frame" x="152" y="10" width="71" height="30"/>
-                                                    <state key="normal" title="Post Story"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VWA-bf-CbB">
+                                                    <rect key="frame" x="160" y="9.5" width="54" height="30"/>
+                                                    <state key="normal" title="Preview"/>
                                                     <connections>
-                                                        <action selector="testSaveStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="VtK-Hx-fQq"/>
+                                                        <action selector="previewStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="xyc-Mb-z1U"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="KSd-8F-IhC" firstAttribute="centerY" secondItem="VTA-zz-bRw" secondAttribute="centerY" id="TJl-ez-XSP"/>
-                                                <constraint firstItem="KSd-8F-IhC" firstAttribute="centerX" secondItem="VTA-zz-bRw" secondAttribute="centerX" id="l61-Bq-Wrw"/>
+                                                <constraint firstItem="VWA-bf-CbB" firstAttribute="centerX" secondItem="VTA-zz-bRw" secondAttribute="centerX" id="nfD-bS-3VG"/>
+                                                <constraint firstItem="VWA-bf-CbB" firstAttribute="centerY" secondItem="VTA-zz-bRw" secondAttribute="centerY" id="zKT-tQ-Dzs"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="50" id="ROD-rt-7Mj">
+                                        <rect key="frame" x="0.0" y="462.5" width="375" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ROD-rt-7Mj" id="De8-xm-Xk3">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ueS-aY-P0A">
+                                                    <rect key="frame" x="152" y="10" width="71" height="30"/>
+                                                    <state key="normal" title="Post Story"/>
+                                                    <connections>
+                                                        <action selector="testSaveStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="eHU-mH-Jam"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="ueS-aY-P0A" firstAttribute="centerY" secondItem="De8-xm-Xk3" secondAttribute="centerY" id="AXC-4Y-Jpm"/>
+                                                <constraint firstItem="ueS-aY-P0A" firstAttribute="centerX" secondItem="De8-xm-Xk3" secondAttribute="centerX" id="yOy-WU-MsV"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
