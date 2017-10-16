@@ -37,6 +37,7 @@ extension PHAsset {
     guard let resource = PHAssetResource.assetResources(for: self).first else {
       CCLog.assert("The asset resource is not available")
       callback(nil, ErrorCode.assetResourceNotFound)
+      return
     }
 
     let writeURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
