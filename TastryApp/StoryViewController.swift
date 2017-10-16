@@ -120,17 +120,6 @@ class StoryViewController: TransitableViewController {
   
   // MARK: - Private Instance Functions
   fileprivate func pausePlay() {
-    guard let currentMoment = currentMoment, let mediaObject = currentMoment.media, let mediaType = mediaObject.mediaType, let avPlayer = currentExportPlayer?.avPlayer else {
-        
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.assert("No Current Moment, Media Object, Media Type or AVPlayer for StoryVC when trying to pause/reumse")
-        self.dismiss(animated: true, completion: nil)
-      }
-      return
-    }
-    
-    CCLog.info("User pressed Paused/Resume. isPaused = \(isPaused), photoTimer.isValid = \(photoTimer != nil ? String(photoTimer!.isValid) : "None"), avPlayer.rate = \(avPlayer.rate), mediaType = \(mediaType)")
-    
     if let photoTimer = photoTimer {
       
       if photoTimer.isValid {
@@ -148,6 +137,13 @@ class StoryViewController: TransitableViewController {
         resumeStateTrack()
       }
     } else {
+      guard let avPlayer = currentExportPlayer?.avPlayer else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.assert("No AVPlayer for StoryVC when trying to pause/reumse")
+          self.dismiss(animated: true, completion: nil)
+        }
+        return
+      }
       
       if avPlayer.rate != 0.0 {
         // Video is playing. Pause the video
