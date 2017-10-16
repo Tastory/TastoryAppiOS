@@ -528,120 +528,141 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   // Function to mark Moments and Media to retrieve, and then kick off the retrieval state machine
   func contentRetrievalRequest(fromMoment startNumber: Int, forUpTo numberOfMoments: Int, withBlock callback: SimpleErrorBlock? = nil) {
-    
-    guard let momentArray = moments else {
-      CCLog.assert("contentRetrieveRequest for \(foodieObjectType())(\(getUniqueIdentifier())) has moments = nil.")
-      callback?(ErrorCode.contentRetrieveMomentArrayNil)
-      return
-    }
-    
-    // Adjust number to retrieve based on how many Moments there are until the end
-    var index = startNumber
-    var numberToRetrieve = numberOfMoments
-    
-    if numberOfMoments == 0 {
-      numberToRetrieve = momentArray.count
-    }
-    
-    // Mark the Moment and Media to fetch as appropriate
-    while index < momentArray.count, numberToRetrieve > 0 {
-      
-      let moment = momentArray[index]
-      moment.foodieObject.markPendingRetrieval()
-      
-      numberToRetrieve -= 1
-      index += 1
-    }
-    
-    // Start the content retrieval state machine if it's not already started
-    var executeStateMachine = false
-    SwiftMutex.lock(&contentRetrievalMutex)  // TODO-Performance: Move to OperationQueue to eliminate chance of blocking main thread
-    
-    if contentRetrievalInProg {
-      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) already in progress")
-      contentRetrievalPending = true
-      contentRetrievalPendingCallback = callback
-    } else {
-      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) begins")
-      contentRetrievalInProg = true
-      executeStateMachine = true
-    }
-    
-    SwiftMutex.unlock(&contentRetrievalMutex)
-    
-    // Bringing function call out of critical section
-    if executeStateMachine {
-      contentRetrievalStateMachine(momentIndex: 0, withError: nil, withBlock: callback)
-    }
+    fatalError("contentRetrievalRequest To Be Removed")
+//
+//    guard let momentArray = moments else {
+//      CCLog.assert("contentRetrieveRequest for \(foodieObjectType())(\(getUniqueIdentifier())) has moments = nil.")
+//      callback?(ErrorCode.contentRetrieveMomentArrayNil)
+//      return
+//    }
+//
+//    // Adjust number to retrieve based on how many Moments there are until the end
+//    var index = startNumber
+//    var numberToRetrieve = numberOfMoments
+//
+//    if numberOfMoments == 0 {
+//      numberToRetrieve = momentArray.count
+//    }
+//
+//    // Mark the Moment and Media to fetch as appropriate
+//    while index < momentArray.count, numberToRetrieve > 0 {
+//
+//      let moment = momentArray[index]
+//      moment.foodieObject.markPendingRetrieval()
+//
+//      numberToRetrieve -= 1
+//      index += 1
+//    }
+//
+//    // Start the content retrieval state machine if it's not already started
+//    var executeStateMachine = false
+//    SwiftMutex.lock(&contentRetrievalMutex)  // TODO-Performance: Move to OperationQueue to eliminate chance of blocking main thread
+//
+//    if contentRetrievalInProg {
+//      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) already in progress")
+//      contentRetrievalPending = true
+//      contentRetrievalPendingCallback = callback
+//    } else {
+//      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) begins")
+//      contentRetrievalInProg = true
+//      executeStateMachine = true
+//    }
+//
+//    SwiftMutex.unlock(&contentRetrievalMutex)
+//
+//    // Bringing function call out of critical section
+//    if executeStateMachine {
+//      contentRetrievalStateMachine(momentIndex: 0, withError: nil, withBlock: callback)
+//    }
   }
   
     
   // The brain of the content retrieval process
   func contentRetrievalStateMachine(momentIndex: Int, withError firstError: Error?, withBlock callback: SimpleErrorBlock? = nil) {
-    
-    guard let momentArray = moments else {
-      CCLog.assert("contentRetrieveStateMachine for \(foodieObjectType())(\(getUniqueIdentifier())) has moments = nil")
-      callback?(ErrorCode.contentRetrieveMomentArrayNil)
-      return
-    }
-    
-    var index = momentIndex
-    
-    // Look for the next moment that is marked for retrieval
-    while index < momentArray.count {
-      let moment = momentArray[index]
-      
-      // Retrieve the Moment first. One step at a time...
-      if moment.foodieObject.retrieveIfPending(withBlock: { error in
-        
-        var currentError = firstError
-        
-        if let err = error {
-          // TODO: How do we signal a background task error? Get whatever top of the presenting stack and push an error dialoge box on it?
-          CCLog.warning("\(self.foodieObjectType())(\(self.getUniqueIdentifier)) retrieve content of Type \(moment.foodieObjectType())(\(moment.getUniqueIdentifier())) resulted in Error = \(err.localizedDescription)")
-          if currentError == nil { currentError = err }
-          self.contentRetrievalStateMachine(momentIndex: momentIndex+1, withError: currentError, withBlock: callback)
-          return
-        }
-
-        self.contentRetrievalStateMachine(momentIndex: momentIndex+1, withError: currentError, withBlock: callback)
-      }) { return }
-      
-      // See if the next moment needs retrieval if the previous one doesn't
-      index += 1
-    }
-    
-    // Do callback if there is one since we went through the entire momentArray
-    if firstError == nil {
-      callback?(nil)
-    } else {
-      callback?(firstError)
-    }
-
-    // If there was a pending retrieval operation, go for another round
-    var executeStateMachine = false
-    SwiftMutex.lock(&contentRetrievalMutex)  // TODO-Performance: Move to OperationQueue to eliminate chance of blocking main thread
-    
-    if contentRetrievalPending {
-      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) was pending. Initiate another round of Content Retrieval")
-      contentRetrievalPending = false
-      executeStateMachine = true
-    } else {
-      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) completes!")
-      contentRetrievalInProg = false
-    }
-    
-    SwiftMutex.unlock(&contentRetrievalMutex)
-    
-    // Bringing function call out of critical section
-    if executeStateMachine {
-      contentRetrievalStateMachine(momentIndex: 0, withError: nil, withBlock: contentRetrievalPendingCallback)
-    }
+    fatalError("contentRetrievalRequest To Be Removed")
+//
+//    guard let momentArray = moments else {
+//      CCLog.assert("contentRetrieveStateMachine for \(foodieObjectType())(\(getUniqueIdentifier())) has moments = nil")
+//      callback?(ErrorCode.contentRetrieveMomentArrayNil)
+//      return
+//    }
+//
+//    var index = momentIndex
+//
+//    // Look for the next moment that is marked for retrieval
+//    while index < momentArray.count {
+//      let moment = momentArray[index]
+//
+//      // Retrieve the Moment first. One step at a time...
+//      if moment.foodieObject.retrieveIfPending(withBlock: { error in
+//
+//        var currentError = firstError
+//
+//        if let err = error {
+//          // TODO: How do we signal a background task error? Get whatever top of the presenting stack and push an error dialoge box on it?
+//          CCLog.warning("\(self.foodieObjectType())(\(self.getUniqueIdentifier)) retrieve content of Type \(moment.foodieObjectType())(\(moment.getUniqueIdentifier())) resulted in Error = \(err.localizedDescription)")
+//          if currentError == nil { currentError = err }
+//          self.contentRetrievalStateMachine(momentIndex: momentIndex+1, withError: currentError, withBlock: callback)
+//          return
+//        }
+//
+//        self.contentRetrievalStateMachine(momentIndex: momentIndex+1, withError: currentError, withBlock: callback)
+//      }) { return }
+//
+//      // See if the next moment needs retrieval if the previous one doesn't
+//      index += 1
+//    }
+//
+//    // Do callback if there is one since we went through the entire momentArray
+//    if firstError == nil {
+//      callback?(nil)
+//    } else {
+//      callback?(firstError)
+//    }
+//
+//    // If there was a pending retrieval operation, go for another round
+//    var executeStateMachine = false
+//    SwiftMutex.lock(&contentRetrievalMutex)  // TODO-Performance: Move to OperationQueue to eliminate chance of blocking main thread
+//
+//    if contentRetrievalPending {
+//      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) was pending. Initiate another round of Content Retrieval")
+//      contentRetrievalPending = false
+//      executeStateMachine = true
+//    } else {
+//      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) completes!")
+//      contentRetrievalInProg = false
+//    }
+//
+//    SwiftMutex.unlock(&contentRetrievalMutex)
+//
+//    // Bringing function call out of critical section
+//    if executeStateMachine {
+//      contentRetrievalStateMachine(momentIndex: 0, withError: nil, withBlock: contentRetrievalPendingCallback)
+//    }
   }
   
   
   
   // MARK: - Foodie Digest Conceptual Sub-Object
+  
+  var isDigestRetrieved: Bool {
+    guard super.isRetrieved else {
+      return false  // Don't go further if even the parent isn't retrieved
+    }
+    
+    guard let thumbnail = thumbnail, let venue = venue, let markups = markups else {
+      CCLog.assert("Thumbnail, Markups and Venue should all be not nil")
+      return false
+    }
+    
+    var markupsAreRetrieved = true
+    for markup in markups {
+      markupsAreRetrieved = markupsAreRetrieved && markup.isRetrieved
+    }
+    
+    return thumbnail.isRetrieved && venue.isRetrieved && markupsAreRetrieved
+  }
+  
   
   // Function to retrieve the Digest (Story minus the Moments)
   func retrieveDigest(from location: FoodieObject.StorageLocation,
@@ -672,26 +693,21 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Foodie Object Delegate Conformance
   
   override var isRetrieved: Bool {
-    
-    let thumbnailIsRetrieved = thumbnail?.isRetrieved ?? false
+    guard isDigestRetrieved else {
+      return false  // Don't go further if even the parent isn't retrieved
+    }
+
+    guard let moments = moments else {
+      CCLog.assert("Moments shoudl not be nil")
+      return false
+    }
     
     var momentsAreRetrieved = true
-    if let moments = self.moments {
-      for moment in moments {
-        momentsAreRetrieved = momentsAreRetrieved || moment.isRetrieved
-      }
+    for moment in moments {
+      momentsAreRetrieved = momentsAreRetrieved && moment.isRetrieved
     }
     
-    var markupsAreRetrieved = true
-    if let markups = self.markups {
-      for markup in markups {
-        markupsAreRetrieved = markupsAreRetrieved || markup.isRetrieved
-      }
-    }
-    
-    let venueIsRetrieved = venue?.isRetrieved ?? false
-    
-    return super.isRetrieved || thumbnailIsRetrieved || momentsAreRetrieved || markupsAreRetrieved || venueIsRetrieved
+    return momentsAreRetrieved
   }
   
   

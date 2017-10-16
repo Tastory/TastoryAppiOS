@@ -389,7 +389,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   // Might execute block both synchronously or asynchronously
-  func execute(if notReadyBlock: SimpleBlock?, when readyBlock: @escaping SimpleBlock) {
+  func execute(ifNotReady notReadyBlock: SimpleBlock?, whenReady readyBlock: @escaping SimpleBlock) {
     var isReady = false
     
     // What's going on here is we are preventing a race condition between
@@ -428,19 +428,21 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Foodie Object Delegate Conformance
   
   override var isRetrieved: Bool {
-    
-    let thumbnailIsRetrieved = thumbnail?.isRetrieved ?? false
-    
-    var mediaIsRetrieved = media?.isRetrieved ?? false
-    
-    var markupsAreRetrieved = true
-    if let markups = self.markups {
-      for markup in markups {
-        markupsAreRetrieved = markupsAreRetrieved || markup.isRetrieved
-      }
+    guard super.isRetrieved else {
+      return false  // Don't go further if even the parent isn't retrieved
     }
     
-    return super.isRetrieved || thumbnailIsRetrieved || mediaIsRetrieved || markupsAreRetrieved
+    guard let thumbnail = thumbnail, let media = media, let markups = markups else {
+      CCLog.assert("Thumbnail, Markups and Venue should all be not nil")
+      return false
+    }
+    
+    var markupsAreRetrieved = true
+    for markup in markups {
+      markupsAreRetrieved = markupsAreRetrieved && markup.isRetrieved
+    }
+    
+    return thumbnail.isRetrieved && media.isRetrieved && markupsAreRetrieved
   }
   
   
@@ -450,10 +452,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                          forceAnyways: Bool = false,
                          withReady readyBlock: SimpleBlock? = nil,
                          withCompletion callback: SimpleErrorBlock?) {
-    
-    guard readyBlock == nil else {
-      CCLog.fatal("FoodieMoment does not support Ready Resposnes")
-    }
     
     CCLog.verbose("Retrieve Recursive for Moment \(getUniqueIdentifier())")
     

@@ -166,14 +166,14 @@ class StoryViewController: TransitableViewController {
   
   fileprivate func displayMoment(_ moment: FoodieMoment) {
     
-    guard let mediaObject = moment.media else {
+    guard let media = moment.media else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
         CCLog.fatal("Unexpected, moment.media == nil ")
       }
       return
     }
     
-    guard let mediaType = mediaObject.mediaType else {
+    guard let mediaType = media.mediaType else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
         CCLog.fatal("Unexpected, mediaObject.mediaType == nil")
       }
@@ -189,7 +189,7 @@ class StoryViewController: TransitableViewController {
     // Try to display the media as by type
     if mediaType == .photo {
 
-      guard let imageBuffer = mediaObject.imageMemoryBuffer else {
+      guard let imageBuffer = media.imageMemoryBuffer else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
           CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
           self.dismiss(animated: true, completion: nil)
@@ -212,7 +212,7 @@ class StoryViewController: TransitableViewController {
       
     } else if mediaType == .video {
       
-      guard let videoExportPlayer = mediaObject.videoExportPlayer, let avPlayer = videoExportPlayer.avPlayer else {
+      guard let videoExportPlayer = media.videoExportPlayer, let avPlayer = videoExportPlayer.avPlayer else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
           CCLog.assert("MediaObject.videoExportPlayer == nil")
           self.dismiss(animated: true, completion: nil)
@@ -316,6 +316,34 @@ class StoryViewController: TransitableViewController {
   }
   
   
+  fileprivate func displayMomentIfLoaded(for moment: FoodieMoment) {
+    
+    var shouldRetrieveMoment = false
+    
+    moment.execute(ifNotReady: {
+      CCLog.verbose("displayMomentIfLoaded: Not yet loaded")
+      self.activitySpinner.apply(below: self.tapGestureStackView)
+      self.soundButton.isHidden = true
+      shouldRetrieveMoment = true  // Don't execute the retrieve here. This is actually executed inside of a mutex
+      
+    }, whenReady: {
+      self.displayMoment(moment)
+    })
+    
+    if shouldRetrieveMoment {
+      // TODO: - Execute this against the High Priority FoodieFetch Queue
+      moment.retrieveRecursive(from: .both, type: .cache) { error in
+        // TODO: - Complete this against the High Priority FoodieFetch Queue
+      }
+    }
+  }
+  
+  
+  fileprivate func determineInitialUI(for moment: FoodieMoment) {
+    
+  }
+  
+  
   fileprivate func stopVideoTimerAndObservers(for moment: FoodieMoment) {
     pauseResumeButton.isHidden = true
     resumeStateTrack()
@@ -386,7 +414,7 @@ class StoryViewController: TransitableViewController {
     if nextIndex == moments.count {
       dismiss(animated: true, completion: nil)
     } else {
-      //self.displayMomentIfLoaded(for: moments[nextIndex])
+      self.displayMomentIfLoaded(for: moments[nextIndex])
     }
   }
   

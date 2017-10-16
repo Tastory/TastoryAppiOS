@@ -240,7 +240,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
                          withCompletion callback: SimpleErrorBlock?) {
     
     guard readyBlock == nil else {
-      CCLog.fatal("FoodieStory does not support Ready Responses")
+      CCLog.fatal("FoodieCategory does not support Ready Responses")
     }
     
     // Retrieve self. This object have no children

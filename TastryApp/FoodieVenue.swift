@@ -714,12 +714,11 @@ extension FoodieVenue: FoodieObjectDelegate {
                          withReady readyBlock: SimpleBlock? = nil,
                          withCompletion callback: SimpleErrorBlock?) {
     
-    guard readyBlock == nil else {
-      CCLog.fatal("FoodieStory does not support Ready Responses")
-    }
-    
     // Retrieve self. This object have no children
-    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      readyBlock?()
+      callback?(error)
+    }
   }
   
   

@@ -172,7 +172,10 @@ class FoodieObject {
   // MARK: - Public Instance Functions
   
   // Reset outstandingChildOperations
-  func resetOutstandingChildOperations() { outstandingChildOperations = 0 }
+  func resetOutstandingChildOperations() {
+    outstandingChildOperations = 0
+    outstandingChildReadies = 0
+  }
   
   
   // Function to mark pending retrieval

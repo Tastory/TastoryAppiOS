@@ -313,8 +313,10 @@ extension FoodieMedia: FoodieObjectDelegate {
         self.retrieveFromServerToBuffer() { (buffer, error) in
           if let error = error {
             CCLog.warning("retrieveFromServerToBuffer for photo failed with error \(error.localizedDescription)")
+          } else {
+            if let buffer = buffer as? Data { self.imageMemoryBuffer = buffer }
+            readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval
           }
-          if let buffer = buffer as? Data { self.imageMemoryBuffer = buffer }
           callback?(error)
         }
       }
