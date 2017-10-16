@@ -171,6 +171,21 @@ class FoodieMedia: FoodieFileObject {
 // MARK: - Foodie Object Delegate Conformance
 extension FoodieMedia: FoodieObjectDelegate {
   
+  var isRetrieved: Bool {
+    
+    if let mediaType = mediaType {
+      switch mediaType {
+      case .photo:
+        return (imageMemoryBuffer != nil)
+        
+      case .video:
+        return (videoExportPlayer != nil)
+      }
+    }
+    return false
+  }
+  
+  
   func retrieve(from localType: FoodieObject.LocalType,
                 forceAnyways: Bool,
                 withBlock callback: SimpleErrorBlock?) {
@@ -184,7 +199,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     }
     
     // If photo and in memory, or video in player, just callback
-    if !forceAnyways && (imageMemoryBuffer != nil || videoExportPlayer != nil) {
+    if !forceAnyways && isRetrieved {
       DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }
       return
     }
@@ -234,7 +249,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     }
     
     // If photo and in memory, or video and in player, just callback
-    if !forceAnyways && (imageMemoryBuffer != nil || videoExportPlayer != nil) {
+    if !forceAnyways && isRetrieved {
       DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }
       return
       

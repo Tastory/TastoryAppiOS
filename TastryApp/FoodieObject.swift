@@ -20,6 +20,8 @@ protocol FoodieObjectDelegate: class {
    *
    ********************************************************************************************************************/
   
+  var isRetrieved: Bool { get }
+  
   static func deleteAll(from localType: FoodieObject.LocalType,
                         withBlock callback: SimpleErrorBlock?)
   
@@ -37,7 +39,6 @@ protocol FoodieObjectDelegate: class {
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool,
                          withBlock callback: SimpleErrorBlock?)
-  
   
   func save(to localType: FoodieObject.LocalType,
             withBlock callback: SimpleErrorBlock?)

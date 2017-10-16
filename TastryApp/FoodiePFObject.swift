@@ -68,6 +68,9 @@ class FoodiePFObject: PFObject {
   }
   
   
+  var isRetrieved: Bool { return isDataAvailable }
+  
+  
   func retrieve(from localType: FoodieObject.LocalType,  // At the Fetch stage, Parse doesn't care any more
                 forceAnyways: Bool,
                 withBlock callback: SimpleErrorBlock?) {

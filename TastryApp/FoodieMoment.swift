@@ -134,9 +134,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  var thumbnailObj: FoodieMedia? {
+  var thumbnail: FoodieMedia? {
     didSet {
-      thumbnailFileName = thumbnailObj!.foodieFileName
+      thumbnailFileName = thumbnail!.foodieFileName
     }
   }
   
@@ -163,8 +163,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         self.mediaObj = FoodieMedia(for: fileName, localType: localType, mediaType: type)
       }
       
-      if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
-        self.thumbnailObj = FoodieMedia(for: fileName, localType: localType, mediaType: .photo)
+      if self.thumbnail == nil, let fileName = self.thumbnailFileName {
+        self.thumbnail = FoodieMedia(for: fileName, localType: localType, mediaType: .photo)
       }
       callback?(error)  // Callback regardless
     }
@@ -192,8 +192,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      guard let thumbnail = self.thumbnailObj else {
-        CCLog.assert("Unexpected Moment.retrieve() resulted in moment.thumbnailObj = nil")
+      guard let thumbnail = self.thumbnail else {
+        CCLog.assert("Unexpected Moment.retrieve() resulted in moment.thumbnail = nil")
         callback?(error)
         return
       }
@@ -235,7 +235,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       }
     }
     
-    if let thumbnail = thumbnailObj {
+    if let thumbnail = thumbnail {
       foodieObject.saveChild(thumbnail, to: location, type: localType, withBlock: callback)
       childOperationPending = true
     }
@@ -272,7 +272,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
             self.foodieObject.deleteChild(media, from: location, type: localType, withBlock: nil)
           }
           
-          if let thumbnail = self.thumbnailObj {
+          if let thumbnail = self.thumbnail {
             self.foodieObject.deleteChild(thumbnail, from: location, type: localType, withBlock: nil)
           }
           
@@ -296,7 +296,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           childOperationPending = true
         }
         
-        if let thumbnail = self.thumbnailObj {
+        if let thumbnail = self.thumbnail {
           self.foodieObject.deleteChild(thumbnail, from: location, type: localType, withBlock: callback)
           childOperationPending = true
         }
@@ -388,6 +388,28 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Foodie Object Delegate Conformance
   
+  override var isRetrieved: Bool {
+    
+    let thumbnailIsRetrieved = thumbnail?.isRetrieved ?? false
+    
+    var momentsAreRetrieved = true
+    if let moments = self.moments {
+      for moment in moments {
+        momentsAreRetrieved = momentsAreRetrieved || moment.isRetrieved
+      }
+    }
+    
+    var markupsAreRetrieved = true
+    if let markups = self.markups {
+      for markup in markups {
+        markupsAreRetrieved = markupsAreRetrieved || markup.isRetrieved
+      }
+    }
+    
+    return super.isRetrieved || thumbnailIsRetrieved || momentsAreRetrieved || markupsAreRetrieved
+  }
+  
+  
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
@@ -445,7 +467,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         }
       }
       
-      if let thumbnail = self.thumbnailObj {
+      if let thumbnail = self.thumbnail {
         thumbnail.cancelRetrieveFromServerRecursive()
       }
     }
@@ -466,7 +488,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       }
     }
     
-    if let thumbnail = thumbnailObj {
+    if let thumbnail = thumbnail {
       thumbnail.cancelSaveToServerRecursive()
     }
   }

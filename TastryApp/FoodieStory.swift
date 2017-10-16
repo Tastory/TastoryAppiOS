@@ -156,7 +156,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Public Instance Variables
-  var thumbnailObj: FoodieMedia?
+  var thumbnail: FoodieMedia?
   var selfPrefetchContext: FoodiePrefetch.Context?
   var contentPrefetchContext: FoodiePrefetch.Context?
 
@@ -209,8 +209,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     
     foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
-      if self.thumbnailObj == nil, let fileName = self.thumbnailFileName {
-        self.thumbnailObj = FoodieMedia(for: fileName, localType: localType, mediaType: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
+      if self.thumbnail == nil, let fileName = self.thumbnailFileName {
+        self.thumbnail = FoodieMedia(for: fileName, localType: localType, mediaType: .photo)  // TODO: This will cause double thumbnail. Already a copy in the Moment
       }
       callback?(error)  // Callback regardless
     }
@@ -231,8 +231,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      guard let thumbnail = self.thumbnailObj else {
-        CCLog.assert("Story retrieved but thumbnailObj = nil")
+      guard let thumbnail = self.thumbnail else {
+        CCLog.assert("Story retrieved but thumbnail = nil")
         callback?(error)
         return
       }
@@ -311,8 +311,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      guard let thumbnail = self.thumbnailObj else {
-        CCLog.assert("Unexpected Story.retrieve() resulted in self.thumbnailObj = nil")
+      guard let thumbnail = self.thumbnail else {
+        CCLog.assert("Unexpected Story.retrieve() resulted in self.thumbnail = nil")
         callback?(error)
         return
       }
@@ -671,6 +671,30 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
 
   // MARK: - Foodie Object Delegate Conformance
   
+  override var isRetrieved: Bool {
+    
+    let thumbnailIsRetrieved = thumbnail?.isRetrieved ?? false
+    
+    var momentsAreRetrieved = true
+    if let moments = self.moments {
+      for moment in moments {
+        momentsAreRetrieved = momentsAreRetrieved || moment.isRetrieved
+      }
+    }
+    
+    var markupsAreRetrieved = true
+    if let markups = self.markups {
+      for markup in markups {
+        markupsAreRetrieved = markupsAreRetrieved || markup.isRetrieved
+      }
+    }
+    
+    let venueIsRetrieved = venue?.isRetrieved ?? false
+    
+    return super.isRetrieved || thumbnailIsRetrieved || momentsAreRetrieved || markupsAreRetrieved || venueIsRetrieved
+  }
+  
+  
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
@@ -719,8 +743,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      guard let thumbnail = self.thumbnailObj else {
-        CCLog.assert("Unexpected Story.retrieve() resulted in self.thumbnailObj = nil")
+      guard let thumbnail = self.thumbnail else {
+        CCLog.assert("Unexpected Story.retrieve() resulted in self.thumbnail = nil")
         return
       }
 
@@ -792,7 +816,7 @@ extension FoodieStory: FoodiePrefetchDelegate {
   func doPrefetch(on objectToFetch: AnyObject, for context: FoodiePrefetch.Context, withBlock callback: FoodiePrefetch.PrefetchCompletionBlock? = nil) {
     if let story = objectToFetch as? FoodieStory {
       
-      if story.thumbnailObj == nil {
+      if story.thumbnail == nil {
         // No Thumbnail Object, so assume the Story itself needs to be retrieved
         CCLog.verbose("doPrefetch retrieveDigest for \(foodieObjectType())(\(getUniqueIdentifier()))")
         story.retrieveDigest(from: .both, type: .cache) { error in
