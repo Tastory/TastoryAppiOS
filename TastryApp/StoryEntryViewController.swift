@@ -512,6 +512,13 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         }
       }
 
+      var indexPaths: [IndexPath] = []
+      var index = 0
+
+      if(workingStory.moments != nil) {
+        index += (workingStory.moments!.count - 1)
+      }
+
       for returnedMoment in returnedMoments {
         // Let's figure out what to do with the returned Moment
         if markupMoment != nil {
@@ -532,8 +539,12 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
           }
         } else {
 
-          // This is a new Moment. Let's add it to the Story!
           workingStory.add(moment: returnedMoment)
+
+          CCLog.verbose("item \(index)")
+          indexPaths.append(IndexPath( item: (index) , section: 0))
+          index += 1
+
 
           // If there wasn't any moments before, we got to make this the default thumbnail for the Story
           // Got to do this also when removing moments!!!
@@ -550,6 +561,28 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
             //self.returnedMoment = nil  // We should be in a state where whom is the returned Moment should no longer matter
           }
         }
+      }
+
+      guard let collectionView = self.momentViewController.collectionView else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.fatal("collection view is nil")
+        }
+        return
+      }
+
+      guard let moments = workingStory.moments else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.fatal("Moments in working journal is nil")
+        }
+        return
+      }
+
+      // this updates the collectionView and must be done when story entry view is visible
+      // NEVER run the following code when collection view is not visible. It will crash!!!!!
+      if(returnedMoments.count == moments.count) {
+        collectionView.reloadData()
+      } else {
+        collectionView.insertItems(at: indexPaths)
       }
     }
   }
@@ -723,32 +756,11 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
 }
 
 
-
 extension StoryEntryViewController: CameraReturnDelegate {
   func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
     self.returnedMoments = markedupMoments
     self.markupMoment = nil
-
-    dismiss(animated: true) {
-      if let workingStory = self.workingStory {
-        guard let collectionView = self.momentViewController.collectionView else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-            CCLog.fatal("collection view is nil")
-          }
-          return
-        }
-        guard let moments = workingStory.moments else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-            CCLog.fatal("Moments in working journal is nil")
-          }
-          return
-        }
-
-        // this updates the collectionView and must be done when story entry view is visible
-        // NEVER run the following code when collection view is not visible. It will crash!!!!!
-        collectionView.insertItems(at: [IndexPath( item: moments.count - 1, section: 0)])
-      }
-    }
+    dismiss(animated: true)
   }
 }
 
