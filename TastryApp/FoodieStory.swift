@@ -786,6 +786,7 @@ extension FoodieStory: FoodiePrefetchDelegate {
   func removePrefetchContexts() {
     selfPrefetchContext = nil
     contentPrefetchContext = nil
+    cancelRetrieveFromServerRecursive()
   }
   
   func doPrefetch(on objectToFetch: AnyObject, for context: FoodiePrefetch.Context, withBlock callback: FoodiePrefetch.PrefetchCompletionBlock? = nil) {
@@ -804,7 +805,7 @@ extension FoodieStory: FoodiePrefetchDelegate {
       } else {
         story.contentRetrievalRequest(fromMoment: 0, forUpTo: Constants.MomentsToBufferAtATime) { error in
           if let storyError = error {
-            CCLog.assert("On prefetch, contentRetrievalRequest for \(self.foodieObjectType())(\(self.getUniqueIdentifier())) callback with error: \(storyError.localizedDescription)")
+            CCLog.warning("On prefetch, contentRetrievalRequest for \(self.foodieObjectType())(\(self.getUniqueIdentifier())) callback with error: \(storyError.localizedDescription)")
           }
           callback?(context)
         }

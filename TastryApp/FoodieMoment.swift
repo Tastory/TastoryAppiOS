@@ -429,18 +429,25 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Cancel Retrieve Recursive for Moment \(getUniqueIdentifier())")
     
-    if let media = mediaObj {
-      media.cancelRetrieveFromServerRecursive()
-    }
-    
-    if let markups = markups {
-      for markup in markups {
-        markup.cancelRetrieveFromServerRecursive()
+    retrieveFromLocalThenServer(forceAnyways: false, type: .cache) { error in
+      if let error = error {
+        CCLog.assert("Moment.retrieve() resulted in error: \(error.localizedDescription)")
+        return
       }
-    }
-    
-    if let thumbnail = thumbnailObj {
-      thumbnail.cancelRetrieveFromServerRecursive()
+      
+      if let media = self.mediaObj {
+        media.cancelRetrieveFromServerRecursive()
+      }
+      
+      if let markups = self.markups {
+        for markup in markups {
+          markup.cancelRetrieveFromServerRecursive()
+        }
+      }
+      
+      if let thumbnail = self.thumbnailObj {
+        thumbnail.cancelRetrieveFromServerRecursive()
+      }
     }
   }
   

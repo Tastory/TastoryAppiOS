@@ -183,7 +183,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       CCLog.fatal("Retrieve not allowed when Media has no MediaType")
     }
     
-    // If photo and in memory, or video and in local, just callback
+    // If photo and in memory, or video in player, just callback
     if !forceAnyways && (imageMemoryBuffer != nil || videoExportPlayer != nil) {
       DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }
       return
@@ -210,7 +210,6 @@ extension FoodieMedia: FoodieObjectDelegate {
           self.videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getFileURL(for: localType, with: fileName))
           callback?(nil)
         } else {
-          self.videoExportPlayer = nil
           callback?(ErrorCode.retrieveFileDoesNotExist)
         }
       }
@@ -234,7 +233,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       CCLog.fatal("Only allowing Server to Cache, not to Draft")
     }
     
-    // If photo and in memory, or video and in local, just callback
+    // If photo and in memory, or video and in player, just callback
     if !forceAnyways && (imageMemoryBuffer != nil || videoExportPlayer != nil) {
       DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }
       return
@@ -439,7 +438,7 @@ extension FoodieMedia: FoodieObjectDelegate {
   func cancelRetrieveFromServerRecursive() {
     cancelRetrieveFromServer()
     if let videoExportPlayer = videoExportPlayer {
-      videoExportPlayer.cancelExport()
+      videoExportPlayer.cancelExport()  // On successful export cancel, the retrieve completion failure will nil the videoExportPlayer pointer
     }
   }
   

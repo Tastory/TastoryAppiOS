@@ -229,7 +229,6 @@ class AVExportPlayer: NSObject {
           
         case .cancelled:
           self.avExportSession = nil
-          self.avPlayer = nil
           callback?(ErrorCode.exportAsyncCancelled)
         }
       }

@@ -39,7 +39,7 @@ class FeedCollectionViewController: UICollectionViewController {
   
   @objc func viewStory(_ sender: UIButton) {
     // Stop all prefetches
-    FoodiePrefetch.global.blockPrefetching()
+    // TODO: - Reinstate Prefetch  FoodiePrefetch.global.blockPrefetching()
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
@@ -61,8 +61,8 @@ class FeedCollectionViewController: UICollectionViewController {
     CCLog.verbose("StoryArray.count = \(storyArray.count)")
 
     // Turn on CollectionView prefetching
-    collectionView?.prefetchDataSource = self
-    collectionView?.isPrefetchingEnabled = true
+    // TODO: - Reinstate Prefetch  collectionView?.prefetchDataSource = self
+    // TODO: - Reinstate Prefetch  collectionView?.isPrefetchingEnabled = true
   }
   
   
@@ -178,7 +178,7 @@ class FeedCollectionViewController: UICollectionViewController {
         
         if letsPrefetch {
           let story = self.storyArray[indexPath.row]
-          story.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: story, on: story)
+          // TODO: - Reinstate Prefetch  story.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: story, on: story)
         }
       }
     }
@@ -204,7 +204,7 @@ class FeedCollectionViewController: UICollectionViewController {
     
     if letsPrefetch {
       let story = self.storyArray[indexPath.row]
-      story.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: story, on: story)
+      // TODO: - Reinstate Prefetch  story.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: story, on: story)
     }
   }
   
@@ -213,7 +213,7 @@ class FeedCollectionViewController: UICollectionViewController {
     CCLog.verbose("collectionView didEndDisplayingCell indexPath.row = \(indexPath.row)")
     let story = storyArray[indexPath.row]
     if let context = story.contentPrefetchContext {
-      FoodiePrefetch.global.removePrefetchWork(for: context)
+      // TODO: - Reinstate Prefetch  FoodiePrefetch.global.removePrefetchWork(for: context)
     }
   }
 }
