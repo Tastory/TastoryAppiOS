@@ -40,6 +40,7 @@ class FoodieMedia: FoodieFileObject {
       CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
     }
   }
+
   
   
   
@@ -52,6 +53,8 @@ class FoodieMedia: FoodieFileObject {
   
   
 
+  
+  
   // MARK: - Public Instance Functions
 
   // This is the Initilizer Parse will call upon Query or Retrieves
@@ -179,7 +182,7 @@ extension FoodieMedia: FoodieObjectDelegate {
         return (imageMemoryBuffer != nil)
         
       case .video:
-        return (videoExportPlayer != nil)
+        return (videoExportPlayer != nil)  // !!! For this case, it's not possible to tell if it's retrieved, or retrieving
       }
     }
     return false
@@ -234,7 +237,8 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   func retrieveFromLocalThenServer(forceAnyways: Bool,
                                    type localType: FoodieObject.LocalType,
-                                   withBlock callback: SimpleErrorBlock?) {
+                                   withReady readyBlock: SimpleBlock? = nil,
+                                   withCompletion callback: SimpleErrorBlock?) {
     
     guard let fileName = foodieFileName else {
       CCLog.fatal("FoodieMedia has no foodieFileName")
@@ -250,6 +254,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     
     // If photo and in memory, or video and in player, just callback
     if !forceAnyways && isRetrieved {
+      readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval
       DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }
       return
       
@@ -260,8 +265,10 @@ extension FoodieMedia: FoodieObjectDelegate {
         retrieveFromServerToBuffer() { buffer, error in
           if let error = error {
             CCLog.warning("retrieveFromServerToBuffer for photo failed with error \(error.localizedDescription)")
+          } else {
+            if let imageBuffer = buffer as? Data { self.imageMemoryBuffer = imageBuffer }
+            readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval
           }
-          if let imageBuffer = buffer as? Data { self.imageMemoryBuffer = imageBuffer }
           callback?(error)
         }
         
@@ -274,12 +281,14 @@ extension FoodieMedia: FoodieObjectDelegate {
             self.videoExportPlayer = nil
             callback?(error)
           } else if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
+            
             callback?(nil)
           } else {
             self.videoExportPlayer = nil
             callback?(ErrorCode.retrieveFileDoesNotExist)
           }
         }
+        readyBlock?()
       }
       return
     }
@@ -292,6 +301,7 @@ extension FoodieMedia: FoodieObjectDelegate {
         guard let error = error as? FoodieFileObject.FileErrorCode else {
           // Error is nil. This is actually success case!
           if let imageBuffer = buffer as? Data { self.imageMemoryBuffer = imageBuffer }
+          readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval
           callback?(nil)
           return
         }
@@ -315,6 +325,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       guard !FoodieFileObject.checkIfExists(for: fileName, in: .cache) else {
         self.videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getFileURL(for: .cache, with: fileName))
         DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+          readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval
           callback?(nil)
         }
         return
@@ -333,6 +344,7 @@ extension FoodieMedia: FoodieObjectDelegate {
           callback?(ErrorCode.retrieveFileDoesNotExist)
         }
       }
+      readyBlock?()
     }
   }
   
@@ -341,14 +353,19 @@ extension FoodieMedia: FoodieObjectDelegate {
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
-                         withBlock callback: SimpleErrorBlock?) {
+                         withReady readyBlock: SimpleBlock? = nil,
+                         withCompletion callback: SimpleErrorBlock?) {
     
     // Retrieve self. This object have no children
     switch location {
     case .local:
-      retrieve(from: localType, forceAnyways: forceAnyways, withBlock: callback)
+      retrieve(from: localType, forceAnyways: forceAnyways) { error in
+        readyBlock?()
+        callback?(error)
+      }
+      
     case .both:
-      retrieveFromLocalThenServer(forceAnyways: forceAnyways, type: localType, withBlock: callback)
+      retrieveFromLocalThenServer(forceAnyways: forceAnyways, type: localType, withReady: readyBlock, withCompletion: callback)
     }
   }
   

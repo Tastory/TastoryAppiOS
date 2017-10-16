@@ -246,13 +246,13 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       self.foodieObject.resetOutstandingChildOperations()
       
       // Got through all sanity check, calling children's retrieveRecursive
-      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
       
-      self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
       
       if let markups = self.markups {
         for markup in markups {
-          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
         }
       }
       
@@ -320,24 +320,24 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       self.foodieObject.resetOutstandingChildOperations()
       
       // Got through all sanity check, calling children's retrieveRecursive
-      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
       
       if let moments = self.moments {
         for moment in moments {
-          self.foodieObject.retrieveChild(moment, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+          self.foodieObject.retrieveChild(moment, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
         }
       }
       
       if let markups = self.markups {
         for markup in markups {
-          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
         }
       }
       
       // Do we need to retrieve User?
       
       if let venue = self.venue {
-        self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+        self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
       }
     }
   }
@@ -699,7 +699,12 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
-                         withBlock callback: SimpleErrorBlock?) {
+                         withReady readyBlock: SimpleBlock? = nil,
+                         withCompletion callback: SimpleErrorBlock?) {
+    
+    guard readyBlock == nil else {
+      CCLog.fatal("FoodieStory does not support Ready Responses")
+    }
     
     CCLog.verbose("Retrieve Recursive for Story \(getUniqueIdentifier())")
     

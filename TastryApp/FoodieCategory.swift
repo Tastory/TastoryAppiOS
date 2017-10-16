@@ -236,7 +236,12 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
-                         withBlock callback: SimpleErrorBlock?) {
+                         withReady readyBlock: SimpleBlock? = nil,
+                         withCompletion callback: SimpleErrorBlock?) {
+    
+    guard readyBlock == nil else {
+      CCLog.fatal("FoodieStory does not support Ready Responses")
+    }
     
     // Retrieve self. This object have no children
     foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)

@@ -127,10 +127,10 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Public Instance Variables
-  var mediaObj: FoodieMedia? {
+  var media: FoodieMedia? {
     didSet {
-      mediaFileName = mediaObj!.foodieFileName
-      mediaType = mediaObj!.mediaType?.rawValue
+      mediaFileName = media!.foodieFileName
+      mediaType = media!.mediaType?.rawValue
     }
   }
   
@@ -144,7 +144,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Private Instance Variables
   fileprivate var asyncOperationQueue = OperationQueue()
-  fileprivate var hasRetrieved = false  // this flag indicate if this moment has been retrieved from Parse ?
+  private var readyCallback: (() -> Void)?
+  private var readyMutex = SwiftMutex.create()
   
   
   
@@ -158,9 +159,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
-      if self.mediaObj == nil, let fileName = self.mediaFileName,
+      if self.media == nil, let fileName = self.mediaFileName,
         let typeString = self.mediaType, let type = FoodieMediaType(rawValue: typeString) {
-        self.mediaObj = FoodieMedia(for: fileName, localType: localType, mediaType: type)
+        self.media = FoodieMedia(for: fileName, localType: localType, mediaType: type)
       }
       
       if self.thumbnail == nil, let fileName = self.thumbnailFileName {
@@ -186,8 +187,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      guard let media = self.mediaObj else {
-        CCLog.assert("Unexpected Moment.retrieve() resulted in moment.mediaObj = nil")
+      guard let media = self.media else {
+        CCLog.assert("Unexpected Moment.retrieve() resulted in moment.media = nil")
         callback?(error)
         return
       }
@@ -201,13 +202,13 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       self.foodieObject.resetOutstandingChildOperations()
       
       // Got through all sanity check, calling children's retrieveRecursive
-      self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
       
-      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
       
       if let markups = self.markups {
         for markup in markups {
-          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
         }
       }
     }
@@ -223,7 +224,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     var childOperationPending = false
     
     // Need to make sure all children FoodieRecursives saved before proceeding
-    if let media = mediaObj {
+    if let media = media {
       foodieObject.saveChild(media, to: location, type: localType, withBlock: callback)
       childOperationPending = true
     }
@@ -268,7 +269,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           CCLog.warning("Deleting self resulted in error: \(error.localizedDescription)")
           
           // Do best effort delete of all children
-          if let media = self.mediaObj {
+          if let media = self.media {
             self.foodieObject.deleteChild(media, from: location, type: localType, withBlock: nil)
           }
           
@@ -291,7 +292,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         var childOperationPending = false
         
         // check for media and thumbnails to be deleted from this object
-        if let media = self.mediaObj {
+        if let media = self.media {
           self.foodieObject.deleteChild(media, from: location, type: localType, withBlock: callback)
           childOperationPending = true
         }
@@ -326,7 +327,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     foodieObject.delegate = self
     asyncOperationQueue.maxConcurrentOperationCount = 1
     
-    // mediaObj = FoodieMedia()  // retrieve() will take care of this. Don't set this here.
+    // media = FoodieMedia()  // retrieve() will take care of this. Don't set this here.
   }
   
   
@@ -335,8 +336,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     self.init()
     thumbnailObj = foodieMedia.generateThumbnail()
     thumbnailFileName = thumbnailObj!.foodieFileName
+    
     // didSet does not get called in initialization context...
-    mediaObj = foodieMedia
+    media = foodieMedia
     mediaFileName = foodieMedia.foodieFileName
     mediaType = foodieMedia.mediaType?.rawValue
 
@@ -386,18 +388,50 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
+  // Might execute block both synchronously or asynchronously
+  func execute(if notReadyBlock: SimpleBlock?, when readyBlock: @escaping SimpleBlock) {
+    var isReady = false
+    
+    // What's going on here is we are preventing a race condition between
+    // 1. The checking for retrieval here, which takes time. Can race with a potential completion process for a background retrieval
+    // 2. The calling of the notReadyBlock to make sure it's going to be before the readyBlock potentially by a background retrieval completion
+    
+    readyMutex.lock()
+    isReady = isRetrieved
+    
+    if !isReady {
+      notReadyBlock?()
+      readyCallback = readyBlock
+    } else {
+      readyCallback = nil
+    }
+    readyMutex.unlock()
+    
+    if isReady {
+      readyBlock()
+    }
+  }
+
+  
+  func executeReady() {
+    var blockToExecute: SimpleBlock?
+    
+    readyMutex.lock()
+    blockToExecute = readyCallback
+    readyCallback = nil
+    readyMutex.unlock()
+    
+    blockToExecute?()
+  }
+  
+  
   // MARK: - Foodie Object Delegate Conformance
   
   override var isRetrieved: Bool {
     
     let thumbnailIsRetrieved = thumbnail?.isRetrieved ?? false
     
-    var momentsAreRetrieved = true
-    if let moments = self.moments {
-      for moment in moments {
-        momentsAreRetrieved = momentsAreRetrieved || moment.isRetrieved
-      }
-    }
+    var mediaIsRetrieved = media?.isRetrieved ?? false
     
     var markupsAreRetrieved = true
     if let markups = self.markups {
@@ -406,7 +440,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       }
     }
     
-    return super.isRetrieved || thumbnailIsRetrieved || momentsAreRetrieved || markupsAreRetrieved
+    return super.isRetrieved || thumbnailIsRetrieved || mediaIsRetrieved || markupsAreRetrieved
   }
   
   
@@ -414,7 +448,12 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
-                         withBlock callback: SimpleErrorBlock?) {
+                         withReady readyBlock: SimpleBlock? = nil,
+                         withCompletion callback: SimpleErrorBlock?) {
+    
+    guard readyBlock == nil else {
+      CCLog.fatal("FoodieMoment does not support Ready Resposnes")
+    }
     
     CCLog.verbose("Retrieve Recursive for Moment \(getUniqueIdentifier())")
     
@@ -451,13 +490,15 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Cancel Retrieve Recursive for Moment \(getUniqueIdentifier())")
     
+    readyCallback = nil  // Not too sure about this one...
+    
     retrieveFromLocalThenServer(forceAnyways: false, type: .cache) { error in
       if let error = error {
         CCLog.assert("Moment.retrieve() resulted in error: \(error.localizedDescription)")
         return
       }
       
-      if let media = self.mediaObj {
+      if let media = self.media {
         media.cancelRetrieveFromServerRecursive()
       }
       
@@ -478,7 +519,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Cancel Save Recursive for Moment \(getUniqueIdentifier())")
     
-    if let media = mediaObj {
+    if let media = media {
       media.cancelSaveToServerRecursive()
     }
     

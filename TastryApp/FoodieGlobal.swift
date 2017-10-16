@@ -15,6 +15,7 @@ typealias BooleanErrorBlock = (Bool, Error?) -> Void
 typealias AnyErrorBlock = (Any?, Error?) -> Void
 typealias SimpleErrorBlock = (Error?) -> Void
 typealias UserErrorBlock = (FoodieUser?, Error?) -> Void
+typealias SimpleBlock = () -> Void
 
 
 enum FoodieMediaType: String {
@@ -27,6 +28,7 @@ enum FoodieMediaType: String {
 struct FoodieGlobal {
   
   // MARK: - Constants
+  
   struct Constants {
     static let ThumbnailPixels = 640.0
     static let JpegCompressionQuality: Double = 0.8

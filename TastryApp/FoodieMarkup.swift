@@ -39,10 +39,14 @@ extension FoodieMarkup: FoodieObjectDelegate {
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
-                         withBlock callback: SimpleErrorBlock?) {
+                         withReady readyBlock: SimpleBlock? = nil,
+                         withCompletion callback: SimpleErrorBlock?) {
     
     // Retrieve self. This object have no children
-    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      readyBlock?()
+      callback?(error)
+    }
   }
   
   

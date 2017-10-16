@@ -33,12 +33,14 @@ protocol FoodieObjectDelegate: class {
   
   func retrieveFromLocalThenServer(forceAnyways: Bool,
                                    type: FoodieObject.LocalType,
-                                   withBlock callback: SimpleErrorBlock?)
+                                   withReady readyBlock: SimpleBlock?,
+                                   withCompletion callback: SimpleErrorBlock?)
   
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool,
-                         withBlock callback: SimpleErrorBlock?)
+                         withReady readyBlock: SimpleBlock?,
+                         withCompletion callback: SimpleErrorBlock?)
   
   func save(to localType: FoodieObject.LocalType,
             withBlock callback: SimpleErrorBlock?)
@@ -69,13 +71,6 @@ protocol FoodieObjectDelegate: class {
   func foodieObjectType() -> String
 }
 
- 
-
-protocol FoodieObjectWaitOnRetrieveDelegate: class {
-  
-  func retrieved(for object: FoodieObjectDelegate)
-}
-
 
  
 class FoodieObject {
@@ -103,6 +98,7 @@ class FoodieObject {
   
   
   // MARK: Error Types Definition
+  
   enum ErrorCode: LocalizedError {
     
     case saveStateTransitionNoState
@@ -147,18 +143,20 @@ class FoodieObject {
   
   
   // MARK: - Public Instance Variables
+  
   weak var delegate: FoodieObjectDelegate?
-  weak var waitOnRetrieveDelegate: FoodieObjectWaitOnRetrieveDelegate?
   
 
   
   // MARK: - Private Instance Variables
+  
   fileprivate(set) var operationError: Error? = nil
   fileprivate var retrieveStateMutex = SwiftMutex.create()
   fileprivate(set) var retrieveState: RetrieveStates = .notAvailable
   fileprivate var outstandingChildOperationsMutex = SwiftMutex.create()
   fileprivate var outstandingChildOperations = 0
-  
+  fileprivate var outstandingChildReadiesMutex = SwiftMutex.create()
+  fileprivate var outstandingChildReadies = 0
   
   
   // MARK: - Public Static Functions
@@ -195,11 +193,15 @@ class FoodieObject {
   }
   
   
-  func retrieveChild(_ child: FoodieObjectDelegate, from location: StorageLocation, type localType: LocalType, forceAnyways: Bool, withBlock callback: SimpleErrorBlock?) {
+  func retrieveChild(_ child: FoodieObjectDelegate, from location: StorageLocation, type localType: LocalType, forceAnyways: Bool, withReady readyBlock: SimpleBlock? = nil, withCompletion callback: SimpleErrorBlock?) {
     guard let delegate = delegate else {
       CCLog.fatal("delegate = nil. Unable to proceed.")
     }
     
+    SwiftMutex.lock(&self.outstandingChildReadiesMutex)
+    outstandingChildReadies += 1
+    //let beforeReadies = self.outstandingChildReadies
+    SwiftMutex.unlock(&self.outstandingChildReadiesMutex)
     
     SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
@@ -210,7 +212,21 @@ class FoodieObject {
       CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Outstanding: \(beforeOutstanding)")
     #endif
     
-    child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways) { error in
+    child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, withReady: {
+      
+      // This needs to be critical section or race condition between many childrens' completion can occur
+      var childReadiesPending = true
+      SwiftMutex.lock(&self.outstandingChildReadiesMutex)
+      self.outstandingChildReadies -= 1
+      //let afterReadies = self.outstandingChildReadies
+      if self.outstandingChildReadies == 0 { childReadiesPending = false }
+      SwiftMutex.unlock(&self.outstandingChildReadiesMutex)
+      
+      if !childReadiesPending {
+        readyBlock?()
+      }
+      
+    }, withCompletion: { error in
       if let error = error {
         CCLog.warning("retrieveChild on \(child.foodieObjectType())(\(child.getUniqueIdentifier())) failed with Error \(error.localizedDescription)")
         self.operationError = error
@@ -231,7 +247,7 @@ class FoodieObject {
       if !childOperationsPending {
         callback?(self.operationError)
       }
-    }
+    })
   }
   
   
@@ -244,7 +260,7 @@ class FoodieObject {
     case .local:
       delegate.retrieve(from: localType, forceAnyways: forceAnyways, withBlock: callback)
     case .both:
-      delegate.retrieveFromLocalThenServer(forceAnyways: forceAnyways, type: localType, withBlock: callback)
+      delegate.retrieveFromLocalThenServer(forceAnyways: forceAnyways, type: localType, withReady: nil, withCompletion: callback)
     }
   }
   
@@ -367,66 +383,4 @@ class FoodieObject {
       delegate.deleteFromLocalNServer(withBlock: callback)
     }
   }
-  
-  
-  // Function to retrieve if the Download status calls for
-  func retrieveIfPending(withBlock callback: SimpleErrorBlock?) -> Bool {
-    
-    var needRetrieval = false
-    
-    SwiftMutex.lock(&retrieveStateMutex)
-    
-    if retrieveState == .pendingRetrieval {
-      retrieveState = .retrieving
-      needRetrieval = true
-      SwiftMutex.unlock(&retrieveStateMutex)
-      
-    } else {
-      SwiftMutex.unlock(&retrieveStateMutex)
-      return false  // Nothing pending, just return false
-    }
-    
-    if needRetrieval {
-      guard let delegateObj = delegate else {
-        CCLog.fatal("delegate not expected to be nil in retrieveIfPending()")
-      }
-      delegateObj.retrieveRecursive(from: .both, type: .cache, forceAnyways: false) { error in
-        
-        // Move forward state if success, backwards if failed
-        SwiftMutex.lock(&self.retrieveStateMutex)
-        
-        if error == nil {
-          self.retrieveState = .objectSynced
-        } else {
-          self.retrieveState = .notAvailable
-        }
-        SwiftMutex.unlock(&self.retrieveStateMutex)
-        
-        callback?(error)
-        self.waitOnRetrieveDelegate?.retrieved(for: delegateObj)
-        self.waitOnRetrieveDelegate = nil
-      }
-      return true  // Pending retrieval issued as retrieval, return true
-    }
-  }
-  
-  
-  // Funciton to check if Content Retrieved is set to True. Register delegate object if False
-  func checkRetrieved(ifFalseSetDelegate delegate: FoodieObjectWaitOnRetrieveDelegate) -> Bool {
-    
-    var retrieved = false
-    SwiftMutex.lock(&retrieveStateMutex)
-    
-    switch retrieveState {
-    case .pendingRetrieval, .retrieving:
-      waitOnRetrieveDelegate = delegate
-      retrieved = false
-    case .notAvailable, .objectSynced:
-      retrieved = true
-    }
-    
-    SwiftMutex.unlock(&retrieveStateMutex)
-    return retrieved
-  }
-  
 }

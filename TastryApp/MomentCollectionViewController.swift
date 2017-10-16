@@ -80,7 +80,7 @@ class MomentCollectionViewController: UICollectionViewController {
     // Long Press detected on a Moment Thumbnail. Set that as the Story Thumbnail
     // TODO: Do we need to factor out thumbnail operations?
     currentStory.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
-    currentStory.thumbnailObj = momentArray[indexPath.row].thumbnailObj
+    currentStory.thumbnail = momentArray[indexPath.row].thumbnail
 
     // Unhide the Thumbnail Frame to give feedback to user that this is the Story Thumbnail
     cell.thumbFrameView.isHidden = false
@@ -136,7 +136,7 @@ extension MomentCollectionViewController {
     
     let moment = momentArray[indexPath.row]
     
-    guard let thumbnailObj = moment.thumbnailObj else {
+    guard let thumbnailObj = moment.thumbnail else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
         CCLog.assert("No Thumbnail Object for Moment \(moment.getUniqueIdentifier())")
       }
@@ -201,7 +201,7 @@ extension MomentCollectionViewController {
       }
     }
 
-    cell.momentThumb.image = UIImage(data: moment.thumbnailObj!.imageMemoryBuffer!)
+    cell.momentThumb.image = UIImage(data: moment.thumbnail!.imageMemoryBuffer!)
   
     // Should Thumbnail frame be hidden?
     cell.createFrameLayer()

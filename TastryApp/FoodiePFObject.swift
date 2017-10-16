@@ -118,7 +118,8 @@ class FoodiePFObject: PFObject {
   // At the Fetch stage, Parse doesn't care about Draft vs Cache anymore. But this always saves a copy back into Cache if ultimately retrieved from Server
   func retrieveFromLocalThenServer(forceAnyways: Bool,
                                    type localType: FoodieObject.LocalType,
-                                   withBlock callback: SimpleErrorBlock?) {
+                                   withReady readyBlock: SimpleBlock? = nil,
+                                   withCompletion callback: SimpleErrorBlock?) {
     
     let fetchRetry = SwiftRetry()
     

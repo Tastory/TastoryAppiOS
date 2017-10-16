@@ -937,7 +937,7 @@ extension MapViewController: MKMapViewDelegate {
       view.canShowCallout = true
     }
     
-    if let thumbnail = annotation.story.thumbnailObj, let imageData = thumbnail.imageMemoryBuffer {
+    if let thumbnail = annotation.story.thumbnail, let imageData = thumbnail.imageMemoryBuffer {
       
       let screenSize = UIScreen.main.bounds
       

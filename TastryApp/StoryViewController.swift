@@ -15,7 +15,6 @@ class StoryViewController: TransitableViewController {
   
   // MARK: - Constants
   struct Constants {
-    static let MomentsToBufferAtATime = FoodieGlobal.Constants.MomentsToBufferAtATime
     static let MomentsViewingTimeInterval = 5.0
   }
   
@@ -23,53 +22,22 @@ class StoryViewController: TransitableViewController {
   // MARK: - Public Instance Variables
   var viewingStory: FoodieStory? {
     didSet {
-      fetchSomeMoment(from: 0)
+      // Start Fetching Moment?
     }
   }
   
   
   // MARK: - Private Instance Variables
   fileprivate let jotViewController = JotViewController()
-  fileprivate var photoTimer: Timer?
   fileprivate var currentMoment: FoodieMoment?
   fileprivate var currentExportPlayer: AVExportPlayer?
+  fileprivate var photoTimer: Timer?
   fileprivate var avPlayerLayer: AVPlayerLayer!
   fileprivate var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
+  fileprivate var photoTimeRemaining: TimeInterval = 0.0
   fileprivate var soundOn: Bool = true
   fileprivate var isPaused: Bool = false
-  fileprivate var photoTimeRemaining: TimeInterval = 0.0
   
-  
-  // Generic error dialog box to the user on internal errors
-  func internalErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when a Story View internal error occured",
-                                              message: "An internal error has occured. Please try again",
-                                              messageComment: "Alert dialog message when a Story View internal error occured",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for generic StoryView errors",
-                                     style: .default)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-  
-  // Generic error dialog box to the user when displaying photo or video
-  fileprivate func displayErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when Story View has problem displaying photo or video",
-                                              message: "Error displaying media. Please try again",
-                                              messageComment: "Alert dialog message when Story View has problem displaying photo or video",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for error when displaying photo or video in StoryView",
-                                     style: .default)
-      
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
   
   
   // MARK: - IBOutlets
@@ -88,17 +56,20 @@ class StoryViewController: TransitableViewController {
     displayNextMoment()
   }
 
+  
   @IBAction func tapBackward(_ sender: UITapGestureRecognizer) {
     CCLog.info("User tapped Backward")
     displayPreviousMoment()
   }
   
+  
   @IBAction func swipeUp(_ sender: UISwipeGestureRecognizer) {
     CCLog.info("User swiped Up")
     
     guard let story = viewingStory else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected, viewingStory = nil")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.assert("Unexpected, viewingStory = nil")
+      }
       return
     }
     
@@ -148,19 +119,12 @@ class StoryViewController: TransitableViewController {
   
   
   // MARK: - Private Instance Functions
-  
   fileprivate func pausePlay() {
-    guard let currentMoment = currentMoment, let mediaObject = currentMoment.mediaObj, let mediaType = mediaObject.mediaType else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.assert("No Current Moment, Media Object, or Media Type for StoryVC when trying to pause/reumse")
-        self.dismiss(animated: true, completion: nil)
-      }
-      return
-    }
-    
-    guard let avPlayer = currentExportPlayer?.avPlayer else {
+    guard let currentMoment = currentMoment, let mediaObject = currentMoment.media, let mediaType = mediaObject.mediaType, let avPlayer = currentExportPlayer?.avPlayer else {
+        
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.assert("Expected AVExportPlayer")
+        CCLog.assert("No Current Moment, Media Object, Media Type or AVPlayer for StoryVC when trying to pause/reumse")
+        self.dismiss(animated: true, completion: nil)
       }
       return
     }
@@ -199,50 +163,37 @@ class StoryViewController: TransitableViewController {
   }
   
   
-  fileprivate func fetchSomeMoment(from momentNumber: Int) {
-    guard let story = viewingStory else {
-      CCLog.fatal("Unexpected, no Story being viewed by Story View Controller")
-    }
-    
-    guard let moments = story.moments else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected, storymoments = nil")
-      return
-    }
-    
-    // Start pre-fetching if Moment array is not empty
-    if !moments.isEmpty {
-      story.contentRetrievalRequest(fromMoment: momentNumber, forUpTo: Constants.MomentsToBufferAtATime)
-    }
-  }
-  
   
   fileprivate func displayMoment(_ moment: FoodieMoment) {
     
-    guard let mediaObject = moment.mediaObj else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected, moment.mediaObj == nil ")
+    guard let mediaObject = moment.media else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("Unexpected, moment.media == nil ")
+      }
       return
     }
     
     guard let mediaType = mediaObject.mediaType else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected, mediaObject.mediaType == nil")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("Unexpected, mediaObject.mediaType == nil")
+      }
       return
     }
     
     // Keep track of what moment we are displaying
     currentMoment = moment
     
-    // Remove Blue Layer and Activity Indicator
+    // Remove Blur Layer and Activity Indicator
     activitySpinner.remove()
     
     // Try to display the media as by type
     if mediaType == .photo {
 
       guard let imageBuffer = mediaObject.imageMemoryBuffer else {
-        displayErrorDialog()
-        CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
+          self.dismiss(animated: true, completion: nil)
+        }
         return
       }
       
@@ -305,21 +256,25 @@ class StoryViewController: TransitableViewController {
       for markup in markups {
         
         if !markup.isDataAvailable {
-          displayErrorDialog()
-          CCLog.fatal("Markup not available even tho Moment deemed Loaded")
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("Markup not available even tho Moment deemed Loaded")
+          }
+          return
         }
         
         guard let dataType = markup.dataType else {
-          displayErrorDialog()
-          CCLog.assert("Unexpected markup.dataType = nil")
-          self.dismiss(animated: true, completion: nil)
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            CCLog.assert("Unexpected markup.dataType = nil")
+            self.dismiss(animated: true, completion: nil)
+          }
           return
         }
         
         guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
-          displayErrorDialog()
-          CCLog.assert("markup.dataType did not actually translate into valid type")
-          self.dismiss(animated: true, completion: nil)
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            CCLog.assert("markup.dataType did not actually translate into valid type")
+            self.dismiss(animated: true, completion: nil)
+          }
           return
         }
         
@@ -327,9 +282,10 @@ class StoryViewController: TransitableViewController {
           
         case .jotLabel:
           guard let labelData = markup.data else {
-            displayErrorDialog()
-            CCLog.assert("Unexpected markup.data = nil when dataType == .jotLabel")
-            self.dismiss(animated: true, completion: nil)
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+              CCLog.assert("Unexpected markup.data = nil when dataType == .jotLabel")
+              self.dismiss(animated: true, completion: nil)
+            }
             return
           }
           
@@ -341,9 +297,10 @@ class StoryViewController: TransitableViewController {
           
         case .jotDrawView:
           guard let drawViewDictionary = markup.data else {
-            displayErrorDialog()
-            CCLog.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
-            self.dismiss(animated: true, completion: nil)
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+              CCLog.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
+              self.dismiss(animated: true, completion: nil)
+            }
             return
           }
           
@@ -355,34 +312,6 @@ class StoryViewController: TransitableViewController {
       jotViewController.unserialize(jotDictionary)
       
       pauseResumeButton.isHidden = false
-    }
-  }
-  
-  
-  fileprivate func displayMomentIfLoaded(for moment: FoodieMoment) {
-    
-    guard let story = viewingStory else {
-      CCLog.fatal("Unexpected, no Story being viewed by Story View Controller")
-    }
-    
-    let momentIndex = story.getIndexOf(moment)
-    
-    // Fetch this and a few more moments regardless
-    fetchSomeMoment(from: momentIndex)
-    
-    if moment.foodieObject.checkRetrieved(ifFalseSetDelegate: self) {
-      if moment.foodieObject.retrieveState == .objectSynced {
-        DispatchQueue.main.async { [weak self] in self?.displayMoment(moment) }
-      } else {
-        // Seems moment is not available. Move on to the next one
-        CCLog.warning("displayMomentIfLoaded moment.checkRetrieved returned operationState != .objectSynced. Skipping moment index = \(momentIndex)")
-        currentMoment = moment
-        displayNextMoment()
-      }
-    } else {
-      CCLog.verbose("displayMomentIfLoaded: Not yet loaded")
-      activitySpinner.apply(below: tapGestureStackView)
-      soundButton.isHidden = true
     }
   }
   
@@ -425,20 +354,26 @@ class StoryViewController: TransitableViewController {
   @objc func displayNextMoment() {
     
     guard let story = viewingStory else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected, viewingStory = nil")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Unexpected, viewingStory = nil")
+        self.dismiss(animated: true, completion: nil)
+      }
       return
     }
     
     guard let moments = story.moments else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected, viewingStory.moments = nil")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Unexpected, viewingStory.moments = nil")
+        self.dismiss(animated: true, completion: nil)
+      }
       return
     }
     
     guard let moment = currentMoment else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected, currentMoment = nil")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Unexpected, currentMoment = nil")
+        self.dismiss(animated: true, completion: nil)
+      }
       return
     }
     
@@ -451,7 +386,7 @@ class StoryViewController: TransitableViewController {
     if nextIndex == moments.count {
       dismiss(animated: true, completion: nil)
     } else {
-      displayMomentIfLoaded(for: moments[nextIndex])
+      //self.displayMomentIfLoaded(for: moments[nextIndex])
     }
   }
   
@@ -460,20 +395,26 @@ class StoryViewController: TransitableViewController {
   func displayPreviousMoment() {
     
     guard let story = viewingStory else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected, viewingStory = nil")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Unexpected, viewingStory = nil")
+        self.dismiss(animated: true, completion: nil)
+      }
       return
     }
     
     guard let moments = story.moments else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected, viewingStory.moments = nil")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Unexpected, viewingStory.moments = nil")
+        self.dismiss(animated: true, completion: nil)
+      }
       return
     }
     
     guard let moment = currentMoment else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected, currentMoment = nil")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Unexpected, currentMoment = nil")
+        self.dismiss(animated: true, completion: nil)
+      }
       return
     }
     
@@ -503,29 +444,34 @@ class StoryViewController: TransitableViewController {
     jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                              andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
     addChildViewController(jotViewController)
+    
+    jotViewController.view.frame = view.bounds
     view.addSubview(jotViewController.view)
     view.insertSubview(jotViewController.view, belowSubview: tapGestureStackView)
     jotViewController.didMove(toParentViewController: self)
-    jotViewController.view.frame = view.bounds
     
     activitySpinner = ActivitySpinner(addTo: view)
     
-    dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)
     tapBackwardsWidth.constant = UIScreen.main.bounds.width/3.0  // Gotta test this on a different screen size to know if this works
+    dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)  // This is needed so that the Swipe down to dismiss from TransitableViewController will only have an effect if this is not a Swipe Up to Safari
   }
   
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     guard let story = viewingStory else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected viewingStory = nil")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Unexpected viewingStory = nil")
+        self.dismiss(animated: true, completion: nil)
+      }
       return
     }
     
     guard let moments = story.moments, !moments.isEmpty else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected viewingStory.moments = nil or empty")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Unexpected viewingStory.moments = nil or empty")
+        self.dismiss(animated: true, completion: nil)
+      }
       return
     }
     
@@ -559,19 +505,6 @@ class StoryViewController: TransitableViewController {
 }
 
 
-// MARK: - Foodie Moment Wait On Content Delegate Conformance
-extension StoryViewController: FoodieObjectWaitOnRetrieveDelegate {
-  
-  func retrieved(for object: FoodieObjectDelegate) {
-    guard let moment = object as? FoodieMoment else {
-      internalErrorDialog()
-      CCLog.assert("JouranlViewController retrieved() for object is not FoodieMoment")
-      return
-    }
-    DispatchQueue.main.async { [weak self] in self?.displayMoment(moment) }
-  }
-}
-
 
 // MARK: - Safari View Controller Did Finish Delegate Conformance
 extension StoryViewController: SFSafariViewControllerDelegate {
@@ -582,6 +515,7 @@ extension StoryViewController: SFSafariViewControllerDelegate {
     }
   }
 }
+
 
 
 // MARK: - AVPlayAndExportDelegate Conformance

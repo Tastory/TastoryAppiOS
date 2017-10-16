@@ -129,7 +129,7 @@ class FeedCollectionViewController: UICollectionViewController {
         return
       }
       
-      guard let thumbnailObject = story.thumbnailObj else {
+      guard let thumbnailObject = story.thumbnail else {
         AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Cover Media") { action in
           CCLog.assert("Story.retrieveDigest callback with thumbnailObj = nil")
         }

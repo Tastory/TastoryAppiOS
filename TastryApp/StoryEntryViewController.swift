@@ -325,14 +325,14 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     }
     viewController.markupReturnDelegate = markupReturnVC
 
-    guard let mediaObj = moment.mediaObj else {
+    guard let media = moment.media else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
         CCLog.assert("Nil media object in moment")
       }
       return
     }
 
-    viewController.mediaObj = mediaObj
+    viewController.mediaObj = media
     viewController.editMomentObj = moment
     viewController.addToExistingStoryOnly = true
     viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: false)
