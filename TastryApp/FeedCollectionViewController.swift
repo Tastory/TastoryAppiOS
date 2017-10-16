@@ -150,6 +150,7 @@ class FeedCollectionViewController: UICollectionViewController {
           // CCLog.verbose("cellForItem(at:) DispatchQueue.main for cell #\(indexPath.row)")
           cell.storyTitle?.text = self.storyArray[indexPath.row].title
           cell.storyButton?.setImage(UIImage(data: thumbnailData), for: .normal)
+          cell.storyButton?.imageView?.contentMode = .scaleAspectFill
           cell.activityIndicator.isHidden = true
           cell.activityIndicator.stopAnimating()
           

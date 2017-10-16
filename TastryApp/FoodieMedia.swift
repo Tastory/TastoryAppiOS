@@ -254,8 +254,10 @@ extension FoodieMedia: FoodieObjectDelegate {
     
     // If photo and in memory, or video and in player, just callback
     if !forceAnyways && isRetrieved {
-      readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval
-      DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }
+      DispatchQueue.global(qos: .userInitiated).async {
+        readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval?
+        callback?(nil)
+      }
       return
       
     } else if forceAnyways {
@@ -288,7 +290,7 @@ extension FoodieMedia: FoodieObjectDelegate {
             callback?(ErrorCode.retrieveFileDoesNotExist)
           }
         }
-        readyBlock?()
+        DispatchQueue.global(qos: .userInitiated).async { readyBlock?() }  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
       }
       return
     }
@@ -305,11 +307,13 @@ extension FoodieMedia: FoodieObjectDelegate {
           callback?(nil)
           return
         }
+        
         if error == FoodieFileObject.FileErrorCode.fileManagerReadLocalNoFile {
           // This is expected when file is not cached to local
         } else {
           CCLog.warning("retrieveFromLocalToBuffer for photo failed with error \(error.localizedDescription)")
         }
+        
         self.retrieveFromServerToBuffer() { (buffer, error) in
           if let error = error {
             CCLog.warning("retrieveFromServerToBuffer for photo failed with error \(error.localizedDescription)")
@@ -346,7 +350,7 @@ extension FoodieMedia: FoodieObjectDelegate {
           callback?(ErrorCode.retrieveFileDoesNotExist)
         }
       }
-      readyBlock?()
+      DispatchQueue.global(qos: .userInitiated).async { readyBlock?() }  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
     }
   }
   
@@ -362,7 +366,9 @@ extension FoodieMedia: FoodieObjectDelegate {
     switch location {
     case .local:
       retrieve(from: localType, forceAnyways: forceAnyways) { error in
-        readyBlock?()
+        if error == nil {
+          readyBlock?()
+        }
         callback?(error)
       }
       

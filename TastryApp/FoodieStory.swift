@@ -698,7 +698,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     }
 
     guard let moments = moments else {
-      CCLog.assert("Moments shoudl not be nil")
+      CCLog.assert("Moments should not be nil")
       return false
     }
     

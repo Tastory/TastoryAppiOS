@@ -183,12 +183,8 @@ class StoryViewController: TransitableViewController {
     // Keep track of what moment we are displaying
     currentMoment = moment
     
-    // Remove Blur Layer and Activity Indicator
-    activitySpinner.remove()
-    
     // Try to display the media as by type
     if mediaType == .photo {
-
       guard let imageBuffer = media.imageMemoryBuffer else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
           CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
@@ -197,11 +193,13 @@ class StoryViewController: TransitableViewController {
         return
       }
       
+      // Display the Photo
       photoView.contentMode = .scaleAspectFill
       photoView.image = UIImage(data: imageBuffer)
       view.insertSubview(photoView, belowSubview: jotViewController.view)
 
-      // Hide the sound button
+      // UI Update
+      activitySpinner.remove()
       soundButton?.isHidden = true
       
       // Create timer for advancing to the next media? // TODO: Should not be a fixed time
@@ -211,7 +209,6 @@ class StoryViewController: TransitableViewController {
       }
       
     } else if mediaType == .video {
-      
       guard let videoExportPlayer = media.videoExportPlayer, let avPlayer = videoExportPlayer.avPlayer else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
           CCLog.assert("MediaObject.videoExportPlayer == nil")
@@ -224,7 +221,7 @@ class StoryViewController: TransitableViewController {
       videoExportPlayer.delegate = self
       avPlayerLayer.player = avPlayer
       view.insertSubview(videoView, belowSubview: jotViewController.view)
-      activitySpinner.apply(below: tapGestureStackView)
+      //activitySpinner.apply(below: tapGestureStackView)
       
       // Should we play sound? Should the sound button be visible?
       avPlayer.volume = 0.0
@@ -321,13 +318,14 @@ class StoryViewController: TransitableViewController {
     var shouldRetrieveMoment = false
     
     moment.execute(ifNotReady: {
-      CCLog.verbose("displayMomentIfLoaded: Not yet loaded")
+      CCLog.verbose("Moment \(moment.getUniqueIdentifier()) not yet loaded")
       self.activitySpinner.apply(below: self.tapGestureStackView)
       self.soundButton.isHidden = true
       shouldRetrieveMoment = true  // Don't execute the retrieve here. This is actually executed inside of a mutex
       
     }, whenReady: {
-      self.displayMoment(moment)
+      CCLog.verbose("Moment \(moment.getUniqueIdentifier()) ready to display")
+      DispatchQueue.main.async { self.displayMoment(moment) }
     })
     
     if shouldRetrieveMoment {
@@ -505,10 +503,6 @@ class StoryViewController: TransitableViewController {
     
     // If a moment was already in play, just display that again. Otherwise try to display the first moment
     if currentMoment == nil {
-      
-      // Always display activity indicator and blur layer up front
-      
-      activitySpinner.apply(below: tapGestureStackView)
       soundButton.isHidden = true
       pauseResumeButton.isHidden = true
       

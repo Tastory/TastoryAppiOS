@@ -433,7 +433,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
     
     guard let thumbnail = thumbnail, let media = media, let markups = markups else {
-      CCLog.assert("Thumbnail, Markups and Venue should all be not nil")
+      // If anything is nil, just re-retrieve? CCLog.assert("Thumbnail, Markups and Venue should all be not nil")
       return false
     }
     

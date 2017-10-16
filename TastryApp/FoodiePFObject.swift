@@ -104,7 +104,7 @@ class FoodiePFObject: PFObject {
       
       // No Object or No Data Available
       else if object == nil || self.isDataAvailable == false {
-        CCLog.debug("fetchFromLocalDatastore did not return Data Available & Object for \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))")
+        CCLog.assert("fetchFromLocalDatastore did not return Data Available & Object for \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))")
         callback?(PFErrorCode.errorCacheMiss as? Error)
         return
       }

@@ -44,7 +44,7 @@ extension FoodieMarkup: FoodieObjectDelegate {
     
     // Retrieve self. This object have no children
     foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
-      readyBlock?()
+      if error == nil { readyBlock?() }
       callback?(error)
     }
   }

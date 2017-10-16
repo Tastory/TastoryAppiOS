@@ -203,7 +203,7 @@ class FoodieObject {
     
     SwiftMutex.lock(&self.outstandingChildReadiesMutex)
     outstandingChildReadies += 1
-    //let beforeReadies = self.outstandingChildReadies
+    let beforeReadies = self.outstandingChildReadies
     SwiftMutex.unlock(&self.outstandingChildReadiesMutex)
     
     SwiftMutex.lock(&self.outstandingChildOperationsMutex)
@@ -212,7 +212,7 @@ class FoodieObject {
     SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
     
     #if DEBUG
-      CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Outstanding: \(beforeOutstanding)")
+      CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(beforeReadies), Outstanding: \(beforeOutstanding)")
     #endif
     
     child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, withReady: {
@@ -221,9 +221,13 @@ class FoodieObject {
       var childReadiesPending = true
       SwiftMutex.lock(&self.outstandingChildReadiesMutex)
       self.outstandingChildReadies -= 1
-      //let afterReadies = self.outstandingChildReadies
+      let afterReadies = self.outstandingChildReadies
       if self.outstandingChildReadies == 0 { childReadiesPending = false }
       SwiftMutex.unlock(&self.outstandingChildReadiesMutex)
+      
+      #if DEBUG
+        CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieved child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(afterReadies)")
+      #endif
       
       if !childReadiesPending {
         readyBlock?()
