@@ -199,7 +199,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      self.foodieObject.resetOutstandingChildOperations()
+      self.foodieObject.resetChildOperationVariables()
       
       // Got through all sanity check, calling children's retrieveRecursive
       self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
@@ -220,7 +220,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                                    type localType: FoodieObject.LocalType,
                                    withBlock callback: SimpleErrorBlock?) {
     
-    foodieObject.resetOutstandingChildOperations()
+    foodieObject.resetChildOperationVariables()
     var childOperationPending = false
     
     // Need to make sure all children FoodieRecursives saved before proceeding
@@ -288,7 +288,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           return
         }
         
-        self.foodieObject.resetOutstandingChildOperations()
+        self.foodieObject.resetChildOperationVariables()
         var childOperationPending = false
         
         // check for media and thumbnails to be deleted from this object

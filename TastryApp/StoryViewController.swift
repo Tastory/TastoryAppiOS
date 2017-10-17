@@ -348,6 +348,7 @@ class StoryViewController: TransitableViewController {
     currentExportPlayer?.delegate = nil
     avPlayerLayer.player = nil
     currentExportPlayer?.layerDisconnected()
+    currentExportPlayer = nil
   }
   
   
@@ -541,10 +542,16 @@ extension StoryViewController: SFSafariViewControllerDelegate {
 extension StoryViewController: AVPlayAndExportDelegate {
  
   func avExportPlayer(isLikelyToKeepUp avExportPlayer: AVExportPlayer) {
+    pauseResumeButton.isHidden = false
+    if currentExportPlayer != nil {
+      soundButton.isHidden = false
+    }
     activitySpinner.remove()
   }
   
   func avExportPlayer(isWaitingForData avExportPlayer: AVExportPlayer) {
+    soundButton.isHidden = true
+    pauseResumeButton.isHidden = true
     activitySpinner.apply(below: tapGestureStackView)
   }
   

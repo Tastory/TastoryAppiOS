@@ -172,7 +172,8 @@ class FoodieObject {
   // MARK: - Public Instance Functions
   
   // Reset outstandingChildOperations
-  func resetOutstandingChildOperations() {
+  func resetChildOperationVariables() {
+    operationError = nil
     outstandingChildOperations = 0
     outstandingChildReadies = 0
   }

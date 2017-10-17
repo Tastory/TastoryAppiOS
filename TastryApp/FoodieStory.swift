@@ -238,7 +238,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      self.foodieObject.resetOutstandingChildOperations()
+      self.foodieObject.resetChildOperationVariables()
       
       // Got through all sanity check, calling children's retrieveRecursive
       self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
@@ -266,7 +266,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     }
     author = currentUser
     
-    self.foodieObject.resetOutstandingChildOperations()
+    self.foodieObject.resetChildOperationVariables()
     var childOperationPending = false
     
     // Need to make sure all children recursive saved before proceeding
@@ -312,7 +312,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      self.foodieObject.resetOutstandingChildOperations()
+      self.foodieObject.resetChildOperationVariables()
       
       // Got through all sanity check, calling children's retrieveRecursive
       self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
@@ -348,7 +348,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     }
     author = currentUser
     
-    self.foodieObject.resetOutstandingChildOperations()
+    self.foodieObject.resetChildOperationVariables()
     var childOperationPending = false
     
     // Need to make sure all children recursive saved before proceeding
@@ -423,7 +423,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
           return
         }
         
-        self.foodieObject.resetOutstandingChildOperations()
+        self.foodieObject.resetChildOperationVariables()
         var childOperationPending = false
         
         if let moments = self.moments {

@@ -58,7 +58,6 @@ class AVExportPlayer: NSObject {
   
   // MARK: - Private Instance Variable
   private var avURLAsset: AVURLAsset?
-  
   private var periodicObserver: Any?
   
   
@@ -70,10 +69,12 @@ class AVExportPlayer: NSObject {
   var delegate: AVPlayAndExportDelegate? {
     didSet {
       if let avPlayerItem = avPlayer?.currentItem {
-        if avPlayerItem.isPlaybackLikelyToKeepUp {
-          delegate?.avExportPlayer(isLikelyToKeepUp: self)
-        } else {
-          delegate?.avExportPlayer(isWaitingForData: self)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+          if avPlayerItem.isPlaybackLikelyToKeepUp {
+            self?.delegate?.avExportPlayer(isLikelyToKeepUp: self!)
+          } else {
+            self?.delegate?.avExportPlayer(isWaitingForData: self!)
+          }
         }
       }
     }
@@ -86,7 +87,60 @@ class AVExportPlayer: NSObject {
   }
   
   
+  override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+    
+    guard context == &avExportContext else {
+      CCLog.warning("Did not get back address of avExportContext as context")
+      return
+    }
+    
+    guard let keyPath = keyPath else {
+      CCLog.warning("No KeyPath for observeValue")
+      return
+    }
+    
+    guard object != nil else {
+      CCLog.warning("No object for observeValue")
+      return
+    }
+    
+    DispatchQueue.main.async {
+      if keyPath == #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackLikelyToKeepUp) {
+        guard let change = change as? [NSKeyValueChangeKey : Bool], let isLikelyToKeepUp = change[.newKey] else {
+          CCLog.warning("ChangeKey is not of Bool Type")
+          return
+        }
+        if isLikelyToKeepUp {
+          self.delegate?.avExportPlayer(isLikelyToKeepUp: self)
+        } else {
+          self.delegate?.avExportPlayer(isWaitingForData: self)
+        }
+      }
+      else {
+        CCLog.warning("No Match for Keypath - \(keyPath)")
+        return
+      }
+    }
+  } 
+  
+  
   // MARK: - Private Instance Functions
+  private func determineIfPlaying() {
+    if let avPlayer = self.avPlayer, let avPlayerItem = avPlayer.currentItem {
+      if avPlayerItem.isPlaybackLikelyToKeepUp {
+        //CCLog.verbose("avPlayer.periodicObserver - isPlaybackLikelyToKeepUp")
+        delegate?.avExportPlayer(isLikelyToKeepUp: self)
+      } else if avPlayerItem.isPlaybackBufferEmpty {
+        //CCLog.verbose("avPlayer.periodicObserver - isPlaybackBufferEmpty")
+        delegate?.avExportPlayer(isWaitingForData: self)
+      }  else if avPlayerItem.isPlaybackBufferFull {
+        //CCLog.verbose("avPlayer.periodicObserver - isPlaybackBufferFull")
+      } else {
+        //CCLog.verbose("avPlayer.periodicObserver - Buffering")
+      }
+    }
+  }
+  
   private func switchBackingToLocalIfNeeded() {
     
     if let avExportSession = avExportSession {
@@ -131,13 +185,14 @@ class AVExportPlayer: NSObject {
     avPlayer!.pause()  // Leave this Paused for good measure, until a Layer is added and explicitly plays
     
     // Adding Observers for Starts and Stalls. Queue must be a Serial Queue
-    periodicObserver = avPlayer!.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 100), queue: DispatchQueue.main) { [weak self] time in
-      if avPlayerItem.isPlaybackLikelyToKeepUp {
-        self?.delegate?.avExportPlayer(isLikelyToKeepUp: self!)
-      } else {
-        self?.delegate?.avExportPlayer(isWaitingForData: self!)
-      }
+    periodicObserver = avPlayer!.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 600), queue: DispatchQueue.main) { [weak self] time in
+      self?.determineIfPlaying()
     }
+    
+    // Adding Observers for Starts and Stalls
+//    DispatchQueue.main.async {
+//      self.addObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackLikelyToKeepUp), options: [.new], context: &self.avExportContext)
+//    }
   }
   
 
@@ -259,15 +314,14 @@ class AVExportPlayer: NSObject {
     
   deinit {
     // This essentially is a Cancel for everything. So let's cancel everything, clean-up, and call it
-    guard let avPlayer = avPlayer else {
-      CCLog.fatal("avPlayer = nil unexpected")
-    }
+    CCLog.verbose("AVExportPlayer Deinit")
     if let periodicObserver = periodicObserver {
-      avPlayer.removeTimeObserver(periodicObserver)
+      avPlayer?.removeTimeObserver(periodicObserver)
     }
+//    self.removeObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackLikelyToKeepUp))
     NotificationCenter.default.removeObserver(self)
     avExportSession?.cancelExport()
-    //removeObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackLikelyToKeepUp))
+    avPlayer?.replaceCurrentItem(with: nil)
   }
     
     

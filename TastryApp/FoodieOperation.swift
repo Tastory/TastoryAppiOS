@@ -59,6 +59,13 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
     }
     
     return StoryOperation(with: type, on: story) { error in
+      
+      #if DEBUG
+        CCLog.info("A fetch \(type.rawValue) operation for Story \(story.getUniqueIdentifier()) completed.")
+      #else
+        CCLog.debug("A fetch \(type.rawValue) operation for Story \(story.getUniqueIdentifier()) completed.")
+      #endif
+      
       if let error = error {
         switch error {
         case ErrorCode.allMomentsForStoryRetrieved:
@@ -70,6 +77,13 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
         }
       }
       let nextStoryOperation = createRecursive(with: type, on: story, at: priority)
+      
+      #if DEBUG
+        CCLog.info("Queue Story \(type.rawValue) Operation for \(story.getUniqueIdentifier())")
+      #else
+        CCLog.debug("Queue Story \(type.rawValue) Operation for \(story.getUniqueIdentifier())")
+      #endif
+      
       FoodieFetch.global.queue(nextStoryOperation, at: priority)
     }
   }

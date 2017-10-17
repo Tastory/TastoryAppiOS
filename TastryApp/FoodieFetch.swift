@@ -35,7 +35,7 @@ class FoodieFetch {
   // !!! This function must be operating inside of Operation Mutex Lock !!!
   private func splitArray(with priority: Operation.QueuePriority, for object: AnyObject) -> [FoodieOperation] {
     guard let operationArray = operationArray[priority] else {
-      CCLog.fatal("Operation Array for \(priority) does not exist")
+      CCLog.fatal("Operation Array for priority \(priority.rawValue) does not exist")
     }
     var operations = [FoodieOperation]()
 
@@ -61,17 +61,31 @@ class FoodieFetch {
   func queue(_ operation: FoodieOperation, at priority: Operation.QueuePriority) {  // We can later make an intermediary sublcass to make it more diverse across any objects. Eg. Prefetch User Objects, etc
     DispatchQueue.global(qos: .userInitiated).async {
       guard self.operationArray[priority] != nil else {
-        CCLog.fatal("Operation Array for \(priority) does not exist")
+        CCLog.fatal("Operation Array for priority \(priority.rawValue) does not exist")
       }
       self.operationMutex.lock()
       self.operationArray[priority]!.append(operation)
+      let beginCount = self.operationArray[priority]!.count
       self.operationMutex.unlock()
+      
+      #if DEBUG
+        CCLog.info("Added operation to queue priority \(priority.rawValue). Now at \(beginCount) outstanding")
+      #else
+        CCLog.debug("Added operation to queue priority \(priority.rawValue). Now at \(beginCount) outstanding")
+      #endif
       
       operation.queuePriority = priority
       operation.completionBlock = {
         self.operationMutex.lock()
         self.operationArray[priority] = self.operationArray[priority]!.filter { $0 !== operation }
+        let endCount = self.operationArray[priority]!.count
         self.operationMutex.unlock()
+        
+        #if DEBUG
+          CCLog.info("Completion recieved for queue priority \(priority.rawValue). Now at \(endCount) outstanding")
+        #else
+          CCLog.debug("Completion recieved for queue priority \(priority.rawValue). Now at \(endCount) outstanding")
+        #endif
       }
       self.fetchQueue.addOperation(operation)
     }
@@ -85,7 +99,7 @@ class FoodieFetch {
       self.operationMutex.unlock()
 
       if operations.count > 1 {
-        CCLog.assert("Not expecting \(operations.count) operations for object in each queue priority")
+        CCLog.warning("Not expecting \(operations.count) operations for object in each queue priority")
       }
       else if operations.count == 1 {
         operations[0].cancel()
@@ -97,7 +111,7 @@ class FoodieFetch {
   func cancelAllBut(for object: AnyObject, at priority: Operation.QueuePriority) {
     DispatchQueue.global(qos: .userInitiated).async {
       guard let operationArray = self.operationArray[priority] else {
-        CCLog.fatal("Operation Array for \(priority) does not exist")
+        CCLog.fatal("Operation Array for priority \(priority.rawValue) does not exist")
       }
 
       self.operationMutex.lock()
@@ -116,7 +130,7 @@ class FoodieFetch {
   func cancelAll(at priority: Operation.QueuePriority) {
     DispatchQueue.global(qos: .userInitiated).async {
       guard let operationArray = self.operationArray[priority] else {
-        CCLog.fatal("Operation Array for \(priority) does not exist")
+        CCLog.fatal("Operation Array for priority \(priority.rawValue) does not exist")
       }
       
       self.operationMutex.lock()
