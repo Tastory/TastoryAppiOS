@@ -113,7 +113,7 @@ extension MomentCollectionViewController {
     if let moments = workingStory.moments {
       return moments.count
     } else {
-      CCLog.assert("No Moments in Working Story")
+      CCLog.verbose("No Moments in Working Story")
       return 0
     }
   }
