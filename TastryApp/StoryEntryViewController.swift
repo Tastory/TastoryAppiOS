@@ -512,12 +512,24 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         }
       }
 
+      // compute the insert index for the collection view
       var indexPaths: [IndexPath] = []
-      var index = 0
+      var itemIndex = 1
 
       if(workingStory.moments != nil) {
-        index += (workingStory.moments!.count - 1)
+        itemIndex += (workingStory.moments!.count - 1)
       }
+
+      guard let collectionView = self.momentViewController.collectionView else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.fatal("collection view is nil")
+        }
+        return
+      }
+
+      // there is a bug in collectionview that miscount the number of items
+      // by adding the following line it will synchronize the count properly Dont remove!!!! 
+      collectionView.numberOfItems(inSection: 0)
 
       for returnedMoment in returnedMoments {
         // Let's figure out what to do with the returned Moment
@@ -540,11 +552,8 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         } else {
 
           workingStory.add(moment: returnedMoment)
-
-          CCLog.verbose("item \(index)")
-          indexPaths.append(IndexPath( item: (index) , section: 0))
-          index += 1
-
+          indexPaths.append(IndexPath( item: (itemIndex) , section: 0))
+          itemIndex += 1
 
           // If there wasn't any moments before, we got to make this the default thumbnail for the Story
           // Got to do this also when removing moments!!!
@@ -563,12 +572,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         }
       }
 
-      guard let collectionView = self.momentViewController.collectionView else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-          CCLog.fatal("collection view is nil")
-        }
-        return
-      }
 
       guard let moments = workingStory.moments else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
@@ -577,11 +580,12 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         return
       }
 
-      // this updates the collectionView and must be done when story entry view is visible
-      // NEVER run the following code when collection view is not visible. It will crash!!!!!
       if(returnedMoments.count == moments.count) {
+        // always reload data when view collection is empty from beginning otherwise it will crash
         collectionView.reloadData()
       } else {
+        // this updates the collectionView and must be done when story entry view is visible
+        // NEVER run the following code when collection view is not visible. It will crash!!!!!
         collectionView.insertItems(at: indexPaths)
       }
     }

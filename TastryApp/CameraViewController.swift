@@ -420,6 +420,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     }
     viewController.mediaObj = mediaObj
     viewController.markupReturnDelegate = self
+    viewController.addToExistingStoryOnly = addToExistingStoryOnly
     self.present(viewController, animated: true)
   }
 
@@ -498,9 +499,10 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     }
   }
 
-  func processMoments() {
+  func dismissComplete() {
+    // to display all the buttons properly in markup this code must be in this function otherwise
+    // the buttons will be hidden
     if(markedupMoments.count == 1) {
-
       guard let moment = markedupMoments[0] else {
         CCLog.assert("Unwrapped nil moment")
         return
@@ -510,11 +512,11 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
         CCLog.assert("Unwrapped nil moment")
         return
       }
-
       self.displayMarkUpController(mediaObj: mediaObj)
-
     }
+  }
 
+  func processMoments() {
     if(markedupMoments.count > 1)
     {
       var selectedMoments: [FoodieMoment] = []
@@ -537,13 +539,20 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       else
       {
         workingStory = FoodieStory.currentStory!
-        StorySelector.displayStorySelection(to: self, newStoryHandler: { (uiaction) in
-          StorySelector.showStoryDiscardDialog(to: self, withBlock: { (error) in
-            self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: FoodieStory.newCurrent())
+
+        if(addToExistingStoryOnly) {
+          DispatchQueue.main.async {
+            self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
+          }
+        } else {
+          StorySelector.displayStorySelection(to: self, newStoryHandler: { (uiaction) in
+            StorySelector.showStoryDiscardDialog(to: self, withBlock: { (error) in
+              self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: FoodieStory.newCurrent())
+            })
+          }, addToCurrentHandler: { (uiaction) in
+            self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
           })
-        }, addToCurrentHandler: { (uiaction) in
-          self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
-        })
+        }
       }
     }
   }
