@@ -11,7 +11,7 @@ import AVFoundation
 
 class FoodieMedia: FoodieFileObject {
   
-  // MARK: - Error Types Definition
+  // MARK: - Error Types
   enum ErrorCode: LocalizedError {
     
     case retrieveFileDoesNotExist

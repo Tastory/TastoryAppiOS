@@ -33,7 +33,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   typealias CategoriesErrorBlock = ([FoodieCategory]?, Error?) -> Void
   
   
-  // MARK: - Error Types Definition
+  // MARK: - Error Types
   enum ErrorCode: LocalizedError {
     
     case searchFoursquareBothNearAndLocation

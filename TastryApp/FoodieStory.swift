@@ -53,7 +53,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     var location: FoodieObject.StorageLocation
     var localType: FoodieObject.LocalType
     var forceAnyways: Bool
-    var error: Error?
+    //var error: Error?
     var callback: ((Error?) -> Void)?
     
     init(on operationType: OperationType,
@@ -111,7 +111,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   
   
-  // MARK: Error Types Definition
+  // MARK: Error Types
   enum ErrorCode: LocalizedError {
     
     case retrieveDigestStoryNilThumbnail
@@ -157,16 +157,11 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Public Instance Variables
   var thumbnail: FoodieMedia?
-  var selfPrefetchContext: FoodiePrefetch.Context?
-  var contentPrefetchContext: FoodiePrefetch.Context?
+  
 
   
   // MARK: - Private Instance Variables
   fileprivate var asyncOperationQueue = OperationQueue()
-  fileprivate var contentRetrievalMutex = SwiftMutex.create()
-  fileprivate var contentRetrievalInProg = false
-  fileprivate var contentRetrievalPending = false
-  fileprivate var contentRetrievalPendingCallback: SimpleErrorBlock?
   
   
   
@@ -485,23 +480,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       self.moments = [moment]
     }
   }
-  
-  
-  // Function to move Moment to specified position in Moment array. Return failure if moving past end of array
-  // Other Moments in the array might have their position altered accordingly
-  // Controller layer should query to confirm how other Moments might have their orders and positions changed
-  func move(moment: FoodieMoment,
-            to position: Int) {
-    
-  }
-  
-  
-  // Function to delete specified Moment
-  // Other Moments in the array might have their position altered accordingly
-  // Controller layer should query to confirm how other Moments might have their orders and positions changed
-  func remove(moment: FoodieMoment) {
-  }
-  
+
   
   // Function to get index of specified Moment in Moment Array
   func getIndexOf(_ moment: FoodieMoment) -> Int {
@@ -520,125 +499,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.assert("story.getIndexOf() cannot find Moment from Moment Array")
     return momentArray.count  // This is error case
-  }
-  
-  
-  
-  // MARK: - Children Moments Retrieval Algorithms
-  
-  // Function to mark Moments and Media to retrieve, and then kick off the retrieval state machine
-  func contentRetrievalRequest(fromMoment startNumber: Int, forUpTo numberOfMoments: Int, withBlock callback: SimpleErrorBlock? = nil) {
-    fatalError("contentRetrievalRequest To Be Removed")
-//
-//    guard let momentArray = moments else {
-//      CCLog.assert("contentRetrieveRequest for \(foodieObjectType())(\(getUniqueIdentifier())) has moments = nil.")
-//      callback?(ErrorCode.contentRetrieveMomentArrayNil)
-//      return
-//    }
-//
-//    // Adjust number to retrieve based on how many Moments there are until the end
-//    var index = startNumber
-//    var numberToRetrieve = numberOfMoments
-//
-//    if numberOfMoments == 0 {
-//      numberToRetrieve = momentArray.count
-//    }
-//
-//    // Mark the Moment and Media to fetch as appropriate
-//    while index < momentArray.count, numberToRetrieve > 0 {
-//
-//      let moment = momentArray[index]
-//      moment.foodieObject.markPendingRetrieval()
-//
-//      numberToRetrieve -= 1
-//      index += 1
-//    }
-//
-//    // Start the content retrieval state machine if it's not already started
-//    var executeStateMachine = false
-//    SwiftMutex.lock(&contentRetrievalMutex)  // TODO-Performance: Move to OperationQueue to eliminate chance of blocking main thread
-//
-//    if contentRetrievalInProg {
-//      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) already in progress")
-//      contentRetrievalPending = true
-//      contentRetrievalPendingCallback = callback
-//    } else {
-//      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) begins")
-//      contentRetrievalInProg = true
-//      executeStateMachine = true
-//    }
-//
-//    SwiftMutex.unlock(&contentRetrievalMutex)
-//
-//    // Bringing function call out of critical section
-//    if executeStateMachine {
-//      contentRetrievalStateMachine(momentIndex: 0, withError: nil, withBlock: callback)
-//    }
-  }
-  
-    
-  // The brain of the content retrieval process
-  func contentRetrievalStateMachine(momentIndex: Int, withError firstError: Error?, withBlock callback: SimpleErrorBlock? = nil) {
-    fatalError("contentRetrievalRequest To Be Removed")
-//
-//    guard let momentArray = moments else {
-//      CCLog.assert("contentRetrieveStateMachine for \(foodieObjectType())(\(getUniqueIdentifier())) has moments = nil")
-//      callback?(ErrorCode.contentRetrieveMomentArrayNil)
-//      return
-//    }
-//
-//    var index = momentIndex
-//
-//    // Look for the next moment that is marked for retrieval
-//    while index < momentArray.count {
-//      let moment = momentArray[index]
-//
-//      // Retrieve the Moment first. One step at a time...
-//      if moment.foodieObject.retrieveIfPending(withBlock: { error in
-//
-//        var currentError = firstError
-//
-//        if let err = error {
-//          // TODO: How do we signal a background task error? Get whatever top of the presenting stack and push an error dialoge box on it?
-//          CCLog.warning("\(self.foodieObjectType())(\(self.getUniqueIdentifier)) retrieve content of Type \(moment.foodieObjectType())(\(moment.getUniqueIdentifier())) resulted in Error = \(err.localizedDescription)")
-//          if currentError == nil { currentError = err }
-//          self.contentRetrievalStateMachine(momentIndex: momentIndex+1, withError: currentError, withBlock: callback)
-//          return
-//        }
-//
-//        self.contentRetrievalStateMachine(momentIndex: momentIndex+1, withError: currentError, withBlock: callback)
-//      }) { return }
-//
-//      // See if the next moment needs retrieval if the previous one doesn't
-//      index += 1
-//    }
-//
-//    // Do callback if there is one since we went through the entire momentArray
-//    if firstError == nil {
-//      callback?(nil)
-//    } else {
-//      callback?(firstError)
-//    }
-//
-//    // If there was a pending retrieval operation, go for another round
-//    var executeStateMachine = false
-//    SwiftMutex.lock(&contentRetrievalMutex)  // TODO-Performance: Move to OperationQueue to eliminate chance of blocking main thread
-//
-//    if contentRetrievalPending {
-//      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) was pending. Initiate another round of Content Retrieval")
-//      contentRetrievalPending = false
-//      executeStateMachine = true
-//    } else {
-//      CCLog.verbose("Content Retrieval for \(foodieObjectType())(\(getUniqueIdentifier())) completes!")
-//      contentRetrievalInProg = false
-//    }
-//
-//    SwiftMutex.unlock(&contentRetrievalMutex)
-//
-//    // Bringing function call out of critical section
-//    if executeStateMachine {
-//      contentRetrievalStateMachine(momentIndex: 0, withError: nil, withBlock: contentRetrievalPendingCallback)
-//    }
   }
   
   
@@ -825,36 +685,3 @@ extension FoodieStory: PFSubclassing {
   }
 }
 
-
-extension FoodieStory: FoodiePrefetchDelegate {
-  
-  func removePrefetchContexts() {
-    selfPrefetchContext = nil
-    contentPrefetchContext = nil
-    cancelRetrieveFromServerRecursive()
-  }
-  
-  func doPrefetch(on objectToFetch: AnyObject, for context: FoodiePrefetch.Context, withBlock callback: FoodiePrefetch.PrefetchCompletionBlock? = nil) {
-    if let story = objectToFetch as? FoodieStory {
-      
-      if story.thumbnail == nil {
-        // No Thumbnail Object, so assume the Story itself needs to be retrieved
-        CCLog.verbose("doPrefetch retrieveDigest for \(foodieObjectType())(\(getUniqueIdentifier()))")
-        story.retrieveDigest(from: .both, type: .cache) { error in
-          if let storyError = error {
-            CCLog.assert("On prefetch, retrieveDigest for \(self.foodieObjectType())(\(self.getUniqueIdentifier())) callback with error: \(storyError.localizedDescription)")
-          }
-          callback?(context)
-        }
-        
-      } else {
-        story.contentRetrievalRequest(fromMoment: 0, forUpTo: Constants.MomentsToBufferAtATime) { error in
-          if let storyError = error {
-            CCLog.warning("On prefetch, contentRetrievalRequest for \(self.foodieObjectType())(\(self.getUniqueIdentifier())) callback with error: \(storyError.localizedDescription)")
-          }
-          callback?(context)
-        }
-      }
-    }
-  }
-}

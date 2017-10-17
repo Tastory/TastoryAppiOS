@@ -41,7 +41,7 @@ class FoodieRole {
   }
   
   
-  // MARK: - Error Types Definition
+  // MARK: - Error Types
   enum ErrorCode: LocalizedError {
     
     case addUserFoundNonRole

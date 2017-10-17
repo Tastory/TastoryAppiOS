@@ -61,9 +61,6 @@ struct FoodieGlobal {
     
     // Create S3 Manager singleton
     FoodieFileObject.fileConfigure()
-    
-    // Create Prefetch Manager singleton
-    FoodiePrefetch.global = FoodiePrefetch()
   }
   
   

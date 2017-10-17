@@ -13,7 +13,7 @@ import CoreLocation
 
 class MapViewController: TransitableViewController {
 
-  // MARK: Error Types Definition
+  // MARK: Error Types
   enum ErrorCode: LocalizedError {
     
     case mapQueryExceededMaxLat
@@ -162,9 +162,6 @@ class MapViewController: TransitableViewController {
   
   
   @IBAction func searchWithFilter(_ sender: UIButton) {
-    
-    // Kill all Pre-fetches
-    FoodiePrefetch.global.removeAllPrefetchWork()
     
     performQuery { stories, error in
       if let error = error {
@@ -563,10 +560,7 @@ class MapViewController: TransitableViewController {
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    
-    // Kill all Pre-fetches
-    FoodiePrefetch.global.removeAllPrefetchWork()
-    
+ 
     // There should already be pins on the map, do nothing
     if storyQuery != nil {
       self.startLocationWatcher()
@@ -1003,16 +997,16 @@ extension MapViewController: MKMapViewDelegate {
       CCLog.warning("No StoryMapAnnotation associated with Annotation View")
       return
     }
-    let story = annotation.story
-    // TODO: - Reinstate Prefetch  story.contentPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: story, on: story)
+    let storyRecursivePrefetchOperation = StoryOperation.createRecursive(on: annotation.story, at: .low)
+    FoodieFetch.global.queue(storyRecursivePrefetchOperation, at: .low)
   }
   
   
   func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-    guard let annotation = view.annotation as? StoryMapAnnotation, let context = annotation.story.contentPrefetchContext else {
+    guard let annotation = view.annotation as? StoryMapAnnotation else {
       CCLog.warning("No PrefetchContext associated with Story, or no StoryMapAnnotation associated with Annotation View")
       return
     }
-    // TODO: - Reinstate Prefetch  FoodiePrefetch.global.removePrefetchWork(for: context)
+    FoodieFetch.global.cancel(for: annotation.story, at: .low)
   }
 }

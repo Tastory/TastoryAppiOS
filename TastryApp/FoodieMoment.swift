@@ -57,7 +57,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     var location: FoodieObject.StorageLocation
     var localType: FoodieObject.LocalType
     var forceAnyways: Bool
-    var error: Error?
+    //var error: Error?
     var callback: ((Error?) -> Void)?
     
     init(on operationType: OperationType,
@@ -103,7 +103,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
 
   
   
-  // MARK: - Error Types Definition
+  // MARK: - Error Types
   enum ErrorCode: LocalizedError {
     
     case setMediaWithPhotoImageNil

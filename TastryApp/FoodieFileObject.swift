@@ -14,7 +14,7 @@ import Foundation
 
 class FoodieFileObject {
   
-  // MARK: - Error Types Definition
+  // MARK: - Error Types
   enum FileErrorCode: LocalizedError {
     
     case fileManagerCopyItemLocalFailed
@@ -23,7 +23,6 @@ class FoodieFileObject {
     case fileManagerReadLocalFailed
     case fileManagerSaveLocalFailed
     case fileManagerRemoveItemLocalFailed
-    case urlSessionDownloadError
     case urlSessionDownloadNotUrlError
     case urlSessionDownloadHttpResponseNil
     case urlSessionDownloadHttpResponseFailed
@@ -50,8 +49,6 @@ class FoodieFileObject {
         return NSLocalizedString("Data.write failed", comment: "Error description for an exception error code")
       case .fileManagerRemoveItemLocalFailed:
         return NSLocalizedString("FileManager.removeItem failed", comment: "Error description for an exception error code")
-      case .urlSessionDownloadError:
-        return NSLocalizedString("DownloadSession.downloadTask Error", comment: "Error description for an exception error code")
       case .urlSessionDownloadNotUrlError:
         return NSLocalizedString("DownloadSession.downloadTask error not a URLError", comment: "Error description for an exception error code")
       case .urlSessionDownloadHttpResponseNil:
@@ -267,7 +264,7 @@ class FoodieFileObject {
           if !retrieveRetry.attemptRetryBasedOnURLError(urlError,
                                                         after: Constants.AwsRetryDelay,
                                                         withQoS: .userInitiated) {
-            callback?(FileErrorCode.urlSessionDownloadError)
+            callback?(urlError)
           }
           return
         }

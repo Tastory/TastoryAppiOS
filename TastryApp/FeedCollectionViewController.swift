@@ -68,13 +68,13 @@ class FeedCollectionViewController: UICollectionViewController {
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    FoodiePrefetch.global.unblockPrefetching()
+    //FoodiePrefetch.global.unblockPrefetching()
   }
   
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    FoodiePrefetch.global.removeAllPrefetchWork()
+    //FoodiePrefetch.global.removeAllPrefetchWork()
   }
   
   
@@ -116,11 +116,11 @@ class FeedCollectionViewController: UICollectionViewController {
     
     // CCLog.verbose("collectionView(cellForItemAt #\(indexPath.row)")
     
-    FoodiePrefetch.global.blockPrefetching()
+    //FoodiePrefetch.global.blockPrefetching()
     
     story.retrieveDigest(from: .both, type: .cache) { error in
       
-      FoodiePrefetch.global.unblockPrefetching()
+      //FoodiePrefetch.global.unblockPrefetching()
       
       if let error = error {
         AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story - \(error.localizedDescription)") { action in
@@ -213,9 +213,9 @@ class FeedCollectionViewController: UICollectionViewController {
   override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
     CCLog.verbose("collectionView didEndDisplayingCell indexPath.row = \(indexPath.row)")
     let story = storyArray[indexPath.row]
-    if let context = story.contentPrefetchContext {
-      // TODO: - Reinstate Prefetch  FoodiePrefetch.global.removePrefetchWork(for: context)
-    }
+//    if let context = story.contentPrefetchContext {
+//      // TODO: - Reinstate Prefetch  FoodiePrefetch.global.removePrefetchWork(for: context)
+//    }
   }
 }
 
@@ -248,7 +248,7 @@ extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
     for indexPath in indexPaths {
       CCLog.verbose("collectionView prefetchItemsAt indexPath.row = \(indexPath.row)")
       let story = storyArray[indexPath.row]
-      story.selfPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: story, on: story)
+      //story.selfPrefetchContext = FoodiePrefetch.global.addPrefetchWork(for: story, on: story)
     }
   }
   
@@ -256,9 +256,9 @@ extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
     for indexPath in indexPaths {
       CCLog.verbose("collectionView cancelPrefetchingForItemsAt indexPath.row = \(indexPath.row)")
       let story = storyArray[indexPath.row]
-      if let context = story.selfPrefetchContext {
-        FoodiePrefetch.global.removePrefetchWork(for: context)
-      }
+//      if let context = story.selfPrefetchContext {
+//        FoodiePrefetch.global.removePrefetchWork(for: context)
+//      }
     }
   }
 }

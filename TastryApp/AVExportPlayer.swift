@@ -28,7 +28,7 @@ class AVExportPlayer: NSObject {
     static let ExportRetryQoS = DispatchQoS.QoSClass.utility
   }
   
-  // MARK: - Error Types Definition
+  // MARK: - Error Types
   enum ErrorCode: LocalizedError {
     
     case exportAsyncStatusUnknownUnexpected

@@ -68,7 +68,7 @@ class FoodieVenue: FoodiePFObject  {
   }
   
   
-  // MARK: - Error Types Definition
+  // MARK: - Error Types
   enum ErrorCode: LocalizedError {
     
     case startupFoursquareCategoryError

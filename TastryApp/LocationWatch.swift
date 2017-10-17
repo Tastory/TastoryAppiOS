@@ -22,7 +22,7 @@ class LocationWatch: NSObject {
   }
   
   
-  // MARK: Error Types Definition
+  // MARK: Error Types
   enum ErrorCode: LocalizedError {
     
     case managerFailWithNoCLError

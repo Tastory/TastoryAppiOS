@@ -57,7 +57,7 @@ class FoodieUser: PFUser {
 
   
   
-  // MARK: - Error Types Definition
+  // MARK: - Error Types
   enum ErrorCode: LocalizedError {
     
     case loginFoodieUserNil
