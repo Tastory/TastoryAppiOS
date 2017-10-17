@@ -277,7 +277,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       case .video:
         videoExportPlayer = AVExportPlayer()
         videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getS3URL(for: fileName))
-        videoExportPlayer!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName)) { error in
+        videoExportPlayer!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
           if let error = error {
             CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
             self.videoExportPlayer = nil
@@ -338,7 +338,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
 
       videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getS3URL(for: fileName))
-      videoExportPlayer!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName)) { error in
+      videoExportPlayer!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
         if let error = error {
           CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
           self.videoExportPlayer = nil

@@ -24,6 +24,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   // MARK: - Types & Enumerations
   enum OperationType: String {
     case digest
+    case moment
     case nextMoment
   }
 
@@ -49,7 +50,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   
   // MARK: - Public Instance Variables
   var callback: SimpleErrorBlock?
-  
+  var momentNumber: Int = 999
   
   
   // MARK: - Public Static Functions
@@ -90,8 +91,11 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   
   
   // MARK: - Public Instance Functions
-  init(with type: OperationType, on story: FoodieStory, completion callback: SimpleErrorBlock?) {
+  init(with type: OperationType, on story: FoodieStory, for momentIndex: Int? = nil, completion callback: SimpleErrorBlock?) {
     super.init(with: type, on: story)
+    if let momentIndex = momentIndex {
+      self.momentNumber = momentIndex
+    }
     self.callback = callback
   }
   
@@ -113,6 +117,15 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
     switch opType {
     case .digest:
       story.retrieveDigest(from: .both, type: .cache) { error in
+        self.callback?(error)
+        self.finished()
+      }
+      
+    case .moment:
+      guard let moments = story.moments  else {
+        CCLog.fatal("Story has no moments")
+      }
+      moments[momentNumber].retrieveRecursive(from: .both, type: .cache) { error in
         self.callback?(error)
         self.finished()
       }

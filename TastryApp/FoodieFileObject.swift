@@ -89,6 +89,7 @@ class FoodieFileObject {
     static let DraftStoryMediaFolderUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieObject.LocalType.draft.rawValue, isDirectory: true)
     static let CleanCrashLogFolderUrl = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("CleanCrashLog", isDirectory: true)  // Cleanroom Logger will be responsible for creating this directory
     static let CacheFoodieMediaFolderUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieObject.LocalType.cache.rawValue, isDirectory: true)
+    static let TempFolderUrl = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("FoodieTemp", isDirectory: true)
     static let AwsRetryCount = FoodieGlobal.Constants.DefaultServerRequestRetryCount
     static let AwsRetryDelay = FoodieGlobal.Constants.DefaultServerRequestRetryDelay
   }
@@ -170,6 +171,11 @@ class FoodieFileObject {
   
   static func getS3URL(for fileName: String) -> URL {
     return Constants.CloudFrontUrl.appendingPathComponent(fileName, isDirectory: false)
+  }
+  
+  
+  static func getRandomTempFileURL() -> URL {
+    return Constants.CacheFoodieMediaFolderUrl.appendingPathComponent("\(UUID().uuidString).tmp", isDirectory: false)
   }
   
   

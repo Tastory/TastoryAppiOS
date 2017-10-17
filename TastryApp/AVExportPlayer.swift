@@ -57,15 +57,18 @@ class AVExportPlayer: NSObject {
   
   
   // MARK: - Private Instance Variable
+  private var localURL: URL?
   private var avURLAsset: AVURLAsset?
   private var periodicObserver: Any?
   
   
-  // MARK: - Public Instance Variable
+  // MARK: - Read-Only Instance Variable
   @objc private(set) var avPlayer: AVPlayer?
   private(set) var avExportSession: AVAssetExportSession?
   private(set) var avExportContext = 0
   
+  
+  // MARK: - Public Instance Variable
   var delegate: AVPlayAndExportDelegate? {
     didSet {
       if let avPlayerItem = avPlayer?.currentItem {
@@ -149,10 +152,22 @@ class AVExportPlayer: NSObject {
         
         // Swap AVPlayer's backing file to local Cache. It's assumed that the Cache file will always exist if the AVPlayer is still in Memory.
         // If the app quits and a cache clean up occurs, the AVPlayer will get reinitialized next time against the network instead.
-        guard let exportURL = avExportSession.outputURL else {
-          CCLog.fatal("Unable to get at outputURL. Cannot switch AVPlayer backing to Local File")
+        guard let outputURL = avExportSession.outputURL else {
+          CCLog.fatal("outputURL = nil. Cannot switch AVPlayer backing to Local File")
         }
-        self.initAVPlayer(from: exportURL)
+        
+        guard let localURL = localURL else {
+          CCLog.fatal("localURL = nil. Cannot copy exported file from Temp to Local")
+        }
+        
+        do {
+          try FileManager.default.copyItem(at: outputURL, to: localURL)
+        } catch {
+          CCLog.assert("Failed to copy from \(outputURL.absoluteString) to \(localURL.absoluteString)")
+          return
+        }
+        
+        self.initAVPlayer(from: localURL)
       }
     }
   }
@@ -196,7 +211,7 @@ class AVExportPlayer: NSObject {
   }
   
 
-  func exportAsync(to exportURL: URL, using preset: String = AVAssetExportPreset1280x720, with outputType: AVFileType = .mov, completion callback: ((Error?) -> Void)? = nil) {
+  func exportAsync(to exportURL: URL, thru tempURL: URL, using preset: String = AVAssetExportPreset1280x720, with outputType: AVFileType = .mov, completion callback: ((Error?) -> Void)? = nil) {
     
     guard let avPlayer = self.avPlayer else {
       CCLog.fatal("avPlayer == nil. Cannot check whether needed to switch AVPlayer backing to Local File")
@@ -208,18 +223,17 @@ class AVExportPlayer: NSObject {
       CCLog.fatal("avURLAsset == nil. initAVAsset must be called before initExportSession.")
     }
     
+    localURL = exportURL
     let playURL = avURLAsset.url
     
     let exportRetry = SwiftRetry()
     exportRetry.start("AVExport Sync to \(playURL.lastPathComponent)", withCountOf: Constants.ExportRetryCount) { [unowned self] in
-
       guard let avAssetExportSession = AVAssetExportSession(asset: avURLAsset, presetName: preset) else {
         CCLog.fatal("Unable to create AVAssetExportSession with URL: \(playURL) and Preset: \(preset)")
       }
-      
       CCLog.verbose("Starting AVExport Asynchronously from \(playURL.absoluteString) to \(exportURL.absoluteString)")
 
-      avAssetExportSession.outputURL = exportURL
+      avAssetExportSession.outputURL = tempURL
       avAssetExportSession.outputFileType = outputType
       avAssetExportSession.timeRange = CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity)
       self.avExportSession = avAssetExportSession
@@ -265,7 +279,7 @@ class AVExportPlayer: NSObject {
             if nsError.domain == AVFoundationErrorDomain, nsError.code == AVError.operationInterrupted.rawValue {
               // Operation was interrupted. Lets try to restart
               CCLog.warning("AV Export Asynchronously was Interrupted. Retrying")
-              self.exportAsync(to: exportURL, completion: callback)
+              self.exportAsync(to: exportURL, thru: tempURL, using: preset, with: outputType, completion: callback)
               return
             }
             

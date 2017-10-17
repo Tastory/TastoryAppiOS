@@ -41,8 +41,8 @@ class StoryViewController: TransitableViewController {
   @IBOutlet weak var photoView: UIImageView!
   @IBOutlet weak var videoView: UIView!
   @IBOutlet weak var swipeUpGestureRecognizer: UISwipeGestureRecognizer!
-  @IBOutlet weak var tapGestureStackView: UIStackView!
-  @IBOutlet weak var tapBackwardsWidth: NSLayoutConstraint!
+  @IBOutlet weak var tapForwardGestureRecognizer: UIView!
+  @IBOutlet weak var tapBackwardGestureRecognizer: UIView!
   @IBOutlet weak var soundButton: UIButton!
   @IBOutlet weak var pauseResumeButton: UIButton!
   
@@ -192,8 +192,8 @@ class StoryViewController: TransitableViewController {
       view.insertSubview(photoView, belowSubview: jotViewController.view)
 
       // UI Update
+      pauseResumeButton.isHidden = false
       activitySpinner.remove()
-      soundButton?.isHidden = true
       
       // Create timer for advancing to the next media? // TODO: Should not be a fixed time
       photoTimer = Timer.scheduledTimer(withTimeInterval: Constants.MomentsViewingTimeInterval,
@@ -214,23 +214,6 @@ class StoryViewController: TransitableViewController {
       videoExportPlayer.delegate = self
       avPlayerLayer.player = avPlayer
       view.insertSubview(videoView, belowSubview: jotViewController.view)
-      //activitySpinner.apply(below: tapGestureStackView)
-      
-      // Should we play sound? Should the sound button be visible?
-      avPlayer.volume = 0.0
-      
-      // Should we show the sound button?
-      if moment.playSound {
-        soundButton?.isHidden = false
-        
-        if soundOn {
-          avPlayer.volume = 1.0
-        }
-      } else {
-        soundButton?.isHidden = true
-      }
-      
-      // Finally, let's play the Media
       avPlayer.play()
       
       // No image nor video to work on, Fatal
@@ -300,20 +283,20 @@ class StoryViewController: TransitableViewController {
       
       jotDictionary[kLabels] = labelDictionary
       jotViewController.unserialize(jotDictionary)
-      
-      pauseResumeButton.isHidden = false
     }
   }
   
   
   fileprivate func displayMomentIfLoaded(for moment: FoodieMoment) {
+    guard let story = viewingStory else {
+      CCLog.fatal("viewingStory = nil")
+    }
     
     var shouldRetrieveMoment = false
     
     moment.execute(ifNotReady: {
       CCLog.verbose("Moment \(moment.getUniqueIdentifier()) not yet loaded")
-      self.activitySpinner.apply(below: self.tapGestureStackView)
-      self.soundButton.isHidden = true
+      self.activitySpinner.apply(below: self.tapBackwardGestureRecognizer)
       shouldRetrieveMoment = true  // Don't execute the retrieve here. This is actually executed inside of a mutex
       
     }, whenReady: {
@@ -325,22 +308,16 @@ class StoryViewController: TransitableViewController {
       if draftPreview {
         moment.retrieveRecursive(from: .local, type: .draft, withCompletion: nil)
       } else {
-        // TODO: - Execute this against the High Priority FoodieFetch Queue
-        moment.retrieveRecursive(from: .both, type: .cache) { error in
-          // TODO: - Complete this against the High Priority FoodieFetch Queue
-        }
+        let momentOperation = StoryOperation(with: .moment, on: story, for: story.getIndexOf(moment), completion: nil)
+        FoodieFetch.global.queue(momentOperation, at: .high)
       }
     }
   }
   
   
-  fileprivate func determineInitialUI(for moment: FoodieMoment) {
-    
-  }
-  
-  
   fileprivate func stopVideoTimerAndObservers(for moment: FoodieMoment) {
     pauseResumeButton.isHidden = true
+    soundButton.isHidden = true
     resumeStateTrack()
     photoTimer?.invalidate()
     photoTimer = nil
@@ -471,15 +448,13 @@ class StoryViewController: TransitableViewController {
     
     jotViewController.view.frame = view.bounds
     view.addSubview(jotViewController.view)
-    view.insertSubview(jotViewController.view, belowSubview: tapGestureStackView)
+    view.insertSubview(jotViewController.view, belowSubview: tapForwardGestureRecognizer)
     jotViewController.didMove(toParentViewController: self)
     
     activitySpinner = ActivitySpinner(addTo: view)
-    
-    tapBackwardsWidth.constant = UIScreen.main.bounds.width/3.0  // Gotta test this on a different screen size to know if this works
     dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)  // This is needed so that the Swipe down to dismiss from TransitableViewController will only have an effect if this is not a Swipe Up to Safari
   }
-  
+
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
@@ -501,10 +476,9 @@ class StoryViewController: TransitableViewController {
     
     // If a moment was already in play, just display that again. Otherwise try to display the first moment
     if currentMoment == nil {
+      currentMoment = moments[0]
       soundButton.isHidden = true
       pauseResumeButton.isHidden = true
-      
-      currentMoment = moments[0]
       displayMomentIfLoaded(for: currentMoment!)
     } else if isPaused {
       pausePlay()
@@ -542,17 +516,28 @@ extension StoryViewController: SFSafariViewControllerDelegate {
 extension StoryViewController: AVPlayAndExportDelegate {
  
   func avExportPlayer(isLikelyToKeepUp avExportPlayer: AVExportPlayer) {
-    pauseResumeButton.isHidden = false
-    if currentExportPlayer != nil {
-      soundButton.isHidden = false
+    if let avExportPlayer = currentExportPlayer, let avPlayer = avExportPlayer.avPlayer {
+      // So this is a playing video, should we turn on the sound? Sound button?
+      avPlayer.volume = 0.0
+      
+      // Should we show the sound button?
+      if currentMoment?.playSound ?? false {
+        soundButton.isHidden = false
+        if soundOn {
+          avPlayer.volume = 1.0
+        }
+      } else {
+        soundButton?.isHidden = true
+      }
     }
+    pauseResumeButton.isHidden = false
     activitySpinner.remove()
   }
   
   func avExportPlayer(isWaitingForData avExportPlayer: AVExportPlayer) {
     soundButton.isHidden = true
     pauseResumeButton.isHidden = true
-    activitySpinner.apply(below: tapGestureStackView)
+    activitySpinner.apply(below: tapBackwardGestureRecognizer)
   }
   
   func avExportPlayer(completedPlaying avExportPlayer: AVExportPlayer) {
