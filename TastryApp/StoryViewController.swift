@@ -326,7 +326,7 @@ class StoryViewController: TransitableViewController {
     photoTimer = nil
     currentExportPlayer?.avPlayer?.pause()
     currentExportPlayer?.delegate = nil
-    avPlayerLayer.player = nil
+    // avPlayerLayer.player = nil  // !!! Taking a risk here. So that video transitions will be a touch quicker
     currentExportPlayer?.layerDisconnected()
     currentExportPlayer = nil
   }
