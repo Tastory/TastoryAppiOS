@@ -73,11 +73,6 @@ extension AsyncOperation {
     state = .Executing
   }
   
-  open override func cancel() {
-    super.cancel()
-    state = .Finished
-  }
-  
   open func finished() {
     state = .Finished
   }

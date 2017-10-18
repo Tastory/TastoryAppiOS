@@ -24,6 +24,7 @@ class FoodieFetch {
   
   
   // MARK: - Private Instance Variable
+  private let dispatchQueue = DispatchQueue(label: "operationDispatchQueue", qos: DispatchQoS.userInitiated)
   private let fetchQueue = OperationQueue()
   private let operationMutex = SwiftMutex.create()
   private var operationArray = [Operation.QueuePriority: [FoodieOperation]]()
@@ -59,14 +60,14 @@ class FoodieFetch {
   
   // Idea here is that each object can at most only have 1 operation per priority
   func queue(_ operation: FoodieOperation, at priority: Operation.QueuePriority) {  // We can later make an intermediary sublcass to make it more diverse across any objects. Eg. Prefetch User Objects, etc
-    DispatchQueue.global(qos: .userInitiated).async {
+    dispatchQueue.sync {
       guard self.operationArray[priority] != nil else {
         CCLog.fatal("Operation Array for priority \(priority.rawValue) does not exist")
       }
-      self.operationMutex.lock()
+      //self.operationMutex.lock()
       self.operationArray[priority]!.append(operation)
       let beginCount = self.operationArray[priority]!.count
-      self.operationMutex.unlock()
+      //self.operationMutex.unlock()
       
       #if DEBUG
         CCLog.info("Added operation to queue priority \(priority.rawValue). Now at \(beginCount) outstanding")
@@ -76,10 +77,10 @@ class FoodieFetch {
       
       operation.queuePriority = priority
       operation.completionBlock = {
-        self.operationMutex.lock()
+        //self.operationMutex.lock()
         self.operationArray[priority] = self.operationArray[priority]!.filter { $0 !== operation }
         let endCount = self.operationArray[priority]!.count
-        self.operationMutex.unlock()
+        //self.operationMutex.unlock()
         
         #if DEBUG
           CCLog.info("Completion recieved for queue priority \(priority.rawValue). Now at \(endCount) outstanding")
@@ -93,10 +94,10 @@ class FoodieFetch {
   
   
   func cancel(for object: AnyObject, at priority: Operation.QueuePriority) {
-    DispatchQueue.global(qos: .userInitiated).async {
-      self.operationMutex.lock()
+    dispatchQueue.sync {
+      //self.operationMutex.lock()
       let operations = self.splitArray(with: priority, for: object)
-      self.operationMutex.unlock()
+      //self.operationMutex.unlock()
 
       if operations.count > 1 {
         CCLog.warning("Not expecting \(operations.count) operations for object in each queue priority")
@@ -109,16 +110,16 @@ class FoodieFetch {
   
   
   func cancelAllBut(for object: AnyObject, at priority: Operation.QueuePriority) {
-    DispatchQueue.global(qos: .userInitiated).async {
+    dispatchQueue.sync {
       guard let operationArray = self.operationArray[priority] else {
         CCLog.fatal("Operation Array for priority \(priority.rawValue) does not exist")
       }
 
-      self.operationMutex.lock()
+      //self.operationMutex.lock()
       let operationsToRemain = self.splitArray(with: priority, for: object)
       let operationsToCancel = operationArray
       self.operationArray[priority] = operationsToRemain
-      self.operationMutex.unlock()
+      //self.operationMutex.unlock()
       
       for operation in operationsToCancel {
         operation.cancel()
@@ -128,19 +129,35 @@ class FoodieFetch {
   
   
   func cancelAll(at priority: Operation.QueuePriority) {
-    DispatchQueue.global(qos: .userInitiated).async {
+    dispatchQueue.sync {
       guard let operationArray = self.operationArray[priority] else {
         CCLog.fatal("Operation Array for priority \(priority.rawValue) does not exist")
       }
       
-      self.operationMutex.lock()
+      //self.operationMutex.lock()
       let operationsToCancel = operationArray
       self.operationArray[priority] = [FoodieOperation]()
-      self.operationMutex.unlock()
+      //self.operationMutex.unlock()
       
       for operation in operationsToCancel {
         operation.cancel()
       }
+    }
+  }
+  
+  
+  func cancelAll() {
+    dispatchQueue.sync {
+      fetchQueue.cancelAllOperations()
+    }
+  }
+  
+  func printDebug() {
+    dispatchQueue.sync {
+      // Print Operation Queue Status
+      
+      // Print 
+      
     }
   }
 }

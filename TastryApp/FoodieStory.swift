@@ -162,7 +162,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Private Instance Variables
   fileprivate var asyncOperationQueue = OperationQueue()
-  
+  private var digestReadyCallback: (() -> Void)?
+  private var digestReadyMutex = SwiftMutex.create()
   
   
   // MARK: - Public Static Functions
@@ -241,13 +242,13 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       self.foodieObject.resetChildOperationVariables()
       
       // Got through all sanity check, calling children's retrieveRecursive
-      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
+      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
       
-      self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
+      self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
       
       if let markups = self.markups {
         for markup in markups {
-          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
+          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
         }
       }
       
@@ -502,6 +503,42 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
+  // Might execute block both synchronously or asynchronously
+  func executeForDigest(ifNotReady notReadyBlock: SimpleBlock?, whenReady readyBlock: @escaping SimpleBlock) {
+    var isReady = false
+    
+    // What's going on here is we are preventing a race condition between
+    // 1. The checking for retrieval here, which takes time. Can race with a potential completion process for a background retrieval
+    // 2. The calling of the notReadyBlock to make sure it's going to be before the readyBlock potentially by a background retrieval completion
+    
+    digestReadyMutex.lock()
+    isReady = isDigestRetrieved
+    
+    if !isReady {
+      notReadyBlock?()
+      digestReadyCallback = readyBlock
+    } else {
+      digestReadyCallback = nil
+    }
+    digestReadyMutex.unlock()
+    
+//    if isReady {
+//      readyBlock()
+//    }
+  }
+  
+  
+  func executeReady() {
+    var blockToExecute: SimpleBlock?
+    
+    digestReadyMutex.lock()
+    blockToExecute = digestReadyCallback
+    digestReadyCallback = nil
+    digestReadyMutex.unlock()
+    
+    blockToExecute?()
+  }
+  
   
   // MARK: - Foodie Digest Conceptual Sub-Object
   
@@ -510,14 +547,16 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       return false  // Don't go further if even the parent isn't retrieved
     }
     
-    guard let thumbnail = thumbnail, let venue = venue, let markups = markups else {
-      CCLog.assert("Thumbnail, Markups and Venue should all be not nil")
+    guard let thumbnail = thumbnail, let venue = venue else {
+      // If anything is nil, just re-retrieve? CCLog.assert("Thumbnail, Markups and Venue should all be not nil")
       return false
     }
     
     var markupsAreRetrieved = true
-    for markup in markups {
-      markupsAreRetrieved = markupsAreRetrieved && markup.isRetrieved
+    if let markups = markups {
+      for markup in markups {
+        markupsAreRetrieved = markupsAreRetrieved && markup.isRetrieved
+      }
     }
     
     return thumbnail.isRetrieved && venue.isRetrieved && markupsAreRetrieved
@@ -616,6 +655,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   func cancelRetrieveFromServerRecursive() {
     
     CCLog.verbose("Cancel Retreive Recursive for Story \(getUniqueIdentifier())")
+    
+    digestReadyCallback = nil // Not too sure about this one...
     
     // Retrieve the Story (only) to guarentee access to the childrens
     retrieveFromLocalThenServer(forceAnyways: false, type: .cache) { error in

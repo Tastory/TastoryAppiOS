@@ -296,7 +296,6 @@ class StoryViewController: TransitableViewController {
     
     moment.execute(ifNotReady: {
       CCLog.verbose("Moment \(moment.getUniqueIdentifier()) not yet loaded")
-      self.activitySpinner.apply(below: self.tapBackwardGestureRecognizer)
       shouldRetrieveMoment = true  // Don't execute the retrieve here. This is actually executed inside of a mutex
       
     }, whenReady: {
@@ -305,12 +304,16 @@ class StoryViewController: TransitableViewController {
     })
     
     if shouldRetrieveMoment {
+      self.activitySpinner.apply(below: self.tapBackwardGestureRecognizer)
       if draftPreview {
         moment.retrieveRecursive(from: .local, type: .draft, withCompletion: nil)
       } else {
         let momentOperation = StoryOperation(with: .moment, on: story, for: story.getIndexOf(moment), completion: nil)
         FoodieFetch.global.queue(momentOperation, at: .high)
       }
+    } else {
+      CCLog.verbose("Moment \(moment.getUniqueIdentifier()) displaying")
+      DispatchQueue.main.async { self.displayMoment(moment) }
     }
   }
   

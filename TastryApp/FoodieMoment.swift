@@ -407,9 +407,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
     readyMutex.unlock()
     
-    if isReady {
-      readyBlock()
-    }
+//    if isReady {
+//      readyBlock()
+//    }
   }
 
   
