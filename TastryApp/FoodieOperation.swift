@@ -61,12 +61,6 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
     
     return StoryOperation(with: type, on: story) { error in
       
-      #if DEBUG
-        CCLog.info("A fetch \(type.rawValue) operation for Story \(story.getUniqueIdentifier()) completed.")
-      #else
-        CCLog.debug("A fetch \(type.rawValue) operation for Story \(story.getUniqueIdentifier()) completed.")
-      #endif
-      
       if let error = error {
         switch error {
         case ErrorCode.allMomentsForStoryRetrieved:
@@ -78,13 +72,6 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
         }
       }
       let nextStoryOperation = createRecursive(with: type, on: story, at: priority)
-      
-      #if DEBUG
-        CCLog.info("Queue Story \(type.rawValue) Operation for \(story.getUniqueIdentifier())")
-      #else
-        CCLog.debug("Queue Story \(type.rawValue) Operation for \(story.getUniqueIdentifier())")
-      #endif
-      
       FoodieFetch.global.queue(nextStoryOperation, at: priority)
     }
   }
@@ -108,20 +95,28 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       CCLog.fatal("type in StoryOperation is not an OperationType")
     }
     
-    #if DEBUG
-      CCLog.info("Fetch Story \(opType) Operation for \(story.getUniqueIdentifier()) Started")
-    #else
-      CCLog.debug("Fetch Story \(opType) Operation for \(story.getUniqueIdentifier()) Started")
-    #endif
-    
     switch opType {
     case .digest:
+      
+      #if DEBUG
+        CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation started")
+      #else
+        CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation started")
+      #endif
+      
       story.retrieveDigest(from: .both, type: .cache) { error in
         self.callback?(error)
         self.finished()
       }
       
     case .moment:
+      
+      #if DEBUG
+        CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation with \(momentNumber) started")
+      #else
+        CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation started")
+      #endif
+      
       guard let moments = story.moments  else {
         CCLog.fatal("Story has no moments")
       }
@@ -143,7 +138,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
         if !moment.isRetrieved {
           
           #if DEBUG
-            CCLog.info("Moment \(momentNum)/\(moments.count) to fetch for Story \(story.getUniqueIdentifier()) is \(moment.getUniqueIdentifier())")
+            CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment \(momentNum)/\(moments.count) is \(moment.getUniqueIdentifier())")
           #else
             CCLog.debug("Moment \(momentNum)/\(moments.count) to fetch for Story \(story.getUniqueIdentifier()) is \(moment.getUniqueIdentifier())")
           #endif

@@ -22,142 +22,102 @@ class FoodieFetch {
   private(set) static var global = FoodieFetch()
   
   
-  
   // MARK: - Private Instance Variable
-  private let dispatchQueue = DispatchQueue(label: "operationDispatchQueue", qos: DispatchQoS.userInitiated)
   private let fetchQueue = OperationQueue()
-  private let operationMutex = SwiftMutex.create()
-  private var operationArray = [Operation.QueuePriority: [FoodieOperation]]()
-  
-  
-  
-  // MARK: - Private Instance Functions
-  
-  // !!! This function must be operating inside of Operation Mutex Lock !!!
-  private func splitArray(with priority: Operation.QueuePriority, for object: AnyObject) -> [FoodieOperation] {
-    guard let operationArray = operationArray[priority] else {
-      CCLog.fatal("Operation Array for priority \(priority.rawValue) does not exist")
-    }
-    var operations = [FoodieOperation]()
-
-    for index in stride(from: operationArray.count - 1, through: 0, by: -1) {
-      if operationArray[index].object === object {
-        operations.append(operationArray[index])
-        self.operationArray[priority]?.remove(at: index)
-      }
-    }
-    return operations
-  }
   
   
   // MARK: - Public Instance Functions
   init() {
-    operationArray[.high] = [FoodieOperation]()
-    operationArray[.low] = [FoodieOperation]()
+    fetchQueue.qualityOfService = QualityOfService.userInitiated  // The priority of this must be equal or higher than what's used throughout the recursive operations. Otherwise the FoodieModel will fall apart.
     fetchQueue.maxConcurrentOperationCount = Constants.ConcurrentFetchesAtATime
   }
   
-  
   // Idea here is that each object can at most only have 1 operation per priority
   func queue(_ operation: FoodieOperation, at priority: Operation.QueuePriority) {  // We can later make an intermediary sublcass to make it more diverse across any objects. Eg. Prefetch User Objects, etc
-    dispatchQueue.sync {
-      guard self.operationArray[priority] != nil else {
-        CCLog.fatal("Operation Array for priority \(priority.rawValue) does not exist")
-      }
-      //self.operationMutex.lock()
-      self.operationArray[priority]!.append(operation)
-      let beginCount = self.operationArray[priority]!.count
-      //self.operationMutex.unlock()
-      
+    
+    guard let storyOp = operation as? StoryOperation, let story = storyOp.object as? FoodieStory, let type = storyOp.type as? StoryOperation.OperationType else {
+      CCLog.fatal("Expecting storyOp, story and type")
+    }
+    
+    #if DEBUG
+      CCLog.info("#Prefetch - Queuing Story \(story.getUniqueIdentifier()) for \(type.rawValue) operation. Queue now at \(self.fetchQueue.operations.count + 1) outstanding")
+    #else
+    CCLog.debug("Queuing Story \(story.getUniqueIdentifier()) for \(type.rawValue) operation. Queue now at \(self.fetchQueue.operations.count + 1) outstanding")
+    #endif
+  
+    operation.queuePriority = priority
+    operation.completionBlock = {
       #if DEBUG
-        CCLog.info("Added operation to queue priority \(priority.rawValue). Now at \(beginCount) outstanding")
+        CCLog.info("#Prefetch - Completion for Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operations.count) outstanding")
       #else
-        CCLog.debug("Added operation to queue priority \(priority.rawValue). Now at \(beginCount) outstanding")
+        CCLog.debug("Completion for Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operations.count) outstanding")
       #endif
-      
-      operation.queuePriority = priority
-      operation.completionBlock = {
-        //self.operationMutex.lock()
-        self.operationArray[priority] = self.operationArray[priority]!.filter { $0 !== operation }
-        let endCount = self.operationArray[priority]!.count
-        //self.operationMutex.unlock()
-        
-        #if DEBUG
-          CCLog.info("Completion recieved for queue priority \(priority.rawValue). Now at \(endCount) outstanding")
-        #else
-          CCLog.debug("Completion recieved for queue priority \(priority.rawValue). Now at \(endCount) outstanding")
-        #endif
-      }
-      self.fetchQueue.addOperation(operation)
     }
+    fetchQueue.addOperation(operation)
   }
   
-  
-  func cancel(for object: AnyObject, at priority: Operation.QueuePriority) {
-    dispatchQueue.sync {
-      //self.operationMutex.lock()
-      let operations = self.splitArray(with: priority, for: object)
-      //self.operationMutex.unlock()
-
-      if operations.count > 1 {
-        CCLog.warning("Not expecting \(operations.count) operations for object in each queue priority")
-      }
-      else if operations.count == 1 {
-        operations[0].cancel()
+  func cancel(for object: AnyObject) {
+    for operation in fetchQueue.operations {
+      if let storyOp = operation as? StoryOperation {
+        if storyOp.object === object {
+          
+          if let story = storyOp.object as? FoodieStory, let type = storyOp.type as? StoryOperation.OperationType {
+          #if DEBUG
+            CCLog.info("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operations.count) outstanding before cancel")
+          #else
+            CCLog.debug("Completion Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operations.count) outstanding")
+          #endif
+          } else {
+            CCLog.warning("storyOp.object not a story!")
+          }
+          storyOp.cancel()
+        }
       }
     }
   }
   
-  
-  func cancelAllBut(for object: AnyObject, at priority: Operation.QueuePriority) {
-    dispatchQueue.sync {
-      guard let operationArray = self.operationArray[priority] else {
-        CCLog.fatal("Operation Array for priority \(priority.rawValue) does not exist")
-      }
-
-      //self.operationMutex.lock()
-      let operationsToRemain = self.splitArray(with: priority, for: object)
-      let operationsToCancel = operationArray
-      self.operationArray[priority] = operationsToRemain
-      //self.operationMutex.unlock()
-      
-      for operation in operationsToCancel {
-        operation.cancel()
+  func cancelAllBut(for object: AnyObject) {
+    
+    guard let story = object as? FoodieStory else {
+      CCLog.fatal("Expected object to be of FoodieStory type")
+    }
+    #if DEBUG
+      CCLog.info("#Prefetch - Cancel All but Story \(story.getUniqueIdentifier()). Queue at \(self.fetchQueue.operations.count) outstanding before cancel")
+    #else
+      CCLog.debug("Cancel All but Story \(story.getUniqueIdentifier()). Queue at \(self.fetchQueue.operations.count) outstanding before cancel")
+    #endif
+    
+    for operation in fetchQueue.operations {
+      if let storyOp = operation as? StoryOperation {
+        if storyOp.object !== object {
+          
+          if let story = storyOp.object as? FoodieStory, let type = storyOp.type as? StoryOperation.OperationType {
+            #if DEBUG
+              CCLog.info("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operations.count) outstanding before cancel")
+            #else
+              CCLog.debug("Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operations.count) outstanding")
+            #endif
+          }  else {
+            CCLog.warning("storyOp.object not a story!")
+          }
+          storyOp.cancel()
+        }
       }
     }
   }
-  
-  
-  func cancelAll(at priority: Operation.QueuePriority) {
-    dispatchQueue.sync {
-      guard let operationArray = self.operationArray[priority] else {
-        CCLog.fatal("Operation Array for priority \(priority.rawValue) does not exist")
-      }
-      
-      //self.operationMutex.lock()
-      let operationsToCancel = operationArray
-      self.operationArray[priority] = [FoodieOperation]()
-      //self.operationMutex.unlock()
-      
-      for operation in operationsToCancel {
-        operation.cancel()
-      }
-    }
-  }
-  
   
   func cancelAll() {
-    dispatchQueue.sync {
-      fetchQueue.cancelAllOperations()
-    }
+    fetchQueue.cancelAllOperations()
   }
   
   func printDebug() {
-    dispatchQueue.sync {
-      // Print Operation Queue Status
-      
-      // Print 
-      
+    CCLog.info("Fetch Queue has \(fetchQueue.operations.count) outstanding operations")
+    for operation in fetchQueue.operations {
+      if let storyOp = operation as? StoryOperation {
+        if let story = storyOp.object as? FoodieStory, let type = storyOp.type as? StoryOperation.OperationType {
+          CCLog.info(" Story \(story.getUniqueIdentifier()) with \(type.rawValue) operation and index of \(storyOp.momentNumber)")
+        }
+      }
     }
   }
 }

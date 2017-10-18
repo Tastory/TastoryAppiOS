@@ -1007,6 +1007,6 @@ extension MapViewController: MKMapViewDelegate {
       CCLog.warning("No PrefetchContext associated with Story, or no StoryMapAnnotation associated with Annotation View")
       return
     }
-    FoodieFetch.global.cancel(for: annotation.story, at: .low)
+    FoodieFetch.global.cancel(for: annotation.story)
   }
 }

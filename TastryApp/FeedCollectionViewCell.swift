@@ -27,31 +27,20 @@ class FeedCollectionViewCell: UICollectionViewCell {
   
   
   
-  // MARK: - Private Instance Variable
-  func prefetch(for story: FoodieStory) {
-    let storyRecursivePrefetchOperation = StoryOperation.createRecursive(on: story, at: .low)
-    FoodieFetch.global.queue(storyRecursivePrefetchOperation, at: .low)
-  }
-  
-  func cancelPrefetch(for story: FoodieStory) {
-    FoodieFetch.global.cancel(for: story, at: .low)
-  }
-  
-  
-  
   // MARK: - Public Instance Variables
   
   var cellRoundingRadius = Constants.CellRoundingRadius
   var cellStatusMutex = SwiftMutex.create()
+  var cellPrefetching = false
   
   var cellStory: FoodieStory? {
     willSet {
-      if let story = cellStory, newValue == nil {
+      if let story = cellStory, newValue == nil, cellDisplayed == true {
         cancelPrefetch(for: story)
       }
     }
     didSet {
-      if let story = cellStory, cellDisplayed == true {
+      if let story = cellStory, oldValue == nil, cellDisplayed == true {
         prefetch(for: story)
       }
     }
@@ -59,13 +48,29 @@ class FeedCollectionViewCell: UICollectionViewCell {
   
   var cellDisplayed = false {
     didSet {
-      if let story = cellStory, cellDisplayed == true {
+      if let story = cellStory, cellDisplayed == true, oldValue == false {
         prefetch(for: story)
       }
       else if let story = cellStory, cellDisplayed == false, oldValue == true {
         cancelPrefetch(for: story)
       }
     }
+  }
+  
+  
+  
+  // MARK: - Private Instance Function
+  
+  func prefetch(for story: FoodieStory) {
+    CCLog.verbose("feedCollectionViewCell prefetch for Story \(story.getUniqueIdentifier())")
+    let storyRecursivePrefetchOperation = StoryOperation.createRecursive(on: story, at: .low)
+    FoodieFetch.global.queue(storyRecursivePrefetchOperation, at: .low)
+  }
+  
+  
+  func cancelPrefetch(for story: FoodieStory) {
+    CCLog.verbose("feedCollectionViewCell cance prefetch for Story \(story.getUniqueIdentifier())")
+    FoodieFetch.global.cancel(for: story)
   }
   
   
@@ -79,6 +84,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
       containerView?.layer.masksToBounds = true
     }
   }
+  
   
   override func prepareForReuse() {
     super.prepareForReuse()

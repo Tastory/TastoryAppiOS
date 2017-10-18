@@ -68,8 +68,7 @@ class FeedCollectionViewController: UICollectionViewController {
   @objc func viewStory(_ sender: UIButton) {
     let story = storyArray[sender.tag]
     // Stop all prefetches but the story being viewed
-    FoodieFetch.global.cancelAllBut(for: story, at: .high)
-    FoodieFetch.global.cancelAllBut(for: story, at: .low)
+    FoodieFetch.global.cancelAllBut(for: story)
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
@@ -98,7 +97,7 @@ class FeedCollectionViewController: UICollectionViewController {
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    FoodieFetch.global.cancelAll()
+    // Don't Cancel!!! viewDidDisappear actually gets triggered even when presenting the StoryVC.   FoodieFetch.global.cancelAll()
   }
   
   
@@ -208,7 +207,7 @@ extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
   func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
     for indexPath in indexPaths {
       CCLog.verbose("collectionView cancelPrefetchingForItemsAt indexPath.row = \(indexPath.row)")
-      FoodieFetch.global.cancel(for: storyArray[indexPath.row], at: .low)
+      FoodieFetch.global.cancel(for: storyArray[indexPath.row])
     }
   }
 }

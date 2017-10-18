@@ -157,7 +157,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Public Instance Variables
   var thumbnail: FoodieMedia?
-  
+  var operation: StoryOperation?
 
   
   // MARK: - Private Instance Variables
@@ -654,7 +654,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   func cancelRetrieveFromServerRecursive() {
     
-    CCLog.verbose("Cancel Retreive Recursive for Story \(getUniqueIdentifier())")
+    CCLog.verbose("Cancel Retrieve Recursive for Story \(getUniqueIdentifier())")
     
     digestReadyCallback = nil // Not too sure about this one...
     

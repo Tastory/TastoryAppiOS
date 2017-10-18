@@ -282,13 +282,13 @@ extension FoodieMedia: FoodieObjectDelegate {
             CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
             self.videoExportPlayer = nil
             callback?(error)
-          } else if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
-            
+          } else { // if FoodieFileObject.checkIfExists(for: fileName, in: .cache
             callback?(nil)
-          } else {
-            self.videoExportPlayer = nil
-            callback?(ErrorCode.retrieveFileDoesNotExist)
           }
+//          else {   // You can't look for the filename. Because AVExportPlayer might do a Temp -> Cache Switch
+//            self.videoExportPlayer = nil
+//            callback?(ErrorCode.retrieveFileDoesNotExist)
+//          }
         }
         DispatchQueue.global(qos: .userInitiated).async { readyBlock?() }  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
       }
@@ -343,12 +343,13 @@ extension FoodieMedia: FoodieObjectDelegate {
           CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
           self.videoExportPlayer = nil
           callback?(error)
-        } else if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
+        } else { // if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
           callback?(nil)
-        } else {
-          self.videoExportPlayer = nil
-          callback?(ErrorCode.retrieveFileDoesNotExist)
         }
+//        else {  // You can't look for the filename. Because AVExportPlayer might do a Temp -> Cache Switch
+//          self.videoExportPlayer = nil
+//          callback?(ErrorCode.retrieveFileDoesNotExist)
+//        }
       }
       DispatchQueue.global(qos: .userInitiated).async { readyBlock?() }  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
     }
