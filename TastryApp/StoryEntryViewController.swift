@@ -414,7 +414,8 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
     momentViewController.workingStory = workingStory
-    //momentViewController.momentHeight = Constants.momentHeight
+    momentViewController.momentHeight = Constants.momentHeight
+    momentViewController.collectionView?.frame
     momentViewController.cameraReturnDelegate = self
 
     guard let collectionView = momentViewController.collectionView else {

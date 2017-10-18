@@ -10,7 +10,9 @@ import UIKit
 
 class MomentCollectionViewController: UICollectionViewController {
 
-  
+  // MARK: - Public Instance Variables
+  var momentHeight: CGFloat?
+
   // MARK: - Private Class Constants
   fileprivate struct Constants {
     static let momentCellReuseId = "MomentCell"
@@ -20,6 +22,7 @@ class MomentCollectionViewController: UICollectionViewController {
     static let headerFooterToCellWidthRatio: CGFloat = 3/4
   }
 
+  fileprivate var momentHeightDefault: CGFloat!
 
   // MARK: - Public Instance Variables
   var workingStory: FoodieStory!
@@ -90,6 +93,12 @@ class MomentCollectionViewController: UICollectionViewController {
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    guard let momentHeightUnwrapped = momentHeight else {
+      CCLog.fatal("nil momentHeight in Moment Collection View Controller")
+    }
+
+    momentHeightDefault = momentHeightUnwrapped
   }
 
   
@@ -266,7 +275,7 @@ extension MomentCollectionViewController {
 extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    let height = collectionView.frame.height - 2*Constants.interitemSpacing
+    let height = momentHeightDefault - 2*Constants.interitemSpacing
     let width = height / FoodieGlobal.Constants.DefaultMomentAspectRatio
     return CGSize(width: width, height: height)
   }
@@ -280,7 +289,7 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-    let height = collectionView.frame.height - 2*Constants.interitemSpacing
+    let height = momentHeightDefault - 2*Constants.interitemSpacing
     let width = height / FoodieGlobal.Constants.DefaultMomentAspectRatio * Constants.headerFooterToCellWidthRatio
     
     // Now we know the width, also set the Collection View Content Inset here
@@ -289,7 +298,7 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-    let height = collectionView.frame.height - 2*Constants.interitemSpacing
+    let height = momentHeightDefault - 2*Constants.interitemSpacing
     let width = height / FoodieGlobal.Constants.DefaultMomentAspectRatio * Constants.headerFooterToCellWidthRatio
     return CGSize(width: width, height: height)
   }
