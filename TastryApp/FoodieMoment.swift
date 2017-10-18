@@ -325,8 +325,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   override init() {
     super.init()
     foodieObject.delegate = self
+    asyncOperationQueue.qualityOfService = .userInitiated  // Needs to be the same as FoodieObject.Constants.RecursiveOpQoS
     asyncOperationQueue.maxConcurrentOperationCount = 1
-    
     // media = FoodieMedia()  // retrieve() will take care of this. Don't set this here.
   }
   

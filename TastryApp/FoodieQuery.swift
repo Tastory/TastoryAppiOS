@@ -409,7 +409,7 @@ class FoodieQuery {
         if let stories = objects as? [FoodieStory] {
           callback?(stories, error)
         } else {
-          if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .userInitiated) { return }
+          if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .utility) { return }
           callback?(nil, error)
         }
       }
@@ -435,7 +435,7 @@ class FoodieQuery {
         if let stories = objects as? [FoodieVenue] {
           callback?(stories, error)
         } else {
-          if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .userInitiated) { return }
+          if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .utility) { return }
           callback?(nil, error)
         }
       }
@@ -462,7 +462,7 @@ class FoodieQuery {
         if let stories = objects as? [FoodieStory] {
           callback?(stories, error)
         } else {
-          if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .userInitiated) { return }
+          if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .utility) { return }
           callback?(nil, error)
         }
       }
@@ -489,7 +489,7 @@ class FoodieQuery {
         if let stories = objects as? [FoodieVenue] {
           callback?(stories, error)
         } else {
-          if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .userInitiated) { return }
+          if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .utility) { return }
           callback?(nil, error)
         }
       }

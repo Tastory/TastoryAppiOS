@@ -136,11 +136,11 @@ class FeedCollectionViewController: UICollectionViewController {
     var shouldRetrieveDigest = false
     
     story.executeForDigest(ifNotReady: {
-      CCLog.verbose("Digest \(story.getUniqueIdentifier()) not yet loaded")
+      CCLog.debug("Digest \(story.getUniqueIdentifier()) not yet loaded")
       shouldRetrieveDigest = true  // Don't execute the retrieve here. This is actually executed inside of a mutex
       
     }, whenReady: {
-      CCLog.verbose("Digest \(story.getUniqueIdentifier()) ready to display")
+      CCLog.debug("Digest \(story.getUniqueIdentifier()) ready to display")
       DispatchQueue.main.async { self.loadImage(in: collectionView, forItemAt: indexPath) }
     })
     

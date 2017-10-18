@@ -101,7 +101,7 @@ class AVExportPlayer: NSObject {
       return
     }
     
-    CCLog.debug("Observed Value for keyPath changed - \(keyPath)")
+    // CCLog.debug("Observed Value for keyPath changed - \(keyPath)")
     
     switch keyPath {
     case #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackLikelyToKeepUp), #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackBufferEmpty):

@@ -221,7 +221,7 @@ class FoodieFileObject {
       directoryUrl = Constants.DraftStoryMediaFolderUrl
     }
     
-    DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+    DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
       do {
         for contentUrl in try FileManager.default.contentsOfDirectory(at: directoryUrl, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) {
           try FileManager.default.removeItem(at: contentUrl)
@@ -269,7 +269,7 @@ class FoodieFileObject {
           CCLog.warning("Download of \(fileName) from CloudFront resulted in error - \(error.localizedDescription)")
           if !retrieveRetry.attemptRetryBasedOnURLError(urlError,
                                                         after: Constants.AwsRetryDelay,
-                                                        withQoS: .userInitiated) {
+                                                        withQoS: .utility) {
             callback?(urlError)
           }
           return
@@ -291,7 +291,7 @@ class FoodieFileObject {
           CCLog.warning("HTTPURLResponse.statusCode = \(httpResponse.statusCode) for downloading \(fileName)")
           if !retrieveRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                           after: Constants.AwsRetryDelay,
-                                                          withQoS: .userInitiated) {
+                                                          withQoS: .utility) {
             callback?(FileErrorCode.urlSessionDownloadHttpResponseFailed)
           }
           return
@@ -342,7 +342,7 @@ class FoodieFileObject {
     }
     CCLog.debug("Retrieve \(fileName) from \(localType)")
     
-    DispatchQueue.global(qos: .userInitiated).async {  // Make this an async call as the callback is expected to be not on the main thread
+    DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Make this an async call as the callback is expected to be not on the main thread
       let buffer: Data?
       
       do {
@@ -400,7 +400,7 @@ class FoodieFileObject {
       CCLog.fatal("FoodieFileObject has no foodieFileName")
     }
     
-    DispatchQueue.global(qos: .userInitiated).async {  // Make this an async call as the callback is expected to be not on the main thread
+    DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Make this an async call as the callback is expected to be not on the main thread
       // Check if the file already exist. If so just assume it's the right file
       if !FoodieFileObject.checkIfExists(for: fileName, in: localType) {
         CCLog.debug("Save Buffer as \(fileName) to \(localType)")
@@ -427,7 +427,7 @@ class FoodieFileObject {
       CCLog.fatal("FoodieFileObject has no foodieFileName")
     }
     
-    DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+    DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
     // Check if the file already exist. If so just assume it's the right file
       if !FoodieFileObject.checkIfExists(for: fileName, in: localType) {
         CCLog.debug("Copy to \(localType) as \(fileName) from \(url.absoluteString)")
@@ -475,7 +475,7 @@ class FoodieFileObject {
         saveRetry.start("save file '\(fileName)' to S3", withCountOf: Constants.AwsRetryCount) { [unowned self] in
           
           guard let uploadRequest = AWSS3TransferManagerUploadRequest() else {
-            DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+            DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
               CCLog.assert("AWSS3TransferManagerUploadRequest() returned nil")
               callback?(FileErrorCode.awsS3TransferManagerUploadRequestNil)
             }
@@ -503,14 +503,14 @@ class FoodieFileObject {
                   
                 default:
                   CCLog.warning("S3 upload for \(fileName) resulted in Error - \(error)")
-                  if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
+                  if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .utility) {
                     self.uploadRequest = nil
                     callback?(FileErrorCode.awsS3TransferUploadUnknownError)
                   }
                 }
               } else {
                 CCLog.warning("S3 upload for \(fileName) resulted in Error - \(error)")
-                if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .userInitiated) {
+                if !saveRetry.attempt(after: Constants.AwsRetryDelay, withQoS: .utility) {
                   self.uploadRequest = nil
                   callback?(FileErrorCode.awsS3TransferUploadUnknownError)
                 }
@@ -541,7 +541,7 @@ class FoodieFileObject {
       CCLog.fatal("Unexpected. FoodieFileObject has no foodieFileName")
     }
     
-    DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+    DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
       if FoodieFileObject.checkIfExists(for: fileName, in: localType) {
         CCLog.debug("Delete \(fileName) from \(localType)")
         

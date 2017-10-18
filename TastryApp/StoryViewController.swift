@@ -295,11 +295,11 @@ class StoryViewController: TransitableViewController {
     var shouldRetrieveMoment = false
     
     moment.execute(ifNotReady: {
-      CCLog.verbose("Moment \(moment.getUniqueIdentifier()) not yet loaded")
+      CCLog.debug("Moment \(moment.getUniqueIdentifier()) not yet loaded")
       shouldRetrieveMoment = true  // Don't execute the retrieve here. This is actually executed inside of a mutex
       
     }, whenReady: {
-      CCLog.verbose("Moment \(moment.getUniqueIdentifier()) ready to display")
+      CCLog.debug("Moment \(moment.getUniqueIdentifier()) ready to display")
       DispatchQueue.main.async { self.displayMoment(moment) }
     })
     
@@ -312,7 +312,7 @@ class StoryViewController: TransitableViewController {
         FoodieFetch.global.queue(momentOperation, at: .high)
       }
     } else {
-      CCLog.verbose("Moment \(moment.getUniqueIdentifier()) displaying")
+      CCLog.info("Moment \(moment.getUniqueIdentifier()) displaying")
       DispatchQueue.main.async { self.displayMoment(moment) }
     }
   }

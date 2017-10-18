@@ -82,7 +82,7 @@ class FoodiePFObject: PFObject {
     // See if this is already in memory, if so no need to do anything
     if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
       CCLog.debug("\(delegate.foodieObjectType())(\(getUniqueIdentifier())) Data Available and not Forcing Anyways. Calling back with nil")
-      DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }  // Calling back in a different thread, because sometimes we might still be in main thread all the way from the caller
+      DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async { callback?(nil) }  // Calling back in a different thread, because sometimes we might still be in main thread all the way from the caller
       return
     }
 
@@ -130,7 +130,7 @@ class FoodiePFObject: PFObject {
     // See if this is already in memory, if so no need to do anything
     if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
       CCLog.debug("\(delegate.foodieObjectType())(\(getUniqueIdentifier())) Data Available and not Forcing Anyways. Calling back with nil")
-      DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }  // Calling back in a different thread, because sometimes we might still be in main thread all the way from the caller
+      DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async { callback?(nil) }  // Calling back in a different thread, because sometimes we might still be in main thread all the way from the caller
       return
     }
     
@@ -142,7 +142,7 @@ class FoodiePFObject: PFObject {
         self.fetchInBackground() { object, error in  // This fetch only comes from Server
           if let error = error {
             CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) with error: \(error.localizedDescription)")
-            if fetchRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
+            if fetchRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .utility) { return }
           }
           // Return if got what's wanted
           callback?(error)
@@ -184,7 +184,7 @@ class FoodiePFObject: PFObject {
         self.fetchIfNeededInBackground { serverObject, serverError in
           if let error = serverError {
             CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())), with error: \(error.localizedDescription)")
-            if fetchRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
+            if fetchRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .utility) { return }
           } else {
             CCLog.debug("Pin \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) to Name '\(localType)'")
             self.pinInBackground(withName: localType.rawValue) { (success, error) in FoodieGlobal.booleanToSimpleErrorCallback(success, error, nil) }
@@ -230,7 +230,7 @@ class FoodiePFObject: PFObject {
         
         self.saveInBackground { success, error in
           if !success || error != nil {
-            if saveRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
+            if saveRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .utility) { return }
           }
           FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
         }
@@ -263,7 +263,7 @@ class FoodiePFObject: PFObject {
       
       self.deleteInBackground { success, error in
         if !success || error != nil {
-          if deleteRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }
+          if deleteRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .utility) { return }
         }
         
         // Each call actually goes through a booleanToSimpleErrorCallback(). So will do a CCLog.warning natively. Should just brute force deletes regardless

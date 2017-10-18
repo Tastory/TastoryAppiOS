@@ -203,7 +203,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     
     // If photo and in memory, or video in player, just callback
     if !forceAnyways && isRetrieved {
-      DispatchQueue.global(qos: .userInitiated).async { callback?(nil) }
+      DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async { callback?(nil) }
       return
     }
     
@@ -222,7 +222,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
       
     case .video:
-      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+      DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
         if FoodieFileObject.checkIfExists(for: fileName, in: localType) {
           self.videoExportPlayer = AVExportPlayer()
           self.videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getFileURL(for: localType, with: fileName))
@@ -254,7 +254,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     
     // If photo and in memory, or video and in player, just callback
     if !forceAnyways && isRetrieved {
-      DispatchQueue.global(qos: .userInitiated).async {
+      DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {
         readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval?
         callback?(nil)
       }
@@ -290,7 +290,7 @@ extension FoodieMedia: FoodieObjectDelegate {
 //            callback?(ErrorCode.retrieveFileDoesNotExist)
 //          }
         }
-        DispatchQueue.global(qos: .userInitiated).async { readyBlock?() }  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
+        DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async { readyBlock?() }  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
       }
       return
     }
@@ -330,7 +330,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       
       guard !FoodieFileObject.checkIfExists(for: fileName, in: .cache) else {
         self.videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getFileURL(for: .cache, with: fileName))
-        DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+        DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
           readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval
           callback?(nil)
         }
@@ -351,7 +351,7 @@ extension FoodieMedia: FoodieObjectDelegate {
 //          callback?(ErrorCode.retrieveFileDoesNotExist)
 //        }
       }
-      DispatchQueue.global(qos: .userInitiated).async { readyBlock?() }  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
+      DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async { readyBlock?() }  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
     }
   }
   
@@ -390,7 +390,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       CCLog.fatal("Retrieve not allowed when Media has no MediaType")
     }
     
-    DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+    DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
       
       switch type {
       case .photo:

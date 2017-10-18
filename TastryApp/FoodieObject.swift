@@ -97,7 +97,15 @@ class FoodieObject {
   }
   
   
-  // MARK: Error Types
+  
+  // Mark: - Constants
+  struct Constants {
+    static let RecursiveOpQoS = DispatchQoS.QoSClass.userInitiated
+  }
+  
+  
+  
+  // MARK: - Error Types
   
   enum ErrorCode: LocalizedError {
     
@@ -212,9 +220,7 @@ class FoodieObject {
     let beforeOutstanding = self.outstandingChildOperations
     SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
     
-    #if DEBUG
-      CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(beforeReadies), Outstanding: \(beforeOutstanding)")
-    #endif
+    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(beforeReadies), Outstanding: \(beforeOutstanding)")
     
     child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, withReady: {
       
@@ -226,9 +232,7 @@ class FoodieObject {
       if self.outstandingChildReadies == 0 { childReadiesPending = false }
       SwiftMutex.unlock(&self.outstandingChildReadiesMutex)
       
-      #if DEBUG
-        CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieved child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(afterReadies)")
-      #endif
+      CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieved child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(afterReadies)")
       
       if !childReadiesPending {
         readyBlock?()
@@ -248,9 +252,7 @@ class FoodieObject {
       if self.outstandingChildOperations == 0 { childOperationsPending = false }
       SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
       
-      #if DEBUG
-        CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieved child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Outstanding: \(afterOutstanding)")
-      #endif
+      CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieved child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Outstanding: \(afterOutstanding)")
       
       if !childOperationsPending {
         callback?(self.operationError)
@@ -281,7 +283,7 @@ class FoodieObject {
     
     // If children all came back and there is error, unwind state and call callback
     if operationError != nil {
-      DispatchQueue.global(qos: .userInitiated).async {  // Guarentee that callback comes back async from another thread
+      DispatchQueue.global(qos: Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
         callback?(self.operationError)
       }
     }
@@ -304,7 +306,7 @@ class FoodieObject {
     guard let delegate = delegate else {
       CCLog.fatal("delegate = nil. Unable to proceed.")
     }
-    CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Saving Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
+    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Saving Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
     
     SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
@@ -350,7 +352,7 @@ class FoodieObject {
     guard let delegate = delegate else {
       CCLog.fatal("delegate = nil. Unable to proceed.")
     }
-    CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Delete Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
+    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Delete Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
     
     // Lock here is in case that if the first operation competes and calls back before even the 2nd op's deleteChild goes out
     SwiftMutex.lock(&self.outstandingChildOperationsMutex)
