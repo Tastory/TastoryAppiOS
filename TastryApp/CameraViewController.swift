@@ -472,31 +472,32 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   }
 
   func dismissPhotoPicker(withTLPHAssets: [TLPHAsset]) {
+    DispatchQueue.global(qos: .userInitiated).async {
+      if withTLPHAssets.count < 0 {
+        CCLog.assert("No asset returned from TLPHAsset")
+      }
 
-    if withTLPHAssets.count < 0 {
-      CCLog.assert("No asset returned from TLPHAsset")
-    }
+      self.moments = Array.init(repeatElement(nil, count: withTLPHAssets.count))
+      for tlphAsset in withTLPHAssets {
+        self.outstandingConvertOperations += 1
+        self.convertToMedia(from: tlphAsset) { (foodieMedia) in
 
-    moments = Array.init(repeatElement(nil, count: withTLPHAssets.count))
-    for tlphAsset in withTLPHAssets {
-      outstandingConvertOperations += 1
-      convertToMedia(from: tlphAsset) { (foodieMedia) in
+          guard let foodieMedia = foodieMedia else {
+            CCLog.assert("Failed to convert tlphAsset to FoodieMedia as foodieMedia is nil")
+            return
+          }
+          let moment = FoodieMoment(foodieMedia: foodieMedia)
+          self.moments[(tlphAsset.selectedOrder - 1)] = moment
 
-        guard let foodieMedia = foodieMedia else {
-          CCLog.assert("Failed to convert tlphAsset to FoodieMedia as foodieMedia is nil")
-          return
-        }
-        let moment = FoodieMoment(foodieMedia: foodieMedia)
-        self.moments[(tlphAsset.selectedOrder - 1)] = moment
+          var convertOperationsPending = true
+          SwiftMutex.lock(&self.outstandingConvertOperationsMutex)
+          self.outstandingConvertOperations -= 1
+          if self.outstandingConvertOperations == 0 { convertOperationsPending = false }
+          SwiftMutex.unlock(&self.outstandingConvertOperationsMutex)
 
-        var convertOperationsPending = true
-        SwiftMutex.lock(&self.outstandingConvertOperationsMutex)
-        self.outstandingConvertOperations -= 1
-        if self.outstandingConvertOperations == 0 { convertOperationsPending = false }
-        SwiftMutex.unlock(&self.outstandingConvertOperationsMutex)
-
-        if !convertOperationsPending {
-          self.processMoments()
+          if !convertOperationsPending {
+            self.processMoments()
+          }
         }
       }
     }
