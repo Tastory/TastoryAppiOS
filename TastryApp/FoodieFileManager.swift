@@ -338,11 +338,12 @@ class FoodieFile {
         try self.fileManager.copyItem(at: url, to: FoodieFile.getFileURL(for: localType, with: fileName))
         
         // This is a little hacky.... Delete file after copy to Draft, assuming that the file was in Tmp
-        if localType == .draft {
+        /*if localType == .draft {
           try self.fileManager.removeItem(at: url)
-        }
+        }*/
       } catch {
-        CCLog.assert("Failed to copy from \(url.absoluteString) to \(localType) as \(fileName)")
+
+        CCLog.assert("Failed to copy from \(url.absoluteString) to \(localType) as \(fileName) \(error)")
         callback?(ErrorCode.fileManagerCopyItemLocalFailed)
         return
       }

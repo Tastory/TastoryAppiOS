@@ -333,11 +333,20 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // This is the Initializer we will call internally
   convenience init(foodieMedia: FoodieMedia) {
     self.init()
-    mediaObj = foodieMedia
-    
+    thumbnailObj = foodieMedia.generateThumbnail()
+    thumbnailFileName = thumbnailObj!.foodieFileName
     // didSet does not get called in initialization context...
+    mediaObj = foodieMedia
     mediaFileName = foodieMedia.foodieFileName
     mediaType = foodieMedia.mediaType?.rawValue
+
+    if foodieMedia.width != nil {
+      width = foodieMedia.width!
+    }
+
+    if(foodieMedia.aspectRatio != nil) {
+      aspectRatio = foodieMedia.aspectRatio!
+    }
   }
   
   

@@ -41,7 +41,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
   // MARK: - Public Instance Variable
   var workingStory: FoodieStory?
-  var returnedMoment: FoodieMoment?
+  var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
   var containerVC: MarkupReturnDelegate?
   
@@ -414,7 +414,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
     momentViewController.workingStory = workingStory
-    //momentViewController.momentHeight = Constants.momentHeight
+    momentViewController.momentHeight = Constants.momentHeight
     momentViewController.cameraReturnDelegate = self
 
     guard let collectionView = momentViewController.collectionView else {
@@ -450,6 +450,47 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     previousSwipeRecognizer.direction = .right
     previousSwipeRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(previousSwipeRecognizer)
+
+    if let workingStory = workingStory {
+
+      for returnedMoment in returnedMoments {
+        // Let's figure out what to do with the returned Moment
+        if markupMoment != nil {
+          // So there is a Moment under markup. The returned Moment should match this.
+          if returnedMoment === markupMoment {
+
+            // save to local
+            returnedMoment.saveRecursive(to: .local, type: .draft) { error in
+              if let error = error {
+                AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
+                  CCLog.assert("Error saving moment into local caused by: \(error.localizedDescription)")
+                }
+              }
+            }
+          } else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain)
+            CCLog.assert("returnedMoment expected to match markupMoment")
+          }
+        } else {
+
+          workingStory.add(moment: returnedMoment)
+          // If there wasn't any moments before, we got to make this the default thumbnail for the Story
+          // Got to do this also when removing moments!!!
+          if workingStory.moments!.count == 1 {
+            // TODO: Do we need to factor out thumbnail operations?
+            workingStory.thumbnailFileName = returnedMoment.thumbnailFileName
+            workingStory.thumbnailObj = returnedMoment.thumbnailObj
+          }
+
+          preSave(returnedMoment) { (error) in
+            if error != nil {  // Error code should've already been printed to the Debug log from preSave()
+              AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .internalTryAgain)
+            }
+            //self.returnedMoment = nil  // We should be in a state where whom is the returned Moment should no longer matter
+          }
+        }
+      }
+    }
 
     // TODO: Do we need to download the Story itself first? How can we tell?
   }
@@ -511,49 +552,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
           }
         }
       }
-      
-      // Let's figure out what to do with the returned Moment
-      if let moment = returnedMoment {
-        if markupMoment != nil {
-          // So there is a Moment under markup. The returned Moment should match this.
-          if returnedMoment === markupMoment {
-
-            // save to local
-            moment.saveRecursive(to: .local, type: .draft) { error in
-              if let error = error {
-                AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
-                  CCLog.assert("Error saving moment into local caused by: \(error.localizedDescription)")
-                }
-              }
-            }
-          } else {
-            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain)
-            CCLog.assert("returnedMoment expected to match markupMoment")
-          }
-        } else {
-          
-          // This is a new Moment. Let's add it to the Story!
-          workingStory.add(moment: moment)
-          
-          // If there wasn't any moments before, we got to make this the default thumbnail for the Story
-          // Got to do this also when removing moments!!!
-          if workingStory.moments!.count == 1 {
-            // TODO: Do we need to factor out thumbnail operations?
-            workingStory.thumbnailFileName = moment.thumbnailFileName
-            workingStory.thumbnailObj = moment.thumbnailObj
-          }
-          
-          preSave(moment) { (error) in
-            if error != nil {  // Error code should've already been printed to the Debug log from preSave()
-              AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .internalTryAgain)
-            }
-            self.returnedMoment = nil  // We should be in a state where whom is the returned Moment should no longer matter
-          }
-        }
-      } else {
-        CCLog.debug("No Moment returned on viewWillAppear")
-      }
-      
     }
   }
   
@@ -569,7 +567,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     placeholderLabel.removeFromSuperview()
     
     // We should clear this so we don't assume that we still have a returned moment
-    returnedMoment = nil
+    returnedMoments.removeAll()
   }
   
   override func didReceiveMemoryWarning() {
@@ -728,31 +726,41 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
 }
 
 
-
 extension StoryEntryViewController: CameraReturnDelegate {
-  func captureComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
-    self.returnedMoment = markedupMoment
-    self.markupMoment = nil
+  func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
 
     dismiss(animated: true) {
-      if let workingStory = self.workingStory {
-        guard let collectionView = self.momentViewController.collectionView else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-            CCLog.fatal("collection view is nil")
-          }
-          return
-        }
-        guard let moments = workingStory.moments else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-            CCLog.fatal("Moments in working journal is nil")
-          }
-          return
-        }
+      self.returnedMoments =  markedupMoments
+      // compute the insert index for the collection view
+      var indexPaths: [IndexPath] = []
+      var itemIndex = 1
 
-        // this updates the collectionView and must be done when story entry view is visible
-        // NEVER run the following code when collection view is not visible. It will crash!!!!!
-        collectionView.insertItems(at: [IndexPath( item: moments.count - 1, section: 0)])
+      if let workingStory = self.workingStory {
+        if(workingStory.moments != nil) {
+          itemIndex += (workingStory.moments!.count - 1)
+
+          for moment in markedupMoments {
+            indexPaths.append(IndexPath( item: (itemIndex) , section: 0))
+            itemIndex += 1
+            workingStory.add(moment: moment)
+          }
+
+          for moment in markedupMoments {
+            self.preSave(moment) { (error) in
+              if error != nil {  // Error code should've already been printed to the Debug log from preSave()
+                AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .internalTryAgain)
+              }
+            }
+          }
+
+          guard let collectionView = self.momentViewController.collectionView else {
+            CCLog.fatal("collection view from momentViewController is nil")
+          }
+          collectionView.insertItems(at: indexPaths)
+        }
       }
+
+      self.markupMoment = nil
     }
   }
 }

@@ -16,7 +16,8 @@ target 'TastryApp' do
   pod 'Fabric', :inhibit_warnings => true
   pod 'Crashlytics', :inhibit_warnings => true
   pod 'RATreeView', :inhibit_warnings => true
-
+  pod 'TLPhotoPicker', :inhibit_warnings => true
+ 
   target 'TastryAppTests' do
     inherit! :search_paths
     # Pods for testing

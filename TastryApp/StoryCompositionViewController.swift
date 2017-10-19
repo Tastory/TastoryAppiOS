@@ -18,9 +18,9 @@ class StoryCompositionViewController: TransitableViewController {
     }
   }
   
-  var returnedMoment: FoodieMoment? {
+  var returnedMoments: [FoodieMoment] = [] {
     didSet {
-      staticTableViewController?.returnedMoment = returnedMoment
+      staticTableViewController?.returnedMoments = returnedMoments
     }
   }
   
@@ -42,7 +42,7 @@ class StoryCompositionViewController: TransitableViewController {
     }
     
     viewController.workingStory = workingStory
-    viewController.returnedMoment = returnedMoment
+    viewController.returnedMoments = returnedMoments
     viewController.markupMoment = markupMoment
     viewController.containerVC = self
     
@@ -56,9 +56,12 @@ class StoryCompositionViewController: TransitableViewController {
 }
 
 extension StoryCompositionViewController: MarkupReturnDelegate {
-  func markupComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
-    self.returnedMoment = markedupMoment
-    self.markupMoment = markedupMoment
+  func markupComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
+    self.returnedMoments = markedupMoments
+
+    if(markedupMoments.count > 0) {
+      self.markupMoment = markedupMoments.first
+    }
     dismiss(animated: true, completion: nil)
   }
 }

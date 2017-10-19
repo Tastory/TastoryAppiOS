@@ -14,10 +14,11 @@ import UIKit
 import Photos
 import SwiftyCam
 import MobileCoreServices
+import TLPhotoPicker
 
 
 protocol CameraReturnDelegate {
-  func captureComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?)
+  func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?)
 }
 
 
@@ -40,7 +41,12 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   fileprivate var captureLocation: CLLocation? = nil
   fileprivate var captureLocationError: Error? = nil
   fileprivate var locationWatcher: LocationWatch.Context? = nil
-  
+  fileprivate var outstandingConvertOperations = 0
+  fileprivate var outstandingConvertOperationsMutex = SwiftMutex.create()
+  fileprivate var moments: [FoodieMoment?] = []
+  fileprivate var enableMultiPicker = false
+
+
   // MARK: - IBOutlets
   @IBOutlet weak var captureButton: CameraButton?
   @IBOutlet weak var exitButton: ExitButton?
@@ -50,16 +56,28 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   // MARK: - IBActions
 
   @IBAction func launchImagePicker(_ sender: Any) {
-    let imagePickerController = UIImagePickerController()
-    imagePickerController.sourceType = .photoLibrary
-    imagePickerController.delegate = self
 
-    // var types = UIImagePickerController.availableMediaTypes(for: UIImagePickerControllerSourceType.photoLibrary)
+    if(enableMultiPicker) {
+      let photoPickerController = TLPhotosPickerViewController()
+      var configure = TLPhotosPickerConfigure()
+      configure.usedCameraButton = false
+      configure.allowedLivePhotos = false
+      configure.maxSelectedAssets = 10
+      photoPickerController.delegate = self
+      photoPickerController.configure = configure
+      self.present(photoPickerController, animated: false, completion: nil)
+    }
+    else {
+      let imagePickerController = UIImagePickerController()
+      imagePickerController.sourceType = .photoLibrary
+      imagePickerController.delegate = self
 
-    imagePickerController.mediaTypes = ["public.image", "public.movie"]
+      // var types = UIImagePickerController.availableMediaTypes(for: UIImagePickerControllerSourceType.photoLibrary)
 
-    self.present(imagePickerController, animated: true, completion: nil)
-    
+      imagePickerController.mediaTypes = ["public.image", "public.movie"]
+
+      self.present(imagePickerController, animated: true, completion: nil)
+    }
   }
 
   @IBAction func capturePressed(_ sender: CameraButton) {
@@ -381,13 +399,168 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
 
 
 extension CameraViewController: MarkupReturnDelegate {
-  func markupComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?) {
+  func markupComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
     guard let delegate = cameraReturnDelegate else {
       internalErrorDialog()
       CCLog.assert("Unexpected, cameraReturnDelegate = nil")
       return
     }
-    delegate.captureComplete(markedupMoment: markedupMoment, suggestedStory: suggestedStory)
+    delegate.captureComplete(markedupMoments: markedupMoments, suggestedStory: suggestedStory)
+  }
+}
+
+extension CameraViewController: TLPhotosPickerViewControllerDelegate {
+
+  private func displayMarkUpController(mediaObj: FoodieMedia) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
+      }
+      return
+    }
+    viewController.mediaObj = mediaObj
+    viewController.markupReturnDelegate = self
+    viewController.addToExistingStoryOnly = addToExistingStoryOnly
+    self.present(viewController, animated: true)
+  }
+
+  func convertToMedia(from tlphAsset: TLPHAsset, withBlock callback: @escaping (FoodieMedia?) -> Void) {
+    DispatchQueue.global(qos: .userInitiated).async {
+      guard tlphAsset.phAsset != nil else {
+        CCLog.assert("Failed to unwrap phAsset from TLPHAsset")
+        return
+      }
+
+      var mediaObject: FoodieMedia
+      switch(tlphAsset.type)
+      {
+      case .photo:
+
+        guard let uiImage = tlphAsset.fullResolutionImage else {
+          CCLog.assert("failed to unwrap ui image from TLPH Asset")
+          return
+        }
+
+        var mediaObject: FoodieMedia
+        mediaObject = FoodieMedia(for: FoodieFile.newPhotoFileName(), localType: .draft, mediaType: .photo)
+        mediaObject.imageMemoryBuffer =
+          UIImageJPEGRepresentation(
+            uiImage,
+            CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+        callback(mediaObject)
+
+      case .video:
+
+        let videoName = FoodieFile.newVideoFileName()
+        mediaObject = FoodieMedia(for: videoName, localType: .draft, mediaType: .video)
+        tlphAsset.phAsset?.copyMediaFile(withName: videoName) { (url,error) in
+
+          if(error != nil) {
+            CCLog.assert("An error occured when trying to copy video from photo albumn to tmp folder")
+          }
+          mediaObject.videoLocalBufferUrl = url
+          callback(mediaObject)
+        }
+
+      default:
+        AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { action in
+          CCLog.fatal("Media returned from Image Picker is neither a Photo nor a Video")
+        }
+      }
+    }
+  }
+
+  func dismissPhotoPicker(withTLPHAssets: [TLPHAsset]) {
+    DispatchQueue.global(qos: .userInitiated).async {
+      if withTLPHAssets.count < 0 {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.assert("No asset returned from TLPHAsset")
+        }
+      }
+
+      self.moments = Array.init(repeatElement(nil, count: withTLPHAssets.count))
+      for tlphAsset in withTLPHAssets {
+        self.outstandingConvertOperations += 1
+        self.convertToMedia(from: tlphAsset) { (foodieMedia) in
+
+          guard let foodieMedia = foodieMedia else {
+            CCLog.assert("Failed to convert tlphAsset to FoodieMedia as foodieMedia is nil")
+            return
+          }
+          let moment = FoodieMoment(foodieMedia: foodieMedia)
+          self.moments[(tlphAsset.selectedOrder - 1)] = moment
+
+          var convertOperationsPending = true
+          SwiftMutex.lock(&self.outstandingConvertOperationsMutex)
+          self.outstandingConvertOperations -= 1
+          if self.outstandingConvertOperations == 0 { convertOperationsPending = false }
+          SwiftMutex.unlock(&self.outstandingConvertOperationsMutex)
+
+          if !convertOperationsPending {
+            self.processMoments()
+          }
+        }
+      }
+    }
+  }
+
+  func dismissComplete() {
+    // to display all the buttons properly in markup this code must be in this function otherwise
+    // the buttons will be hidden
+    if(moments.count == 1) {
+      guard let moment = moments[0] else {
+        CCLog.assert("Unwrapped nil moment")
+        return
+      }
+
+      guard let mediaObj = moment.mediaObj else {
+        CCLog.assert("Unwrapped nil moment")
+        return
+      }
+      self.displayMarkUpController(mediaObj: mediaObj)
+    }
+  }
+
+  private func processMoments() {
+    if(moments.count > 1)
+    {
+      var selectedMoments: [FoodieMoment] = []
+      for moment in moments {
+
+        guard let unwrappedMoment = moment else {
+          CCLog.assert("moment is nil")
+          return
+        }
+
+        selectedMoments.append(unwrappedMoment)
+      }
+
+      var workingStory: FoodieStory
+      if(FoodieStory.currentStory == nil)
+      {
+        workingStory =  FoodieStory.newCurrent()
+        self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
+      }
+      else
+      {
+        workingStory = FoodieStory.currentStory!
+
+        if(addToExistingStoryOnly) {
+          DispatchQueue.main.async {
+            self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
+          }
+        } else {
+          StorySelector.displayStorySelection(to: self, newStoryHandler: { (uiaction) in
+            StorySelector.showStoryDiscardDialog(to: self, withBlock: { (error) in
+              self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: FoodieStory.newCurrent())
+            })
+          }, addToCurrentHandler: { (uiaction) in
+            self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
+          })
+        }
+      }
+    }
   }
 }
 
@@ -405,9 +578,9 @@ extension CameraViewController: UIImagePickerControllerDelegate {
     var mediaName: String
 
     switch mediaType {
-      
+
     case String(kUTTypeMovie):
-      
+
       guard let movieUrl = info[UIImagePickerControllerMediaURL] as? NSURL else {
         CCLog.assert("video URL is not returned from image picker")
         return
@@ -425,19 +598,19 @@ extension CameraViewController: UIImagePickerControllerDelegate {
 
       mediaObject = FoodieMedia(for: movieName, localType: .draft, mediaType: .video)
       mediaObject.videoLocalBufferUrl = URL(fileURLWithPath: moviePath)
-    
+
     case String(kUTTypeImage):
-      
+
       mediaName = FoodieFile.newPhotoFileName()
-      
+
       guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
         CCLog.assert("UIImage is not returned from image picker")
         return
       }
-      
+
       mediaObject = FoodieMedia(for: mediaName, localType: .draft, mediaType: .photo)
       mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
-      
+
     default:
       AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { action in
         CCLog.assert("Media returned from Image Picker is neither a Photo nor a Video")
@@ -447,19 +620,12 @@ extension CameraViewController: UIImagePickerControllerDelegate {
     }
 
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
-      }
-      return
-    }
+    let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
     viewController.mediaObj = mediaObject
     viewController.markupReturnDelegate = self
+    viewController.addToExistingStoryOnly = addToExistingStoryOnly
     self.present(viewController, animated: true)
   }
 }
-
-
-
 
 

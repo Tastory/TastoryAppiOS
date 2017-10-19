@@ -217,7 +217,6 @@ class FoodiePFObject: PFObject {
       
       let saveRetry = SwiftRetry()
       saveRetry.start("Save \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) {
-        
         self.saveInBackground { success, error in
           if !success || error != nil {
             if saveRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }

@@ -21,7 +21,7 @@ import Jot
 
 
 protocol MarkupReturnDelegate {
-  func markupComplete(markedupMoment: FoodieMoment, suggestedStory: FoodieStory?)
+  func markupComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?)
 }
 
 
@@ -61,10 +61,7 @@ class MarkupViewController: TransitableViewController {
   
   fileprivate var thumbnailObject: FoodieMedia?
   fileprivate var mediaObject: FoodieMedia!
-  
-  fileprivate var mediaWidth: Int?
-  fileprivate var mediaAspectRatio: Double?
-  
+
   fileprivate var soundOn = true
   
   fileprivate let jotViewController = JotViewController()
@@ -265,9 +262,6 @@ class MarkupViewController: TransitableViewController {
 
     momentObj.set(location: mediaLocation)
     momentObj.playSound = soundOn
-    
-    // Setting the Thumbnail Object also initializes the thumbnailFileName
-    momentObj.thumbnailObj = thumbnailObject
 
     momentObj.clearMarkups()
     // Serialize the Jot Markup into Foodie Markups
@@ -307,21 +301,6 @@ class MarkupViewController: TransitableViewController {
     } else {
       CCLog.debug("No dictionary returned by jotViewController to serialize into Markup")
     }
-    
-    // Fill in the width and aspect ratio
-    guard let width = mediaWidth else {
-      saveErrorDialog()
-      CCLog.assert("Unexpected. mediaWidth == nil")
-      return
-    }
-    momentObj.width = width
-    
-    guard let aspectRatio = mediaAspectRatio else {
-      saveErrorDialog()
-      CCLog.assert("Unexpected. mediaAspectRatio == nil")
-      return
-    }
-    momentObj.aspectRatio = aspectRatio
 
     // Keep in mind there are 2 scenarios here. 
     // 1. We are working on the Current Draft Story
@@ -332,18 +311,18 @@ class MarkupViewController: TransitableViewController {
     if let story = FoodieStory.currentStory {
       if(addToExistingStoryOnly) {
         // skip the selection of adding to current or not
-        self.cleanupAndReturn(markedUpMoment: momentObj, suggestedStory: story)
+        self.cleanupAndReturn(markedUpMoments: [momentObj], suggestedStory: story)
       }
       else {
         displayStorySelection(
           newStoryHandler: { UIAlertAction -> Void in self.showStoryDiscardDialog(moment: momentObj) },
-          addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoment: momentObj, suggestedStory: story) }
+          addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoments: [momentObj], suggestedStory: story) }
         )
       }
     }
     else {
       // Just return a new Current Story
-      self.cleanupAndReturn(markedUpMoment: momentObj, suggestedStory: FoodieStory.newCurrent())
+      self.cleanupAndReturn(markedUpMoments: [momentObj], suggestedStory: FoodieStory.newCurrent())
     }
     
     // TODO: - Scenario 2 - We are editing an existing Story, not the Current Draft Story
@@ -410,7 +389,7 @@ class MarkupViewController: TransitableViewController {
       FoodieStory.removeCurrent()
       
       // We don't add Moments here, we let the Story Entry View decide what to do with it
-      self.cleanupAndReturn(markedUpMoment: moment, suggestedStory: FoodieStory.newCurrent())
+      self.cleanupAndReturn(markedUpMoments: [moment], suggestedStory: FoodieStory.newCurrent())
     }
     
     let alertController =
@@ -429,7 +408,7 @@ class MarkupViewController: TransitableViewController {
     self.present(alertController, animated: true, completion: nil)
   }
 
-  func cleanupAndReturn(markedUpMoment: FoodieMoment, suggestedStory: FoodieStory ){
+  func cleanupAndReturn(markedUpMoments: [FoodieMoment], suggestedStory: FoodieStory ){
     // Stop if there might be video looping
     self.avPlayer?.pause()  // TODO: - Do we need to free the avPlayer memory or something?
     
@@ -438,7 +417,7 @@ class MarkupViewController: TransitableViewController {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
       CCLog.fatal("Unexpected. markupReturnDelegate became nil. Unable to proceed")
     }
-    delegate.markupComplete(markedupMoment: markedUpMoment, suggestedStory: suggestedStory)
+    delegate.markupComplete(markedupMoments: markedUpMoments, suggestedStory: suggestedStory)
   }
 
   // MARK: - Private Instance Functions
@@ -693,121 +672,11 @@ class MarkupViewController: TransitableViewController {
       CCLog.fatal("Both photoToMarkup and videoToMarkupURL are nil")
     }
   }
-  
-  
-  override func viewDidAppear(_ animated: Bool) {
 
-    // Obtain thumbnail, width and aspect ratio ahead of time once view is already loaded
-    let thumbnailCgImage: CGImage!
-    
-    // Need to decide what image to set as thumbnail
-    switch mediaObject.mediaType! {
-    case .photo:
-      guard let imageBuffer = mediaObject.imageMemoryBuffer else {
-        internalErrorDialog()
-        CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
-        return
-      }
-      
-      guard let imageSource = CGImageSourceCreateWithData(imageBuffer as CFData, nil) else {
-        internalErrorDialog()
-        CCLog.assert("CGImageSourceCreateWithData() failed")
-        return
-      }
-      
-      let options = [
-        kCGImageSourceThumbnailMaxPixelSize as String : FoodieGlobal.Constants.ThumbnailPixels as NSNumber,
-        kCGImageSourceCreateThumbnailFromImageAlways as String : true as NSNumber,
-        kCGImageSourceCreateThumbnailWithTransform as String: true as NSNumber
-      ]
-      thumbnailCgImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options as CFDictionary)  // Assuming either portrait or square
-      
-      // Get the width and aspect ratio while at it
-      let imageCount = CGImageSourceGetCount(imageSource)
-      
-      if imageCount != 1 {
-        internalErrorDialog()
-        CCLog.assert("Image Source Count not 1")
-        return
-      }
-      
-      guard let imageProperties = (CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [String : AnyObject]) else {
-        internalErrorDialog()
-        CCLog.assert("CGImageSourceCopyPropertiesAtIndex failed to get Dictionary of image properties")
-        return
-      }
-      
-      if let pixelWidth = imageProperties[kCGImagePropertyPixelWidth as String] as? Int {
-        mediaWidth = pixelWidth
-      } else {
-        internalErrorDialog()
-        CCLog.assert("Image property with index kCGImagePropertyPixelWidth did not return valid Integer value")
-        return
-      }
-      
-      if let pixelHeight = imageProperties[kCGImagePropertyPixelHeight as String] as? Int {
-        mediaAspectRatio = Double(mediaWidth!)/Double(pixelHeight)
-      } else {
-        internalErrorDialog()
-        CCLog.assert("Image property with index kCGImagePropertyPixelHeight did not return valid Integer value")
-        return
-      }
-      
-    case .video:      // TODO: Allow user to change timeframe in video to base Thumbnail on
-      guard let videoUrl = mediaObject.videoLocalBufferUrl else {
-        internalErrorDialog()
-        CCLog.assert("Unexpected, videoLocalBufferUrl == nil")
-        return
-      }
-      
-      let asset = AVURLAsset(url: videoUrl)
-      let imgGenerator = AVAssetImageGenerator(asset: asset)
-      
-      imgGenerator.maximumSize = CGSize(width: FoodieGlobal.Constants.ThumbnailPixels, height: FoodieGlobal.Constants.ThumbnailPixels)  // Assuming either portrait or square
-      imgGenerator.appliesPreferredTrackTransform = true
-      
-      do {
-        thumbnailCgImage = try imgGenerator.copyCGImage(at: CMTimeMake(0, 1), actualTime: nil)
-      } catch {
-        internalErrorDialog()
-        CCLog.assert("AVAssetImageGenerator.copyCGImage failed with error: \(error.localizedDescription)")
-        return
-      }
-      
-      let avTracks = asset.tracks(withMediaType: AVMediaType.video)
-      
-      if avTracks.count != 1 {
-        internalErrorDialog()
-        CCLog.assert("There isn't exactly 1 video track for the AVURLAsset")
-        return
-      }
-      
-      let videoSize = avTracks[0].naturalSize
-      mediaWidth = Int(videoSize.width)
-      mediaAspectRatio = Double(videoSize.width/videoSize.height)
-      
-      //CCLog.verbose("Media width: \(videoSize.width) height: \(videoSize.height). Thumbnail width: \(thumbnailCgImage.width) height: \(thumbnailCgImage.height)")
-    }
-    
-    // Create a Thumbnail Media with file name based on the original file name of the Media
-    guard let foodieFileName = mediaObject.foodieFileName else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected. mediaObject.foodieFileName = nil")
-      return
-    }
-    
-    thumbnailObject = FoodieMedia(for: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), localType: .draft, mediaType: .photo)
-    
-    thumbnailObject!.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
-    //CGImageRelease(thumbnailCgImage)
-  }
-  
-  
   override func viewWillDisappear(_ animated: Bool) {
     view.endEditing(true)  // Force clear the keyboard
   }
-  
-  
+
   override var prefersStatusBarHidden: Bool {
     return true
   }
