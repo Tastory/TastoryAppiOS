@@ -30,8 +30,8 @@ class FoodiePFObject: PFObject {
     Parse.enableLocalDatastore()
     
     let configuration = ParseClientConfiguration {
-      $0.applicationId = "iOpr6ye2sQBg8gBAH4vIQ8toWrhlVSPzuWg8UoAk"
-      $0.clientKey = "wtj9jq3FzSogAjnfsMuNFQdQa5m2GqpWkqLjjrSg"
+      $0.applicationId = "HTMKtzMDQsuWXp9g0te0uYg5JQGuptZOQmmR46BK"
+      $0.clientKey = "oX4mM0xixVcdmQANyGXmgqxlo0VTYld1dg1dO8P1"
       $0.server = "https://parseapi.back4app.com"
       $0.isLocalDatastoreEnabled = true
     }
