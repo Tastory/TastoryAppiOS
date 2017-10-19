@@ -7,7 +7,6 @@
 //
 
 
-import AVFoundation
 import Parse
 
 class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
@@ -150,102 +149,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Private Instance Functions
-
-  fileprivate func generateThumbnail(mediaObject: FoodieMedia) -> FoodieMedia? {
-    // Obtain thumbnail, width and aspect ratio ahead of time once view is already loaded
-    let thumbnailCgImage: CGImage!
-
-    // Need to decide what image to set as thumbnail
-    switch mediaObject.mediaType! {
-    case .photo:
-      guard let imageBuffer = mediaObject.imageMemoryBuffer else {
-        // TODO not sure how we can display a dialog within this model if an error does occur
-        // there used to be display internal dialog here before 
-        CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
-        return nil
-      }
-
-      guard let imageSource = CGImageSourceCreateWithData(imageBuffer as CFData, nil) else {
-        CCLog.assert("CGImageSourceCreateWithData() failed")
-        return nil
-      }
-
-      let options = [
-        kCGImageSourceThumbnailMaxPixelSize as String : FoodieGlobal.Constants.ThumbnailPixels as NSNumber,
-        kCGImageSourceCreateThumbnailFromImageAlways as String : true as NSNumber,
-        kCGImageSourceCreateThumbnailWithTransform as String: true as NSNumber
-      ]
-      thumbnailCgImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options as CFDictionary)  // Assuming either portrait or square
-
-      // Get the width and aspect ratio while at it
-      let imageCount = CGImageSourceGetCount(imageSource)
-
-      if imageCount != 1 {
-        CCLog.assert("Image Source Count not 1")
-        return nil
-      }
-
-      guard let imageProperties = (CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [String : AnyObject]) else {
-        CCLog.assert("CGImageSourceCopyPropertiesAtIndex failed to get Dictionary of image properties")
-        return nil
-      }
-
-      if let pixelWidth = imageProperties[kCGImagePropertyPixelWidth as String] as? Int {
-        width = pixelWidth
-      } else {
-        CCLog.assert("Image property with index kCGImagePropertyPixelWidth did not return valid Integer value")
-        return nil
-      }
-
-      if let pixelHeight = imageProperties[kCGImagePropertyPixelHeight as String] as? Int {
-        aspectRatio = Double(width)/Double(pixelHeight)
-      } else {
-        CCLog.assert("Image property with index kCGImagePropertyPixelHeight did not return valid Integer value")
-        return nil
-      }
-
-    case .video:      // TODO: Allow user to change timeframe in video to base Thumbnail on
-      guard let videoUrl = mediaObject.videoLocalBufferUrl else {
-        CCLog.assert("Unexpected, videoLocalBufferUrl == nil")
-        return nil
-      }
-
-      let asset = AVURLAsset(url: videoUrl)
-      let imgGenerator = AVAssetImageGenerator(asset: asset)
-
-      imgGenerator.maximumSize = CGSize(width: FoodieGlobal.Constants.ThumbnailPixels, height: FoodieGlobal.Constants.ThumbnailPixels)  // Assuming either portrait or square
-      imgGenerator.appliesPreferredTrackTransform = true
-
-      do {
-        thumbnailCgImage = try imgGenerator.copyCGImage(at: CMTimeMake(0, 1), actualTime: nil)
-      } catch {
-        CCLog.assert("AVAssetImageGenerator.copyCGImage failed with error: \(error.localizedDescription)")
-        return nil
-      }
-
-      let avTracks = asset.tracks(withMediaType: AVMediaType.video)
-
-      if avTracks.count != 1 {
-        CCLog.assert("There isn't exactly 1 video track for the AVURLAsset")
-        return nil
-      }
-
-      let videoSize = avTracks[0].naturalSize
-      width = Int(videoSize.width)
-      aspectRatio = Double(videoSize.width/videoSize.height)
-    }
-
-    // Create a Thumbnail Media with file name based on the original file name of the Media
-    guard let foodieFileName = mediaObject.foodieFileName else {
-      CCLog.assert("Unexpected. mediaObject.foodieFileName = nil")
-      return nil
-    }
-
-    let thumbnailObj = FoodieMedia(for: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), localType: .draft, mediaType: .photo)
-    thumbnailObj.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
-    return thumbnailObj
-  }
-
+  
   // Retrieves just the moment itself
   fileprivate func retrieve(from location: FoodieObject.StorageLocation,
                             type localType: FoodieObject.LocalType,
@@ -429,13 +333,20 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // This is the Initializer we will call internally
   convenience init(foodieMedia: FoodieMedia) {
     self.init()
-    mediaObj = foodieMedia
-    
-    thumbnailObj = generateThumbnail(mediaObject: foodieMedia)
+    thumbnailObj = foodieMedia.generateThumbnail()
     thumbnailFileName = thumbnailObj!.foodieFileName
     // didSet does not get called in initialization context...
+    mediaObj = foodieMedia
     mediaFileName = foodieMedia.foodieFileName
     mediaType = foodieMedia.mediaType?.rawValue
+
+    if foodieMedia.width != nil {
+      width = foodieMedia.width!
+    }
+
+    if(foodieMedia.aspectRatio != nil) {
+      aspectRatio = foodieMedia.aspectRatio!
+    }
   }
   
   
