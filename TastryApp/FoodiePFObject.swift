@@ -29,8 +29,8 @@ class FoodiePFObject: PFObject {
     Parse.enableLocalDatastore()
     
     let configuration = ParseClientConfiguration {
-      $0.applicationId = "HTMKtzMDQsuWXp9g0te0uYg5JQGuptZOQmmR46BK"
-      $0.clientKey = "oX4mM0xixVcdmQANyGXmgqxlo0VTYld1dg1dO8P1"
+      $0.applicationId = "XWWoiDtH0kOo2Y5w9QIHq5TecpOBj6CwaRiArb7o"
+      $0.clientKey = "f3j1ztnsbi8sBKQJKKK0c8pPmd90bPLWw75WwNKW"
       $0.server = "https://parseapi.back4app.com"
       $0.isLocalDatastoreEnabled = true
     }
@@ -216,8 +216,7 @@ class FoodiePFObject: PFObject {
       CCLog.debug("Save \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) in background")
       
       let saveRetry = SwiftRetry()
-      saveRetry.start("Save \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) {
-        
+      saveRetry.start("Save \(self.objectId) \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) {
         self.saveInBackground { success, error in
           if !success || error != nil {
             if saveRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .userInitiated) { return }

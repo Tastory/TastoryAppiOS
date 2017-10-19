@@ -108,8 +108,8 @@ class FoodieFile {
   
   // MARK: - Private Constants
   struct Constants {
-    static let S3BucketKey = "tastry-master"
-    static let CloudFrontUrl = URL(string: "https://d2zy9a8xd3cswc.cloudfront.net/")!
+    static let S3BucketKey = "tastry-dev-victor"
+    static let CloudFrontUrl = URL(string: "https://dqeax91c6icyu.cloudfront.net/")!
     static let DraftStoryMediaFolderUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieObject.LocalType.draft.rawValue, isDirectory: true)
     static let CleanCrashLogFolderUrl = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("CleanCrashLog", isDirectory: true)  // Cleanroom Logger will be responsible for creating this directory
     static let CacheFoodieMediaFolderUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieObject.LocalType.cache.rawValue, isDirectory: true)
@@ -338,11 +338,12 @@ class FoodieFile {
         try self.fileManager.copyItem(at: url, to: FoodieFile.getFileURL(for: localType, with: fileName))
         
         // This is a little hacky.... Delete file after copy to Draft, assuming that the file was in Tmp
-        if localType == .draft {
+        /*if localType == .draft {
           try self.fileManager.removeItem(at: url)
-        }
+        }*/
       } catch {
-        CCLog.assert("Failed to copy from \(url.absoluteString) to \(localType) as \(fileName)")
+
+        CCLog.assert("Failed to copy from \(url.absoluteString) to \(localType) as \(fileName) \(error)")
         callback?(ErrorCode.fileManagerCopyItemLocalFailed)
         return
       }
