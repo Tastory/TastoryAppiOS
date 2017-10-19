@@ -467,6 +467,34 @@ class MapViewController: TransitableViewController {
   }
   
   
+  private func applyDefaultMapLocation() {
+    // Provide a default Map Region incase Location Update is slow or user denies authorization
+    let startMapLocation: CLLocationCoordinate2D = lastLocation ?? Constants.DefaultCLCoordinate2D
+    let startMapDelta: CLLocationDegrees = lastMapDelta ?? Constants.DefaultMaxDelta
+    let region = MKCoordinateRegion(center: startMapLocation,
+                                    span: MKCoordinateSpan(latitudeDelta: startMapDelta, longitudeDelta: startMapDelta))
+    mapView?.setRegion(region, animated: false)
+  }
+  
+  
+  private func startLocationWatcher() {
+    // Start/Restart the Location Watcher
+    locationWatcher = LocationWatch.global.start(butPaused: (lastLocation != nil)) { (location, error) in
+      if let error = error {
+        self.locationErrorDialog(message: "LocationWatch returned error - \(error.localizedDescription)", comment: "Alert Dialogue Message")
+        CCLog.warning("LocationWatch returned error - \(error.localizedDescription)")
+        return
+      }
+      
+      if let location = location {
+        let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: self.currentMapDelta, longitudeDelta: self.currentMapDelta))
+        DispatchQueue.main.async { self.mapView?.setRegion(region, animated: true) }
+      }
+    }
+  }
+  
+  
+  
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -530,33 +558,7 @@ class MapViewController: TransitableViewController {
       }
     }
   }
-  
-  
-  private func applyDefaultMapLocation() {
-    // Provide a default Map Region incase Location Update is slow or user denies authorization
-    let startMapLocation: CLLocationCoordinate2D = lastLocation ?? Constants.DefaultCLCoordinate2D
-    let startMapDelta: CLLocationDegrees = lastMapDelta ?? Constants.DefaultMaxDelta
-    let region = MKCoordinateRegion(center: startMapLocation,
-                                    span: MKCoordinateSpan(latitudeDelta: startMapDelta, longitudeDelta: startMapDelta))
-    mapView?.setRegion(region, animated: false)
-  }
-  
-  
-  private func startLocationWatcher() {
-    // Start/Restart the Location Watcher
-    locationWatcher = LocationWatch.global.start(butPaused: (lastLocation != nil)) { (location, error) in
-      if let error = error {
-        self.locationErrorDialog(message: "LocationWatch returned error - \(error.localizedDescription)", comment: "Alert Dialogue Message")
-        CCLog.warning("LocationWatch returned error - \(error.localizedDescription)")
-        return
-      }
-      
-      if let location = location {
-        let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: self.currentMapDelta, longitudeDelta: self.currentMapDelta))
-        DispatchQueue.main.async { self.mapView?.setRegion(region, animated: true) }
-      }
-    }
-  }
+
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
@@ -661,6 +663,11 @@ class MapViewController: TransitableViewController {
         }
       }
     }
+  }
+  
+  
+  override func viewDidAppear(_ animated: Bool) {
+    FoodieFetch.global.cancelAll()
   }
   
   

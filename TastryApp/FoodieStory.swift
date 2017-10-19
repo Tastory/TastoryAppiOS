@@ -571,7 +571,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       return false  // Don't go further if even the parent isn't retrieved
     }
     
-    guard let thumbnail = thumbnail, let venue = venue else {
+    guard let thumbnail = thumbnail, let venue = venue, let author = author else {
       // If anything is nil, just re-retrieve? CCLog.assert("Thumbnail, Markups and Venue should all be not nil")
       return false
     }
@@ -583,7 +583,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       }
     }
     
-    return thumbnail.isRetrieved && venue.isRetrieved && markupsAreRetrieved
+    return thumbnail.isRetrieved && venue.isRetrieved && markupsAreRetrieved && author.isRetrieved
   }
   
   
