@@ -445,7 +445,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
         }
 
         var mediaObject: FoodieMedia
-        mediaObject = FoodieMedia(for: FoodieFile.newPhotoFileName(), localType: .draft, mediaType: .photo)
+        mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
         mediaObject.imageMemoryBuffer =
           UIImageJPEGRepresentation(
             uiImage,
@@ -454,14 +454,21 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
 
       case .video:
 
-        let videoName = FoodieFile.newVideoFileName()
+        let videoName = FoodieFileObject.newVideoFileName()
         mediaObject = FoodieMedia(for: videoName, localType: .draft, mediaType: .video)
-        tlphAsset.phAsset?.copyMediaFile(withName: videoName) { (url,error) in
+        tlphAsset.phAsset?.copyMediaFile(withName: videoName) { (url, error) in
 
-          if(error != nil) {
-            CCLog.assert("An error occured when trying to copy video from photo albumn to tmp folder")
+          if let error = error {
+            CCLog.fatal("Error occured when trying to copy video from photo albumn to tmp folder - \(error.localizedDescription)")
           }
-          mediaObject.videoLocalBufferUrl = url
+          
+          guard let url = url else {
+            CCLog.fatal("No URL returend from copyMediaFile()")
+          }
+          
+          let avExportPlayer = AVExportPlayer()
+          avExportPlayer.initAVPlayer(from: url)
+          mediaObject.videoExportPlayer = avExportPlayer
           callback(mediaObject)
         }
 
@@ -516,7 +523,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
         return
       }
 
-      guard let mediaObj = moment.mediaObj else {
+      guard let mediaObj = moment.media else {
         CCLog.assert("Unwrapped nil moment")
         return
       }

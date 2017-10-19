@@ -462,9 +462,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
-                            <view opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nxS-Eu-LGj" userLabel="TapForward">
-                                <rect key="frame" x="72" y="0.0" width="269.33333333333337" height="736"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nxS-Eu-LGj" userLabel="TapForward">
+                                <rect key="frame" x="131.5" y="0.0" width="243.5" height="667"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <gestureRecognizers/>
@@ -545,9 +544,13 @@
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="OMv-jK-C3v"/>
                             <constraint firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" id="P6T-e5-UJl"/>
                             <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="3Gc-Ev-vmE" secondAttribute="bottom" id="Vmo-EH-HPg"/>
+                            <constraint firstAttribute="trailing" secondItem="nxS-Eu-LGj" secondAttribute="trailing" id="WD0-hq-DLo"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="aCi-cl-PK7"/>
+                            <constraint firstItem="nxS-Eu-LGj" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" multiplier="0.65" id="cmr-Xm-15e"/>
+                            <constraint firstItem="nxS-Eu-LGj" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="eXL-2f-A15"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="efA-ND-dRG"/>
                             <constraint firstItem="On6-b9-DFl" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="bottom" id="fNQ-Yf-4Lf"/>
+                            <constraint firstAttribute="bottom" secondItem="nxS-Eu-LGj" secondAttribute="bottom" id="jhR-31-wUi"/>
                             <constraint firstAttribute="trailing" secondItem="3Gc-Ev-vmE" secondAttribute="trailing" id="uPp-NK-myt"/>
                         </constraints>
                     </view>

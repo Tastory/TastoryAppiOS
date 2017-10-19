@@ -334,8 +334,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // This is the Initializer we will call internally
   convenience init(foodieMedia: FoodieMedia) {
     self.init()
-    thumbnailObj = foodieMedia.generateThumbnail()
-    thumbnailFileName = thumbnailObj!.foodieFileName
+    thumbnail = foodieMedia.generateThumbnail()
+    thumbnailFileName = thumbnail!.foodieFileName
     
     // didSet does not get called in initialization context...
     media = foodieMedia

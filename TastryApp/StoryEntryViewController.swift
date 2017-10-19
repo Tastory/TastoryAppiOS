@@ -506,7 +506,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
           if workingStory.moments!.count == 1 {
             // TODO: Do we need to factor out thumbnail operations?
             workingStory.thumbnailFileName = returnedMoment.thumbnailFileName
-            workingStory.thumbnailObj = returnedMoment.thumbnailObj
+            workingStory.thumbnail = returnedMoment.thumbnail
           }
 
           preSave(returnedMoment) { (error) in

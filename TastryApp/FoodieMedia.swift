@@ -7,6 +7,7 @@
 //
 
 
+import UIKit
 import AVFoundation
 
 class FoodieMedia: FoodieFileObject {
@@ -127,12 +128,10 @@ class FoodieMedia: FoodieFileObject {
       }
       
     case .video:      // TODO: Allow user to change timeframe in video to base Thumbnail on
-      guard let videoUrl = videoLocalBufferUrl else {
-        CCLog.assert("Unexpected, videoLocalBufferUrl == nil")
-        return nil
+      guard let asset = videoExportPlayer?.avPlayer?.currentItem?.asset as? AVURLAsset else {
+        CCLog.fatal("Cannot get at AVURLAsset")
       }
       
-      let asset = AVURLAsset(url: videoUrl)
       let imgGenerator = AVAssetImageGenerator(asset: asset)
       
       imgGenerator.maximumSize = CGSize(width: FoodieGlobal.Constants.ThumbnailPixels, height: FoodieGlobal.Constants.ThumbnailPixels)  // Assuming either portrait or square
@@ -163,7 +162,7 @@ class FoodieMedia: FoodieFileObject {
       return nil
     }
     
-    let thumbnailObj = FoodieMedia(for: FoodieFile.thumbnailFileName(originalFileName: foodieFileName), localType: .draft, mediaType: .photo)
+    let thumbnailObj = FoodieMedia(for: FoodieFileObject.thumbnailFileName(originalFileName: foodieFileName), localType: .draft, mediaType: .photo)
     thumbnailObj.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
     return thumbnailObj
   }
