@@ -85,7 +85,7 @@
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */; };
 		C24F69651EB85B0300A0DB7B /* StoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69641EB85B0300A0DB7B /* StoryViewController.swift */; };
 		C29CD1391F93198800A6D53F /* StorySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD1381F93198800A6D53F /* StorySelector.swift */; };
-		C29CD13B1F9844BC00A6D53F /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD13A1F9844BC00A6D53F /* PHAsset+Extension.swift */; };
+		C29CD13D1F988B2000A6D53F /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */; };
 		D3272D7D673F648DD9415F7E /* Pods_TastryAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3DBF493BCE72101729EF1C /* Pods_TastryAppTests.framework */; };
 		F351A78B7F036463BBC4B536 /* Pods_TastryAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9EF05BC204B0292B02F87C3 /* Pods_TastryAppUITests.framework */; };
 /* End PBXBuildFile section */
@@ -199,7 +199,7 @@
 		C0DCCB78E795CC617A076CB5 /* Pods-TastryAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastryAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TastryAppTests/Pods-TastryAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		C24F69641EB85B0300A0DB7B /* StoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryViewController.swift; sourceTree = "<group>"; };
 		C29CD1381F93198800A6D53F /* StorySelector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorySelector.swift; sourceTree = "<group>"; };
-		C29CD13A1F9844BC00A6D53F /* PHAsset+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
+		C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
 		EB2A90DE815F97B592389FDD /* Pods-TastryAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastryAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TastryAppUITests/Pods-TastryAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		F51050D81CF6AB86BC58AB12 /* Pods-TastryApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastryApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TastryApp/Pods-TastryApp.debug.xcconfig"; sourceTree = "<group>"; };
 		F9EF05BC204B0292B02F87C3 /* Pods_TastryAppUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TastryAppUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -382,7 +382,7 @@
 		8CD328D81E8B2B7900E5254F /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				C29CD13A1F9844BC00A6D53F /* PHAsset+Extension.swift */,
+				C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */,
 				8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */,
 				8C312ABF1E8262270084DD98 /* MKCoordinateSpan+Extension.swift */,
 				8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */,
@@ -884,7 +884,7 @@
 				8CE49EB51F64C8E8007278C1 /* PickerSquareLayer.swift in Sources */,
 				8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */,
 				8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */,
-				C29CD13B1F9844BC00A6D53F /* PHAsset+Extension.swift in Sources */,
+				C29CD13D1F988B2000A6D53F /* PHAsset+Extension.swift in Sources */,
 				8C3254A51F40240900895572 /* VenueTableViewController.swift in Sources */,
 				8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */,
 				8C61BCDC1E985D1300DDF248 /* CleanCrashLog.swift in Sources */,

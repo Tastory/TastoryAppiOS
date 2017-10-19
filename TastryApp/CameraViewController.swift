@@ -474,7 +474,9 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   func dismissPhotoPicker(withTLPHAssets: [TLPHAsset]) {
     DispatchQueue.global(qos: .userInitiated).async {
       if withTLPHAssets.count < 0 {
-        CCLog.assert("No asset returned from TLPHAsset")
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.assert("No asset returned from TLPHAsset")
+        }
       }
 
       self.moments = Array.init(repeatElement(nil, count: withTLPHAssets.count))
@@ -621,6 +623,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
     viewController.mediaObj = mediaObject
     viewController.markupReturnDelegate = self
+    viewController.addToExistingStoryOnly = addToExistingStoryOnly
     self.present(viewController, animated: true)
   }
 }
