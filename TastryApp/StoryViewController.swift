@@ -43,6 +43,11 @@ class StoryViewController: TransitableViewController {
   @IBOutlet weak var swipeUpGestureRecognizer: UISwipeGestureRecognizer!
   @IBOutlet weak var tapForwardGestureRecognizer: UIView!
   @IBOutlet weak var tapBackwardGestureRecognizer: UIView!
+  
+  @IBOutlet weak var venueButton: UIButton!
+  
+  @IBOutlet weak var authorButton: UIButton!
+  
   @IBOutlet weak var soundButton: UIButton!
   @IBOutlet weak var pauseResumeButton: UIButton!
   
@@ -83,6 +88,38 @@ class StoryViewController: TransitableViewController {
       safariViewController.modalPresentationStyle = .overFullScreen
       self.present(safariViewController, animated: true, completion: nil)
     }
+  }
+  
+  
+  @IBAction func venueAction(_ sender: UIButton) {
+    CCLog.info("User tapped Venue")
+    
+    // !!!!!!  TODO: @)(#U@(* I#JHTLI W*$TR O*G#LN TODO !!!!!!!!!
+//    guard let story = viewingStory else {
+//      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+//        CCLog.assert("Unexpected, viewingStory = nil")
+//      }
+//      return
+//    }
+//
+//    if let storyLinkString = story.storyURL, let storyLinkUrl = URL(string: storyLinkString) {
+//
+//      // Pause if playing
+//      if !isPaused {
+//        pausePlay()
+//      }
+//
+//      CCLog.info("Opening Safari View for \(storyLinkString)")
+//      let safariViewController = SFSafariViewController(url: storyLinkUrl)
+//      safariViewController.delegate = self
+//      safariViewController.modalPresentationStyle = .overFullScreen
+//      self.present(safariViewController, animated: true, completion: nil)
+//    }
+  }
+  
+  
+  @IBAction func authorAction(_ sender: UIButton) {
+    CCLog.info("User tapped Author")
   }
   
   
@@ -498,6 +535,11 @@ class StoryViewController: TransitableViewController {
   override func topViewWillEnterForeground() {
     super.topViewWillEnterForeground()
     currentExportPlayer?.avPlayer?.play()
+  }
+  
+  
+  override var prefersStatusBarHidden: Bool {
+    return true
   }
 }
 
