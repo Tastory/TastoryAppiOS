@@ -427,7 +427,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
 
   func convertToMedia(from tlphAsset: TLPHAsset, withBlock callback: @escaping (FoodieMedia?) -> Void) {
     DispatchQueue.global(qos: .userInitiated).async {
-      guard let selectedAsset = tlphAsset.phAsset else {
+      guard tlphAsset.phAsset != nil else {
         CCLog.assert("Failed to unwrap phAsset from TLPHAsset")
         return
       }

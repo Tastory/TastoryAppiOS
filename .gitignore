@@ -27,7 +27,7 @@ xcuserdata/
 *.moved-aside
 *.xcuserstate
 *.xcscmblueprint
-xcschememanagement.plist
+**/xcschememanagement.plist
 
 ## Obj-C/Swift specific
 *.hmap
