@@ -41,26 +41,26 @@ class RootViewController: UIViewController {
   override func viewDidAppear(_ animated: Bool) {
     if let currentUser = FoodieUser.current, currentUser.isRegistered {
       
-      // Get an updated copy of User before proceeding
-      currentUser.retrieve(forceAnyways: true) { error in
+      currentUser.retrieveFromLocalThenServer(forceAnyways: true, type: .cache) { error in
         if let error = error {
           CCLog.warning("Retrieve latest copy of Current User failed with Error - \(error.localizedDescription)")
         }
         
         // Make sure the right permissions are assigned to objects since we are assuming a User
         FoodiePermission.setDefaultObjectPermission(for: currentUser)
-        
-        // Lets just jump directly into the Main view!
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController") as? MapViewController else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-            CCLog.fatal("ViewController initiated not of MapViewController Class!!")
-          }
-          return
-        }
-        viewController.setTransition(presentTowards: .left, dismissTowards: .right)
-        self.present(viewController, animated: false, completion: nil)
       }
+      
+      // Risking it by jumping to the Main View in parallel with updating the user's details from server
+      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController") as? MapViewController else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("ViewController initiated not of MapViewController Class!!")
+        }
+        return
+      }
+      viewController.setTransition(presentTowards: .left, dismissTowards: .right)
+      self.present(viewController, animated: false, completion: nil)
+      
     } else {
       // Resetting permissions back to global default since we don't know whose gonna be logged'in
       FoodiePermission.setDefaultGlobalObjectPermission()

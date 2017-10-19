@@ -43,13 +43,11 @@ class StoryViewController: TransitableViewController {
   @IBOutlet weak var swipeUpGestureRecognizer: UISwipeGestureRecognizer!
   @IBOutlet weak var tapForwardGestureRecognizer: UIView!
   @IBOutlet weak var tapBackwardGestureRecognizer: UIView!
-  
   @IBOutlet weak var venueButton: UIButton!
-  
   @IBOutlet weak var authorButton: UIButton!
-  
   @IBOutlet weak var soundButton: UIButton!
   @IBOutlet weak var pauseResumeButton: UIButton!
+  
   
   
   // MARK: - IBActions
@@ -94,27 +92,25 @@ class StoryViewController: TransitableViewController {
   @IBAction func venueAction(_ sender: UIButton) {
     CCLog.info("User tapped Venue")
     
-    // !!!!!!  TODO: @)(#U@(* I#JHTLI W*$TR O*G#LN TODO !!!!!!!!!
-//    guard let story = viewingStory else {
-//      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-//        CCLog.assert("Unexpected, viewingStory = nil")
-//      }
-//      return
-//    }
-//
-//    if let storyLinkString = story.storyURL, let storyLinkUrl = URL(string: storyLinkString) {
-//
-//      // Pause if playing
-//      if !isPaused {
-//        pausePlay()
-//      }
-//
-//      CCLog.info("Opening Safari View for \(storyLinkString)")
-//      let safariViewController = SFSafariViewController(url: storyLinkUrl)
-//      safariViewController.delegate = self
-//      safariViewController.modalPresentationStyle = .overFullScreen
-//      self.present(safariViewController, animated: true, completion: nil)
-//    }
+    guard let story = viewingStory, let venue = story.venue else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.assert("Unexpected, viewingStory = nil")
+      }
+      return
+    }
+
+    if let foursquareURLString = venue.foursquareURL, let foursquareURL = URL(string: foursquareURLString) {
+      // Pause if playing
+      if !isPaused {
+        pausePlay()
+      }
+
+      CCLog.info("Opening Safari View for \(foursquareURLString)")
+      let safariViewController = SFSafariViewController(url: foursquareURL)
+      safariViewController.delegate = self
+      safariViewController.modalPresentationStyle = .overFullScreen
+      self.present(safariViewController, animated: true, completion: nil)
+    }
   }
   
   
@@ -228,8 +224,10 @@ class StoryViewController: TransitableViewController {
       photoView.image = UIImage(data: imageBuffer)
       view.insertSubview(photoView, belowSubview: jotViewController.view)
 
-      // UI Update
+      // UI Update - Really should group some of the common UI stuff into some sort of function?
       pauseResumeButton.isHidden = false
+      venueButton.isHidden = false
+      authorButton.isHidden = false
       activitySpinner.remove()
       
       // Create timer for advancing to the next media? // TODO: Should not be a fixed time
@@ -358,6 +356,8 @@ class StoryViewController: TransitableViewController {
   fileprivate func stopVideoTimerAndObservers(for moment: FoodieMoment) {
     pauseResumeButton.isHidden = true
     soundButton.isHidden = true
+    venueButton.isHidden = true
+    authorButton.isHidden = true
     resumeStateTrack()
     photoTimer?.invalidate()
     photoTimer = nil
@@ -491,6 +491,24 @@ class StoryViewController: TransitableViewController {
     view.insertSubview(jotViewController.view, belowSubview: tapForwardGestureRecognizer)
     jotViewController.didMove(toParentViewController: self)
     
+    guard let story = viewingStory else {
+      CCLog.fatal("No Story when loading StoryViewController")
+    }
+    
+    if let author = story.author, let username = author.username {
+      authorButton.setTitle(username, for: .normal)
+    } else {
+      CCLog.warning("Cannot get at username from Story \(story.getUniqueIdentifier)")
+      authorButton.isHidden = true
+    }
+    
+    if let venue = story.venue, let venueName = venue.name {
+      venueButton.setTitle(venueName, for: .normal)
+    } else {
+      CCLog.warning("Cannot get at venue name from Story \(story.getUniqueIdentifier)")
+      venueButton.isHidden = true
+    }
+    
     activitySpinner = ActivitySpinner(addTo: view)
     dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)  // This is needed so that the Swipe down to dismiss from TransitableViewController will only have an effect if this is not a Swipe Up to Safari
   }
@@ -519,6 +537,8 @@ class StoryViewController: TransitableViewController {
       currentMoment = moments[0]
       soundButton.isHidden = true
       pauseResumeButton.isHidden = true
+      venueButton.isHidden = true
+      authorButton.isHidden = true
       displayMomentIfLoaded(for: currentMoment!)
     } else if isPaused {
       pausePlay()
@@ -576,12 +596,16 @@ extension StoryViewController: AVPlayAndExportDelegate {
       }
     }
     pauseResumeButton.isHidden = false
+    venueButton.isHidden = false
+    authorButton.isHidden = false
     activitySpinner.remove()
   }
   
   func avExportPlayer(isWaitingForData avExportPlayer: AVExportPlayer) {
     soundButton.isHidden = true
     pauseResumeButton.isHidden = true
+    venueButton.isHidden = true
+    authorButton.isHidden = true
     activitySpinner.apply(below: tapBackwardGestureRecognizer)
   }
   

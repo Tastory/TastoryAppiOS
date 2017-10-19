@@ -228,15 +228,15 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       }
       
       guard let thumbnail = self.thumbnail else {
-        CCLog.assert("Story retrieved but thumbnail = nil")
-        callback?(error)
-        return
+        CCLog.fatal("Story retrieved but thumbnail = nil")
       }
       
       guard let venue = self.venue else {
-        CCLog.assert("Story retrieved but venue = nil")
-        callback?(error)
-        return
+        CCLog.fatal("Story retrieved but venue = nil")
+      }
+      
+      guard let author = self.author else {
+        CCLog.fatal("Story retrieved but author = nil")
       }
       
       self.foodieObject.resetChildOperationVariables()
@@ -252,7 +252,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         }
       }
       
-      // Do we need to retrieve User?
+      if localType != .draft {
+        self.foodieObject.retrieveChild(author, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
+      }
     }
   }
   
@@ -287,6 +289,11 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       childOperationPending = true
     }
     
+    if let author = author, localType != .draft {
+      foodieObject.saveChild(author, to: location, type: localType, withBlock: callback)
+      childOperationPending = true
+    }
+    
     if !childOperationPending {
       self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
     }
@@ -308,9 +315,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       }
       
       guard let thumbnail = self.thumbnail else {
-        CCLog.assert("Unexpected Story.retrieve() resulted in self.thumbnail = nil")
-        callback?(error)
-        return
+        CCLog.fatal("Unexpected Story.retrieve() resulted in self.thumbnail = nil")
       }
       
       self.foodieObject.resetChildOperationVariables()
@@ -330,10 +335,12 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         }
       }
       
-      // Do we need to retrieve User?
-      
       if let venue = self.venue {
         self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
+      }
+      
+      if let author = self.author, localType != .draft {
+        self.foodieObject.retrieveChild(author, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
       }
     }
   }
@@ -374,6 +381,13 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       childOperationPending = true
     }
     
+    
+    if let author = author, localType != .draft {
+      foodieObject.saveChild(author, to: location, type: localType, withBlock: callback)
+      childOperationPending = true
+    }
+    
+    
     if !childOperationPending {
       self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
     }
@@ -392,7 +406,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         callback?(error)
         return
       }
-      self.author = nil
       
       // Delete self first before deleting children
       self.foodieObject.deleteObject(from: location, type: localType) { error in
@@ -417,7 +430,12 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
             self.foodieObject.deleteChild(venue, from: .local, type: localType, withBlock: nil)  // Don't ever delete venues from the server
           }
           
-          // Don't delete Users nor Thumbnail!!!
+          // Delete user only if from Cache and it's not the current user
+          if let author = self.author, author != FoodieUser.current, localType != .draft {
+            self.foodieObject.deleteChild(author, from: .local, type: localType, withBlock: nil)  // Don't delete User as part of a recursive operation
+          }
+          
+          // Don't delete Thumbnail!!!
           
           // Just callback with the error
           callback?(error)
@@ -442,7 +460,12 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         }
         
         if let venue = self.venue {
-          self.foodieObject.deleteChild(venue, from: .local, type: localType, withBlock: callback)  // Don't ever delete venues from the server
+          self.foodieObject.deleteChild(venue, from: .local, type: localType, withBlock: nil)  // Don't ever delete venues from the server
+        }
+        
+        // Delete user only if from Cache and it's not the current user
+        if let author = self.author, author != FoodieUser.current {
+          self.foodieObject.deleteChild(author, from: .local, type: localType, withBlock: nil)  // Don't delete User as part of a recursive operation
         }
         
         if !childOperationPending {

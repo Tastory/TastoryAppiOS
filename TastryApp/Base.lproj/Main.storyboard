@@ -460,24 +460,17 @@
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nnO-KA-kth">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <subviews>
-                                    <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nxS-Eu-LGj" userLabel="TapForward">
-                                        <rect key="frame" x="131" y="0.0" width="243.5" height="667"/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <gestureRecognizers/>
-                                        <connections>
-                                            <outletCollection property="gestureRecognizers" destination="tIj-XR-Qdo" appends="YES" id="svu-Ej-BeG"/>
-                                        </connections>
-                                    </view>
-                                </subviews>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="nxS-Eu-LGj" secondAttribute="bottom" id="0i5-na-pTY"/>
-                                    <constraint firstAttribute="trailing" secondItem="nxS-Eu-LGj" secondAttribute="trailing" id="SQP-gb-cP5"/>
-                                    <constraint firstItem="nxS-Eu-LGj" firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="width" multiplier="0.65" id="Tkg-Mj-JWI"/>
-                                    <constraint firstItem="nxS-Eu-LGj" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="wnl-5T-nf7"/>
-                                </constraints>
+                            </view>
+                            <view opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nxS-Eu-LGj" userLabel="TapForward">
+                                <rect key="frame" x="72" y="0.0" width="269.33333333333337" height="736"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="tIj-XR-Qdo" appends="YES" id="svu-Ej-BeG"/>
+                                </connections>
                             </view>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nrk-FM-KHI" userLabel="TapBackwards">
                                 <rect key="frame" x="0.0" y="0.0" width="131.5" height="667"/>
@@ -489,14 +482,14 @@
                                 </connections>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="ZiO-0U-WG2" userLabel="Author Venue Time Stack">
-                                <rect key="frame" x="8" y="6" width="91" height="32"/>
+                                <rect key="frame" x="15" y="13" width="112" height="42"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NkP-5B-uyd">
-                                        <rect key="frame" x="0.0" y="0.0" width="91" height="16"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="112" height="21"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="16" id="UM2-Dx-qJm"/>
+                                            <constraint firstAttribute="height" constant="21" id="UM2-Dx-qJm"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <size key="titleShadowOffset" width="1" height="1"/>
                                         <state key="normal" title="AuthorUserName">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -507,8 +500,8 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uqd-o4-gnC">
-                                        <rect key="frame" x="0.0" y="16" width="63" height="16"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                        <rect key="frame" x="0.0" y="21" width="79" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <size key="titleShadowOffset" width="1" height="1"/>
                                         <state key="normal" title="VenueName">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -543,11 +536,11 @@
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="Nrk-FM-KHI" secondAttribute="bottom" id="1in-oP-9ty"/>
-                            <constraint firstItem="ZiO-0U-WG2" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" constant="6" id="9zk-j6-dQ2"/>
+                            <constraint firstItem="ZiO-0U-WG2" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" constant="13" id="9zk-j6-dQ2"/>
                             <constraint firstItem="Nrk-FM-KHI" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="D6W-0v-YPx"/>
                             <constraint firstItem="Nrk-FM-KHI" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="GSI-W5-GBB"/>
                             <constraint firstItem="Nrk-FM-KHI" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" multiplier="0.35" id="K0U-ZI-iHh"/>
-                            <constraint firstItem="ZiO-0U-WG2" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" constant="8" id="MCx-CB-BJe"/>
+                            <constraint firstItem="ZiO-0U-WG2" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" constant="15" id="MCx-CB-BJe"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="Md4-SM-fkG"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="top" secondItem="cgZ-7E-g3q" secondAttribute="top" id="OMv-jK-C3v"/>
                             <constraint firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" id="P6T-e5-UJl"/>
@@ -953,7 +946,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VWA-bf-CbB">
-                                                    <rect key="frame" x="160" y="9.5" width="54" height="30"/>
+                                                    <rect key="frame" x="160.5" y="9.5" width="54" height="30"/>
                                                     <state key="normal" title="Preview"/>
                                                     <connections>
                                                         <action selector="previewStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="xyc-Mb-z1U"/>
@@ -1107,7 +1100,7 @@
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="▢" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8uz-Vu-9QF">
-                                    <rect key="frame" x="24.5" y="89" width="45" height="45"/>
+                                    <rect key="frame" x="24.5" y="88.5" width="45" height="45"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="45" id="JWt-aE-4n2"/>
                                         <constraint firstAttribute="width" secondItem="8uz-Vu-9QF" secondAttribute="height" multiplier="1:1" id="yCp-z7-24b"/>
