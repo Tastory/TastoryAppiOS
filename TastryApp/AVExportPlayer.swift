@@ -106,12 +106,16 @@ class AVExportPlayer: NSObject {
     switch keyPath {
     case #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackLikelyToKeepUp), #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackBufferEmpty):
       DispatchQueue.main.async { [weak self] in
-        self?.determineIfPlaying()
+        if let player = self {
+          player.determineIfPlaying()
+        }
       }
       
     case #keyPath(AVExportPlayer.avPlayer.status), #keyPath(AVExportPlayer.avPlayer.reasonForWaitingToPlay):
       DispatchQueue.main.async { [weak self] in
-        self?.determineIfPlaying()
+        if let player = self {
+          player.determineIfPlaying()
+        }
       }
       
     default:

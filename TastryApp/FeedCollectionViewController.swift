@@ -90,7 +90,7 @@ class FeedCollectionViewController: UICollectionViewController {
     CCLog.verbose("StoryArray.count = \(storyArray.count)")
 
     // Turn on CollectionView prefetching
-    collectionView?.prefetchDataSource = self
+    //collectionView?.prefetchDataSource = self
     collectionView?.isPrefetchingEnabled = true
   }
   
