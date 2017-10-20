@@ -65,6 +65,7 @@
 		8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */; };
 		8CAA445F1F8C102C0053CD4F /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAA445E1F8C102C0053CD4F /* ProfileViewController.swift */; };
 		8CAA44611F8C12D60053CD4F /* LogOutDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */; };
+		8CBEBD971F99883100C70ED7 /* Compose.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CBEBD961F99883100C70ED7 /* Compose.storyboard */; };
 		8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */; };
 		8CBF55891E7F7EDF00F4B1CD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */; };
 		8CBF558B1E7F7EDF00F4B1CD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF558A1E7F7EDF00F4B1CD /* Assets.xcassets */; };
@@ -138,7 +139,7 @@
 		8C1ED6ED1F5D15A300A8CC94 /* ThumbnailFrameLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailFrameLayer.swift; sourceTree = "<group>"; };
 		8C1ED6F31F5DEC2500A8CC94 /* AsyncOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncOperation.swift; sourceTree = "<group>"; };
 		8C1ED6FF1F5E2BF700A8CC94 /* CleanroomLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CleanroomLogger.framework; path = Carthage/Build/iOS/CleanroomLogger.framework; sourceTree = "<group>"; };
-		8C1FF12A1F7CA5380062312C /* LogInSignUp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LogInSignUp.storyboard; sourceTree = "<group>"; };
+		8C1FF12A1F7CA5380062312C /* LogInSignUp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LogInSignUp.storyboard; path = Base.lproj/LogInSignUp.storyboard; sourceTree = "<group>"; };
 		8C1FF1301F7CA6C10062312C /* LogInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		8C1FF1321F7CA7240062312C /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		8C1FF1341F7DA1760062312C /* FoodieRole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieRole.swift; sourceTree = "<group>"; };
@@ -176,6 +177,7 @@
 		8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+Extension.swift"; sourceTree = "<group>"; };
 		8CAA445E1F8C102C0053CD4F /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutDismiss.swift; sourceTree = "<group>"; };
+		8CBEBD961F99883100C70ED7 /* Compose.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Compose.storyboard; path = Base.lproj/Compose.storyboard; sourceTree = "<group>"; };
 		8CBF55801E7F7EDF00F4B1CD /* TastryApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TastryApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8CBF55881E7F7EDF00F4B1CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -384,8 +386,9 @@
 				8C841B4A1F6244700002A5A2 /* CategoryTableViewCell.swift */,
 				8C841B481F6242C00002A5A2 /* CategoryTableViewCell.xib */,
 				8CBF558C1E7F7EDF00F4B1CD /* LaunchScreen.storyboard */,
-				8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */,
 				8C1FF12A1F7CA5380062312C /* LogInSignUp.storyboard */,
+				8CBEBD961F99883100C70ED7 /* Compose.storyboard */,
+				8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -603,6 +606,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8C1FF12B1F7CA5380062312C /* LogInSignUp.storyboard in Resources */,
+				8CBEBD971F99883100C70ED7 /* Compose.storyboard in Resources */,
 				8CBF558E1E7F7EDF00F4B1CD /* LaunchScreen.storyboard in Resources */,
 				8C841B491F6242C00002A5A2 /* CategoryTableViewCell.xib in Resources */,
 				8CBF558B1E7F7EDF00F4B1CD /* Assets.xcassets in Resources */,

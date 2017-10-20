@@ -188,13 +188,17 @@ class AVExportPlayer: NSObject {
     avURLAsset!.resourceLoader.setDelegate(self, queue: queue)  // Must be set before the AVURLAsset is first used
     
     // Clean-up the previous instance of AVPlayer first if there was a previous instance
-    if let avPlayer = avPlayer {
+    if avPlayer != nil {
       NotificationCenter.default.removeObserver(self)
+      self.removeObserver(self, forKeyPath: #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackLikelyToKeepUp))
+      self.removeObserver(self, forKeyPath: #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackBufferEmpty))
+      self.removeObserver(self, forKeyPath: #keyPath(AVExportPlayer.avPlayer.status))
+      self.removeObserver(self, forKeyPath: #keyPath(AVExportPlayer.avPlayer.reasonForWaitingToPlay))
       
-      if let periodicObserver = periodicObserver {
-        avPlayer.removeTimeObserver(periodicObserver)
-        self.periodicObserver = nil
-      }
+//      if let periodicObserver = periodicObserver {
+//        avPlayer.removeTimeObserver(periodicObserver)
+//        self.periodicObserver = nil
+//      }
     }
     
     let avPlayerItem = AVPlayerItem(asset: avURLAsset!)

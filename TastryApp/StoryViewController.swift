@@ -92,14 +92,14 @@ class StoryViewController: TransitableViewController {
   @IBAction func venueAction(_ sender: UIButton) {
     CCLog.info("User tapped Venue")
     
-    guard let story = viewingStory, let venue = story.venue else {
+    guard let story = viewingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
         CCLog.assert("Unexpected, viewingStory = nil")
       }
       return
     }
 
-    if let foursquareURLString = venue.foursquareURL, let foursquareURL = URL(string: foursquareURLString) {
+    if let venue = story.venue, let foursquareURLString = venue.foursquareURL, let foursquareURL = URL(string: foursquareURLString) {
       // Pause if playing
       if !isPaused {
         pausePlay()

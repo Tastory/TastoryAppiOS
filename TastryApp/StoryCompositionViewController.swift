@@ -33,7 +33,7 @@ class StoryCompositionViewController: TransitableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as? StoryEntryViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
         CCLog.fatal("ViewController initiated not of StoryEntryViewController Class!!")

@@ -102,7 +102,7 @@ class MapViewController: TransitableViewController {
   @IBAction func launchDraftStory(_ sender: Any) {
     // This is used for viewing the draft story to be used with update story later
     // Hid the button due to problems with empty draft story and saving an empty story is problematic
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
         CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")
@@ -125,7 +125,7 @@ class MapViewController: TransitableViewController {
   
   
   @IBAction func launchCamera(_ sender: UIButton) {
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as? CameraViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
         CCLog.fatal("ViewController initiated not of CameraViewController Class!!")
@@ -852,7 +852,7 @@ extension MapViewController: UITextFieldDelegate {
 extension MapViewController: CameraReturnDelegate {
   func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
     DispatchQueue.main.async {  // UI Work. We don't know which thread we might be in, so guarentee execute in Main thread
-      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+      let storyboard = UIStoryboard(name: "Compose", bundle: nil)
       guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
           CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")

@@ -59,7 +59,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
   // MARK: - IBActions
   @IBAction func venueClicked(_ sender: UIButton) {
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as? VenueTableViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
         CCLog.fatal("ViewController initiated not of VenueTableViewController Class!!")
@@ -327,7 +327,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     }
 
     let moment = momentArray[indexPath.row]
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
         CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
@@ -438,7 +438,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     mapView.showsUserLocation = true
     sectionOneView.addSubview(mapView)
     
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
     momentViewController.workingStory = workingStory
     momentViewController.momentHeight = Constants.momentHeight

@@ -302,7 +302,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
     mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))  // TOOD: Is this main thread? If so do this conversion else where? Not like the user can do anything else tho? Pop-up a spinner instead?
     
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
         CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
@@ -351,7 +351,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       avExportPlayer.initAVPlayer(from: url)
       mediaObject.videoExportPlayer = avExportPlayer
       
-      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+      let storyboard = UIStoryboard(name: "Compose", bundle: nil)
       guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
           CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
@@ -414,7 +414,7 @@ extension CameraViewController: MarkupReturnDelegate {
 extension CameraViewController: TLPhotosPickerViewControllerDelegate {
 
   private func displayMarkUpController(mediaObj: FoodieMedia) {
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
         CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
@@ -630,7 +630,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       return
     }
 
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
     viewController.mediaObj = mediaObject
     viewController.markupReturnDelegate = self
