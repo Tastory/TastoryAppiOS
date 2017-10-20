@@ -241,6 +241,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       
       self.foodieObject.resetChildOperationVariables()
       
+      SwiftMutex.lock(&self.foodieObject.outstandingChildReadiesMutex)
+      SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
+      
       // Got through all sanity check, calling children's retrieveRecursive
       self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
       
@@ -255,6 +258,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       if localType != .draft {
         self.foodieObject.retrieveChild(author, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
       }
+      
+      SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
+      SwiftMutex.unlock(&self.foodieObject.outstandingChildReadiesMutex)
     }
   }
   
@@ -270,6 +276,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     author = currentUser
     
     self.foodieObject.resetChildOperationVariables()
+    SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
     var childOperationPending = false
     
     // Need to make sure all children recursive saved before proceeding
@@ -293,6 +300,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       foodieObject.saveChild(author, to: location, type: localType, withBlock: callback)
       childOperationPending = true
     }
+    
+    SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
     
     if !childOperationPending {
       self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
@@ -319,6 +328,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       }
       
       self.foodieObject.resetChildOperationVariables()
+      SwiftMutex.lock(&self.foodieObject.outstandingChildReadiesMutex)
+      SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
       
       // Got through all sanity check, calling children's retrieveRecursive
       self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
@@ -342,6 +353,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       if let author = self.author, localType != .draft {
         self.foodieObject.retrieveChild(author, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
       }
+      
+      SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
+      SwiftMutex.unlock(&self.foodieObject.outstandingChildReadiesMutex)
     }
   }
   
@@ -357,6 +371,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     author = currentUser
     
     self.foodieObject.resetChildOperationVariables()
+    SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
     var childOperationPending = false
     
     // Need to make sure all children recursive saved before proceeding
@@ -387,6 +402,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       childOperationPending = true
     }
     
+    SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
     
     if !childOperationPending {
       self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
@@ -443,6 +459,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         }
         
         self.foodieObject.resetChildOperationVariables()
+        SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
         var childOperationPending = false
         
         if let moments = self.moments {
@@ -467,6 +484,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         if let author = self.author, author != FoodieUser.current {
           self.foodieObject.deleteChild(author, from: .local, type: localType, withBlock: nil)  // Don't delete User as part of a recursive operation
         }
+        
+        SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
         
         if !childOperationPending {
           CCLog.assert("No child deletes pending. Is this okay?")

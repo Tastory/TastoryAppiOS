@@ -200,6 +200,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       }
       
       self.foodieObject.resetChildOperationVariables()
+      SwiftMutex.lock(&self.foodieObject.outstandingChildReadiesMutex)
+      SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
       
       // Got through all sanity check, calling children's retrieveRecursive
       self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
@@ -211,6 +213,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
         }
       }
+      
+      SwiftMutex.unlock(&self.foodieObject.outstandingChildReadiesMutex)
+      SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
     }
   }
   
@@ -221,6 +226,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                                    withBlock callback: SimpleErrorBlock?) {
     
     foodieObject.resetChildOperationVariables()
+    SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
     var childOperationPending = false
     
     // Need to make sure all children FoodieRecursives saved before proceeding
@@ -240,6 +246,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       foodieObject.saveChild(thumbnail, to: location, type: localType, withBlock: callback)
       childOperationPending = true
     }
+    
+    SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
     
     if !childOperationPending {
       CCLog.assert("No child saves pending. Then why is this even saved?")
@@ -289,6 +297,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         }
         
         self.foodieObject.resetChildOperationVariables()
+        SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
         var childOperationPending = false
         
         // check for media and thumbnails to be deleted from this object
@@ -308,6 +317,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
             childOperationPending = true
           }
         }
+        
+        SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
         
         if !childOperationPending {
           CCLog.assert("No child deletes pending. Is this okay?")

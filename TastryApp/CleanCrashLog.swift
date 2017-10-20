@@ -24,7 +24,7 @@ class CCLog {
     fileprivate static let stdoutMinSeverity = LogSeverity.debug
     fileprivate static let rotatingMinSeverity = LogSeverity.debug
     fileprivate static let osLogMinSeverity = LogSeverity.info
-    fileprivate static let crashlyticsLogMinSeverity = LogSeverity.info
+    fileprivate static let crashlyticsLogMinSeverity = LogSeverity.debug  // Lower to .info for AppStore release maybe?
     #endif
   }
   

@@ -161,10 +161,11 @@ class FoodieObject {
   fileprivate(set) var operationError: Error? = nil
   fileprivate var retrieveStateMutex = SwiftMutex.create()
   fileprivate(set) var retrieveState: RetrieveStates = .notAvailable
-  fileprivate var outstandingChildOperationsMutex = SwiftMutex.create()
+  var outstandingChildOperationsMutex = SwiftMutex.create()
   fileprivate var outstandingChildOperations = 0
-  fileprivate var outstandingChildReadiesMutex = SwiftMutex.create()
+  var outstandingChildReadiesMutex = SwiftMutex.create()
   fileprivate var outstandingChildReadies = 0
+  fileprivate var outstandingChildRequestsAllSent = false
   
   
   // MARK: - Public Static Functions
@@ -184,6 +185,7 @@ class FoodieObject {
     operationError = nil
     outstandingChildOperations = 0
     outstandingChildReadies = 0
+    outstandingChildRequestsAllSent = false
   }
   
   
@@ -210,17 +212,9 @@ class FoodieObject {
       CCLog.fatal("delegate = nil. Unable to proceed.")
     }
     
-    SwiftMutex.lock(&self.outstandingChildReadiesMutex)
     outstandingChildReadies += 1
-    let beforeReadies = self.outstandingChildReadies
-    SwiftMutex.unlock(&self.outstandingChildReadiesMutex)
-    
-    SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
-    let beforeOutstanding = self.outstandingChildOperations
-    SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
-    
-    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(beforeReadies), Outstanding: \(beforeOutstanding)")
+    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(self.outstandingChildReadies), Outstanding: \(self.outstandingChildOperations)")
     
     child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, withReady: {
       
@@ -308,9 +302,7 @@ class FoodieObject {
     }
     CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Saving Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
     
-    SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     outstandingChildOperations += 1
-    SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
     
     // Save Recursive for each children. Call saveCompletionFromChild when done and without errors
     child.saveRecursive(to: location, type: localType) { error in
@@ -355,9 +347,7 @@ class FoodieObject {
     CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Delete Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
     
     // Lock here is in case that if the first operation competes and calls back before even the 2nd op's deleteChild goes out
-    SwiftMutex.lock(&self.outstandingChildOperationsMutex)
     self.outstandingChildOperations += 1
-    SwiftMutex.unlock(&self.outstandingChildOperationsMutex)
     
     // Delete Recursive for each children
     child.deleteRecursive(from: location, type: localType) { error in

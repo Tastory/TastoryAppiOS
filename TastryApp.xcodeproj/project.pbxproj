@@ -261,11 +261,10 @@
 			isa = PBXGroup;
 			children = (
 				8C61BCDB1E985D1300DDF248 /* CleanCrashLog.swift */,
-				8C5B48501F579D3800C18089 /* SwiftMutex.swift */,
-				8C1ED6F31F5DEC2500A8CC94 /* AsyncOperation.swift */,
-				8C2F79761F4E3E6E00851334 /* ThreadSafeDLL.swift */,
 				8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */,
-				8CE259AC1F53808C00310749 /* AlertDialog.swift */,
+				8C5B48501F579D3800C18089 /* SwiftMutex.swift */,
+				8C2F79761F4E3E6E00851334 /* ThreadSafeDLL.swift */,
+				8C1ED6F31F5DEC2500A8CC94 /* AsyncOperation.swift */,
 				8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */,
 				8C2F79721F4E23F700851334 /* LocationWatch.swift */,
 			);
@@ -452,6 +451,7 @@
 		8CE49EB81F64D334007278C1 /* Supports */ = {
 			isa = PBXGroup;
 			children = (
+				8CE259AC1F53808C00310749 /* AlertDialog.swift */,
 				8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */,
 				C29CD1381F93198800A6D53F /* StorySelector.swift */,
 				8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */,

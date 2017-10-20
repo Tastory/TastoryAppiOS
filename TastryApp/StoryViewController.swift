@@ -182,9 +182,6 @@ class StoryViewController: TransitableViewController {
       return
     }
     
-    // Keep track of what moment we are displaying
-    currentMoment = moment
-    
     // Try to display the media as by type
     if mediaType == .photo {
       guard let imageBuffer = media.imageMemoryBuffer else {
@@ -239,9 +236,9 @@ class StoryViewController: TransitableViewController {
       
       for markup in markups {
         
-        if !markup.isDataAvailable {
+        if !markup.isRetrieved {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-            CCLog.fatal("Markup not available even tho Moment deemed Loaded")
+            CCLog.fatal("Markup not available even tho Moment \(moment.getUniqueIdentifier()) deemed Loaded")
           }
           return
         }
@@ -311,7 +308,11 @@ class StoryViewController: TransitableViewController {
       
     }, whenReady: {
       CCLog.debug("Moment \(moment.getUniqueIdentifier()) ready to display")
-      DispatchQueue.main.async { self.displayMoment(moment) }
+      DispatchQueue.main.async {
+        if let currentMoment = self.currentMoment, currentMoment == moment {
+          self.displayMoment(moment)
+        }
+      }
     })
     
     if shouldRetrieveMoment {
@@ -324,7 +325,7 @@ class StoryViewController: TransitableViewController {
       }
     } else {
       CCLog.info("Moment \(moment.getUniqueIdentifier()) displaying")
-      DispatchQueue.main.async { self.displayMoment(moment) }
+      self.displayMoment(moment)
     }
   }
   
@@ -429,6 +430,7 @@ class StoryViewController: TransitableViewController {
     if nextIndex == moments.count {
       dismiss(animated: true, completion: nil)
     } else {
+      currentMoment = moments[nextIndex]
       self.displayMomentIfLoaded(for: moments[nextIndex])
     }
   }
@@ -470,6 +472,7 @@ class StoryViewController: TransitableViewController {
     if index == 0 {
       dismiss(animated: true, completion: nil)
     } else {
+      currentMoment = moments[index-1]
       displayMomentIfLoaded(for: moments[index-1])
     }
   }
