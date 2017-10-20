@@ -553,7 +553,6 @@
                         <outlet property="pauseResumeButton" destination="7rC-KB-BnZ" id="qTD-9Q-iCi"/>
                         <outlet property="photoView" destination="3Gc-Ev-vmE" id="tiQ-hZ-B0K"/>
                         <outlet property="soundButton" destination="t4S-lT-gBv" id="ZDG-D8-Ify"/>
-                        <outlet property="swipeUpGestureRecognizer" destination="zih-Ot-OhF" id="VT9-68-H4H"/>
                         <outlet property="tapBackwardGestureRecognizer" destination="Nrk-FM-KHI" id="Lg0-K0-zEc"/>
                         <outlet property="tapForwardGestureRecognizer" destination="nxS-Eu-LGj" id="Atf-gT-VMq"/>
                         <outlet property="venueButton" destination="Uqd-o4-gnC" id="5CF-Oq-rex"/>
@@ -571,11 +570,6 @@
                         <action selector="tapBackward:" destination="l2J-hP-Z7q" id="dmU-VL-El7"/>
                     </connections>
                 </tapGestureRecognizer>
-                <swipeGestureRecognizer direction="up" id="zih-Ot-OhF">
-                    <connections>
-                        <action selector="swipeUp:" destination="l2J-hP-Z7q" id="fxh-ue-qO8"/>
-                    </connections>
-                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-140" y="513"/>
         </scene>

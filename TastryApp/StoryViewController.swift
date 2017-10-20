@@ -25,11 +25,13 @@ class StoryViewController: TransitableViewController {
   
   
   // MARK: - Private Instance Variables
+  
   fileprivate let jotViewController = JotViewController()
   fileprivate var currentMoment: FoodieMoment?
   fileprivate var currentExportPlayer: AVExportPlayer?
   fileprivate var photoTimer: Timer?
-  fileprivate var avPlayerLayer: AVPlayerLayer!
+  fileprivate var swipeUpGestureRecognizer: UISwipeGestureRecognizer!  // Set by ViewDidLoad
+  fileprivate var avPlayerLayer: AVPlayerLayer!  // Set by ViewDidLoad
   fileprivate var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
   fileprivate var photoTimeRemaining: TimeInterval = 0.0
   fileprivate var soundOn: Bool = true
@@ -40,7 +42,6 @@ class StoryViewController: TransitableViewController {
   // MARK: - IBOutlets
   @IBOutlet weak var photoView: UIImageView!
   @IBOutlet weak var videoView: UIView!
-  @IBOutlet weak var swipeUpGestureRecognizer: UISwipeGestureRecognizer!
   @IBOutlet weak var tapForwardGestureRecognizer: UIView!
   @IBOutlet weak var tapBackwardGestureRecognizer: UIView!
   @IBOutlet weak var venueButton: UIButton!
@@ -60,32 +61,6 @@ class StoryViewController: TransitableViewController {
   @IBAction func tapBackward(_ sender: UITapGestureRecognizer) {
     CCLog.info("User tapped Backward")
     displayPreviousMoment()
-  }
-  
-  
-  @IBAction func swipeUp(_ sender: UISwipeGestureRecognizer) {
-    CCLog.info("User swiped Up")
-    
-    guard let story = viewingStory else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.assert("Unexpected, viewingStory = nil")
-      }
-      return
-    }
-    
-    if let storyLinkString = story.storyURL, let storyLinkUrl = URL(string: storyLinkString) {
-      
-      // Pause if playing
-      if !isPaused {
-        pausePlay()
-      }
-      
-      CCLog.info("Opening Safari View for \(storyLinkString)")
-      let safariViewController = SFSafariViewController(url: storyLinkUrl)
-      safariViewController.delegate = self
-      safariViewController.modalPresentationStyle = .overFullScreen
-      self.present(safariViewController, animated: true, completion: nil)
-    }
   }
   
   
@@ -149,6 +124,7 @@ class StoryViewController: TransitableViewController {
   
   
   // MARK: - Private Instance Functions
+  
   fileprivate func pausePlay() {
     if let photoTimer = photoTimer {
       
@@ -391,6 +367,32 @@ class StoryViewController: TransitableViewController {
   
   // MARK: - Public Instance Functions
   
+  @objc func swipeUp(_ sender: UISwipeGestureRecognizer) {
+    CCLog.info("User swiped Up")
+    
+    guard let story = viewingStory else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.assert("Unexpected, viewingStory = nil")
+      }
+      return
+    }
+    
+    if let storyLinkString = story.storyURL, let storyLinkUrl = URL(string: storyLinkString) {
+      
+      // Pause if playing
+      if !isPaused {
+        pausePlay()
+      }
+      
+      CCLog.info("Opening Safari View for \(storyLinkString)")
+      let safariViewController = SFSafariViewController(url: storyLinkUrl)
+      safariViewController.delegate = self
+      safariViewController.modalPresentationStyle = .overFullScreen
+      self.present(safariViewController, animated: true, completion: nil)
+    }
+  }
+  
+  
   // Display the next Moment based on what the current Moment is
   @objc func displayNextMoment() {
     
@@ -510,6 +512,11 @@ class StoryViewController: TransitableViewController {
     }
     
     activitySpinner = ActivitySpinner(addTo: view)
+    
+    swipeUpGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeUp(_:)))
+    swipeUpGestureRecognizer.direction = .up
+    swipeUpGestureRecognizer.numberOfTouchesRequired = 1
+    view.addGestureRecognizer(swipeUpGestureRecognizer)
     dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)  // This is needed so that the Swipe down to dismiss from TransitableViewController will only have an effect if this is not a Swipe Up to Safari
   }
 
