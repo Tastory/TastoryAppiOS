@@ -535,7 +535,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     // 1. The checking for retrieval here, which takes time. Can race with a potential completion process for a background retrieval
     // 2. The calling of the notReadyBlock to make sure it's going to be before the readyBlock potentially by a background retrieval completion
     
-    digestReadyMutex.lock()
+    SwiftMutex.lock(&digestReadyMutex)
     isReady = isDigestRetrieved
     
     if !isReady {
@@ -544,7 +544,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     } else {
       digestReadyCallback = nil
     }
-    digestReadyMutex.unlock()
+    SwiftMutex.unlock(&digestReadyMutex)
     
 //    if isReady {
 //      readyBlock()
@@ -555,10 +555,10 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   func executeReady() {
     var blockToExecute: SimpleBlock?
     
-    digestReadyMutex.lock()
+    SwiftMutex.lock(&digestReadyMutex)
     blockToExecute = digestReadyCallback
     digestReadyCallback = nil
-    digestReadyMutex.unlock()
+    SwiftMutex.unlock(&digestReadyMutex)
     
     blockToExecute?()
   }
