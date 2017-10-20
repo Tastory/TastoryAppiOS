@@ -1,13 +1,13 @@
 PODS:
-  - AWSCognito (2.6.2):
-    - AWSCore (= 2.6.2)
-  - AWSCore (2.6.2)
-  - AWSS3 (2.6.2):
-    - AWSCore (= 2.6.2)
+  - AWSCognito (2.6.4):
+    - AWSCore (= 2.6.4)
+  - AWSCore (2.6.4)
+  - AWSS3 (2.6.4):
+    - AWSCore (= 2.6.4)
   - Bolts/Tasks (1.8.4)
-  - Crashlytics (3.8.6):
-    - Fabric (~> 1.6.3)
-  - Fabric (1.6.13)
+  - Crashlytics (3.9.0):
+    - Fabric (~> 1.7.0)
+  - Fabric (1.7.0)
   - HTTPStatusCodes (3.1.2)
   - Jot (0.2.0):
     - Masonry (~> 1.0.2)
@@ -17,7 +17,7 @@ PODS:
   - QuadratTouch (1.1.3)
   - RATreeView (2.1.2)
   - SwiftyCam (2.6.0)
-  - TLPhotoPicker (1.3.0)
+  - TLPhotoPicker (1.3.2)
 
 DEPENDENCIES:
   - AWSCognito
@@ -48,12 +48,12 @@ CHECKOUT OPTIONS:
     :git: https://github.com/Constantine-Fry/das-quadrat.git
 
 SPEC CHECKSUMS:
-  AWSCognito: e8db76ef485fbbc1c90617217451301b1477ce45
-  AWSCore: 8f458961a4967be219162108f5be7df1c935639a
-  AWSS3: b3e2c4aca868cae06b5b88337ceabee25709fcc5
+  AWSCognito: 730f6795c78817ff86701844fb22ca40d129494b
+  AWSCore: f5611be1c3edc38dbf9d6da0a5d2b6c4841d1c05
+  AWSS3: f7a10f4c6bae46efc9a4588a1480a6761edcbc45
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
-  Crashlytics: 95d05f4e4c19a771250c4bd9ce344d996de32bbf
-  Fabric: 2fb5676bc811af011a04513451f463dac6803206
+  Crashlytics: 64aad5dd97249dd3ff94b979fea140144590cdd3
+  Fabric: e6be012366472553807dada21243c5ab8d904151
   HTTPStatusCodes: 88155ba36826366a898a7b4f34d311f49083d546
   Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
@@ -61,8 +61,8 @@ SPEC CHECKSUMS:
   QuadratTouch: 9e311cbd4f0573b58cafe6783df1fa7ce2458afa
   RATreeView: 380cde0090cfde21dc6ac29137f49d3b768fdd28
   SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
-  TLPhotoPicker: ccdf4b8a3358867a56fe89cdef15484d070bcfbb
+  TLPhotoPicker: d850050494b9dcac0b585cf2d49ad2accf692d25
 
 PODFILE CHECKSUM: 049edd2efdb5a859e79aa200204dc6a25b0f60d6
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.2.0
