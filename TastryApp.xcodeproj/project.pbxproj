@@ -150,7 +150,7 @@
 		8C3254A41F40240900895572 /* VenueTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenueTableViewController.swift; sourceTree = "<group>"; };
 		8C40B20B1F1466D40030B5B5 /* Jot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jot-Bridging-Header.h"; sourceTree = "<group>"; };
 		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
-		8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivitySpinner.swift; path = "../../../../../Documents/Dev Space/MyPlayground/AVFoundationPlayground/AVFoundationPlayground/ActivitySpinner.swift"; sourceTree = "<group>"; };
+		8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySpinner.swift; sourceTree = "<group>"; };
 		8C5B48501F579D3800C18089 /* SwiftMutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftMutex.swift; sourceTree = "<group>"; };
 		8C5C4DDD1EFEEDEC008C83EC /* FoodieFetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFetch.swift; sourceTree = "<group>"; };
 		8C61BCDB1E985D1300DDF248 /* CleanCrashLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CleanCrashLog.swift; sourceTree = "<group>"; };
