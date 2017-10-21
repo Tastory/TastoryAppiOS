@@ -82,7 +82,7 @@ class FoodiePFObject: PFObject {
     // See if this is already in memory, if so no need to do anything
     if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
       CCLog.debug("\(delegate.foodieObjectType())(\(getUniqueIdentifier())) Data Available and not Forcing Anyways. Calling back with nil")
-      DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async { callback?(nil) }  // Calling back in a different thread, because sometimes we might still be in main thread all the way from the caller
+      callback?(nil)
       return
     }
 
@@ -130,7 +130,7 @@ class FoodiePFObject: PFObject {
     // See if this is already in memory, if so no need to do anything
     if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
       CCLog.debug("\(delegate.foodieObjectType())(\(getUniqueIdentifier())) Data Available and not Forcing Anyways. Calling back with nil")
-      DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async { callback?(nil) }  // Calling back in a different thread, because sometimes we might still be in main thread all the way from the caller
+      callback?(nil)
       return
     }
     

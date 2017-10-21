@@ -95,14 +95,7 @@ class FoodieObject {
     case local
     case both
   }
-  
-  
-  
-  // Mark: - Constants
-  struct Constants {
-    static let RecursiveOpQoS = DispatchQoS.QoSClass.userInitiated
-  }
-  
+
   
   
   // MARK: - Error Types
@@ -260,9 +253,7 @@ class FoodieObject {
     
     // If children all came back and there is error, unwind state and call callback
     if operationError != nil {
-      DispatchQueue.global(qos: Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
-        callback?(self.operationError)
-      }
+      callback?(self.operationError)
     }
       
     // If children all came back and no error, Save yourself!

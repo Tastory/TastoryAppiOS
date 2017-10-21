@@ -202,7 +202,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     
     // If photo and in memory, or video in player, just callback
     if !forceAnyways && isRetrieved {
-      DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async { callback?(nil) }
+      callback?(nil)
       return
     }
     
@@ -221,14 +221,12 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
       
     case .video:
-      DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
-        if FoodieFileObject.checkIfExists(for: fileName, in: localType) {
-          self.videoExportPlayer = AVExportPlayer()
-          self.videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getFileURL(for: localType, with: fileName))
-          callback?(nil)
-        } else {
-          callback?(ErrorCode.retrieveFileDoesNotExist)
-        }
+      if FoodieFileObject.checkIfExists(for: fileName, in: localType) {
+        self.videoExportPlayer = AVExportPlayer()
+        self.videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getFileURL(for: localType, with: fileName))
+        callback?(nil)
+      } else {
+        callback?(ErrorCode.retrieveFileDoesNotExist)
       }
     }
   }
@@ -253,10 +251,8 @@ extension FoodieMedia: FoodieObjectDelegate {
     
     // If photo and in memory, or video and in player, just callback
     if !forceAnyways && isRetrieved {
-      DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {
-        readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval?
-        callback?(nil)
-      }
+      readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval?
+      callback?(nil)
       return
       
     } else if forceAnyways {
@@ -284,12 +280,8 @@ extension FoodieMedia: FoodieObjectDelegate {
           } else { // if FoodieFileObject.checkIfExists(for: fileName, in: .cache
             callback?(nil)
           }
-//          else {   // You can't look for the filename. Because AVExportPlayer might do a Temp -> Cache Switch
-//            self.videoExportPlayer = nil
-//            callback?(ErrorCode.retrieveFileDoesNotExist)
-//          }
         }
-        DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async { readyBlock?() }  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
+        readyBlock?()  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
       }
       return
     }
@@ -329,10 +321,8 @@ extension FoodieMedia: FoodieObjectDelegate {
       
       guard !FoodieFileObject.checkIfExists(for: fileName, in: .cache) else {
         self.videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getFileURL(for: .cache, with: fileName))
-        DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
-          readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval
-          callback?(nil)
-        }
+        readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval
+        callback?(nil)
         return
       }
 
@@ -345,12 +335,8 @@ extension FoodieMedia: FoodieObjectDelegate {
         } else { // if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
           callback?(nil)
         }
-//        else {  // You can't look for the filename. Because AVExportPlayer might do a Temp -> Cache Switch
-//          self.videoExportPlayer = nil
-//          callback?(ErrorCode.retrieveFileDoesNotExist)
-//        }
       }
-      DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async { readyBlock?() }  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
+      readyBlock?()  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
     }
   }
   
@@ -389,34 +375,32 @@ extension FoodieMedia: FoodieObjectDelegate {
       CCLog.fatal("Retrieve not allowed when Media has no MediaType")
     }
     
-    DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
+    switch type {
+    case .photo:
+      guard let memoryBuffer = self.imageMemoryBuffer else {
+        callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
+        return
+      }
+      self.save(buffer: memoryBuffer, to: localType, withBlock: callback)
       
-      switch type {
-      case .photo:
-        guard let memoryBuffer = self.imageMemoryBuffer else {
-          callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
-          return
+    case .video:
+      guard let videoExportPlayer = self.videoExportPlayer else {
+        callback?(ErrorCode.saveToLocalWithNilVideoExportPlayer)
+        return
+      }
+      
+      guard let sourceURL = (videoExportPlayer.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
+        callback?(ErrorCode.saveToLocalVideoExportPlayerHasNoAVURLAsset)
+        return
+      }
+      
+      self.copy(url: sourceURL, to: localType) { error in
+        if error == nil {
+          videoExportPlayer.initAVPlayer(from: FoodieFileObject.getFileURL(for: localType, with: fileName))
         }
-        self.save(buffer: memoryBuffer, to: localType, withBlock: callback)
-        
-      case .video:
-        guard let videoExportPlayer = self.videoExportPlayer else {
-          callback?(ErrorCode.saveToLocalWithNilVideoExportPlayer)
-          return
-        }
-        
-        guard let sourceURL = (videoExportPlayer.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
-          callback?(ErrorCode.saveToLocalVideoExportPlayerHasNoAVURLAsset)
-          return
-        }
-        
-        self.copy(url: sourceURL, to: localType) { error in
-          if error == nil {
-            videoExportPlayer.initAVPlayer(from: FoodieFileObject.getFileURL(for: localType, with: fileName))
-          }
-          callback?(error)
-        }
-          
+        callback?(error)
+      }
+      
 //        guard !FoodieFileObject.checkIfExists(for: fileName, in: localType) else {
 //          CCLog.info("SaveToLocal attempt despite \(FoodieFileObject.getFileURL(for: localType, with: fileName)) already exists")
 //          callback?(nil)
@@ -433,7 +417,6 @@ extension FoodieMedia: FoodieObjectDelegate {
 //            callback?(ErrorCode.saveToLocalCompletedWithNoOutputFile)
 //          }
 //        }
-      }
     }
   }
   

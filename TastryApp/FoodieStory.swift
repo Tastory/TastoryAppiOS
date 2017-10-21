@@ -497,7 +497,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   override init() {
     super.init()
     foodieObject.delegate = self
-    asyncOperationQueue.qualityOfService = .userInitiated  // Needs to be the same as FoodieObject.Constants.RecursiveOpQoS
+    asyncOperationQueue.qualityOfService = .userInitiated
     asyncOperationQueue.maxConcurrentOperationCount = 1
   }
   

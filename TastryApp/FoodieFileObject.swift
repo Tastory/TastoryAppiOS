@@ -222,17 +222,15 @@ class FoodieFileObject {
       directoryUrl = Constants.DraftStoryMediaFolderUrl
     }
     
-    DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
-      do {
-        for contentUrl in try FileManager.default.contentsOfDirectory(at: directoryUrl, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) {
-          try FileManager.default.removeItem(at: contentUrl)
-        }
-      } catch {
-        CCLog.warning("DeleteAll from \(localType) resulted in Exception - \(error.localizedDescription)")
-        returnError = error
+    do {
+      for contentUrl in try FileManager.default.contentsOfDirectory(at: directoryUrl, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) {
+        try FileManager.default.removeItem(at: contentUrl)
       }
-      callback?(returnError)
+    } catch {
+      CCLog.warning("DeleteAll from \(localType) resulted in Exception - \(error.localizedDescription)")
+      returnError = error
     }
+    callback?(returnError)
   }
   
   
@@ -343,27 +341,25 @@ class FoodieFileObject {
     }
     CCLog.debug("Retrieve \(fileName) from \(localType)")
     
-    DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Make this an async call as the callback is expected to be not on the main thread
-      let buffer: Data?
+    let buffer: Data?
+    
+    do {
+      buffer = try Data(contentsOf: FoodieFileObject.getFileURL(for: localType, with: fileName))
+    } catch {
+      let nsError = error as NSError
       
-      do {
-        buffer = try Data(contentsOf: FoodieFileObject.getFileURL(for: localType, with: fileName))
-      } catch {
-        let nsError = error as NSError
-        
-        if nsError.domain == NSCocoaErrorDomain && nsError.code == NSFileReadNoSuchFileError {
-          CCLog.info("No file '\(fileName) in local \(localType)")
-          callback?(nil, FileErrorCode.fileManagerReadLocalNoFile)
-          return
-        } else {
-          CCLog.warning("Failed to read file \(fileName) from local \(localType) - \(error.localizedDescription)")
-          callback?(nil, FileErrorCode.fileManagerReadLocalFailed)
-          return
-        }
+      if nsError.domain == NSCocoaErrorDomain && nsError.code == NSFileReadNoSuchFileError {
+        CCLog.info("No file '\(fileName) in local \(localType)")
+        callback?(nil, FileErrorCode.fileManagerReadLocalNoFile)
+        return
+      } else {
+        CCLog.warning("Failed to read file \(fileName) from local \(localType) - \(error.localizedDescription)")
+        callback?(nil, FileErrorCode.fileManagerReadLocalFailed)
+        return
       }
-      // Save to Local completed successfully!!
-      callback?(buffer!, nil)
     }
+    // Save to Local completed successfully!!
+    callback?(buffer!, nil)
   }
   
   
@@ -401,24 +397,22 @@ class FoodieFileObject {
       CCLog.fatal("FoodieFileObject has no foodieFileName")
     }
     
-    DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Make this an async call as the callback is expected to be not on the main thread
-      // Check if the file already exist. If so just assume it's the right file
-      if !FoodieFileObject.checkIfExists(for: fileName, in: localType) {
-        CCLog.debug("Save Buffer as \(fileName) to \(localType)")
-        
-        do {
-          try buffer.write(to: FoodieFileObject.getFileURL(for: localType, with: fileName))
-        } catch {
-          CCLog.assert("Failed to write media data to \(localType) as \(fileName)")
-          callback?(FileErrorCode.fileManagerSaveLocalFailed)
-          return
-        }
-        // Save to Local completed successfully!!
-        callback?(nil)
-      } else {
-        CCLog.debug("File \(fileName) already exist. Skipping Save")
-        callback?(nil)
+    // Check if the file already exist. If so just assume it's the right file
+    if !FoodieFileObject.checkIfExists(for: fileName, in: localType) {
+      CCLog.debug("Save Buffer as \(fileName) to \(localType)")
+      
+      do {
+        try buffer.write(to: FoodieFileObject.getFileURL(for: localType, with: fileName))
+      } catch {
+        CCLog.assert("Failed to write media data to \(localType) as \(fileName)")
+        callback?(FileErrorCode.fileManagerSaveLocalFailed)
+        return
       }
+      // Save to Local completed successfully!!
+      callback?(nil)
+    } else {
+      CCLog.debug("File \(fileName) already exist. Skipping Save")
+      callback?(nil)
     }
   }
   
@@ -428,29 +422,26 @@ class FoodieFileObject {
       CCLog.fatal("FoodieFileObject has no foodieFileName")
     }
     
-    DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
     // Check if the file already exist. If so just assume it's the right file
-      if !FoodieFileObject.checkIfExists(for: fileName, in: localType) {
-        CCLog.debug("Copy to \(localType) as \(fileName) from \(url.absoluteString)")
-        
-        do {
-          try FileManager.default.copyItem(at: url, to: FoodieFileObject.getFileURL(for: localType, with: fileName))
-          
-//          // This is a little hacky.... Delete file after copy to Draft, assuming that the file was in Tmp
-//          if localType == .draft {
-//            try FileManager.default.removeItem(at: url)
-//          }
-        } catch {
-          CCLog.assert("Failed to copy from \(url.absoluteString) to \(localType) as \(fileName)")
-          callback?(FileErrorCode.fileManagerCopyItemLocalFailed)
-          return
-        }
-        // Copy local completed successfully!!
-        callback?(nil)
-      } else {
-        CCLog.debug("File \(fileName) already exist. Skipping Copy")
-        callback?(nil)
+    if !FoodieFileObject.checkIfExists(for: fileName, in: localType) {
+      CCLog.debug("Copy to \(localType) as \(fileName) from \(url.absoluteString)")
+      
+      do {
+        try FileManager.default.copyItem(at: url, to: FoodieFileObject.getFileURL(for: localType, with: fileName))
+//      // This is a little hacky.... Delete file after copy to Draft, assuming that the file was in Tmp
+//      if localType == .draft {
+//        try FileManager.default.removeItem(at: url)
+//      }
+      } catch {
+        CCLog.assert("Failed to copy from \(url.absoluteString) to \(localType) as \(fileName)")
+        callback?(FileErrorCode.fileManagerCopyItemLocalFailed)
+        return
       }
+      // Copy local completed successfully!!
+      callback?(nil)
+    } else {
+      CCLog.debug("File \(fileName) already exist. Skipping Copy")
+      callback?(nil)
     }
   }
   
@@ -476,10 +467,8 @@ class FoodieFileObject {
         saveRetry.start("save file '\(fileName)' to S3", withCountOf: Constants.AwsRetryCount) { [unowned self] in
           
           guard let uploadRequest = AWSS3TransferManagerUploadRequest() else {
-            DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
-              CCLog.assert("AWSS3TransferManagerUploadRequest() returned nil")
-              callback?(FileErrorCode.awsS3TransferManagerUploadRequestNil)
-            }
+            CCLog.assert("AWSS3TransferManagerUploadRequest() returned nil")
+            callback?(FileErrorCode.awsS3TransferManagerUploadRequestNil)
             return
           }
           
@@ -542,22 +531,20 @@ class FoodieFileObject {
       CCLog.fatal("Unexpected. FoodieFileObject has no foodieFileName")
     }
     
-    DispatchQueue.global(qos: FoodieObject.Constants.RecursiveOpQoS).async {  // Guarentee that callback comes back async from another thread
-      if FoodieFileObject.checkIfExists(for: fileName, in: localType) {
-        CCLog.debug("Delete \(fileName) from \(localType)")
-        
-        do {
-          try FileManager.default.removeItem(at: FoodieFileObject.getFileURL(for: localType, with: fileName))
-        } catch {
-          CCLog.warning("Failed to delete \(fileName) from \(localType)")
-          callback?(FileErrorCode.fileManagerRemoveItemLocalFailed)
-        }
-        // Delete local completed successfully!!
-        callback?(nil)
-      } else {
-        CCLog.debug("File \(fileName) already not found from \(localType). Skipping Delete")
-        callback?(nil)
+    if FoodieFileObject.checkIfExists(for: fileName, in: localType) {
+      CCLog.debug("Delete \(fileName) from \(localType)")
+      
+      do {
+        try FileManager.default.removeItem(at: FoodieFileObject.getFileURL(for: localType, with: fileName))
+      } catch {
+        CCLog.warning("Failed to delete \(fileName) from \(localType)")
+        callback?(FileErrorCode.fileManagerRemoveItemLocalFailed)
       }
+      // Delete local completed successfully!!
+      callback?(nil)
+    } else {
+      CCLog.debug("File \(fileName) already not found from \(localType). Skipping Delete")
+      callback?(nil)
     }
   }
   
