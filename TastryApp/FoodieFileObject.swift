@@ -126,6 +126,7 @@ class FoodieFileObject {
     do {
       try FileManager.default.createDirectory(at: Constants.DraftStoryMediaFolderUrl, withIntermediateDirectories: true, attributes: nil)
       try FileManager.default.createDirectory(at: Constants.CacheFoodieMediaFolderUrl, withIntermediateDirectories: true, attributes: nil)
+      try FileManager.default.createDirectory(at: Constants.TempFolderUrl, withIntermediateDirectories: true, attributes: nil)
     } catch {
       CCLog.fatal("Cannot create required directories - \(error.localizedDescription)")
     }
@@ -175,7 +176,7 @@ class FoodieFileObject {
   
   
   static func getRandomTempFileURL() -> URL {
-    return Constants.CacheFoodieMediaFolderUrl.appendingPathComponent("\(UUID().uuidString).tmp", isDirectory: false)
+    return Constants.TempFolderUrl.appendingPathComponent("\(UUID().uuidString).tmp", isDirectory: false)
   }
   
   

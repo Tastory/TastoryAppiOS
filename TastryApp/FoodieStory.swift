@@ -240,7 +240,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       }
       
       self.foodieObject.resetChildOperationVariables()
-      
       SwiftMutex.lock(&self.foodieObject.outstandingChildReadiesMutex)
       SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
       

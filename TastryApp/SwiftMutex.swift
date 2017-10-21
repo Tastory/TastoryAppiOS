@@ -118,7 +118,7 @@ struct SwiftMutex {
     fileprivate static let secondsMutexConsideredTooLong = 0.1
     fileprivate static let trySleepPeriodus: UInt32 = 25000  // Put in some sleep between lock retries. Set at 25ms each
     fileprivate static let tryLogLimit = 4  // Log that lock is held too long at the +100ms mark
-    fileprivate static let tryStopLimit = 120  // Kill the app if a lock is held for 3 seconds
+    fileprivate static let tryStopLimit = 200  // Kill the app if a lock is held for 5 seconds
   }
   
   // MARK: - Public Static Functions

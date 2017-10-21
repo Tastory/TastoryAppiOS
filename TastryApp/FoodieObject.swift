@@ -214,7 +214,7 @@ class FoodieObject {
     
     outstandingChildReadies += 1
     outstandingChildOperations += 1
-    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(self.outstandingChildReadies), Outstanding: \(self.outstandingChildOperations)")
+    //CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(self.outstandingChildReadies), Outstanding: \(self.outstandingChildOperations)")
     
     child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, withReady: {
       
@@ -226,7 +226,7 @@ class FoodieObject {
       if self.outstandingChildReadies == 0 { childReadiesPending = false }
       SwiftMutex.unlock(&self.outstandingChildReadiesMutex)
       
-      CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieved child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(afterReadies)")
+      CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) readied child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(afterReadies)")
       
       if !childReadiesPending {
         readyBlock?()
@@ -297,10 +297,10 @@ class FoodieObject {
   
   // Function to call a child's saveRecursive
   func saveChild(_ child: FoodieObjectDelegate, to location: StorageLocation, type localType: LocalType, withBlock callback: SimpleErrorBlock?) {
-    guard let delegate = delegate else {
-      CCLog.fatal("delegate = nil. Unable to proceed.")
-    }
-    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Saving Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
+//    guard let delegate = delegate else {
+//      CCLog.fatal("delegate = nil. Unable to proceed.")
+//    }
+    //CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Saving Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
     
     outstandingChildOperations += 1
     
@@ -341,10 +341,10 @@ class FoodieObject {
   
   // Function to delete child
   func deleteChild(_ child: FoodieObjectDelegate, from location: StorageLocation, type localType: LocalType, withBlock callback: SimpleErrorBlock?) {
-    guard let delegate = delegate else {
-      CCLog.fatal("delegate = nil. Unable to proceed.")
-    }
-    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Delete Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
+//    guard let delegate = delegate else {
+//      CCLog.fatal("delegate = nil. Unable to proceed.")
+//    }
+    //CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Delete Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
     
     // Lock here is in case that if the first operation competes and calls back before even the 2nd op's deleteChild goes out
     self.outstandingChildOperations += 1

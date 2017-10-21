@@ -174,6 +174,9 @@ class AVExportPlayer: NSObject {
         
         do {
           try FileManager.default.copyItem(at: outputURL, to: localURL)
+        } catch CocoaError.fileWriteFileExists {
+          CCLog.warning("Trying to swich backing when file \(localURL.absoluteString) already exist")
+          return  // Just do nothing for now
         } catch {
           CCLog.assert("Failed to copy from \(outputURL.absoluteString) to \(localURL.absoluteString)")
           return
