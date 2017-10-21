@@ -144,6 +144,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Private Instance Variables
   fileprivate var asyncOperationQueue = OperationQueue()
+  fileprivate var childOperationQueue = DispatchQueue(label: "Child Operation Queue", qos: .userInitiated)
   private var readyCallback: (() -> Void)?
   private var readyMutex = SwiftMutex.create()
   
@@ -200,22 +201,18 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       }
       
       self.foodieObject.resetChildOperationVariables()
-      SwiftMutex.lock(&self.foodieObject.outstandingChildReadiesMutex)
-      SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
       
-      // Got through all sanity check, calling children's retrieveRecursive
-      self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
-      
-      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
-      
-      if let markups = self.markups {
-        for markup in markups {
-          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
+      self.childOperationQueue.async {
+        self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback)
+        
+        self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback)
+        
+        if let markups = self.markups {
+          for markup in markups {
+            self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback)
+          }
         }
       }
-      
-      SwiftMutex.unlock(&self.foodieObject.outstandingChildReadiesMutex)
-      SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
     }
   }
   
@@ -226,32 +223,31 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                                    withBlock callback: SimpleErrorBlock?) {
     
     foodieObject.resetChildOperationVariables()
-    SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
-    var childOperationPending = false
     
-    // Need to make sure all children FoodieRecursives saved before proceeding
-    if let media = media {
-      foodieObject.saveChild(media, to: location, type: localType, withBlock: callback)
-      childOperationPending = true
-    }
-    
-    if let markups = markups {
-      for markup in markups {
-        foodieObject.saveChild(markup, to: location, type: localType, withBlock: callback)
+    childOperationQueue.async {
+      var childOperationPending = false
+      
+      if let media = self.media {
+        self.foodieObject.saveChild(media, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
         childOperationPending = true
       }
-    }
-    
-    if let thumbnail = thumbnail {
-      foodieObject.saveChild(thumbnail, to: location, type: localType, withBlock: callback)
-      childOperationPending = true
-    }
-    
-    SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
-    
-    if !childOperationPending {
-      CCLog.assert("No child saves pending. Then why is this even saved?")
-      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      
+      if let markups = self.markups {
+        for markup in markups {
+          self.foodieObject.saveChild(markup, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+          childOperationPending = true
+        }
+      }
+      
+      if let thumbnail = self.thumbnail {
+        self.foodieObject.saveChild(thumbnail, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+        childOperationPending = true
+      }
+      
+      if !childOperationPending {
+        CCLog.assert("No child saves pending. Then why is this even saved?")
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
     }
   }
   
@@ -278,16 +274,16 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           
           // Do best effort delete of all children
           if let media = self.media {
-            self.foodieObject.deleteChild(media, from: location, type: localType, withBlock: nil)
+            self.foodieObject.deleteChild(media, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
           }
           
           if let thumbnail = self.thumbnail {
-            self.foodieObject.deleteChild(thumbnail, from: location, type: localType, withBlock: nil)
+            self.foodieObject.deleteChild(thumbnail, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
           }
           
           if let markups = self.markups {
             for markup in markups {
-              self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: nil)
+              self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
             }
           }
           
@@ -297,32 +293,32 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         }
         
         self.foodieObject.resetChildOperationVariables()
-        SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
-        var childOperationPending = false
         
-        // check for media and thumbnails to be deleted from this object
-        if let media = self.media {
-          self.foodieObject.deleteChild(media, from: location, type: localType, withBlock: callback)
-          childOperationPending = true
-        }
-        
-        if let thumbnail = self.thumbnail {
-          self.foodieObject.deleteChild(thumbnail, from: location, type: localType, withBlock: callback)
-          childOperationPending = true
-        }
-        
-        if let markups = self.markups {
-          for markup in markups {
-            self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: callback)
+        self.childOperationQueue.async {
+          var childOperationPending = false
+          
+          // check for media and thumbnails to be deleted from this object
+          if let media = self.media {
+            self.foodieObject.deleteChild(media, from: location, type: localType, on: self.childOperationQueue, withBlock: callback)
             childOperationPending = true
           }
-        }
-        
-        SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
-        
-        if !childOperationPending {
-          CCLog.assert("No child deletes pending. Is this okay?")
-          callback?(error)
+          
+          if let thumbnail = self.thumbnail {
+            self.foodieObject.deleteChild(thumbnail, from: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+            childOperationPending = true
+          }
+          
+          if let markups = self.markups {
+            for markup in markups {
+              self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+              childOperationPending = true
+            }
+          }
+          
+          if !childOperationPending {
+            CCLog.assert("No child deletes pending. Is this okay?")
+            callback?(error)
+          }
         }
       }
     }

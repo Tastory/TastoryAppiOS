@@ -160,10 +160,13 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   var operation: StoryOperation?
 
   
+  
   // MARK: - Private Instance Variables
   fileprivate var asyncOperationQueue = OperationQueue()
+  fileprivate var childOperationQueue = DispatchQueue(label: "Child Operation Queue", qos: .userInitiated)
   private var digestReadyCallback: (() -> Void)?
   private var digestReadyMutex = SwiftMutex.create()
+  
   
   
   // MARK: - Public Static Functions
@@ -240,26 +243,22 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       }
       
       self.foodieObject.resetChildOperationVariables()
-      SwiftMutex.lock(&self.foodieObject.outstandingChildReadiesMutex)
-      SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
       
-      // Got through all sanity check, calling children's retrieveRecursive
-      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
-      
-      self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
-      
-      if let markups = self.markups {
-        for markup in markups {
-          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
+      self.childOperationQueue.async {
+        self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback)
+        
+        self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback)
+        
+        if let markups = self.markups {
+          for markup in markups {
+            self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback)
+          }
+        }
+        
+        if localType != .draft {
+          self.foodieObject.retrieveChild(author, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback)
         }
       }
-      
-      if localType != .draft {
-        self.foodieObject.retrieveChild(author, from: location, type: localType, forceAnyways: forceAnyways, withReady: self.executeReady, withCompletion: callback)
-      }
-      
-      SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
-      SwiftMutex.unlock(&self.foodieObject.outstandingChildReadiesMutex)
     }
   }
   
@@ -275,35 +274,35 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     author = currentUser
     
     self.foodieObject.resetChildOperationVariables()
-    SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
-    var childOperationPending = false
     
-    // Need to make sure all children recursive saved before proceeding
-    
-    // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
-    // We are not gonna save the User here either
-    
-    if let markups = markups {
-      for markup in markups {
-        foodieObject.saveChild(markup, to: location, type: localType, withBlock: callback)
+    childOperationQueue.async {
+      var childOperationPending = false
+      
+      // Need to make sure all children recursive saved before proceeding
+      
+      // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
+      // We are not gonna save the User here either
+      
+      if let markups = self.markups {
+        for markup in markups {
+          self.foodieObject.saveChild(markup, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+          childOperationPending = true
+        }
+      }
+      
+      if let venue = self.venue {
+        self.foodieObject.saveChild(venue, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
         childOperationPending = true
       }
-    }
-    
-    if let venue = venue {
-      foodieObject.saveChild(venue, to: location, type: localType, withBlock: callback)
-      childOperationPending = true
-    }
-    
-    if let author = author, localType != .draft {
-      foodieObject.saveChild(author, to: location, type: localType, withBlock: callback)
-      childOperationPending = true
-    }
-    
-    SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
-    
-    if !childOperationPending {
-      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      
+      if let author = self.author, localType != .draft {
+        self.foodieObject.saveChild(author, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+        childOperationPending = true
+      }
+      
+      if !childOperationPending {
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
     }
   }
   
@@ -327,34 +326,30 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       }
       
       self.foodieObject.resetChildOperationVariables()
-      SwiftMutex.lock(&self.foodieObject.outstandingChildReadiesMutex)
-      SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
       
-      // Got through all sanity check, calling children's retrieveRecursive
-      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
-      
-      if let moments = self.moments {
-        for moment in moments {
-          self.foodieObject.retrieveChild(moment, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
+      self.childOperationQueue.async {
+        self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withCompletion: callback)
+        
+        if let moments = self.moments {
+          for moment in moments {
+            self.foodieObject.retrieveChild(moment, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withCompletion: callback)
+          }
+        }
+        
+        if let markups = self.markups {
+          for markup in markups {
+            self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withCompletion: callback)
+          }
+        }
+        
+        if let venue = self.venue {
+          self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withCompletion: callback)
+        }
+        
+        if let author = self.author, localType != .draft {
+          self.foodieObject.retrieveChild(author, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withCompletion: callback)
         }
       }
-      
-      if let markups = self.markups {
-        for markup in markups {
-          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
-        }
-      }
-      
-      if let venue = self.venue {
-        self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
-      }
-      
-      if let author = self.author, localType != .draft {
-        self.foodieObject.retrieveChild(author, from: location, type: localType, forceAnyways: forceAnyways, withCompletion: callback)
-      }
-      
-      SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
-      SwiftMutex.unlock(&self.foodieObject.outstandingChildReadiesMutex)
     }
   }
   
@@ -370,41 +365,40 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     author = currentUser
     
     self.foodieObject.resetChildOperationVariables()
-    SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
-    var childOperationPending = false
     
-    // Need to make sure all children recursive saved before proceeding
-    // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
-    
-    if let moments = moments {
-      for moment in moments {
-        foodieObject.saveChild(moment, to: location, type: localType, withBlock: callback)
+    childOperationQueue.async {
+      var childOperationPending = false
+      
+      // Need to make sure all children recursive saved before proceeding
+      // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
+      
+      if let moments = self.moments {
+        for moment in moments {
+          self.foodieObject.saveChild(moment, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+          childOperationPending = true
+        }
+      }
+      
+      if let markups = self.markups {
+        for markup in markups {
+          self.foodieObject.saveChild(markup, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+          childOperationPending = true
+        }
+      }
+      
+      if let venue = self.venue {
+        self.foodieObject.saveChild(venue, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
         childOperationPending = true
       }
-    }
-    
-    if let markups = markups {
-      for markup in markups {
-        foodieObject.saveChild(markup, to: location, type: localType, withBlock: callback)
+      
+      if let author = self.author, localType != .draft {
+        self.foodieObject.saveChild(author, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
         childOperationPending = true
       }
-    }
-    
-    if let venue = venue {
-      foodieObject.saveChild(venue, to: location, type: localType, withBlock: callback)
-      childOperationPending = true
-    }
-    
-    
-    if let author = author, localType != .draft {
-      foodieObject.saveChild(author, to: location, type: localType, withBlock: callback)
-      childOperationPending = true
-    }
-    
-    SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
-    
-    if !childOperationPending {
-      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      
+      if !childOperationPending {
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
     }
   }
   
@@ -431,23 +425,23 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
           // Do best effort delete of all children
           if let moments = self.moments {
             for moment in moments {
-              self.foodieObject.deleteChild(moment, from: location, type: localType, withBlock: nil)
+              self.foodieObject.deleteChild(moment, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
             }
           }
           
           if let markups = self.markups {
             for markup in markups {
-              self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: nil)
+              self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
             }
           }
           
           if let venue = self.venue {
-            self.foodieObject.deleteChild(venue, from: .local, type: localType, withBlock: nil)  // Don't ever delete venues from the server
+            self.foodieObject.deleteChild(venue, from: .local, type: localType, on: self.childOperationQueue, withBlock: nil)  // Don't ever delete venues from the server
           }
           
           // Delete user only if from Cache and it's not the current user
           if let author = self.author, author != FoodieUser.current, localType != .draft {
-            self.foodieObject.deleteChild(author, from: .local, type: localType, withBlock: nil)  // Don't delete User as part of a recursive operation
+            self.foodieObject.deleteChild(author, from: .local, type: localType, on: self.childOperationQueue, withBlock: nil)  // Don't delete User as part of a recursive operation
           }
           
           // Don't delete Thumbnail!!!
@@ -458,37 +452,37 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         }
         
         self.foodieObject.resetChildOperationVariables()
-        SwiftMutex.lock(&self.foodieObject.outstandingChildOperationsMutex)
-        var childOperationPending = false
-        
-        if let moments = self.moments {
-          for moment in moments {
-            self.foodieObject.deleteChild(moment, from: location, type: localType, withBlock: callback)
-            childOperationPending = true
+       
+        self.childOperationQueue.async {
+          var childOperationPending = false
+          
+          if let moments = self.moments {
+            for moment in moments {
+              self.foodieObject.deleteChild(moment, from: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+              childOperationPending = true
+            }
           }
-        }
-        
-        if let markups = self.markups {
-          for markup in markups {
-            self.foodieObject.deleteChild(markup, from: location, type: localType, withBlock: callback)
-            childOperationPending = true
+          
+          if let markups = self.markups {
+            for markup in markups {
+              self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+              childOperationPending = true
+            }
           }
-        }
-        
-        if let venue = self.venue {
-          self.foodieObject.deleteChild(venue, from: .local, type: localType, withBlock: nil)  // Don't ever delete venues from the server
-        }
-        
-        // Delete user only if from Cache and it's not the current user
-        if let author = self.author, author != FoodieUser.current {
-          self.foodieObject.deleteChild(author, from: .local, type: localType, withBlock: nil)  // Don't delete User as part of a recursive operation
-        }
-        
-        SwiftMutex.unlock(&self.foodieObject.outstandingChildOperationsMutex)
-        
-        if !childOperationPending {
-          CCLog.assert("No child deletes pending. Is this okay?")
-          callback?(error)
+          
+          if let venue = self.venue {
+            self.foodieObject.deleteChild(venue, from: .local, type: localType, on: self.childOperationQueue, withBlock: nil)  // Don't ever delete venues from the server
+          }
+          
+          // Delete user only if from Cache and it's not the current user
+          if let author = self.author, author != FoodieUser.current {
+            self.foodieObject.deleteChild(author, from: .local, type: localType, on: self.childOperationQueue, withBlock: nil)  // Don't delete User as part of a recursive operation
+          }
+          
+          if !childOperationPending {
+            CCLog.assert("No child deletes pending. Is this okay?")
+            callback?(error)
+          }
         }
       }
     }
