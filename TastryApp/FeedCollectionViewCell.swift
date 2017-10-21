@@ -30,8 +30,6 @@ class FeedCollectionViewCell: UICollectionViewCell {
   // MARK: - Public Instance Variables
   
   var cellRoundingRadius = Constants.CellRoundingRadius
-  var cellStatusMutex = SwiftMutex.create()
-  var cellPrefetching = false
   
   var cellStory: FoodieStory? {
     willSet {

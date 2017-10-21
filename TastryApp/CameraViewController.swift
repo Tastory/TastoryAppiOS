@@ -42,7 +42,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   fileprivate var captureLocationError: Error? = nil
   fileprivate var locationWatcher: LocationWatch.Context? = nil
   fileprivate var outstandingConvertOperations = 0
-  fileprivate var outstandingConvertOperationsMutex = SwiftMutex.create()
+  fileprivate var outstandingConvertQueue = DispatchQueue(label: "Outstanding Convert Queue", qos: .userInitiated)
   fileprivate var moments: [FoodieMoment?] = []
   fileprivate var enableMultiPicker = false
 
@@ -481,14 +481,15 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   }
 
   func dismissPhotoPicker(withTLPHAssets: [TLPHAsset]) {
-    DispatchQueue.global(qos: .userInitiated).async {
-      if withTLPHAssets.count < 0 {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-          CCLog.assert("No asset returned from TLPHAsset")
-        }
+    if withTLPHAssets.count < 0 {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("No asset returned from TLPHAsset")
       }
+    }
 
+    outstandingConvertQueue.async {
       self.moments = Array.init(repeatElement(nil, count: withTLPHAssets.count))
+      
       for tlphAsset in withTLPHAssets {
         self.outstandingConvertOperations += 1
         self.convertToMedia(from: tlphAsset) { (foodieMedia) in
@@ -497,17 +498,13 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
             CCLog.assert("Failed to convert tlphAsset to FoodieMedia as foodieMedia is nil")
             return
           }
+          
           let moment = FoodieMoment(foodieMedia: foodieMedia)
           self.moments[(tlphAsset.selectedOrder - 1)] = moment
 
-          var convertOperationsPending = true
-          SwiftMutex.lock(&self.outstandingConvertOperationsMutex)
-          self.outstandingConvertOperations -= 1
-          if self.outstandingConvertOperations == 0 { convertOperationsPending = false }
-          SwiftMutex.unlock(&self.outstandingConvertOperationsMutex)
-
-          if !convertOperationsPending {
-            self.processMoments()
+          self.outstandingConvertQueue.async {
+            self.outstandingConvertOperations -= 1
+            if self.outstandingConvertOperations == 0 { self.processMoments() }
           }
         }
       }
