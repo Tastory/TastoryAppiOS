@@ -10,14 +10,19 @@ import UIKit
 
 class SettingsTableViewController: UITableViewController {
   
+  @objc func logOutAction(_ sender: UIBarButtonItem) {
+    LogOutDismiss.askDiscardIfNeeded(from: self)
+  }
+  
+  @objc func dismissAction(_ sender: UIBarButtonItem) {
+    dismiss(animated: true, completion: nil)
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    // Uncomment the following line to preserve selection between presentations
-    // self.clearsSelectionOnViewWillAppear = false
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem
+    navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(dismissAction(_:)))
+    navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logOutAction(_:)))
   }
   
   override func didReceiveMemoryWarning() {

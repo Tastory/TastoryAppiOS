@@ -42,11 +42,6 @@ class ProfileViewController: TransitableViewController {
   }
   
   
-  @IBAction func logOutAction(_ sender: UIBarButtonItem) {
-    LogOutDismiss.askDiscardIfNeeded(from: self)
-  }
-  
-  
   @IBAction func settingsAction(_ sender: UIBarButtonItem) {
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsViewController") as? SettingsViewController else {
