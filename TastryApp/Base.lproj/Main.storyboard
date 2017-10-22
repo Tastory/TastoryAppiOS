@@ -76,9 +76,9 @@
                                                 <action selector="backAction:" destination="Mls-rg-2Ue" id="IpE-Q5-fkq"/>
                                             </connections>
                                         </barButtonItem>
-                                        <barButtonItem key="rightBarButtonItem" title="Logout" id="ord-9A-wYs">
+                                        <barButtonItem key="rightBarButtonItem" title="Settings" id="ord-9A-wYs">
                                             <connections>
-                                                <action selector="logOutAction:" destination="Mls-rg-2Ue" id="ByZ-BO-tSK"/>
+                                                <action selector="settingsAction:" destination="Mls-rg-2Ue" id="q8N-5y-e3E"/>
                                             </connections>
                                         </barButtonItem>
                                     </navigationItem>
@@ -103,7 +103,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D8H-kQ-saV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-140" y="-666.11694152923542"/>
+            <point key="canvasLocation" x="-303" y="-666"/>
         </scene>
         <!--Map View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -434,7 +434,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Cgs-s6-Dbf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1162.4000000000001" y="17.541229385307346"/>
+            <point key="canvasLocation" x="-1846" y="-666"/>
         </scene>
         <!--Story View Controller-->
         <scene sceneID="ooy-sj-8sY">
@@ -571,7 +571,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-140" y="513"/>
+            <point key="canvasLocation" x="-1162" y="17"/>
         </scene>
         <!--Category Table View Controller-->
         <scene sceneID="r9j-Iu-ATn">

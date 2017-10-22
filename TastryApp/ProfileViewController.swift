@@ -41,8 +41,30 @@ class ProfileViewController: TransitableViewController {
     dismiss(animated: true, completion: nil)
   }
   
+  
   @IBAction func logOutAction(_ sender: UIBarButtonItem) {
     LogOutDismiss.askDiscardIfNeeded(from: self)
+  }
+  
+  
+  @IBAction func settingsAction(_ sender: UIBarButtonItem) {
+    let storyboard = UIStoryboard(name: "Settings", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsViewController") as? SettingsViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of SettingsViewController Class!!")
+      }
+      return
+    }
+    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    self.present(viewController, animated: true)
+    
+//    let storyboard = UIStoryboard(name: "Settings", bundle: nil)
+//
+//    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsTableViewController") as? SettingsTableViewController else {
+//      CCLog.fatal("Cannot cast ViewController from Storyboard to SettingsTableViewController")
+//    }
+//    let navController = SettingsNavController(rootViewController: viewController)
+//    self.present(navController, animated: true)
   }
   
   

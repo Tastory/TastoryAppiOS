@@ -47,6 +47,9 @@
 		8C6983541F97ED810091334D /* AVPlayerTimeControlStatus+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C6983531F97ED810091334D /* AVPlayerTimeControlStatus+Extension.swift */; };
 		8C6983561F97EDE50091334D /* AVPlayerItemStatus+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C6983551F97EDE50091334D /* AVPlayerItemStatus+Extension.swift */; };
 		8C7CE2881F36B92A00DEFCBE /* FoodieQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7CE2871F36B92A00DEFCBE /* FoodieQuery.swift */; };
+		8C7EBAC21F9D3884004E43D8 /* ProfileDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7EBAC11F9D3884004E43D8 /* ProfileDetailViewController.swift */; };
+		8C7EBAC41F9D3950004E43D8 /* SettingsNavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7EBAC31F9D3950004E43D8 /* SettingsNavController.swift */; };
+		8C7EBAC61F9D477C004E43D8 /* PasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7EBAC51F9D477C004E43D8 /* PasswordViewController.swift */; };
 		8C7EC58F1F8E0D2400C8E80B /* MKCoordinateRegion+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7EC58E1F8E0D2400C8E80B /* MKCoordinateRegion+Extension.swift */; };
 		8C841B491F6242C00002A5A2 /* CategoryTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C841B481F6242C00002A5A2 /* CategoryTableViewCell.xib */; };
 		8C841B4B1F6244700002A5A2 /* CategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C841B4A1F6244700002A5A2 /* CategoryTableViewCell.swift */; };
@@ -70,11 +73,16 @@
 		8CBF55891E7F7EDF00F4B1CD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */; };
 		8CBF558B1E7F7EDF00F4B1CD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF558A1E7F7EDF00F4B1CD /* Assets.xcassets */; };
 		8CBF558E1E7F7EDF00F4B1CD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF558C1E7F7EDF00F4B1CD /* LaunchScreen.storyboard */; };
-		8CBF55991E7F7EDF00F4B1CD /* EatellyAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55981E7F7EDF00F4B1CD /* EatellyAppTests.swift */; };
-		8CBF55A41E7F7EDF00F4B1CD /* EatellyAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55A31E7F7EDF00F4B1CD /* EatellyAppUITests.swift */; };
+		8CBF55991E7F7EDF00F4B1CD /* TastryAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55981E7F7EDF00F4B1CD /* TastryAppTests.swift */; };
+		8CBF55A41E7F7EDF00F4B1CD /* TastryAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55A31E7F7EDF00F4B1CD /* TastryAppUITests.swift */; };
 		8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55B11E80C72200F4B1CD /* MapViewController.swift */; };
 		8CC1101A1F92D07000ACBF9A /* FoodieFileObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */; };
 		8CC48D601EFC81CD003A0FC9 /* PrecisionTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */; };
+		8CD5A4E01F9BFDD700CFD670 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4DF1F9BFDD700CFD670 /* SettingsViewController.swift */; };
+		8CD5A4E41F9BFED300CFD670 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4E31F9BFED300CFD670 /* SettingsTableViewController.swift */; };
+		8CD5A4E51F9C078D00CFD670 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */; };
+		8CD5A4E71F9C161800CFD670 /* ProfileDetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4E61F9C161700CFD670 /* ProfileDetailTableViewController.swift */; };
+		8CD5A4E91F9C16AC00CFD670 /* PasswordTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4E81F9C16AC00CFD670 /* PasswordTableViewController.swift */; };
 		8CE0DE1D1F89B12800F258E5 /* TransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE0DE1A1F89B12700F258E5 /* TransitionAnimator.swift */; };
 		8CE0DE1E1F89B12800F258E5 /* PercentInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE0DE1B1F89B12700F258E5 /* PercentInteractor.swift */; };
 		8CE0DE1F1F89B12800F258E5 /* TransitableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE0DE1C1F89B12800F258E5 /* TransitableViewController.swift */; };
@@ -158,6 +166,9 @@
 		8C6983531F97ED810091334D /* AVPlayerTimeControlStatus+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVPlayerTimeControlStatus+Extension.swift"; sourceTree = "<group>"; };
 		8C6983551F97EDE50091334D /* AVPlayerItemStatus+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVPlayerItemStatus+Extension.swift"; sourceTree = "<group>"; };
 		8C7CE2871F36B92A00DEFCBE /* FoodieQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieQuery.swift; sourceTree = "<group>"; };
+		8C7EBAC11F9D3884004E43D8 /* ProfileDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDetailViewController.swift; sourceTree = "<group>"; };
+		8C7EBAC31F9D3950004E43D8 /* SettingsNavController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsNavController.swift; sourceTree = "<group>"; };
+		8C7EBAC51F9D477C004E43D8 /* PasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordViewController.swift; sourceTree = "<group>"; };
 		8C7EC58E1F8E0D2400C8E80B /* MKCoordinateRegion+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKCoordinateRegion+Extension.swift"; sourceTree = "<group>"; };
 		8C841B471F623E670002A5A2 /* RATreeView-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RATreeView-Bridging-Header.h"; sourceTree = "<group>"; };
 		8C841B481F6242C00002A5A2 /* CategoryTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CategoryTableViewCell.xib; sourceTree = "<group>"; };
@@ -185,14 +196,19 @@
 		8CBF558D1E7F7EDF00F4B1CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8CBF558F1E7F7EDF00F4B1CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8CBF55941E7F7EDF00F4B1CD /* TastryAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TastryAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8CBF55981E7F7EDF00F4B1CD /* EatellyAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EatellyAppTests.swift; sourceTree = "<group>"; };
+		8CBF55981E7F7EDF00F4B1CD /* TastryAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TastryAppTests.swift; sourceTree = "<group>"; };
 		8CBF559A1E7F7EDF00F4B1CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8CBF559F1E7F7EDF00F4B1CD /* TastryAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TastryAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8CBF55A31E7F7EDF00F4B1CD /* EatellyAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EatellyAppUITests.swift; sourceTree = "<group>"; };
+		8CBF55A31E7F7EDF00F4B1CD /* TastryAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TastryAppUITests.swift; sourceTree = "<group>"; };
 		8CBF55A51E7F7EDF00F4B1CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8CBF55B11E80C72200F4B1CD /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodieFileObject.swift; sourceTree = "<group>"; };
 		8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrecisionTime.swift; sourceTree = "<group>"; };
+		8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Settings.storyboard; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
+		8CD5A4DF1F9BFDD700CFD670 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		8CD5A4E31F9BFED300CFD670 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
+		8CD5A4E61F9C161700CFD670 /* ProfileDetailTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDetailTableViewController.swift; sourceTree = "<group>"; };
+		8CD5A4E81F9C16AC00CFD670 /* PasswordTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordTableViewController.swift; sourceTree = "<group>"; };
 		8CE0DE1A1F89B12700F258E5 /* TransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionAnimator.swift; sourceTree = "<group>"; };
 		8CE0DE1B1F89B12700F258E5 /* PercentInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PercentInteractor.swift; sourceTree = "<group>"; };
 		8CE0DE1C1F89B12800F258E5 /* TransitableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitableViewController.swift; sourceTree = "<group>"; };
@@ -354,16 +370,16 @@
 		8CBF55971E7F7EDF00F4B1CD /* TastryAppTests */ = {
 			isa = PBXGroup;
 			children = (
-				8CBF55981E7F7EDF00F4B1CD /* EatellyAppTests.swift */,
+				8CBF55981E7F7EDF00F4B1CD /* TastryAppTests.swift */,
 				8CBF559A1E7F7EDF00F4B1CD /* Info.plist */,
 			);
 			path = TastryAppTests;
-			sourceTree = "<group>";
+			sourceTree = SOURCE_ROOT;
 		};
 		8CBF55A21E7F7EDF00F4B1CD /* TastryAppUITests */ = {
 			isa = PBXGroup;
 			children = (
-				8CBF55A31E7F7EDF00F4B1CD /* EatellyAppUITests.swift */,
+				8CBF55A31E7F7EDF00F4B1CD /* TastryAppUITests.swift */,
 				8CBF55A51E7F7EDF00F4B1CD /* Info.plist */,
 			);
 			path = TastryAppUITests;
@@ -386,8 +402,9 @@
 				8C841B481F6242C00002A5A2 /* CategoryTableViewCell.xib */,
 				8CBF558C1E7F7EDF00F4B1CD /* LaunchScreen.storyboard */,
 				8C1FF12A1F7CA5380062312C /* LogInSignUp.storyboard */,
-				8CBEBD961F99883100C70ED7 /* Compose.storyboard */,
 				8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */,
+				8CBEBD961F99883100C70ED7 /* Compose.storyboard */,
+				8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -413,23 +430,10 @@
 			isa = PBXGroup;
 			children = (
 				8CE49EB81F64D334007278C1 /* Supports */,
-				8C0590481EC65B0000027E91 /* RootViewController.swift */,
-				8C1FF1301F7CA6C10062312C /* LogInViewController.swift */,
-				8C14E28A1F7F42FD001CC869 /* EmailResetViewController.swift */,
-				8C1FF1321F7CA7240062312C /* SignUpViewController.swift */,
-				8CF858651F7ED8A000C46614 /* IntroViewController.swift */,
-				8C0590461EC653DF00027E91 /* DiscoverFeedViewController.swift */,
-				8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */,
-				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
-				C24F69641EB85B0300A0DB7B /* StoryViewController.swift */,
-				8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */,
-				8C9AD0611E8F615D005F337E /* MarkupViewController.swift */,
-				8C030E491F88A42400B93EAC /* StoryCompositionViewController.swift */,
-				8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */,
-				8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */,
-				8C3254A41F40240900895572 /* VenueTableViewController.swift */,
-				8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */,
-				8CAA445E1F8C102C0053CD4F /* ProfileViewController.swift */,
+				8CD5A4DB1F9BFD4900CFD670 /* LogInSignUp */,
+				8CD5A4DC1F9BFD5C00CFD670 /* Main */,
+				8CD5A4DD1F9BFD6500CFD670 /* Compose */,
+				8CD5A4DE1F9BFD7800CFD670 /* Settings */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -446,6 +450,58 @@
 				8C7EC5901F8EA7E400C8E80B /* Transitions */,
 			);
 			name = Layers;
+			sourceTree = "<group>";
+		};
+		8CD5A4DB1F9BFD4900CFD670 /* LogInSignUp */ = {
+			isa = PBXGroup;
+			children = (
+				8C0590481EC65B0000027E91 /* RootViewController.swift */,
+				8C1FF1301F7CA6C10062312C /* LogInViewController.swift */,
+				8C14E28A1F7F42FD001CC869 /* EmailResetViewController.swift */,
+				8C1FF1321F7CA7240062312C /* SignUpViewController.swift */,
+				8CF858651F7ED8A000C46614 /* IntroViewController.swift */,
+			);
+			name = LogInSignUp;
+			sourceTree = "<group>";
+		};
+		8CD5A4DC1F9BFD5C00CFD670 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				8C0590461EC653DF00027E91 /* DiscoverFeedViewController.swift */,
+				8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */,
+				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
+				C24F69641EB85B0300A0DB7B /* StoryViewController.swift */,
+				8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */,
+				8CAA445E1F8C102C0053CD4F /* ProfileViewController.swift */,
+			);
+			name = Main;
+			sourceTree = "<group>";
+		};
+		8CD5A4DD1F9BFD6500CFD670 /* Compose */ = {
+			isa = PBXGroup;
+			children = (
+				8C9AD0611E8F615D005F337E /* MarkupViewController.swift */,
+				8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */,
+				8C030E491F88A42400B93EAC /* StoryCompositionViewController.swift */,
+				8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */,
+				8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */,
+				8C3254A41F40240900895572 /* VenueTableViewController.swift */,
+			);
+			name = Compose;
+			sourceTree = "<group>";
+		};
+		8CD5A4DE1F9BFD7800CFD670 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				8CD5A4DF1F9BFDD700CFD670 /* SettingsViewController.swift */,
+				8C7EBAC31F9D3950004E43D8 /* SettingsNavController.swift */,
+				8CD5A4E31F9BFED300CFD670 /* SettingsTableViewController.swift */,
+				8C7EBAC11F9D3884004E43D8 /* ProfileDetailViewController.swift */,
+				8CD5A4E61F9C161700CFD670 /* ProfileDetailTableViewController.swift */,
+				8C7EBAC51F9D477C004E43D8 /* PasswordViewController.swift */,
+				8CD5A4E81F9C16AC00CFD670 /* PasswordTableViewController.swift */,
+			);
+			name = Settings;
 			sourceTree = "<group>";
 		};
 		8CE49EB81F64D334007278C1 /* Supports */ = {
@@ -611,6 +667,7 @@
 				8C841B491F6242C00002A5A2 /* CategoryTableViewCell.xib in Resources */,
 				8CBF558B1E7F7EDF00F4B1CD /* Assets.xcassets in Resources */,
 				8CBF55891E7F7EDF00F4B1CD /* Main.storyboard in Resources */,
+				8CD5A4E51F9C078D00CFD670 /* Settings.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -854,7 +911,9 @@
 				8C2F79731F4E23F700851334 /* LocationWatch.swift in Sources */,
 				8C2F796F1F4C0D9A00851334 /* SwiftRetry.swift in Sources */,
 				8CF44DA61F86F422007E905A /* CameraCrossLayer.swift in Sources */,
+				8CD5A4E41F9BFED300CFD670 /* SettingsTableViewController.swift in Sources */,
 				8C1089311EADC11B00457E66 /* MomentHeaderReusableView.swift in Sources */,
+				8C7EBAC61F9D477C004E43D8 /* PasswordViewController.swift in Sources */,
 				8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */,
 				8C1ED6F21F5D15A300A8CC94 /* ThumbnailFrameLayer.swift in Sources */,
 				8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */,
@@ -884,6 +943,7 @@
 				8C1D4E241EDCECCD00939B2C /* FeedCollectionViewCell.swift in Sources */,
 				8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */,
 				8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */,
+				8CD5A4E91F9C16AC00CFD670 /* PasswordTableViewController.swift in Sources */,
 				8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */,
 				8CE0DE1F1F89B12800F258E5 /* TransitableViewController.swift in Sources */,
 				8C10FB4E1F91C43200C26BF6 /* AVExportPlayer.swift in Sources */,
@@ -894,6 +954,9 @@
 				8C900D311F5FAAC30058BDFE /* PassthruStackView.swift in Sources */,
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,
 				8CAA44611F8C12D60053CD4F /* LogOutDismiss.swift in Sources */,
+				8C7EBAC21F9D3884004E43D8 /* ProfileDetailViewController.swift in Sources */,
+				8C7EBAC41F9D3950004E43D8 /* SettingsNavController.swift in Sources */,
+				8CD5A4E01F9BFDD700CFD670 /* SettingsViewController.swift in Sources */,
 				8CE49EB11F637918007278C1 /* ExpandButton.swift in Sources */,
 				C29CD1391F93198800A6D53F /* StorySelector.swift in Sources */,
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */,
@@ -914,6 +977,7 @@
 				8CE0DE1E1F89B12800F258E5 /* PercentInteractor.swift in Sources */,
 				8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */,
 				8C030E4A1F88A42400B93EAC /* StoryCompositionViewController.swift in Sources */,
+				8CD5A4E71F9C161800CFD670 /* ProfileDetailTableViewController.swift in Sources */,
 				8CAA445F1F8C102C0053CD4F /* ProfileViewController.swift in Sources */,
 				8C6983541F97ED810091334D /* AVPlayerTimeControlStatus+Extension.swift in Sources */,
 				8C1D4E221EDCEC9A00939B2C /* FeedCollectionViewController.swift in Sources */,
@@ -933,7 +997,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8CBF55991E7F7EDF00F4B1CD /* EatellyAppTests.swift in Sources */,
+				8CBF55991E7F7EDF00F4B1CD /* TastryAppTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -941,7 +1005,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8CBF55A41E7F7EDF00F4B1CD /* EatellyAppUITests.swift in Sources */,
+				8CBF55A41E7F7EDF00F4B1CD /* TastryAppUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

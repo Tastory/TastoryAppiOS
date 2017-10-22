@@ -56,6 +56,10 @@ class AVExportPlayer: NSObject {
   }
   
   
+  // MARL: - Private
+  private let uniqueIdentifier = UUID().uuidString
+  
+  
   // MARK: - Private Instance Variable
   private var localURL: URL?
   private var avURLAsset: AVURLAsset?
@@ -65,7 +69,6 @@ class AVExportPlayer: NSObject {
   // MARK: - Read-Only Instance Variable
   @objc private(set) var avPlayer: AVPlayer?
   private(set) var avExportSession: AVAssetExportSession?
-  private(set) var avExportContext = 0
   
   
   // MARK: - Public Instance Variable
@@ -86,11 +89,6 @@ class AVExportPlayer: NSObject {
   
   override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
     
-    guard context == &avExportContext else {
-      CCLog.warning("Did not get back address of avExportContext as context")
-      return
-    }
-    
     guard let keyPath = keyPath else {
       CCLog.warning("No KeyPath for observeValue")
       return
@@ -101,22 +99,17 @@ class AVExportPlayer: NSObject {
       return
     }
     
-    // CCLog.debug("Observed Value for keyPath changed - \(keyPath)")
+    CCLog.debug("Observed Value for keyPath changed - \(keyPath) on AVExport Player \(uniqueIdentifier)")
     
     switch keyPath {
     case #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackLikelyToKeepUp), #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackBufferEmpty):
-      DispatchQueue.main.async { [weak self] in
-        if let player = self {
-          player.determineIfPlaying()
-        }
+      DispatchQueue.main.async {
+        CCLog.debug("Determine if playing for AVExport Player \(self.uniqueIdentifier)")
+        self.determineIfPlaying()
       }
-      
+    
     case #keyPath(AVExportPlayer.avPlayer.status), #keyPath(AVExportPlayer.avPlayer.reasonForWaitingToPlay):
-      DispatchQueue.main.async { [weak self] in
-        if let player = self {
-          player.determineIfPlaying()
-        }
-      }
+      DispatchQueue.main.async { self.determineIfPlaying() }
       
     default:
       CCLog.warning("No Match for Keypath - \(keyPath)")
@@ -225,10 +218,10 @@ class AVExportPlayer: NSObject {
     
     // Adding Observers for Starts and Stalls
     DispatchQueue.main.async {
-      self.addObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackLikelyToKeepUp), options: [.new], context: &self.avExportContext)
-      self.addObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackBufferEmpty), options: [.new], context: &self.avExportContext)
-      self.addObserver(self, forKeyPath: #keyPath(avPlayer.status), options: [.new], context: &self.avExportContext)
-      self.addObserver(self, forKeyPath: #keyPath(avPlayer.reasonForWaitingToPlay), options: [.new], context: &self.avExportContext)
+      self.addObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackLikelyToKeepUp), options: [.new], context: nil)
+      self.addObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackBufferEmpty), options: [.new], context: nil)
+      self.addObserver(self, forKeyPath: #keyPath(avPlayer.status), options: [.new], context: nil)
+      self.addObserver(self, forKeyPath: #keyPath(avPlayer.reasonForWaitingToPlay), options: [.new], context: nil)
     }
   }
   

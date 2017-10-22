@@ -114,7 +114,11 @@ class TransitableViewController: UIViewController {
     case .began:
       interactor.hasStarted = true
       animator.dismissDirection = .stay
-      dismiss(animated: true, completion: nil)
+      if let navigationController = navigationController {
+        navigationController.popViewController(animated: true)
+      } else {
+        dismiss(animated: true, completion: nil)
+      }
 
     case .changed:
       view.frame.origin = frameTranslation
@@ -263,6 +267,29 @@ extension TransitableViewController: UIViewControllerTransitioningDelegate {
   }
   
   func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    if let interactor = interactor {
+      return interactor.hasStarted ? interactor : nil
+    } else {
+      return nil
+    }
+  }
+}
+
+
+
+// MARK: - Navigation Controller Transition Delegate Protocol
+extension TransitableViewController: UINavigationControllerDelegate {
+  
+  func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationControllerOperation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    if operation == .push {
+      animator?.isPresenting = true
+    } else if operation == .pop {
+      animator?.isPresenting = false
+    }
+    return animator
+  }
+  
+  func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
     if let interactor = interactor {
       return interactor.hasStarted ? interactor : nil
     } else {

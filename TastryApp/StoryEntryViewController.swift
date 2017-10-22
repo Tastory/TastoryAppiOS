@@ -216,8 +216,8 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     }
     
     if numValidCoordinates != 0, let latitude = sumLatitude, let longitude = sumLongitude {
-      return CLLocation.init(latitude: latitude/Double(numValidCoordinates),
-                             longitude: longitude/Double(numValidCoordinates))
+      return CLLocation(latitude: latitude/Double(numValidCoordinates),
+                        longitude: longitude/Double(numValidCoordinates))
     } else {
       return nil
     }
