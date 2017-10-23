@@ -10,7 +10,7 @@
 import Parse
 
 
-class FoodieUser: PFUser{
+class FoodieUser: PFUser {
 
   // PFUser Freebie Fields
   // @NSManaged var username: String!
@@ -193,9 +193,7 @@ class FoodieUser: PFUser{
       profileMediaType = media!.mediaType?.rawValue
     }
   }
-  
-  var oldMedia: FoodieMedia?
-  
+
   var isRegistered: Bool { return objectId != nil }
   
   var isEmailVerified: Bool {
@@ -791,7 +789,7 @@ extension FoodieUser: FoodieObjectDelegate {
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool,
-                         withReady readyBlock: SimpleBlock?,
+                         withReady readyBlock: SimpleBlock? = nil,
                          withCompletion callback: SimpleErrorBlock?) {
     
     retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in

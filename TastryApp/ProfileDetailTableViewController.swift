@@ -30,6 +30,15 @@ class ProfileDetailTableViewController: UITableViewController {
   private var headerView: ProfileTableHeaderView!
   private var emailFooterView: ProfileTableEmailFooterView!
   private var saveFooterView: ProfileTableSaveFooterView!
+  private var unsavedChanges = false
+  private var profileImageChanged = false
+  
+  private var profileImage: UIImage? { didSet { unsavedChanges = true; profileImageChanged = true } }
+  private var username: String? { didSet { if username != oldValue { unsavedChanges = true } } }
+  private var email: String? { didSet { if email != oldValue { unsavedChanges = true } } }
+  private var fullName: String? { didSet { if fullName != oldValue { unsavedChanges = true } } }
+  private var websiteString: String? { didSet { if websiteString != oldValue { unsavedChanges = true } } }
+  private var biography: String? { didSet { if biography != oldValue { unsavedChanges = true } } }
   
   
   
@@ -72,6 +81,28 @@ class ProfileDetailTableViewController: UITableViewController {
   
   
   @objc private func saveUser() {
+    
+    // Transfer all buffer data into the user
+    if let username = username, username != user.username! {
+      user.username = username
+    }
+    
+    if let email = email, email != user.email! {
+      user.email = email
+    }
+    
+    user.fullName = fullName
+    user.url = websiteString
+    user.biography = biography
+    
+    var oldMedia: FoodieMedia?
+    if profileImageChanged, let profileImage = profileImage {
+      oldMedia = user.media
+      let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
+      mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(profileImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+      user.changeProfileMedia(to: mediaObject)
+    }
+    
     user.saveRecursive(to: .both, type: .cache) { error in
       if let error = error {
         AlertDialog.present(from: self, title: "Save User Details Failed", message: "Error - \(error.localizedDescription). Please try again") { action in
@@ -80,7 +111,11 @@ class ProfileDetailTableViewController: UITableViewController {
         return
       }
       
-      self.user.oldMedia?.deleteRecursive(from: .both, type: .cache, withBlock: nil)
+      oldMedia?.deleteRecursive(from: .both, type: .cache, withBlock: nil)
+      self.unsavedChanges = false
+      self.profileImageChanged = false
+      
+      self.updateAllUIDisplayed()
       AlertDialog.present(from: self, title: "User Details Updated!", message: "")
     }
   }
@@ -99,7 +134,7 @@ class ProfileDetailTableViewController: UITableViewController {
         self.emailFooterView.emailFooterHeight = Constants.EmptyFooterHeight
       }
       
-      if self.user.isDirty {
+      if self.unsavedChanges {
         self.saveFooterView.saveButton.setTitleColor(UIColor.blue, for: .normal)
         self.saveFooterView.saveButton.isEnabled = true
       } else {
@@ -108,12 +143,12 @@ class ProfileDetailTableViewController: UITableViewController {
       }
       
       // Extract the profile image from the User object
-      if let profileImageBuffer = self.user.media?.imageMemoryBuffer, let profileImage = UIImage(data: profileImageBuffer) {
+      if let profileImage = self.profileImage {
         self.headerView.profileImageButton.setImage(profileImage, for: .normal)
-        self.headerView.profileImageButton.imageView?.contentMode = .scaleAspectFill
       } else {
-        CCLog.warning("No associated Profile Image Filename")
+        self.headerView.profileImageButton.setImage(#imageLiteral(resourceName: "AddProfileIcon"), for: .normal)
       }
+      self.headerView.profileImageButton.imageView?.contentMode = .scaleAspectFill
     }
   }
   
@@ -180,8 +215,31 @@ class ProfileDetailTableViewController: UITableViewController {
         return
       }
       
-      // See if there's media associated with the user. If so track it as the one to delete if user saves, or the one to restore to if the user discard changes
-      self.user.oldMedia = self.user.media
+      // Put all user data into temporary view buffers
+      
+      // Extract the profile image from the User object
+      if let profileImageBuffer = self.user.media?.imageMemoryBuffer, let profileImage = UIImage(data: profileImageBuffer) {
+        self.profileImage = profileImage
+      } else {
+        CCLog.warning("No associated Profile Image Filename")
+      }
+      
+      if let username = self.user.username { self.username = username } else {
+        CCLog.assert("User has no username??")
+      }
+      
+      if let email = self.user.email { self.email = email } else {
+        CCLog.assert("User has no E-mail??")
+      }
+      
+      if let fullName = self.user.fullName { self.fullName = fullName }
+      if let url = self.user.url { self.websiteString = url }
+      if let biography = self.user.biography { self.biography = biography }
+      
+      // Reset unsaved changes
+      self.unsavedChanges = false
+      self.profileImageChanged = false
+      
       self.updateAllUIDisplayed()
     }
   }
@@ -262,13 +320,9 @@ extension ProfileDetailTableViewController: UIImagePickerControllerDelegate, UIN
     
     picker.dismiss(animated:true, completion: nil)
     
-    var mediaObject: FoodieMedia
-    var mediaName: String
-    
     switch mediaType {
       
     case String(kUTTypeMovie):
-      
       CCLog.assert("Movie type for Profile not yet supported")
       return
       
@@ -293,8 +347,6 @@ extension ProfileDetailTableViewController: UIImagePickerControllerDelegate, UIN
 //      mediaObject.videoExportPlayer = avExportPlayer
       
     case String(kUTTypeImage):
-      mediaName = FoodieFileObject.newPhotoFileName()
-      
       var image: UIImage!
       if let editedImage = info[UIImagePickerControllerEditedImage] as? UIImage {
         image = editedImage
@@ -306,9 +358,7 @@ extension ProfileDetailTableViewController: UIImagePickerControllerDelegate, UIN
         CCLog.assert("UIImage is not returned from image picker")
         return
       }
-      
-      mediaObject = FoodieMedia(for: mediaName, localType: .draft, mediaType: .photo)
-      mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+      self.profileImage = image
       
     default:
       AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { action in
@@ -318,7 +368,6 @@ extension ProfileDetailTableViewController: UIImagePickerControllerDelegate, UIN
       return
     }
     
-    user.changeProfileMedia(to: mediaObject)
     self.updateAllUIDisplayed()
   }
 }
