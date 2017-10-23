@@ -13,7 +13,6 @@ import MobileCoreServices
 
 class ProfileDetailTableViewController: UITableViewController {
   
-  
   // MARK: - Constants
   struct Constants {
     static let ProfileBorderColor = FoodieGlobal.Constants.ThemeColor
@@ -26,17 +25,18 @@ class ProfileDetailTableViewController: UITableViewController {
   }
   
   
+  
   // MARK: - Private Instance Variable
   private var headerView: ProfileTableHeaderView!
   private var emailFooterView: ProfileTableEmailFooterView!
   private var saveFooterView: ProfileTableSaveFooterView!
-  private var oldMedia: FoodieMedia?
-  private var unsavedChanges = false
+  
   
   
   // MARK: - Public Instance Variable
   var user: FoodieUser!
 
+  
   
   // MARK: - Private Instance Functions
   @objc private func changeProfileImage() {
@@ -80,7 +80,7 @@ class ProfileDetailTableViewController: UITableViewController {
         return
       }
       
-      self.oldMedia?.deleteRecursive(from: .both, type: .cache, withBlock: nil)
+      self.user.oldMedia?.deleteRecursive(from: .both, type: .cache, withBlock: nil)
       AlertDialog.present(from: self, title: "User Details Updated!", message: "")
     }
   }
@@ -99,7 +99,7 @@ class ProfileDetailTableViewController: UITableViewController {
         self.emailFooterView.emailFooterHeight = Constants.EmptyFooterHeight
       }
       
-      if self.unsavedChanges {
+      if self.user.isDirty {
         self.saveFooterView.saveButton.setTitleColor(UIColor.blue, for: .normal)
         self.saveFooterView.saveButton.isEnabled = true
       } else {
@@ -181,7 +181,7 @@ class ProfileDetailTableViewController: UITableViewController {
       }
       
       // See if there's media associated with the user. If so track it as the one to delete if user saves, or the one to restore to if the user discard changes
-      self.oldMedia = self.user.media
+      self.user.oldMedia = self.user.media
       self.updateAllUIDisplayed()
     }
   }
@@ -252,7 +252,6 @@ class ProfileDetailTableViewController: UITableViewController {
 }
 
 
-
 extension ProfileDetailTableViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
   public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
     
@@ -272,6 +271,7 @@ extension ProfileDetailTableViewController: UIImagePickerControllerDelegate, UIN
       
       CCLog.assert("Movie type for Profile not yet supported")
       return
+      
 //      guard let movieUrl = info[UIImagePickerControllerMediaURL] as? NSURL else {
 //        CCLog.assert("video URL is not returned from image picker")
 //        return
@@ -293,10 +293,16 @@ extension ProfileDetailTableViewController: UIImagePickerControllerDelegate, UIN
 //      mediaObject.videoExportPlayer = avExportPlayer
       
     case String(kUTTypeImage):
-      
       mediaName = FoodieFileObject.newPhotoFileName()
       
-      guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
+      var image: UIImage!
+      if let editedImage = info[UIImagePickerControllerEditedImage] as? UIImage {
+        image = editedImage
+      }
+      else if let originalImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
+        image = originalImage
+      }
+      else {
         CCLog.assert("UIImage is not returned from image picker")
         return
       }
@@ -312,7 +318,6 @@ extension ProfileDetailTableViewController: UIImagePickerControllerDelegate, UIN
       return
     }
     
-    unsavedChanges = true
     user.changeProfileMedia(to: mediaObject)
     self.updateAllUIDisplayed()
   }

@@ -194,9 +194,11 @@ class FoodieUser: PFUser{
     }
   }
   
+  var oldMedia: FoodieMedia?
+  
   var isRegistered: Bool { return objectId != nil }
   
- var isEmailVerified: Bool {
+  var isEmailVerified: Bool {
     if let emailVerified = self.object(forKey: "emailVerified") as? Bool, emailVerified {
       return true
     } else {

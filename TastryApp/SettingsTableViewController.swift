@@ -10,11 +10,11 @@ import UIKit
 
 class SettingsTableViewController: UITableViewController {
   
-  @objc func logOutAction(_ sender: UIBarButtonItem) {
+  @objc private func logOutAction(_ sender: UIBarButtonItem) {
     LogOutDismiss.askDiscardIfNeeded(from: self)
   }
   
-  @objc func dismissAction(_ sender: UIBarButtonItem) {
+  @objc private func dismissAction(_ sender: UIBarButtonItem) {
     dismiss(animated: true, completion: nil)
   }
   

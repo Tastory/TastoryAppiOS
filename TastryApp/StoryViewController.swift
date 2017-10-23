@@ -368,7 +368,7 @@ class StoryViewController: TransitableViewController {
   
   // MARK: - Public Instance Functions
   
-  @objc func swipeUp(_ sender: UISwipeGestureRecognizer) {
+  @objc private func swipeUp(_ sender: UISwipeGestureRecognizer) {
     CCLog.info("User swiped Up")
     
     guard let story = viewingStory else {
@@ -395,7 +395,7 @@ class StoryViewController: TransitableViewController {
   
   
   // Display the next Moment based on what the current Moment is
-  @objc func displayNextMoment() {
+  @objc private func displayNextMoment() {
     
     guard let story = viewingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in

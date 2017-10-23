@@ -31,7 +31,7 @@ class TransitableViewController: UIViewController {
   
   // MARK: - Public Instance Functions
   
-  @objc func panGestureAction(_ panGesture: UIPanGestureRecognizer) {
+  @objc private func panGestureAction(_ panGesture: UIPanGestureRecognizer) {
     guard let dismissDirection = dismissDirection else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
         CCLog.assert("No Dimiss Direction even tho dragGestureRecognizer is set")

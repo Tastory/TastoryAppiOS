@@ -900,7 +900,7 @@ extension MapViewController: MKMapViewDelegate {
     var story: FoodieStory?
   }
   
-  @objc func storyCalloutTapped(sender: StoryButton) {
+  @objc private func storyCalloutTapped(sender: StoryButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in

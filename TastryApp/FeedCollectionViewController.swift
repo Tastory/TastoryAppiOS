@@ -68,7 +68,7 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
-  @objc func viewStory(_ sender: UIButton) {
+  @objc private func viewStory(_ sender: UIButton) {
     let story = storyArray[sender.tag]
     // Stop all prefetches but the story being viewed
     FoodieFetch.global.cancelAllBut(for: story)

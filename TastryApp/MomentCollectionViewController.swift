@@ -28,7 +28,7 @@ class MomentCollectionViewController: UICollectionViewController {
   
 
   // MARK: - Public Instance Functions
-  @objc func openCamera() {
+  @objc private func openCamera() {
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as! CameraViewController
     viewController.addToExistingStoryOnly = true
