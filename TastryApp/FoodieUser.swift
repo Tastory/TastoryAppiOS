@@ -22,6 +22,8 @@ class FoodieUser: PFUser{
   @NSManaged var location: String?  // Format of this shall be enforced by the UI, not by the data structure
   @NSManaged var biography: String?
   @NSManaged var url: String?
+  @NSManaged var profileMediaFileName: String?  // File name for the media photo or video. Needs to go with the media object
+  @NSManaged var profileMediaType: String?  // Really an enum saying whether it's a Photo or Video
   
   // User Properties
   @NSManaged var roleLevel: Int
@@ -176,10 +178,31 @@ class FoodieUser: PFUser{
   
   
   
+  // MARK: - Private Instance Variables
+  fileprivate var childOperationQueue = DispatchQueue(label: "Child Operation Queue", qos: .userInitiated)
+  
+  
+  
   // MARK: - Public Instance Variables
+  
   var foodieObject: FoodieObject!
+  
+  var media: FoodieMedia? {
+    didSet {
+      profileMediaFileName = media!.foodieFileName
+      profileMediaType = media!.mediaType?.rawValue
+    }
+  }
+  
   var isRegistered: Bool { return objectId != nil }
   
+ var isEmailVerified: Bool {
+    if let emailVerified = self.object(forKey: "emailVerified") as? Bool, emailVerified {
+      return true
+    } else {
+      return false
+    }
+  }
   
   
   // MARK: - Public Static Functions
@@ -443,10 +466,28 @@ class FoodieUser: PFUser{
   
   // MARK: - Public Instance Functions
   
+  // This is the Initilizer Parse will call upon Query or Retrieves
   override init() {
     super.init()
     foodieObject = FoodieObject()
     foodieObject.delegate = self
+    // media = FoodieMedia()  // retrieve() will take care of this. Don't set this here.
+  }
+  
+  
+  // This is the Initializer we will call internally
+  convenience init(foodieMedia: FoodieMedia) {
+    self.init()
+    
+    // didSet does not get called in initialization context...
+    changeProfileMedia(to: foodieMedia)
+  }
+  
+  
+  func changeProfileMedia(to foodieMedia: FoodieMedia) {
+    media = foodieMedia
+    profileMediaFileName = foodieMedia.foodieFileName
+    profileMediaType = foodieMedia.mediaType?.rawValue
   }
   
   
@@ -708,7 +749,6 @@ class FoodieUser: PFUser{
 }
 
 
-
 // MARK: - Foodie Object Delegate Protocol Conformance
 
 extension FoodieUser: FoodieObjectDelegate {
@@ -726,14 +766,55 @@ extension FoodieUser: FoodieObjectDelegate {
   static func cancelAll() { return }  // Nothing to cancel on for PFUser types
   
   
+  // MARK: - Private Instance Helper Functions
+  
+  // Retrieves just the user itself
+  fileprivate func retrieve(from location: FoodieObject.StorageLocation,
+                            type localType: FoodieObject.LocalType,
+                            forceAnyways: Bool,
+                            withBlock callback: SimpleErrorBlock?) {
+    
+    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      
+      if self.media == nil, let fileName = self.profileMediaFileName,
+        let typeString = self.profileMediaType, let type = FoodieMediaType(rawValue: typeString) {
+        self.media = FoodieMedia(for: fileName, localType: localType, mediaType: type)
+      }
+      
+      callback?(error)  // Callback regardless
+    }
+  }
+  
+  
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool,
                          withReady readyBlock: SimpleBlock?,
                          withCompletion callback: SimpleErrorBlock?) {
-    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
-      readyBlock?()
-      callback?(error)
+    
+    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      
+      if let error = error {
+        CCLog.assert("User.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      self.foodieObject.resetChildOperationVariables()
+      
+      self.childOperationQueue.async {
+        var childOperationPending = false
+        
+        if let media = self.media {
+          self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: readyBlock, withCompletion: callback)
+          childOperationPending = true
+        }
+        
+        if !childOperationPending {
+          readyBlock?()
+          callback?(nil)
+        }
+      }
     }
   }
   
@@ -741,27 +822,99 @@ extension FoodieUser: FoodieObjectDelegate {
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
                      withBlock callback: SimpleErrorBlock?) {
-    foodieObject.saveObject(to: location, type: localType, withBlock: callback)
+    
+    foodieObject.resetChildOperationVariables()
+    
+    childOperationQueue.async {
+      var childOperationPending = false
+      
+      if let media = self.media {
+        self.foodieObject.saveChild(media, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+        childOperationPending = true
+      }
+      
+      if !childOperationPending {
+        CCLog.assert("No child saves pending. Then why is this even saved?")
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
+    }
   }
   
   
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
                        withBlock callback: SimpleErrorBlock?) {
-    // Delete self. For now, this object has no children
-    foodieObject.deleteObject(from: location, type: localType, withBlock: callback)
+    
+    // Retrieve the User (only) to guarentee access to the childrens
+    retrieve(from: location, type: localType, forceAnyways: false) { error in
+      
+      if let error = error {
+        CCLog.assert("User.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      // Delete self first before deleting children
+      self.foodieObject.deleteObject(from: location, type: localType) { error in
+        
+        if let error = error {
+          CCLog.warning("Deleting self resulted in error: \(error.localizedDescription)")
+          
+          // Do best effort delete of all children
+          if let media = self.media {
+            self.foodieObject.deleteChild(media, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
+          }
+          
+          // Just callback with the error
+          callback?(error)
+          return
+        }
+        
+        self.foodieObject.resetChildOperationVariables()
+        
+        self.childOperationQueue.async {
+          var childOperationPending = false
+          
+          // check for media and thumbnails to be deleted from this object
+          if let media = self.media {
+            self.foodieObject.deleteChild(media, from: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+            childOperationPending = true
+          }
+
+          if !childOperationPending {
+            CCLog.assert("No child deletes pending. Is this okay?")
+            callback?(error)
+          }
+        }
+      }
+    }
   }
   
   
   func cancelRetrieveFromServerRecursive() {
-    // At this point, nothing can be cancelled for Users
-    return
+    
+    CCLog.verbose("Cancel Retrieve Recursive for User \(getUniqueIdentifier())")
+
+    retrieveFromLocalThenServer(forceAnyways: false, type: .cache) { error in
+      if let error = error {
+        CCLog.assert("User() resulted in error: \(error.localizedDescription)")
+        return
+      }
+      
+      if let media = self.media {
+        media.cancelRetrieveFromServerRecursive()
+      }
+    }
   }
   
   
   func cancelSaveToServerRecursive() {
-    // At this point, nothing can be cancelled for Users
-    return
+    
+    CCLog.verbose("Cancel Save Recursive for User \(getUniqueIdentifier())")
+    
+    if let media = media {
+      media.cancelSaveToServerRecursive()
+    }
   }
   
   

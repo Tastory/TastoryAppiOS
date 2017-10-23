@@ -70,12 +70,11 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     else {
       let imagePickerController = UIImagePickerController()
       imagePickerController.sourceType = .photoLibrary
+      imagePickerController.mediaTypes = [kUTTypeImage, kUTTypeMovie] as [String]
+      imagePickerController.videoQuality = .typeIFrame1280x720
+      imagePickerController.videoMaximumDuration = TimeInterval(20.0)
+      imagePickerController.allowsEditing = false  // Hand the editing to an explicit Editor
       imagePickerController.delegate = self
-
-      // var types = UIImagePickerController.availableMediaTypes(for: UIImagePickerControllerSourceType.photoLibrary)
-
-      imagePickerController.mediaTypes = ["public.image", "public.movie"]
-
       self.present(imagePickerController, animated: true, completion: nil)
     }
   }
@@ -123,11 +122,6 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     }
   }
   
-  
-  // MARK: - Public Instance Function
-  func enableCaptureButton() {
-    
-  }
   
   
   // MARK: - View Controller Life Cycle
@@ -592,20 +586,36 @@ extension CameraViewController: UIImagePickerControllerDelegate {
         return
       }
 
+      guard let moviePath = movieUrl.relativePath else {
+        CCLog.assert("video URL \(movieUrl.absoluteString ?? "") is missing relative path")
+        return
+      }
+  
+      // Go into Video Clip trimming if the Video can be edited
+      if UIVideoEditorController.canEditVideo(atPath: moviePath) {
+
+        let videoEditor = UIVideoEditorController()
+        videoEditor.videoPath = moviePath
+        videoEditor.videoQuality = .typeIFrame1280x720
+        videoEditor.videoMaximumDuration = TimeInterval(20.0)
+        videoEditor.delegate = self
+        present(videoEditor, animated: true, completion: nil)
+        return
+
+      } else {
+        CCLog.warning("Video at path \(moviePath) cannot be edited")
+      }
+      
       guard let movieName = movieUrl.lastPathComponent else {
         CCLog.assert("video URL is missing movie name")
         return
       }
-
-      guard let moviePath = movieUrl.relativePath else {
-        CCLog.assert("video URL is missing relative path")
-        return
-      }
-
+      
       mediaObject = FoodieMedia(for: movieName, localType: .draft, mediaType: .video)
       let avExportPlayer = AVExportPlayer()
       avExportPlayer.initAVPlayer(from: URL(fileURLWithPath: moviePath))
       mediaObject.videoExportPlayer = avExportPlayer
+      
       
     case String(kUTTypeImage):
       
@@ -637,3 +647,35 @@ extension CameraViewController: UIImagePickerControllerDelegate {
 }
 
 
+extension CameraViewController: UIVideoEditorControllerDelegate {
+  func videoEditorController(_ editor: UIVideoEditorController, didSaveEditedVideoToPath editedVideoPath: String) {
+    
+    let movieUrl = URL(fileURLWithPath: editedVideoPath, isDirectory: false)
+    let movieName = movieUrl.lastPathComponent
+    
+    let mediaObject = FoodieMedia(for: movieName, localType: .draft, mediaType: .video)
+    let avExportPlayer = AVExportPlayer()
+    avExportPlayer.initAVPlayer(from: movieUrl)
+    mediaObject.videoExportPlayer = avExportPlayer
+    
+    editor.dismiss(animated: true) {
+      let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+      viewController.mediaObj = mediaObject
+      viewController.markupReturnDelegate = self
+      viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
+      
+      self.present(viewController, animated: true)
+    }
+  }
+  
+  func videoEditorControllerDidCancel(_ editor: UIVideoEditorController) {
+    CCLog.info("User cancelled Video Editor")
+  }
+  
+  func videoEditorController(_ editor: UIVideoEditorController, didFailWithError error: Error) {
+    AlertDialog.present(from: self, title: "Video Edit Failed", message: error.localizedDescription) { action in
+      CCLog.assert("Video Editing Failed with Error - \(error.localizedDescription)")
+    }
+  }
+}

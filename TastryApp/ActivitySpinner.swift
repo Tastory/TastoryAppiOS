@@ -16,20 +16,22 @@ class ActivitySpinner {
   var controllerView: UIView? = nil
   
   init(addTo view: UIView, blurStyle: UIBlurEffectStyle = .regular, spinnerStyle: UIActivityIndicatorViewStyle = .whiteLarge) {
-    let blurEffect = UIBlurEffect(style: blurStyle)
-    blurEffectView = UIVisualEffectView(effect: blurEffect)
-    view.addSubview(blurEffectView!)
-    activityView = UIActivityIndicatorView(activityIndicatorStyle: spinnerStyle)
-    view.addSubview(activityView!)
-    controllerView = view
+    DispatchQueue.main.async {
+      let blurEffect = UIBlurEffect(style: blurStyle)
+      self.blurEffectView = UIVisualEffectView(effect: blurEffect)
+      view.addSubview(self.blurEffectView!)
+      self.activityView = UIActivityIndicatorView(activityIndicatorStyle: spinnerStyle)
+      view.addSubview(self.activityView!)
+      self.controllerView = view
+    }
   }
   
   func apply(below subview: UIView? = nil, with completion: (() -> Void)? = nil) {
-    guard let view = controllerView else {
-      CCLog.fatal("controllerView = nil when applying Activity Spinner")
-    }
-    
     DispatchQueue.main.async {
+      guard let view = self.controllerView else {
+        CCLog.fatal("controllerView = nil when applying Activity Spinner")
+      }
+      
       if let blurEffectView = self.blurEffectView {
         blurEffectView.frame = view.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]

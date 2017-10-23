@@ -426,7 +426,7 @@ class MapViewController: TransitableViewController {
       story.retrieveDigest(from: .both, type: .cache) { error in
         if let error = error {
           AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story Digest - \(error.localizedDescription)") { action in
-            CCLog.assert("Failed to retrieve Story Digest via story.retrieveDigest. Error - \(error.localizedDescription)")
+            CCLog.warning("Failed to retrieve Story Digest via story.retrieveDigest. Error - \(error.localizedDescription)")
           }
           return
         }
@@ -969,6 +969,7 @@ extension MapViewController: MKMapViewDelegate {
       
       let thumbnailButton = StoryButton()
       thumbnailButton.setImage(UIImage(data: imageData), for: .normal)
+      thumbnailButton.imageView?.contentMode = .scaleAspectFill
       thumbnailButton.translatesAutoresizingMaskIntoConstraints = false
       thumbnailButton.story = annotation.story
       thumbnailButton.addTarget(self, action: #selector(storyCalloutTapped(sender:)), for: .touchUpInside)

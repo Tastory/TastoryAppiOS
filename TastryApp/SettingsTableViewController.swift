@@ -22,7 +22,7 @@ class SettingsTableViewController: UITableViewController {
     super.viewDidLoad()
     
     navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(dismissAction(_:)))
-    navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logOutAction(_:)))
+    // navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logOutAction(_:)))
   }
   
   override func didReceiveMemoryWarning() {
@@ -60,6 +60,14 @@ class SettingsTableViewController: UITableViewController {
       pushViewController = viewController
     }
     
+    else if indexPath.section == 1, indexPath.row == 0 {
+      
+    }
+      
+    else if indexPath.section == 1, indexPath.row == 1 {
+      
+    }
+      
     else if indexPath.section == 2, indexPath.row == 0 {
       
     }
@@ -70,6 +78,14 @@ class SettingsTableViewController: UITableViewController {
     
     else if indexPath.section == 2, indexPath.row == 2 {
       
+    }
+      
+    else if indexPath.section == 2, indexPath.row == 3 {
+      
+    }
+      
+    else if indexPath.section == 3, indexPath.row == 0 {
+      LogOutDismiss.askDiscardIfNeeded(from: self)
     }
     
     else {

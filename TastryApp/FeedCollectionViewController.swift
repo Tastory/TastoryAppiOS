@@ -54,6 +54,9 @@ class FeedCollectionViewController: UICollectionViewController {
       reusableCell.activityIndicator?.isHidden = true
       reusableCell.activityIndicator?.stopAnimating()
       reusableCell.cellStory = storyArray[indexPath.row]
+    } else {
+      CCLog.debug("No cell provided or found to display Story \(storyArray[indexPath.row].getUniqueIdentifier())!!!")
+      collectionView.reloadItems(at: [indexPath])
     }
   }
   
@@ -151,6 +154,7 @@ class FeedCollectionViewController: UICollectionViewController {
       FoodieFetch.global.queue(digestOperation, at: .high)
       
     } else {
+      CCLog.debug("Direct load image for Story \(story.getUniqueIdentifier())")
       loadImage(to: reusableCell, in: collectionView, forItemAt: indexPath)
     }
     return reusableCell

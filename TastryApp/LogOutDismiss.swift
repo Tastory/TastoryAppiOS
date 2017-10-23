@@ -19,11 +19,13 @@ struct LogOutDismiss {
         self.logOutAndDismiss(from: viewController)
       }
     } else {
-      self.logOutAndDismiss(from: viewController)
+      AlertDialog.presentConfirm(from: viewController, title: "Log Out", message: "Are you sure you want to log out?") { action in
+        self.logOutAndDismiss(from: viewController)
+      }
     }
   }
   
-  
+
   // MARK: - Private Instance Functions
   
   private static func logOutAndDismiss(from viewController: UIViewController) {
