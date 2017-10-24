@@ -552,8 +552,16 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
           }
         } else {
           StorySelector.displayStorySelection(to: self, newStoryHandler: { (uiaction) in
-            StorySelector.showStoryDiscardDialog(to: self, withBlock: { (error) in
-              self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: FoodieStory.newCurrent())
+            StorySelector.showStoryDiscardDialog(to: self, withBlock: {
+              FoodieStory.cleanUpDraft() { error in
+
+                if let error = error {
+                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+                    CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
+                  }
+                }
+                self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: FoodieStory.newCurrent())
+              }
             })
           }, addToCurrentHandler: { (uiaction) in
             self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)

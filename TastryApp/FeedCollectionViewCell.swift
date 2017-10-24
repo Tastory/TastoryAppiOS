@@ -16,7 +16,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
     static let CellRoundingRadius: CGFloat = 0.0
   }
   
-  
+
   
   // MARK: - IBOutlets
   
@@ -24,8 +24,8 @@ class FeedCollectionViewCell: UICollectionViewCell {
   @IBOutlet weak var storyButton: UIButton?
   @IBOutlet weak var storyTitle: UILabel?
   @IBOutlet weak var activityIndicator: UIActivityIndicatorView?
-  
-  
+  @IBOutlet weak var editButton: UIButton!
+
   
   // MARK: - Public Instance Variables
   

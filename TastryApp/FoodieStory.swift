@@ -692,7 +692,42 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     }
   }
 
-  
+  static func cleanUpDraft(withBlock callback: @escaping SimpleErrorBlock) {
+    guard let story = currentStory else {
+      CCLog.fatal("Discard current Story but no current Story")
+    }
+
+    story.cancelSaveToServerRecursive()
+
+
+    // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
+    FoodieObject.deleteAll(from: .draft) { error in
+      if let error = error {
+        CCLog.warning("Deleting All Drafts resulted in Error - \(error.localizedDescription)")
+        callback(error)
+      }
+
+      var location: FoodieObject.StorageLocation = .both
+      if(story.objectId != nil) {
+        // this indicate that we are editing a story
+        location = .local
+      }
+
+      // Delete all traces of this unPosted Story
+      story.deleteRecursive(from: location, type: .draft) { error in
+        if let error = error {
+          CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
+          callback(error)
+        }
+
+        currentStory?.retrieveRecursive(from: .both, type: .cache, forceAnyways: true, withCompletion: { (error) in
+          removeCurrent()
+          callback(nil)
+        })
+      }
+    }
+  }
+
   // Function to get index of specified Moment in Moment Array
   func getIndexOf(_ moment: FoodieMoment) -> Int {
 
