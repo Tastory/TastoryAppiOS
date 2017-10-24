@@ -314,8 +314,21 @@ class MarkupViewController: TransitableViewController {
         self.cleanupAndReturn(markedUpMoments: [momentObj], suggestedStory: story)
       }
       else {
-        displayStorySelection(
-          newStoryHandler: { UIAlertAction -> Void in self.showStoryDiscardDialog(moment: momentObj) },
+        StorySelector.displayStorySelection(
+          to: self,
+          newStoryHandler: { UIAlertAction -> Void in
+
+            StorySelector.showStoryDiscardDialog(to: self) {
+              FoodieStory.cleanUpDraft() { error in
+                if let error = error  {
+                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+                    CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
+                  }
+                }
+                self.cleanupAndReturn(markedUpMoments: [momentObj], suggestedStory: FoodieStory.newCurrent())
+              }
+            }
+        },
           addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoments: [momentObj], suggestedStory: story) }
         )
       }
@@ -330,91 +343,6 @@ class MarkupViewController: TransitableViewController {
 
   
   // MARK - Public Instance Functions
-  
-  func displayStorySelection( newStoryHandler: @escaping (UIAlertAction) -> Void, addToCurrentHandler: @escaping (UIAlertAction) -> Void) {
-    // Display Action Sheet to ask user if they want to add this Moment to current Story, or a new one, or Cancel
-    // Create a button and associated Callback for adding the Moment to a new Story
-    let addToNewButton =
-      UIAlertAction(title: "New Story",
-                    comment: "Button for adding to a New Story in Save Moment action sheet",
-                    style: .default,
-                    handler: newStoryHandler)
-    // Create a button with associated Callback for adding the Moment to the current Story
-    let addToCurrentButton =
-      UIAlertAction(title: "Current Story",
-                    comment: "Button for adding to a Current Story in Save Moment action sheet",
-                    style: .default,
-                    handler: addToCurrentHandler)
-
-    // Finally, create the Action Sheet!
-    let actionSheet = UIAlertController(title: "Add this Moment to...",
-                                        titleComment: "Title for Save Moment action sheet",
-                                        message: nil, messageComment: nil,
-                                        preferredStyle: .actionSheet)
-    actionSheet.addAction(addToNewButton)
-    actionSheet.addAction(addToCurrentButton)
-    actionSheet.addAlertAction(title: "Cancel",
-                               comment: "Action Sheet button for Cancelling Adding a Moment in MarkupImageView",
-                               style: .cancel)
-    self.present(actionSheet, animated: true, completion: nil)
-  }
-
-  func showStoryDiscardDialog(moment: FoodieMoment) {
-    
-    guard let story = FoodieStory.currentStory else {
-      AlertDialog.standardPresent(from: self, title: .genericDeleteError, message: .internalTryAgain)
-      CCLog.fatal("Discard current Story but no current Story")
-    }
-    
-    // Create a button and associated Callback for discarding the previous current Story and make a new one
-    let discardButton =
-      UIKit.UIAlertAction(title: "Discard",
-                          comment: "Button to discard current Story in alert dialog box to warn user",
-                          style: .destructive) { action in
-            
-        story.cancelSaveToServerRecursive()
-//        story.deleteRecursive(from: .both, type: .draft) { error in
-//          if let error = error {
-//            CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
-//          }
-//        }
-                            
-      // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
-      FoodieObject.deleteAll(from: .draft) { error in
-        if let error = error {
-          CCLog.warning("Deleting All Drafts resulted in Error - \(error.localizedDescription)")
-        }
-
-        // Delete all traces of this unPosted Story
-        story.deleteRecursive(from: .both, type: .draft) { error in
-          if let error = error {
-            CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
-          }
-        }
-      }
-      
-      FoodieStory.removeCurrent()
-      
-      // We don't add Moments here, we let the Story Entry View decide what to do with it
-      self.cleanupAndReturn(markedUpMoments: [moment], suggestedStory: FoodieStory.newCurrent())
-    }
-    
-    let alertController =
-      UIAlertController(title: "Discard & Overwrite",
-                        titleComment: "Dialog title to warn user on discard and overwrite",
-                        message: "Are you sure you want to discard and overwrite the current Story?",
-                        messageComment: "Dialog message to warn user on discard and overwrite",
-                        preferredStyle: .alert)
-    
-    alertController.addAction(discardButton)
-    alertController.addAlertAction(title: "Cancel",
-                                   comment: "Alert Dialog box button to cancel discarding and overwritting of current Story",
-                                   style: .cancel)
-
-    // Present the Discard dialog box to the user
-    self.present(alertController, animated: true, completion: nil)
-  }
-
   func cleanupAndReturn(markedUpMoments: [FoodieMoment], suggestedStory: FoodieStory ){
     // Stop if there might be video looping
     self.avPlayer?.pause()  // TODO: - Do we need to free the avPlayer memory or something?

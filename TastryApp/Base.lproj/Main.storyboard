@@ -395,6 +395,12 @@
                                                     <nil key="highlightedColor"/>
                                                     <size key="shadowOffset" width="0.0" height="0.0"/>
                                                 </label>
+                                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sxu-JM-hNm" userLabel="⚙️">
+                                                    <rect key="frame" x="144" y="0.0" width="43" height="40"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                                    <state key="normal" title=" ⚙️"/>
+                                                </button>
                                             </subviews>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <constraints>
@@ -421,6 +427,7 @@
                                 <connections>
                                     <outlet property="activityIndicator" destination="i2G-50-vAv" id="kAX-X9-pgh"/>
                                     <outlet property="containerView" destination="vDe-jM-Nqk" id="LEJ-Zc-4lD"/>
+                                    <outlet property="editButton" destination="sxu-JM-hNm" id="2W6-X1-W9l"/>
                                     <outlet property="storyButton" destination="Ex6-Ee-5zY" id="Ll0-mc-gaZ"/>
                                     <outlet property="storyTitle" destination="HVl-kq-EgA" id="tFA-qp-cXO"/>
                                 </connections>

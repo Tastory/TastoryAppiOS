@@ -38,36 +38,14 @@ class StorySelector {
     viewController.present(actionSheet, animated: true, completion: nil)
   }
 
-  static func showStoryDiscardDialog(to viewController: UIViewController, withBlock callback: @escaping SimpleErrorBlock) {
-
-    guard let story = FoodieStory.currentStory else {
-      AlertDialog.standardPresent(from: viewController, title: .genericDeleteError, message: .internalTryAgain)
-      CCLog.fatal("Discard current Story but no current Story")
-    }
+  static func showStoryDiscardDialog(to viewController: UIViewController, withBlock callback: @escaping ()->Void ) {
 
     // Create a button and associated Callback for discarding the previous current Story and make a new one
     let discardButton =
       UIKit.UIAlertAction(title: "Discard",
                           comment: "Button to discard current Story in alert dialog box to warn user",
                           style: .destructive) { action in
-
-                            // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
-                            FoodieObject.deleteAll(from: .draft) { error in
-                              if let error = error {
-                                CCLog.warning("Deleting All Drafts resulted in Error - \(error.localizedDescription)")
-                                callback(error)
-                              }
-
-                              // Delete all traces of this unPosted Story
-                              story.deleteRecursive(from: .both, type: .draft) { error in
-                                if let error = error {
-                                  CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
-                                }
-                              }
-                            }
-
-                            FoodieStory.removeCurrent()
-                            callback(nil)
+                            callback()
     }
 
     let alertController =

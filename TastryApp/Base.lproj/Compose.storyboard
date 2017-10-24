@@ -394,8 +394,30 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="50" id="ROD-rt-7Mj">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="50" id="eRM-f7-hZX">
                                         <rect key="frame" x="0.0" y="462.5" width="375" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="eRM-f7-hZX" id="VkH-cl-w8f">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dkp-ne-DHY">
+                                                    <rect key="frame" x="161" y="9.5" width="53" height="30"/>
+                                                    <state key="normal" title="Discard"/>
+                                                    <connections>
+                                                        <action selector="discardStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="i5M-Kc-q0Q"/>
+                                                        <action selector="previewStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="x5e-YJ-cAJ"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="dkp-ne-DHY" firstAttribute="centerX" secondItem="VkH-cl-w8f" secondAttribute="centerX" id="1fq-Rt-Ceb"/>
+                                                <constraint firstItem="dkp-ne-DHY" firstAttribute="centerY" secondItem="VkH-cl-w8f" secondAttribute="centerY" id="o9q-IP-9ri"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="50" id="ROD-rt-7Mj">
+                                        <rect key="frame" x="0.0" y="512.5" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ROD-rt-7Mj" id="De8-xm-Xk3">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
@@ -405,7 +427,7 @@
                                                     <rect key="frame" x="152" y="10" width="71" height="30"/>
                                                     <state key="normal" title="Post Story"/>
                                                     <connections>
-                                                        <action selector="testSaveStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="eHU-mH-Jam"/>
+                                                        <action selector="postStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="heD-T8-mcB"/>
                                                     </connections>
                                                 </button>
                                             </subviews>

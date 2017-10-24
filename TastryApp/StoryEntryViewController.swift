@@ -74,8 +74,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
   }
-  
-  
+
   @IBAction func previewStory(_ sender: Any) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
@@ -85,9 +84,21 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     self.present(viewController, animated: true)
   }
 
-  
-  @IBAction func testSaveStory(_ sender: UIButton) {
+  @IBAction func discardStory(_ sender: UIButton) {
+    StorySelector.showStoryDiscardDialog(to: self) {
+      self.workingStory = nil
+      FoodieStory.cleanUpDraft() { error in
+        if let error = error {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
+          }
+        }
+        self.dismiss(animated: true, completion: nil)
+      }
+    }
+  }
 
+  @IBAction func postStory(_ sender: UIButton) {
     guard let story = workingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
       CCLog.fatal("No Working Story when user pressed Post Story")
@@ -154,7 +165,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
               // Pop-up Alert Dialog and then Dismiss
               CCLog.info("Story Posted!")
               AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
-                self.vcDismiss()
+                self.dismiss(animated: true, completion: nil)
               }
             }
           }
@@ -425,11 +436,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
   }
 
-  @objc func vcDismiss() {
-    // TODO: Data Passback through delegate?
-    dismiss(animated: true, completion: nil)
-  }
-
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -473,11 +479,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     keyboardDismissRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(keyboardDismissRecognizer)
     
-    let previousSwipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(vcDismiss))
-    previousSwipeRecognizer.direction = .right
-    previousSwipeRecognizer.numberOfTouchesRequired = 1
-    tableView.addGestureRecognizer(previousSwipeRecognizer)
-
     if let workingStory = workingStory {
 
       for returnedMoment in returnedMoments {

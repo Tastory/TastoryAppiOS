@@ -112,6 +112,7 @@ class ProfileViewController: TransitableViewController {
     viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     viewController.didMove(toParentViewController: self)
     feedCollectionViewController = viewController
+    feedCollectionViewController?.enableEdit = true
   }
   
   

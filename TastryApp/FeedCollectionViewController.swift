@@ -25,6 +25,7 @@ class FeedCollectionViewController: UICollectionViewController {
   var columns: CGFloat = Constants.DefaultColumns
   var padding: CGFloat = Constants.DefaultPadding
   var cellAspectRatio: CGFloat = FoodieGlobal.Constants.DefaultMomentAspectRatio
+  var enableEdit = false
 
   var storyQuery: FoodieQuery!
   var storyArray = [FoodieStory]()
@@ -57,7 +58,38 @@ class FeedCollectionViewController: UICollectionViewController {
     }
   }
   
-  
+  private func displayStoryEntry(_ story: FoodieStory) {
+    story.retrieveRecursive(from: .both, type: .cache) { error in
+
+      if let error = error {
+        AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
+          CCLog.assert("Error retrieving story into cache caused by: \(error.localizedDescription)")
+        }
+      }
+
+      FoodieStory.setCurrentStory(to: story)
+
+      let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")
+        }
+        return
+      }
+      viewController.workingStory = story
+      story.saveRecursive(to: .local, type: .draft) { error in
+
+        if let error = error {
+          CCLog.warning("Story pre-save to Local resulted in error - \(error.localizedDescription)")
+        }
+
+        viewController.setTransition(presentTowards: .left, dismissTowards: .right)
+        DispatchQueue.main.async {
+          self.present(viewController, animated: true)
+        }
+      }
+    }
+  }
   
   // MARK: - Public Instance Functions
   func reloadData() {
@@ -82,7 +114,19 @@ class FeedCollectionViewController: UICollectionViewController {
     self.present(viewController, animated: true)
   }
   
-  
+  @objc func editStory(_ sender: UIButton) {
+    let story:FoodieStory = storyArray[sender.tag]
+    // Stop all prefetches but the story being viewed
+    FoodieFetch.global.cancelAllBut(for: story)
+
+    if(FoodieStory.currentStory != nil) {
+      // display the the discard dialog
+      StorySelector.showStoryDiscardDialog(to: self) {
+        self.displayStoryEntry(story)
+      }
+    }
+    displayStoryEntry(story)
+  }
   
   // MARK: - View Controller Lifecycle Functions
   override func viewDidLoad() {
@@ -132,7 +176,13 @@ class FeedCollectionViewController: UICollectionViewController {
     let story = storyArray[indexPath.row]
     reusableCell.storyButton?.tag = indexPath.row
     reusableCell.storyButton?.addTarget(self, action: #selector(viewStory(_:)), for: .touchUpInside)
-    
+
+    if(enableEdit) {
+      reusableCell.editButton.isHidden = false
+      reusableCell.editButton.tag = indexPath.row
+      reusableCell.editButton?.addTarget(self, action: #selector(editStory(_:)), for: .touchUpInside)
+    }
+
     var shouldRetrieveDigest = false
     
     story.executeForDigest(ifNotReady: {
