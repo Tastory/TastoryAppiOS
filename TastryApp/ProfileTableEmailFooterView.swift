@@ -12,6 +12,7 @@ class ProfileTableEmailFooterView: UITableViewHeaderFooterView {
 
   @IBOutlet weak var emailButton: UIButton!
   @IBOutlet weak var emailLabel: UILabel!
+  @IBOutlet weak var warningLabel: UILabel!
   
   var emailFooterHeight: CGFloat = 20.0
 }

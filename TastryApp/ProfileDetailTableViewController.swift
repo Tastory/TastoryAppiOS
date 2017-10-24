@@ -19,8 +19,8 @@ class ProfileDetailTableViewController: UITableViewController {
     static let ProfileBorderWidth: CGFloat = 5.0
     static let ProfileCornerRadius: CGFloat = 15.0
     static let ProfileHeaderHeight: CGFloat = 190.0
-    static let EmailFooterHeight: CGFloat = 110.0
-    static let EmptyFooterHeight: CGFloat = 30.0
+    static let EmailFooterHeight: CGFloat = 130.0
+    static let EmptyFooterHeight: CGFloat = 50.0
     static let SaveFooterHeight: CGFloat = 80.0
   }
   
@@ -151,42 +151,98 @@ class ProfileDetailTableViewController: UITableViewController {
   
   @objc private func saveUser() {
     
-    // Transfer all buffer data into the user
-    if let username = username, username != user.username! {
-      user.username = username
+    guard var username = username else {
+      CCLog.warning("username = nil")
+      return
     }
     
-    if let email = email, email != user.email! {
-      user.email = email
-      user.forceEmailUnverified()
+    guard var email = email else {
+      CCLog.warning("email = nil")
+      return
     }
     
-    user.fullName = fullName
-    user.url = websiteString
-    user.biography = biography
+    // Okay, lower case username and E-mail only.
+    username = username.lowercased()
+    usernameField?.text = username
+    email = email.lowercased()
+    emailField?.text = email
     
-    var oldMedia: FoodieMedia?
-    if profileImageChanged, let profileImage = profileImage {
-      oldMedia = user.media
-      let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
-      mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(profileImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
-      user.changeProfileMedia(to: mediaObject)
+    // Check for validity and availability before allowing to save
+    if let error = FoodieUser.checkValidFor(username: username) {
+      AlertDialog.present(from: self, title: "Invalid Username", message: "\(error.localizedDescription)")
+      CCLog.info("User entered invalid username - \(error.localizedDescription)")
+      return
     }
     
-    user.saveRecursive(to: .both, type: .cache) { error in
-      if let error = error {
-        AlertDialog.present(from: self, title: "Save User Details Failed", message: "Error - \(error.localizedDescription). Please try again") { action in
-          CCLog.warning("user.saveRecursive Failed. Error - \(error.localizedDescription)")
+    if !FoodieUser.checkValidFor(email: email) {
+      AlertDialog.present(from: self, title: "Invalid E-mail", message: "Address entered is not of valid E-mail address format")
+      CCLog.info("Address \(email) entered is not of valid E-mail address format")
+      return
+    }
+    
+    FoodieUser.checkUserAvailFor(username: username) { (usernameSuccess, usernameError) in
+      FoodieUser.checkUserAvailFor(email: email) { (emailSuccess, emailError) in
+        
+        // Transfer all buffer data into the user
+        if username != self.user.username! {
+          
+          // Look at result of Username check only if Username changed
+          if let usernameError = usernameError {
+            AlertDialog.present(from: self, title: "Save Failed", message: "Unable to check Username Validity")
+            CCLog.warning("checkUserAvailFor username: (\(username)) Failed - \(usernameError.localizedDescription)")
+            return
+          } else if !usernameSuccess {
+            AlertDialog.present(from: self, title: "Username Unavailable", message: "Username \(username) already taken")
+            CCLog.info("checkUserAvailFor username: (\(username)) already exists")
+            return
+          }
+          self.user.username = username
         }
-        return
+      
+        if email != self.user.email! {
+          
+          // Look at result of E-mail check only if E-mail changed
+          if let emailError = emailError {
+            AlertDialog.present(from: self, title: "Save Failed", message: "Unable to check E-mail Validity")
+            CCLog.warning("checkUserAvailFor E-mail: (\(email)) Failed - \(emailError.localizedDescription)")
+            return
+          } else if !emailSuccess {
+            AlertDialog.present(from: self, title: "E-mail Unavailable", message: "E-mail Address \(email) already taken")
+            CCLog.info("checkUserAvailFor E-mail: (\(email)) already exists")
+            return
+          }
+          self.user.email = email
+          self.user.forceEmailUnverified()
+        }
+        
+        self.user.fullName = self.fullName
+        self.user.url = self.websiteString
+        self.user.biography = self.biography
+        
+        var oldMedia: FoodieMedia?
+        if self.profileImageChanged, let profileImage = self.profileImage {
+          oldMedia = self.user.media
+          let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
+          mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(profileImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+          self.user.changeProfileMedia(to: mediaObject)
+        }
+        
+        self.user.saveRecursive(to: .both, type: .cache) { error in
+          if let error = error {
+            AlertDialog.present(from: self, title: "Save User Details Failed", message: "Error - \(error.localizedDescription). Please try again") { action in
+              CCLog.warning("user.saveRecursive Failed. Error - \(error.localizedDescription)")
+            }
+            return
+          }
+          
+          oldMedia?.deleteRecursive(from: .both, type: .cache, withBlock: nil)
+          self.unsavedChanges = false
+          self.profileImageChanged = false
+          
+          self.updateAllUIDisplayed()
+          AlertDialog.present(from: self, title: "User Details Updated!", message: "")
+        }
       }
-      
-      oldMedia?.deleteRecursive(from: .both, type: .cache, withBlock: nil)
-      self.unsavedChanges = false
-      self.profileImageChanged = false
-      
-      self.updateAllUIDisplayed()
-      AlertDialog.present(from: self, title: "User Details Updated!", message: "")
     }
   }
   
@@ -305,6 +361,7 @@ class ProfileDetailTableViewController: UITableViewController {
     // Apply some default UI properties
     self.emailFooterView.emailButton.isHidden = true
     self.emailFooterView.emailLabel.isHidden = true
+    self.emailFooterView.warningLabel.text = ""
     self.emailFooterView.emailFooterHeight = Constants.EmptyFooterHeight
     self.saveFooterView.saveButton.setTitleColor(UIColor.gray, for: .normal)
     self.saveFooterView.saveButton.isEnabled = false
@@ -459,7 +516,64 @@ extension ProfileDetailTableViewController: UITextViewDelegate {
 
 
 extension ProfileDetailTableViewController: UITextFieldDelegate {
-  
+  func textFieldDidEndEditing(_ textField: UITextField) {
+    
+    switch textField {
+    case usernameField!:
+      self.emailFooterView.warningLabel.text = ""
+      guard var textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinUsernameLength, let username = user.username, textString != username else {
+        return  // No text, nothing to see here
+      }
+      
+      // Okay. Lower cased usernames only
+      textString = textString.lowercased()
+      textField.text = textString
+      
+      if let error = FoodieUser.checkValidFor(username: textString) {
+        emailFooterView.warningLabel.text = "✖︎ " + error.localizedDescription
+        return
+      }
+      
+      FoodieUser.checkUserAvailFor(username: textString) { (success, error) in
+        DispatchQueue.main.async {
+          if let error = error {
+            CCLog.warning("checkUserAvailFor username: (\(textString)) Failed - \(error.localizedDescription)")
+          } else if !success {
+            self.emailFooterView.warningLabel.text = "✖︎ " + "Username '\(textString)' is not available"
+          }
+        }
+      }
+      
+    case emailField!:
+      emailFooterView.warningLabel.text = ""
+      guard var textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinEmailLength, let email = user.email, textString != email else {
+        return  // No yet an E-mail, nothing to see here
+      }
+      
+      // Lower cased emails only too
+      textString = textString.lowercased()
+      textField.text = textString
+      
+      if !FoodieUser.checkValidFor(email: textString) {
+        self.emailFooterView.warningLabel.text = "Address entered is not of valid E-mail address format"
+        return
+      }
+      
+      FoodieUser.checkUserAvailFor(email: textString) { (success, error) in
+        DispatchQueue.main.async {
+          if let error = error {
+            CCLog.warning("checkUserAvailFor E-mail: (\(textString)) Failed - \(error.localizedDescription)")
+          } else if !success {
+            self.emailFooterView.warningLabel.text = "✖︎ " + "E-mail address \(textString) is already signed up"
+          }
+        }
+      }
+    
+    default:
+      // Just ignore the other fields. They don't need to check for invalid
+      break
+    }
+  }
 }
 
 
@@ -478,26 +592,6 @@ extension ProfileDetailTableViewController: UIImagePickerControllerDelegate, UIN
     case String(kUTTypeMovie):
       CCLog.assert("Movie type for Profile not yet supported")
       return
-      
-//      guard let movieUrl = info[UIImagePickerControllerMediaURL] as? NSURL else {
-//        CCLog.assert("video URL is not returned from image picker")
-//        return
-//      }
-//
-//      guard let movieName = movieUrl.lastPathComponent else {
-//        CCLog.assert("video URL is missing movie name")
-//        return
-//      }
-//
-//      guard let moviePath = movieUrl.relativePath else {
-//        CCLog.assert("video URL is missing relative path")
-//        return
-//      }
-//
-//      mediaObject = FoodieMedia(for: movieName, localType: .draft, mediaType: .video)
-//      let avExportPlayer = AVExportPlayer()
-//      avExportPlayer.initAVPlayer(from: URL(fileURLWithPath: moviePath))
-//      mediaObject.videoExportPlayer = avExportPlayer
       
     case String(kUTTypeImage):
       var image: UIImage!
