@@ -484,6 +484,11 @@ class FoodieUser: PFUser {
   }
   
   
+  func forceEmailUnverified() {
+    self.setObject(false, forKey: "emailVerified")
+  }
+  
+  
   func changeProfileMedia(to foodieMedia: FoodieMedia) {
     media = foodieMedia
     profileMediaFileName = foodieMedia.foodieFileName
@@ -834,7 +839,6 @@ extension FoodieUser: FoodieObjectDelegate {
       }
       
       if !childOperationPending {
-        CCLog.assert("No child saves pending. Then why is this even saved?")
         self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
       }
     }
@@ -882,7 +886,6 @@ extension FoodieUser: FoodieObjectDelegate {
           }
 
           if !childOperationPending {
-            CCLog.assert("No child deletes pending. Is this okay?")
             callback?(error)
           }
         }

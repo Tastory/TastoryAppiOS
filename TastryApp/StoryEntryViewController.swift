@@ -46,7 +46,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   var containerVC: MarkupReturnDelegate?
   
   // MARK: - Private Instance Variables
-  fileprivate var placeholderLabel = UILabel()
   fileprivate var momentViewController = MomentCollectionViewController()
   fileprivate var selectedViewCell: MomentCollectionViewCell?
 
@@ -54,7 +53,11 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var venueButton: UIButton?
   @IBOutlet weak var linkTextField: UITextField?
-  @IBOutlet weak var tagsTextView: UITextView?
+  @IBOutlet weak var tagsTextView: UITextViewWithPlaceholder? {
+    didSet {
+      tagsTextView?.placeholder = "Tags"
+    }
+  }
 
 
   // MARK: - IBActions
@@ -466,7 +469,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     
     titleTextField?.delegate = self
     linkTextField?.delegate = self
-    tagsTextView?.delegate = self
     
     let keyboardDismissRecognizer = UITapGestureRecognizer(target: self, action: #selector(keyboardDismiss))
     keyboardDismissRecognizer.numberOfTapsRequired = 1
@@ -543,17 +545,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
       if let storyURL = workingStory.storyURL, storyURL != "" {
         linkTextField?.text = storyURL
       }
-      
-      if let tags = workingStory.tags, !tags.isEmpty {
-        // TODO: Deal with tags here?
-      } else {
-        placeholderLabel = UILabel(frame: CGRect(x: 0, y: 7, width: 50, height: 20))
-        placeholderLabel.text = "Tags" // TODO: Localization
-        placeholderLabel.textColor = Constants.placeholderColor
-        placeholderLabel.font = UIFont.systemFont(ofSize: 14.5)
-        placeholderLabel.isHidden = !tagsTextView!.text.isEmpty
-        tagsTextView?.addSubview(placeholderLabel)  // Remember to remove on the way out. There might be real Tags next time in the TextView
-      }
 
       // Lets update the map location to the top here
       // If there's a Venue, use that location first. Usually if a venue have been freshly selected, it wouldn't have been confirmed in time. So another update is done in venueSearchComplete()
@@ -589,9 +580,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    
-    // This is for removing the fake Placeholder text from the Tags TextView
-    placeholderLabel.removeFromSuperview()
     
     // We should clear this so we don't assume that we still have a returned moment
     returnedMoments.removeAll()
@@ -657,13 +645,6 @@ extension StoryEntryViewController {
   }
 }
 
-
-// MARK: - Tags TextView Delegate
-extension StoryEntryViewController: UITextViewDelegate {
-  func textViewDidChange(_ textView: UITextView) {
-    placeholderLabel.isHidden = !textView.text.isEmpty
-  }
-}
 
 
 // MARK: - Text Fields' Delegate

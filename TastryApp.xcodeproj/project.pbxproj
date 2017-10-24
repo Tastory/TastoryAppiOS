@@ -101,6 +101,7 @@
 		8CE6B8871EA9864800D454A9 /* StoryEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */; };
 		8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */; };
 		8CE9718F1F9D54AE003D526F /* ProfileImageButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE9718E1F9D54AE003D526F /* ProfileImageButton.swift */; };
+		8CEA8DB81F9EBE0400557CE5 /* UITextViewWithPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CEA8DB71F9EBE0400557CE5 /* UITextViewWithPlaceholder.swift */; };
 		8CF44DA61F86F422007E905A /* CameraCrossLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF44DA51F86F422007E905A /* CameraCrossLayer.swift */; };
 		8CF858661F7ED8A000C46614 /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF858651F7ED8A000C46614 /* IntroViewController.swift */; };
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */; };
@@ -234,6 +235,7 @@
 		8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryEntryViewController.swift; sourceTree = "<group>"; };
 		8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentCollectionViewCell.swift; sourceTree = "<group>"; };
 		8CE9718E1F9D54AE003D526F /* ProfileImageButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageButton.swift; sourceTree = "<group>"; };
+		8CEA8DB71F9EBE0400557CE5 /* UITextViewWithPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewWithPlaceholder.swift; sourceTree = "<group>"; };
 		8CF44DA51F86F422007E905A /* CameraCrossLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraCrossLayer.swift; sourceTree = "<group>"; };
 		8CF858651F7ED8A000C46614 /* IntroViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroViewController.swift; sourceTree = "<group>"; };
 		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
@@ -451,6 +453,7 @@
 				8CD328DA1E8B2BD600E5254F /* Layers */,
 				8C7EC5901F8EA7E400C8E80B /* Transitions */,
 				8C900D301F5FAAC30058BDFE /* PassthruStackView.swift */,
+				8CEA8DB71F9EBE0400557CE5 /* UITextViewWithPlaceholder.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -1011,6 +1014,7 @@
 				8CE49EB11F637918007278C1 /* ExpandButton.swift in Sources */,
 				C29CD1391F93198800A6D53F /* StorySelector.swift in Sources */,
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */,
+				8CEA8DB81F9EBE0400557CE5 /* UITextViewWithPlaceholder.swift in Sources */,
 				8CE259AD1F53808C00310749 /* AlertDialog.swift in Sources */,
 				8C1FF1311F7CA6C10062312C /* LogInViewController.swift in Sources */,
 				8C2F79771F4E3E6E00851334 /* ThreadSafeDLL.swift in Sources */,

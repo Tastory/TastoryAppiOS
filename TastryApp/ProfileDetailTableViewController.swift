@@ -18,20 +18,69 @@ class ProfileDetailTableViewController: UITableViewController {
     static let ProfileBorderColor = FoodieGlobal.Constants.ThemeColor
     static let ProfileBorderWidth: CGFloat = 5.0
     static let ProfileCornerRadius: CGFloat = 15.0
-    static let ProfileHeaderHeight: CGFloat = 180.0
+    static let ProfileHeaderHeight: CGFloat = 190.0
     static let EmailFooterHeight: CGFloat = 110.0
     static let EmptyFooterHeight: CGFloat = 30.0
-    static let SaveFooterHeight: CGFloat = 70.0
+    static let SaveFooterHeight: CGFloat = 80.0
+  }
+  
+  
+  
+  // MARK: - IBOutlet
+  @IBOutlet weak var usernameField: UITextField? {
+    didSet {
+      usernameField?.text = username
+      usernameField?.delegate = self
+    }
+  }
+  
+  @IBOutlet weak var emailField: UITextField? {
+    didSet {
+      emailField?.text = email
+      emailField?.delegate = self
+    }
+  }
+  
+  @IBOutlet weak var fullNameField: UITextField? {
+    didSet {
+      fullNameField?.text = fullName
+      fullNameField?.delegate = self
+    }
+  }
+  
+  @IBOutlet weak var websiteField: UITextField? {
+    didSet {
+      websiteField?.text = websiteString
+      websiteField?.delegate = self
+    }
+  }
+  
+  @IBOutlet weak var biographyField: UITextViewWithPlaceholder? {
+    didSet {
+      biographyField?.text = biography
+      biographyField?.delegate = self
+    }
   }
   
   
   
   // MARK: - Private Instance Variable
+  private var activitySpinner: ActivitySpinner!
   private var headerView: ProfileTableHeaderView!
   private var emailFooterView: ProfileTableEmailFooterView!
   private var saveFooterView: ProfileTableSaveFooterView!
-  private var unsavedChanges = false
   private var profileImageChanged = false
+  private var unsavedChanges: Bool = true {
+    didSet {
+      if unsavedChanges {
+        self.saveFooterView.saveButton.setTitleColor(self.view.tintColor, for: .normal)
+        self.saveFooterView.saveButton.isEnabled = true
+      } else {
+        self.saveFooterView.saveButton.setTitleColor(UIColor.gray, for: .normal)
+        self.saveFooterView.saveButton.isEnabled = false
+      }
+    }
+  }
   
   private var profileImage: UIImage? { didSet { unsavedChanges = true; profileImageChanged = true } }
   private var username: String? { didSet { if username != oldValue { unsavedChanges = true } } }
@@ -45,6 +94,26 @@ class ProfileDetailTableViewController: UITableViewController {
   // MARK: - Public Instance Variable
   var user: FoodieUser!
 
+  
+  
+  // MARK: - IBAction
+  
+  @IBAction func usernameEdited(_ sender: UITextField) {
+    username = sender.text
+  }
+  
+  @IBAction func emailEdited(_ sender: UITextField) {
+    email = sender.text
+  }
+  
+  @IBAction func fullnameEdited(_ sender: UITextField) {
+    fullName = sender.text
+  }
+  
+  @IBAction func websiteEdited(_ sender: UITextField) {
+    websiteString = sender.text
+  }
+  
   
   
   // MARK: - Private Instance Functions
@@ -89,6 +158,7 @@ class ProfileDetailTableViewController: UITableViewController {
     
     if let email = email, email != user.email! {
       user.email = email
+      user.forceEmailUnverified()
     }
     
     user.fullName = fullName
@@ -121,6 +191,38 @@ class ProfileDetailTableViewController: UITableViewController {
   }
   
   
+  @objc private func dismissKeyboard() {
+    view.endEditing(true)
+  }
+  
+  
+  @objc private func keyboardWillHide(notification: Notification) {
+    if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+      let viewHeight = self.view.frame.height
+      self.view.frame = CGRect(x: self.view.frame.origin.x,
+                               y: self.view.frame.origin.y,
+                               width: self.view.frame.width,
+                               height: viewHeight + keyboardSize.height)
+    } else {
+      CCLog.assert("We're about to hide the keyboard and the keyboard size is nil. Now is the rapture.")
+    }
+  }
+  
+  
+  @objc private func keyboardWillShow(notification: Notification) {
+    if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+      // We're not just minusing the kb height from the view height because
+      // the view could already have been resized for the keyboard before
+      self.view.frame = CGRect(x: self.view.frame.origin.x,
+                               y: self.view.frame.origin.y,
+                               width: self.view.frame.width,
+                               height: UIScreen.main.bounds.height - keyboardSize.height)
+    } else {
+      CCLog.assert("We're showing the keyboard and either the keyboard size or window is nil: panic widely.")
+    }
+  }
+  
+  
   private func updateAllUIDisplayed() {
     DispatchQueue.main.async {
       // Update the UI according to the current User object
@@ -135,7 +237,7 @@ class ProfileDetailTableViewController: UITableViewController {
       }
       
       if self.unsavedChanges {
-        self.saveFooterView.saveButton.setTitleColor(UIColor.blue, for: .normal)
+        self.saveFooterView.saveButton.setTitleColor(self.view.tintColor, for: .normal)
         self.saveFooterView.saveButton.isEnabled = true
       } else {
         self.saveFooterView.saveButton.setTitleColor(UIColor.gray, for: .normal)
@@ -145,10 +247,9 @@ class ProfileDetailTableViewController: UITableViewController {
       // Extract the profile image from the User object
       if let profileImage = self.profileImage {
         self.headerView.profileImageButton.setImage(profileImage, for: .normal)
-      } else {
-        self.headerView.profileImageButton.setImage(#imageLiteral(resourceName: "AddProfileIcon"), for: .normal)
       }
       self.headerView.profileImageButton.imageView?.contentMode = .scaleAspectFill
+      self.tableView.reloadData()
     }
   }
   
@@ -201,13 +302,32 @@ class ProfileDetailTableViewController: UITableViewController {
     self.saveFooterView.saveButton.addTarget(self, action: #selector(saveUser), for: .touchUpInside)
     self.saveFooterView.saveFooterHeight = Constants.SaveFooterHeight
     
+    // Apply some default UI properties
+    self.emailFooterView.emailButton.isHidden = true
+    self.emailFooterView.emailLabel.isHidden = true
+    self.emailFooterView.emailFooterHeight = Constants.EmptyFooterHeight
+    self.saveFooterView.saveButton.setTitleColor(UIColor.gray, for: .normal)
+    self.saveFooterView.saveButton.isEnabled = false
+    self.headerView.profileImageButton.setImage(#imageLiteral(resourceName: "AddProfileIcon"), for: .normal)
+    
+    // Add a Tap gesture recognizer to dismiss th keyboard when needed
+    let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+    tapGestureRecognizer.numberOfTapsRequired = 1
+    tapGestureRecognizer.numberOfTouchesRequired = 1
+    view.addGestureRecognizer(tapGestureRecognizer)
+    
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: Notification.Name.UIKeyboardWillHide, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: Notification.Name.UIKeyboardWillShow, object: nil)
+
     guard let currentUser = FoodieUser.current else {
       CCLog.fatal("We are only supporting User Detail View for Current User only")
     }
     user = currentUser
-
-    user.retrieveRecursive(from: .both, type: .cache, forceAnyways: false, withReady: nil) { error in
-      
+  }
+  
+  
+  override func viewWillAppear(_ animated: Bool) {
+    self.user.retrieveRecursive(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
       if let error = error {
         AlertDialog.standardPresent(from: self, title: .genericNetworkError, message: .networkTryAgain) { action in
           CCLog.warning("Retreive User Recursive Failed with Error - \(error.localizedDescription)")
@@ -217,30 +337,48 @@ class ProfileDetailTableViewController: UITableViewController {
       
       // Put all user data into temporary view buffers
       
-      // Extract the profile image from the User object
-      if let profileImageBuffer = self.user.media?.imageMemoryBuffer, let profileImage = UIImage(data: profileImageBuffer) {
-        self.profileImage = profileImage
-      } else {
-        CCLog.warning("No associated Profile Image Filename")
+      DispatchQueue.main.async {
+        // Extract the profile image from the User object
+        if let profileImageBuffer = self.user.media?.imageMemoryBuffer, let profileImage = UIImage(data: profileImageBuffer) {
+          self.profileImage = profileImage
+        } else {
+          CCLog.warning("No associated Profile Image Filename")
+        }
+        
+        if let username = self.user.username {
+          self.username = username
+          self.usernameField?.text = username
+        } else {
+          CCLog.assert("User has no username??")
+        }
+        
+        if let email = self.user.email {
+          self.email = email
+          self.emailField?.text = email
+        } else {
+          CCLog.assert("User has no E-mail??")
+        }
+        
+        if let fullName = self.user.fullName {
+          self.fullName = fullName
+          self.fullNameField?.text = fullName
+        }
+        
+        if let url = self.user.url {
+          self.websiteString = url
+          self.websiteField?.text = url
+        }
+        
+        if let biography = self.user.biography {
+          self.biography = biography
+          self.biographyField?.text = biography
+        }
+        
+        // Reset unsaved changes
+        self.unsavedChanges = false
+        self.profileImageChanged = false
+        self.updateAllUIDisplayed()
       }
-      
-      if let username = self.user.username { self.username = username } else {
-        CCLog.assert("User has no username??")
-      }
-      
-      if let email = self.user.email { self.email = email } else {
-        CCLog.assert("User has no E-mail??")
-      }
-      
-      if let fullName = self.user.fullName { self.fullName = fullName }
-      if let url = self.user.url { self.websiteString = url }
-      if let biography = self.user.biography { self.biography = biography }
-      
-      // Reset unsaved changes
-      self.unsavedChanges = false
-      self.profileImageChanged = false
-      
-      self.updateAllUIDisplayed()
     }
   }
   
@@ -251,6 +389,9 @@ class ProfileDetailTableViewController: UITableViewController {
   }
   
   
+  deinit {
+    //NotificationCenter.default.removeObserver(self)
+  }
   
   // MARK: - Table view data source
   
@@ -307,6 +448,18 @@ class ProfileDetailTableViewController: UITableViewController {
       return Constants.EmptyFooterHeight
     }
   }
+}
+
+
+extension ProfileDetailTableViewController: UITextViewDelegate {
+  func textViewDidChange(_ textView: UITextView) {
+    biography = textView.text
+  }
+}
+
+
+extension ProfileDetailTableViewController: UITextFieldDelegate {
+  
 }
 
 
