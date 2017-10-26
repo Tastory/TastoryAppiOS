@@ -208,14 +208,6 @@ class PasswordTableViewController: UITableViewController {
       return Constants.EmptyFooterHeight
     }
   }
-  
-  override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    return Constants.EmptyFooterHeight
-  }
-  
-  override func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
-    return Constants.EmptyFooterHeight
-  }
 }
 
 
