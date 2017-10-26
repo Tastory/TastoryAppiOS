@@ -5,7 +5,7 @@
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -301,8 +301,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kwj-i7-hiS">
-                                                    <rect key="frame" x="16" y="6.5" width="343" height="30"/>
+                                                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kwj-i7-hiS">
+                                                    <rect key="frame" x="16" y="7" width="343" height="30"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <state key="normal" title="Venue">
@@ -316,7 +316,7 @@
                                             <constraints>
                                                 <constraint firstItem="kwj-i7-hiS" firstAttribute="centerY" secondItem="mrM-YN-vc8" secondAttribute="centerY" id="72g-BK-ADT"/>
                                                 <constraint firstItem="kwj-i7-hiS" firstAttribute="leading" secondItem="mrM-YN-vc8" secondAttribute="leading" constant="16" id="ZXg-0h-ZAD"/>
-                                                <constraint firstItem="kwj-i7-hiS" firstAttribute="trailing" secondItem="mrM-YN-vc8" secondAttribute="trailing" constant="-16" id="hYz-XT-nwm"/>
+                                                <constraint firstAttribute="trailing" secondItem="kwj-i7-hiS" secondAttribute="trailing" constant="16" id="w3s-ax-8EJ"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -327,8 +327,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Link" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Sdu-9R-pbJ">
-                                                    <rect key="frame" x="16" y="13" width="343" height="18"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="752" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Link" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Sdu-9R-pbJ">
+                                                    <rect key="frame" x="16" y="13" width="305" height="18"/>
                                                     <nil key="textColor"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="URL"/>
@@ -336,10 +336,19 @@
                                                         <action selector="editedLink:" destination="YxI-Mg-cNr" eventType="editingDidEnd" id="nk7-uO-Tdy"/>
                                                     </connections>
                                                 </textField>
+                                                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="right" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ndz-1J-p2V">
+                                                    <rect key="frame" x="329" y="5" width="30" height="34"/>
+                                                    <state key="normal" title="⬅️"/>
+                                                    <connections>
+                                                        <action selector="previewLink:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="Skd-Tf-1dE"/>
+                                                    </connections>
+                                                </button>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="Sdu-9R-pbJ" secondAttribute="trailing" constant="16" id="KNf-aW-XnA"/>
+                                                <constraint firstItem="Ndz-1J-p2V" firstAttribute="centerY" secondItem="BJ3-IR-B5A" secondAttribute="centerY" id="5bc-RP-9tD"/>
+                                                <constraint firstAttribute="trailing" secondItem="Ndz-1J-p2V" secondAttribute="trailing" constant="16" id="Vts-YY-22N"/>
                                                 <constraint firstItem="Sdu-9R-pbJ" firstAttribute="centerY" secondItem="BJ3-IR-B5A" secondAttribute="centerY" id="fA8-Pb-bed"/>
+                                                <constraint firstItem="Sdu-9R-pbJ" firstAttribute="trailing" secondItem="Ndz-1J-p2V" secondAttribute="leading" constant="-8" id="iOF-5Q-MeP"/>
                                                 <constraint firstItem="Sdu-9R-pbJ" firstAttribute="leading" secondItem="BJ3-IR-B5A" secondAttribute="leading" constant="16" id="k71-qD-3zK"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -504,13 +513,13 @@
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="≪" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8iO-QC-YKs">
-                                    <rect key="frame" x="0.0" y="0.0" width="94" height="222"/>
+                                    <rect key="frame" x="16" y="0.0" width="62" height="222"/>
                                     <fontDescription key="fontDescription" name="TimesNewRomanPS-BoldMT" family="Times New Roman" pointSize="40"/>
                                     <color key="textColor" red="1" green="0.20000000000000001" blue="0.066666666669999999" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" +" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zjt-5s-v7V">
-                                    <rect key="frame" x="0.0" y="0.0" width="94" height="222"/>
+                                    <rect key="frame" x="16" y="0.0" width="62" height="222"/>
                                     <fontDescription key="fontDescription" name="TimesNewRomanPS-BoldMT" family="Times New Roman" pointSize="40"/>
                                     <color key="textColor" red="1" green="0.20000000000000001" blue="0.086274509803921567" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>

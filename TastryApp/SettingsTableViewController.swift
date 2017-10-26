@@ -27,7 +27,7 @@ class SettingsTableViewController: UITableViewController {
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
+    CCLog.warning("didReceiveMemoryWarning")
   }
   
   // MARK: - TableViewController Delegate Protocol Conformance

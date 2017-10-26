@@ -40,6 +40,9 @@
 		8C3254A51F40240900895572 /* VenueTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3254A41F40240900895572 /* VenueTableViewController.swift */; };
 		8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */; };
 		8C4AF66E1F91B1B900AADA5C /* ActivitySpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */; };
+		8C56A9121FA16F5C00D3204B /* PasswordTableSaveFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C56A9111FA16F5C00D3204B /* PasswordTableSaveFooterView.swift */; };
+		8C56A9141FA16F6C00D3204B /* PasswordTableSaveFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C56A9131FA16F6C00D3204B /* PasswordTableSaveFooterView.xib */; };
+		8C56A9161FA19E6200D3204B /* URL+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C56A9151FA19E6200D3204B /* URL+Extension.swift */; };
 		8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5B48501F579D3800C18089 /* SwiftMutex.swift */; };
 		8C5C4DDE1EFEEDEC008C83EC /* FoodieFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5C4DDD1EFEEDEC008C83EC /* FoodieFetch.swift */; };
 		8C61BCDC1E985D1300DDF248 /* CleanCrashLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCDB1E985D1300DDF248 /* CleanCrashLog.swift */; };
@@ -167,6 +170,9 @@
 		8C40B20B1F1466D40030B5B5 /* Jot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jot-Bridging-Header.h"; sourceTree = "<group>"; };
 		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
 		8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySpinner.swift; sourceTree = "<group>"; };
+		8C56A9111FA16F5C00D3204B /* PasswordTableSaveFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordTableSaveFooterView.swift; sourceTree = "<group>"; };
+		8C56A9131FA16F6C00D3204B /* PasswordTableSaveFooterView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordTableSaveFooterView.xib; sourceTree = "<group>"; };
+		8C56A9151FA19E6200D3204B /* URL+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Extension.swift"; sourceTree = "<group>"; };
 		8C5B48501F579D3800C18089 /* SwiftMutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftMutex.swift; sourceTree = "<group>"; };
 		8C5C4DDD1EFEEDEC008C83EC /* FoodieFetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFetch.swift; sourceTree = "<group>"; };
 		8C61BCDB1E985D1300DDF248 /* CleanCrashLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CleanCrashLog.swift; sourceTree = "<group>"; };
@@ -349,6 +355,8 @@
 				8CBBED101F9D740F008D4B12 /* ProfileTableEmailFooterView.xib */,
 				8CBBED141F9D7E94008D4B12 /* ProfileTableSaveFooterView.swift */,
 				8CBBED161F9D7EA9008D4B12 /* ProfileTableSaveFooterView.xib */,
+				8C56A9111FA16F5C00D3204B /* PasswordTableSaveFooterView.swift */,
+				8C56A9131FA16F6C00D3204B /* PasswordTableSaveFooterView.xib */,
 				8C841B4A1F6244700002A5A2 /* CategoryTableViewCell.swift */,
 				8C841B481F6242C00002A5A2 /* CategoryTableViewCell.xib */,
 			);
@@ -465,6 +473,7 @@
 				8C6983511F97ECFB0091334D /* AVPlayerStatus+Extension.swift */,
 				8C6983531F97ED810091334D /* AVPlayerTimeControlStatus+Extension.swift */,
 				8C6983551F97EDE50091334D /* AVPlayerItemStatus+Extension.swift */,
+				8C56A9151FA19E6200D3204B /* URL+Extension.swift */,
 				C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */,
 				8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */,
 				8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */,
@@ -709,6 +718,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C56A9141FA16F6C00D3204B /* PasswordTableSaveFooterView.xib in Resources */,
 				8C889ED11F9D614C00E8CC56 /* ProfileTableHeaderView.xib in Resources */,
 				8C1FF12B1F7CA5380062312C /* LogInSignUp.storyboard in Resources */,
 				8CBEBD971F99883100C70ED7 /* Compose.storyboard in Resources */,
@@ -979,6 +989,7 @@
 				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */,
 				8C9B47C71F9576B100D21246 /* FoodieOperation.swift in Sources */,
 				8C1ED6F41F5DEC2500A8CC94 /* AsyncOperation.swift in Sources */,
+				8C56A9161FA19E6200D3204B /* URL+Extension.swift in Sources */,
 				8C6983521F97ECFB0091334D /* AVPlayerStatus+Extension.swift in Sources */,
 				8CF858661F7ED8A000C46614 /* IntroViewController.swift in Sources */,
 				8CE9718F1F9D54AE003D526F /* ProfileImageButton.swift in Sources */,
@@ -1039,6 +1050,7 @@
 				8C1D4E221EDCEC9A00939B2C /* FeedCollectionViewController.swift in Sources */,
 				8C7CE2881F36B92A00DEFCBE /* FoodieQuery.swift in Sources */,
 				8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */,
+				8C56A9121FA16F5C00D3204B /* PasswordTableSaveFooterView.swift in Sources */,
 				8CC48D601EFC81CD003A0FC9 /* PrecisionTime.swift in Sources */,
 				8C05904B1EC6671400027E91 /* UIStoryboard+Extension.swift in Sources */,
 				8C7EC58F1F8E0D2400C8E80B /* MKCoordinateRegion+Extension.swift in Sources */,

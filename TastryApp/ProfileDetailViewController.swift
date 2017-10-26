@@ -16,9 +16,8 @@ class ProfileDetailViewController: TransitableViewController {
     
     super.viewDidLoad()
     navigationController?.delegate = self
-    
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
-    
+    navigationItem.title = "Profile Details"
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileDetailTableViewController") as? ProfileDetailTableViewController else {
       CCLog.fatal("Cannot cast ViewController from Storyboard to ProfileDetailTableViewController")
     }

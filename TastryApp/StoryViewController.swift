@@ -378,7 +378,7 @@ class StoryViewController: TransitableViewController {
       return
     }
     
-    if let storyLinkString = story.storyURL, let storyLinkUrl = URL(string: storyLinkString) {
+    if let storyLinkString = story.storyURL, let storyLinkUrl = URL(string: URL.addHttpIfNeeded(to: storyLinkString)) {
       
       // Pause if playing
       if !isPaused {

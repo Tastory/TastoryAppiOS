@@ -26,7 +26,6 @@
                     <state key="normal" image="AddProfileIcon"/>
                 </button>
             </subviews>
-            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="83g-1B-oeO" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="8wh-1Q-qSv"/>
                 <constraint firstItem="83g-1B-oeO" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="lsM-LM-u85"/>

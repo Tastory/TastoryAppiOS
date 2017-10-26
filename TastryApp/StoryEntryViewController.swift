@@ -14,6 +14,7 @@
 import UIKit
 import MapKit
 import CoreLocation
+import SafariServices
 
 protocol CameraDelegate {
   func openCamera()
@@ -76,6 +77,18 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     viewController.suggestedLocation = averageLocationOfMoments()
     viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
+  }
+  
+  
+  @IBAction func previewLink(_ sender: UIButton) {
+    CCLog.info("User tapped Link Preview")
+    
+    if let linkText = linkTextField?.text, let url = URL(string: URL.addHttpIfNeeded(to: linkText)) {
+      CCLog.info("Opening Safari View for \(url)")
+      let safariViewController = SFSafariViewController(url: url)
+      safariViewController.modalPresentationStyle = .overFullScreen
+      self.present(safariViewController, animated: true, completion: nil)
+    }
   }
   
   
@@ -185,16 +198,11 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
       return
     }
     
-    var validHttpText = text
-    let lowercaseText = text.lowercased()
-    
-    if !lowercaseText.hasPrefix("http://") && !lowercaseText.hasPrefix("https://") {
-      validHttpText = "http://" + text
-      linkTextField?.text = validHttpText
-    }
+    let validHttpText = URL.addHttpIfNeeded(to: text)
+    linkTextField?.text = validHttpText
+    story.storyURL = validHttpText
     
     CCLog.info("User edited Link of Story")
-    story.storyURL = validHttpText
     preSave(nil, withBlock: nil)
   }
   

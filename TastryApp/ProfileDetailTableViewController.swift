@@ -8,6 +8,7 @@
 
 
 import UIKit
+import SafariServices
 import MobileCoreServices
 
 
@@ -15,7 +16,7 @@ class ProfileDetailTableViewController: UITableViewController {
   
   // MARK: - Constants
   struct Constants {
-    static let ProfileBorderColor = FoodieGlobal.Constants.ThemeColor
+    static let ProfileBorderColor = UIColor.gray // FoodieGlobal.Constants.ThemeColor
     static let ProfileBorderWidth: CGFloat = 5.0
     static let ProfileCornerRadius: CGFloat = 15.0
     static let ProfileHeaderHeight: CGFloat = 190.0
@@ -114,9 +115,24 @@ class ProfileDetailTableViewController: UITableViewController {
     websiteString = sender.text
   }
   
+  @IBAction func websitePreview(_ sender: UIButton) {
+    CCLog.info("User tapped Website Preview")
+    
+    if let linkText = websiteField?.text, let url = URL(string: URL.addHttpIfNeeded(to: linkText)) {
+      websiteField?.text = URL.addHttpIfNeeded(to: linkText)
+      websiteString = URL.addHttpIfNeeded(to: linkText)
+      
+      CCLog.info("Opening Safari View for \(url)")
+      let safariViewController = SFSafariViewController(url: url)
+      safariViewController.modalPresentationStyle = .overFullScreen
+      self.present(safariViewController, animated: true, completion: nil)
+    }
+  }
+  
   
   
   // MARK: - Private Instance Functions
+  
   @objc private func changeProfileImage() {
     let imagePickerController = UIImagePickerController()
     imagePickerController.sourceType = .photoLibrary
@@ -166,6 +182,12 @@ class ProfileDetailTableViewController: UITableViewController {
     usernameField?.text = username
     email = email.lowercased()
     emailField?.text = email
+    
+    // See if there's a web address. If so check for validity and changed if needed
+    if let urlString = websiteString {
+      websiteString = URL.addHttpIfNeeded(to: urlString)
+      websiteField?.text = urlString
+    }
     
     // Check for validity and availability before allowing to save
     if let error = FoodieUser.checkValidFor(username: username) {
@@ -455,9 +477,14 @@ class ProfileDetailTableViewController: UITableViewController {
   }
   
   
+  override func viewWillDisappear(_ animated: Bool) {
+    view.endEditing(true)
+  }
+  
+  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
+    CCLog.warning("didReceiveMemoryWarning")
   }
   
   
@@ -465,7 +492,9 @@ class ProfileDetailTableViewController: UITableViewController {
     //NotificationCenter.default.removeObserver(self)
   }
   
-  // MARK: - Table view data source
+  
+  
+  // MARK: - Table View Data Source
   
   override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     if section == 0 {
@@ -588,6 +617,11 @@ extension ProfileDetailTableViewController: UITextFieldDelegate {
       // Just ignore the other fields. They don't need to check for invalid
       break
     }
+  }
+  
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    textField.resignFirstResponder()
+    return true
   }
 }
 

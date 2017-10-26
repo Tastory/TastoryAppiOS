@@ -16,7 +16,7 @@ class PasswordViewController: TransitableViewController {
     
     super.viewDidLoad()
     navigationController?.delegate = self
-    
+    navigationItem.title = "Password Change"
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
     
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "PasswordTableViewController") as? PasswordTableViewController else {

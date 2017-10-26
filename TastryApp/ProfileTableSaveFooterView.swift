@@ -12,5 +12,5 @@ class ProfileTableSaveFooterView: UITableViewHeaderFooterView {
 
   @IBOutlet weak var saveButton: UIButton!
   
-    var saveFooterHeight: CGFloat = 50.0
+  var saveFooterHeight: CGFloat = 50.0
 }
