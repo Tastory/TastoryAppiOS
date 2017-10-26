@@ -139,6 +139,11 @@ class FoodiePFObject: PFObject {
       CCLog.debug("Forced to fetch \(delegate.foodieObjectType())(\(getUniqueIdentifier())) In Background")
       
       fetchRetry.start("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) { [unowned self] in
+
+        if(self.isDirty) {
+          self.revert() 
+        }
+
         self.fetchInBackground() { object, error in  // This fetch only comes from Server
           if let error = error {
             CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) with error: \(error.localizedDescription)")

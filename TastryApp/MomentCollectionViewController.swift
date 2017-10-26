@@ -371,8 +371,13 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
  
         // Delete the Moment
         self.workingStory.moments!.remove(at: indexPath.item)
-        
-        moment.deleteRecursive(from: .both, type: .draft) { error in
+
+        var location: FoodieObject.StorageLocation = .both
+        if(moment.objectId != nil) {
+          location = .local
+        }
+
+        moment.deleteRecursive(from: location, type: .draft) { error in
           if let error = error {
             CCLog.warning("Failed to delete moments from pending delete moment lists: \(error)")
           }
