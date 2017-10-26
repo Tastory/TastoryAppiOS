@@ -720,10 +720,20 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
           callback(error)
         }
 
-        currentStory?.retrieveRecursive(from: .both, type: .cache, forceAnyways: true, withCompletion: { (error) in
+        currentStory?.retrieveRecursive(from: .both, type: .cache, forceAnyways: true) { (error) in
+
+          // restore the thumbnail correctly
+          if let moments = story.moments {
+            for moment in moments {
+              if(moment.thumbnailFileName == story.thumbnailFileName) {
+                story.thumbnail = moment.thumbnail
+              }
+            }
+          }
           removeCurrent()
           callback(nil)
-        })
+        }
+
       }
     }
   }
