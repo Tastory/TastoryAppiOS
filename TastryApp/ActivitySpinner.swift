@@ -20,8 +20,12 @@ class ActivitySpinner {
       let blurEffect = UIBlurEffect(style: blurStyle)
       self.blurEffectView = UIVisualEffectView(effect: blurEffect)
       view.addSubview(self.blurEffectView!)
+      view.sendSubview(toBack: self.blurEffectView!)
+      self.blurEffectView!.isHidden = true
       self.activityView = UIActivityIndicatorView(activityIndicatorStyle: spinnerStyle)
       view.addSubview(self.activityView!)
+      self.activityView!.isHidden = true
+      view.sendSubview(toBack: self.activityView!)
       self.controllerView = view
     }
   }
@@ -41,6 +45,7 @@ class ActivitySpinner {
         } else {
           view.bringSubview(toFront: blurEffectView)
         }
+        blurEffectView.isHidden = false
       }
       
       if let activityView = self.activityView {
@@ -51,6 +56,7 @@ class ActivitySpinner {
         } else {
           view.bringSubview(toFront: activityView)
         }
+        activityView.isHidden = false
         activityView.startAnimating()
       }
       completion?()
@@ -65,10 +71,12 @@ class ActivitySpinner {
     DispatchQueue.main.async {
       if let blurEffectView = self.blurEffectView {
         view.sendSubview(toBack: blurEffectView)
+        blurEffectView.isHidden = true
       }
       if let activityView = self.activityView {
         activityView.stopAnimating()
         view.sendSubview(toBack: activityView)
+        activityView.isHidden = true
       }
       completion?()
     }

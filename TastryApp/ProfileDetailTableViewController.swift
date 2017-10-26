@@ -180,6 +180,8 @@ class ProfileDetailTableViewController: UITableViewController {
       return
     }
     
+    activitySpinner.apply()
+    
     FoodieUser.checkUserAvailFor(username: username) { (usernameSuccess, usernameError) in
       FoodieUser.checkUserAvailFor(email: email) { (emailSuccess, emailError) in
         
@@ -190,10 +192,12 @@ class ProfileDetailTableViewController: UITableViewController {
           if let usernameError = usernameError {
             AlertDialog.present(from: self, title: "Save Failed", message: "Unable to check Username Validity")
             CCLog.warning("checkUserAvailFor username: (\(username)) Failed - \(usernameError.localizedDescription)")
+            self.activitySpinner.remove()
             return
           } else if !usernameSuccess {
             AlertDialog.present(from: self, title: "Username Unavailable", message: "Username \(username) already taken")
             CCLog.info("checkUserAvailFor username: (\(username)) already exists")
+            self.activitySpinner.remove()
             return
           }
           self.user.username = username
@@ -205,10 +209,12 @@ class ProfileDetailTableViewController: UITableViewController {
           if let emailError = emailError {
             AlertDialog.present(from: self, title: "Save Failed", message: "Unable to check E-mail Validity")
             CCLog.warning("checkUserAvailFor E-mail: (\(email)) Failed - \(emailError.localizedDescription)")
+            self.activitySpinner.remove()
             return
           } else if !emailSuccess {
             AlertDialog.present(from: self, title: "E-mail Unavailable", message: "E-mail Address \(email) already taken")
             CCLog.info("checkUserAvailFor E-mail: (\(email)) already exists")
+            self.activitySpinner.remove()
             return
           }
           self.user.email = email
@@ -228,6 +234,7 @@ class ProfileDetailTableViewController: UITableViewController {
         }
         
         self.user.saveRecursive(to: .both, type: .cache) { error in
+          self.activitySpinner.remove()
           if let error = error {
             AlertDialog.present(from: self, title: "Save User Details Failed", message: "Error - \(error.localizedDescription). Please try again") { action in
               CCLog.warning("user.saveRecursive Failed. Error - \(error.localizedDescription)")
@@ -367,6 +374,8 @@ class ProfileDetailTableViewController: UITableViewController {
     self.saveFooterView.saveButton.isEnabled = false
     self.headerView.profileImageButton.setImage(#imageLiteral(resourceName: "AddProfileIcon"), for: .normal)
     
+    activitySpinner = ActivitySpinner(addTo: view)
+    
     // Add a Tap gesture recognizer to dismiss th keyboard when needed
     let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
     tapGestureRecognizer.numberOfTapsRequired = 1
@@ -384,7 +393,13 @@ class ProfileDetailTableViewController: UITableViewController {
   
   
   override func viewWillAppear(_ animated: Bool) {
+    
+    activitySpinner.apply()
+    
     self.user.retrieveRecursive(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
+      
+      self.activitySpinner.remove()
+      
       if let error = error {
         AlertDialog.standardPresent(from: self, title: .genericNetworkError, message: .networkTryAgain) { action in
           CCLog.warning("Retreive User Recursive Failed with Error - \(error.localizedDescription)")

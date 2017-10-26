@@ -5,7 +5,7 @@
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,9 +18,9 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <button clipsSubviews="YES" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="83g-1B-oeO" customClass="ProfileImageButton" customModule="TastryApp" customModuleProvider="target">
-                    <rect key="frame" x="137.5" y="294" width="100" height="100"/>
+                    <rect key="frame" x="127.5" y="284" width="120" height="120"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="100" id="rCN-MF-7Zt"/>
+                        <constraint firstAttribute="width" constant="120" id="rCN-MF-7Zt"/>
                         <constraint firstAttribute="width" secondItem="83g-1B-oeO" secondAttribute="height" multiplier="1:1" id="ynL-Xf-rCH"/>
                     </constraints>
                     <state key="normal" image="AddProfileIcon"/>
@@ -39,6 +39,6 @@
         </view>
     </objects>
     <resources>
-        <image name="AddProfileIcon" width="100" height="100"/>
+        <image name="AddProfileIcon" width="120" height="120"/>
     </resources>
 </document>
