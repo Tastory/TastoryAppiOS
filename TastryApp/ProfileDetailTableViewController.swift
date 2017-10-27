@@ -411,11 +411,7 @@ class ProfileDetailTableViewController: UITableViewController {
       CCLog.fatal("We are only supporting User Detail View for Current User only")
     }
     user = currentUser
-  }
-  
-  
-  override func viewWillAppear(_ animated: Bool) {
-    
+
     activitySpinner.apply()
     
     _ = self.user.retrieveRecursive(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
