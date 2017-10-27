@@ -67,7 +67,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
   
   
   func cancelPrefetch(for story: FoodieStory) {
-    CCLog.verbose("feedCollectionViewCell cance prefetch for Story \(story.getUniqueIdentifier())")
+    CCLog.verbose("feedCollectionViewCell cancel prefetch for Story \(story.getUniqueIdentifier())")
     FoodieFetch.global.cancel(for: story)
   }
   

@@ -40,7 +40,7 @@ protocol FoodieObjectDelegate: class {
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool,
                          withReady readyBlock: SimpleBlock?,
-                         withCompletion callback: SimpleErrorBlock?)
+                         withCompletion callback: SimpleErrorBlock?) -> AsyncOperation?
   
   func save(to localType: FoodieObject.LocalType,
             withBlock callback: SimpleErrorBlock?)
@@ -50,7 +50,7 @@ protocol FoodieObjectDelegate: class {
   
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
-                     withBlock callback: SimpleErrorBlock?)
+                     withBlock callback: SimpleErrorBlock?) -> AsyncOperation?
   
   
   func delete(from localType: FoodieObject.LocalType,
@@ -60,7 +60,7 @@ protocol FoodieObjectDelegate: class {
   
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
-                       withBlock callback: SimpleErrorBlock?)
+                       withBlock callback: SimpleErrorBlock?) -> AsyncOperation?
   
   func cancelRetrieveFromServerRecursive()
   
@@ -178,7 +178,7 @@ class FoodieObject {
   
   // Function to mark pending retrieval
   
-  func retrieveChild(_ child: FoodieObjectDelegate, from location: StorageLocation, type localType: LocalType, forceAnyways: Bool, on queue: DispatchQueue, withReady readyBlock: SimpleBlock? = nil, withCompletion callback: SimpleErrorBlock?) {
+  func retrieveChild(_ child: FoodieObjectDelegate, from location: StorageLocation, type localType: LocalType, forceAnyways: Bool, on queue: DispatchQueue, withReady readyBlock: SimpleBlock? = nil, withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     guard let delegate = delegate else {
       CCLog.fatal("delegate = nil. Unable to proceed.")
     }
@@ -188,7 +188,7 @@ class FoodieObject {
     
     //CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(self.outstandingChildReadies), Outstanding: \(self.outstandingChildOperations)")
     
-    child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, withReady: {
+    return child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, withReady: {
       
       // This needs to be critical section or race condition between many childrens' completion can occur
       queue.async {
@@ -253,7 +253,7 @@ class FoodieObject {
   
   
   // Function to call a child's saveRecursive
-  func saveChild(_ child: FoodieObjectDelegate, to location: StorageLocation, type localType: LocalType, on queue: DispatchQueue, withBlock callback: SimpleErrorBlock?) {
+  func saveChild(_ child: FoodieObjectDelegate, to location: StorageLocation, type localType: LocalType, on queue: DispatchQueue, withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
 //    guard let delegate = delegate else {
 //      CCLog.fatal("delegate = nil. Unable to proceed.")
 //    }
@@ -262,7 +262,7 @@ class FoodieObject {
     outstandingChildOperations += 1
     
     // Save Recursive for each children. Call saveCompletionFromChild when done and without errors
-    child.saveRecursive(to: location, type: localType) { error in
+    return child.saveRecursive(to: location, type: localType) { error in
       if let error = error {
         CCLog.warning("saveChild on \(child.foodieObjectType())(\(child.getUniqueIdentifier())) failed with Error \(error.localizedDescription)")
         self.operationError = error
@@ -294,7 +294,7 @@ class FoodieObject {
   
   
   // Function to delete child
-  func deleteChild(_ child: FoodieObjectDelegate, from location: StorageLocation, type localType: LocalType, on queue: DispatchQueue, withBlock callback: SimpleErrorBlock?) {
+  func deleteChild(_ child: FoodieObjectDelegate, from location: StorageLocation, type localType: LocalType, on queue: DispatchQueue, withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
 //    guard let delegate = delegate else {
 //      CCLog.fatal("delegate = nil. Unable to proceed.")
 //    }
@@ -303,7 +303,7 @@ class FoodieObject {
     self.outstandingChildOperations += 1
     
     // Delete Recursive for each children
-    child.deleteRecursive(from: location, type: localType) { error in
+    return child.deleteRecursive(from: location, type: localType) { error in
       if let error = error {
         CCLog.warning("deleteChild on \(child.foodieObjectType())(\(child.getUniqueIdentifier())) failed with Error \(error.localizedDescription)")
         self.operationError = error

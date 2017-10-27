@@ -372,14 +372,14 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
         // Delete the Moment
         self.workingStory.moments!.remove(at: indexPath.item)
         
-        moment.deleteRecursive(from: .both, type: .draft) { error in
+        _ = moment.deleteRecursive(from: .both, type: .draft) { error in
           if let error = error {
             CCLog.warning("Failed to delete moments from pending delete moment lists: \(error)")
           }
         }
 
         // Pre-save the Story now that it's changed
-        self.workingStory.saveDigest(to: .local, type: .draft) { error in
+        _ = self.workingStory.saveDigest(to: .local, type: .draft) { error in
           if let error = error {
             AlertDialog.present(from: self, title: "Pre-Save Failed!", message: "Problem saving Story to Local Draft! Quitting or backgrounding the app might cause lost of the current Story under Draft!") { action in
               CCLog.assert("Pre-Saving Story to Draft Local Store Failed - \(error.localizedDescription)")

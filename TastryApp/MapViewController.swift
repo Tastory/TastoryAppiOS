@@ -423,7 +423,7 @@ class MapViewController: TransitableViewController {
     }
     
     for story in stories {
-      story.retrieveDigest(from: .both, type: .cache) { error in
+      _ = story.retrieveDigest(from: .both, type: .cache) { error in
         if let error = error {
           AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story Digest - \(error.localizedDescription)") { action in
             CCLog.warning("Failed to retrieve Story Digest via story.retrieveDigest. Error - \(error.localizedDescription)")
@@ -534,7 +534,7 @@ class MapViewController: TransitableViewController {
             return
           }
            
-          story.retrieveRecursive(from: .local, type: .draft, forceAnyways: false) { error in
+          _ = story.retrieveRecursive(from: .local, type: .draft, forceAnyways: false) { error in
             
             if let retrieveError = error {
               FoodieObject.deleteAll(from: .draft) { error in

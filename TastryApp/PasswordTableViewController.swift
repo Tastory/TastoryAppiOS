@@ -107,7 +107,7 @@ class PasswordTableViewController: UITableViewController {
       self.user.password = newText
       
       // Save the user
-      self.user.saveRecursive(to: .both, type: .cache) { error in
+      _ = self.user.saveRecursive(to: .both, type: .cache) { error in
         self.activitySpinner.remove()
         
         if let error = error {
@@ -156,7 +156,7 @@ class PasswordTableViewController: UITableViewController {
     self.saveFooterView.saveFooterHeight = Constants.SaveFooterHeight
     self.saveFooterView.warningLabel.text = ""
     
-    activitySpinner = ActivitySpinner(addTo: view)
+    activitySpinner = ActivitySpinner(addTo: view, blurStyle: .dark)
     
     // Add a Tap gesture recognizer to dismiss the keyboard when needed
     let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))

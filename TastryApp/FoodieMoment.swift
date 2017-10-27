@@ -60,6 +60,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     //var error: Error?
     var callback: ((Error?) -> Void)?
     
+    private var childOperations = [AsyncOperation]()
+    
     init(on operationType: OperationType,
          for moment: FoodieMoment,
          to location: FoodieObject.StorageLocation,
@@ -81,21 +83,53 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       
       switch operationType {
       case .retrieveMoment:
-        moment.retrieveOpRecursive(from: location, type: localType, forceAnyways: forceAnyways) { error in
+        moment.retrieveOpRecursive(for: self, from: location, type: localType, forceAnyways: forceAnyways) { error in
           self.callback?(error)
           self.finished()
         }
         
       case .saveMoment:
-        moment.saveOpRecursive(to: location, type: localType) { error in
+        moment.saveOpRecursive(for: self, to: location, type: localType) { error in
           self.callback?(error)
           self.finished()
         }
         
       case .deleteMoment:
-        moment.deleteOpRecursive(from: location, type: localType) { error in
+        moment.deleteOpRecursive(for: self, from: location, type: localType) { error in
           self.callback?(error)
           self.finished()
+        }
+      }
+    }
+    
+    func add(_ childOperation: AsyncOperation) {
+      childOperations.append(childOperation)
+    }
+    
+    override func cancel() {
+      // Sample isExecuting firsty
+      let executing = isExecuting
+      
+      // Cancel regardless
+      super.cancel()
+      
+      CCLog.debug("Cancel for Moment \(moment.getUniqueIdentifier()), Executing = \(executing)")
+      
+      if executing {
+        moment.childOperationQueue.async {
+          // Cancel all child operations
+          for operation in self.childOperations {
+            operation.cancel()
+          }
+          
+          switch self.operationType {
+          case .retrieveMoment:
+            self.moment.cancelRetrieveOpRecursive()
+          case .saveMoment:
+            self.moment.cancelSaveOpRecursive()
+          default:
+            break
+          }
         }
       }
     }
@@ -108,6 +142,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     case setMediaWithPhotoImageNil
     case setMediaWithPhotoJpegRepresentationFailed
+    case operationCancelled
     
     var errorDescription: String? {
       switch self {
@@ -115,6 +150,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         return NSLocalizedString("setMedia failed, photoImage = nil", comment: "Error description for an exception error code")
       case .setMediaWithPhotoJpegRepresentationFailed:
         return NSLocalizedString("setMedia failed, cannot create JPEG representation", comment: "Error description for an exception error code")
+      case .operationCancelled:
+        return NSLocalizedString("Moment Operation Cancelled", comment: "Error message for reason why an operation failed")
       }
     }
     
@@ -140,11 +177,11 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
+  var childOperationQueue = DispatchQueue(label: "Child Operation Queue", qos: .userInitiated)
   
   
   // MARK: - Private Instance Variables
-  fileprivate var asyncOperationQueue = OperationQueue()
-  fileprivate var childOperationQueue = DispatchQueue(label: "Child Operation Queue", qos: .userInitiated)
+  private var asyncOperationQueue = OperationQueue()
   private var readyCallback: (() -> Void)?
   private var readyMutex = SwiftMutex.create()
   
@@ -153,7 +190,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Private Instance Functions
   
   // Retrieves just the moment itself
-  fileprivate func retrieve(from location: FoodieObject.StorageLocation,
+  private func retrieve(from location: FoodieObject.StorageLocation,
                             type localType: FoodieObject.LocalType,
                             forceAnyways: Bool,
                             withBlock callback: SimpleErrorBlock?) {
@@ -174,7 +211,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
-  fileprivate func retrieveOpRecursive(from location: FoodieObject.StorageLocation,
+  private func retrieveOpRecursive(for momentOperation: MomentAsyncOperation,
+                                       from location: FoodieObject.StorageLocation,
                                        type localType: FoodieObject.LocalType,
                                        forceAnyways: Bool = false,
                                        withBlock callback: SimpleErrorBlock?) {
@@ -203,13 +241,24 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       self.foodieObject.resetChildOperationVariables()
       
       self.childOperationQueue.async {
-        self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback)
+        guard !momentOperation.isCancelled else {
+          callback?(ErrorCode.operationCancelled)
+          return
+        }
         
-        self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback)
+        if let childOperation = self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
+          momentOperation.add(childOperation)
+        }
+        
+        if let childOperation = self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
+          momentOperation.add(childOperation)
+        }
         
         if let markups = self.markups {
           for markup in markups {
-            self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback)
+            if let childOperation = self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
+              momentOperation.add(childOperation)
+            }
           }
         }
       }
@@ -218,29 +267,40 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
-  fileprivate func saveOpRecursive(to location: FoodieObject.StorageLocation,
-                                   type localType: FoodieObject.LocalType,
-                                   withBlock callback: SimpleErrorBlock?) {
+  private func saveOpRecursive(for momentOperation: MomentAsyncOperation,
+                               to location: FoodieObject.StorageLocation,
+                               type localType: FoodieObject.LocalType,
+                               withBlock callback: SimpleErrorBlock?) {
     
     foodieObject.resetChildOperationVariables()
     
     childOperationQueue.async {
+      guard !momentOperation.isCancelled else {
+        callback?(ErrorCode.operationCancelled)
+        return
+      }
       var childOperationPending = false
       
       if let media = self.media {
-        self.foodieObject.saveChild(media, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+        if let childOperation = self.foodieObject.saveChild(media, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
+          momentOperation.add(childOperation)
+        }
         childOperationPending = true
       }
       
       if let markups = self.markups {
         for markup in markups {
-          self.foodieObject.saveChild(markup, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+          if let childOperation = self.foodieObject.saveChild(markup, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
+            momentOperation.add(childOperation)
+          }
           childOperationPending = true
         }
       }
       
       if let thumbnail = self.thumbnail {
-        self.foodieObject.saveChild(thumbnail, to: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+        if let childOperation = self.foodieObject.saveChild(thumbnail, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
+          momentOperation.add(childOperation)
+        }
         childOperationPending = true
       }
       
@@ -253,9 +313,10 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   // Trigger recursive saves against all child objects.
-  fileprivate func deleteOpRecursive(from location: FoodieObject.StorageLocation,
-                                     type localType: FoodieObject.LocalType,
-                                     withBlock callback: SimpleErrorBlock?) {
+  private func deleteOpRecursive(for momentOperation: MomentAsyncOperation,
+                                 from location: FoodieObject.StorageLocation,
+                                 type localType: FoodieObject.LocalType,
+                                 withBlock callback: SimpleErrorBlock?) {
     
     // Retrieve the Moment (only) to guarentee access to the childrens
     retrieve(from: location, type: localType, forceAnyways: false) { error in
@@ -274,16 +335,16 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           
           // Do best effort delete of all children
           if let media = self.media {
-            self.foodieObject.deleteChild(media, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
+            _ = self.foodieObject.deleteChild(media, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
           }
           
           if let thumbnail = self.thumbnail {
-            self.foodieObject.deleteChild(thumbnail, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
+            _ = self.foodieObject.deleteChild(thumbnail, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
           }
           
           if let markups = self.markups {
             for markup in markups {
-              self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
+              _ = self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
             }
           }
           
@@ -295,22 +356,33 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         self.foodieObject.resetChildOperationVariables()
         
         self.childOperationQueue.async {
+          guard !momentOperation.isCancelled else {
+            callback?(ErrorCode.operationCancelled)
+            return
+          }
+          
           var childOperationPending = false
           
           // check for media and thumbnails to be deleted from this object
           if let media = self.media {
-            self.foodieObject.deleteChild(media, from: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+            if let childOperation = self.foodieObject.deleteChild(media, from: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
+              momentOperation.add(childOperation)
+            }
             childOperationPending = true
           }
           
           if let thumbnail = self.thumbnail {
-            self.foodieObject.deleteChild(thumbnail, from: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+            if let childOperation = self.foodieObject.deleteChild(thumbnail, from: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
+              momentOperation.add(childOperation)
+            }
             childOperationPending = true
           }
           
           if let markups = self.markups {
             for markup in markups {
-              self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: callback)
+              if let childOperation = self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
+                momentOperation.add(childOperation)
+              }
               childOperationPending = true
             }
           }
@@ -321,6 +393,53 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           }
         }
       }
+    }
+  }
+  
+    
+  private func cancelRetrieveOpRecursive() {
+    CCLog.verbose("Cancel Retrieve Recursive for Moment \(getUniqueIdentifier())")
+    
+    readyCallback = nil  // Not too sure about this one...
+    
+    retrieveFromLocalThenServer(forceAnyways: false, type: .cache) { error in
+      if let error = error {
+        CCLog.assert("Moment.retrieve() resulted in error: \(error.localizedDescription)")
+        return
+      }
+      
+      if let media = self.media {
+        media.cancelRetrieveFromServerRecursive()
+      }
+      
+      if let markups = self.markups {
+        for markup in markups {
+          markup.cancelRetrieveFromServerRecursive()
+        }
+      }
+      
+      if let thumbnail = self.thumbnail {
+        thumbnail.cancelRetrieveFromServerRecursive()
+      }
+    }
+  }
+  
+  
+  private func cancelSaveOpRecursive() {
+    CCLog.verbose("Cancel Save Recursive for Moment \(getUniqueIdentifier())")
+    
+    if let media = media {
+      media.cancelSaveToServerRecursive()
+    }
+    
+    if let markups = markups {
+      for markup in markups {
+        markup.cancelSaveToServerRecursive()
+      }
+    }
+    
+    if let thumbnail = thumbnail {
+      thumbnail.cancelSaveToServerRecursive()
     }
   }
 
@@ -458,85 +577,54 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
                          withReady readyBlock: SimpleBlock? = nil,
-                         withCompletion callback: SimpleErrorBlock?) {
+                         withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     CCLog.verbose("Retrieve Recursive for Moment \(getUniqueIdentifier())")
     
     let retrieveOperation = MomentAsyncOperation(on: .retrieveMoment, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
     asyncOperationQueue.addOperation(retrieveOperation)
+    
+    return retrieveOperation
   }
   
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
-                     withBlock callback: SimpleErrorBlock?) {
+                     withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     CCLog.verbose("Save Recursive for Moment \(getUniqueIdentifier())")
     
     let saveOperation = MomentAsyncOperation(on: .saveMoment, for: self, to: location, type: localType, withBlock: callback)
     asyncOperationQueue.addOperation(saveOperation)
+    
+    return saveOperation
   }
   
   
   // Trigger recursive delete against all child objects.
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
-                       withBlock callback: SimpleErrorBlock?) {
+                       withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     CCLog.verbose("Delete Recursive for Moment \(getUniqueIdentifier())")
     
     let deleteOperation = MomentAsyncOperation(on: .deleteMoment, for: self, to: location, type: localType, withBlock: callback)
     asyncOperationQueue.addOperation(deleteOperation)
+    
+    return deleteOperation
   }
   
   
   func cancelRetrieveFromServerRecursive() {
-    
-    CCLog.verbose("Cancel Retrieve Recursive for Moment \(getUniqueIdentifier())")
-    
-    readyCallback = nil  // Not too sure about this one...
-    
-    retrieveFromLocalThenServer(forceAnyways: false, type: .cache) { error in
-      if let error = error {
-        CCLog.assert("Moment.retrieve() resulted in error: \(error.localizedDescription)")
-        return
-      }
-      
-      if let media = self.media {
-        media.cancelRetrieveFromServerRecursive()
-      }
-      
-      if let markups = self.markups {
-        for markup in markups {
-          markup.cancelRetrieveFromServerRecursive()
-        }
-      }
-      
-      if let thumbnail = self.thumbnail {
-        thumbnail.cancelRetrieveFromServerRecursive()
-      }
-    }
+    CCLog.info("Cancel All Rerieval (All Operations!) for Moment \(getUniqueIdentifier())")
+    asyncOperationQueue.cancelAllOperations()
   }
   
   
   func cancelSaveToServerRecursive() {
-    
-    CCLog.verbose("Cancel Save Recursive for Moment \(getUniqueIdentifier())")
-    
-    if let media = media {
-      media.cancelSaveToServerRecursive()
-    }
-    
-    if let markups = markups {
-      for markup in markups {
-        markup.cancelSaveToServerRecursive()
-      }
-    }
-    
-    if let thumbnail = thumbnail {
-      thumbnail.cancelSaveToServerRecursive()
-    }
+    CCLog.info("Cancel All Save (All Operations!) for Moment \(getUniqueIdentifier())")
+    asyncOperationQueue.cancelAllOperations()
   }
   
   

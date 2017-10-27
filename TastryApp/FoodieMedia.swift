@@ -346,7 +346,7 @@ extension FoodieMedia: FoodieObjectDelegate {
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
                          withReady readyBlock: SimpleBlock? = nil,
-                         withCompletion callback: SimpleErrorBlock?) {
+                         withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     // Retrieve self. This object have no children
     switch location {
@@ -361,6 +361,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     case .both:
       retrieveFromLocalThenServer(forceAnyways: forceAnyways, type: localType, withReady: readyBlock, withCompletion: callback)
     }
+    return nil
   }
   
   
@@ -440,21 +441,23 @@ extension FoodieMedia: FoodieObjectDelegate {
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
-                     withBlock callback: SimpleErrorBlock?) {
+                     withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+    return nil
   }
   
   
   // Trigger recursive delete against all child objects.
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
-                       withBlock callback: SimpleErrorBlock?) {
+                       withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     CCLog.verbose("FoodieStory.deleteRecursive \(getUniqueIdentifier())")
     
     // Delete itself first
     foodieObject.deleteObject(from: location, type: localType, withBlock: callback)
+    return nil
   }
   
   

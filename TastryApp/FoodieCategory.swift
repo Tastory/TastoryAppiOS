@@ -237,7 +237,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
                          withReady readyBlock: SimpleBlock? = nil,
-                         withCompletion callback: SimpleErrorBlock?) {
+                         withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     guard readyBlock == nil else {
       CCLog.fatal("FoodieCategory does not support Ready Responses")
@@ -245,25 +245,28 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
     
     // Retrieve self. This object have no children
     foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    return nil
   }
   
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
-                     withBlock callback: SimpleErrorBlock?) {
+                     withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     CCLog.assert("FoodieCategory.saveRecursive called, but not yet implemented!")
+    return nil
   }
   
   
   // Trigger recursive delete against all child objects.
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
-                       withBlock callback: SimpleErrorBlock?) {
+                       withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
 
     // Delete self. This object have no children
     foodieObject.deleteObject(from: location, type: localType, withBlock: callback)
+    return nil
   }
   
   

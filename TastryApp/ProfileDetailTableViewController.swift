@@ -252,10 +252,10 @@ class ProfileDetailTableViewController: UITableViewController {
           oldMedia = self.user.media
           let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
           mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(profileImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
-          self.user.changeProfileMedia(to: mediaObject)
+          self.user.media = mediaObject
         }
         
-        self.user.saveRecursive(to: .both, type: .cache) { error in
+        _ = self.user.saveRecursive(to: .both, type: .cache) { error in
           self.activitySpinner.remove()
           if let error = error {
             AlertDialog.present(from: self, title: "Save User Details Failed", message: "Error - \(error.localizedDescription). Please try again") { action in
@@ -264,7 +264,7 @@ class ProfileDetailTableViewController: UITableViewController {
             return
           }
           
-          oldMedia?.deleteRecursive(from: .both, type: .cache, withBlock: nil)
+          _ = oldMedia?.deleteRecursive(from: .both, type: .cache, withBlock: nil)
           self.unsavedChanges = false
           self.profileImageChanged = false
           
@@ -396,7 +396,7 @@ class ProfileDetailTableViewController: UITableViewController {
     self.saveFooterView.saveButton.isEnabled = false
     self.headerView.profileImageButton.setImage(#imageLiteral(resourceName: "AddProfileIcon"), for: .normal)
     
-    activitySpinner = ActivitySpinner(addTo: view)
+    activitySpinner = ActivitySpinner(addTo: view, blurStyle: .dark)
     
     // Add a Tap gesture recognizer to dismiss th keyboard when needed
     let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -418,14 +418,13 @@ class ProfileDetailTableViewController: UITableViewController {
     
     activitySpinner.apply()
     
-    self.user.retrieveRecursive(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
-      
-      self.activitySpinner.remove()
+    _ = self.user.retrieveRecursive(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
       
       if let error = error {
         AlertDialog.standardPresent(from: self, title: .genericNetworkError, message: .networkTryAgain) { action in
           CCLog.warning("Retreive User Recursive Failed with Error - \(error.localizedDescription)")
         }
+        self.activitySpinner.remove()
         return
       }
       
@@ -472,6 +471,7 @@ class ProfileDetailTableViewController: UITableViewController {
         self.unsavedChanges = false
         self.profileImageChanged = false
         self.updateAllUIDisplayed()
+        self.activitySpinner.remove()
       }
     }
   }

@@ -131,7 +131,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     activitySpinner.apply()
 
     // This will cause a save to both Local Cache and Server
-    story.saveRecursive(to: .both, type: .cache) { error in
+    _ = story.saveRecursive(to: .both, type: .cache) { error in
       
       if let error = error {
         activitySpinner.remove()
@@ -144,7 +144,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
           
           if let error = error {
             // Best effort remove the Story from Server & Cache in this case
-            story.deleteRecursive(from: .both, type: .cache, withBlock: nil)
+            _ = story.deleteRecursive(from: .both, type: .cache, withBlock: nil)
             
             activitySpinner.remove()
             CCLog.warning("Add Story to User List Failed with Error: \(error)")
@@ -158,7 +158,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
             }
             
             // Now removing it from Draft - only if upload to server is a total success
-            story.deleteRecursive(from: .local, type: .draft) { error in
+            _ = story.deleteRecursive(from: .local, type: .draft) { error in
               if let error = error {
                 CCLog.warning("Deleting Story from Local Draft Failed with Error: \(error)")
               }
@@ -265,7 +265,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     }
     
     // Save Story to Local
-    story.saveDigest(to: .local, type: .draft) { error in
+    _ = story.saveDigest(to: .local, type: .draft) { error in
       
       if let error = error {
         CCLog.warning("Story pre-save to Local resulted in error - \(error.localizedDescription)")
@@ -286,7 +286,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
       
       // Okay screw this, add an extra step to save to Local first. Then save to Both. Just to make double sure in case
       // One day we somehow turn off recursive child saves on Parse
-      object.saveRecursive(to: .local, type: .draft) { error in
+      _ = object.saveRecursive(to: .local, type: .draft) { error in
         
         if let error = error {
           CCLog.warning("\(object.foodieObjectType()) pre-save to local resulted in error - \(error.localizedDescription)")
@@ -295,7 +295,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         }
         
         CCLog.debug("Completed Pre-Saving \(object.foodieObjectType()) to Local")
-        object.saveRecursive(to: .both, type: .draft) { error in
+        _ = object.saveRecursive(to: .both, type: .draft) { error in
           
           if let error = error {
             CCLog.warning("\(object.foodieObjectType()) pre-save to local & server resulted in error - \(error.localizedDescription)")
@@ -402,7 +402,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         }
 
         // Pre-save the Story now that it's changed
-        story.saveDigest(to: .local, type: .draft) { error in
+        _ = story.saveDigest(to: .local, type: .draft) { error in
           if let error = error {
             AlertDialog.present(from: self, title: "Pre-Save Failed!", message: "Problem saving Story to Local Draft! Quitting or backgrounding the app might cause lost of the current Story under Draft!") { action in
               CCLog.assert("Pre-Saving Story to Draft Local Store Failed - \(error.localizedDescription)")
@@ -497,7 +497,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
           if returnedMoment === markupMoment {
 
             // save to local
-            returnedMoment.saveRecursive(to: .local, type: .draft) { error in
+            _ = returnedMoment.saveRecursive(to: .local, type: .draft) { error in
               if let error = error {
                 AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
                   CCLog.assert("Error saving moment into local caused by: \(error.localizedDescription)")

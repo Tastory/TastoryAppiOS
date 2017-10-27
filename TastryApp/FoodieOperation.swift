@@ -48,6 +48,10 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   }
   
   
+  // MARK: - Private Instance Variable
+  private var childOperation: AsyncOperation?
+  
+  
   // MARK: - Public Instance Variables
   var callback: SimpleErrorBlock?
   var momentNumber: Int = 999
@@ -104,7 +108,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
         CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation started")
       #endif
       
-      story.retrieveDigest(from: .both, type: .cache) { error in
+      childOperation = story.retrieveDigest(from: .both, type: .cache) { error in
         self.callback?(error)
         self.finished()
       }
@@ -120,7 +124,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       guard let moments = story.moments  else {
         CCLog.fatal("Story has no moments")
       }
-      moments[momentNumber].retrieveRecursive(from: .both, type: .cache) { error in
+      childOperation = moments[momentNumber].retrieveRecursive(from: .both, type: .cache) { error in
         self.callback?(error)
         self.finished()
       }
@@ -143,7 +147,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
             CCLog.debug("Moment \(momentNum)/\(moments.count) to fetch for Story \(story.getUniqueIdentifier()) is \(moment.getUniqueIdentifier())")
           #endif
           
-          moment.retrieveRecursive(from: .both, type: .cache) { error in //withReady: nil
+          childOperation = moment.retrieveRecursive(from: .both, type: .cache) { error in //withReady: nil
             self.callback?(error)
             self.finished()
           }
@@ -159,9 +163,8 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   
   override func cancel() {
     super.cancel()
-    guard let story = object as? FoodieStory else {
-      CCLog.fatal("Object in StoryOperation is not a Story")
+    if let childOperation = childOperation {
+      childOperation.cancel()
     }
-    story.cancelRetrieveFromServerRecursive()
   }
 }

@@ -59,7 +59,7 @@ class StorySelector {
                               }
 
                               // Delete all traces of this unPosted Story
-                              story.deleteRecursive(from: .both, type: .draft) { error in
+                              _ = story.deleteRecursive(from: .both, type: .draft) { error in
                                 if let error = error {
                                   CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
                                 }
