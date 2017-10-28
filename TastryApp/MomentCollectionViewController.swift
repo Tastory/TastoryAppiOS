@@ -373,6 +373,8 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
         self.workingStory.moments!.remove(at: indexPath.item)
 
         var location: FoodieObject.StorageLocation = .both
+
+        // when editing, we only want to delete the local copy not the server copy
         if(moment.objectId != nil) {
           location = .local
         }

@@ -699,41 +699,31 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
 
     story.cancelSaveToServerRecursive()
 
+    var location: FoodieObject.StorageLocation = .both
+    if(story.objectId != nil) {
+      // this indicate that we are editing a story
+      location = .local
+    }
 
-    // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
-    FoodieObject.deleteAll(from: .draft) { error in
+    // Delete all traces of this unPosted Story
+    story.deleteRecursive(from: location, type: .draft) { error in
       if let error = error {
-        CCLog.warning("Deleting All Drafts resulted in Error - \(error.localizedDescription)")
+        CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
         callback(error)
       }
 
-      var location: FoodieObject.StorageLocation = .both
-      if(story.objectId != nil) {
-        // this indicate that we are editing a story
-        location = .local
-      }
+      currentStory?.retrieveRecursive(from: .both, type: .cache, forceAnyways: true) { (error) in
 
-      // Delete all traces of this unPosted Story
-      story.deleteRecursive(from: location, type: .draft) { error in
-        if let error = error {
-          CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
-          callback(error)
-        }
-
-        currentStory?.retrieveRecursive(from: .both, type: .cache, forceAnyways: true) { (error) in
-
-          // restore the thumbnail correctly
-          if let moments = story.moments {
-            for moment in moments {
-              if(moment.thumbnailFileName == story.thumbnailFileName) {
-                story.thumbnail = moment.thumbnail
-              }
+        // restore the thumbnail correctly
+        if let moments = story.moments {
+          for moment in moments {
+            if(moment.thumbnailFileName == story.thumbnailFileName) {
+              story.thumbnail = moment.thumbnail
             }
           }
-          removeCurrent()
-          callback(nil)
         }
-
+        removeCurrent()
+        callback(nil)
       }
     }
   }
