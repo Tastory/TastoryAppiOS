@@ -774,11 +774,7 @@ extension StoryEntryViewController: CameraReturnDelegate {
           }
 
           for moment in markedupMoments {
-            self.preSave(moment) { (error) in
-              if error != nil {  // Error code should've already been printed to the Debug log from preSave()
-                AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .internalTryAgain)
-              }
-            }
+            self.preSave(moment, withBlock: nil)
           }
 
           guard let collectionView = self.momentViewController.collectionView else {
