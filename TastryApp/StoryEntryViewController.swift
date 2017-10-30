@@ -48,7 +48,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   
   // MARK: - Private Instance Variables
   fileprivate var momentViewController = MomentCollectionViewController()
-  fileprivate var selectedViewCell: MomentCollectionViewCell?
+
 
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
@@ -200,7 +200,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     
     CCLog.info("User edited Title of Story")
     story.title = text
-    preSave(nil, withBlock: nil)
+    FoodieStory.preSave(nil, withBlock: nil)
   }
   
   
@@ -215,7 +215,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     story.storyURL = validHttpText
     
     CCLog.info("User edited Link of Story")
-    preSave(nil, withBlock: nil)
+    FoodieStory.preSave(nil, withBlock: nil)
   }
   
   
@@ -267,185 +267,13 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   }
   
   
-  fileprivate func preSave(_ object: FoodieObjectDelegate?, withBlock callback: SimpleErrorBlock?) {
-    
-    CCLog.debug("Pre-Save Operation Started")
-    
-    guard let story = workingStory else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
-      CCLog.fatal("No Working Story on Pre Save")
-    }
-    
-    // Save Story to Local
-    _ = story.saveDigest(to: .local, type: .draft) { error in
-      
-      if let error = error {
-        CCLog.warning("Story pre-save to Local resulted in error - \(error.localizedDescription)")
-        callback?(error)
-        return
-      }
-      CCLog.debug("Completed pre-saving Story to Local")
-      
-      guard let object = object else {
-        CCLog.debug("No Foodie Object supplied on preSave(), skipping Object Server save")
-        callback?(nil)
-        return
-      }
-      
-      // The only reason why this is working is because story.saveDigest actually saves every single child PFObjects also.
-      // Otherwise if a Moment PreSave to .both is stuck waiting for a large media upload and the user kills the app,
-      // the Moment save to Parse Database (and Server) actually takes place after the server save completes...
-      
-      // Okay screw this, add an extra step to save to Local first. Then save to Both. Just to make double sure in case
-      // One day we somehow turn off recursive child saves on Parse
-      _ = object.saveRecursive(to: .local, type: .draft) { error in
-        
-        if let error = error {
-          CCLog.warning("\(object.foodieObjectType()) pre-save to local resulted in error - \(error.localizedDescription)")
-          callback?(error)
-          return
-        }
-        
-        CCLog.debug("Completed Pre-Saving \(object.foodieObjectType()) to Local")
-        _ = object.saveRecursive(to: .both, type: .draft) { error in
-          
-          if let error = error {
-            CCLog.warning("\(object.foodieObjectType()) pre-save to local & server resulted in error - \(error.localizedDescription)")
-            callback?(error)
-            return
-          }
-          
-          CCLog.debug("Completed Pre-Saving \(object.foodieObjectType()) to Local & Server")
-          callback?(nil)
-        }
-      }
-    }
-  }
+  
 
 
   // MARK: - Public Instace Functions
-  @objc private func editMoment(_ sender: UIGestureRecognizer)
-  {
-    let point = sender.location(in: momentViewController.collectionView)
-
-    guard let indexPath = momentViewController.collectionView!.indexPathForItem(at: point) else {
-      // invalid index path selected just return
-      return
-    }
-
-    guard let momentArray = workingStory?.moments else {
-      CCLog.fatal("No moments in current working story.")
-    }
-
-    guard let markupReturnVC = containerVC else {
-      CCLog.fatal("Story Entry VC does not have a Container VC")
-    }
-    
-    
-    if(indexPath.row >= momentArray.count)
-    {
-      AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { action in
-        CCLog.fatal("Moment selection is out of bound")
-      }
-    }
-
-    let moment = momentArray[indexPath.row]
-    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
-      }
-      return
-    }
-    viewController.markupReturnDelegate = markupReturnVC
-
-    guard let media = moment.media else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.assert("Nil media object in moment")
-      }
-      return
-    }
-
-    viewController.mediaObj = media
-    viewController.editMomentObj = moment
-    viewController.addToExistingStoryOnly = true
-    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: false)
-    self.present(viewController, animated: true)
-    
-  }
 
   @objc private func keyboardDismiss() {
     self.view.endEditing(true)
-  }
-
-  @objc private func reorderMoment(_ gesture: UILongPressGestureRecognizer) {
-
-    guard let collectionView = momentViewController.collectionView else {
-      CCLog.assert("Error unwrapping the collectionView from moment view controller is nil")
-      return
-    }
-
-    switch(gesture.state) {
-
-    case UIGestureRecognizerState.began:
-      guard let selectedIndexPath = collectionView.indexPathForItem(at: gesture.location(in: collectionView)) else {
-        break
-      }
-      collectionView.beginInteractiveMovementForItem(at: selectedIndexPath)
-      selectedViewCell = collectionView.cellForItem(at: selectedIndexPath) as? MomentCollectionViewCell
-
-      guard let selectedCell = selectedViewCell else {
-        CCLog.assert("Can't get momentCollectionViewCell from collection view")
-        return
-      }
-
-      selectedCell.wobble()
-    case UIGestureRecognizerState.changed:
-      collectionView.updateInteractiveMovementTargetPosition(gesture.location(in: gesture.view!))
-    case UIGestureRecognizerState.ended:
-      collectionView.endInteractiveMovement()
-
-      if(selectedViewCell != nil) {
-        selectedViewCell!.stopWobble()
-
-        guard let story = workingStory else {
-          CCLog.assert("workingStory is nil")
-          return
-        }
-
-        // Pre-save the Story now that it's changed
-        _ = story.saveDigest(to: .local, type: .draft) { error in
-          if let error = error {
-            AlertDialog.present(from: self, title: "Pre-Save Failed!", message: "Problem saving Story to Local Draft! Quitting or backgrounding the app might cause lost of the current Story under Draft!") { action in
-              CCLog.assert("Pre-Saving Story to Draft Local Store Failed - \(error.localizedDescription)")
-            }
-          }
-        }
-      }
-
-    default:
-      collectionView.cancelInteractiveMovement()
-    }
-  }
-
-  @objc private func setThumbnail(_ sender: UIGestureRecognizer) {
-
-    let point = sender.location(in: momentViewController.collectionView)
-
-    guard let indexPath = momentViewController.collectionView!.indexPathForItem(at: point) else {
-      // invalid index path selected just return
-      return
-    }
-    momentViewController.setThumbnail(indexPath)
-
-    // save journal
-    preSave(nil) { (error) in
-      if error != nil {  // preSave should have logged the error, so skipping that here.
-        AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain)
-        return
-      }
-    }
-
   }
 
   @objc private func vcDismiss() {
@@ -466,27 +294,14 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     momentViewController.workingStory = workingStory
     momentViewController.momentHeight = Constants.momentHeight
     momentViewController.cameraReturnDelegate = self
+    momentViewController.containerVC = containerVC
 
     guard let collectionView = momentViewController.collectionView else {
       CCLog.fatal("collection view from momentViewController is nil")
     }
 
-    let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(setThumbnail(_:)))
-    tapRecognizer.numberOfTapsRequired = 1
-    collectionView.addGestureRecognizer(tapRecognizer)
-
-    let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(editMoment(_:)))
-    doubleTapRecognizer.numberOfTapsRequired = 2
-    collectionView.addGestureRecognizer(doubleTapRecognizer)
-
-    tapRecognizer.require(toFail: doubleTapRecognizer)
-
-    let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(reorderMoment(_:)))
-    collectionView.addGestureRecognizer(longPressGesture)
-
     self.addChildViewController(momentViewController)
-    //momentViewController.didMove(toParentViewController: self)
-    
+
     titleTextField?.delegate = self
     linkTextField?.delegate = self
     
@@ -526,7 +341,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
             workingStory.thumbnail = returnedMoment.thumbnail
           }
 
-          preSave(returnedMoment) { (error) in
+          FoodieStory.preSave(returnedMoment) { (error) in
             if error != nil {  // Error code should've already been printed to the Debug log from preSave()
               AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .internalTryAgain)
             }
@@ -736,7 +551,7 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
           }
           
           // Pre-save only the Story to Local only
-          self.preSave(nil) { (error) in
+          FoodieStory.preSave(nil) { (error) in
             if error != nil {  // preSave should have logged the error, so skipping that here.
               AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain)
               return
@@ -747,7 +562,6 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
     }
   }
 }
-
 
 extension StoryEntryViewController: CameraReturnDelegate {
   func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
@@ -769,7 +583,7 @@ extension StoryEntryViewController: CameraReturnDelegate {
           }
 
           for moment in markedupMoments {
-            self.preSave(moment, withBlock: nil)
+            FoodieStory.preSave(moment, withBlock: nil)
           }
 
           guard let collectionView = self.momentViewController.collectionView else {

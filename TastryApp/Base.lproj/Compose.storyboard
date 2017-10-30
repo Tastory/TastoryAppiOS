@@ -5,7 +5,7 @@
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -506,6 +506,12 @@
                                         </button>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cSh-jl-knJ">
                                             <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
+                                            <subviews>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="dW4-fF-q5K">
+                                                    <rect key="frame" x="53" y="102" width="20" height="20"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                </activityIndicatorView>
+                                            </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                     </subviews>
@@ -525,6 +531,8 @@
                                     <constraint firstAttribute="trailing" secondItem="cSh-jl-knJ" secondAttribute="trailing" id="rMo-4G-LVr"/>
                                 </constraints>
                                 <connections>
+                                    <outlet property="activityIndicator" destination="dW4-fF-q5K" id="y4x-cj-xR0"/>
+                                    <outlet property="deleteButton" destination="BCS-cR-mdn" id="XTE-te-gvq"/>
                                     <outlet property="momentThumb" destination="oF2-s4-G9T" id="FtQ-lr-s6d"/>
                                     <outlet property="thumbFrameView" destination="cSh-jl-knJ" id="DPu-5k-f0e"/>
                                 </connections>
@@ -535,13 +543,13 @@
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="≪" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8iO-QC-YKs">
-                                    <rect key="frame" x="16" y="0.0" width="62" height="222"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="94" height="222"/>
                                     <fontDescription key="fontDescription" name="TimesNewRomanPS-BoldMT" family="Times New Roman" pointSize="40"/>
                                     <color key="textColor" red="1" green="0.20000000000000001" blue="0.066666666669999999" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" +" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zjt-5s-v7V">
-                                    <rect key="frame" x="16" y="0.0" width="62" height="222"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="94" height="222"/>
                                     <fontDescription key="fontDescription" name="TimesNewRomanPS-BoldMT" family="Times New Roman" pointSize="40"/>
                                     <color key="textColor" red="1" green="0.20000000000000001" blue="0.086274509803921567" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>

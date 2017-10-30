@@ -249,12 +249,15 @@ class FoodiePFObject: PFObject {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")
     }
-    
+
+    if(isDirty) {
+      revert()
+    }
+
     CCLog.debug("Delete \(delegate.foodieObjectType())(\(getUniqueIdentifier())) from Local with Name \(localType)")
     unpinInBackground(withName: localType.rawValue) { success, error in FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback) }
   }
-  
-  
+
   func deleteFromLocalNServer(withBlock callback: SimpleErrorBlock?) {
     guard let delegate = foodieObject.delegate else {
       CCLog.fatal("No Foodie Object Delegate 'aka yourself'. Fatal and cannot proceed")

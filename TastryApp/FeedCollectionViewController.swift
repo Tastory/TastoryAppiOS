@@ -54,6 +54,7 @@ class FeedCollectionViewController: UICollectionViewController {
       reusableCell.storyButton?.imageView?.contentMode = .scaleAspectFill
       reusableCell.activityIndicator?.isHidden = true
       reusableCell.activityIndicator?.stopAnimating()
+      reusableCell.editButton.isHidden = false
       reusableCell.cellStory = storyArray[indexPath.row]
     } else {
       CCLog.debug("No cell provided or found to display Story \(storyArray[indexPath.row].getUniqueIdentifier())!!!")
@@ -62,14 +63,6 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   private func displayStoryEntry(_ story: FoodieStory) {
-    story.retrieveRecursive(from: .both, type: .cache) { error in
-
-      if let error = error {
-        AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
-          CCLog.assert("Error retrieving story into cache caused by: \(error.localizedDescription)")
-        }
-      }
-
       FoodieStory.setCurrentStory(to: story)
 
       let storyboard = UIStoryboard(name: "Compose", bundle: nil)
@@ -80,18 +73,10 @@ class FeedCollectionViewController: UICollectionViewController {
         return
       }
       viewController.workingStory = story
-      story.saveRecursive(to: .local, type: .draft) { error in
-
-        if let error = error {
-          CCLog.warning("Story pre-save to Local resulted in error - \(error.localizedDescription)")
-        }
-
-        viewController.setTransition(presentTowards: .left, dismissTowards: .right)
-        DispatchQueue.main.async {
-          self.present(viewController, animated: true)
-        }
+      viewController.setTransition(presentTowards: .left, dismissTowards: .right)
+      DispatchQueue.main.async {
+        self.present(viewController, animated: true)
       }
-    }
   }
   
   // MARK: - Public Instance Functions
@@ -200,6 +185,7 @@ class FeedCollectionViewController: UICollectionViewController {
     if shouldRetrieveDigest {
       reusableCell.activityIndicator?.isHidden = false
       reusableCell.activityIndicator?.startAnimating()
+      reusableCell.editButton.isHidden = true
       let digestOperation = StoryOperation(with: .digest, on: story, completion: nil)
       FoodieFetch.global.queue(digestOperation, at: .high)
       

@@ -712,21 +712,73 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         callback(error)
       }
 
-      currentStory?.retrieveRecursive(from: .both, type: .cache, forceAnyways: true) { (error) in
-
-        // restore the thumbnail correctly
-        if let moments = story.moments {
-          for moment in moments {
-            if(moment.thumbnailFileName == story.thumbnailFileName) {
-              story.thumbnail = moment.thumbnail
-            }
+      // restore the thumbnail correctly
+      if let moments = story.moments {
+        for moment in moments {
+          if(moment.thumbnailFileName == story.thumbnailFileName) {
+            story.thumbnail = moment.thumbnail
           }
         }
-        removeCurrent()
-        callback(nil)
+      }
+      removeCurrent()
+      callback(nil)
+    }
+  }
+
+  static func preSave(_ object: FoodieObjectDelegate?, withBlock callback: SimpleErrorBlock?) {
+
+    CCLog.debug("Pre-Save Operation Started")
+
+    guard let story = currentStory else {
+      CCLog.fatal("No Working Story on Pre Save")
+    }
+
+    // Save Story to Local
+    _ = story.saveDigest(to: .local, type: .draft) { error in
+
+      if let error = error {
+        CCLog.warning("Story pre-save to Local resulted in error - \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      CCLog.debug("Completed pre-saving Story to Local")
+
+      guard let object = object else {
+        CCLog.debug("No Foodie Object supplied on preSave(), skipping Object Server save")
+        callback?(nil)
+        return
+      }
+
+      // The only reason why this is working is because story.saveDigest actually saves every single child PFObjects also.
+      // Otherwise if a Moment PreSave to .both is stuck waiting for a large media upload and the user kills the app,
+      // the Moment save to Parse Database (and Server) actually takes place after the server save completes...
+
+      // Okay screw this, add an extra step to save to Local first. Then save to Both. Just to make double sure in case
+      // One day we somehow turn off recursive child saves on Parse
+      _ = object.saveRecursive(to: .local, type: .draft) { error in
+
+        if let error = error {
+          CCLog.warning("\(object.foodieObjectType()) pre-save to local resulted in error - \(error.localizedDescription)")
+          callback?(error)
+          return
+        }
+
+        CCLog.debug("Completed Pre-Saving \(object.foodieObjectType()) to Local")
+        _ = object.saveRecursive(to: .both, type: .draft) { error in
+
+          if let error = error {
+            CCLog.warning("\(object.foodieObjectType()) pre-save to local & server resulted in error - \(error.localizedDescription)")
+            callback?(error)
+            return
+          }
+
+          CCLog.debug("Completed Pre-Saving \(object.foodieObjectType()) to Local & Server")
+          callback?(nil)
+        }
       }
     }
   }
+
 
   // Function to get index of specified Moment in Moment Array
   func getIndexOf(_ moment: FoodieMoment) -> Int {
