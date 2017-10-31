@@ -87,6 +87,8 @@
 		8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55B11E80C72200F4B1CD /* MapViewController.swift */; };
 		8CC1101A1F92D07000ACBF9A /* FoodieFileObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */; };
 		8CC48D601EFC81CD003A0FC9 /* PrecisionTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */; };
+		8CCC7EFE1FA599440049AF00 /* FeedCollectionNodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */; };
+		8CCC7F001FA5A32F0049AF00 /* FeedCollectionCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCC7EFF1FA5A32F0049AF00 /* FeedCollectionCellNode.swift */; };
 		8CD5A4E01F9BFDD700CFD670 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4DF1F9BFDD700CFD670 /* SettingsViewController.swift */; };
 		8CD5A4E41F9BFED300CFD670 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4E31F9BFED300CFD670 /* SettingsTableViewController.swift */; };
 		8CD5A4E51F9C078D00CFD670 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */; };
@@ -224,6 +226,8 @@
 		8CBF55B11E80C72200F4B1CD /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodieFileObject.swift; sourceTree = "<group>"; };
 		8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrecisionTime.swift; sourceTree = "<group>"; };
+		8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionNodeController.swift; sourceTree = "<group>"; };
+		8CCC7EFF1FA5A32F0049AF00 /* FeedCollectionCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionCellNode.swift; sourceTree = "<group>"; };
 		8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Settings.storyboard; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
 		8CD5A4DF1F9BFDD700CFD670 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		8CD5A4E31F9BFED300CFD670 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
@@ -346,6 +350,7 @@
 			isa = PBXGroup;
 			children = (
 				8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */,
+				8CCC7EFF1FA5A32F0049AF00 /* FeedCollectionCellNode.swift */,
 				8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */,
 				8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */,
 				8C1089321EADC13700457E66 /* MomentFooterReusableView.swift */,
@@ -526,6 +531,7 @@
 			children = (
 				8C0590461EC653DF00027E91 /* DiscoverFeedViewController.swift */,
 				8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */,
+				8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */,
 				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
 				C24F69641EB85B0300A0DB7B /* StoryViewController.swift */,
 				8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */,
@@ -1008,6 +1014,7 @@
 				8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */,
 				8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */,
 				8CD5A4E91F9C16AC00CFD670 /* PasswordTableViewController.swift in Sources */,
+				8CCC7EFE1FA599440049AF00 /* FeedCollectionNodeController.swift in Sources */,
 				8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */,
 				8CE0DE1F1F89B12800F258E5 /* TransitableViewController.swift in Sources */,
 				8C10FB4E1F91C43200C26BF6 /* AVExportPlayer.swift in Sources */,
@@ -1022,6 +1029,7 @@
 				8C7EBAC21F9D3884004E43D8 /* ProfileDetailViewController.swift in Sources */,
 				8C7EBAC41F9D3950004E43D8 /* SettingsNavController.swift in Sources */,
 				8CD5A4E01F9BFDD700CFD670 /* SettingsViewController.swift in Sources */,
+				8CCC7F001FA5A32F0049AF00 /* FeedCollectionCellNode.swift in Sources */,
 				8CE49EB11F637918007278C1 /* ExpandButton.swift in Sources */,
 				C29CD1391F93198800A6D53F /* StorySelector.swift in Sources */,
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */,

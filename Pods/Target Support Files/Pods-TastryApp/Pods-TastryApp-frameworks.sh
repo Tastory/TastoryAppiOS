@@ -96,11 +96,15 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/HTTPStatusCodes/HTTPStatusCodes.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Jot/Jot.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Masonry/Masonry.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/PINCache/PINCache.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/PINOperation/PINOperation.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/PINRemoteImage/PINRemoteImage.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Parse/Parse.framework"
   install_framework "$BUILT_PRODUCTS_DIR/QuadratTouch/QuadratTouch.framework"
   install_framework "$BUILT_PRODUCTS_DIR/RATreeView/RATreeView.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SwiftyCam/SwiftyCam.framework"
   install_framework "$BUILT_PRODUCTS_DIR/TLPhotoPicker/TLPhotoPicker.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/Texture/AsyncDisplayKit.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/AWSCognito/AWSCognito.framework"
@@ -110,11 +114,15 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/HTTPStatusCodes/HTTPStatusCodes.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Jot/Jot.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Masonry/Masonry.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/PINCache/PINCache.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/PINOperation/PINOperation.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/PINRemoteImage/PINRemoteImage.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Parse/Parse.framework"
   install_framework "$BUILT_PRODUCTS_DIR/QuadratTouch/QuadratTouch.framework"
   install_framework "$BUILT_PRODUCTS_DIR/RATreeView/RATreeView.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SwiftyCam/SwiftyCam.framework"
   install_framework "$BUILT_PRODUCTS_DIR/TLPhotoPicker/TLPhotoPicker.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/Texture/AsyncDisplayKit.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
   wait
