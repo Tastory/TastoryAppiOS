@@ -317,16 +317,16 @@ extension MomentCollectionViewController {
         }
       }
 
-      if(cell.momentThumb.gestureRecognizers == nil) {
+      if(cell.viewButton.gestureRecognizers == nil) {
 
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.thumbnailGesture(_:)))
         tapRecognizer.numberOfTapsRequired = 1
-        cell.momentThumb.isUserInteractionEnabled = true
-        cell.momentThumb.addGestureRecognizer(tapRecognizer)
+        cell.viewButton.isUserInteractionEnabled = true
+        cell.viewButton.addGestureRecognizer(tapRecognizer)
 
         let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.editMoment(_:)))
         doubleTapRecognizer.numberOfTapsRequired = 2
-        cell.momentThumb.addGestureRecognizer(doubleTapRecognizer)
+        cell.viewButton.addGestureRecognizer(doubleTapRecognizer)
         tapRecognizer.require(toFail: doubleTapRecognizer)
       }
 

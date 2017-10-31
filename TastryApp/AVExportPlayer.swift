@@ -190,6 +190,7 @@ class AVExportPlayer: NSObject {
     // Clean-up the previous instance of AVPlayer first if there was a previous instance
     if avPlayer != nil {
       NotificationCenter.default.removeObserver(self)
+      //TODO saw a crash here before observer might not be registered and there is no way to check in swift
       self.removeObserver(self, forKeyPath: #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackLikelyToKeepUp))
       self.removeObserver(self, forKeyPath: #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackBufferEmpty))
       self.removeObserver(self, forKeyPath: #keyPath(AVExportPlayer.avPlayer.status))

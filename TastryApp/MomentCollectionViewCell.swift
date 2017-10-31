@@ -15,6 +15,7 @@ protocol MomentCollectionViewCellDelegate: class {
 
 class MomentCollectionViewCell: UICollectionViewCell {
   @IBOutlet weak var deleteButton: UIButton!
+  @IBOutlet weak var viewButton: UIButton!
   @IBOutlet weak var momentThumb: UIImageView!
   @IBOutlet weak var thumbFrameView: UIView!
   @IBOutlet weak var activityIndicator: UIActivityIndicatorView!

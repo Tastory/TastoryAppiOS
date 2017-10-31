@@ -162,28 +162,21 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
             CCLog.warning("Add Story to User List Failed with Error: \(error)")
             AlertDialog.present(from: self, title: "Add Story to User Failed", message: error.localizedDescription)
           }
-        
-          // If a previous Save is stuck because of whatever reason (slow network, etc). This coming Delete will never go thru... And will clog everything there-after. So whack the entire local just in case regardless...
-          FoodieObject.deleteAll(from: .draft) { error in
+
+          FoodieStory.cleanUpDraft() { error in
             if let error = error {
-              CCLog.warning("Deleting All Drafts resulted in Error - \(error.localizedDescription)")
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+                CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
+              }
             }
-            
-            // Now removing it from Draft - only if upload to server is a total success
-            _ = story.deleteRecursive(from: .local, type: .draft) { error in
-              if let error = error {
-                CCLog.warning("Deleting Story from Local Draft Failed with Error: \(error)")
-              }
-              
-              FoodieStory.removeCurrent()
-              self.workingStory = nil
-              activitySpinner.remove()
-              
-              // Pop-up Alert Dialog and then Dismiss
-              CCLog.info("Story Posted!")
-              AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
-                self.dismiss(animated: true, completion: nil)
-              }
+
+            self.workingStory = nil
+            activitySpinner.remove()
+
+            // Pop-up Alert Dialog and then Dismiss
+            CCLog.info("Story Posted!")
+            AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
+              self.dismiss(animated: true, completion: nil)
             }
           }
         }

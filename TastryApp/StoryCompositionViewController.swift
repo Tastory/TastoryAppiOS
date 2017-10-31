@@ -62,6 +62,10 @@ extension StoryCompositionViewController: MarkupReturnDelegate {
     if(markedupMoments.count > 0) {
       self.markupMoment = markedupMoments.first
     }
+
+    // presave afer saving an edit moment
+    FoodieStory.preSave(nil, withBlock: nil) 
+
     dismiss(animated: true, completion: nil)
   }
 }

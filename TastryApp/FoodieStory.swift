@@ -718,6 +718,12 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
           if(moment.thumbnailFileName == story.thumbnailFileName) {
             story.thumbnail = moment.thumbnail
           }
+
+          // clean up video player
+          if(moment.media != nil) {
+            moment.media!.videoExportPlayer = nil
+
+          }
         }
       }
       removeCurrent()
@@ -733,8 +739,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       CCLog.fatal("No Working Story on Pre Save")
     }
 
-    // Save Story to Local
-    _ = story.saveDigest(to: .local, type: .draft) { error in
+    // Save Story to Local 
+    _ = story.saveRecursive(to: .local, type: .draft) { error in
 
       if let error = error {
         CCLog.warning("Story pre-save to Local resulted in error - \(error.localizedDescription)")
@@ -748,7 +754,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         callback?(nil)
         return
       }
-
+      
       // The only reason why this is working is because story.saveDigest actually saves every single child PFObjects also.
       // Otherwise if a Moment PreSave to .both is stuck waiting for a large media upload and the user kills the app,
       // the Moment save to Parse Database (and Server) actually takes place after the server save completes...
