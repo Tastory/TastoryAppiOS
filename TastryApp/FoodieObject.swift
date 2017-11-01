@@ -186,7 +186,7 @@ class FoodieObject {
     outstandingChildReadies += 1
     outstandingChildOperations += 1
     
-    //CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(self.outstandingChildReadies), Outstanding: \(self.outstandingChildOperations)")
+    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(self.outstandingChildReadies), Outstanding: \(self.outstandingChildOperations)")
     
     return child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, withReady: {
       
@@ -254,10 +254,10 @@ class FoodieObject {
   
   // Function to call a child's saveRecursive
   func saveChild(_ child: FoodieObjectDelegate, to location: StorageLocation, type localType: LocalType, on queue: DispatchQueue, withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
-//    guard let delegate = delegate else {
-//      CCLog.fatal("delegate = nil. Unable to proceed.")
-//    }
-//    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Saving Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
+    guard let delegate = delegate else {
+      CCLog.fatal("delegate = nil. Unable to proceed.")
+    }
+    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Saving Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
     
     outstandingChildOperations += 1
     
@@ -295,10 +295,10 @@ class FoodieObject {
   
   // Function to delete child
   func deleteChild(_ child: FoodieObjectDelegate, from location: StorageLocation, type localType: LocalType, on queue: DispatchQueue, withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
-//    guard let delegate = delegate else {
-//      CCLog.fatal("delegate = nil. Unable to proceed.")
-//    }
-//    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Delete Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
+    guard let delegate = delegate else {
+      CCLog.fatal("delegate = nil. Unable to proceed.")
+    }
+    CCLog.debug("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) Delete Child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) to Location: \(location), LocalType: \(localType)")
     
     self.outstandingChildOperations += 1
     

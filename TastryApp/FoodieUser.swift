@@ -204,13 +204,15 @@ class FoodieUser: PFUser {
     }
     
     override func main() {
-      CCLog.debug ("User Async \(operationType) Operation for \(user.getUniqueIdentifier()) Started")
+      CCLog.debug ("User Async \(operationType) Operation \(getUniqueIdentifier()) for \(user.getUniqueIdentifier()) Started")
       
       switch operationType {
       case .retrieveUser:
         user.retrieveOpRecursive(for: self, from: location, type: localType, forceAnyways: forceAnyways) { error in
+          // Careful here. Make sure nothing in here can race against anything before this point. In case of a sync callback
           self.childOperations.removeAll()
           self.callback?(error)
+          //CCLog.debug ("User Async \(self.operationType) Operation \(self.getUniqueIdentifier()) for \(self.user.getUniqueIdentifier()) Finished")
           self.finished()
         }
         
@@ -218,6 +220,7 @@ class FoodieUser: PFUser {
         user.saveOpRecursive(for: self, to: location, type: localType) { error in
           self.childOperations.removeAll()
           self.callback?(error)
+          //CCLog.debug ("User Async \(self.operationType) Operation \(self.getUniqueIdentifier()) for \(self.user.getUniqueIdentifier()) Finished")
           self.finished()
         }
         
@@ -225,6 +228,7 @@ class FoodieUser: PFUser {
         user.deleteOpRecursive(for: self, from: location, type: localType) { error in
           self.childOperations.removeAll()
           self.callback?(error)
+          //CCLog.debug ("User Async \(self.operationType) Operation \(self.getUniqueIdentifier()) for \(self.user.getUniqueIdentifier()) Finished")
           self.finished()
         }
       }
@@ -235,32 +239,31 @@ class FoodieUser: PFUser {
     }
     
     override func cancel() {
-      // Sample isExecuting firsty
-      let executing = isExecuting
-      
-      // Cancel regardless
-      super.cancel()
-      
-      CCLog.debug("Cancel for User \(user.getUniqueIdentifier()), Executing = \(executing)")
-      
-      if executing {
-        user.childOperationQueue.async {
-          // Cancel all child operations
-          for operation in self.childOperations {
-            operation.cancel()
+      stateQueue.async {
+        // Cancel regardless
+        super.cancel()
+        
+        CCLog.debug("Cancel for User \(self.user.getUniqueIdentifier()), Executing = \(self.isExecuting)")
+        
+        if self.isExecuting {
+          self.user.childOperationQueue.async {
+            // Cancel all child operations
+            for operation in self.childOperations {
+              operation.cancel()
+            }
+            
+            switch self.operationType {
+            case .retrieveUser:
+              self.user.cancelRetrieveOpRecursive()
+            case .saveUser:
+              self.user.cancelSaveOpRecursive()
+            default:
+              break
+            }
           }
-          
-          switch self.operationType {
-          case .retrieveUser:
-            self.user.cancelRetrieveOpRecursive()
-          case .saveUser:
-            self.user.cancelSaveOpRecursive()
-          default:
-            break
-          }
+        } else {
+          self.callback?(ErrorCode.operationCancelled)
         }
-      } else {
-        self.callback?(ErrorCode.operationCancelled)
       }
     }
   }
@@ -1070,14 +1073,12 @@ extension FoodieUser: FoodieObjectDelegate {
                          withReady readyBlock: SimpleBlock? = nil,
                          withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
-    CCLog.verbose("Retrieve Recursive for User \(getUniqueIdentifier())")
-    
     let retrieveOperation = UserAsyncOperation(on: .retrieveUser, for: self, to: location, type: localType, forceAnyways: forceAnyways) { error in
       readyBlock?()
       callback?(error)
     }
     asyncOperationQueue.addOperation(retrieveOperation)
-    
+    CCLog.debug ("Retrieve User Recursive Operation \(retrieveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     return retrieveOperation
   }
   
@@ -1087,9 +1088,8 @@ extension FoodieUser: FoodieObjectDelegate {
                      type localType: FoodieObject.LocalType,
                      withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
     
-    CCLog.verbose("Save Recursive for User \(getUniqueIdentifier())")
-    
     let saveOperation = UserAsyncOperation(on: .saveUser, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Save User Recursive Operation \(saveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     asyncOperationQueue.addOperation(saveOperation)
     
     return saveOperation
@@ -1101,9 +1101,8 @@ extension FoodieUser: FoodieObjectDelegate {
                        type localType: FoodieObject.LocalType,
                        withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
     
-    CCLog.verbose("Delete Recursive for User \(getUniqueIdentifier())")
-    
     let deleteOperation = UserAsyncOperation(on: .deleteUser, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Delete User Recursive Operation \(deleteOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     asyncOperationQueue.addOperation(deleteOperation)
     
     return deleteOperation

@@ -42,6 +42,8 @@ open class AsyncOperation: Operation {
       didChangeValue(forKey: state.keyPath)
     }
   }
+  
+  public let stateQueue = DispatchQueue(label: "Asycn State Critical Section Queue", qos: .userInitiated)
 }
 
 
@@ -64,16 +66,20 @@ extension AsyncOperation {
   }
   
   override open func start() {
-    if isCancelled {
-      state = .Finished
-      return
+    stateQueue.async {
+      if self.isCancelled {
+        self.state = .Finished
+        return
+      }
+      self.state = .Executing
+      self.main()
     }
-    
-    main()
-    state = .Executing
   }
   
   open func finished() {
+    // This is not put in the stateQueue. So make sure no caller of this can race against start() or main()
     state = .Finished
   }
+  
+  func getUniqueIdentifier() -> String { return String(describing: UnsafeRawPointer(Unmanaged.passUnretained(self).toOpaque())) }
 }

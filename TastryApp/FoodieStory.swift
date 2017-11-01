@@ -80,30 +80,36 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       switch operationType {
       case .retrieveStory:
         story.retrieveOpRecursive(for: self, from: location, type: localType, forceAnyways: forceAnyways) { error in
+          // Careful here. Make sure nothing in here can race against anything before this point. In case of a sync callback
+          self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
         }
         
       case .saveStory:
         story.saveOpRecursive(for: self, to: location, type: localType) { error in
+          self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
         }
         
       case .deleteStory:
         story.deleteOpRecursive(for: self, from: location, type: localType) { error in
+          self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
         }
         
       case .retrieveDigest:
         story.retrieveOpDigest(for: self, from: location, type: localType, forceAnyways: forceAnyways) { error in
+          self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
         }
       
       case .saveDigest:
         story.saveOpDigest(for: self, to: location, type: localType) { error in
+          self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
         }
@@ -115,32 +121,31 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     }
     
     override func cancel() {
-      // Sample isExecuting firsty
-      let executing = isExecuting
-      
-      // Cancel regardless
-      super.cancel()
+      self.stateQueue.async {
+        // Cancel regardless
+        super.cancel()
 
-      CCLog.debug("Cancel for Story \(story.getUniqueIdentifier()), Executing = \(executing)")
-      
-      if executing {
-        story.childOperationQueue.async {
-          // Cancel all child operations
-          for operation in self.childOperations {
-            operation.cancel()
+        CCLog.debug("Cancel for Story \(self.story.getUniqueIdentifier()), Executing = \(self.isExecuting)")
+        
+        if self.isExecuting {
+          self.story.childOperationQueue.async {
+            // Cancel all child operations
+            for operation in self.childOperations {
+              operation.cancel()
+            }
+            
+            switch self.operationType {
+            case .retrieveDigest, .retrieveStory:
+              self.story.cancelRetrieveOpRecursive()
+            case .saveDigest, .saveStory:
+              self.story.cancelSaveOpRecursive()
+            default:
+              break
+            }
           }
-          
-          switch self.operationType {
-          case .retrieveDigest, .retrieveStory:
-            self.story.cancelRetrieveOpRecursive()
-          case .saveDigest, .saveStory:
-            self.story.cancelSaveOpRecursive()
-          default:
-            break
-          }
+        } else {
+          self.callback?(ErrorCode.operationCancelled)
         }
-      } else {
-        self.callback?(ErrorCode.operationCancelled)
       }
     }
   }

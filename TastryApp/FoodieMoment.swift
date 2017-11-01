@@ -84,18 +84,22 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       switch operationType {
       case .retrieveMoment:
         moment.retrieveOpRecursive(for: self, from: location, type: localType, forceAnyways: forceAnyways) { error in
+          // Careful here. Make sure nothing in here can race against anything before this point. In case of a sync callback
+          self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
         }
         
       case .saveMoment:
         moment.saveOpRecursive(for: self, to: location, type: localType) { error in
+          self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
         }
         
       case .deleteMoment:
         moment.deleteOpRecursive(for: self, from: location, type: localType) { error in
+          self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
         }
@@ -107,32 +111,31 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
     
     override func cancel() {
-      // Sample isExecuting firsty
-      let executing = isExecuting
-      
-      // Cancel regardless
-      super.cancel()
-      
-      CCLog.debug("Cancel for Moment \(moment.getUniqueIdentifier()), Executing = \(executing)")
-      
-      if executing {
-        moment.childOperationQueue.async {
-          // Cancel all child operations
-          for operation in self.childOperations {
-            operation.cancel()
+      self.stateQueue.async {
+        // Cancel regardless
+        super.cancel()
+        
+        CCLog.debug("Cancel for Moment \(self.moment.getUniqueIdentifier()), Executing = \(self.isExecuting)")
+        
+        if self.isExecuting {
+          self.moment.childOperationQueue.async {
+            // Cancel all child operations
+            for operation in self.childOperations {
+              operation.cancel()
+            }
+            
+            switch self.operationType {
+            case .retrieveMoment:
+              self.moment.cancelRetrieveOpRecursive()
+            case .saveMoment:
+              self.moment.cancelSaveOpRecursive()
+            default:
+              break
+            }
           }
-          
-          switch self.operationType {
-          case .retrieveMoment:
-            self.moment.cancelRetrieveOpRecursive()
-          case .saveMoment:
-            self.moment.cancelSaveOpRecursive()
-          default:
-            break
-          }
+        } else {
+          self.callback?(ErrorCode.operationCancelled)
         }
-      } else {
-        self.callback?(ErrorCode.operationCancelled)
       }
     }
   }
