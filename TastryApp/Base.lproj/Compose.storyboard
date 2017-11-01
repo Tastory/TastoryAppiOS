@@ -412,7 +412,6 @@
                                                     <state key="normal" title="Discard"/>
                                                     <connections>
                                                         <action selector="discardStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="i5M-Kc-q0Q"/>
-                                                        <action selector="previewStory:" destination="YxI-Mg-cNr" eventType="touchUpInside" id="x5e-YJ-cAJ"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
@@ -452,6 +451,7 @@
                         </connections>
                     </tableView>
                     <connections>
+                        <outlet property="discardButton" destination="dkp-ne-DHY" id="rsw-lP-05N"/>
                         <outlet property="linkTextField" destination="Sdu-9R-pbJ" id="Ve3-UO-asd"/>
                         <outlet property="tagsTextView" destination="ijC-Vt-3Fq" id="2sl-gj-NL9"/>
                         <outlet property="titleTextField" destination="p0e-OO-Rl9" id="HKe-RT-VXu"/>

@@ -131,6 +131,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
             break
           }
         }
+      } else {
+        self.callback?(ErrorCode.operationCancelled)
       }
     }
   }
@@ -164,6 +166,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Public Instance Variables
+
+  var isEditMoment: Bool { return objectId != nil }
+
   var media: FoodieMedia? {
     didSet {
       mediaFileName = media!.foodieFileName

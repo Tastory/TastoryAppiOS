@@ -38,7 +38,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   // MARK: - Private Instance Constants
   fileprivate let sectionOneView = UIView()
   fileprivate let mapView = MKMapView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: Constants.mapHeight))
-
+  fileprivate var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
 
   // MARK: - Public Instance Variable
   var workingStory: FoodieStory?
@@ -54,6 +54,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var venueButton: UIButton?
   @IBOutlet weak var linkTextField: UITextField?
+  @IBOutlet weak var discardButton: UIButton!
   @IBOutlet weak var tagsTextView: UITextViewWithPlaceholder? {
     didSet {
       tagsTextView?.placeholder = "Tags"
@@ -104,13 +105,16 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   @IBAction func discardStory(_ sender: UIButton) {
     StorySelector.showStoryDiscardDialog(to: self) {
       self.workingStory = nil
+      self.activitySpinner.apply()
       FoodieStory.cleanUpDraft() { error in
         if let error = error {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            self.activitySpinner.remove()
             CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
           }
         }
         self.dismiss(animated: true, completion: nil)
+        self.activitySpinner.remove()
       }
     }
   }
@@ -139,14 +143,13 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     CCLog.info("User pressed 'Post Story'")
     
     view.endEditing(true)
-    let activitySpinner = ActivitySpinner(addTo: view)
     activitySpinner.apply()
 
     // This will cause a save to both Local Cache and Server
     _ = story.saveRecursive(to: .both, type: .cache) { error in
       
       if let error = error {
-        activitySpinner.remove()
+        self.activitySpinner.remove()
         CCLog.warning("Save Story to Server Failed with Error: \(error)")
         AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
       } else {
@@ -158,7 +161,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
             // Best effort remove the Story from Server & Cache in this case
             _ = story.deleteRecursive(from: .both, type: .cache, withBlock: nil)
             
-            activitySpinner.remove()
+            self.activitySpinner.remove()
             CCLog.warning("Add Story to User List Failed with Error: \(error)")
             AlertDialog.present(from: self, title: "Add Story to User Failed", message: error.localizedDescription)
           }
@@ -171,7 +174,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
             }
 
             self.workingStory = nil
-            activitySpinner.remove()
+            self.activitySpinner.remove()
 
             // Pop-up Alert Dialog and then Dismiss
             CCLog.info("Story Posted!")
@@ -289,9 +292,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     momentViewController.cameraReturnDelegate = self
     momentViewController.containerVC = containerVC
 
-    guard let collectionView = momentViewController.collectionView else {
-      CCLog.fatal("collection view from momentViewController is nil")
-    }
 
     self.addChildViewController(momentViewController)
 
@@ -304,6 +304,8 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     tableView.addGestureRecognizer(keyboardDismissRecognizer)
     
     if let workingStory = workingStory {
+
+      discardButton.isEnabled = workingStory.isEditStory
 
       for returnedMoment in returnedMoments {
         // Let's figure out what to do with the returned Moment
@@ -343,6 +345,11 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         }
       }
     }
+
+    activitySpinner = ActivitySpinner(addTo: view, blurStyle: .dark, spinnerStyle: .whiteLarge)
+
+
+
 
     // TODO: Do we need to download the Story itself first? How can we tell?
   }

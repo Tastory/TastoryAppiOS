@@ -120,7 +120,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       
       // Cancel regardless
       super.cancel()
-      
+
       CCLog.debug("Cancel for Story \(story.getUniqueIdentifier()), Executing = \(executing)")
       
       if executing {
@@ -139,6 +139,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
             break
           }
         }
+      } else {
+        self.callback?(ErrorCode.operationCancelled)
       }
     }
   }
@@ -193,6 +195,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Public Instance Variables
+  var isEditStory: Bool { return objectId != nil }
   var thumbnail: FoodieMedia?
   //var operation: StoryOperation?
   var childOperationQueue = DispatchQueue(label: "Child Operation Queue", qos: .userInitiated)
@@ -697,12 +700,16 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       CCLog.fatal("Discard current Story but no current Story")
     }
 
-    story.cancelSaveToServerRecursive()
-
     var location: FoodieObject.StorageLocation = .both
-    if(story.objectId != nil) {
+    if(story.isEditStory) {
       // this indicate that we are editing a story
       location = .local
+    }
+
+    if let moments = story.moments {
+      for moment in moments {
+        moment.cancelRetrieveFromServerRecursive()
+      }
     }
 
     // Delete all traces of this unPosted Story
@@ -721,6 +728,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
 
           // clean up video player
           if(moment.media != nil) {
+            moment.media!.videoExportPlayer?.cancelExport()
             moment.media!.videoExportPlayer = nil
 
           }
@@ -740,7 +748,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     }
 
     // Save Story to Local 
-    _ = story.saveRecursive(to: .local, type: .draft) { error in
+    _ = story.saveDigest(to: .local, type: .draft) { error in
 
       if let error = error {
         CCLog.warning("Story pre-save to Local resulted in error - \(error.localizedDescription)")

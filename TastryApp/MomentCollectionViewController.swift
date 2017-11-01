@@ -227,6 +227,15 @@ class MomentCollectionViewController: UICollectionViewController {
 
     let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(reorderMoment(_:)))
     collectionView.addGestureRecognizer(longPressGesture)
+
+    if(workingStory.isEditStory) {
+      // retrieve story only when in edit mode
+      _ = workingStory.retrieveRecursive(from: .both, type: .cache) { (error) in
+        if let error = error {
+          CCLog.warning("Failed to retrieve working story with Error - \(error.localizedDescription)")
+        }
+      }
+    }
   }
 
   
@@ -245,7 +254,6 @@ extension MomentCollectionViewController {
     return 1
   }
 
-
   override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     if let moments = workingStory.moments {
       return moments.count
@@ -254,7 +262,6 @@ extension MomentCollectionViewController {
       return 0
     }
   }
-
 
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath) as! MomentCollectionViewCell
@@ -280,9 +287,8 @@ extension MomentCollectionViewController {
     _  = moment.retrieveRecursive(from: .both, type: .cache) { (error) in
 
       if let error = error {
-        AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
-          CCLog.assert("Error retrieving story into cache caused by: \(error.localizedDescription)")
-        }
+        CCLog.warning("Error retrieving story into cache caused by: \(error.localizedDescription)")
+        return
       }
 
       _ = moment.saveRecursive(to: .local, type: .draft) { (error) in
@@ -514,7 +520,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
         var location: FoodieObject.StorageLocation = .both
 
         // when editing, we only want to delete the local copy not the server copy
-        if(moment.objectId != nil) {
+        if(moment.isEditMoment) {
           location = .local
         }
 

@@ -259,6 +259,8 @@ class FoodieUser: PFUser {
             break
           }
         }
+      } else {
+        self.callback?(ErrorCode.operationCancelled)
       }
     }
   }
