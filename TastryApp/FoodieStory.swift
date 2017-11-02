@@ -723,25 +723,24 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
         callback(error)
       }
+    }
+    // restore the thumbnail correctly
+    if let moments = story.moments {
+      for moment in moments {
+        if(moment.thumbnailFileName == story.thumbnailFileName) {
+          story.thumbnail = moment.thumbnail
+        }
 
-      // restore the thumbnail correctly
-      if let moments = story.moments {
-        for moment in moments {
-          if(moment.thumbnailFileName == story.thumbnailFileName) {
-            story.thumbnail = moment.thumbnail
-          }
+        // clean up video player
+        if(moment.media != nil) {
+          moment.media!.videoExportPlayer?.cancelExport()
+          moment.media!.videoExportPlayer = nil
 
-          // clean up video player
-          if(moment.media != nil) {
-            moment.media!.videoExportPlayer?.cancelExport()
-            moment.media!.videoExportPlayer = nil
-
-          }
         }
       }
-      removeCurrent()
-      callback(nil)
     }
+    removeCurrent()
+    callback(nil)
   }
 
   static func preSave(_ object: FoodieObjectDelegate?, withBlock callback: SimpleErrorBlock?) {

@@ -234,6 +234,16 @@ class MomentCollectionViewController: UICollectionViewController {
         if let error = error {
           CCLog.warning("Failed to retrieve working story with Error - \(error.localizedDescription)")
         }
+        // save entire story to draft is required since some non visible cell might not trigger
+        // save to draft 
+        _ = self.workingStory.saveRecursive(to: .local, type: .draft) { (error) in
+          if let error = error {
+            AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
+              CCLog.assert("Saving story into draft caused by: \(error.localizedDescription)")
+            }
+          }
+        }
+
       }
     }
   }
@@ -289,14 +299,6 @@ extension MomentCollectionViewController {
       if let error = error {
         CCLog.warning("Error retrieving story into cache caused by: \(error.localizedDescription)")
         return
-      }
-
-      _ = moment.saveRecursive(to: .local, type: .draft) { (error) in
-        if let error = error {
-          AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
-            CCLog.assert("Saving story into draft caused by: \(error.localizedDescription)")
-          }
-        }
       }
 
       guard let thumbnailObj = moment.thumbnail else {
