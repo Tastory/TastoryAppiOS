@@ -189,7 +189,11 @@ class AVExportPlayer: NSObject {
     
     // Clean-up the previous instance of AVPlayer first if there was a previous instance
     if avPlayer != nil {
-      NotificationCenter.default.removeObserver(self)
+      if let avPlayerItem = avPlayer?.currentItem {
+        NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: avPlayerItem)
+      } else {
+        CCLog.assert("AVExportPlayer \(uniqueIdentifier) has no avPlayerItem")
+      }
       //TODO saw a crash here before observer might not be registered and there is no way to check in swift
       self.removeObserver(self, forKeyPath: #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackLikelyToKeepUp))
       self.removeObserver(self, forKeyPath: #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackBufferEmpty))
@@ -218,12 +222,10 @@ class AVExportPlayer: NSObject {
 //    }
     
     // Adding Observers for Starts and Stalls
-    DispatchQueue.main.async {
-      self.addObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackLikelyToKeepUp), options: [.new], context: nil)
-      self.addObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackBufferEmpty), options: [.new], context: nil)
-      self.addObserver(self, forKeyPath: #keyPath(avPlayer.status), options: [.new], context: nil)
-      self.addObserver(self, forKeyPath: #keyPath(avPlayer.reasonForWaitingToPlay), options: [.new], context: nil)
-    }
+    self.addObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackLikelyToKeepUp), options: [.new], context: nil)
+    self.addObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackBufferEmpty), options: [.new], context: nil)
+    self.addObserver(self, forKeyPath: #keyPath(avPlayer.status), options: [.new], context: nil)
+    self.addObserver(self, forKeyPath: #keyPath(avPlayer.reasonForWaitingToPlay), options: [.new], context: nil)
   }
   
 
@@ -348,11 +350,15 @@ class AVExportPlayer: NSObject {
 //    if let periodicObserver = periodicObserver {
 //      avPlayer?.removeTimeObserver(periodicObserver)
 //    }
+    if let avPlayerItem = avPlayer?.currentItem {
+      NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: avPlayerItem)
+    } else {
+      CCLog.assert("AVExportPlayer \(uniqueIdentifier) has no avPlayerItem")
+    }
     self.removeObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackLikelyToKeepUp))
     self.removeObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackBufferEmpty))
     self.removeObserver(self, forKeyPath: #keyPath(avPlayer.status))
     self.removeObserver(self, forKeyPath: #keyPath(avPlayer.reasonForWaitingToPlay))
-    NotificationCenter.default.removeObserver(self)
     avExportSession?.cancelExport()
     avPlayer?.replaceCurrentItem(with: nil)
   }
