@@ -445,7 +445,7 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
     }
 
     let height = momentHeightUnwrapped - 2*Constants.interitemSpacing
-    let width = height / FoodieGlobal.Constants.DefaultMomentAspectRatio
+    let width = height * FoodieGlobal.Constants.DefaultMomentAspectRatio
     return CGSize(width: width, height: height)
   }
   
@@ -464,7 +464,7 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
     }
 
     let height = momentHeightUnwrapped - 2*Constants.interitemSpacing
-    let width = height / FoodieGlobal.Constants.DefaultMomentAspectRatio * Constants.headerFooterToCellWidthRatio
+    let width = height * FoodieGlobal.Constants.DefaultMomentAspectRatio * Constants.headerFooterToCellWidthRatio
     
     // Now we know the width, also set the Collection View Content Inset here
     collectionView.contentInset = UIEdgeInsetsMake(0.0, -width, 0.0, 0.0)
@@ -478,7 +478,7 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
     }
 
     let height = momentHeightUnwrapped - 2*Constants.interitemSpacing
-    let width = height / FoodieGlobal.Constants.DefaultMomentAspectRatio * Constants.headerFooterToCellWidthRatio
+    let width = height * FoodieGlobal.Constants.DefaultMomentAspectRatio * Constants.headerFooterToCellWidthRatio
     return CGSize(width: width, height: height)
   }
   

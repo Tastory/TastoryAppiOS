@@ -154,13 +154,6 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
-  }
-  
-  
   
   // MARK: - UICollectionViewDataSource
   override func numberOfSections(in collectionView: UICollectionView) -> Int {

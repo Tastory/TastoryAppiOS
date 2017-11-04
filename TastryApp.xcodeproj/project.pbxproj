@@ -66,6 +66,7 @@
 		8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89867D1E958B4300B62306 /* FoodieObject.swift */; };
 		8C900D311F5FAAC30058BDFE /* PassthruStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C900D301F5FAAC30058BDFE /* PassthruStackView.swift */; };
 		8C900D331F60C0E50058BDFE /* CategoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */; };
+		8C93F6E21FAD772900596452 /* GradientNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C93F6E11FAD772900596452 /* GradientNode.swift */; };
 		8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */; };
 		8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0601E8F615D005F337E /* ExitButton.swift */; };
 		8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0611E8F615D005F337E /* MarkupViewController.swift */; };
@@ -199,6 +200,7 @@
 		8C89867D1E958B4300B62306 /* FoodieObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieObject.swift; sourceTree = "<group>"; };
 		8C900D301F5FAAC30058BDFE /* PassthruStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassthruStackView.swift; sourceTree = "<group>"; };
 		8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryTableViewController.swift; sourceTree = "<group>"; };
+		8C93F6E11FAD772900596452 /* GradientNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientNode.swift; sourceTree = "<group>"; };
 		8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMoment.swift; sourceTree = "<group>"; };
 		8C9AD0601E8F615D005F337E /* ExitButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExitButton.swift; sourceTree = "<group>"; };
 		8C9AD0611E8F615D005F337E /* MarkupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkupViewController.swift; sourceTree = "<group>"; };
@@ -380,6 +382,14 @@
 			name = Buttons;
 			sourceTree = "<group>";
 		};
+		8C93F6E01FAD76A700596452 /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				8C93F6E11FAD772900596452 /* GradientNode.swift */,
+			);
+			name = Nodes;
+			sourceTree = "<group>";
+		};
 		8C9AD05A1E8F60E4005F337E /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -462,6 +472,7 @@
 			children = (
 				8C889ECD1F9D5F7000E8CC56 /* Storyboards */,
 				8C889ECE1F9D5FC500E8CC56 /* Cell, Headers/Footers */,
+				8C93F6E01FAD76A700596452 /* Nodes */,
 				8C889ECF1F9D5FF200E8CC56 /* Buttons */,
 				8CD328DA1E8B2BD600E5254F /* Layers */,
 				8C7EC5901F8EA7E400C8E80B /* Transitions */,
@@ -985,6 +996,7 @@
 				8C1ED6F21F5D15A300A8CC94 /* ThumbnailFrameLayer.swift in Sources */,
 				8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */,
 				8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */,
+				8C93F6E21FAD772900596452 /* GradientNode.swift in Sources */,
 				8C8986741E91985700B62306 /* FoodieVenue.swift in Sources */,
 				8C6983561F97EDE50091334D /* AVPlayerItemStatus+Extension.swift in Sources */,
 				8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */,
@@ -1243,7 +1255,7 @@
 				INFOPLIST_FILE = TastryApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Master;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Texture;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1268,7 +1280,7 @@
 				INFOPLIST_FILE = TastryApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Master;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Texture;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

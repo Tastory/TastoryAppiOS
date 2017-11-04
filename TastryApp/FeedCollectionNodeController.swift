@@ -9,12 +9,13 @@
 import Foundation
 import AsyncDisplayKit
 
-final class FeedcollectionNodeController: ASViewController<ASDisplayNode>, ASCollectionDataSource, ASCollectionDelegate {
+final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   // MARK: - Private Class Constants
   private struct Constants {
-    static let DefaultColumns: CGFloat = 2.0
-    static let DefaultPadding: CGFloat = 1.0
+    static let DefaultColumns: Int = 2
+    static let DefaultInterCardInsetSize: CGFloat = 1.0
+    static let DefaultCoverPhotoAspecRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
   }
   
   
@@ -26,14 +27,28 @@ final class FeedcollectionNodeController: ASViewController<ASDisplayNode>, ASCol
   
   
   // MARK: - Private Instance Variable
-  private var flowLayout: UICollectionViewLayout
+  private var flowLayout: UICollectionViewFlowLayout
   private var collectionNode: ASCollectionNode
-  
+  private var numOfColumns = Constants.DefaultColumns
+  private var interCardInsetSize = Constants.DefaultInterCardInsetSize
   
   
   // MARK: - Public Instance Function
   init() {
     flowLayout = UICollectionViewFlowLayout()
+    
+    // For ASCollectionNode, it gets the Cell Constraint size via the itemSize property of the Layout via a Layout Inspector
+    let screenWidth = UIScreen.main.bounds.width
+    let marginSize = Constants.DefaultInterCardInsetSize*2
+    let itemWidth = (screenWidth - 2*marginSize - CGFloat(numOfColumns - 1)*marginSize) / CGFloat(numOfColumns)
+    let itemHeight = itemWidth/Constants.DefaultCoverPhotoAspecRatio
+    
+    flowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
+    flowLayout.estimatedItemSize = CGSize(width: itemWidth, height: itemHeight)
+    flowLayout.sectionInset = UIEdgeInsetsMake(0.0, marginSize, 0.0, marginSize)
+    flowLayout.minimumInteritemSpacing = marginSize
+    flowLayout.minimumLineSpacing = marginSize
+    
     collectionNode = ASCollectionNode(collectionViewLayout: flowLayout)
     
     super.init(node: collectionNode)
@@ -41,7 +56,7 @@ final class FeedcollectionNodeController: ASViewController<ASDisplayNode>, ASCol
   
   
   required init?(coder aDecoder: NSCoder) {
-    CCLog.fatal("AsyncDisplayKit is not incompatible with Storyboards")
+    CCLog.fatal("AsyncDisplayKit is incompatible with Storyboards")
   }
   
   
@@ -49,12 +64,18 @@ final class FeedcollectionNodeController: ASViewController<ASDisplayNode>, ASCol
   // MARK: - Node Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
+    collectionNode.frame = view.bounds
     collectionNode.delegate = self
     collectionNode.dataSource = self
   }
-  
-  
-  // MARK: - ASCollectionDataSource Protocol Conformance
+}
+
+
+
+// MARK: - AsyncDisplayKit Collection Data Source Protocol Conformance
+
+extension FeedCollectionNodeController: ASCollectionDataSource {
+
   func numberOfSections(in collectionNode: ASCollectionNode) -> Int {
     return 1
   }
@@ -66,11 +87,33 @@ final class FeedcollectionNodeController: ASViewController<ASDisplayNode>, ASCol
   
 
   func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
-    return { return ASCellNode() }
+    let story = storyArray[indexPath.row]
+    let cellNode = FeedCollectionCellNode(story: story, numOfColumns: Constants.DefaultColumns, interCardInsetSize: Constants.DefaultInterCardInsetSize)
+    
+    return { return cellNode }
   }
+}
+
+
+
+// MARK: - AsyncDisplayKit Collection Delegate Protocol Conformance
+
+extension FeedCollectionNodeController: ASCollectionDelegate {
   
-  
-  func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> ASCellNodeBlock {
-    return { return ASCellNode() }
+  func collectionNode(_ collectionNode: ASCollectionNode, didSelectItemAt indexPath: IndexPath) {
+    let story = storyArray[indexPath.row]
+    // Stop all prefetches but the story being viewed
+    FoodieFetch.global.cancelAllBut(for: story)
+    
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of StoryViewController Class!!")
+      }
+      return
+    }
+    viewController.viewingStory = story
+    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    self.present(viewController, animated: true)
   }
 }
