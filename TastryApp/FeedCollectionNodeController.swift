@@ -14,8 +14,9 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // MARK: - Private Class Constants
   private struct Constants {
     static let DefaultColumns: Int = 2
-    static let DefaultInterCardInsetSize: CGFloat = 1.0
+    static let DefaultFeedNodeMargin: CGFloat = 5.0
     static let DefaultCoverPhotoAspecRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
+    static let DefaultFeedNodeCornerRadiusFraction = 0.05
   }
   
   
@@ -30,8 +31,9 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   private var flowLayout: UICollectionViewFlowLayout
   private var collectionNode: ASCollectionNode
   private var numOfColumns = Constants.DefaultColumns
-  private var interCardInsetSize = Constants.DefaultInterCardInsetSize
-  
+  private var feedNodeMargin = Constants.DefaultFeedNodeMargin
+  private var itemWidth: CGFloat
+  private var itemHeight: CGFloat
   
   // MARK: - Public Instance Function
   init() {
@@ -39,18 +41,18 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     
     // For ASCollectionNode, it gets the Cell Constraint size via the itemSize property of the Layout via a Layout Inspector
     let screenWidth = UIScreen.main.bounds.width
-    let marginSize = Constants.DefaultInterCardInsetSize*2
-    let itemWidth = (screenWidth - 2*marginSize - CGFloat(numOfColumns - 1)*marginSize) / CGFloat(numOfColumns)
-    let itemHeight = itemWidth/Constants.DefaultCoverPhotoAspecRatio
+    itemWidth = (screenWidth - 2*feedNodeMargin - CGFloat(numOfColumns - 1)*feedNodeMargin) / CGFloat(numOfColumns)
+    if numOfColumns == 3 { itemWidth = floor(itemWidth) }  // Weird problem when the itemWidth is .3 repeat.
+    itemHeight = itemWidth/Constants.DefaultCoverPhotoAspecRatio
     
     flowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
     flowLayout.estimatedItemSize = CGSize(width: itemWidth, height: itemHeight)
-    flowLayout.sectionInset = UIEdgeInsetsMake(0.0, marginSize, 0.0, marginSize)
-    flowLayout.minimumInteritemSpacing = marginSize
-    flowLayout.minimumLineSpacing = marginSize
+    flowLayout.sectionInset = UIEdgeInsetsMake(0.0, feedNodeMargin, 0.0, feedNodeMargin)
+    flowLayout.minimumInteritemSpacing = feedNodeMargin
+    flowLayout.minimumLineSpacing = feedNodeMargin
     
     collectionNode = ASCollectionNode(collectionViewLayout: flowLayout)
-    
+
     super.init(node: collectionNode)
   }
   
@@ -88,8 +90,8 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
 
   func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
     let story = storyArray[indexPath.row]
-    let cellNode = FeedCollectionCellNode(story: story, numOfColumns: Constants.DefaultColumns, interCardInsetSize: Constants.DefaultInterCardInsetSize)
-    
+    let cellNode = FeedCollectionCellNode(story: story)
+    cellNode.cornerRadius = itemWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
     return { return cellNode }
   }
 }

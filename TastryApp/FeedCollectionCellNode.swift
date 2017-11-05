@@ -27,25 +27,19 @@ class FeedCollectionCellNode: ASCellNode {
   
   
   // MARK: - Private Instance Variable
-  private let story: FoodieStory
   private let coverImageNode: ASNetworkImageNode
-  private let numOfColumns: Int
-  private let interCardInsetSize: CGFloat
   private var coverTitleNode: ASTextNode?
   private var coverTitleBackgroundNode: ASDisplayNode?
   
   
   
   // MARK: - Public Instance Function
-  init(story: FoodieStory, numOfColumns: Int, interCardInsetSize: CGFloat) {
+  init(story: FoodieStory) {
     guard let thumbnailFileName = story.thumbnailFileName else {
       CCLog.fatal("No Thumbnail Filename in Story \(story.getUniqueIdentifier())")
     }
     
-    self.story = story
     self.coverImageNode = ASNetworkImageNode()
-    self.numOfColumns = numOfColumns
-    self.interCardInsetSize = interCardInsetSize
     super.init()
     
     coverImageNode.url = FoodieFileObject.getS3URL(for: thumbnailFileName)
@@ -70,6 +64,7 @@ class FeedCollectionCellNode: ASCellNode {
       coverTitleBackgroundNode!.isOpaque = false
     }
     automaticallyManagesSubnodes = true
+    enableSubtreeRasterization()
   }
   
     
