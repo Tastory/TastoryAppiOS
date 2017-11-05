@@ -30,6 +30,15 @@ class GradientNode: ASDisplayNode {
       return
     }
 
+    // Calculate the start and end points
+    let startUnitX = parameters.startUnitPoint.x
+    let startUnitY = parameters.startUnitPoint.y
+    let endUnitX = parameters.endUnitPoint.x
+    let endUnitY = parameters.endUnitPoint.y
+    
+    let startPoint = CGPoint(x: bounds.width * startUnitX + bounds.minX, y: bounds.height * startUnitY + bounds.minY)
+    let endPoint = CGPoint(x: bounds.width * endUnitX + bounds.minX, y: bounds.height * endUnitY + bounds.minY)
+    
     let context = UIGraphicsGetCurrentContext()!
     context.saveGState()
     context.clip(to: bounds)
@@ -42,9 +51,9 @@ class GradientNode: ASDisplayNode {
     }
 
     context.drawLinearGradient(gradient,
-                               start: CGPoint(x: bounds.midX, y: bounds.maxY),
-                               end: CGPoint(x: bounds.midX, y: bounds.midY),
-                               options: []) //CGGradientDrawingOptions.drawsAfterEndLocation)
+                               start: startPoint,
+                               end: endPoint,
+                               options: CGGradientDrawingOptions.drawsAfterEndLocation)
     context.restoreGState()
   }
   

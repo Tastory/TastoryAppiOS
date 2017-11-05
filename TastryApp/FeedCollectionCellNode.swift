@@ -14,18 +14,16 @@ class FeedCollectionCellNode: ASCellNode {
   // MARK: - Constants
   struct Constants {
     fileprivate static let CoverPhotoAspectRatio: CGFloat = FoodieGlobal.Constants.DefaultMomentAspectRatio
-    fileprivate static let CoverTitleMaxFontSize: CGFloat = 17.0
-    fileprivate static let CoverTitleMinFontSize: CGFloat = 15.0
+    fileprivate static let CoverTitleFontFraction: CGFloat = 0.052  // Of Constrained Size's Height
     fileprivate static let CoverTitleFontName: String = "Avenir-Medium"
-    fileprivate static let CoverTitleBackgroundBlackAlpha: CGFloat = 0.3
-    fileprivate static let CoverTitleInsets = UIEdgeInsetsMake(15.0, 15.0, 15.0, 15.0)
-    fileprivate static let CoverStackInsets = UIEdgeInsetsMake(3.0, 3.0, 3.0, 3.0)
+    fileprivate static let CoverTitleMaxNumOfLines: UInt = 3
+    fileprivate static let CoverTitleTextColor = UIColor.white
+    fileprivate static let CoverTitleBackgroundBlackAlphas: [CGFloat] = [0.7, 0.0]
+    fileprivate static let CoverTitleBackgroundBlackStops: [CGFloat] = [0.0, 1.0]
+    fileprivate static let CoverTitleInsetWidthFraction: CGFloat = 0.050
+    fileprivate static let CoverTitleInsetHeightFraction: CGFloat = 0.045
   }
   
-  
-  private static let gradientBackgroundNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
-                                                           endingAt: CGPoint(x: 0.5, y: 0.0),
-                                                           with: [UIColor.black.withAlphaComponent(Constants.CoverTitleBackgroundBlackAlpha), UIColor.clear])
   
   
   // MARK: - Private Instance Variable
@@ -35,13 +33,6 @@ class FeedCollectionCellNode: ASCellNode {
   private let interCardInsetSize: CGFloat
   private var coverTitleNode: ASTextNode?
   private var coverTitleBackgroundNode: ASDisplayNode?
-  
-  
-  
-  // MARK: - Public Instance Variables
-  var coverTitleMaxFontSize: CGFloat = Constants.CoverTitleMaxFontSize
-  var coverTitleMinFontSize: CGFloat = Constants.CoverTitleMinFontSize
-  var coverTitleFontName: String = Constants.CoverTitleFontName
   
   
   
@@ -61,25 +52,27 @@ class FeedCollectionCellNode: ASCellNode {
     coverImageNode.isLayerBacked = true
     
     if let coverTitle = story.title {
-      guard let coverFont = UIFont(name: coverTitleFontName, size: coverTitleMaxFontSize) else {
-        CCLog.fatal("Cannot create UIFont with name \(coverTitleFontName)")
-      }
       coverTitleNode = ASTextNode()
-      coverTitleNode!.attributedText = NSAttributedString(string: coverTitle, attributes: [.font : coverFont, .foregroundColor : UIColor.darkGray])
+      coverTitleNode!.attributedText = NSAttributedString(string: coverTitle)
+      coverTitleNode!.maximumNumberOfLines = Constants.CoverTitleMaxNumOfLines
+      coverTitleNode!.placeholderColor = Constants.CoverTitleTextColor
+      coverTitleNode!.placeholderEnabled = true
       coverTitleNode!.isLayerBacked = true
-      //coverTitleNode!.isOpaque = false
+      // Do we need this if we plan to drop shadows? coverTitleNode!.isOpaque = false
       
       // Create a gradient layer as title backing
+      let backgroundColors = Constants.CoverTitleBackgroundBlackAlphas.map { UIColor.black.withAlphaComponent($0) }
       coverTitleBackgroundNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
                                               endingAt: CGPoint(x: 0.5, y: 0.0),
-                                              with: [UIColor.black.withAlphaComponent(Constants.CoverTitleBackgroundBlackAlpha), UIColor.clear])//FeedCollectionCellNode.gradientBackgroundNode
+                                              with: backgroundColors,
+                                              for: nil) //Constants.CoverTitleBackgroundBlackStops)
       coverTitleBackgroundNode!.isLayerBacked = true
       coverTitleBackgroundNode!.isOpaque = false
     }
-    
     automaticallyManagesSubnodes = true
   }
   
+    
   override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
     
     let coverImageWrapperSpec = ASWrapperLayoutSpec(layoutElement: coverImageNode)
@@ -92,25 +85,39 @@ class FeedCollectionCellNode: ASCellNode {
         CCLog.fatal("FeedCellNode has titleNode but no titleBackgroundNode")
       }
       
+      // Adjust the font size?
+      if let attributedText = coverTitleNode.attributedText {
+        guard let coverFont = UIFont(name: Constants.CoverTitleFontName,
+                                     size: Constants.CoverTitleFontFraction * constrainedSize.max.height) else {
+          CCLog.fatal("Cannot create UIFont with name \(Constants.CoverTitleFontName)")
+        }
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .center
+        
+        coverTitleNode.attributedText = NSAttributedString(string: attributedText.string.trimmingCharacters(in: .whitespacesAndNewlines),
+                                                          attributes: [.font : coverFont,
+                                                                       .foregroundColor : Constants.CoverTitleTextColor,
+                                                                       .paragraphStyle : paragraphStyle])
+      }
+      
       // Inset the Title a little if needed
-      let titleInsetSpec = ASInsetLayoutSpec(insets: Constants.CoverTitleInsets, child: coverTitleNode)
+      let titleInsets = UIEdgeInsetsMake(Constants.CoverTitleInsetHeightFraction * constrainedSize.min.height,
+                                         Constants.CoverTitleInsetWidthFraction * constrainedSize.min.width,
+                                         Constants.CoverTitleInsetHeightFraction * constrainedSize.min.height,
+                                         Constants.CoverTitleInsetWidthFraction * constrainedSize.min.width)
+      let titleInsetSpec = ASInsetLayoutSpec(insets: titleInsets, child: coverTitleNode)
       
       // Overlay the Cover Title Node on the Title Background
-      let titleOverlaySpec = ASOverlayLayoutSpec(child: coverTitleBackgroundNode, overlay: titleInsetSpec)
+      let titleOverlaySpec = ASBackgroundLayoutSpec(child: titleInsetSpec, background: coverTitleBackgroundNode)
       
       // Create Stack with Title Node
-      let coverStackSpec = ASStackLayoutSpec.vertical()
-      coverStackSpec.justifyContent = .end
-      coverStackSpec.alignItems = .center
-      coverStackSpec.children = [titleOverlaySpec]
-      
-      // Create Spec to inset the Cover Stack if needed
-      //let coverStackInsetSpec = ASInsetLayoutSpec(insets: Constants.CoverStackInsets, child: coverStackSpec)
+      let coverStackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 5.0, justifyContent: .end, alignItems: .stretch, children: [titleOverlaySpec])
       
       // Overlay the Cover Stack in front of the Image Node
-      let coverOverlaySpec = ASOverlayLayoutSpec(child: coverImageWrapperSpec, overlay: coverStackSpec) // coverStackInsetSpec)
+      let coverOverlaySpec = ASOverlayLayoutSpec(child: coverImageNode, overlay: coverStackSpec)
       
-      finalLayoutSpec = ASWrapperLayoutSpec(layoutElement: coverTitleBackgroundNode) // coverOverlaySpec
+      finalLayoutSpec = coverOverlaySpec
     }
     
     return finalLayoutSpec
