@@ -460,7 +460,6 @@ class MapViewController: TransitableViewController {
       }
       return
     }
-    viewController.storyQuery = query
     viewController.storyArray = stories
     viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)

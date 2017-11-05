@@ -9,11 +9,25 @@
 import Foundation
 import AsyncDisplayKit
 
+
+protocol FeedCollectionNodeDelegate {
+  
+  // FeedCollectionNodeController needs more data
+  func collectionNodeNeedsNextDataPage(for context: AnyObject)
+  
+  // FeedCollectionNodeController displaying Stories with indexes. Array[0] is guarenteed to be the highest item in the CollectionNode's view
+  func collectionNodeDisplayingStories(with indexes: [Int])
+}
+
+
+
 final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
+  
   // MARK: - Private Class Constants
+  
   private struct Constants {
-    static let DefaultColumns: Int = 2
+    static let DefaultColumns: Int = 1
     static let DefaultFeedNodeMargin: CGFloat = 5.0
     static let DefaultCoverPhotoAspecRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
     static let DefaultFeedNodeCornerRadiusFraction = 0.05
@@ -22,21 +36,29 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   
   // MARK: - Public Instance Variable
-  var storyQuery: FoodieQuery!
-  var storyArray = [FoodieStory]()
+  
+  var delegate: FeedCollectionNodeDelegate?
   
   
   
   // MARK: - Private Instance Variable
-  private var flowLayout: UICollectionViewFlowLayout
+  
+  private var storyArray: [FoodieStory]
   private var collectionNode: ASCollectionNode
+  
+  private var flowLayout: UICollectionViewFlowLayout
   private var numOfColumns = Constants.DefaultColumns
   private var feedNodeMargin = Constants.DefaultFeedNodeMargin
   private var itemWidth: CGFloat
   private var itemHeight: CGFloat
   
-  // MARK: - Public Instance Function
-  init() {
+  private var allPagesFetched: Bool
+  
+  
+  
+  // MARK: - Node Controller Lifecycle
+  
+  init(with stories: [FoodieStory]) {
     flowLayout = UICollectionViewFlowLayout()
     
     // For ASCollectionNode, it gets the Cell Constraint size via the itemSize property of the Layout via a Layout Inspector
@@ -51,6 +73,8 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     flowLayout.minimumInteritemSpacing = feedNodeMargin
     flowLayout.minimumLineSpacing = feedNodeMargin
     
+    storyArray = stories
+    allPagesFetched = false
     collectionNode = ASCollectionNode(collectionViewLayout: flowLayout)
 
     super.init(node: collectionNode)
@@ -62,13 +86,43 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   }
   
   
-  
-  // MARK: - Node Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
     collectionNode.frame = view.bounds
     collectionNode.delegate = self
     collectionNode.dataSource = self
+  }
+  
+  
+  
+  // MARK: - Public Instance Function
+  
+  // More Data Fetched, update ColllectionNode
+  func updateDataPage(withStory indexes: [Int], for context: AnyObject, isLastPage: Bool) {
+    
+    guard let batchContext = context as? ASBatchContext else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Expected context of type ASBatchContext")
+      }
+      return
+    }
+    
+    // Add to Collection Node if there's any more Stories returned
+    if indexes.count > 0 {
+      collectionNode.insertItems(at: indexes.map { IndexPath.init(row: $0, section: 1) })
+    }
+    
+    allPagesFetched = isLastPage
+    
+    batchContext.completeBatchFetching(true)
+  }
+  
+  
+  // If the parent view have fetched a completly different list of Stories, start from scratch
+  func resetCollectionNode(with stories: [FoodieStory]) {
+    storyArray = stories
+    allPagesFetched = false
+    collectionNode.reloadData()
   }
 }
 
@@ -84,6 +138,13 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
   
 
   func collectionNode(_ collectionNode: ASCollectionNode, numberOfItemsInSection section: Int) -> Int {
+    guard storyArray.count > 0 else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("There must be more than 1 story supplied before displaying the FeedCollectionViewController")
+        self.dismiss(animated: true, completion: nil)
+      }
+      return 0
+    }
     return storyArray.count
   }
   
@@ -117,5 +178,15 @@ extension FeedCollectionNodeController: ASCollectionDelegate {
     viewController.viewingStory = story
     viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
     self.present(viewController, animated: true)
+  }
+  
+  
+  func shouldBatchFetch(for collectionNode: ASCollectionNode) -> Bool {
+    return !allPagesFetched
+  }
+  
+  
+  func collectionNode(_ collectionNode: ASCollectionNode, willBeginBatchFetchWith context: ASBatchContext) {
+    delegate?.collectionNodeNeedsNextDataPage(for: context)
   }
 }

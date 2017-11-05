@@ -187,13 +187,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   
   
-  // MARK: - Public Constants
-  struct Constants {
-    static let MomentsToBufferAtATime = 2
-  }
-  
-  
-  
   // MARK: - Public Read-Only Static Variables
   private(set) static var currentStory: FoodieStory?
   
