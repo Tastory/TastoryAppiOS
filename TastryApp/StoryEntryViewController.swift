@@ -311,7 +311,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     super.viewWillAppear(animated)
     
     if let workingStory = workingStory {
-      discardButton.isEnabled = workingStory.isEditStory
 
       for returnedMoment in returnedMoments {
         // Let's figure out what to do with the returned Moment
