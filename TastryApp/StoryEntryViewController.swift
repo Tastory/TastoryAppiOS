@@ -16,8 +16,8 @@ import MapKit
 import CoreLocation
 import SafariServices
 
-protocol CameraDelegate {
-  func openCamera()
+protocol PreviewControlDelegate {
+  func enablePreviewButton(_ isEnabled: Bool)
 }
 
 class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelegate {
@@ -54,6 +54,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var venueButton: UIButton?
   @IBOutlet weak var linkTextField: UITextField?
+  @IBOutlet weak var previewButton: UIButton!
   @IBOutlet weak var discardButton: UIButton!
   @IBOutlet weak var tagsTextView: UITextViewWithPlaceholder? {
     didSet {
@@ -91,7 +92,6 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
       self.present(safariViewController, animated: true, completion: nil)
     }
   }
-  
   
   @IBAction func previewStory(_ sender: Any) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -290,6 +290,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     momentViewController.workingStory = workingStory
     momentViewController.momentHeight = Constants.momentHeight
     momentViewController.cameraReturnDelegate = self
+    momentViewController.previewControlDelegate = self
     momentViewController.containerVC = containerVC
 
 
@@ -302,9 +303,14 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     keyboardDismissRecognizer.numberOfTapsRequired = 1
     keyboardDismissRecognizer.numberOfTouchesRequired = 1
     tableView.addGestureRecognizer(keyboardDismissRecognizer)
+    activitySpinner = ActivitySpinner(addTo: view, blurStyle: .dark, spinnerStyle: .whiteLarge)
+    // TODO: Do we need to download the Story itself first? How can we tell?
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     
     if let workingStory = workingStory {
-
       discardButton.isEnabled = workingStory.isEditStory
 
       for returnedMoment in returnedMoments {
@@ -344,21 +350,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
           }
         }
       }
-    }
 
-    activitySpinner = ActivitySpinner(addTo: view, blurStyle: .dark, spinnerStyle: .whiteLarge)
-
-
-
-
-    // TODO: Do we need to download the Story itself first? How can we tell?
-  }
-  
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    
-    if let workingStory = workingStory {
-      
       // Update all the fields here?
       if let title = workingStory.title {
         titleTextField?.text = title
@@ -594,6 +586,14 @@ extension StoryEntryViewController: CameraReturnDelegate {
       }
 
       self.markupMoment = nil
+    }
+  }
+}
+
+extension StoryEntryViewController: PreviewControlDelegate {
+  func enablePreviewButton(_ isEnabled: Bool) {
+    DispatchQueue.main.async {
+      self.previewButton.isEnabled = isEnabled
     }
   }
 }

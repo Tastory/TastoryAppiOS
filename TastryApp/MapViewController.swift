@@ -533,25 +533,34 @@ class MapViewController: TransitableViewController {
             CCLog.info("No Story found from Draft")
             return
           }
-           
-          _ = story.retrieveRecursive(from: .local, type: .draft, forceAnyways: false) { error in
-            
-            if let retrieveError = error {
-              FoodieObject.deleteAll(from: .draft) { error in
-                if let deleteError = error {
-                  CCLog.warning("Delete All resulted in Error - \(deleteError.localizedDescription)")
+
+          if(!story.isEditStory) {
+            _ = story.retrieveRecursive(from: .local, type: .draft, forceAnyways: false) { error in
+
+              if let retrieveError = error {
+                FoodieObject.deleteAll(from: .draft) { error in
+                  if let deleteError = error {
+                    CCLog.warning("Delete All resulted in Error - \(deleteError.localizedDescription)")
+                  }
+                  AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { action in
+                    CCLog.assert("Retrieve Recursive on Draft Story \(story.getUniqueIdentifier()) resulted in error. Clearing Draft Pin and Directory - \(retrieveError.localizedDescription)")
+                  }
                 }
-                AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { action in
-                  CCLog.assert("Retrieve Recursive on Draft Story \(story.getUniqueIdentifier()) resulted in error. Clearing Draft Pin and Directory - \(retrieveError.localizedDescription)")
-                }
+                return
               }
-              return
+
+              FoodieStory.setCurrentStory(to: story)
+
+              DispatchQueue.main.async {
+                self.draftButton.isHidden = false
+              }
             }
-            
-            FoodieStory.setCurrentStory(to: story)
-            
-            DispatchQueue.main.async {
-              self.draftButton.isHidden = false
+          } else {
+            // remove all traces of draft if previous story was an edit 
+            FoodieObject.deleteAll(from: .draft) { error in
+              if let deleteError = error {
+                CCLog.warning("Delete All resulted in Error - \(deleteError.localizedDescription)")
+              }
             }
           }
         }

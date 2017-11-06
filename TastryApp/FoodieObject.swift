@@ -167,7 +167,30 @@ class FoodieObject {
   
   
   // MARK: - Public Instance Functions
-  
+
+  // Function when all child delete have completed
+  func deleteCompletedFromAllChildren(to location: StorageLocation, type localType: LocalType, withBlock callback: SimpleErrorBlock?) {
+    guard let delegate = delegate else {
+      CCLog.fatal("delegate = nil. Unable to proceed.")
+    }
+
+    // If children all came back and there is error, unwind state and call callback
+    if operationError != nil {
+      callback?(self.operationError)
+    }
+
+      // If children all came back and no error, delete yourself!
+    else {
+      deleteObject(from: location, type: localType) { error in
+        if let error = error {
+          CCLog.warning("Saving Object \(delegate.foodieObjectType()) \(delegate.getUniqueIdentifier()) to \(location), \(localType) Failed - \(error.localizedDescription)")
+          self.operationError = error
+        }
+        callback?(self.operationError)
+      }
+    }
+  }
+
   // Reset outstandingChildOperations
   func resetChildOperationVariables() {
     operationError = nil
@@ -312,7 +335,9 @@ class FoodieObject {
       // This needs to be critical section or race condition between many childrens' completion can occur
       queue.async {
         self.outstandingChildOperations -= 1
-        if self.outstandingChildOperations == 0 { callback?(self.operationError) }
+        if self.outstandingChildOperations == 0 {
+          self.deleteCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+        }
       }
     }
   }

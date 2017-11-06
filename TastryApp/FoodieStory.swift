@@ -516,86 +516,52 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         callback?(error)
         return
       }
-      
-      // Delete self first before deleting children
-      self.foodieObject.deleteObject(from: location, type: localType) { error in
-        
-        if let error = error {
-          CCLog.warning("Deleting self resulted in error: \(error.localizedDescription)")
-          
-          // Do best effort delete of all children
-          if let moments = self.moments {
-            for moment in moments {
-              _ = self.foodieObject.deleteChild(moment, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
-            }
-          }
-          
-          if let markups = self.markups {
-            for markup in markups {
-              _ = self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
-            }
-          }
-          
-          if let venue = self.venue {
-            _ = self.foodieObject.deleteChild(venue, from: .local, type: localType, on: self.childOperationQueue, withBlock: nil)  // Don't ever delete venues from the server
-          }
-          
-          // Delete user only if from Cache and it's not the current user
-          if let author = self.author, author != FoodieUser.current, localType != .draft {
-            _ = self.foodieObject.deleteChild(author, from: .local, type: localType, on: self.childOperationQueue, withBlock: nil)  // Don't delete User as part of a recursive operation
-          }
-          
-          // Don't delete Thumbnail!!!
-          
-          // Just callback with the error
-          callback?(error)
+
+      self.foodieObject.resetChildOperationVariables()
+
+      self.childOperationQueue.async {
+        guard !storyOperation.isCancelled else {
+          callback?(ErrorCode.operationCancelled)
           return
         }
-        
-        self.foodieObject.resetChildOperationVariables()
-       
-        self.childOperationQueue.async {
-          guard !storyOperation.isCancelled else {
-            callback?(ErrorCode.operationCancelled)
-            return
-          }
-          var childOperationPending = false
-          
-          if let moments = self.moments {
-            for moment in moments {
-              if let childOperation = self.foodieObject.deleteChild(moment, from: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
-                storyOperation.add(childOperation)
-              }
-              childOperationPending = true
-            }
-          }
-          
-          if let markups = self.markups {
-            for markup in markups {
-              if let childOperation = self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
-                storyOperation.add(childOperation)
-              }
-              childOperationPending = true
-            }
-          }
-          
-          if let venue = self.venue {
-            if let childOperation = self.foodieObject.deleteChild(venue, from: .local, type: localType, on: self.childOperationQueue, withBlock: nil) { // Don't ever delete venues from the server
+
+        var childOperationPending = false
+
+        if let moments = self.moments {
+          for moment in moments {
+            if let childOperation = self.foodieObject.deleteChild(moment, from: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
               storyOperation.add(childOperation)
             }
+            childOperationPending = true
           }
+        }
           
-          // Delete user only if from Cache and it's not the current user
-          if let author = self.author, author != FoodieUser.current {
-            if let childOperation = self.foodieObject.deleteChild(author, from: .local, type: localType, on: self.childOperationQueue, withBlock: nil) { // Don't delete User as part of a recursive operation
+        if let markups = self.markups {
+          for markup in markups {
+            if let childOperation = self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
               storyOperation.add(childOperation)
             }
+            childOperationPending = true
           }
+        }
+
+        if let venue = self.venue {
+          if let childOperation = self.foodieObject.deleteChild(venue, from: .local, type: localType, on: self.childOperationQueue, withBlock: nil) { // Don't ever delete venues from the server
+            storyOperation.add(childOperation)
+          }
+          childOperationPending = true
+        }
+
+        // Delete user only if from Cache and it's not the current user
+        if let author = self.author, author != FoodieUser.current {
+          if let childOperation = self.foodieObject.deleteChild(author, from: .local, type: localType, on: self.childOperationQueue, withBlock: nil) { // Don't delete User as part of a recursive operation
+            storyOperation.add(childOperation)
+          }
+          childOperationPending = true
+        }
           
-          if !childOperationPending {
-            CCLog.assert("No child deletes pending. Is this okay?")
-            callback?(error)
-          }
+        if !childOperationPending {
+          self.foodieObject.deleteCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
         }
       }
     }
@@ -705,12 +671,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       CCLog.fatal("Discard current Story but no current Story")
     }
 
-    var location: FoodieObject.StorageLocation = .both
-    if(story.isEditStory) {
-      // this indicate that we are editing a story
-      location = .local
-    }
-
     if let moments = story.moments {
       for moment in moments {
         moment.cancelRetrieveFromServerRecursive()
@@ -718,29 +678,40 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     }
 
     // Delete all traces of this unPosted Story
-    story.deleteRecursive(from: location, type: .draft) { error in
+    _ = story.deleteRecursive(from: .local, type: .draft) { error in
       if let error = error {
         CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
         callback(error)
       }
-    }
-    // restore the thumbnail correctly
-    if let moments = story.moments {
-      for moment in moments {
-        if(moment.thumbnailFileName == story.thumbnailFileName) {
-          story.thumbnail = moment.thumbnail
+
+      if(!story.isEditStory) {
+        // this draft is a newly created story and need to remove presaved moments 
+        _ = story.deleteRecursive(from: .both, type: .draft) { error in
+          if let error = error {
+            CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
+            callback(error)
+          }
         }
+      } else {
+        // story was reverted and the thumbnail needs to be restored
+        if let moments = story.moments {
+          for moment in moments {
+            if(moment.thumbnailFileName == story.thumbnailFileName) {
+              story.thumbnail = moment.thumbnail
+            }
 
-        // clean up video player
-        if(moment.media != nil) {
-          moment.media!.videoExportPlayer?.cancelExport()
-          moment.media!.videoExportPlayer = nil
-
+            // clean up video player
+            if(moment.media != nil) {
+              moment.media!.videoExportPlayer?.cancelExport()
+              moment.media!.videoExportPlayer = nil
+            }
+          }
         }
       }
+
+      removeCurrent()
+      callback(nil)
     }
-    removeCurrent()
-    callback(nil)
   }
 
   static func preSave(_ object: FoodieObjectDelegate?, withBlock callback: SimpleErrorBlock?) {

@@ -27,6 +27,7 @@ class MomentCollectionViewController: UICollectionViewController {
   var workingStory: FoodieStory!
   var cameraReturnDelegate: CameraReturnDelegate!
   var containerVC: MarkupReturnDelegate?
+  var previewControlDelegate: PreviewControlDelegate!
 
   // MARK: - Private Instance Variables
   fileprivate var selectedViewCell: MomentCollectionViewCell?
@@ -230,10 +231,12 @@ class MomentCollectionViewController: UICollectionViewController {
 
     if(workingStory.isEditStory) {
       // retrieve story only when in edit mode
+      previewControlDelegate.enablePreviewButton(false)
       _ = workingStory.retrieveRecursive(from: .both, type: .cache) { (error) in
         if let error = error {
           CCLog.warning("Failed to retrieve working story with Error - \(error.localizedDescription)")
         }
+        self.previewControlDelegate.enablePreviewButton(true)
         // save entire story to draft is required since some non visible cell might not trigger
         // save to draft 
         _ = self.workingStory.saveRecursive(to: .local, type: .draft) { (error) in
@@ -243,12 +246,10 @@ class MomentCollectionViewController: UICollectionViewController {
             }
           }
         }
-
       }
     }
   }
 
-  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
@@ -327,15 +328,17 @@ extension MomentCollectionViewController {
 
       if(cell.viewButton.gestureRecognizers == nil) {
 
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.thumbnailGesture(_:)))
-        tapRecognizer.numberOfTapsRequired = 1
-        cell.viewButton.isUserInteractionEnabled = true
-        cell.viewButton.addGestureRecognizer(tapRecognizer)
+        DispatchQueue.main.async {
+          let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.thumbnailGesture(_:)))
+          tapRecognizer.numberOfTapsRequired = 1
+          cell.viewButton.isUserInteractionEnabled = true
+          cell.viewButton.addGestureRecognizer(tapRecognizer)
 
-        let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.editMoment(_:)))
-        doubleTapRecognizer.numberOfTapsRequired = 2
-        cell.viewButton.addGestureRecognizer(doubleTapRecognizer)
-        tapRecognizer.require(toFail: doubleTapRecognizer)
+          let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.editMoment(_:)))
+          doubleTapRecognizer.numberOfTapsRequired = 2
+          cell.viewButton.addGestureRecognizer(doubleTapRecognizer)
+          tapRecognizer.require(toFail: doubleTapRecognizer)
+        }
       }
 
       DispatchQueue.main.async {
@@ -507,7 +510,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
         if self.workingStory.thumbnailFileName == moment.thumbnailFileName {
 
           var rowIdx = indexPath.row + 1
-          if(rowIdx >= moments.count)
+          if(rowIdx >= collectionView.visibleCells.count)
           {
             rowIdx = indexPath.row - 1
           }
@@ -526,7 +529,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
           location = .local
         }
 
-        moment.deleteRecursive(from: location, type: .draft) { error in
+        _ = moment.deleteRecursive(from: location, type: .draft) { error in
           if let error = error {
             CCLog.warning("Failed to delete moments from pending delete moment lists: \(error)")
           }

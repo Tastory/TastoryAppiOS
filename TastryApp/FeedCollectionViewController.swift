@@ -110,10 +110,18 @@ class FeedCollectionViewController: UICollectionViewController {
     if(FoodieStory.currentStory != nil) {
       // display the the discard dialog
       StorySelector.showStoryDiscardDialog(to: self) {
-        self.displayStoryEntry(story)
+        FoodieStory.cleanUpDraft() { error in
+          if let error = error  {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+              CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
+            }
+          }
+          self.displayStoryEntry(story)
+        }
       }
+    } else {
+      displayStoryEntry(story)
     }
-    displayStoryEntry(story)
   }
   
   // MARK: - View Controller Lifecycle Functions
