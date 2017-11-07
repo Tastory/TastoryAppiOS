@@ -115,6 +115,7 @@ class FeedCollectionViewController: UICollectionViewController {
             AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
               CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
             }
+            return
           }
           self.displayStoryEntry(story)
         }

@@ -557,8 +557,9 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
 
                 if let error = error {
                   AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-                    CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
+                    CCLog.assert("Error when cleaning up story from draft- \(error.localizedDescription)")
                   }
+                  return
                 }
                 self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: FoodieStory.newCurrent())
               }
