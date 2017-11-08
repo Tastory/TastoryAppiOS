@@ -117,16 +117,8 @@ class FoodieFetch {
             }
             storyOp.cancel()
             
-          // Cancel anything that is not fetching nextMoment
-          } else {
-            if let operationType = storyOp.type as? StoryOperation.OperationType {
-              if operationType != .nextMoment {
-                storyOp.cancel()
-              } else {
-                // Found that the correct Prefetch is already executed. Good!
-                needsToPrefetchNextMoment = false
-              }
-            }
+          } else if let operationType = storyOp.type as? StoryOperation.OperationType, operationType == .nextMoment {
+            needsToPrefetchNextMoment = false
           }
         }
       }

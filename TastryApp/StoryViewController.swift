@@ -559,6 +559,13 @@ class StoryViewController: TransitableViewController {
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
     cleanUp()
+    
+    // Cancel All potential Prefetch associated with the Story before exiting
+    if let story = viewingStory {
+      FoodieFetch.global.cancel(for: story)
+    } else {
+      CCLog.assert("Expected a viewingStory even tho dismissing")
+    }
   }
   
   

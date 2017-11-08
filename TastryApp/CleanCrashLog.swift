@@ -146,14 +146,14 @@ fileprivate class XcodePlusLogFormatter: LogFormatter {
     }
     
     fields.append(.timestamp(timestampStyle))
-    fields.append(.delimiter(.space))
+    fields.append(.delimiter(.tab))
     fields.append(.severity(.xcode))
-    fields.append(.delimiter(.space))
+    fields.append(.delimiter(.tab))
     fields.append(.payload)
     
     if showCallSite {
-      fields.append(.delimiter(.space))
-      fields.append(.delimiter(.custom(" @ ")))
+      fields.append(.delimiter(.tab))
+      fields.append(.delimiter(.custom("@ ")))
       fields.append(.callSite)
       fields.append(.delimiter(.spacedHyphen))
       fields.append(.stackFrame)
