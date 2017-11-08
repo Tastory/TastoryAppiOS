@@ -131,9 +131,7 @@ class ProfileViewController: TransitableViewController {
     viewController.didMove(toParentViewController: self)
     feedCollectionViewController = viewController
     feedCollectionViewController?.enableEdit = true
-  }
 
-  override func viewWillAppear(_ animated: Bool) {
     activitySpinner.apply()
     query!.initStoryQueryAndSearch { (stories, error) in
       self.activitySpinner.remove()
@@ -155,7 +153,6 @@ class ProfileViewController: TransitableViewController {
     }
   }
 }
-
 
 extension ProfileViewController: UINavigationBarDelegate {
   func position(for bar: UIBarPositioning) -> UIBarPosition {

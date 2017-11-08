@@ -38,7 +38,10 @@ class StorySelector {
     viewController.present(actionSheet, animated: true, completion: nil)
   }
 
-  static func showStoryDiscardDialog(to viewController: UIViewController, withBlock callback: @escaping ()->Void ) {
+  static func showStoryDiscardDialog(to viewController: UIViewController,
+                                     message: String = "Are you sure you want to discard and overwrite the current Story?",
+                                     title: String = "Discard & Overwrite",
+                                     withBlock callback: @escaping ()->Void ) {
 
     // Create a button and associated Callback for discarding the previous current Story and make a new one
     let discardButton =
@@ -49,9 +52,9 @@ class StorySelector {
     }
 
     let alertController =
-      UIAlertController(title: "Discard & Overwrite",
+      UIAlertController(title: title,
                         titleComment: "Dialog title to warn user on discard and overwrite",
-                        message: "Are you sure you want to discard and overwrite the current Story?",
+                        message: message,
                         messageComment: "Dialog message to warn user on discard and overwrite",
                         preferredStyle: .alert)
 

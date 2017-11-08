@@ -11,7 +11,13 @@ import UIKit
 class StoryCompositionViewController: TransitableViewController {
   
   var staticTableViewController: StoryEntryViewController?
-  
+
+  var restoreStoryDelegate: restoreStoryDelegate? {
+    didSet {
+      staticTableViewController?.restoreStoryDelegate = restoreStoryDelegate
+    }
+  }
+
   var workingStory: FoodieStory? {
     didSet {
       staticTableViewController?.workingStory = workingStory
@@ -45,6 +51,7 @@ class StoryCompositionViewController: TransitableViewController {
     viewController.returnedMoments = returnedMoments
     viewController.markupMoment = markupMoment
     viewController.containerVC = self
+    viewController.restoreStoryDelegate = restoreStoryDelegate
     
     addChildViewController(viewController)
     view.addSubview(viewController.view)

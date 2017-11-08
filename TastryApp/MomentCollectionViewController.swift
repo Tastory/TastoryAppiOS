@@ -83,8 +83,8 @@ class MomentCollectionViewController: UICollectionViewController {
 
     // Long Press detected on a Moment Thumbnail. Set that as the Story Thumbnail
     // TODO: Do we need to factor out thumbnail operations?
-    currentStory.thumbnailFileName = momentArray[indexPath.row].thumbnailFileName
-    currentStory.thumbnail = momentArray[indexPath.row].thumbnail
+    currentStory.thumbnailFileName = momentArray[indexPath.item].thumbnailFileName
+    currentStory.thumbnail = momentArray[indexPath.item].thumbnail
 
     // Unhide the Thumbnail Frame to give feedback to user that this is the Story Thumbnail
     cell.thumbFrameView.isHidden = false
@@ -186,14 +186,14 @@ class MomentCollectionViewController: UICollectionViewController {
     }
 
 
-    if(indexPath.row >= momentArray.count)
+    if(indexPath.item >= momentArray.count)
     {
       AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { action in
         CCLog.fatal("Moment selection is out of bound")
       }
     }
 
-    let moment = momentArray[indexPath.row]
+    let moment = momentArray[indexPath.item]
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
@@ -217,7 +217,40 @@ class MomentCollectionViewController: UICollectionViewController {
     self.present(viewController, animated: true)
 
   }
-  
+
+  private func loadImage(to cell: UICollectionViewCell? = nil, in collectionView: UICollectionView, forItemAt indexPath: IndexPath) {
+
+    guard let momentArray = workingStory.moments else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("No Moments for workingStory \(self.workingStory.getUniqueIdentifier())")
+      }
+      return
+    }
+
+    if let reusableCell = (cell ?? collectionView.cellForItem(at: indexPath)) as? MomentCollectionViewCell {
+      let moment = momentArray[indexPath.item]
+
+      DispatchQueue.main.async() {
+        reusableCell.momentThumb.image = UIImage(data: moment.thumbnail!.imageMemoryBuffer!)
+
+        // Should Thumbnail frame be hidden?
+        reusableCell.createFrameLayer()
+        if self.workingStory.thumbnailFileName != nil, self.workingStory.thumbnailFileName == moment.thumbnailFileName {
+          reusableCell.thumbFrameView.isHidden = false
+        } else {
+          reusableCell.thumbFrameView.isHidden = true
+        }
+
+        reusableCell.delegate = self
+        reusableCell.activityIndicator.stopAnimating()
+        reusableCell.deleteButton.isHidden = false
+      }
+    } else {
+      CCLog.debug("No cell provided or found for story \(self.workingStory.getUniqueIdentifier()))!!!")
+      collectionView.reloadItems(at: [indexPath])
+    }
+  }
+
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -228,6 +261,8 @@ class MomentCollectionViewController: UICollectionViewController {
 
     let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(reorderMoment(_:)))
     collectionView.addGestureRecognizer(longPressGesture)
+
+    collectionView.decelerationRate = UIScrollViewDecelerationRateFast
 
     if(workingStory.isEditStory) {
       // retrieve story only when in edit mode
@@ -281,84 +316,72 @@ extension MomentCollectionViewController {
       return cell
     }
     
-    if indexPath.row >= momentArray.count {
+    if indexPath.item >= momentArray.count {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
-        CCLog.assert("Moment Array for Story \(self.workingStory.getUniqueIdentifier()) index out of range - indexPath.row \(indexPath.row) >= momentArray.count \(momentArray.count)")
+        CCLog.assert("Moment Array for Story \(self.workingStory.getUniqueIdentifier()) index out of range - indexPath.item \(indexPath.item) >= momentArray.count \(momentArray.count)")
       }
       return cell
     }
     
-    let moment = momentArray[indexPath.row]
+    let moment = momentArray[indexPath.item]
     
     cell.activityIndicator.hidesWhenStopped = true
     cell.activityIndicator.startAnimating()
     cell.deleteButton.isHidden = true
 
+    if(moment.thumbnail?.imageMemoryBuffer != nil) {
+      loadImage(to: cell, in: collectionView, forItemAt: indexPath)
+    } else {
+      _  = moment.retrieveRecursive(from: .both, type: .cache) { (error) in
 
-    _  = moment.retrieveRecursive(from: .both, type: .cache) { (error) in
-
-      if let error = error {
-        CCLog.warning("Error retrieving story into cache caused by: \(error.localizedDescription)")
-        return
-      }
-
-      guard let thumbnailObj = moment.thumbnail else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
-          CCLog.assert("No Thumbnail Object for Moment \(moment.getUniqueIdentifier())")
+        if let error = error {
+          CCLog.warning("Error retrieving story into cache caused by: \(error.localizedDescription)")
+          return
         }
-        return
-      }
 
-      guard let thumbnailFileName = moment.thumbnailFileName else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
-          CCLog.assert("No Thumbnail Filename for Moment \(moment.getUniqueIdentifier())")
+        guard let thumbnailObj = moment.thumbnail else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
+            CCLog.assert("No Thumbnail Object for Moment \(moment.getUniqueIdentifier())")
+          }
+          return
         }
-        return
-      }
 
-      if thumbnailObj.imageMemoryBuffer == nil {
-        do {
-          try thumbnailObj.imageMemoryBuffer = Data(contentsOf: FoodieFileObject.Constants.DraftStoryMediaFolderUrl.appendingPathComponent(thumbnailFileName))
-        } catch {
-          AlertDialog.present(from: self, title: "File Read Error", message: "Cannot read image file from local flash storage") { action in
-            CCLog.assert("Cannot read image file \(thumbnailFileName)")
+        guard let thumbnailFileName = moment.thumbnailFileName else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
+            CCLog.assert("No Thumbnail Filename for Moment \(moment.getUniqueIdentifier())")
+          }
+          return
+        }
+
+        if thumbnailObj.imageMemoryBuffer == nil {
+          do {
+            try thumbnailObj.imageMemoryBuffer = Data(contentsOf: FoodieFileObject.Constants.DraftStoryMediaFolderUrl.appendingPathComponent(thumbnailFileName))
+          } catch {
+            AlertDialog.present(from: self, title: "File Read Error", message: "Cannot read image file from local flash storage") { action in
+              CCLog.assert("Cannot read image file \(thumbnailFileName)")
+            }
           }
         }
-      }
-
-      if(cell.viewButton.gestureRecognizers == nil) {
 
         DispatchQueue.main.async {
-          let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.thumbnailGesture(_:)))
-          tapRecognizer.numberOfTapsRequired = 1
-          cell.viewButton.isUserInteractionEnabled = true
-          cell.viewButton.addGestureRecognizer(tapRecognizer)
 
-          let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.editMoment(_:)))
-          doubleTapRecognizer.numberOfTapsRequired = 2
-          cell.viewButton.addGestureRecognizer(doubleTapRecognizer)
-          tapRecognizer.require(toFail: doubleTapRecognizer)
+          if(cell.viewButton.gestureRecognizers == nil) {
+            let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.thumbnailGesture(_:)))
+            tapRecognizer.numberOfTapsRequired = 1
+            cell.viewButton.isUserInteractionEnabled = true
+            cell.viewButton.addGestureRecognizer(tapRecognizer)
+
+            let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.editMoment(_:)))
+            doubleTapRecognizer.numberOfTapsRequired = 2
+            cell.viewButton.addGestureRecognizer(doubleTapRecognizer)
+            tapRecognizer.require(toFail: doubleTapRecognizer)
+          }
+
+          // check to see if indexPath is within the visible items
+          if(collectionView.indexPathsForVisibleItems.contains(indexPath)) {
+            self.loadImage(in: collectionView, forItemAt: indexPath)
+          }
         }
-      }
-
-      DispatchQueue.main.async {
-
-        // referencing a cell using the original indexpath doesnt seem to work here just reuse cell reference in the first place
-        if(cell.momentThumb.image == nil) {
-          cell.momentThumb.image = UIImage(data: moment.thumbnail!.imageMemoryBuffer!)
-        }
-
-        // Should Thumbnail frame be hidden?
-        cell.createFrameLayer()
-        if self.workingStory.thumbnailFileName != nil, self.workingStory.thumbnailFileName == moment.thumbnailFileName {
-          cell.thumbFrameView.isHidden = false
-        } else {
-          cell.thumbFrameView.isHidden = true
-        }
-
-        cell.delegate = self
-        cell.activityIndicator.stopAnimating()
-        cell.deleteButton.isHidden = false
       }
     }
 
@@ -509,14 +532,14 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
         // if the deleted item is the one with the thumnail, select next in the list
         if self.workingStory.thumbnailFileName == moment.thumbnailFileName {
 
-          var rowIdx = indexPath.row + 1
-          if(rowIdx >= collectionView.visibleCells.count)
+          var itemIdx = indexPath.item + 1
+          if(itemIdx >= collectionView.visibleCells.count)
           {
-            rowIdx = indexPath.row - 1
+            itemIdx = indexPath.item - 1
           }
 
           // row is the index of the moment array
-          self.setThumbnail(IndexPath(row: rowIdx, section: indexPath.section))
+          self.setThumbnail(IndexPath(item: itemIdx, section: indexPath.section))
         }
  
         // Delete the Moment

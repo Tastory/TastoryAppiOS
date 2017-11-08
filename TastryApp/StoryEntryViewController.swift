@@ -45,6 +45,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
   var containerVC: MarkupReturnDelegate?
+  var restoreStoryDelegate: restoreStoryDelegate?
   
   // MARK: - Private Instance Variables
   fileprivate var momentViewController = MomentCollectionViewController()
@@ -103,8 +104,9 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   }
 
   @IBAction func discardStory(_ sender: UIButton) {
-    StorySelector.showStoryDiscardDialog(to: self) {
-      self.workingStory = nil
+    StorySelector.showStoryDiscardDialog(to: self,
+                                         message: "Are you sure you want to discard your edited Story?",
+                                         title: "Discard Edit") {
       self.activitySpinner.apply()
       FoodieStory.cleanUpDraft() { error in
         if let error = error {
@@ -113,6 +115,18 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
             CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
           }
         }
+
+        guard let story = self.workingStory else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
+          CCLog.fatal("No Working Story when discarding story")
+        }
+
+        if(story.isEditStory) {
+          self.restoreStoryDelegate?.updateStory(story)
+        }
+
+        self.workingStory = nil
+
         self.dismiss(animated: true, completion: nil)
         self.activitySpinner.remove()
       }
@@ -172,15 +186,19 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
                 CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
               }
             }
+          }
 
-            self.workingStory = nil
-            self.activitySpinner.remove()
+          if(story.isEditStory) {
+            self.restoreStoryDelegate?.updateStory(story)
+          }
 
-            // Pop-up Alert Dialog and then Dismiss
-            CCLog.info("Story Posted!")
-            AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
-              self.dismiss(animated: true, completion: nil)
-            }
+          self.workingStory = nil
+          self.activitySpinner.remove()
+
+          // Pop-up Alert Dialog and then Dismiss
+          CCLog.info("Story Posted!")
+          AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
+            self.dismiss(animated: true, completion: nil)
           }
         }
       }

@@ -8,6 +8,9 @@
 
 import UIKit
 
+protocol restoreStoryDelegate {
+  func updateStory(_ story: FoodieStory)
+}
 
 class FeedCollectionViewController: UICollectionViewController {
   
@@ -18,7 +21,8 @@ class FeedCollectionViewController: UICollectionViewController {
     static let DefaultPadding: CGFloat = 1.0
   }
   
-  
+  // MARK: - Private Instance Variable
+  var lastIndexPath: IndexPath?
   
   // MARK: - Public Instance Variable
   var scrollViewInset: CGFloat = 0.0
@@ -54,7 +58,7 @@ class FeedCollectionViewController: UICollectionViewController {
       reusableCell.storyButton?.imageView?.contentMode = .scaleAspectFill
       reusableCell.activityIndicator?.isHidden = true
       reusableCell.activityIndicator?.stopAnimating()
-      reusableCell.editButton.isHidden = false
+      reusableCell.editButton.isHidden = !enableEdit
       reusableCell.cellStory = storyArray[indexPath.row]
     } else {
       CCLog.debug("No cell provided or found to display Story \(storyArray[indexPath.row].getUniqueIdentifier())!!!")
@@ -74,6 +78,7 @@ class FeedCollectionViewController: UICollectionViewController {
       }
       viewController.workingStory = story
       viewController.setTransition(presentTowards: .left, dismissTowards: .right)
+      viewController.restoreStoryDelegate = self
       DispatchQueue.main.async {
         self.present(viewController, animated: true)
       }
@@ -103,7 +108,9 @@ class FeedCollectionViewController: UICollectionViewController {
   }
   
   @objc func editStory(_ sender: UIButton) {
-    let story:FoodieStory = storyArray[sender.tag]
+    let story = storyArray[sender.tag]
+    lastIndexPath = IndexPath(row: sender.tag, section: 0)
+
     // Stop all prefetches but the story being viewed
     FoodieFetch.global.cancelAllBut(for: story)
 
@@ -175,7 +182,6 @@ class FeedCollectionViewController: UICollectionViewController {
     reusableCell.storyButton?.addTarget(self, action: #selector(viewStory(_:)), for: .touchUpInside)
 
     if(enableEdit) {
-      reusableCell.editButton.isHidden = false
       reusableCell.editButton.tag = indexPath.row
       reusableCell.editButton?.addTarget(self, action: #selector(editStory(_:)), for: .touchUpInside)
     }
@@ -194,7 +200,6 @@ class FeedCollectionViewController: UICollectionViewController {
     if shouldRetrieveDigest {
       reusableCell.activityIndicator?.isHidden = false
       reusableCell.activityIndicator?.startAnimating()
-      reusableCell.editButton.isHidden = true
       let digestOperation = StoryOperation(with: .digest, on: story, completion: nil)
       FoodieFetch.global.queue(digestOperation, at: .high)
       
@@ -258,5 +263,28 @@ extension FeedCollectionViewController: UICollectionViewDataSourcePrefetching {
       CCLog.verbose("collectionView cancelPrefetchingForItemsAt indexPath.row = \(indexPath.row)")
       FoodieFetch.global.cancel(for: storyArray[indexPath.row])
     }
+  }
+}
+
+extension FeedCollectionViewController: restoreStoryDelegate {
+  func updateStory(_ story: FoodieStory) {
+
+    guard let lastIndexPath = lastIndexPath else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.assert("The lastIndexPath is nil. This value should have been assigned before entering edit")
+      }
+      return
+    }
+
+    guard let collectionView = collectionView else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("CollectionView is nil. This is impossible.")
+      }
+      return
+    }
+
+    storyArray[lastIndexPath.row] = story
+    loadImage(to: nil, in: collectionView, forItemAt: lastIndexPath)
+
   }
 }
