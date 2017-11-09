@@ -38,12 +38,11 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // MARK: - Public Instance Variable
   
   var delegate: FeedCollectionNodeDelegate?
-  
+  var storyArray = [FoodieStory]()
   
   
   // MARK: - Private Instance Variable
   
-  private var storyArray: [FoodieStory]
   private var collectionNode: ASCollectionNode
   
   private var flowLayout: UICollectionViewFlowLayout
@@ -58,7 +57,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   // MARK: - Node Controller Lifecycle
   
-  init(with stories: [FoodieStory]) {
+  init(withHeaderInset headerInset: CGFloat = 0.0) {
     flowLayout = UICollectionViewFlowLayout()
     
     // For ASCollectionNode, it gets the Cell Constraint size via the itemSize property of the Layout via a Layout Inspector
@@ -69,11 +68,10 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     
     flowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
     flowLayout.estimatedItemSize = CGSize(width: itemWidth, height: itemHeight)
-    flowLayout.sectionInset = UIEdgeInsetsMake(0.0, feedNodeMargin, 0.0, feedNodeMargin)
+    flowLayout.sectionInset = UIEdgeInsetsMake(headerInset + feedNodeMargin, feedNodeMargin, 0.0, feedNodeMargin)
     flowLayout.minimumInteritemSpacing = feedNodeMargin
     flowLayout.minimumLineSpacing = feedNodeMargin
     
-    storyArray = stories
     allPagesFetched = false
     collectionNode = ASCollectionNode(collectionViewLayout: flowLayout)
 

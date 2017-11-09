@@ -11,21 +11,15 @@ import UIKit
 class ProfileViewController: OverlayViewController {
   
   // MARK: - Private Instance Variables
-  private var feedCollectionViewController: FeedCollectionViewController?
+  private var feedCollectionNodeController: FeedCollectionNodeController?
   fileprivate var activitySpinner: ActivitySpinner!
   
   // MARK: - Public Instance Variable
   var user: FoodieUser?
-  var query: FoodieQuery? {
-    didSet {
-      feedCollectionViewController?.storyQuery = query
-    }
-  }
-  
+  var query: FoodieQuery?
   var stories = [FoodieStory]() {
     didSet {
-      feedCollectionViewController?.storyArray = stories
-      feedCollectionViewController?.reloadData()
+      feedCollectionNodeController?.resetCollectionNode(with: stories)
     }
   }
   
@@ -114,6 +108,15 @@ class ProfileViewController: OverlayViewController {
       }
       self.stories = stories
     }
+      
+    let nodeController = FeedCollectionNodeController(withHeaderInset: navBar.frame.height)
+    nodeController.storyArray = stories
+    addChildViewController(nodeController)
+    feedContainerView.addSubview(nodeController.view)
+    nodeController.view.frame = feedContainerView.bounds
+    nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    nodeController.didMove(toParentViewController: self)
+    feedCollectionNodeController = nodeController
 
     // Setup a Feed VC into the Container View
     let storyboard = UIStoryboard(name: "Main", bundle: nil)

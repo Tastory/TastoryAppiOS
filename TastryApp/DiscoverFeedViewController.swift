@@ -20,7 +20,8 @@ class DiscoverFeedViewController: OverlayViewController {
       CCLog.fatal("No Stories when loading DiscoverFeedViewController")
     }
     
-    let nodeController = FeedCollectionNodeController(with: stories)
+    let nodeController = FeedCollectionNodeController()
+    nodeController.storyArray = stories
     addChildViewController(nodeController)
     view.addSubview(nodeController.view)
     nodeController.view.frame = view.bounds

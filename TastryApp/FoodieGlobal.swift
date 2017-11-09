@@ -33,7 +33,7 @@ struct FoodieGlobal {
     static let ThumbnailPixels = 640.0
     static let JpegCompressionQuality: Double = 0.8
     static let ThemeColor = UIColor(hue: 10.0/360.0, saturation: 0.9, brightness: 1.0, alpha: 1.0)
-    static let StoryFeedPaginationCount = 6  // TODO: Need to implement pagination
+    static let StoryFeedPaginationCount = 50  // TODO: Need to implement pagination
     static let DefaultServerRequestRetryCount = 3
     static let DefaultServerRequestRetryDelay = 3.0
     static let DefaultTransitionAnimationDuration: TimeInterval = 0.4

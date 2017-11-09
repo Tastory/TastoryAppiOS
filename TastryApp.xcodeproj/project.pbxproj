@@ -85,7 +85,7 @@
 		8CBF558E1E7F7EDF00F4B1CD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF558C1E7F7EDF00F4B1CD /* LaunchScreen.storyboard */; };
 		8CBF55991E7F7EDF00F4B1CD /* TastryAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55981E7F7EDF00F4B1CD /* TastryAppTests.swift */; };
 		8CBF55A41E7F7EDF00F4B1CD /* TastryAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55A31E7F7EDF00F4B1CD /* TastryAppUITests.swift */; };
-		8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55B11E80C72200F4B1CD /* MapViewController.swift */; };
+		8CBF55B21E80C72300F4B1CD /* DiscoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55B11E80C72200F4B1CD /* DiscoverViewController.swift */; };
 		8CC1101A1F92D07000ACBF9A /* FoodieFileObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */; };
 		8CC48D601EFC81CD003A0FC9 /* PrecisionTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */; };
 		8CCC7EFE1FA599440049AF00 /* FeedCollectionNodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */; };
@@ -230,7 +230,7 @@
 		8CBF559F1E7F7EDF00F4B1CD /* TastryAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TastryAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CBF55A31E7F7EDF00F4B1CD /* TastryAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TastryAppUITests.swift; sourceTree = "<group>"; };
 		8CBF55A51E7F7EDF00F4B1CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8CBF55B11E80C72200F4B1CD /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		8CBF55B11E80C72200F4B1CD /* DiscoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverViewController.swift; sourceTree = "<group>"; };
 		8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodieFileObject.swift; sourceTree = "<group>"; };
 		8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrecisionTime.swift; sourceTree = "<group>"; };
 		8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionNodeController.swift; sourceTree = "<group>"; };
@@ -555,7 +555,7 @@
 			isa = PBXGroup;
 			children = (
 				8CCDDA011FB3E7D500B066E7 /* MapNavController.swift */,
-				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
+				8CBF55B11E80C72200F4B1CD /* DiscoverViewController.swift */,
 				8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */,
 				C24F69641EB85B0300A0DB7B /* StoryViewController.swift */,
 				8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */,
@@ -1039,7 +1039,7 @@
 				8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */,
 				8C1D4E241EDCECCD00939B2C /* FeedCollectionViewCell.swift in Sources */,
 				8CBBED151F9D7E94008D4B12 /* ProfileTableSaveFooterView.swift in Sources */,
-				8CBF55B21E80C72300F4B1CD /* MapViewController.swift in Sources */,
+				8CBF55B21E80C72300F4B1CD /* DiscoverViewController.swift in Sources */,
 				8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */,
 				8CD5A4E91F9C16AC00CFD670 /* PasswordTableViewController.swift in Sources */,
 				8CCC7EFE1FA599440049AF00 /* FeedCollectionNodeController.swift in Sources */,

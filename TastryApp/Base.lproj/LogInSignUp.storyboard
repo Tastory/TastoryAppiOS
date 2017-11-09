@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="HelveticaNeueLights.ttc">
+            <string>HelveticaNeue-Light</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--Root View Controller-->
         <scene sceneID="r7f-iY-Fh7">
             <objects>
-                <viewController storyboardIdentifier="RootViewController" id="r8A-E3-4xQ" customClass="RootViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="ol9-6T-3Em"/>
-                        <viewControllerLayoutGuide type="bottom" id="dU9-Dx-WPv"/>
-                    </layoutGuides>
+                <viewController storyboardIdentifier="RootViewController" id="r8A-E3-4xQ" customClass="RootViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="y2k-IU-Ekh">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -59,13 +61,14 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="trS-uE-7SE" firstAttribute="leading" secondItem="y2k-IU-Ekh" secondAttribute="leading" id="2Hi-Nd-huC"/>
-                            <constraint firstItem="dU9-Dx-WPv" firstAttribute="top" secondItem="trS-uE-7SE" secondAttribute="bottom" id="7Bo-7k-tI2"/>
-                            <constraint firstItem="vRZ-ec-eAf" firstAttribute="centerX" secondItem="y2k-IU-Ekh" secondAttribute="centerX" id="Oqe-Ml-gXr"/>
+                            <constraint firstItem="trS-uE-7SE" firstAttribute="leading" secondItem="oLu-Rs-Bg1" secondAttribute="leading" id="2Hi-Nd-huC"/>
+                            <constraint firstItem="oLu-Rs-Bg1" firstAttribute="bottom" secondItem="trS-uE-7SE" secondAttribute="bottom" id="7Bo-7k-tI2"/>
+                            <constraint firstItem="vRZ-ec-eAf" firstAttribute="centerX" secondItem="oLu-Rs-Bg1" secondAttribute="centerX" id="Oqe-Ml-gXr"/>
                             <constraint firstItem="trS-uE-7SE" firstAttribute="top" secondItem="y2k-IU-Ekh" secondAttribute="top" id="sfu-Wd-tEb"/>
-                            <constraint firstAttribute="trailing" secondItem="trS-uE-7SE" secondAttribute="trailing" id="wRY-OY-vo4"/>
+                            <constraint firstItem="oLu-Rs-Bg1" firstAttribute="trailing" secondItem="trS-uE-7SE" secondAttribute="trailing" id="wRY-OY-vo4"/>
                             <constraint firstItem="vRZ-ec-eAf" firstAttribute="centerY" secondItem="y2k-IU-Ekh" secondAttribute="centerY" id="woo-Cx-DZt"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="oLu-Rs-Bg1"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gk8-hG-rpq" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -75,11 +78,7 @@
         <!--Log In View Controller-->
         <scene sceneID="cYh-zV-tCI">
             <objects>
-                <viewController storyboardIdentifier="LogInViewController" id="GhP-Wz-P7h" customClass="LogInViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="327-wz-IQs"/>
-                        <viewControllerLayoutGuide type="bottom" id="iUK-SE-whw"/>
-                    </layoutGuides>
+                <viewController storyboardIdentifier="LogInViewController" id="GhP-Wz-P7h" customClass="LogInViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="KOj-wo-6H1">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -247,12 +246,13 @@
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="QX6-T3-Zcm" firstAttribute="centerY" secondItem="KOj-wo-6H1" secondAttribute="centerY" id="0cv-mR-51T"/>
-                            <constraint firstItem="DTg-fa-6MR" firstAttribute="leading" secondItem="KOj-wo-6H1" secondAttribute="leading" id="6Ce-Hm-Seh"/>
-                            <constraint firstItem="iUK-SE-whw" firstAttribute="top" secondItem="DTg-fa-6MR" secondAttribute="bottom" id="AJq-Lz-t8A"/>
+                            <constraint firstItem="DTg-fa-6MR" firstAttribute="leading" secondItem="Xv6-vk-zCF" secondAttribute="leading" id="6Ce-Hm-Seh"/>
+                            <constraint firstItem="Xv6-vk-zCF" firstAttribute="bottom" secondItem="DTg-fa-6MR" secondAttribute="bottom" id="AJq-Lz-t8A"/>
                             <constraint firstItem="DTg-fa-6MR" firstAttribute="top" secondItem="KOj-wo-6H1" secondAttribute="top" id="P0q-dx-eJ8"/>
-                            <constraint firstAttribute="trailing" secondItem="DTg-fa-6MR" secondAttribute="trailing" id="UxL-zr-ATv"/>
-                            <constraint firstItem="QX6-T3-Zcm" firstAttribute="centerX" secondItem="KOj-wo-6H1" secondAttribute="centerX" id="nKC-on-9PL"/>
+                            <constraint firstItem="Xv6-vk-zCF" firstAttribute="trailing" secondItem="DTg-fa-6MR" secondAttribute="trailing" id="UxL-zr-ATv"/>
+                            <constraint firstItem="QX6-T3-Zcm" firstAttribute="centerX" secondItem="Xv6-vk-zCF" secondAttribute="centerX" id="nKC-on-9PL"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="Xv6-vk-zCF"/>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="pzC-uj-Z0n" appends="YES" id="9YJ-3G-PUu"/>
                         </connections>
@@ -279,11 +279,7 @@
         <!--Email Reset View Controller-->
         <scene sceneID="bcb-Cd-OJ8">
             <objects>
-                <viewController storyboardIdentifier="EmailResetViewController" id="SvV-zZ-u5m" customClass="EmailResetViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="6ca-HF-5i6"/>
-                        <viewControllerLayoutGuide type="bottom" id="ecx-pe-LRs"/>
-                    </layoutGuides>
+                <viewController storyboardIdentifier="EmailResetViewController" id="SvV-zZ-u5m" customClass="EmailResetViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="wyw-h9-P71">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -291,8 +287,8 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TastryTempBgWhite" translatesAutoresizingMaskIntoConstraints="NO" id="mkc-Qz-nEF">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tx1-fg-yuN" userLabel="Exit Button" customClass="ExitButton" customModule="EatellyApp" customModuleProvider="target">
-                                <rect key="frame" x="16" y="28" width="35" height="35"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tx1-fg-yuN" userLabel="Exit Button" customClass="ExitButton" customModule="TastryApp" customModuleProvider="target">
+                                <rect key="frame" x="16" y="20" width="35" height="35"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="35" id="AiX-rw-ycm"/>
                                     <constraint firstAttribute="width" constant="35" id="R3i-en-FTR"/>
@@ -302,16 +298,16 @@
                                 </connections>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" alignment="center" spacing="18" translatesAutoresizingMaskIntoConstraints="NO" id="XiB-tt-ZDa">
-                                <rect key="frame" x="10" y="195" width="300" height="177.5"/>
+                                <rect key="frame" x="10" y="226.5" width="300" height="115"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please enter the E-mail address for the account you are wishing to have it's password reset" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bCn-PL-KaN">
-                                        <rect key="frame" x="2.5" y="0.0" width="295" height="64.5"/>
+                                        <rect key="frame" x="150" y="0.0" width="0.0" height="0.0"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                         <color key="textColor" red="0.1333333333" green="0.1333333333" blue="0.1333333333" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="88p-LY-cs1">
-                                        <rect key="frame" x="0.0" y="82.5" width="300" height="28"/>
+                                        <rect key="frame" x="0.0" y="35" width="300" height="28"/>
                                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.20000000000000001" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="28" id="g1C-tZ-Xnq"/>
@@ -322,7 +318,7 @@
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0TJ-Tv-16c">
-                                        <rect key="frame" x="126" y="143.5" width="48" height="34"/>
+                                        <rect key="frame" x="126" y="81" width="48" height="34"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
                                         <state key="normal" title="Reset"/>
                                         <connections>
@@ -337,15 +333,16 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="mkc-Qz-nEF" firstAttribute="leading" secondItem="wyw-h9-P71" secondAttribute="leading" id="2ML-FV-7xy"/>
+                            <constraint firstItem="mkc-Qz-nEF" firstAttribute="leading" secondItem="ssA-jC-AEP" secondAttribute="leading" id="2ML-FV-7xy"/>
                             <constraint firstItem="XiB-tt-ZDa" firstAttribute="centerY" secondItem="wyw-h9-P71" secondAttribute="centerY" id="3Fr-LF-Fbg"/>
-                            <constraint firstItem="XiB-tt-ZDa" firstAttribute="centerX" secondItem="wyw-h9-P71" secondAttribute="centerX" id="9ef-Tc-fJy"/>
+                            <constraint firstItem="XiB-tt-ZDa" firstAttribute="centerX" secondItem="ssA-jC-AEP" secondAttribute="centerX" id="9ef-Tc-fJy"/>
                             <constraint firstItem="mkc-Qz-nEF" firstAttribute="top" secondItem="wyw-h9-P71" secondAttribute="top" id="J26-Qg-WPX"/>
                             <constraint firstItem="Tx1-fg-yuN" firstAttribute="leading" secondItem="wyw-h9-P71" secondAttribute="leadingMargin" id="MJ4-zC-hlU"/>
-                            <constraint firstAttribute="trailing" secondItem="mkc-Qz-nEF" secondAttribute="trailing" id="RM7-u1-24d"/>
-                            <constraint firstItem="ecx-pe-LRs" firstAttribute="top" secondItem="mkc-Qz-nEF" secondAttribute="bottom" id="b4h-1V-0iA"/>
-                            <constraint firstItem="Tx1-fg-yuN" firstAttribute="top" secondItem="6ca-HF-5i6" secondAttribute="bottom" constant="8" symbolic="YES" id="phN-A0-uJ9"/>
+                            <constraint firstItem="ssA-jC-AEP" firstAttribute="trailing" secondItem="mkc-Qz-nEF" secondAttribute="trailing" id="RM7-u1-24d"/>
+                            <constraint firstItem="ssA-jC-AEP" firstAttribute="bottom" secondItem="mkc-Qz-nEF" secondAttribute="bottom" id="b4h-1V-0iA"/>
+                            <constraint firstItem="Tx1-fg-yuN" firstAttribute="top" secondItem="ssA-jC-AEP" secondAttribute="top" constant="8" symbolic="YES" id="phN-A0-uJ9"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="ssA-jC-AEP"/>
                     </view>
                     <connections>
                         <outlet property="emailField" destination="88p-LY-cs1" id="zxy-06-ZOJ"/>
@@ -359,11 +356,7 @@
         <!--Sign Up View Controller-->
         <scene sceneID="1mq-CY-cVV">
             <objects>
-                <viewController storyboardIdentifier="SignUpViewController" id="Fgd-ff-eel" customClass="SignUpViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="oNy-CK-oa3"/>
-                        <viewControllerLayoutGuide type="bottom" id="yEy-4X-EfE"/>
-                    </layoutGuides>
+                <viewController storyboardIdentifier="SignUpViewController" id="Fgd-ff-eel" customClass="SignUpViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8H4-E5-lLt">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -502,8 +495,8 @@
                                     <action selector="hideShowPwdAction:" destination="Fgd-ff-eel" eventType="touchUpInside" id="FQu-h2-aVa"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UKG-X3-dVy" userLabel="Exit Button" customClass="ExitButton" customModule="EatellyApp" customModuleProvider="target">
-                                <rect key="frame" x="16" y="28" width="35" height="35"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UKG-X3-dVy" userLabel="Exit Button" customClass="ExitButton" customModule="TastryApp" customModuleProvider="target">
+                                <rect key="frame" x="16" y="20" width="35" height="35"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="35" id="X11-fY-LA6"/>
                                     <constraint firstAttribute="height" constant="35" id="f89-vE-N8Z"/>
@@ -516,17 +509,18 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
-                            <constraint firstItem="UKG-X3-dVy" firstAttribute="top" secondItem="oNy-CK-oa3" secondAttribute="bottom" constant="8" symbolic="YES" id="0oB-yd-96F"/>
+                            <constraint firstItem="UKG-X3-dVy" firstAttribute="top" secondItem="Dzp-Vj-yel" secondAttribute="top" constant="8" symbolic="YES" id="0oB-yd-96F"/>
                             <constraint firstItem="UKG-X3-dVy" firstAttribute="leading" secondItem="8H4-E5-lLt" secondAttribute="leadingMargin" id="8VM-bi-i9e"/>
                             <constraint firstItem="0ER-Mz-df0" firstAttribute="trailing" secondItem="EqR-R0-hX7" secondAttribute="trailingMargin" id="9MU-0f-u1Q"/>
                             <constraint firstItem="0n1-th-zfM" firstAttribute="centerY" secondItem="8H4-E5-lLt" secondAttribute="centerY" id="Da9-f3-mN5"/>
-                            <constraint firstItem="yEy-4X-EfE" firstAttribute="top" secondItem="PKn-NJ-WWl" secondAttribute="bottom" id="GXi-Xy-4Ap"/>
-                            <constraint firstAttribute="trailing" secondItem="PKn-NJ-WWl" secondAttribute="trailing" id="US5-5f-Ott"/>
+                            <constraint firstItem="Dzp-Vj-yel" firstAttribute="bottom" secondItem="PKn-NJ-WWl" secondAttribute="bottom" id="GXi-Xy-4Ap"/>
+                            <constraint firstItem="Dzp-Vj-yel" firstAttribute="trailing" secondItem="PKn-NJ-WWl" secondAttribute="trailing" id="US5-5f-Ott"/>
                             <constraint firstItem="0ER-Mz-df0" firstAttribute="centerY" secondItem="EqR-R0-hX7" secondAttribute="centerY" id="UdZ-6J-8NA"/>
-                            <constraint firstItem="0n1-th-zfM" firstAttribute="centerX" secondItem="8H4-E5-lLt" secondAttribute="centerX" id="YO6-Bi-Lhp"/>
+                            <constraint firstItem="0n1-th-zfM" firstAttribute="centerX" secondItem="Dzp-Vj-yel" secondAttribute="centerX" id="YO6-Bi-Lhp"/>
                             <constraint firstItem="PKn-NJ-WWl" firstAttribute="top" secondItem="8H4-E5-lLt" secondAttribute="top" id="YVB-jo-80M"/>
-                            <constraint firstItem="PKn-NJ-WWl" firstAttribute="leading" secondItem="8H4-E5-lLt" secondAttribute="leading" id="yZk-Ml-ghl"/>
+                            <constraint firstItem="PKn-NJ-WWl" firstAttribute="leading" secondItem="Dzp-Vj-yel" secondAttribute="leading" id="yZk-Ml-ghl"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="Dzp-Vj-yel"/>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="rBX-ps-aQv" appends="YES" id="GDJ-CI-0Kc"/>
                         </connections>
@@ -552,11 +546,7 @@
         <!--Intro View Controller-->
         <scene sceneID="7pA-bL-JVv">
             <objects>
-                <viewController storyboardIdentifier="IntroViewController" id="ttf-lQ-Vle" customClass="IntroViewController" customModule="EatellyApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Kml-9I-4PD"/>
-                        <viewControllerLayoutGuide type="bottom" id="07A-Kr-q3K"/>
-                    </layoutGuides>
+                <viewController storyboardIdentifier="IntroViewController" id="ttf-lQ-Vle" customClass="IntroViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="tD9-2K-JXI">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -565,7 +555,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                             </imageView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" translatesAutoresizingMaskIntoConstraints="NO" id="tO9-dh-gdi">
-                                <rect key="frame" x="10" y="184.5" width="300" height="200"/>
+                                <rect key="frame" x="10" y="184" width="300" height="200"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please make sure you confirm your E-mail so you can start posting." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ux7-SI-0g8">
                                         <rect key="frame" x="0.0" y="0.0" width="300" height="45"/>
@@ -635,13 +625,14 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="98g-FQ-eQc" secondAttribute="trailing" id="4St-Ti-wl2"/>
-                            <constraint firstItem="07A-Kr-q3K" firstAttribute="top" secondItem="98g-FQ-eQc" secondAttribute="bottom" id="HXH-5f-tvW"/>
+                            <constraint firstItem="n9s-6T-Q7g" firstAttribute="trailing" secondItem="98g-FQ-eQc" secondAttribute="trailing" id="4St-Ti-wl2"/>
+                            <constraint firstItem="n9s-6T-Q7g" firstAttribute="bottom" secondItem="98g-FQ-eQc" secondAttribute="bottom" id="HXH-5f-tvW"/>
                             <constraint firstItem="tO9-dh-gdi" firstAttribute="centerY" secondItem="tD9-2K-JXI" secondAttribute="centerY" id="J8c-mX-erG"/>
-                            <constraint firstItem="tO9-dh-gdi" firstAttribute="centerX" secondItem="tD9-2K-JXI" secondAttribute="centerX" id="Roo-fL-hp4"/>
+                            <constraint firstItem="tO9-dh-gdi" firstAttribute="centerX" secondItem="n9s-6T-Q7g" secondAttribute="centerX" id="Roo-fL-hp4"/>
                             <constraint firstItem="98g-FQ-eQc" firstAttribute="top" secondItem="tD9-2K-JXI" secondAttribute="top" id="j0N-ap-Rrp"/>
-                            <constraint firstItem="98g-FQ-eQc" firstAttribute="leading" secondItem="tD9-2K-JXI" secondAttribute="leading" id="mnI-As-gac"/>
+                            <constraint firstItem="98g-FQ-eQc" firstAttribute="leading" secondItem="n9s-6T-Q7g" secondAttribute="leading" id="mnI-As-gac"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="n9s-6T-Q7g"/>
                     </view>
                     <connections>
                         <outlet property="firstLabel" destination="ux7-SI-0g8" id="ADD-8Z-N1c"/>
