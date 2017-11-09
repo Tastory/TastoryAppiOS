@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ProfileViewController: TransitableViewController {
+class ProfileViewController: OverlayViewController {
   
   // MARK: - Private Instance Variables
   private var feedCollectionViewController: FeedCollectionViewController?
@@ -50,7 +50,7 @@ class ProfileViewController: TransitableViewController {
       }
       return
     }
-    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
     self.present(viewController, animated: true)
     
 //    let storyboard = UIStoryboard(name: "Settings", bundle: nil)

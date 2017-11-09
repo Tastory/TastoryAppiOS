@@ -11,7 +11,7 @@ import AVFoundation
 import SafariServices
 import Jot
 
-class StoryViewController: TransitableViewController {
+class StoryViewController: OverlayViewController {
   
   // MARK: - Constants
   struct Constants {
@@ -520,7 +520,7 @@ class StoryViewController: TransitableViewController {
     swipeUpGestureRecognizer.direction = .up
     swipeUpGestureRecognizer.numberOfTouchesRequired = 1
     view.addGestureRecognizer(swipeUpGestureRecognizer)
-    dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)  // This is needed so that the Swipe down to dismiss from TransitableViewController will only have an effect if this is not a Swipe Up to Safari
+    dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)  // This is needed so that the Swipe down to dismiss from OverlayViewController will only have an effect if this is not a Swipe Up to Safari
   }
 
   

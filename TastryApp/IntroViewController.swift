@@ -8,7 +8,7 @@
 
 import UIKit
 
-class IntroViewController: TransitableViewController {
+class IntroViewController: OverlayViewController {
   
   // MARK: - Public Instance Function
   var firstLabelText: String?
@@ -112,7 +112,7 @@ class IntroViewController: TransitableViewController {
       }
       return
     }
-    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
     self.present(viewController, animated: true)
   }
   

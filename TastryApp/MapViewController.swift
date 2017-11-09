@@ -11,7 +11,7 @@ import MapKit
 import CoreLocation
 
 
-class MapViewController: TransitableViewController {
+class MapViewController: OverlayViewController {
 
   // MARK: Error Types
   enum ErrorCode: LocalizedError {
@@ -119,7 +119,7 @@ class MapViewController: TransitableViewController {
       viewController.workingStory = FoodieStory.currentStory
     }
     
-    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
     self.present(viewController, animated: true)
   }
   
@@ -267,7 +267,7 @@ class MapViewController: TransitableViewController {
       return
     }
     viewController.user = FoodieUser.current
-    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
     self.present(viewController, animated: true)
   }
   
@@ -461,7 +461,7 @@ class MapViewController: TransitableViewController {
       return
     }
     viewController.storyArray = stories
-    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
     self.present(viewController, animated: true)
   }
   
@@ -845,7 +845,7 @@ extension MapViewController: UITextFieldDelegate {
         return false
       }
       viewController.delegate = self
-      viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
+      viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
       self.present(viewController, animated: true)
       return false
       
@@ -881,7 +881,7 @@ extension MapViewController: CameraReturnDelegate {
       viewController.returnedMoments = markedupMoments
       
       self.dismiss(animated: true) {
-        viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
+        viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
         self.present(viewController, animated: true)
       }
     }
@@ -925,7 +925,7 @@ extension MapViewController: MKMapViewDelegate {
     }
     
     viewController.viewingStory = story
-    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    viewController.setSlideTransition(presentTowards: .up, withGapSize: 5.0, dismissIsInteractive: true)
     self.present(viewController, animated: true)
   }
   

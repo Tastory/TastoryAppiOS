@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DiscoverFeedViewController: TransitableViewController {
+class DiscoverFeedViewController: OverlayViewController {
  
   // MARK: - Private Instance Variables
   var storyArray: [FoodieStory]?

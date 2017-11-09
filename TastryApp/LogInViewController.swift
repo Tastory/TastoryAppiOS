@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LogInViewController: TransitableViewController {
+class LogInViewController: OverlayViewController {
   
   
   // MARK: - IBOutlet
@@ -96,7 +96,7 @@ class LogInViewController: TransitableViewController {
     
     viewController.username = usernameField.text
     viewController.password = passwordField.text
-    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
     self.present(viewController, animated: true)
   }
   
@@ -114,7 +114,7 @@ class LogInViewController: TransitableViewController {
     if let logInText = usernameField.text, FoodieUser.checkValidFor(email: logInText) {
       viewController.emailAddress = logInText
     }
-    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    viewController.setSlideTransition(presentTowards: .up, withGapSize: 5.0, dismissIsInteractive: true)
     self.present(viewController, animated: true)
   }
   
@@ -138,7 +138,7 @@ class LogInViewController: TransitableViewController {
         }
         return
       }
-      viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
+      viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
       self.present(viewController, animated: true)
     }
   }
@@ -218,7 +218,7 @@ class LogInViewController: TransitableViewController {
           viewController.enableResend = true
         }
         
-        viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
+        viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
         self.present(viewController, animated: true, completion: nil)
       }
     }

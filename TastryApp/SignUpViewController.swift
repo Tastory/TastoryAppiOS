@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SignUpViewController: TransitableViewController {
+class SignUpViewController: OverlayViewController {
   
   
   // MARK: - Public Instance Variable
@@ -134,7 +134,7 @@ class SignUpViewController: TransitableViewController {
         viewController.firstLabelText = "Please make sure you confirm your E-mail so you can start posting"
         viewController.secondLabelText = "For now, you can start by checking out what Tasty Stories are around you~"
         viewController.enableResend = false
-        viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
+        viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
         self.present(viewController, animated: true)
       }
     }

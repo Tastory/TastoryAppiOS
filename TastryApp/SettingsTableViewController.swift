@@ -38,7 +38,7 @@ class SettingsTableViewController: UITableViewController {
     }
     
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
-    var pushViewController: TransitableViewController?
+    var pushViewController: OverlayViewController?
   
     if indexPath.section == 0, indexPath.row == 0 {
       guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileDetailViewController") as? ProfileDetailViewController else {
@@ -93,7 +93,7 @@ class SettingsTableViewController: UITableViewController {
     }
     
     if let viewController = pushViewController {
-      viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
+      viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
       navigationController.pushViewController(viewController, animated: true)
     }
   }

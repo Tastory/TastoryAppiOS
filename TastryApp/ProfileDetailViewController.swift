@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ProfileDetailViewController: TransitableViewController {
+class ProfileDetailViewController: OverlayViewController {
   
   var profileDetailTableViewController: ProfileDetailTableViewController?
   

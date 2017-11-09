@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SettingsViewController: TransitableViewController {
+class SettingsViewController: OverlayViewController {
   
   var settingsNavController: SettingsNavController?
   

@@ -27,7 +27,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // MARK: - Private Class Constants
   
   private struct Constants {
-    static let DefaultColumns: Int = 1
+    static let DefaultColumns: Int = 2
     static let DefaultFeedNodeMargin: CGFloat = 5.0
     static let DefaultCoverPhotoAspecRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
     static let DefaultFeedNodeCornerRadiusFraction = 0.05
@@ -138,13 +138,6 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
   
 
   func collectionNode(_ collectionNode: ASCollectionNode, numberOfItemsInSection section: Int) -> Int {
-    guard storyArray.count > 0 else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.assert("There must be more than 1 story supplied before displaying the FeedCollectionViewController")
-        self.dismiss(animated: true, completion: nil)
-      }
-      return 0
-    }
     return storyArray.count
   }
   
@@ -176,7 +169,16 @@ extension FeedCollectionNodeController: ASCollectionDelegate {
       return
     }
     viewController.viewingStory = story
-    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    //viewController.setSlideTransition(presentTowards: .up, withGapSize: 5.0, dismissIsInteractive: true)
+    
+    guard let popFromNode = collectionNode.nodeForItem(at: indexPath) else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("No Feed Collection Node for Index Path?")
+      }
+      return
+    }
+    viewController.setPopTransition(popFrom: popFromNode.view, dismissIsInteractive: true)
+    
     self.present(viewController, animated: true)
   }
   

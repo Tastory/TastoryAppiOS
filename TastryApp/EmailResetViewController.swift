@@ -8,7 +8,7 @@
 
 import UIKit
 
-class EmailResetViewController: TransitableViewController {
+class EmailResetViewController: OverlayViewController {
   
   
   // MARK: - Public Instance Variable

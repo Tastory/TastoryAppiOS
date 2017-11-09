@@ -58,7 +58,7 @@ class RootViewController: UIViewController {
         }
         return
       }
-      viewController.setTransition(presentTowards: .left, dismissTowards: .right)
+      viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
       self.present(viewController, animated: false, completion: nil)
       
     } else {
@@ -73,7 +73,7 @@ class RootViewController: UIViewController {
         }
         return
       }
-      viewController.setTransition(presentTowards: .left, dismissTowards: .right)
+      viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
       self.present(viewController, animated: false)
     }
   }

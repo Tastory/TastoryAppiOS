@@ -90,14 +90,19 @@
 		8CC48D601EFC81CD003A0FC9 /* PrecisionTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */; };
 		8CCC7EFE1FA599440049AF00 /* FeedCollectionNodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */; };
 		8CCC7F001FA5A32F0049AF00 /* FeedCollectionCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCC7EFF1FA5A32F0049AF00 /* FeedCollectionCellNode.swift */; };
+		8CCDDA021FB3E7D600B066E7 /* MapNavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCDDA011FB3E7D500B066E7 /* MapNavController.swift */; };
+		8CCDDA041FB3E7E500B066E7 /* PopTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCDDA031FB3E7E500B066E7 /* PopTransitionAnimator.swift */; };
+		8CCDDA061FB3E7EC00B066E7 /* SlideTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCDDA051FB3E7EC00B066E7 /* SlideTransitionAnimator.swift */; };
+		8CCDDA081FB3E7F600B066E7 /* OverlayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCDDA071FB3E7F600B066E7 /* OverlayViewController.swift */; };
+		8CCDDA0A1FB3E80200B066E7 /* TouchForwardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCDDA091FB3E80200B066E7 /* TouchForwardingView.swift */; };
+		8CCDDA0C1FB3E81700B066E7 /* CGPoint+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCDDA0B1FB3E81600B066E7 /* CGPoint+Extension.swift */; };
+		8CCDDA0E1FB3E82400B066E7 /* BasicDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCDDA0D1FB3E82400B066E7 /* BasicDirection.swift */; };
 		8CD5A4E01F9BFDD700CFD670 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4DF1F9BFDD700CFD670 /* SettingsViewController.swift */; };
 		8CD5A4E41F9BFED300CFD670 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4E31F9BFED300CFD670 /* SettingsTableViewController.swift */; };
 		8CD5A4E51F9C078D00CFD670 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */; };
 		8CD5A4E71F9C161800CFD670 /* ProfileDetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4E61F9C161700CFD670 /* ProfileDetailTableViewController.swift */; };
 		8CD5A4E91F9C16AC00CFD670 /* PasswordTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4E81F9C16AC00CFD670 /* PasswordTableViewController.swift */; };
-		8CE0DE1D1F89B12800F258E5 /* TransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE0DE1A1F89B12700F258E5 /* TransitionAnimator.swift */; };
 		8CE0DE1E1F89B12800F258E5 /* PercentInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE0DE1B1F89B12700F258E5 /* PercentInteractor.swift */; };
-		8CE0DE1F1F89B12800F258E5 /* TransitableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE0DE1C1F89B12800F258E5 /* TransitableViewController.swift */; };
 		8CE259AD1F53808C00310749 /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE259AC1F53808C00310749 /* AlertDialog.swift */; };
 		8CE49EB11F637918007278C1 /* ExpandButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB01F637918007278C1 /* ExpandButton.swift */; };
 		8CE49EB31F638162007278C1 /* ArrowLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB21F638162007278C1 /* ArrowLayer.swift */; };
@@ -230,14 +235,19 @@
 		8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrecisionTime.swift; sourceTree = "<group>"; };
 		8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionNodeController.swift; sourceTree = "<group>"; };
 		8CCC7EFF1FA5A32F0049AF00 /* FeedCollectionCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionCellNode.swift; sourceTree = "<group>"; };
+		8CCDDA011FB3E7D500B066E7 /* MapNavController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapNavController.swift; sourceTree = "<group>"; };
+		8CCDDA031FB3E7E500B066E7 /* PopTransitionAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopTransitionAnimator.swift; sourceTree = "<group>"; };
+		8CCDDA051FB3E7EC00B066E7 /* SlideTransitionAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlideTransitionAnimator.swift; sourceTree = "<group>"; };
+		8CCDDA071FB3E7F600B066E7 /* OverlayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverlayViewController.swift; sourceTree = "<group>"; };
+		8CCDDA091FB3E80200B066E7 /* TouchForwardingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchForwardingView.swift; sourceTree = "<group>"; };
+		8CCDDA0B1FB3E81600B066E7 /* CGPoint+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extension.swift"; sourceTree = "<group>"; };
+		8CCDDA0D1FB3E82400B066E7 /* BasicDirection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicDirection.swift; sourceTree = "<group>"; };
 		8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Settings.storyboard; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
 		8CD5A4DF1F9BFDD700CFD670 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		8CD5A4E31F9BFED300CFD670 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		8CD5A4E61F9C161700CFD670 /* ProfileDetailTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDetailTableViewController.swift; sourceTree = "<group>"; };
 		8CD5A4E81F9C16AC00CFD670 /* PasswordTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordTableViewController.swift; sourceTree = "<group>"; };
-		8CE0DE1A1F89B12700F258E5 /* TransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionAnimator.swift; sourceTree = "<group>"; };
 		8CE0DE1B1F89B12700F258E5 /* PercentInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PercentInteractor.swift; sourceTree = "<group>"; };
-		8CE0DE1C1F89B12800F258E5 /* TransitableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitableViewController.swift; sourceTree = "<group>"; };
 		8CE259AC1F53808C00310749 /* AlertDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertDialog.swift; sourceTree = "<group>"; };
 		8CE49EB01F637918007278C1 /* ExpandButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpandButton.swift; sourceTree = "<group>"; };
 		8CE49EB21F638162007278C1 /* ArrowLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrowLayer.swift; sourceTree = "<group>"; };
@@ -311,6 +321,7 @@
 				8C1ED6F31F5DEC2500A8CC94 /* AsyncOperation.swift */,
 				8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */,
 				8C2F79721F4E23F700851334 /* LocationWatch.swift */,
+				8CCDDA0D1FB3E82400B066E7 /* BasicDirection.swift */,
 			);
 			name = Shared;
 			sourceTree = "<group>";
@@ -331,7 +342,8 @@
 			isa = PBXGroup;
 			children = (
 				8CE0DE1B1F89B12700F258E5 /* PercentInteractor.swift */,
-				8CE0DE1A1F89B12700F258E5 /* TransitionAnimator.swift */,
+				8CCDDA031FB3E7E500B066E7 /* PopTransitionAnimator.swift */,
+				8CCDDA051FB3E7EC00B066E7 /* SlideTransitionAnimator.swift */,
 			);
 			name = Transitions;
 			sourceTree = "<group>";
@@ -382,12 +394,13 @@
 			name = Buttons;
 			sourceTree = "<group>";
 		};
-		8C93F6E01FAD76A700596452 /* Nodes */ = {
+		8C93F6E01FAD76A700596452 /* View/Nodes */ = {
 			isa = PBXGroup;
 			children = (
 				8C93F6E11FAD772900596452 /* GradientNode.swift */,
+				8CCDDA091FB3E80200B066E7 /* TouchForwardingView.swift */,
 			);
-			name = Nodes;
+			name = View/Nodes;
 			sourceTree = "<group>";
 		};
 		8C9AD05A1E8F60E4005F337E /* Models */ = {
@@ -472,7 +485,7 @@
 			children = (
 				8C889ECD1F9D5F7000E8CC56 /* Storyboards */,
 				8C889ECE1F9D5FC500E8CC56 /* Cell, Headers/Footers */,
-				8C93F6E01FAD76A700596452 /* Nodes */,
+				8C93F6E01FAD76A700596452 /* View/Nodes */,
 				8C889ECF1F9D5FF200E8CC56 /* Buttons */,
 				8CD328DA1E8B2BD600E5254F /* Layers */,
 				8C7EC5901F8EA7E400C8E80B /* Transitions */,
@@ -489,6 +502,7 @@
 				8C6983511F97ECFB0091334D /* AVPlayerStatus+Extension.swift */,
 				8C6983531F97ED810091334D /* AVPlayerTimeControlStatus+Extension.swift */,
 				8C6983551F97EDE50091334D /* AVPlayerItemStatus+Extension.swift */,
+				8CCDDA0B1FB3E81600B066E7 /* CGPoint+Extension.swift */,
 				8C56A9151FA19E6200D3204B /* URL+Extension.swift */,
 				C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */,
 				8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */,
@@ -540,6 +554,7 @@
 		8CD5A4DC1F9BFD5C00CFD670 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				8CCDDA011FB3E7D500B066E7 /* MapNavController.swift */,
 				8C0590461EC653DF00027E91 /* DiscoverFeedViewController.swift */,
 				8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */,
 				8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */,
@@ -586,7 +601,7 @@
 				C29CD1381F93198800A6D53F /* StorySelector.swift */,
 				8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */,
 				8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */,
-				8CE0DE1C1F89B12800F258E5 /* TransitableViewController.swift */,
+				8CCDDA071FB3E7F600B066E7 /* OverlayViewController.swift */,
 			);
 			name = Supports;
 			sourceTree = "<group>";
@@ -997,12 +1012,13 @@
 				8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */,
 				8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */,
 				8C93F6E21FAD772900596452 /* GradientNode.swift in Sources */,
+				8CCDDA061FB3E7EC00B066E7 /* SlideTransitionAnimator.swift in Sources */,
 				8C8986741E91985700B62306 /* FoodieVenue.swift in Sources */,
 				8C6983561F97EDE50091334D /* AVPlayerItemStatus+Extension.swift in Sources */,
 				8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */,
 				8C1ED6F01F5D15A300A8CC94 /* CameraButtonRingLayer.swift in Sources */,
-				8CE0DE1D1F89B12800F258E5 /* TransitionAnimator.swift in Sources */,
 				8C0590471EC653DF00027E91 /* DiscoverFeedViewController.swift in Sources */,
+				8CCDDA0C1FB3E81700B066E7 /* CGPoint+Extension.swift in Sources */,
 				8CE49EB31F638162007278C1 /* ArrowLayer.swift in Sources */,
 				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */,
 				8C9B47C71F9576B100D21246 /* FoodieOperation.swift in Sources */,
@@ -1028,9 +1044,9 @@
 				8CD5A4E91F9C16AC00CFD670 /* PasswordTableViewController.swift in Sources */,
 				8CCC7EFE1FA599440049AF00 /* FeedCollectionNodeController.swift in Sources */,
 				8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */,
-				8CE0DE1F1F89B12800F258E5 /* TransitableViewController.swift in Sources */,
 				8C10FB4E1F91C43200C26BF6 /* AVExportPlayer.swift in Sources */,
 				8C8986761E91A72D00B62306 /* FoodieCategory.swift in Sources */,
+				8CCDDA0E1FB3E82400B066E7 /* BasicDirection.swift in Sources */,
 				8C1FF1351F7DA1760062312C /* FoodieRole.swift in Sources */,
 				8CC1101A1F92D07000ACBF9A /* FoodieFileObject.swift in Sources */,
 				8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */,
@@ -1042,6 +1058,7 @@
 				8C7EBAC41F9D3950004E43D8 /* SettingsNavController.swift in Sources */,
 				8CD5A4E01F9BFDD700CFD670 /* SettingsViewController.swift in Sources */,
 				8CCC7F001FA5A32F0049AF00 /* FeedCollectionCellNode.swift in Sources */,
+				8CCDDA021FB3E7D600B066E7 /* MapNavController.swift in Sources */,
 				8CE49EB11F637918007278C1 /* ExpandButton.swift in Sources */,
 				C29CD1391F93198800A6D53F /* StorySelector.swift in Sources */,
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */,
@@ -1066,11 +1083,13 @@
 				8C030E4A1F88A42400B93EAC /* StoryCompositionViewController.swift in Sources */,
 				8CD5A4E71F9C161800CFD670 /* ProfileDetailTableViewController.swift in Sources */,
 				8CAA445F1F8C102C0053CD4F /* ProfileViewController.swift in Sources */,
+				8CCDDA0A1FB3E80200B066E7 /* TouchForwardingView.swift in Sources */,
 				8C6983541F97ED810091334D /* AVPlayerTimeControlStatus+Extension.swift in Sources */,
 				8C1D4E221EDCEC9A00939B2C /* FeedCollectionViewController.swift in Sources */,
 				8C7CE2881F36B92A00DEFCBE /* FoodieQuery.swift in Sources */,
 				8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */,
 				8C56A9121FA16F5C00D3204B /* PasswordTableSaveFooterView.swift in Sources */,
+				8CCDDA081FB3E7F600B066E7 /* OverlayViewController.swift in Sources */,
 				8CC48D601EFC81CD003A0FC9 /* PrecisionTime.swift in Sources */,
 				8C05904B1EC6671400027E91 /* UIStoryboard+Extension.swift in Sources */,
 				8C7EC58F1F8E0D2400C8E80B /* MKCoordinateRegion+Extension.swift in Sources */,
@@ -1078,6 +1097,7 @@
 				8C5C4DDE1EFEEDEC008C83EC /* FoodieFetch.swift in Sources */,
 				8C900D331F60C0E50058BDFE /* CategoryTableViewController.swift in Sources */,
 				8C14E28B1F7F42FD001CC869 /* EmailResetViewController.swift in Sources */,
+				8CCDDA041FB3E7E500B066E7 /* PopTransitionAnimator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1255,6 +1275,7 @@
 				INFOPLIST_FILE = TastryApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
+				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Texture;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

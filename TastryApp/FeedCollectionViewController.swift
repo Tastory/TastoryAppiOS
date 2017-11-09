@@ -103,7 +103,7 @@ class FeedCollectionViewController: UICollectionViewController {
       return
     }
     viewController.viewingStory = storyArray[sender.tag]
-    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
+    viewController.setSlideTransition(presentTowards: .up, withGapSize: 5.0, dismissIsInteractive: true)
     self.present(viewController, animated: true)
   }
   

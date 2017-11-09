@@ -8,7 +8,7 @@
 
 import UIKit
 
-class StoryCompositionViewController: TransitableViewController {
+class StoryCompositionViewController: OverlayViewController {
   
   var staticTableViewController: StoryEntryViewController?
 

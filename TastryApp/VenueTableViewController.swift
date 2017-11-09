@@ -20,7 +20,7 @@ protocol VenueTableReturnDelegate {
 }
 
 
-class VenueTableViewController: TransitableViewController {
+class VenueTableViewController: OverlayViewController {
   
   // MARK: - Types & Enumerations
   
