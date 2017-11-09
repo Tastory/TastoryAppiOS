@@ -73,7 +73,6 @@ class RootViewController: UIViewController {
         }
         return
       }
-      viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
       self.present(viewController, animated: false)
     }
   }

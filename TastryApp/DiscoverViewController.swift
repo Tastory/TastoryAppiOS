@@ -54,7 +54,7 @@ class DiscoverViewController: OverlayViewController {
   private var lastMapDelta: CLLocationDegrees? = nil
   private var storyQuery: FoodieQuery?
   private var storyArray = [FoodieStory]()
-  private var mapView: MKMapView!
+  private weak var mapView: MKMapView!
   
   
   

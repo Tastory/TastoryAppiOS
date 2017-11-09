@@ -115,7 +115,7 @@ class IntroViewController: OverlayViewController {
     
     let mapNavController = MapNavController(rootViewController: viewController)
     mapNavController.modalTransitionStyle = .crossDissolve
-    self.present(viewController, animated: true)
+    self.present(mapNavController, animated: true)
   }
   
   
