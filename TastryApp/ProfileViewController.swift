@@ -46,14 +46,6 @@ class ProfileViewController: OverlayViewController {
     }
     viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
     self.present(viewController, animated: true)
-    
-//    let storyboard = UIStoryboard(name: "Settings", bundle: nil)
-//
-//    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsTableViewController") as? SettingsTableViewController else {
-//      CCLog.fatal("Cannot cast ViewController from Storyboard to SettingsTableViewController")
-//    }
-//    let navController = SettingsNavController(rootViewController: viewController)
-//    self.present(navController, animated: true)
   }
   
   

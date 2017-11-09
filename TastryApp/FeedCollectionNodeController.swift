@@ -76,6 +76,10 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     collectionNode = ASCollectionNode(collectionViewLayout: flowLayout)
 
     super.init(node: collectionNode)
+    node.backgroundColor = .clear
+    
+    collectionNode.delegate = self
+    collectionNode.dataSource = self
   }
   
   
@@ -87,8 +91,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   override func viewDidLoad() {
     super.viewDidLoad()
     collectionNode.frame = view.bounds
-    collectionNode.delegate = self
-    collectionNode.dataSource = self
   }
   
   
@@ -176,8 +178,9 @@ extension FeedCollectionNodeController: ASCollectionDelegate {
       return
     }
     viewController.setPopTransition(popFrom: popFromNode.view, dismissIsInteractive: true)
-    
-    self.present(viewController, animated: true)
+    navigationController?.delegate = viewController
+    navigationController?.pushViewController(viewController, animated: true)
+    //self.present(viewController, animated: true)
   }
   
   

@@ -6,10 +6,8 @@
 //  Copyright © 2017 Tastry. All rights reserved.
 //
 
-import UIKit
-import MapKit
+import AsyncDisplayKit
 import CoreLocation
-
 
 class DiscoverViewController: OverlayViewController {
 
@@ -55,6 +53,7 @@ class DiscoverViewController: OverlayViewController {
   private var storyQuery: FoodieQuery?
   private var storyArray = [FoodieStory]()
   private weak var mapView: MKMapView!
+  private var feedCollectionNodeController: FeedCollectionNodeController!
   
   
   
@@ -63,7 +62,6 @@ class DiscoverViewController: OverlayViewController {
   @IBOutlet weak var pinchGestureRecognizer: UIPinchGestureRecognizer!
   @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer!
   @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer!
-  @IBOutlet weak var buttonStackView: UIStackView!
   @IBOutlet weak var locationField: UITextField!
   @IBOutlet weak var draftButton: UIButton!
   @IBOutlet weak var cameraButton: UIButton!
@@ -78,6 +76,9 @@ class DiscoverViewController: OverlayViewController {
       }
     }
   }
+  
+  @IBOutlet weak var feedContainerView: UIView!
+  
   
   
   // MARK: - IBActions
@@ -467,6 +468,14 @@ class DiscoverViewController: OverlayViewController {
       touchForwardingView.passthroughViews = [mapView]
     }
     
+    let nodeController = FeedCollectionNodeController()
+    addChildViewController(nodeController)
+    feedContainerView.addSubview(nodeController.view)
+    nodeController.view.frame = feedContainerView.bounds
+    nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    nodeController.didMove(toParentViewController: self)
+    feedCollectionNodeController = nodeController
+    
     // Initialize Location Watch manager
     LocationWatch.initializeGlobal()
     
@@ -594,6 +603,7 @@ class DiscoverViewController: OverlayViewController {
             return
           }
           self.displayAnnotations(onStories: stories)
+          self.feedCollectionNodeController.resetCollectionNode(with: stories)
         }
         
         self.startLocationWatcher()
@@ -658,12 +668,13 @@ class DiscoverViewController: OverlayViewController {
 }
 
 
-extension DiscoverViewController: UIGestureRecognizerDelegate {
 
+extension DiscoverViewController: UIGestureRecognizerDelegate {
   func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
     return true
   }
 }
+
 
 
 extension DiscoverViewController: UITextFieldDelegate {
@@ -804,6 +815,7 @@ extension DiscoverViewController: UITextFieldDelegate {
     }
   }
 }
+
 
 
 extension DiscoverViewController: CameraReturnDelegate {

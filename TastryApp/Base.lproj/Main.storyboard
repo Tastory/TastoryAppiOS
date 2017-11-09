@@ -37,7 +37,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ngF-kL-ExG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1162.4000000000001" y="-666.11694152923542"/>
+            <point key="canvasLocation" x="-3735" y="-1070"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="jPv-fG-6wa">
@@ -120,6 +120,41 @@
                                     <outletCollection property="gestureRecognizers" destination="lh5-20-bcQ" appends="YES" id="rVz-C9-OAb"/>
                                 </connections>
                             </view>
+                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QP7-f7-wk1">
+                                <rect key="frame" x="0.0" y="267" width="375" height="400"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="70" translatesAutoresizingMaskIntoConstraints="NO" id="S7U-1x-ELZ">
+                                <rect key="frame" x="24" y="629" width="327" height="30"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
+                                        <rect key="frame" x="0.0" y="0.0" width="54" height="30"/>
+                                        <state key="normal" title="Camera"/>
+                                        <connections>
+                                            <action selector="launchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="k45-JV-u3I"/>
+                                        </connections>
+                                    </button>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q4U-bc-G8m">
+                                        <rect key="frame" x="228" y="0.0" width="99" height="30"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xAk-Bi-Jwa">
+                                                <rect key="frame" x="0.0" y="0.0" width="55" height="30"/>
+                                                <state key="normal" title="Log Out"/>
+                                                <connections>
+                                                    <action selector="logOutAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="77B-XM-jf3"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A3t-Ta-aKO">
+                                                <rect key="frame" x="55" y="0.0" width="44" height="30"/>
+                                                <state key="normal" title="Profile"/>
+                                                <connections>
+                                                    <action selector="profileAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LLt-lz-SBf"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Location to search" textAlignment="center" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
                                 <rect key="frame" x="16" y="20" width="343" height="30"/>
                                 <nil key="textColor"/>
@@ -134,7 +169,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sNl-Tb-SAf" userLabel="Current Button">
-                                <rect key="frame" x="161" y="58" width="52" height="30"/>
+                                <rect key="frame" x="161.5" y="58" width="52" height="30"/>
                                 <state key="normal" title="Current"/>
                                 <connections>
                                     <action selector="currentLocationReturn:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eE7-yk-10G"/>
@@ -148,57 +183,38 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8lR-o3-9WI" userLabel="All Button">
-                                <rect key="frame" x="172" y="629" width="30" height="30"/>
+                                <rect key="frame" x="329" y="88" width="30" height="30"/>
                                 <state key="normal" title="All"/>
                                 <connections>
                                     <action selector="allStories:" destination="BYZ-38-t0r" eventType="touchUpInside" id="rUI-uX-Iqo"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
-                                <rect key="frame" x="16" y="629" width="54" height="30"/>
-                                <state key="normal" title="Camera"/>
-                                <connections>
-                                    <action selector="launchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="k45-JV-u3I"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xAk-Bi-Jwa">
-                                <rect key="frame" x="304" y="629" width="55" height="30"/>
-                                <state key="normal" title="Log Out"/>
-                                <connections>
-                                    <action selector="logOutAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="77B-XM-jf3"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A3t-Ta-aKO">
-                                <rect key="frame" x="315" y="629" width="44" height="30"/>
-                                <state key="normal" title="Profile"/>
-                                <connections>
-                                    <action selector="profileAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LLt-lz-SBf"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="S7U-1x-ELZ" secondAttribute="trailing" constant="8" id="4il-4C-MZU"/>
+                            <constraint firstItem="S7U-1x-ELZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="8" id="6eR-hs-oI6"/>
                             <constraint firstItem="8yq-x6-CLY" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="8Dq-zq-i2O"/>
-                            <constraint firstItem="oB7-Q1-hCS" firstAttribute="bottom" secondItem="xAk-Bi-Jwa" secondAttribute="bottom" constant="8" id="CAt-Qj-XoD"/>
-                            <constraint firstItem="oB7-Q1-hCS" firstAttribute="bottom" secondItem="m1j-Ft-7un" secondAttribute="bottom" constant="8" id="JdO-F3-7Dk"/>
                             <constraint firstItem="QC2-XK-jf4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="K8O-TB-xfm"/>
-                            <constraint firstItem="oB7-Q1-hCS" firstAttribute="bottom" secondItem="A3t-Ta-aKO" secondAttribute="bottom" constant="8" id="LZh-wW-ogX"/>
                             <constraint firstItem="sNl-Tb-SAf" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="MR7-TB-A71"/>
                             <constraint firstItem="0wJ-kE-Bqf" firstAttribute="top" secondItem="oB7-Q1-hCS" secondAttribute="top" symbolic="YES" id="Nbp-8y-0cy"/>
+                            <constraint firstItem="8lR-o3-9WI" firstAttribute="top" secondItem="8yq-x6-CLY" secondAttribute="bottom" id="NxP-Lr-oyo"/>
                             <constraint firstItem="0wJ-kE-Bqf" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="PUi-hX-qEd"/>
-                            <constraint firstItem="8lR-o3-9WI" firstAttribute="centerX" secondItem="oB7-Q1-hCS" secondAttribute="centerX" id="SrF-NH-Qt0"/>
-                            <constraint firstItem="oB7-Q1-hCS" firstAttribute="bottom" secondItem="8lR-o3-9WI" secondAttribute="bottom" constant="8" id="WZC-H1-Mmo"/>
+                            <constraint firstItem="QP7-f7-wk1" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="TPv-Ri-Idi"/>
                             <constraint firstItem="QC2-XK-jf4" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Y24-lj-eHA"/>
+                            <constraint firstItem="S7U-1x-ELZ" firstAttribute="bottom" secondItem="oB7-Q1-hCS" secondAttribute="bottom" priority="750" constant="16" id="bKC-RP-rkh"/>
                             <constraint firstItem="1zZ-dd-fcW" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="dFM-J1-5ln"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="xAk-Bi-Jwa" secondAttribute="trailing" id="h3i-re-lXo"/>
                             <constraint firstAttribute="bottom" secondItem="QC2-XK-jf4" secondAttribute="bottom" id="hBY-qH-XPP"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="8lR-o3-9WI" secondAttribute="trailing" id="hDa-sq-jeb"/>
+                            <constraint firstItem="QP7-f7-wk1" firstAttribute="leading" secondItem="oB7-Q1-hCS" secondAttribute="leading" id="heM-AO-6o5"/>
                             <constraint firstAttribute="trailing" secondItem="QC2-XK-jf4" secondAttribute="trailing" id="hop-HJ-4YV"/>
                             <constraint firstItem="1zZ-dd-fcW" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="is3-jI-Qnz"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="A3t-Ta-aKO" secondAttribute="trailing" id="jZa-gS-gXI"/>
+                            <constraint firstItem="QP7-f7-wk1" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.6" id="rqE-df-sxp"/>
                             <constraint firstAttribute="trailingMargin" secondItem="0wJ-kE-Bqf" secondAttribute="trailing" id="sre-db-TIA"/>
+                            <constraint firstItem="oB7-Q1-hCS" firstAttribute="trailing" secondItem="QP7-f7-wk1" secondAttribute="trailing" id="tHU-hI-SlX"/>
                             <constraint firstAttribute="trailingMargin" secondItem="8yq-x6-CLY" secondAttribute="trailing" id="uUg-YT-GMX"/>
-                            <constraint firstItem="m1j-Ft-7un" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="w3O-eD-cOO"/>
                             <constraint firstItem="sNl-Tb-SAf" firstAttribute="centerX" secondItem="oB7-Q1-hCS" secondAttribute="centerX" id="wdT-rv-LuQ"/>
+                            <constraint firstItem="S7U-1x-ELZ" firstAttribute="bottom" relation="lessThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="bottom" constant="-8" id="zJo-0q-e0B"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="oB7-Q1-hCS"/>
                     </view>
@@ -207,6 +223,7 @@
                         <outlet property="cameraButton" destination="m1j-Ft-7un" id="5xu-my-dGT"/>
                         <outlet property="doubleTapGestureRecognizer" destination="lh5-20-bcQ" id="XwI-na-Qw5"/>
                         <outlet property="draftButton" destination="1zZ-dd-fcW" id="xkV-cw-rjf"/>
+                        <outlet property="feedContainerView" destination="QP7-f7-wk1" id="5wA-qf-gbI"/>
                         <outlet property="locationField" destination="0wJ-kE-Bqf" id="udw-u7-LkJ"/>
                         <outlet property="logoutButton" destination="xAk-Bi-Jwa" id="sAq-I6-br1"/>
                         <outlet property="panGestureRecognizer" destination="MR4-rr-fyd" id="vfj-Nn-0Ym"/>
@@ -238,7 +255,7 @@
                     </connections>
                 </panGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-1162.4000000000001" y="-1352.473763118441"/>
+            <point key="canvasLocation" x="-1162.4000000000001" y="-1352.9556650246307"/>
         </scene>
         <!--Feed Collection View Controller-->
         <scene sceneID="1WN-B5-zBj">
@@ -330,7 +347,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Cgs-s6-Dbf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1846" y="-666"/>
+            <point key="canvasLocation" x="-4490" y="-1070"/>
         </scene>
         <!--Story View Controller-->
         <scene sceneID="ooy-sj-8sY">
@@ -468,7 +485,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-1162" y="17"/>
+            <point key="canvasLocation" x="-1162" y="-666"/>
         </scene>
         <!--Category Table View Controller-->
         <scene sceneID="r9j-Iu-ATn">
