@@ -1,5 +1,5 @@
 //
-//  MapViewController.swift
+//  DiscoverViewController.swift
 //  TastryApp
 //
 //  Created by Howard Lee on 2017-03-20.
@@ -11,7 +11,7 @@ import MapKit
 import CoreLocation
 
 
-class MapViewController: OverlayViewController {
+class DiscoverViewController: OverlayViewController {
 
   // MARK: Error Types
   enum ErrorCode: LocalizedError {
@@ -42,38 +42,42 @@ class MapViewController: OverlayViewController {
                                                               longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
     static let DefaultMaxDelta: CLLocationDegrees = 0.05
     static let DefaultMinDelta: CLLocationDegrees = 0.005
-    
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
   }
 
   
 
   // MARK: - Instance Variables
-  fileprivate var currentMapDelta = Constants.DefaultMaxDelta
-  fileprivate var locationWatcher: LocationWatch.Context?
-  fileprivate var lastLocation: CLLocationCoordinate2D? = nil
-  fileprivate var lastMapDelta: CLLocationDegrees? = nil
-  fileprivate var searchCategory: FoodieCategory?
-  fileprivate var storyQuery: FoodieQuery?
-  fileprivate var storyArray = [FoodieStory]()
+  private var currentMapDelta = Constants.DefaultMaxDelta
+  private var locationWatcher: LocationWatch.Context?
+  private var lastLocation: CLLocationCoordinate2D? = nil
+  private var lastMapDelta: CLLocationDegrees? = nil
+  private var storyQuery: FoodieQuery?
+  private var storyArray = [FoodieStory]()
+  private var mapView: MKMapView!
   
   
   
   // MARK: - IBOutlets
-  @IBOutlet weak var mapView: MKMapView!
   @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer!
   @IBOutlet weak var pinchGestureRecognizer: UIPinchGestureRecognizer!
   @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer!
   @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer!
   @IBOutlet weak var buttonStackView: UIStackView!
   @IBOutlet weak var locationField: UITextField!
-  @IBOutlet weak var categoryField: UITextField!
   @IBOutlet weak var draftButton: UIButton!
   @IBOutlet weak var cameraButton: UIButton!
   @IBOutlet weak var logoutButton: UIButton!
   @IBOutlet weak var profileButton: UIButton!
   @IBOutlet weak var allStoriesButton: UIButton!
   
+  @IBOutlet weak var touchForwardingView: TouchForwardingView? {
+    didSet {
+      if let touchForwardingView = touchForwardingView, let mapNavController = navigationController as? MapNavController {
+        touchForwardingView.passthroughViews = [mapNavController.mapView]
+      }
+    }
+  }
   
   
   // MARK: - IBActions
@@ -275,57 +279,13 @@ class MapViewController: OverlayViewController {
   
   // MARK: - Class Private Functions
   
-  // Generic error dialog box to the user on internal errors
-  fileprivate func internalErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when a Map View internal error occured",
-                                              message: "An internal error has occured. Please try again",
-                                              messageComment: "Alert dialog message when a Map View internal error occured",
-                                              preferredStyle: .alert)
-    
-      alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for generic MapView errors", style: .cancel)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-
-
-  // Error dialog box to the user on location errors
-  fileprivate func locationErrorDialog(message: String, comment: String) {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when a Map View location error occured",
-                                              message: message,
-                                              messageComment: comment,
-                                              preferredStyle: .alert)
-      
-      alertController.addAlertAction(title: "OK", comment: "Button in alert dialog box for location related Map View errors", style: .cancel)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-
-
-  fileprivate func queryErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when a Map View query error occurred",
-                                              message: "A query error has occured. Please try again",
-                                              messageComment: "Alert dialog message when a Map View query error occurred",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for generic Map View errors",
-                                     style: .default)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-  
-  
-  fileprivate func locationPermissionDeniedDialog() {
+  private func locationPermissionDeniedDialog() {
     if self.presentedViewController == nil {
       // Permission was denied before. Ask for permission again
       guard let url = URL(string: UIApplicationOpenSettingsURLString) else {
-        CCLog.assert("UIApplicationOPenSettignsURLString ia an invalid URL String???")
-        internalErrorDialog()
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("UIApplicationOPenSettignsURLString ia an invalid URL String???")
+        }
         return
       }
       
@@ -344,14 +304,15 @@ class MapViewController: OverlayViewController {
   }
   
   
-  fileprivate func performQuery(onAllUsers: Bool = false, at mapRect: MKMapRect? = nil, withBlock callback: FoodieQuery.StoriesErrorBlock?) {
+  private func performQuery(onAllUsers: Bool = false, at mapRect: MKMapRect? = nil, withBlock callback: FoodieQuery.StoriesErrorBlock?) {
     
     var searchMapRect = MKMapRect()
     
     if mapRect == nil {
       guard let visibleMapRect = mapView?.visibleMapRect else {
-        locationErrorDialog(message: "Invalid Map View. Search Location Undefined", comment: "Alert dialog message when mapView is nil when user attempted to perform Search")
-        CCLog.assert("Search w/ Filter cannot be performed when mapView = nil")
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.assert("Search w/ Filter cannot be performed when mapView = nil")
+        }
         return
       }
       searchMapRect = visibleMapRect
@@ -396,18 +357,17 @@ class MapViewController: OverlayViewController {
       
       activitySpinner.remove()
       
-      if let err = error {
-        self.queryErrorDialog()
-        CCLog.assert("Create Story Query & Search failed with error: \(err.localizedDescription)")
-        callback?(nil, err)
+      if let error = error {
+        AlertDialog.present(from: self, title: "Query Failed", message: error.localizedDescription) { action in
+          CCLog.assert("Create Story Query & Search failed with error: \(error.localizedDescription)")
+        }
+        callback?(nil, error)
         return
       }
       
       guard let storyArray = stories else {
-        self.queryErrorDialog()
-        CCLog.assert("Create Story Query & Search returned with nil Story Array")
-        callback?(nil, ErrorCode.queryNilStory)
-        return
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
+        CCLog.fatal("Create Story Query & Search returned with nil Story Array")
       }
       
       self.storyArray = storyArray
@@ -416,7 +376,7 @@ class MapViewController: OverlayViewController {
   }
   
   
-  fileprivate func displayAnnotations(onStories stories: [FoodieStory]) {
+  private func displayAnnotations(onStories stories: [FoodieStory]) {
 
     DispatchQueue.main.async {
       self.mapView.removeAnnotations(self.mapView.annotations)
@@ -452,7 +412,7 @@ class MapViewController: OverlayViewController {
   }
   
   
-  fileprivate func launchFeed(withStoryArray stories: [FoodieStory], withStoryQuery query: FoodieQuery) {
+  private func launchFeed(withStoryArray stories: [FoodieStory], withStoryQuery query: FoodieQuery) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverFeedViewController") as? DiscoverFeedViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
@@ -480,7 +440,6 @@ class MapViewController: OverlayViewController {
     // Start/Restart the Location Watcher
     locationWatcher = LocationWatch.global.start(butPaused: (lastLocation != nil)) { (location, error) in
       if let error = error {
-        self.locationErrorDialog(message: "LocationWatch returned error - \(error.localizedDescription)", comment: "Alert Dialogue Message")
         CCLog.warning("LocationWatch returned error - \(error.localizedDescription)")
         return
       }
@@ -498,17 +457,25 @@ class MapViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    // Set the map to the Map Nav Map for now
+    guard let mapNavController = navigationController as? MapNavController else {
+      CCLog.fatal("DiscoverViewController must have a MapNavController as it's Navigation Controller")
+    }
+    mapView = mapNavController.mapView
+    
+    if let touchForwardingView = touchForwardingView {
+      touchForwardingView.passthroughViews = [mapView]
+    }
+    
     // Initialize Location Watch manager
     LocationWatch.initializeGlobal()
     
     // Do any additional setup after loading the view.
-    mapView?.delegate = self
     panGestureRecognizer?.delegate = self
     pinchGestureRecognizer?.delegate = self
     doubleTapGestureRecognizer?.delegate = self
     singleTapGestureRecognizer?.delegate = self
     locationField?.delegate = self
-    categoryField?.delegate = self
     
     // If current story is nil, double check and see if there are any in Local Datastore
     if FoodieStory.currentStory == nil {
@@ -691,7 +658,7 @@ class MapViewController: OverlayViewController {
 }
 
 
-extension MapViewController: UIGestureRecognizerDelegate {
+extension DiscoverViewController: UIGestureRecognizerDelegate {
 
   func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
     return true
@@ -699,14 +666,10 @@ extension MapViewController: UIGestureRecognizerDelegate {
 }
 
 
-extension MapViewController: UITextFieldDelegate {
+extension DiscoverViewController: UITextFieldDelegate {
 
   // TODO: textFieldShouldReturn, implement Dynamic Filter Querying with another Geocoder
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-
-    if textField === categoryField {
-      return true
-    }
     
     // DEBUG: Forces a Crash!!!!!
     if let text = textField.text {
@@ -834,21 +797,7 @@ extension MapViewController: UITextFieldDelegate {
       // Set the text field color back to black once user starts editing. Might have been set to Red for errors.
       textField.textColor = UIColor.black
       return true
-      
-    } else if textField == categoryField {
-      
-      let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CategoryTableViewController") as? CategoryTableViewController else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.fatal("ViewController initiated not of CategoryTableViewController Class!!")
-        }
-        return false
-      }
-      viewController.delegate = self
-      viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
-      self.present(viewController, animated: true)
-      return false
-      
+
     } else {
       CCLog.assert("Unexpected call of textFieldShoudlBeginEditing on textField \(textField.placeholder ?? "")")
       return false
@@ -857,7 +806,7 @@ extension MapViewController: UITextFieldDelegate {
 }
 
 
-extension MapViewController: CameraReturnDelegate {
+extension DiscoverViewController: CameraReturnDelegate {
   func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
     DispatchQueue.main.async {  // UI Work. We don't know which thread we might be in, so guarentee execute in Main thread
       let storyboard = UIStoryboard(name: "Compose", bundle: nil)
@@ -885,144 +834,5 @@ extension MapViewController: CameraReturnDelegate {
         self.present(viewController, animated: true)
       }
     }
-  }
-}
-
-
-extension MapViewController: CategoryTableReturnDelegate {
-  func categorySearchComplete(category: FoodieCategory?) {
-    if let category = category {
-      searchCategory = category
-      categoryField.text = category.name ?? ""
-    } else {
-      searchCategory = nil
-      categoryField.text = ""
-    }
-  }
-}
-
-
-extension MapViewController: MKMapViewDelegate {
-  
-  class StoryButton: UIButton {
-    var story: FoodieStory?
-  }
-  
-  @objc private func storyCalloutTapped(sender: StoryButton) {
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("ViewController initiated not of StoryViewController Class!!")
-      }
-      return
-    }
-    
-    guard let story = sender.story else {
-      AlertDialog.present(from: self, title: "Story Load Error", message: "No Story was loaded for this location! Please try another one!") { action in
-        CCLog.assert("No story contained in StoryButton clicked")
-      }
-      return
-    }
-    
-    viewController.viewingStory = story
-    viewController.setSlideTransition(presentTowards: .up, withGapSize: 5.0, dismissIsInteractive: true)
-    self.present(viewController, animated: true)
-  }
-  
-  
-  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    guard let annotation = annotation as? StoryMapAnnotation else {
-      return nil
-    }
-    
-    let identifier = "StoryMapPin"
-    var view: MKPinAnnotationView
-    
-    if let dequeuedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKPinAnnotationView {
-      dequeuedView.annotation = annotation
-      view = dequeuedView
-    } else {
-      view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-      view.canShowCallout = true
-    }
-    
-    if let thumbnail = annotation.story.thumbnail, let imageData = thumbnail.imageMemoryBuffer {
-      
-      let screenSize = UIScreen.main.bounds
-      
-      let calloutAccView = UIView()
-      calloutAccView.translatesAutoresizingMaskIntoConstraints = false
-      
-      let titleLabel = UILabel()
-      titleLabel.text = annotation.title
-      titleLabel.font = UIFont.systemFont(ofSize: 17.0)
-      titleLabel.textColor = UIColor.white
-      titleLabel.textAlignment = .center
-      titleLabel.numberOfLines = 3
-      titleLabel.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.2)
-      titleLabel.isUserInteractionEnabled = false  // This is so that all the clicks go straight thru to the button at the back
-      titleLabel.translatesAutoresizingMaskIntoConstraints = false
-      
-      if let venueName = annotation.story.venue?.name {
-        annotation.title = "@ "
-        if venueName.characters.count < 22 {
-          annotation.title! += venueName
-        } else {
-          let index = venueName.index(venueName.startIndex, offsetBy: 22)
-          annotation.title! += venueName[..<index]
-          annotation.title! += "..."
-        }
-      } else { annotation.title = " " }
-      
-      
-      let thumbnailButton = StoryButton()
-      thumbnailButton.setImage(UIImage(data: imageData), for: .normal)
-      thumbnailButton.imageView?.contentMode = .scaleAspectFill
-      thumbnailButton.translatesAutoresizingMaskIntoConstraints = false
-      thumbnailButton.story = annotation.story
-      thumbnailButton.addTarget(self, action: #selector(storyCalloutTapped(sender:)), for: .touchUpInside)
-      
-      calloutAccView.addSubview(thumbnailButton)
-      calloutAccView.addSubview(titleLabel)
-      
-      let views = ["titleLabel": titleLabel,
-                   "thumbnailButton": thumbnailButton]
-      let metrics = ["width": screenSize.width/2.0,
-                     "height": screenSize.height/2.0,
-                     "labelHeight": screenSize.height/10.0]
-      var constraints = [NSLayoutConstraint]()
-      constraints += NSLayoutConstraint.constraints(withVisualFormat: "H:|[thumbnailButton(width)]|", options: [], metrics: metrics, views: views)
-      constraints += NSLayoutConstraint.constraints(withVisualFormat: "V:|[thumbnailButton(height)]|", options: [], metrics: metrics, views: views)
-      constraints += NSLayoutConstraint.constraints(withVisualFormat: "H:|[titleLabel(width)]|", options: [], metrics: metrics, views: views)
-      constraints += NSLayoutConstraint.constraints(withVisualFormat: "V:[titleLabel(labelHeight)]|", options: [], metrics: metrics, views: views)
-      calloutAccView.addConstraints(constraints)
-      
-      view.detailCalloutAccessoryView = calloutAccView
-
-    } else {
-      AlertDialog.present(from: self, title: "Story Retrieval Error", message: "No Thumbnail for Story!") { action in
-        CCLog.warning("No Thumbnail for Story in Map View. Thumbnail filename - \(annotation.story.thumbnailFileName ?? "Filename Not Found")")
-      }
-    }
-    return view
-  }
-  
-  
-  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-    guard let annotation = view.annotation as? StoryMapAnnotation else {
-      CCLog.warning("No StoryMapAnnotation associated with Annotation View")
-      return
-    }
-    let storyRecursivePrefetchOperation = StoryOperation.createRecursive(on: annotation.story, at: .low)
-    FoodieFetch.global.queue(storyRecursivePrefetchOperation, at: .low)
-  }
-  
-  
-  func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-    guard let annotation = view.annotation as? StoryMapAnnotation else {
-      CCLog.warning("No PrefetchContext associated with Story, or no StoryMapAnnotation associated with Annotation View")
-      return
-    }
-    FoodieFetch.global.cancel(for: annotation.story)
   }
 }

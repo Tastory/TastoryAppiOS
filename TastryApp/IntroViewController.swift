@@ -106,13 +106,15 @@ class IntroViewController: OverlayViewController {
   // MARK: - Private Instance Function
   private func presentDiscoverVC() {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController") as? MapViewController else {
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverViewController") as? DiscoverViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("ViewController initiated not of MapViewController Class!!")
+        CCLog.fatal("ViewController initiated not of DiscoverViewController Class!!")
       }
       return
     }
-    viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
+    
+    let mapNavController = MapNavController(rootViewController: viewController)
+    mapNavController.modalTransitionStyle = .crossDissolve
     self.present(viewController, animated: true)
   }
   

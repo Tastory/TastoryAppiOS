@@ -19,6 +19,7 @@ class MapNavController: ASNavigationController {
     setToolbarHidden(true, animated: false)
     
     mapView = MKMapView(frame: view.bounds)
+    mapView.showsUserLocation = true
     view.addSubview(mapView)
     view.sendSubview(toBack: mapView)
   }

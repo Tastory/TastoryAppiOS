@@ -132,14 +132,15 @@ class LogInViewController: OverlayViewController {
     
     AlertDialog.present(from: self, title: "Guest Login", message: "You will not be able to post as a Guest. We highly encourage you to sign-up and log-in for the best experience!") { action in
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController") as? MapViewController else {
+      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverViewController") as? DiscoverViewController else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.fatal("ViewController initiated not of MapViewController Class!!")
+          CCLog.fatal("ViewController initiated not of DiscoverViewController Class!!")
         }
         return
       }
-      viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
-      self.present(viewController, animated: true)
+      let mapNavController = MapNavController(rootViewController: viewController)
+      mapNavController.modalTransitionStyle = .crossDissolve
+      self.present(mapNavController, animated: true)
     }
   }
   

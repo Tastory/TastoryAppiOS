@@ -555,13 +555,13 @@
 			isa = PBXGroup;
 			children = (
 				8CCDDA011FB3E7D500B066E7 /* MapNavController.swift */,
-				8C0590461EC653DF00027E91 /* DiscoverFeedViewController.swift */,
-				8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */,
-				8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */,
 				8CBF55B11E80C72200F4B1CD /* MapViewController.swift */,
+				8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */,
 				C24F69641EB85B0300A0DB7B /* StoryViewController.swift */,
 				8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */,
 				8CAA445E1F8C102C0053CD4F /* ProfileViewController.swift */,
+				8C0590461EC653DF00027E91 /* DiscoverFeedViewController.swift */,
+				8C1D4E211EDCEC9A00939B2C /* FeedCollectionViewController.swift */,
 			);
 			name = Main;
 			sourceTree = "<group>";

@@ -52,14 +52,14 @@ class RootViewController: UIViewController {
       
       // Risking it by jumping to the Main View in parallel with updating the user's details from server
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController") as? MapViewController else {
+      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverViewController") as? DiscoverViewController else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.fatal("ViewController initiated not of MapViewController Class!!")
+          CCLog.fatal("ViewController initiated not of DiscoverViewController Class!!")
         }
         return
       }
-      viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
-      self.present(viewController, animated: false, completion: nil)
+      let mapNavController = MapNavController(rootViewController: viewController)
+      self.present(mapNavController, animated: false, completion: nil)
       
     } else {
       // Resetting permissions back to global default since we don't know whose gonna be logged'in
