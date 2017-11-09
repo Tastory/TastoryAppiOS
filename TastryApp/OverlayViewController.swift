@@ -15,7 +15,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   
   struct Constants {
     fileprivate static let SlideTransitionDuration = FoodieGlobal.Constants.DefaultTransitionAnimationDuration
-    fileprivate static let PopTransitionDuration = 0.3
+    fileprivate static let PopTransitionDuration = 0.25
     fileprivate static let FailInteractionAnimationDuration = 0.2
     fileprivate static let DragVelocityToDismiss: CGFloat = 800.0
     fileprivate static let DefaultSlideVCGap: CGFloat = 30.0
@@ -153,12 +153,11 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
             return
           }
           animator.popFromView.layer.transform = CATransform3DConcat(popTransform, self.view.layer.transform)
-          animator.popFromView.alpha = 0.0
           animator.popFromView.isHidden = false
           
           interactor.finish()
           
-          UIView.animate(withDuration: 0.6*Constants.PopTransitionDuration) {
+          UIView.animate(withDuration: 0.8*Constants.PopTransitionDuration) {
             guard let popTransformInverted = animator.popTransformInverted else {
               AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
                 CCLog.assert("Expected pop Trasnform Matrix to be filled by Animator on present")
@@ -168,7 +167,6 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
             self.view.layer.transform = popTransformInverted
             self.view.alpha = 0.0
             animator.popFromView.layer.transform = CATransform3DIdentity
-            animator.popFromView.alpha = 1.0
           }
           return
         }
