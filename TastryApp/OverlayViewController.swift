@@ -14,7 +14,8 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   // MARK: - Constants
   
   struct Constants {
-    fileprivate static let TransitionDuration = FoodieGlobal.Constants.DefaultTransitionAnimationDuration
+    fileprivate static let SlideTransitionDuration = FoodieGlobal.Constants.DefaultTransitionAnimationDuration
+    fileprivate static let PopTransitionDuration = 0.3
     fileprivate static let FailInteractionAnimationDuration = 0.2
     fileprivate static let DragVelocityToDismiss: CGFloat = 800.0
     fileprivate static let DefaultSlideVCGap: CGFloat = 30.0
@@ -144,9 +145,20 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
       case .ended:
         if directionalTranslation > 0 && directionalVelocity > Constants.DragVelocityToDismiss {
           self.touchPointCenterOffset = nil
+          
+          guard let popTransform = animator.popTransform else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+              CCLog.assert("Expected pop Trasnform Matrix to be filled by Animator on present")
+            }
+            return
+          }
+          animator.popFromView.layer.transform = CATransform3DConcat(popTransform, self.view.layer.transform)
+          animator.popFromView.alpha = 0.0
+          animator.popFromView.isHidden = false
+          
           interactor.finish()
           
-          UIView.animate(withDuration: Double(1-progress)*Constants.TransitionDuration) {
+          UIView.animate(withDuration: 0.6*Constants.PopTransitionDuration) {
             guard let popTransformInverted = animator.popTransformInverted else {
               AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
                 CCLog.assert("Expected pop Trasnform Matrix to be filled by Animator on present")
@@ -154,6 +166,9 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
               return
             }
             self.view.layer.transform = popTransformInverted
+            self.view.alpha = 0.0
+            animator.popFromView.layer.transform = CATransform3DIdentity
+            animator.popFromView.alpha = 1.0
           }
           return
         }
@@ -180,7 +195,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   func setSlideTransition(presentTowards direction: BasicDirection,
                           withGapSize gapSize: CGFloat = Constants.DefaultSlideVCGap,
                           dismissIsInteractive: Bool,
-                          duration: TimeInterval = Constants.TransitionDuration) {
+                          duration: TimeInterval = Constants.SlideTransitionDuration) {
     
     self.animator = SlideTransitionAnimator(presentTowards: direction, withGapSize: gapSize, transitionFor: duration)
     self.navigationController?.delegate = self  // This will usually be nil. The Pusher needs to set the navigationControllerDelegate
@@ -195,7 +210,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   
   func setPopTransition(popFrom fromView: UIView,
                         dismissIsInteractive: Bool,
-                        duration: TimeInterval = Constants.TransitionDuration) {
+                        duration: TimeInterval = Constants.PopTransitionDuration) {
     
     self.animator = PopTransitionAnimator(from: fromView, transitionFor: duration)
     self.navigationController?.delegate = self  // This will usually be nil. The Pusher needs to set the navigationControllerDelegate

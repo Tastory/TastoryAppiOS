@@ -19,13 +19,13 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
   var timingCurve: UIViewAnimationOptions = .curveEaseInOut
   var overridePopDismiss: Bool = false
   var popTransformInverted: CATransform3D?
-  
-  
+  var popTransform: CATransform3D?
+  var popFromView: UIView
   
   // MARK: - Private Instance Variable
   
   private var duration: TimeInterval
-  private var popFromView: UIView
+  
   
   
   
@@ -56,7 +56,6 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     }
 
     let containerView = transitionContext.containerView
-    popFromView.isHidden = true
     
     if isPresenting {
       // Calculate the Presenting Affine Transform
@@ -79,14 +78,25 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
       let translationTransform = CATransform3DMakeTranslation(xTranslation, yTranslation, 0.0)
       popTransformInverted = CATransform3DConcat(scaleTransform, translationTransform)
       
+      let biggerTrasnform = CATransform3DMakeScale(1/xScaleFactor, 1/xScaleFactor, 0.99)
+      let backtrackTransform = CATransform3DMakeTranslation(-xTranslation, -yTranslation, 0.0)
+      popTransform = CATransform3DConcat(biggerTrasnform, backtrackTransform)
+      
       toVC.view.layer.transform = popTransformInverted!
       containerView.addSubview(toVC.view)
       containerView.bringSubview(toFront: toVC.view)
       
+      fromVC.view.bringSubview(toFront: popFromView)
+      
     } else {
+      toVC.view.alpha = 0.0
       containerView.addSubview(toVC.view)
       containerView.insertSubview(toVC.view, belowSubview: fromVC.view)
-      toVC.view.alpha = 0.0
+      
+      if !self.overridePopDismiss {
+        popFromView.isHidden = false
+        popFromView.layer.transform = popTransform!
+      }
     }
     
     UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0.0, options: timingCurve, animations: {
@@ -100,11 +110,15 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             return
           }
           fromVC.view.layer.transform = popTransformInverted
+          fromVC.view.alpha = 0.0
+          self.popFromView.layer.transform = CATransform3DIdentity
         }
         toVC.view.alpha = 1.0
       }
     }, completion: { _ in
-      self.popFromView.isHidden = false
+      if self.isPresenting {
+        self.popFromView.isHidden = true
+      }
       transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
     })
   }
