@@ -618,12 +618,12 @@ class FoodieUser: PFUser {
         
         var childOperationPending = false
         
-        if let media = self.media {
-          if let childOperation = self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: readyBlock, withCompletion: callback) {
-            userOperation.add(childOperation)
-          }
-          childOperationPending = true
-        }
+//        if let media = self.media {
+//          if let childOperation = self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: readyBlock, withCompletion: callback) {
+//            userOperation.add(childOperation)
+//          }
+//          childOperationPending = true
+//        }
         
         if !childOperationPending {
           readyBlock?()

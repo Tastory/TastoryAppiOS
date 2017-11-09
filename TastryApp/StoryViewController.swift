@@ -483,15 +483,14 @@ class StoryViewController: OverlayViewController {
     super.viewDidLoad()
     
     avPlayerLayer = AVPlayerLayer()
-    avPlayerLayer.frame = self.view.bounds
-    videoView!.layer.addSublayer(avPlayerLayer)
+    avPlayerLayer.frame = videoView.bounds
+    videoView.layer.addSublayer(avPlayerLayer)
     
     jotViewController.state = JotViewState.disabled
     jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                              andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
     addChildViewController(jotViewController)
     
-    jotViewController.view.frame = view.bounds
     view.addSubview(jotViewController.view)
     view.insertSubview(jotViewController.view, belowSubview: tapForwardGestureRecognizer)
     jotViewController.didMove(toParentViewController: self)
@@ -523,6 +522,9 @@ class StoryViewController: OverlayViewController {
     dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)  // This is needed so that the Swipe down to dismiss from OverlayViewController will only have an effect if this is not a Swipe Up to Safari
   }
 
+  override func viewDidLayoutSubviews() {
+    jotViewController.view.frame = videoView.frame
+  }
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
