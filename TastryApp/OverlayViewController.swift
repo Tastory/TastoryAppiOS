@@ -15,7 +15,8 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   
   struct Constants {
     fileprivate static let SlideTransitionDuration = FoodieGlobal.Constants.DefaultTransitionAnimationDuration
-    fileprivate static let PopTransitionDuration = 0.25 //* 20
+    fileprivate static let PopTransitionDuration = 0.25
+    fileprivate static let DragReturnTransitionDuration = 0.7*PopTransitionDuration
     fileprivate static let FailInteractionAnimationDuration = 0.2
     fileprivate static let DragVelocityToDismiss: CGFloat = 800.0
     fileprivate static let DefaultSlideVCGap: CGFloat = 30.0
@@ -146,28 +147,40 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
         if directionalTranslation > 0 && directionalVelocity > Constants.DragVelocityToDismiss {
           self.touchPointCenterOffset = nil
           
-          guard let popTransform = animator.popTransform else {
-            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-              CCLog.assert("Expected pop Trasnform Matrix to be filled by Animator on present")
-            }
-            return
-          }
-          animator.popFromView.layer.transform = CATransform3DConcat(popTransform, self.view.layer.transform)
-          animator.popFromView.isHidden = false
+          // Remove the popFromView and place it in the container view for animation, temporarily
+          let containerSuperview = self.view.superview!
+          let presentingView = animator.popFromView
+          animator.remove(presentingView, thenAddTo: containerSuperview)
+          containerSuperview.insertSubview(presentingView, belowSubview: self.view)
+          
+          let popToDragTransform = animator.calculateScaleMove3DTransform(from: presentingView.frame, to: self.view.frame)
+          presentingView.layer.transform = popToDragTransform
+          presentingView.isHidden = false
           
           interactor.finish()
           
-          UIView.animate(withDuration: 0.8*Constants.PopTransitionDuration) {
-            guard let popTransformInverted = animator.popTransformInverted else {
+          UIView.animate(withDuration: Constants.DragReturnTransitionDuration, animations: {
+            guard let popSmallerTransform = animator.popSmallerTransform else {
               AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
                 CCLog.assert("Expected pop Trasnform Matrix to be filled by Animator on present")
               }
               return
             }
-            self.view.layer.transform = popTransformInverted
+            self.view.layer.transform = popSmallerTransform
             self.view.alpha = 0.0
-            animator.popFromView.layer.transform = CATransform3DIdentity
-          }
+            presentingView.layer.transform = CATransform3DIdentity
+            
+          }, completion: { _ in
+            // Return the popFromView to where it was
+            guard let popFromSuperView = animator.popFromSuperview, let popFromOriginalCenter = animator.popFromOriginalCenter else {
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+                CCLog.assert("Still expected PopFrom original information to be preserved by this point")
+              }
+              return
+            }
+            animator.putBack(presentingView, to: popFromSuperView, at: popFromOriginalCenter)
+          })
+          
           return
         }
         fallthrough

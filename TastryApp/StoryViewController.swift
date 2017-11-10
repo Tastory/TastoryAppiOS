@@ -523,11 +523,9 @@ class StoryViewController: OverlayViewController {
   }
 
   override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
     jotViewController.view.frame = videoView.frame
-  }
-  
-  override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated)
+
     guard let story = viewingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
         CCLog.assert("Unexpected viewingStory = nil")
