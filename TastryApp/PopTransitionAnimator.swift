@@ -22,18 +22,24 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
   var popTransform: CATransform3D?
   var popFromView: UIView
   
+  
+  
   // MARK: - Private Instance Variable
-  
+  private var bgOverlayView: UIView?
   private var duration: TimeInterval
-  
   
   
   
   // MARK: - Public Instance Functions
   
-  init(from popFromView: UIView, transitionFor duration: TimeInterval) {
+  init(from popFromView: UIView, withBgOverlay bgOverlay: Bool, transitionFor duration: TimeInterval) {
     self.popFromView = popFromView
     self.duration = duration
+    
+    if bgOverlay {
+      bgOverlayView = UIView()
+      bgOverlayView!.backgroundColor = .black
+    }
     super.init()
   }
   
@@ -82,11 +88,18 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
       let backtrackTransform = CATransform3DMakeTranslation(-xTranslation, -yTranslation, 0.0)
       popTransform = CATransform3DConcat(biggerTrasnform, backtrackTransform)
       
+      if let bgOverlayView = bgOverlayView {
+        bgOverlayView.frame = containerView.bounds
+        bgOverlayView.alpha = 0.0
+        containerView.addSubview(bgOverlayView)
+        containerView.bringSubview(toFront: bgOverlayView)
+      }
+      
       toVC.view.layer.transform = popTransformInverted!
       containerView.addSubview(toVC.view)
       containerView.bringSubview(toFront: toVC.view)
       
-      fromVC.view.bringSubview(toFront: popFromView)
+      self.popFromView.isHidden = true
       
     } else {
       toVC.view.alpha = 0.0
@@ -94,16 +107,24 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
       containerView.insertSubview(toVC.view, belowSubview: fromVC.view)
       
       if !self.overridePopDismiss {
+        guard let popTransform = self.popTransform else {
+          CCLog.assert("Expected popTransform Matrix to have been filled during presentation")
+          return
+        }
         popFromView.isHidden = false
-        popFromView.layer.transform = popTransform!
+        popFromView.layer.transform = popTransform
       }
     }
     
     UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0.0, options: timingCurve, animations: {
       if self.isPresenting {
+        if let bgOverlayView = self.bgOverlayView {
+          bgOverlayView.alpha = 1.0
+        }
         toVC.view.layer.transform = CATransform3DIdentity
         fromVC.view.alpha = 0.0
       } else {
+        
         if !self.overridePopDismiss {
           guard let popTransformInverted = self.popTransformInverted else {
             CCLog.assert("Expected popTransform Matrix to have been filled during presentation")
@@ -113,12 +134,13 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
           fromVC.view.alpha = 0.0
           self.popFromView.layer.transform = CATransform3DIdentity
         }
+        
+        if let bgOverlayView = self.bgOverlayView {
+          bgOverlayView.alpha = 0.0
+        }
         toVC.view.alpha = 1.0
       }
     }, completion: { _ in
-      if self.isPresenting {
-        self.popFromView.isHidden = true
-      }
       transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
     })
   }

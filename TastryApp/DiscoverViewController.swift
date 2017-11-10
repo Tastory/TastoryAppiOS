@@ -273,7 +273,9 @@ class DiscoverViewController: OverlayViewController {
     }
     viewController.user = FoodieUser.current
     viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
-    self.present(viewController, animated: true)
+    navigationController?.delegate = viewController
+    navigationController?.pushViewController(viewController, animated: true)
+    //self.present(viewController, animated: true)
   }
   
   
@@ -423,7 +425,9 @@ class DiscoverViewController: OverlayViewController {
     }
     viewController.storyArray = stories
     viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
-    self.present(viewController, animated: true)
+    navigationController?.delegate = viewController
+    navigationController?.pushViewController(viewController, animated: true)
+    //self.present(viewController, animated: true)
   }
   
   

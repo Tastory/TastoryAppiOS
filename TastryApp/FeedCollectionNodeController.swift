@@ -169,18 +169,24 @@ extension FeedCollectionNodeController: ASCollectionDelegate {
       return
     }
     viewController.viewingStory = story
-    //viewController.setSlideTransition(presentTowards: .up, withGapSize: 5.0, dismissIsInteractive: true)
-    
+
     guard let popFromNode = collectionNode.nodeForItem(at: indexPath) else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
         CCLog.fatal("No Feed Collection Node for Index Path?")
       }
       return
     }
-    viewController.setPopTransition(popFrom: popFromNode.view, dismissIsInteractive: true)
-    navigationController?.delegate = viewController
-    navigationController?.pushViewController(viewController, animated: true)
-    //self.present(viewController, animated: true)
+    
+    guard let mapNavController = navigationController as? MapNavController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("No Navigation Controller or not of MapNavConveroller")
+      }
+      return
+    }
+    
+    viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
+    mapNavController.delegate = viewController
+    mapNavController.pushViewController(viewController, animated: true)
   }
   
   

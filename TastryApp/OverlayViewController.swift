@@ -15,7 +15,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   
   struct Constants {
     fileprivate static let SlideTransitionDuration = FoodieGlobal.Constants.DefaultTransitionAnimationDuration
-    fileprivate static let PopTransitionDuration = 0.25
+    fileprivate static let PopTransitionDuration = 0.25 //* 20
     fileprivate static let FailInteractionAnimationDuration = 0.2
     fileprivate static let DragVelocityToDismiss: CGFloat = 800.0
     fileprivate static let DefaultSlideVCGap: CGFloat = 30.0
@@ -207,10 +207,11 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   
   
   func setPopTransition(popFrom fromView: UIView,
+                        withBgOverlay bgOverlay: Bool,
                         dismissIsInteractive: Bool,
                         duration: TimeInterval = Constants.PopTransitionDuration) {
     
-    self.animator = PopTransitionAnimator(from: fromView, transitionFor: duration)
+    self.animator = PopTransitionAnimator(from: fromView, withBgOverlay: bgOverlay, transitionFor: duration)
     self.navigationController?.delegate = self  // This will usually be nil. The Pusher needs to set the navigationControllerDelegate
     self.transitioningDelegate = self
     

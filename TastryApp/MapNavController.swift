@@ -19,8 +19,15 @@ class MapNavController: ASNavigationController {
     setNavigationBarHidden(true, animated: false)
     setToolbarHidden(true, animated: false)
     
+    // Create Map and set Default Map Configurations
     mapView = MKMapView(frame: view.bounds)
+    mapView.isRotateEnabled = false
+    mapView.isPitchEnabled = false
+    mapView.showsCompass = false
+    mapView.showsScale = false
     mapView.showsUserLocation = true
+    mapView.setUserTrackingMode(.follow, animated: true)
+    
     view.addSubview(mapView)
     view.sendSubview(toBack: mapView)
   }
