@@ -38,6 +38,7 @@ class MomentCollectionViewCell: UICollectionViewCell {
 
   // MARK: - Public Instance Variable
   var thumbFrameLayer = ThumbnailFrameLayer()
+  var indexPath: IndexPath?
 
   // MARK: - Private Instance Functions
   fileprivate func degreesToRadians(x: CGFloat) -> CGFloat {
@@ -72,6 +73,4 @@ class MomentCollectionViewCell: UICollectionViewCell {
       self.transform = conCatTransform
     }, completion: nil)
   }
-
-
 }

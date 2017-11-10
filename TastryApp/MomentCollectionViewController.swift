@@ -218,7 +218,7 @@ class MomentCollectionViewController: UICollectionViewController {
 
   }
 
-  private func loadImage(to cell: UICollectionViewCell? = nil, in collectionView: UICollectionView, forItemAt indexPath: IndexPath) {
+  private func loadThumbnailImage(to cell: UICollectionViewCell? = nil, in collectionView: UICollectionView, forItemAt indexPath: IndexPath) {
 
     guard let momentArray = workingStory.moments else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
@@ -227,10 +227,22 @@ class MomentCollectionViewController: UICollectionViewController {
       return
     }
 
-    if let reusableCell = (cell ?? collectionView.cellForItem(at: indexPath)) as? MomentCollectionViewCell {
+    if let reusableCell = cell as? MomentCollectionViewCell {
       let moment = momentArray[indexPath.item]
 
-      DispatchQueue.main.async() {
+      if(reusableCell.indexPath == indexPath) {
+        if(reusableCell.viewButton.gestureRecognizers == nil) {
+          let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.thumbnailGesture(_:)))
+          tapRecognizer.numberOfTapsRequired = 1
+          reusableCell.viewButton.isUserInteractionEnabled = true
+          reusableCell.viewButton.addGestureRecognizer(tapRecognizer)
+
+          let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.editMoment(_:)))
+          doubleTapRecognizer.numberOfTapsRequired = 2
+          reusableCell.viewButton.addGestureRecognizer(doubleTapRecognizer)
+          tapRecognizer.require(toFail: doubleTapRecognizer)
+        }
+
         reusableCell.momentThumb.image = UIImage(data: moment.thumbnail!.imageMemoryBuffer!)
 
         // Should Thumbnail frame be hidden?
@@ -261,8 +273,6 @@ class MomentCollectionViewController: UICollectionViewController {
 
     let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(reorderMoment(_:)))
     collectionView.addGestureRecognizer(longPressGesture)
-
-    collectionView.decelerationRate = UIScrollViewDecelerationRateFast
 
     if(workingStory.isEditStory) {
       // retrieve story only when in edit mode
@@ -311,26 +321,31 @@ extension MomentCollectionViewController {
 
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath) as! MomentCollectionViewCell
+
+    cell.momentThumb.image = UIImage()
+    cell.indexPath = indexPath
+    cell.activityIndicator.isHidden = false
+    cell.activityIndicator.hidesWhenStopped = true
+    cell.activityIndicator.startAnimating()
+    cell.deleteButton.isHidden = true
+    cell.thumbFrameView.isHidden = true
+
     guard let momentArray = workingStory.moments else {
       CCLog.warning("No Moments for workingStory \(workingStory.getUniqueIdentifier())")
       return cell
     }
-    
+
     if indexPath.item >= momentArray.count {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
         CCLog.assert("Moment Array for Story \(self.workingStory.getUniqueIdentifier()) index out of range - indexPath.item \(indexPath.item) >= momentArray.count \(momentArray.count)")
       }
       return cell
     }
-    
+
     let moment = momentArray[indexPath.item]
-    
-    cell.activityIndicator.hidesWhenStopped = true
-    cell.activityIndicator.startAnimating()
-    cell.deleteButton.isHidden = true
 
     if(moment.thumbnail?.imageMemoryBuffer != nil) {
-      loadImage(to: cell, in: collectionView, forItemAt: indexPath)
+      loadThumbnailImage(to: cell, in: collectionView, forItemAt: indexPath)
     } else {
       _  = moment.retrieveRecursive(from: .both, type: .cache) { (error) in
 
@@ -364,27 +379,11 @@ extension MomentCollectionViewController {
         }
 
         DispatchQueue.main.async {
-
-          if(cell.viewButton.gestureRecognizers == nil) {
-            let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.thumbnailGesture(_:)))
-            tapRecognizer.numberOfTapsRequired = 1
-            cell.viewButton.isUserInteractionEnabled = true
-            cell.viewButton.addGestureRecognizer(tapRecognizer)
-
-            let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.editMoment(_:)))
-            doubleTapRecognizer.numberOfTapsRequired = 2
-            cell.viewButton.addGestureRecognizer(doubleTapRecognizer)
-            tapRecognizer.require(toFail: doubleTapRecognizer)
-          }
-
           // check to see if indexPath is within the visible items
-          if(collectionView.indexPathsForVisibleItems.contains(indexPath)) {
-            self.loadImage(in: collectionView, forItemAt: indexPath)
-          }
+          self.loadThumbnailImage(to: cell, in: collectionView, forItemAt: indexPath)
         }
       }
     }
-
     return cell
   }
 
