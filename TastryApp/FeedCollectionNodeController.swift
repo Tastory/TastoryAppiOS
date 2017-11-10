@@ -68,7 +68,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     
     flowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
     flowLayout.estimatedItemSize = CGSize(width: itemWidth, height: itemHeight)
-    flowLayout.sectionInset = UIEdgeInsetsMake(headerInset + feedNodeMargin, feedNodeMargin, 0.0, feedNodeMargin)
+    flowLayout.sectionInset = UIEdgeInsetsMake(0.0, feedNodeMargin, 0.0, feedNodeMargin)
     flowLayout.minimumInteritemSpacing = feedNodeMargin
     flowLayout.minimumLineSpacing = feedNodeMargin
     

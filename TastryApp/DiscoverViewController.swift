@@ -462,7 +462,7 @@ class DiscoverViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    // Set the map to the Map Nav Map for now
+    // Set the map to the MapNavController Map directly for now
     guard let mapNavController = navigationController as? MapNavController else {
       CCLog.fatal("DiscoverViewController must have a MapNavController as it's Navigation Controller")
     }
