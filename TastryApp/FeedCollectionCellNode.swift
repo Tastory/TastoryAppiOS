@@ -43,6 +43,8 @@ class FeedCollectionCellNode: ASCellNode {
     super.init()
     
     coverImageNode.url = FoodieFileObject.getS3URL(for: thumbnailFileName)
+    coverImageNode.placeholderColor = UIColor.gray
+    coverImageNode.placeholderEnabled = true
     coverImageNode.isLayerBacked = true
     
     if let coverTitle = story.title {

@@ -146,6 +146,8 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
     let story = storyArray[indexPath.row]
     let cellNode = FeedCollectionCellNode(story: story)
     cellNode.cornerRadius = itemWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
+    cellNode.backgroundColor = UIColor.gray
+    cellNode.placeholderEnabled = true
     return { return cellNode }
   }
 }

@@ -57,7 +57,7 @@ class VenueTableViewController: OverlayViewController {
   
   // MARK: - IBActions
   @IBAction func rightSwipe(_ sender: UISwipeGestureRecognizer) {
-    dismiss(animated: true, completion: nil)  // TODO: Do we still need this?
+    popDismiss(animated: true)  // TODO: Do we still need this?
   }
 
   
@@ -337,7 +337,7 @@ extension VenueTableViewController: UITableViewDelegate {
     
     // Call the delegate's function for returning the venue
     delegate?.venueSearchComplete(venue: venueResultArray[indexPath.row])
-    dismiss(animated: true, completion: nil)  // TODO: We should change this whole thing to an OverlayVC + ASTableView
+    popDismiss(animated: true)
   }
   
   // Hide the keyboard if the venue table begins dragging

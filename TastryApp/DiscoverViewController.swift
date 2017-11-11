@@ -11,7 +11,7 @@ import CoreLocation
 
 class DiscoverViewController: OverlayViewController {
 
-  // MARK: Error Types
+  // MARK: - Error Types
   enum ErrorCode: LocalizedError {
     
     case mapQueryExceededMaxLat
@@ -115,12 +115,9 @@ class DiscoverViewController: OverlayViewController {
       return
     }
 
-    if(FoodieStory.currentStory == nil)
-    {
+    if FoodieStory.currentStory == nil {
       viewController.workingStory =  FoodieStory.newCurrent()
-    }
-    else
-    {
+    } else {
       viewController.workingStory = FoodieStory.currentStory
     }
     
@@ -187,39 +184,7 @@ class DiscoverViewController: OverlayViewController {
       }
       
       self.displayAnnotations(onStories: stories)
-    }
-  }
-  
-  
-  @IBAction func showFeed(_ sender: UIButton) {
-    performQuery { stories, error in
-      if let error = error {
-        if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
-          AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
-        } else {
-          AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
-            CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
-          }
-        }
-        return
-      }
-      
-      guard let stories = stories else {
-        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
-          CCLog.assert("Story Query resulted in storyArray = nil")
-        }
-        return
-      }
-      
-      guard let query = self.storyQuery else {
-        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce a Query") { action in
-          CCLog.assert("Story Query resulted in storyQuery = nil")
-        }
-        return
-      }
-      
-      self.displayAnnotations(onStories: stories)
-      self.launchFeed(withStoryArray: stories, withStoryQuery: query)
+      self.feedCollectionNodeController.resetCollectionNode(with: stories)
     }
   }
   
@@ -244,15 +209,8 @@ class DiscoverViewController: OverlayViewController {
         return
       }
       
-      guard let query = self.storyQuery else {
-        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce a Query") { action in
-          CCLog.assert("Story Query resulted in storyQuery = nil")
-        }
-        return
-      }
-      
       self.displayAnnotations(onStories: stories)
-      self.launchFeed(withStoryArray: stories, withStoryQuery: query)
+      self.feedCollectionNodeController.resetCollectionNode(with: stories)
     }
   }
   
@@ -409,20 +367,6 @@ class DiscoverViewController: OverlayViewController {
         }
       }
     }
-  }
-  
-  
-  private func launchFeed(withStoryArray stories: [FoodieStory], withStoryQuery query: FoodieQuery) {
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverFeedViewController") as? DiscoverFeedViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("ViewController initiated not of DiscoverFeedViewController Class!!")
-      }
-      return
-    }
-    viewController.storyArray = stories
-    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
-    pushPresent(viewController, animated: true)
   }
   
   
