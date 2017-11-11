@@ -453,11 +453,11 @@ class FoodieUser: PFUser {
   
   
   static func checkValidFor(username: String) -> ErrorCode? {
-    if username.characters.count < Constants.MinUsernameLength {
+    if username.count < Constants.MinUsernameLength {
       return .usernameTooShort(Constants.MinUsernameLength)
     }
     
-    if username.characters.count > Constants.MaxUsernameLength {
+    if username.count > Constants.MaxUsernameLength {
       return .usernameTooLong(Constants.MaxUsernameLength)
     }
     
@@ -500,11 +500,11 @@ class FoodieUser: PFUser {
   
   static func checkValidFor(password: String, username: String?, email: String?) -> ErrorCode? {
     
-    if password.characters.count < Constants.MinPasswordLength {
+    if password.count < Constants.MinPasswordLength {
       return .passwordTooShort(Constants.MinPasswordLength)
     }
     
-    if password.characters.count > Constants.MaxPasswordLength {
+    if password.count > Constants.MaxPasswordLength {
       return .passwordTooLong(Constants.MaxPasswordLength)
     }
     

@@ -99,7 +99,7 @@ class SettingsTableViewController: UITableViewController {
     }
     
     if let viewController = pushViewController {
-      viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
+      viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
       navigationController.pushViewController(viewController, animated: true)
     }
   }

@@ -562,7 +562,7 @@ extension ProfileDetailTableViewController: UITextFieldDelegate {
     switch textField {
     case usernameField!:
       self.emailFooterView.warningLabel.text = ""
-      guard var textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinUsernameLength, let username = user.username, textString != username else {
+      guard var textString = textField.text, textString.count >= FoodieUser.Constants.MinUsernameLength, let username = user.username, textString != username else {
         return  // No text, nothing to see here
       }
       
@@ -587,7 +587,7 @@ extension ProfileDetailTableViewController: UITextFieldDelegate {
       
     case emailField!:
       emailFooterView.warningLabel.text = ""
-      guard var textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinEmailLength, let email = user.email, textString != email else {
+      guard var textString = textField.text, textString.count >= FoodieUser.Constants.MinEmailLength, let email = user.email, textString != email else {
         return  // No yet an E-mail, nothing to see here
       }
       

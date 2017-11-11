@@ -39,6 +39,7 @@ struct FoodieGlobal {
     static let DefaultTransitionAnimationDuration: TimeInterval = 0.4
     static let DefaultTransitionUnderVCAlpha: CGFloat = 0.1
     static let DefaultMomentAspectRatio: CGFloat = 9/16
+    static let DefaultSlideVCGapSize: CGFloat = 5.0
   }
   
   

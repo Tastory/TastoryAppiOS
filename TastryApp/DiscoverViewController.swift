@@ -124,7 +124,7 @@ class DiscoverViewController: OverlayViewController {
       viewController.workingStory = FoodieStory.currentStory
     }
     
-    viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
   }
   
@@ -271,7 +271,7 @@ class DiscoverViewController: OverlayViewController {
       return
     }
     viewController.user = FoodieUser.current
-    viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
   }
   
@@ -421,7 +421,7 @@ class DiscoverViewController: OverlayViewController {
       return
     }
     viewController.storyArray = stories
-    viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
   }
   
@@ -742,7 +742,7 @@ extension DiscoverViewController: UITextFieldDelegate {
       if let text = placemarks[0].administrativeArea {
 
         // If this is a province/state code, remove this. 'name' usually takes care of this.
-        if !((text.lowercased() == location.lowercased()) && (text.characters.count == 2)){
+        if !((text.lowercased() == location.lowercased()) && (text.count == 2)){
           if !textArray.contains(text) { textArray.append(text) }
         }
       }
@@ -841,7 +841,7 @@ extension DiscoverViewController: CameraReturnDelegate {
       viewController.returnedMoments = markedupMoments
       
       self.dismiss(animated: true) {  // This dismiss is for the CameraViewController to call on
-        viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
+        viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
         self.pushPresent(viewController, animated: true)  // This pushPresent is from the DiscoverViewController to present the Composition VC
       }
     }

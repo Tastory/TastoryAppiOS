@@ -96,7 +96,7 @@ class LogInViewController: OverlayViewController {
     
     viewController.username = usernameField.text
     viewController.password = passwordField.text
-    viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
   }
   
@@ -114,7 +114,7 @@ class LogInViewController: OverlayViewController {
     if let logInText = usernameField.text, FoodieUser.checkValidFor(email: logInText) {
       viewController.emailAddress = logInText
     }
-    viewController.setSlideTransition(presentTowards: .up, withGapSize: 5.0, dismissIsInteractive: true)
+    viewController.setSlideTransition(presentTowards: .up, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
   }
   
@@ -219,7 +219,7 @@ class LogInViewController: OverlayViewController {
           viewController.enableResend = true
         }
         
-        viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
+        viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: false)
         self.pushPresent(viewController, animated: true)
       }
     }

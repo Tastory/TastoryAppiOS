@@ -79,7 +79,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     
     // Average the locations of the Moments to create a location suggestion on where to search for a Venue
     viewController.suggestedLocation = averageLocationOfMoments()
-    viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     parentNavController?.delegate = viewController
     parentNavController?.pushViewController(viewController, animated: true)
   }
@@ -101,7 +101,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
     viewController.viewingStory = workingStory
     viewController.draftPreview = true
-    viewController.setSlideTransition(presentTowards: .up, withGapSize: 5.0, dismissIsInteractive: true)
+    viewController.setSlideTransition(presentTowards: .up, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     parentNavController?.delegate = viewController
     parentNavController?.pushViewController(viewController, animated: true)
   }
