@@ -353,13 +353,13 @@ class DiscoverViewController: OverlayViewController {
           CCLog.fatal("Venue \(venue.getUniqueIdentifier()) returned with no Data Available")
         }
         
-        guard let title = story.title, let venue = story.venue, let location = venue.location else {
+        guard let venue = story.venue, let location = venue.location else {
           CCLog.warning("No Title, Venue or Location to Story. Skipping Story")
           return
         }
         
         DispatchQueue.main.async {
-          let annotation = StoryMapAnnotation(title: title,
+          let annotation = StoryMapAnnotation(title: venue.name ?? "",
                                               story: story,
                                               coordinate: CLLocationCoordinate2D(latitude: location.latitude,
                                                                                  longitude: location.longitude))

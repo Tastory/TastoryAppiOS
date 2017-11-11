@@ -73,7 +73,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QC2-XK-jf4" customClass="TouchForwardingView" customModule="TastryApp" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="433.5"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                                 <connections>
@@ -84,7 +84,7 @@
                                 </connections>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QP7-f7-wk1">
-                                <rect key="frame" x="0.0" y="200" width="375" height="467"/>
+                                <rect key="frame" x="0.0" y="433.5" width="375" height="233.5"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="70" translatesAutoresizingMaskIntoConstraints="NO" id="S7U-1x-ELZ">
@@ -172,7 +172,7 @@
                             <constraint firstItem="QP7-f7-wk1" firstAttribute="leading" secondItem="oB7-Q1-hCS" secondAttribute="leading" id="heM-AO-6o5"/>
                             <constraint firstAttribute="trailing" secondItem="QC2-XK-jf4" secondAttribute="trailing" id="hop-HJ-4YV"/>
                             <constraint firstItem="1zZ-dd-fcW" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="is3-jI-Qnz"/>
-                            <constraint firstItem="QP7-f7-wk1" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.7" id="rqE-df-sxp"/>
+                            <constraint firstItem="QP7-f7-wk1" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.35" id="rqE-df-sxp"/>
                             <constraint firstAttribute="trailingMargin" secondItem="0wJ-kE-Bqf" secondAttribute="trailing" id="sre-db-TIA"/>
                             <constraint firstItem="oB7-Q1-hCS" firstAttribute="trailing" secondItem="QP7-f7-wk1" secondAttribute="trailing" id="tHU-hI-SlX"/>
                             <constraint firstAttribute="trailingMargin" secondItem="8yq-x6-CLY" secondAttribute="trailing" id="uUg-YT-GMX"/>

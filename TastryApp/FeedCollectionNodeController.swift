@@ -29,6 +29,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   private struct Constants {
     static let DefaultColumns: Int = 2
     static let DefaultFeedNodeMargin: CGFloat = 5.0
+    static let DefaultFeedBottomOffset: CGFloat = 16.0
     static let DefaultCoverPhotoAspecRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
     static let DefaultFeedNodeCornerRadiusFraction = 0.05
   }
@@ -41,43 +42,35 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   var storyArray = [FoodieStory]()
   
   
+  
   // MARK: - Private Instance Variable
   
   private var collectionNode: ASCollectionNode
-  
-  private var flowLayout: UICollectionViewFlowLayout
+
+  // Vertical Scroll Parameters
   private var numOfColumns = Constants.DefaultColumns
   private var feedNodeMargin = Constants.DefaultFeedNodeMargin
-  private var itemWidth: CGFloat
-  private var itemHeight: CGFloat
   
-  private var allPagesFetched: Bool
+  
+  // Horizontal Scroll Parameters
+  
+  
+  // Common Parameters
+  private var itemWidth: CGFloat = 0
+  private var itemHeight: CGFloat = 0
+  private var allPagesFetched: Bool = false
   
   
   
   // MARK: - Node Controller Lifecycle
   
   init(withHeaderInset headerInset: CGFloat = 0.0) {
-    flowLayout = UICollectionViewFlowLayout()
+    let layout = UICollectionViewFlowLayout()
+    layout.scrollDirection = .horizontal
+    collectionNode = ASCollectionNode(collectionViewLayout: layout)
     
-    // For ASCollectionNode, it gets the Cell Constraint size via the itemSize property of the Layout via a Layout Inspector
-    let screenWidth = UIScreen.main.bounds.width
-    itemWidth = (screenWidth - 2*feedNodeMargin - CGFloat(numOfColumns - 1)*feedNodeMargin) / CGFloat(numOfColumns)
-    if numOfColumns == 3 { itemWidth = floor(itemWidth) }  // Weird problem when the itemWidth is .3 repeat.
-    itemHeight = itemWidth/Constants.DefaultCoverPhotoAspecRatio
-    
-    flowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
-    flowLayout.estimatedItemSize = CGSize(width: itemWidth, height: itemHeight)
-    flowLayout.sectionInset = UIEdgeInsetsMake(0.0, feedNodeMargin, 0.0, feedNodeMargin)
-    flowLayout.minimumInteritemSpacing = feedNodeMargin
-    flowLayout.minimumLineSpacing = feedNodeMargin
-    
-    allPagesFetched = false
-    collectionNode = ASCollectionNode(collectionViewLayout: flowLayout)
-
     super.init(node: collectionNode)
     node.backgroundColor = .clear
-    
     collectionNode.delegate = self
     collectionNode.dataSource = self
   }
@@ -93,6 +86,41 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     collectionNode.frame = view.bounds
   }
   
+  
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    if let flowLayout = collectionNode.collectionViewLayout as? UICollectionViewFlowLayout {
+      flowLayout.scrollDirection = .horizontal
+      if flowLayout.scrollDirection == .vertical {
+
+        // For ASCollectionNode, it gets the Cell Constraint size via the itemSize property of the Layout via a Layout Inspector
+        let collectionWidth = collectionNode.bounds.width
+        itemWidth = (collectionWidth - 2*feedNodeMargin - CGFloat(numOfColumns - 1)*feedNodeMargin) / CGFloat(numOfColumns)
+        if numOfColumns == 3 { itemWidth = floor(itemWidth) }  // Weird problem when the itemWidth is .3 repeat.
+        itemHeight = itemWidth/Constants.DefaultCoverPhotoAspecRatio
+
+        flowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
+        flowLayout.estimatedItemSize = CGSize(width: itemWidth, height: itemHeight)
+        flowLayout.sectionInset = UIEdgeInsetsMake(0.0, feedNodeMargin, 0.0, feedNodeMargin)
+        flowLayout.minimumInteritemSpacing = feedNodeMargin
+        flowLayout.minimumLineSpacing = feedNodeMargin
+
+      } else if flowLayout.scrollDirection == .horizontal {
+
+        // For ASCollectionNode, it gets the Cell Constraint size via the itemSize property of the Layout via a Layout Inspector
+        let collectionHeight = collectionNode.bounds.height
+        itemHeight = collectionHeight - Constants.DefaultFeedBottomOffset
+        itemWidth = itemHeight*Constants.DefaultCoverPhotoAspecRatio
+
+        flowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
+        flowLayout.estimatedItemSize = CGSize(width: itemWidth, height: itemHeight)
+        flowLayout.sectionInset = UIEdgeInsetsMake(0.0, 0.0, Constants.DefaultFeedBottomOffset, 0.0)
+        flowLayout.minimumInteritemSpacing = feedNodeMargin
+        flowLayout.minimumLineSpacing = feedNodeMargin
+      }
+      collectionNode.layoutIfNeeded()
+    }
+  }
   
   
   // MARK: - Public Instance Function
