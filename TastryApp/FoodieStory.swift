@@ -677,6 +677,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       }
     }
 
+    removeCurrent()
     // Delete all traces of this unPosted Story
     _ = story.deleteRecursive(from: .local, type: .draft) { error in
       if let error = error {
@@ -708,8 +709,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
           }
         }
       }
-
-      removeCurrent()
       callback(nil)
     }
   }
