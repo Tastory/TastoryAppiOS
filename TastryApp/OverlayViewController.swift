@@ -80,11 +80,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
       case .began:
         animator.timingCurve = .curveLinear
         interactor.hasStarted = true
-        if let navigationController = navigationController {
-          navigationController.popViewController(animated: true)
-        } else {
-          dismiss(animated: true, completion: nil)
-        }
+        popDismiss(animated: true)
 
       case .changed:
         interactor.update(progress)
@@ -120,11 +116,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
         animator.isPresenting = false
         animator.overridePopDismiss = true
         
-        if let navigationController = navigationController {
-          navigationController.popViewController(animated: true)
-        } else {
-          dismiss(animated: true, completion: nil)
-        }
+        popDismiss(animated: true)
         
       case .changed:
         guard let touchPointCenterOffset = touchPointCenterOffset else {
@@ -202,6 +194,30 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   
   
   // MARK: - Public Instance Functions
+  
+  func pushPresent(_ viewController: OverlayViewController, animated: Bool) {
+    if let mapNavController = navigationController as? MapNavController {
+      mapNavController.delegate = viewController
+      mapNavController.pushViewController(viewController, animated: animated)
+    }
+    else if let navigationController = navigationController {
+      navigationController.pushViewController(viewController, animated: animated)
+    }
+    else {
+      present(viewController, animated: animated)
+    }
+  }
+  
+  
+  func popDismiss(animated: Bool) {
+    if let navigationController = navigationController {
+      navigationController.popViewController(animated: animated)
+    }
+    else {
+      dismiss(animated: animated)
+    }
+  }
+  
   
   func setSlideTransition(presentTowards direction: BasicDirection,
                           withGapSize gapSize: CGFloat = Constants.DefaultSlideVCGap,

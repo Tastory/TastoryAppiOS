@@ -51,6 +51,7 @@ class StoryCompositionViewController: OverlayViewController {
     viewController.returnedMoments = returnedMoments
     viewController.markupMoment = markupMoment
     viewController.containerVC = self
+    viewController.parentNavController = navigationController
     viewController.restoreStoryDelegate = restoreStoryDelegate
     
     addChildViewController(viewController)
@@ -69,6 +70,6 @@ extension StoryCompositionViewController: MarkupReturnDelegate {
     if(markedupMoments.count > 0) {
       self.markupMoment = markedupMoments.first
     }
-    dismiss(animated: true, completion: nil)
+    dismiss(animated: true, completion: nil)  // This dismiss is for the MarkupVC to call, not for the Story Composition VC
   }
 }

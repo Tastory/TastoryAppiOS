@@ -32,7 +32,7 @@ class ProfileViewController: OverlayViewController {
   
   // MARK: - IBAction
   @IBAction func backAction(_ sender: UIBarButtonItem) {
-    dismiss(animated: true, completion: nil)
+    popDismiss(animated: true)
   }
   
   
@@ -45,7 +45,7 @@ class ProfileViewController: OverlayViewController {
       return
     }
     viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
-    self.present(viewController, animated: true)
+    pushPresent(viewController, animated: true)
   }
   
   
@@ -58,7 +58,7 @@ class ProfileViewController: OverlayViewController {
     guard let user = user, user.isRegistered else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
         CCLog.assert("Entered Profile View but no valid registered user specified")
-        self.dismiss(animated: true, completion: nil)
+        self.popDismiss(animated: true)
       }
       return
     }

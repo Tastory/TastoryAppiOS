@@ -41,6 +41,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   fileprivate var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
 
   // MARK: - Public Instance Variable
+  var parentNavController: UINavigationController?
   var workingStory: FoodieStory?
   var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
@@ -79,7 +80,8 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     // Average the locations of the Moments to create a location suggestion on where to search for a Venue
     viewController.suggestedLocation = averageLocationOfMoments()
     viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
-    self.present(viewController, animated: true)
+    parentNavController?.delegate = viewController
+    parentNavController?.pushViewController(viewController, animated: true)
   }
   
   
@@ -100,7 +102,8 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     viewController.viewingStory = workingStory
     viewController.draftPreview = true
     viewController.setSlideTransition(presentTowards: .up, withGapSize: 5.0, dismissIsInteractive: true)
-    self.present(viewController, animated: true)
+    parentNavController?.delegate = viewController
+    parentNavController?.pushViewController(viewController, animated: true)
   }
 
   @IBAction func discardStory(_ sender: UIButton) {
@@ -292,7 +295,11 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
   @objc private func vcDismiss() {
     // TODO: Data Passback through delegate?
-    dismiss(animated: true, completion: nil)
+    if let parentNavController = parentNavController {
+      parentNavController.popViewController(animated: true)
+    } else {
+      dismiss(animated: true)
+    }
   }
 
   // MARK: - View Controller Life Cycle
@@ -575,7 +582,7 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
 extension StoryEntryViewController: CameraReturnDelegate {
   func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
 
-    dismiss(animated: true) {
+    dismiss(animated: true) {  // This dismiss is for the Camera VC
       self.returnedMoments =  markedupMoments
       // compute the insert index for the collection view
       var indexPaths: [IndexPath] = []

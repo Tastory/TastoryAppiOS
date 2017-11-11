@@ -49,7 +49,7 @@ class EmailResetViewController: OverlayViewController {
   
   
   @IBAction func exitAction(_ sender: ExitButton) {
-    dismiss(animated: true, completion: nil)
+    popDismiss(animated: true)
   }
 
   

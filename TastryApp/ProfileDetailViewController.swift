@@ -21,7 +21,8 @@ class ProfileDetailViewController: OverlayViewController {
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileDetailTableViewController") as? ProfileDetailTableViewController else {
       CCLog.fatal("Cannot cast ViewController from Storyboard to ProfileDetailTableViewController")
     }
-
+    viewController.parentNavigationController = self.navigationController
+    
     addChildViewController(viewController)
     view.addSubview(viewController.view)
     viewController.view.frame = view.bounds

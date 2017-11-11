@@ -19,6 +19,8 @@ class SettingsViewController: OverlayViewController {
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsTableViewController") as? SettingsTableViewController else {
       CCLog.fatal("Cannot cast ViewController from Storyboard to SettingsTableViewController")
     }
+    viewController.parentNavController = self.navigationController
+    
     let navController = SettingsNavController(rootViewController: viewController)
     
     addChildViewController(navController)

@@ -64,7 +64,7 @@ class SignUpViewController: OverlayViewController {
   
   @IBAction func exitAction(_ sender: UIButton) {
     view.endEditing(true)
-    dismiss(animated: true, completion: nil)
+    popDismiss(animated: true)
   }
   
   
@@ -135,7 +135,7 @@ class SignUpViewController: OverlayViewController {
         viewController.secondLabelText = "For now, you can start by checking out what Tasty Stories are around you~"
         viewController.enableResend = false
         viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
-        self.present(viewController, animated: true)
+        self.pushPresent(viewController, animated: true)
       }
     }
   }

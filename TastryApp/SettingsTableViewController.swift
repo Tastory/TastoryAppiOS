@@ -10,12 +10,18 @@ import UIKit
 
 class SettingsTableViewController: UITableViewController {
   
+  var parentNavController: UINavigationController?
+  
   @objc private func logOutAction(_ sender: UIBarButtonItem) {
     LogOutDismiss.askDiscardIfNeeded(from: self)
   }
   
   @objc private func dismissAction(_ sender: UIBarButtonItem) {
-    dismiss(animated: true, completion: nil)
+    if let parentNavController = parentNavController {
+      parentNavController.popViewController(animated: true)
+    } else {
+      dismiss(animated: true)
+    }
   }
   
   override func viewDidLoad() {

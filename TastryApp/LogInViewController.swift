@@ -97,7 +97,7 @@ class LogInViewController: OverlayViewController {
     viewController.username = usernameField.text
     viewController.password = passwordField.text
     viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
-    self.present(viewController, animated: true)
+    pushPresent(viewController, animated: true)
   }
   
   
@@ -115,7 +115,7 @@ class LogInViewController: OverlayViewController {
       viewController.emailAddress = logInText
     }
     viewController.setSlideTransition(presentTowards: .up, withGapSize: 5.0, dismissIsInteractive: true)
-    self.present(viewController, animated: true)
+    pushPresent(viewController, animated: true)
   }
   
   
@@ -220,7 +220,7 @@ class LogInViewController: OverlayViewController {
         }
         
         viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: false)
-        self.present(viewController, animated: true, completion: nil)
+        self.pushPresent(viewController, animated: true)
       }
     }
   }

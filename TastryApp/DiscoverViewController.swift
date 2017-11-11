@@ -45,7 +45,7 @@ class DiscoverViewController: OverlayViewController {
 
   
 
-  // MARK: - Instance Variables
+  // MARK: - Private Instance Variables
   private var currentMapDelta = Constants.DefaultMaxDelta
   private var locationWatcher: LocationWatch.Context?
   private var lastLocation: CLLocationCoordinate2D? = nil
@@ -106,7 +106,7 @@ class DiscoverViewController: OverlayViewController {
   
   @IBAction func launchDraftStory(_ sender: Any) {
     // This is used for viewing the draft story to be used with update story later
-    // Hid the button due to problems with empty draft story and saving an empty story is problematic
+    // Hide the button due to problems with empty draft story and saving an empty story is problematic
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
@@ -125,7 +125,7 @@ class DiscoverViewController: OverlayViewController {
     }
     
     viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
-    self.present(viewController, animated: true)
+    pushPresent(viewController, animated: true)
   }
   
   
@@ -138,9 +138,8 @@ class DiscoverViewController: OverlayViewController {
       return
     }
     viewController.cameraReturnDelegate = self
-    self.present(viewController, animated: true)
+    present(viewController, animated: true)  // Use regular present for the Camera for now. Not including the camera as part of the MapNavController for now
   }
-  
   
   
   @IBAction func currentLocationReturn(_ sender: UIButton) {
@@ -273,9 +272,7 @@ class DiscoverViewController: OverlayViewController {
     }
     viewController.user = FoodieUser.current
     viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
-    navigationController?.delegate = viewController
-    navigationController?.pushViewController(viewController, animated: true)
-    //self.present(viewController, animated: true)
+    pushPresent(viewController, animated: true)
   }
   
   
@@ -425,9 +422,7 @@ class DiscoverViewController: OverlayViewController {
     }
     viewController.storyArray = stories
     viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
-    navigationController?.delegate = viewController
-    navigationController?.pushViewController(viewController, animated: true)
-    //self.present(viewController, animated: true)
+    pushPresent(viewController, animated: true)
   }
   
   
@@ -845,9 +840,9 @@ extension DiscoverViewController: CameraReturnDelegate {
       viewController.workingStory = workingStory!
       viewController.returnedMoments = markedupMoments
       
-      self.dismiss(animated: true) {
+      self.dismiss(animated: true) {  // This dismiss is for the CameraViewController to call on
         viewController.setSlideTransition(presentTowards: .left, withGapSize: 5.0, dismissIsInteractive: true)
-        self.present(viewController, animated: true)
+        self.pushPresent(viewController, animated: true)  // This pushPresent is from the DiscoverViewController to present the Composition VC
       }
     }
   }
