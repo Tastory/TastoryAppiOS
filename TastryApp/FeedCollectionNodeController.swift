@@ -17,6 +17,8 @@ protocol FeedCollectionNodeDelegate {
   
   // FeedCollectionNodeController displaying Stories with indexes. Array[0] is guarenteed to be the highest item in the CollectionNode's view
   func collectionNodeDisplayingStories(with indexes: [Int])
+  
+  func collectionNodeLayoutChanging(to layout: UICollectionViewLayout)
 }
 
 
@@ -27,11 +29,9 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // MARK: - Private Class Constants
   
   private struct Constants {
-    static let DefaultColumns: Int = 2
-    static let DefaultFeedNodeMargin: CGFloat = 5.0
-    static let DefaultFeedBottomOffset: CGFloat = 16.0
-    static let DefaultCoverPhotoAspecRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
-    static let DefaultFeedNodeCornerRadiusFraction = 0.05
+    
+    static let DefaultGuestimatedCellNodeWidth: CGFloat = 150.0
+    static let DefaultFeedNodeCornerRadiusFraction:CGFloat = 0.05
   }
   
   
@@ -46,29 +46,15 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // MARK: - Private Instance Variable
   
   private var collectionNode: ASCollectionNode
-
-  // Vertical Scroll Parameters
-  private var numOfColumns = Constants.DefaultColumns
-  private var feedNodeMargin = Constants.DefaultFeedNodeMargin
-  
-  
-  // Horizontal Scroll Parameters
-  
-  
-  // Common Parameters
-  private var itemWidth: CGFloat = 0
-  private var itemHeight: CGFloat = 0
   private var allPagesFetched: Bool = false
-  
+
   
   
   // MARK: - Node Controller Lifecycle
   
   init(withHeaderInset headerInset: CGFloat = 0.0) {
-    let layout = UICollectionViewFlowLayout()
-    layout.scrollDirection = .horizontal
-    collectionNode = ASCollectionNode(collectionViewLayout: layout)
-    
+    let collectionLayout = CarouselCollectionViewLayout()
+    collectionNode = ASCollectionNode(collectionViewLayout: collectionLayout)
     super.init(node: collectionNode)
     node.backgroundColor = .clear
     collectionNode.delegate = self
@@ -85,42 +71,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     super.viewDidLoad()
     collectionNode.frame = view.bounds
   }
-  
-  
-  override func viewDidLayoutSubviews() {
-    super.viewDidLayoutSubviews()
-    if let flowLayout = collectionNode.collectionViewLayout as? UICollectionViewFlowLayout {
-      flowLayout.scrollDirection = .horizontal
-      if flowLayout.scrollDirection == .vertical {
 
-        // For ASCollectionNode, it gets the Cell Constraint size via the itemSize property of the Layout via a Layout Inspector
-        let collectionWidth = collectionNode.bounds.width
-        itemWidth = (collectionWidth - 2*feedNodeMargin - CGFloat(numOfColumns - 1)*feedNodeMargin) / CGFloat(numOfColumns)
-        if numOfColumns == 3 { itemWidth = floor(itemWidth) }  // Weird problem when the itemWidth is .3 repeat.
-        itemHeight = itemWidth/Constants.DefaultCoverPhotoAspecRatio
-
-        flowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
-        flowLayout.estimatedItemSize = CGSize(width: itemWidth, height: itemHeight)
-        flowLayout.sectionInset = UIEdgeInsetsMake(0.0, feedNodeMargin, 0.0, feedNodeMargin)
-        flowLayout.minimumInteritemSpacing = feedNodeMargin
-        flowLayout.minimumLineSpacing = feedNodeMargin
-
-      } else if flowLayout.scrollDirection == .horizontal {
-
-        // For ASCollectionNode, it gets the Cell Constraint size via the itemSize property of the Layout via a Layout Inspector
-        let collectionHeight = collectionNode.bounds.height
-        itemHeight = collectionHeight - Constants.DefaultFeedBottomOffset
-        itemWidth = itemHeight*Constants.DefaultCoverPhotoAspecRatio
-
-        flowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
-        flowLayout.estimatedItemSize = CGSize(width: itemWidth, height: itemHeight)
-        flowLayout.sectionInset = UIEdgeInsetsMake(0.0, 0.0, Constants.DefaultFeedBottomOffset, 0.0)
-        flowLayout.minimumInteritemSpacing = feedNodeMargin
-        flowLayout.minimumLineSpacing = feedNodeMargin
-      }
-      collectionNode.layoutIfNeeded()
-    }
-  }
   
   
   // MARK: - Public Instance Function
@@ -141,7 +92,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     }
     
     allPagesFetched = isLastPage
-    
     batchContext.completeBatchFetching(true)
   }
   
@@ -151,6 +101,23 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     storyArray = stories
     allPagesFetched = false
     collectionNode.reloadData()
+  }
+
+  
+  func invalidateAndSet() {
+//    let layout = MosaicCollectionViewLayout()
+//    layout.delegate = self
+//
+//    collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
+//    collectionNode.delegate = self
+//    collectionNode.dataSource = self
+//    
+//    //collectionNode.collectionViewLayout.invalidateLayout()
+//    collectionNode.view.setCollectionViewLayout(layout, animated: true)
+//    collectionNode.view.dataController.dataSource = ASDataControllerSource.init(
+//    collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
+//    collectionNode.delegate = self
+//    collectionNode.dataSource = self
   }
 }
 
@@ -173,7 +140,7 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
   func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
     let story = storyArray[indexPath.row]
     let cellNode = FeedCollectionCellNode(story: story)
-    cellNode.cornerRadius = itemWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
+    cellNode.cornerRadius = Constants.DefaultGuestimatedCellNodeWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
     cellNode.backgroundColor = UIColor.gray
     cellNode.placeholderEnabled = true
     return { return cellNode }
@@ -184,7 +151,7 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
 
 // MARK: - AsyncDisplayKit Collection Delegate Protocol Conformance
 
-extension FeedCollectionNodeController: ASCollectionDelegate {
+extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   func collectionNode(_ collectionNode: ASCollectionNode, didSelectItemAt indexPath: IndexPath) {
     let story = storyArray[indexPath.row]
@@ -227,5 +194,47 @@ extension FeedCollectionNodeController: ASCollectionDelegate {
   
   func collectionNode(_ collectionNode: ASCollectionNode, willBeginBatchFetchWith context: ASBatchContext) {
     delegate?.collectionNodeNeedsNextDataPage(for: context)
+  }
+  
+  
+  func collectionNode(_ collectionNode: ASCollectionNode, constrainedSizeForItemAt indexPath: IndexPath) -> ASSizeRange {
+    if let layout = collectionNode.collectionViewLayout as? MosaicCollectionViewLayout {
+      return layout.calculateConstrainedSize(for: collectionNode.bounds)
+    }
+    else if let layout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
+      return layout.calculateConstrainedSize(for: collectionNode.bounds)
+    }
+    else {
+      CCLog.fatal("Did not recognize CollectionNode Layout Type")
+    }
+  }
+  
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+    if let layout = collectionNode.collectionViewLayout as? MosaicCollectionViewLayout {
+      return layout.calculateSectionInset(for: collectionView.bounds, at: section)
+    }
+    else if let layout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
+      return layout.calculateSectionInset(for: collectionView.bounds, at: section)
+    }
+    else {
+      CCLog.fatal("Did not recognize CollectionNode Layout Type")
+    }
+  }
+}
+
+
+
+extension FeedCollectionNodeController: MosaicCollectionViewLayoutDelegate {
+  internal func collectionView(_ collectionView: UICollectionView, layout: MosaicCollectionViewLayout, originalItemSizeAtIndexPath: IndexPath) -> CGSize {
+    if let layout = collectionNode.collectionViewLayout as? MosaicCollectionViewLayout {
+      return layout.calculateConstrainedSize(for: collectionNode.bounds).max
+    }
+    else if let layout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
+      return layout.calculateConstrainedSize(for: collectionNode.bounds).max
+    }
+    else {
+      CCLog.fatal("Did not recognize CollectionNode Layout Type")
+    }
   }
 }

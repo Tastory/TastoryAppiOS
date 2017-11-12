@@ -41,6 +41,10 @@ class DiscoverViewController: OverlayViewController {
     static let DefaultMaxDelta: CLLocationDegrees = 0.05
     static let DefaultMinDelta: CLLocationDegrees = 0.005
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
+    
+    static let HorizontalFeedTranslationForChange: CGFloat = -50.0
+    static let HorizontalFeedHeightAsFraction = 0.3
+    static let VerticalFeedHeightAsFraction: CGFloat = 0.7
   }
 
   
@@ -62,6 +66,8 @@ class DiscoverViewController: OverlayViewController {
   @IBOutlet weak var pinchGestureRecognizer: UIPinchGestureRecognizer!
   @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer!
   @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer!
+  @IBOutlet weak var horizontalFeedChangeRecognizer: UIPanGestureRecognizer!
+  
   @IBOutlet weak var locationField: UITextField!
   @IBOutlet weak var draftButton: UIButton!
   @IBOutlet weak var cameraButton: UIButton!
@@ -79,6 +85,10 @@ class DiscoverViewController: OverlayViewController {
   
   @IBOutlet weak var feedContainerView: UIView!
   
+  
+  @IBAction func Change(_ sender: UIButton) {
+    feedCollectionNodeController.invalidateAndSet()
+  }
   
   
   // MARK: - IBActions
@@ -231,6 +241,34 @@ class DiscoverViewController: OverlayViewController {
     viewController.user = FoodieUser.current
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
+  }
+  
+  
+  @IBAction func horizontalFeedChangeAction(_ panGesture: UIPanGestureRecognizer) {
+    let gestureTranslation = panGesture.translation(in: view)
+    let directionalTranslation = min(gestureTranslation.y, 0.0)
+    
+    switch panGesture.state {
+    case.began:
+      fallthrough
+    case.changed:
+      if directionalTranslation < 0 {
+        if directionalTranslation < Constants.HorizontalFeedTranslationForChange {
+          CCLog.verbose("FeedCollectionNode should change layout to Vertical")
+          
+          feedCollectionNodeController.invalidateAndSet()
+          
+          touchForwardingView?.isHidden = true
+          horizontalFeedChangeRecognizer.isEnabled = false
+          
+        } else {
+          let dragTransform = CATransform3DMakeTranslation(0.0, gestureTranslation.y, 0.0)
+          horizontalFeedChangeRecognizer.view?.layer.transform = dragTransform
+        }
+      }
+    default:
+      horizontalFeedChangeRecognizer.view?.layer.transform = CATransform3DIdentity
+    }
   }
   
   

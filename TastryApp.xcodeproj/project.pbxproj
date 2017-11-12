@@ -95,6 +95,8 @@
 		8CCDDA0A1FB3E80200B066E7 /* TouchForwardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCDDA091FB3E80200B066E7 /* TouchForwardingView.swift */; };
 		8CCDDA0C1FB3E81700B066E7 /* CGPoint+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCDDA0B1FB3E81600B066E7 /* CGPoint+Extension.swift */; };
 		8CCDDA0E1FB3E82400B066E7 /* BasicDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCDDA0D1FB3E82400B066E7 /* BasicDirection.swift */; };
+		8CD02DB51FB8245600768CF8 /* MosaicCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD02DB41FB8245600768CF8 /* MosaicCollectionViewLayout.swift */; };
+		8CD02DB71FB8D61E00768CF8 /* CarouselCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD02DB61FB8D61E00768CF8 /* CarouselCollectionViewLayout.swift */; };
 		8CD5A4E01F9BFDD700CFD670 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4DF1F9BFDD700CFD670 /* SettingsViewController.swift */; };
 		8CD5A4E41F9BFED300CFD670 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4E31F9BFED300CFD670 /* SettingsTableViewController.swift */; };
 		8CD5A4E51F9C078D00CFD670 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */; };
@@ -238,6 +240,8 @@
 		8CCDDA091FB3E80200B066E7 /* TouchForwardingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchForwardingView.swift; sourceTree = "<group>"; };
 		8CCDDA0B1FB3E81600B066E7 /* CGPoint+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extension.swift"; sourceTree = "<group>"; };
 		8CCDDA0D1FB3E82400B066E7 /* BasicDirection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicDirection.swift; sourceTree = "<group>"; };
+		8CD02DB41FB8245600768CF8 /* MosaicCollectionViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MosaicCollectionViewLayout.swift; sourceTree = "<group>"; };
+		8CD02DB61FB8D61E00768CF8 /* CarouselCollectionViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarouselCollectionViewLayout.swift; sourceTree = "<group>"; };
 		8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Settings.storyboard; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
 		8CD5A4DF1F9BFDD700CFD670 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		8CD5A4E31F9BFED300CFD670 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
@@ -476,9 +480,19 @@
 			path = TastryAppUITests;
 			sourceTree = "<group>";
 		};
+		8CD02DAF1FB8155C00768CF8 /* Layout */ = {
+			isa = PBXGroup;
+			children = (
+				8CD02DB41FB8245600768CF8 /* MosaicCollectionViewLayout.swift */,
+				8CD02DB61FB8D61E00768CF8 /* CarouselCollectionViewLayout.swift */,
+			);
+			name = Layout;
+			sourceTree = "<group>";
+		};
 		8CD328D71E8B2B4B00E5254F /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				8CD02DAF1FB8155C00768CF8 /* Layout */,
 				8C889ECD1F9D5F7000E8CC56 /* Storyboards */,
 				8C889ECE1F9D5FC500E8CC56 /* Cell, Headers/Footers */,
 				8C93F6E01FAD76A700596452 /* View/Nodes */,
@@ -1003,6 +1017,7 @@
 				8C7EBAC61F9D477C004E43D8 /* PasswordViewController.swift in Sources */,
 				8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */,
 				8C1ED6F21F5D15A300A8CC94 /* ThumbnailFrameLayer.swift in Sources */,
+				8CD02DB51FB8245600768CF8 /* MosaicCollectionViewLayout.swift in Sources */,
 				8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */,
 				8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */,
 				8C93F6E21FAD772900596452 /* GradientNode.swift in Sources */,
@@ -1066,6 +1081,7 @@
 				8CE49EB51F64C8E8007278C1 /* PickerSquareLayer.swift in Sources */,
 				8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */,
 				8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */,
+				8CD02DB71FB8D61E00768CF8 /* CarouselCollectionViewLayout.swift in Sources */,
 				C29CD13D1F988B2000A6D53F /* PHAsset+Extension.swift in Sources */,
 				8C3254A51F40240900895572 /* VenueTableViewController.swift in Sources */,
 				8C312AC01E8262270084DD98 /* MKCoordinateSpan+Extension.swift in Sources */,
