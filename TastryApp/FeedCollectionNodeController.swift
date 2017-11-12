@@ -105,19 +105,12 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
 
   
   func invalidateAndSet() {
-//    let layout = MosaicCollectionViewLayout()
-//    layout.delegate = self
-//
-//    collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
-//    collectionNode.delegate = self
-//    collectionNode.dataSource = self
-//    
-//    //collectionNode.collectionViewLayout.invalidateLayout()
-//    collectionNode.view.setCollectionViewLayout(layout, animated: true)
-//    collectionNode.view.dataController.dataSource = ASDataControllerSource.init(
-//    collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
-//    collectionNode.delegate = self
-//    collectionNode.dataSource = self
+    let layout = MosaicCollectionViewLayout()
+    layout.delegate = self
+    collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
+    collectionNode.collectionViewLayout.invalidateLayout()
+    collectionNode.view.setCollectionViewLayout(layout, animated: true)
+    collectionNode.relayoutItems()
   }
 }
 
