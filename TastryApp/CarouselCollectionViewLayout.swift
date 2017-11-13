@@ -34,6 +34,7 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
     let feedNodeMargin = Constants.DefaultFeedNodeMargin
     self.minimumInteritemSpacing = feedNodeMargin
     self.minimumLineSpacing = feedNodeMargin
+    self.sectionInset = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
   }
   
   
@@ -58,7 +59,8 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
   
   func calculateSectionInset(for collectionBounds: CGRect, at section: Int) -> UIEdgeInsets {
     let carouselHeight = UIScreen.main.bounds.height*Constants.DefaultCarouselScreenHeightFraction
-    return UIEdgeInsetsMake(collectionBounds.height - carouselHeight, 0.0, Constants.DefaultFeedBottomOffset, 0.0)
+    let insetHeight = floor(collectionBounds.height - carouselHeight)
+    return UIEdgeInsetsMake(insetHeight, 0.0, Constants.DefaultFeedBottomOffset, 0.0)
   }
 }
 

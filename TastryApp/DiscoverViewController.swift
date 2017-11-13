@@ -42,7 +42,7 @@ class DiscoverViewController: OverlayViewController {
     static let DefaultMinDelta: CLLocationDegrees = 0.005
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
     
-    static let HorizontalFeedTranslationForChange: CGFloat = -30.0
+    static let CarouselPullTranslationForChange: CGFloat = -50.0
   }
 
   
@@ -247,7 +247,7 @@ class DiscoverViewController: OverlayViewController {
       fallthrough
     case.changed:
       if directionalTranslation < 0 {
-        if directionalTranslation < Constants.HorizontalFeedTranslationForChange {
+        if directionalTranslation < Constants.CarouselPullTranslationForChange {
           CCLog.info("FeedCollectionNode should change layout to Vertical")
           touchForwardingView?.isHidden = true
           mosaicLayoutChangePanRecognizer.isEnabled = false

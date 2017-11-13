@@ -40,6 +40,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     
     static let DefaultGuestimatedCellNodeWidth: CGFloat = 150.0
     static let DefaultFeedNodeCornerRadiusFraction:CGFloat = 0.05
+    static let MosaicPullTranslationForChange: CGFloat = -80
   }
   
   
@@ -63,7 +64,10 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   init(withHeaderInset headerInset: CGFloat = 0.0) {
     let collectionLayout = CarouselCollectionViewLayout()
     collectionNode = ASCollectionNode(collectionViewLayout: collectionLayout)
+    
     super.init(node: collectionNode)
+    automaticallyAdjustsScrollViewInsets = false
+    
     node.backgroundColor = .clear
     collectionNode.delegate = self
     collectionNode.dataSource = self
@@ -199,6 +203,26 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
     viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
     mapNavController.delegate = viewController
     mapNavController.pushViewController(viewController, animated: true)
+    
+    // Scroll the selected story to top to make sure it's not off bounds to reduce animation artifact
+    guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: indexPath) else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("Cannot find Layout Attribute for item at IndexPath Section: \(indexPath.section) Row: \(indexPath.row)")
+      }
+      return
+    }
+    
+    if layoutAttributes.frame.minY < collectionNode.bounds.minY {
+      collectionNode.scrollToItem(at: indexPath, at: .top, animated: true)
+    } else if layoutAttributes.frame.maxY > collectionNode.bounds.maxY {
+      collectionNode.scrollToItem(at: indexPath, at: .bottom, animated: true)
+    }
+    
+    if layoutAttributes.frame.minX < collectionNode.bounds.minX {
+      collectionNode.scrollToItem(at: indexPath, at: .left, animated: true)
+    } else if layoutAttributes.frame.maxX > collectionNode.bounds.maxX {
+      collectionNode.scrollToItem(at: indexPath, at: .right, animated: true)
+    }
   }
   
   
@@ -240,7 +264,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
     if collectionNode.collectionViewLayout is MosaicCollectionViewLayout {
-      if scrollView.contentOffset.y < -80.0 {
+      if scrollView.contentOffset.y < Constants.MosaicPullTranslationForChange {
         changeLayout(to: .carousel, animated: true)
       }
     }

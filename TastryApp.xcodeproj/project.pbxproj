@@ -62,7 +62,6 @@
 		8C8986761E91A72D00B62306 /* FoodieCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986751E91A72D00B62306 /* FoodieCategory.swift */; };
 		8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986791E933E2E00B62306 /* FoodieUser.swift */; };
 		8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89867D1E958B4300B62306 /* FoodieObject.swift */; };
-		8C900D311F5FAAC30058BDFE /* PassthruStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C900D301F5FAAC30058BDFE /* PassthruStackView.swift */; };
 		8C900D331F60C0E50058BDFE /* CategoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */; };
 		8C93F6E21FAD772900596452 /* GradientNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C93F6E11FAD772900596452 /* GradientNode.swift */; };
 		8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */; };
@@ -201,7 +200,6 @@
 		8C8986751E91A72D00B62306 /* FoodieCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieCategory.swift; sourceTree = "<group>"; };
 		8C8986791E933E2E00B62306 /* FoodieUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieUser.swift; sourceTree = "<group>"; };
 		8C89867D1E958B4300B62306 /* FoodieObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieObject.swift; sourceTree = "<group>"; };
-		8C900D301F5FAAC30058BDFE /* PassthruStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassthruStackView.swift; sourceTree = "<group>"; };
 		8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryTableViewController.swift; sourceTree = "<group>"; };
 		8C93F6E11FAD772900596452 /* GradientNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientNode.swift; sourceTree = "<group>"; };
 		8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMoment.swift; sourceTree = "<group>"; };
@@ -397,6 +395,7 @@
 		8C93F6E01FAD76A700596452 /* View/Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				8CEA8DB71F9EBE0400557CE5 /* UITextViewWithPlaceholder.swift */,
 				8C93F6E11FAD772900596452 /* GradientNode.swift */,
 				8CCDDA091FB3E80200B066E7 /* TouchForwardingView.swift */,
 			);
@@ -499,8 +498,6 @@
 				8C889ECF1F9D5FF200E8CC56 /* Buttons */,
 				8CD328DA1E8B2BD600E5254F /* Layers */,
 				8C7EC5901F8EA7E400C8E80B /* Transitions */,
-				8C900D301F5FAAC30058BDFE /* PassthruStackView.swift */,
-				8CEA8DB71F9EBE0400557CE5 /* UITextViewWithPlaceholder.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -1059,7 +1056,6 @@
 				8CC1101A1F92D07000ACBF9A /* FoodieFileObject.swift in Sources */,
 				8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */,
 				8C889ECC1F9D5F4900E8CC56 /* ProfileTableHeaderView.swift in Sources */,
-				8C900D311F5FAAC30058BDFE /* PassthruStackView.swift in Sources */,
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,
 				8CAA44611F8C12D60053CD4F /* LogOutDismiss.swift in Sources */,
 				8C7EBAC21F9D3884004E43D8 /* ProfileDetailViewController.swift in Sources */,

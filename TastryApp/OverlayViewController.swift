@@ -145,6 +145,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
           animator.remove(presentingView, thenAddTo: containerSuperview)
           containerSuperview.insertSubview(presentingView, belowSubview: self.view)
           
+          let popSmallerTransform = animator.calculateScaleMove3DTransform(from: containerSuperview.frame, to: presentingView.frame)
           let popToDragTransform = animator.calculateScaleMove3DTransform(from: presentingView.frame, to: self.view.frame)
           presentingView.layer.transform = popToDragTransform
           presentingView.isHidden = false
@@ -152,12 +153,6 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
           interactor.finish()
           
           UIView.animate(withDuration: Constants.DragReturnTransitionDuration, animations: {
-            guard let popSmallerTransform = animator.popSmallerTransform else {
-              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-                CCLog.assert("Expected pop Trasnform Matrix to be filled by Animator on present")
-              }
-              return
-            }
             self.view.layer.transform = popSmallerTransform
             self.view.alpha = 0.0
             presentingView.layer.transform = CATransform3DIdentity
