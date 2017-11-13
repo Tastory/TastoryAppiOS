@@ -55,22 +55,45 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // MARK: - Private Instance Variable
   
   private var collectionNode: ASCollectionNode
-  private var allPagesFetched: Bool = false
-
+  private var allowLayoutChange: Bool
+  private var allPagesFetched: Bool
   
   
   // MARK: - Node Controller Lifecycle
   
-  init(withHeaderInset headerInset: CGFloat = 0.0) {
-    let collectionLayout = CarouselCollectionViewLayout()
-    collectionNode = ASCollectionNode(collectionViewLayout: collectionLayout)
+  init(with layoutType: LayoutType,
+       offsetBy contentInset: CGFloat = 0.0,
+       allowLayoutChange: Bool,
+       adjustScrollViewInset: Bool) {
     
-    super.init(node: collectionNode)
-    automaticallyAdjustsScrollViewInsets = false
+    self.allowLayoutChange = allowLayoutChange
+    self.allPagesFetched = false
+    
+    switch layoutType {
+    case .mosaic:
+      let mosaicLayout = MosaicCollectionViewLayout()
+      collectionNode = ASCollectionNode(collectionViewLayout: mosaicLayout)
+      collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
+      
+      if contentInset > 0 {
+        collectionNode.contentInset = UIEdgeInsetsMake(contentInset + MosaicCollectionViewLayout.Constants.DefaultFeedNodeMargin, 0.0, 0.0, 0.0)
+      } else {
+        collectionNode.contentInset = UIEdgeInsetsMake(contentInset, 0.0, 0.0, 0.0)
+      }
+      
+      super.init(node: collectionNode)
+      mosaicLayout.delegate = self
+      
+    case .carousel:
+      collectionNode = ASCollectionNode(collectionViewLayout: CarouselCollectionViewLayout())
+      collectionNode.contentInset = UIEdgeInsetsMake(0.0, contentInset, 0.0, 0.0)
+      super.init(node: collectionNode)
+    }
     
     node.backgroundColor = .clear
     collectionNode.delegate = self
     collectionNode.dataSource = self
+    automaticallyAdjustsScrollViewInsets = adjustScrollViewInset
   }
   
   
@@ -118,6 +141,11 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   func changeLayout(to layoutType: LayoutType, animated: Bool) {
     var layout: UICollectionViewLayout
+    
+    guard allowLayoutChange else {
+      CCLog.warning("Layout Change is Disabled!")
+      return
+    }
     
     switch layoutType {
     case .mosaic:

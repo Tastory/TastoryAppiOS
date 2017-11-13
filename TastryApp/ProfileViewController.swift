@@ -101,7 +101,7 @@ class ProfileViewController: OverlayViewController {
       self.stories = stories
     }
       
-    let nodeController = FeedCollectionNodeController(withHeaderInset: navBar.frame.height)
+    let nodeController = FeedCollectionNodeController(with: .mosaic, offsetBy: navBar.frame.height, allowLayoutChange: false, adjustScrollViewInset: true)
     nodeController.storyArray = stories
     addChildViewController(nodeController)
     feedContainerView.addSubview(nodeController.view)

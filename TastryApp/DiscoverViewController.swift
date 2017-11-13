@@ -440,7 +440,7 @@ class DiscoverViewController: OverlayViewController {
       touchForwardingView.passthroughViews = [mapView]
     }
     
-    let nodeController = FeedCollectionNodeController()
+    let nodeController = FeedCollectionNodeController(with: .carousel, allowLayoutChange: true, adjustScrollViewInset: false)
     addChildViewController(nodeController)
     feedContainerView.addSubview(nodeController.view)
     nodeController.view.frame = feedContainerView.bounds

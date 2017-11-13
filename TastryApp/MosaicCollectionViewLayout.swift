@@ -57,7 +57,7 @@ class MosaicCollectionViewLayout: UICollectionViewFlowLayout {
   
   
   // MARK: - Private Instance Variables
-  private let feedNodeMargin = Constants.DefaultFeedNodeMargin
+   let feedNodeMargin = Constants.DefaultFeedNodeMargin
   
   
   
