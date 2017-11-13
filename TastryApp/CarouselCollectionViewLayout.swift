@@ -18,7 +18,7 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
   
   // MARK: - Constants
   struct Constants {
-    static let DefaultCarouselHeightFraction: CGFloat = 0.5
+    static let DefaultCarouselScreenHeightFraction: CGFloat = 0.375  // Must match what's not covered by Touch Forwarding View in DiscoverViewController as seen in the Storyboard
     static let DefaultCellNodeAspectRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
     static let DefaultFeedNodeMargin: CGFloat = 5.0
     static let DefaultFeedBottomOffset: CGFloat = 16.0
@@ -43,7 +43,8 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
   
   
   func calculateConstrainedSize(for collectionBounds: CGRect) -> ASSizeRange {
-    let cellNodeHeight = collectionBounds.height * Constants.DefaultCarouselHeightFraction
+    var cellNodeHeight = UIScreen.main.bounds.height*Constants.DefaultCarouselScreenHeightFraction-Constants.DefaultFeedBottomOffset
+    cellNodeHeight = floor(cellNodeHeight)  // Take the floor to avoid messes
     let cellNodeWidth = cellNodeHeight * Constants.DefaultCellNodeAspectRatio
     
     // TOOD: Do we need to allow for a smaller size here so the biggest cell is in the middle? Or do we do that as part of the Layout Attributes?
@@ -56,8 +57,8 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
   
   
   func calculateSectionInset(for collectionBounds: CGRect, at section: Int) -> UIEdgeInsets {
-    return UIEdgeInsetsMake((collectionBounds.height*Constants.DefaultCarouselHeightFraction)-Constants.DefaultFeedBottomOffset,
-                            0.0, Constants.DefaultFeedBottomOffset, 0.0)
+    let carouselHeight = UIScreen.main.bounds.height*Constants.DefaultCarouselScreenHeightFraction
+    return UIEdgeInsetsMake(collectionBounds.height - carouselHeight, 0.0, Constants.DefaultFeedBottomOffset, 0.0)
   }
 }
 

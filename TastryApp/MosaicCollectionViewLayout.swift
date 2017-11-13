@@ -132,7 +132,6 @@ class MosaicCollectionViewLayout: UICollectionViewFlowLayout {
       }
       
       let columnWidth = self._columnWidthForSection(section: section)
-      CCLog.verbose("Column Width: \(columnWidth)")
       
       _itemAttributes.append([])
       for idx in 0 ..< numberOfItems {
@@ -146,7 +145,6 @@ class MosaicCollectionViewLayout: UICollectionViewFlowLayout {
         let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
         
         attributes.frame = CGRect(x: xOffset, y: yOffset, width: itemSize.width, height: itemSize.height)
-        CCLog.verbose("ItemSize Width: \(itemSize.width), ItemSize Height: \(itemSize.height)")
         
         _columnHeights?[section][columnIndex] = attributes.frame.maxY + interItemSpacing.bottom
         
@@ -268,7 +266,6 @@ class MosaicCollectionViewLayoutInspector: NSObject, ASCollectionViewLayoutInspe
 {
   func collectionView(_ collectionView: ASCollectionView, constrainedSizeForNodeAt indexPath: IndexPath) -> ASSizeRange {
     let layout = collectionView.collectionViewLayout as! MosaicCollectionViewLayout
-    CCLog.verbose("ItemSize Width: \(layout._itemSizeAtIndexPath(indexPath: indexPath).width), ItemSize Height: \(layout._itemSizeAtIndexPath(indexPath: indexPath).height)")
     return ASSizeRangeMake(layout._itemSizeAtIndexPath(indexPath: indexPath), layout._itemSizeAtIndexPath(indexPath: indexPath))
   }
   

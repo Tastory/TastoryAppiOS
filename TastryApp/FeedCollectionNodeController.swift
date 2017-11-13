@@ -10,20 +10,28 @@ import Foundation
 import AsyncDisplayKit
 
 
-protocol FeedCollectionNodeDelegate {
+@objc protocol FeedCollectionNodeDelegate {
   
   // FeedCollectionNodeController needs more data
-  func collectionNodeNeedsNextDataPage(for context: AnyObject)
+  @objc optional func collectionNodeNeedsNextDataPage(for context: AnyObject)
   
   // FeedCollectionNodeController displaying Stories with indexes. Array[0] is guarenteed to be the highest item in the CollectionNode's view
-  func collectionNodeDisplayingStories(with indexes: [Int])
+  @objc optional func collectionNodeDisplayingStories(with indexes: [Int])
   
-  func collectionNodeLayoutChanging(to layout: UICollectionViewLayout)
+  @objc optional func collectionNodeLayoutChanged(to layoutType: FeedCollectionNodeController.LayoutType)
 }
 
 
 
 final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
+  
+  
+  // MARK: - Types and Enumeration
+  
+  @objc enum LayoutType: Int {
+    case mosaic
+    case carousel
+  }
   
   
   // MARK: - Private Class Constants
@@ -104,13 +112,27 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   }
 
   
-  func invalidateAndSet() {
-    let layout = MosaicCollectionViewLayout()
-    layout.delegate = self
-    collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
+  func changeLayout(to layoutType: LayoutType, animated: Bool) {
+    var layout: UICollectionViewLayout
+    
+    switch layoutType {
+    case .mosaic:
+      let mosaicLayout = MosaicCollectionViewLayout()
+      mosaicLayout.delegate = self
+      collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
+      layout = mosaicLayout
+      
+    case .carousel:
+      let carouselLayout = CarouselCollectionViewLayout()
+      collectionNode.layoutInspector = nil
+      layout = carouselLayout
+    }
+    
     collectionNode.collectionViewLayout.invalidateLayout()
-    collectionNode.view.setCollectionViewLayout(layout, animated: true)
+    collectionNode.view.setCollectionViewLayout(layout, animated: animated)
     collectionNode.relayoutItems()
+    
+    delegate?.collectionNodeLayoutChanged?(to: layoutType)
   }
 }
 
@@ -186,7 +208,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   
   func collectionNode(_ collectionNode: ASCollectionNode, willBeginBatchFetchWith context: ASBatchContext) {
-    delegate?.collectionNodeNeedsNextDataPage(for: context)
+    delegate?.collectionNodeNeedsNextDataPage?(for: context)
   }
   
   
@@ -204,11 +226,26 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-    if let layout = collectionNode.collectionViewLayout as? MosaicCollectionViewLayout {
+    if let layout = collectionViewLayout as? MosaicCollectionViewLayout {
       return layout.calculateSectionInset(for: collectionView.bounds, at: section)
     }
-    else if let layout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
+    else if let layout = collectionViewLayout as? CarouselCollectionViewLayout {
       return layout.calculateSectionInset(for: collectionView.bounds, at: section)
+    }
+    else {
+      CCLog.fatal("Did not recognize CollectionNode Layout Type")
+    }
+  }
+  
+  
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    if collectionNode.collectionViewLayout is MosaicCollectionViewLayout {
+      if scrollView.contentOffset.y < -80.0 {
+        changeLayout(to: .carousel, animated: true)
+      }
+    }
+    else if collectionNode.collectionViewLayout is CarouselCollectionViewLayout {
+      // TODO: Add something cool in place + Pull to Refresh
     }
     else {
       CCLog.fatal("Did not recognize CollectionNode Layout Type")
