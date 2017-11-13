@@ -81,18 +81,26 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
         collectionNode.contentInset = UIEdgeInsetsMake(contentInset, 0.0, 0.0, 0.0)
       }
       
+      // The CollectionView need to bounce even if there's not enough item to fill the view, otherwise user cannot transition to Carousel Layout
+      // Might want to disable this and all bounce for better Animated Transitioning?
+      collectionNode.view.alwaysBounceVertical = true
+      collectionNode.view.alwaysBounceHorizontal = false
       super.init(node: collectionNode)
       mosaicLayout.delegate = self
       
     case .carousel:
       collectionNode = ASCollectionNode(collectionViewLayout: CarouselCollectionViewLayout())
       collectionNode.contentInset = UIEdgeInsetsMake(0.0, contentInset, 0.0, 0.0)
+      
+      collectionNode.view.alwaysBounceVertical = false
+      collectionNode.view.alwaysBounceHorizontal = true
       super.init(node: collectionNode)
     }
     
     node.backgroundColor = .clear
     collectionNode.delegate = self
     collectionNode.dataSource = self
+    collectionNode.view.isDirectionalLockEnabled = true
     automaticallyAdjustsScrollViewInsets = adjustScrollViewInset
   }
   
@@ -152,11 +160,17 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       let mosaicLayout = MosaicCollectionViewLayout()
       mosaicLayout.delegate = self
       collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
+      // The CollectionView need to bounce even if there's not enough item to fill the view, otherwise user cannot transition to Carousel Layout
+      // Might want to disable this and all bounce for better Animated Transitioning?
+      collectionNode.view.alwaysBounceVertical = true
+      collectionNode.view.alwaysBounceHorizontal = false
       layout = mosaicLayout
       
     case .carousel:
       let carouselLayout = CarouselCollectionViewLayout()
       collectionNode.layoutInspector = nil
+      collectionNode.view.alwaysBounceVertical = false
+      collectionNode.view.alwaysBounceHorizontal = true
       layout = carouselLayout
     }
     

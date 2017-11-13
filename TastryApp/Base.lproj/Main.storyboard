@@ -72,6 +72,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view hidden="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8jX-dd-Jb6" userLabel="Mosaic Map View">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QP7-f7-wk1">
                                 <rect key="frame" x="0.0" y="200" width="375" height="467"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -159,9 +163,12 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="8jX-dd-Jb6" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="0xc-pZ-bYn"/>
                             <constraint firstAttribute="trailingMargin" secondItem="S7U-1x-ELZ" secondAttribute="trailing" constant="8" id="4il-4C-MZU"/>
                             <constraint firstItem="S7U-1x-ELZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="8" id="6eR-hs-oI6"/>
                             <constraint firstItem="8yq-x6-CLY" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="8Dq-zq-i2O"/>
+                            <constraint firstItem="8jX-dd-Jb6" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="EFc-6u-qjl"/>
+                            <constraint firstAttribute="trailing" secondItem="8jX-dd-Jb6" secondAttribute="trailing" id="Ea5-mK-mUk"/>
                             <constraint firstItem="QC2-XK-jf4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="K8O-TB-xfm"/>
                             <constraint firstItem="sNl-Tb-SAf" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="MR7-TB-A71"/>
                             <constraint firstItem="0wJ-kE-Bqf" firstAttribute="top" secondItem="oB7-Q1-hCS" secondAttribute="top" symbolic="YES" id="Nbp-8y-0cy"/>
@@ -171,6 +178,7 @@
                             <constraint firstItem="QC2-XK-jf4" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Y24-lj-eHA"/>
                             <constraint firstItem="S7U-1x-ELZ" firstAttribute="bottom" secondItem="oB7-Q1-hCS" secondAttribute="bottom" priority="750" constant="16" id="bKC-RP-rkh"/>
                             <constraint firstItem="1zZ-dd-fcW" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="dFM-J1-5ln"/>
+                            <constraint firstItem="QP7-f7-wk1" firstAttribute="top" secondItem="8jX-dd-Jb6" secondAttribute="bottom" id="h4a-Ee-gf1"/>
                             <constraint firstAttribute="trailingMargin" secondItem="8lR-o3-9WI" secondAttribute="trailing" id="hDa-sq-jeb"/>
                             <constraint firstItem="QP7-f7-wk1" firstAttribute="leading" secondItem="oB7-Q1-hCS" secondAttribute="leading" id="heM-AO-6o5"/>
                             <constraint firstAttribute="trailing" secondItem="QC2-XK-jf4" secondAttribute="trailing" id="hop-HJ-4YV"/>
@@ -194,6 +202,7 @@
                         <outlet property="locationField" destination="0wJ-kE-Bqf" id="udw-u7-LkJ"/>
                         <outlet property="logoutButton" destination="xAk-Bi-Jwa" id="sAq-I6-br1"/>
                         <outlet property="mosaicLayoutChangePanRecognizer" destination="Sj4-40-4nO" id="fbE-TI-okl"/>
+                        <outlet property="mosaicMapView" destination="8jX-dd-Jb6" id="aoN-ur-v8b"/>
                         <outlet property="panGestureRecognizer" destination="MR4-rr-fyd" id="vfj-Nn-0Ym"/>
                         <outlet property="pinchGestureRecognizer" destination="tiz-ix-wUH" id="V93-v5-YL6"/>
                         <outlet property="profileButton" destination="A3t-Ta-aKO" id="B2K-m7-Nv7"/>

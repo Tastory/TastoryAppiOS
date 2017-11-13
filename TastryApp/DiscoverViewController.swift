@@ -54,9 +54,14 @@ class DiscoverViewController: OverlayViewController {
   private var lastMapDelta: CLLocationDegrees? = nil
   private var storyQuery: FoodieQuery?
   private var storyArray = [FoodieStory]()
-  private weak var mapView: MKMapView!
   private var feedCollectionNodeController: FeedCollectionNodeController!
   
+  private var mapNavController: MapNavController {
+    guard let mapNavController = navigationController as? MapNavController else {
+      CCLog.fatal("Expected navigationController to be of type MapNavController")
+    }
+    return mapNavController
+  }
   
   
   // MARK: - IBOutlets
@@ -82,6 +87,7 @@ class DiscoverViewController: OverlayViewController {
   }
   
   @IBOutlet weak var feedContainerView: UIView!
+  @IBOutlet weak var mosaicMapView: UIView!
   
   
   
@@ -110,7 +116,7 @@ class DiscoverViewController: OverlayViewController {
   
   @IBAction func launchDraftStory(_ sender: Any) {
     // This is used for viewing the draft story to be used with update story later
-    // Hide the button due to problems with empty draft story and saving an empty story is problematic
+    // Hide the button as needed, due to problems with empty draft story and saving an empty story is problematic
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
@@ -153,7 +159,7 @@ class DiscoverViewController: OverlayViewController {
     lastMapDelta = nil
 
     // Base the span of the new mapView on what the mapView span currently is
-    if let mapView = mapView { currentMapDelta = mapView.region.span.latitudeDelta }
+    currentMapDelta = mapNavController.exposedRegion.span.latitudeDelta
     
     // Take the lesser of current or default max latitude degrees
     currentMapDelta = min(currentMapDelta, Constants.DefaultMaxDelta)
@@ -296,13 +302,7 @@ class DiscoverViewController: OverlayViewController {
     var searchMapRect = MKMapRect()
     
     if mapRect == nil {
-      guard let visibleMapRect = mapView?.visibleMapRect else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.assert("Search w/ Filter cannot be performed when mapView = nil")
-        }
-        return
-      }
-      searchMapRect = visibleMapRect
+      searchMapRect = mapNavController.exposedMapRect
     } else {
       searchMapRect = mapRect!
     }
@@ -366,7 +366,7 @@ class DiscoverViewController: OverlayViewController {
   private func displayAnnotations(onStories stories: [FoodieStory]) {
 
     DispatchQueue.main.async {
-      self.mapView.removeAnnotations(self.mapView.annotations)
+      self.mapNavController.mapView.removeAnnotations(self.mapNavController.mapView.annotations)
     }
     
     for story in stories {
@@ -392,7 +392,7 @@ class DiscoverViewController: OverlayViewController {
                                               story: story,
                                               coordinate: CLLocationCoordinate2D(latitude: location.latitude,
                                                                                  longitude: location.longitude))
-          self.mapView.addAnnotation(annotation)
+          self.mapNavController.mapView.addAnnotation(annotation)
         }
       }
     }
@@ -405,7 +405,7 @@ class DiscoverViewController: OverlayViewController {
     let startMapDelta: CLLocationDegrees = lastMapDelta ?? Constants.DefaultMaxDelta
     let region = MKCoordinateRegion(center: startMapLocation,
                                     span: MKCoordinateSpan(latitudeDelta: startMapDelta, longitudeDelta: startMapDelta))
-    mapView?.setRegion(region, animated: false)
+    mapNavController.setRegionExposed(region, animated: true)
   }
   
   
@@ -419,7 +419,7 @@ class DiscoverViewController: OverlayViewController {
       
       if let location = location {
         let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: self.currentMapDelta, longitudeDelta: self.currentMapDelta))
-        DispatchQueue.main.async { self.mapView?.setRegion(region, animated: true) }
+        DispatchQueue.main.async { self.mapNavController.setRegionExposed(region, animated: true) }
       }
     }
   }
@@ -430,14 +430,8 @@ class DiscoverViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    // Set the map to the MapNavController Map directly for now
-    guard let mapNavController = navigationController as? MapNavController else {
-      CCLog.fatal("DiscoverViewController must have a MapNavController as it's Navigation Controller")
-    }
-    mapView = mapNavController.mapView
-    
     if let touchForwardingView = touchForwardingView {
-      touchForwardingView.passthroughViews = [mapView]
+      touchForwardingView.passthroughViews = [mapNavController.mapView]
     }
     
     let nodeController = FeedCollectionNodeController(with: .carousel, allowLayoutChange: true, adjustScrollViewInset: false)
@@ -554,7 +548,7 @@ class DiscoverViewController: OverlayViewController {
         
         // Move the map to the initial location
         let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: self.currentMapDelta, longitudeDelta: self.currentMapDelta))
-        DispatchQueue.main.async { self.mapView?.setRegion(region, animated: true) }
+        DispatchQueue.main.async { self.mapNavController.setRegionExposed(region, animated: true) }
         
         // Do an Initial Search near the Current Location
         self.performQuery(at: region.toMapRect()) { stories, error in
@@ -622,6 +616,15 @@ class DiscoverViewController: OverlayViewController {
       }
     }
   }
+
+  
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    // We always start off with Carousel View
+    if let touchForwardingView = touchForwardingView {
+      mapNavController.setExposedRect(with: touchForwardingView)
+    }
+  }
   
   
   override func viewDidAppear(_ animated: Bool) {
@@ -635,8 +638,8 @@ class DiscoverViewController: OverlayViewController {
     locationWatcher?.stop()
     
     // Keep track of what the location is before we disappear
-    lastLocation = mapView?.centerCoordinate
-    lastMapDelta = mapView?.region.span.latitudeDelta
+    lastLocation = mapNavController.exposedRegion.center
+    lastMapDelta = mapNavController.exposedRegion.span.latitudeDelta
   }
 }
 
@@ -662,13 +665,13 @@ extension DiscoverViewController: UITextFieldDelegate {
       }
     }
     
-    guard let location = textField.text, let region = mapView?.region else {
-      // No text in location field, or no map view all together?
+    guard let location = textField.text else {
+      // No text in location field
       return true
     }
 
-    let clRegion = CLCircularRegion(center: region.center,
-                                    radius: region.span.height/1.78/2,
+    let clRegion = CLCircularRegion(center: mapNavController.exposedRegion.center,
+                                    radius: mapNavController.exposedRegion.span.height*Double(FoodieGlobal.Constants.DefaultMomentAspectRatio)/2,
                                     identifier: "currentCLRegion")  // TODO: 16:9 assumption is not good enough
     let geocoder = CLGeocoder()
 
@@ -766,7 +769,7 @@ extension DiscoverViewController: UITextFieldDelegate {
       }
 
       if let region = region {
-        self.mapView?.setRegion(region, animated: true)
+        self.mapNavController.setRegionExposed(region, animated: true)
       }
     }
 
@@ -795,9 +798,14 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
   func collectionNodeLayoutChanged(to layoutType: FeedCollectionNodeController.LayoutType) {
     switch layoutType {
     case .mosaic:
+      mapNavController.setExposedRect(with: mosaicMapView)
       break
+      
     case .carousel:
-      touchForwardingView?.isHidden = false
+      if let touchForwardingView = touchForwardingView {
+        touchForwardingView.isHidden = false
+        mapNavController.setExposedRect(with: touchForwardingView)
+      }
       mosaicLayoutChangePanRecognizer.isEnabled = true
     }
   }

@@ -11,7 +11,56 @@ import AsyncDisplayKit
 
 class MapNavController: ASNavigationController {
 
+  
+  // MARK: - Public Instance Variable
+  
   var mapView: MKMapView!
+
+  
+  
+  // MARK: - Private Instance Functions
+  
+  private var exposedRectInset: UIEdgeInsets?
+  private var exposedRect: CGRect?
+  
+  
+  // MARK: - Public Instance Functions
+  
+  func setExposedRect(with exposedView: UIView) {
+    guard let exposedSuperview = exposedView.superview else {
+      CCLog.fatal("Exposed view has no superview")
+    }
+
+    self.exposedRect = exposedSuperview.convert(exposedView.frame, to: mapView)
+    self.exposedRectInset = mapView.bounds.makeInsetBySubtracting(exposedRect!)
+  }
+  
+  
+  func setRegionExposed(_ region: MKCoordinateRegion, animated: Bool) {
+    if let exposedRectInset = exposedRectInset {
+      mapView.setVisibleMapRect(region.toMapRect(), edgePadding: exposedRectInset, animated: animated)
+    } else {
+      mapView.setRegion(region, animated: animated)
+    }
+  }
+  
+  
+  var exposedMapRect: MKMapRect {
+    return exposedRegion.toMapRect()
+  }
+  
+  
+  var exposedRegion: MKCoordinateRegion {
+    if let exposedRect = exposedRect {
+      return mapView.convert(exposedRect, toRegionFrom: mapView)
+    } else {
+      return mapView.region
+    }
+  }
+  
+  
+  
+  // MARK: - View Controller Lifecycle
   
   override func viewDidLoad() {
     super.viewDidLoad()

@@ -96,6 +96,7 @@
 		8CCDDA0E1FB3E82400B066E7 /* BasicDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCDDA0D1FB3E82400B066E7 /* BasicDirection.swift */; };
 		8CD02DB51FB8245600768CF8 /* MosaicCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD02DB41FB8245600768CF8 /* MosaicCollectionViewLayout.swift */; };
 		8CD02DB71FB8D61E00768CF8 /* CarouselCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD02DB61FB8D61E00768CF8 /* CarouselCollectionViewLayout.swift */; };
+		8CD02DB91FB96A4C00768CF8 /* CGRect+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD02DB81FB96A4C00768CF8 /* CGRect+Extension.swift */; };
 		8CD5A4E01F9BFDD700CFD670 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4DF1F9BFDD700CFD670 /* SettingsViewController.swift */; };
 		8CD5A4E41F9BFED300CFD670 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5A4E31F9BFED300CFD670 /* SettingsTableViewController.swift */; };
 		8CD5A4E51F9C078D00CFD670 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */; };
@@ -240,6 +241,7 @@
 		8CCDDA0D1FB3E82400B066E7 /* BasicDirection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicDirection.swift; sourceTree = "<group>"; };
 		8CD02DB41FB8245600768CF8 /* MosaicCollectionViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MosaicCollectionViewLayout.swift; sourceTree = "<group>"; };
 		8CD02DB61FB8D61E00768CF8 /* CarouselCollectionViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarouselCollectionViewLayout.swift; sourceTree = "<group>"; };
+		8CD02DB81FB96A4C00768CF8 /* CGRect+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extension.swift"; sourceTree = "<group>"; };
 		8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Settings.storyboard; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
 		8CD5A4DF1F9BFDD700CFD670 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		8CD5A4E31F9BFED300CFD670 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
@@ -510,6 +512,7 @@
 				8C6983531F97ED810091334D /* AVPlayerTimeControlStatus+Extension.swift */,
 				8C6983551F97EDE50091334D /* AVPlayerItemStatus+Extension.swift */,
 				8CCDDA0B1FB3E81600B066E7 /* CGPoint+Extension.swift */,
+				8CD02DB81FB96A4C00768CF8 /* CGRect+Extension.swift */,
 				8C56A9151FA19E6200D3204B /* URL+Extension.swift */,
 				C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */,
 				8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */,
@@ -1028,6 +1031,7 @@
 				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */,
 				8C9B47C71F9576B100D21246 /* FoodieOperation.swift in Sources */,
 				8C1ED6F41F5DEC2500A8CC94 /* AsyncOperation.swift in Sources */,
+				8CD02DB91FB96A4C00768CF8 /* CGRect+Extension.swift in Sources */,
 				8C56A9161FA19E6200D3204B /* URL+Extension.swift in Sources */,
 				8C6983521F97ECFB0091334D /* AVPlayerStatus+Extension.swift in Sources */,
 				8CF858661F7ED8A000C46614 /* IntroViewController.swift in Sources */,
