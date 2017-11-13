@@ -160,7 +160,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       layout = carouselLayout
     }
     
-    collectionNode.collectionViewLayout.invalidateLayout()
     collectionNode.view.setCollectionViewLayout(layout, animated: animated)
     collectionNode.relayoutItems()
     
