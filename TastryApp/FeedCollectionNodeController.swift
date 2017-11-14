@@ -57,6 +57,8 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   private var collectionNode: ASCollectionNode
   private var allowLayoutChange: Bool
   private var allPagesFetched: Bool
+  private var currentCard = 0
+  
   
   
   // MARK: - Node Controller Lifecycle
@@ -166,6 +168,10 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       collectionNode.view.alwaysBounceHorizontal = false
       layout = mosaicLayout
       
+      if let oldLayout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
+        oldLayout.sectionInset = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+      }
+      
     case .carousel:
       let carouselLayout = CarouselCollectionViewLayout()
       collectionNode.layoutInspector = nil
@@ -174,6 +180,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       layout = carouselLayout
     }
     
+    collectionNode.collectionViewLayout.invalidateLayout()
     collectionNode.view.setCollectionViewLayout(layout, animated: animated)
     collectionNode.relayoutItems()
     
@@ -279,9 +286,11 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   func collectionNode(_ collectionNode: ASCollectionNode, constrainedSizeForItemAt indexPath: IndexPath) -> ASSizeRange {
     if let layout = collectionNode.collectionViewLayout as? MosaicCollectionViewLayout {
+      CCLog.verbose(":collectionView(:MosaicLayout:constrainedSizeForItemAt\(indexPath.item))")
       return layout.calculateConstrainedSize(for: collectionNode.bounds)
     }
     else if let layout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
+      CCLog.verbose(":collectionView(:CarouselLayout:constrainedSizeForItemAt\(indexPath.item))")
       return layout.calculateConstrainedSize(for: collectionNode.bounds)
     }
     else {
@@ -316,20 +325,25 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       CCLog.fatal("Did not recognize CollectionNode Layout Type")
     }
   }
+  
+  
+  func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    if let layout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
+      let cardWidth = layout.itemSize.width + layout.minimumLineSpacing
+      let offset = scrollView.contentOffset.x
+      currentCard = Int(floor((offset - cardWidth / 2) / cardWidth) + 1)
+      
+      CCLog.verbose("Current Card Number \(currentCard)")
+    }
+  }
+  
 }
 
 
 
 extension FeedCollectionNodeController: MosaicCollectionViewLayoutDelegate {
   internal func collectionView(_ collectionView: UICollectionView, layout: MosaicCollectionViewLayout, originalItemSizeAtIndexPath: IndexPath) -> CGSize {
-    if let layout = collectionNode.collectionViewLayout as? MosaicCollectionViewLayout {
-      return layout.calculateConstrainedSize(for: collectionNode.bounds).max
-    }
-    else if let layout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
-      return layout.calculateConstrainedSize(for: collectionNode.bounds).max
-    }
-    else {
-      CCLog.fatal("Did not recognize CollectionNode Layout Type")
-    }
+    CCLog.verbose("collectionView(:MosaicLayout:originalItemSizeAt:\(originalItemSizeAtIndexPath.item))")
+    return layout.calculateConstrainedSize(for: collectionNode.bounds).max
   }
 }

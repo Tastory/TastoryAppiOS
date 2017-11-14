@@ -22,6 +22,10 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
     static let DefaultCellNodeAspectRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
     static let DefaultFeedNodeMargin: CGFloat = 5.0
     static let DefaultFeedBottomOffset: CGFloat = 16.0
+    static let NonHighlightedItemAlpha: CGFloat = 0.9
+    static let NonHighlightedItemScale: CGFloat = 0.90
+    static let NonHighlightedItemOffsetFraction: CGFloat = 0.05
+    static let InterLineSpacingFraction: CGFloat = -0.025
   }
   
   
@@ -31,10 +35,6 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
   override init() {
     super.init()
     self.scrollDirection = .horizontal
-    let feedNodeMargin = Constants.DefaultFeedNodeMargin
-    self.minimumInteritemSpacing = feedNodeMargin
-    self.minimumLineSpacing = feedNodeMargin
-    self.sectionInset = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
   }
   
   
@@ -62,7 +62,80 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
     let insetHeight = floor(collectionBounds.height - carouselHeight)
     return UIEdgeInsetsMake(insetHeight, 0.0, Constants.DefaultFeedBottomOffset, Constants.DefaultFeedNodeMargin)
   }
+  
+  
+  func changeLayoutAttributes(_ attributes: UICollectionViewLayoutAttributes) {
+    let collectionCenter = collectionView!.frame.size.width/2
+    let normalizedCenter = attributes.center.x - collectionView!.contentOffset.x
+    
+    let maxDistance = self.itemSize.width + self.minimumLineSpacing
+    let distance = min(abs(collectionCenter - normalizedCenter), maxDistance)
+    let ratio = (maxDistance - distance)/maxDistance
+    
+    let standardItemAlpha = Constants.NonHighlightedItemAlpha
+    let standardItemScale = Constants.NonHighlightedItemScale
+    let standardItemOffset = self.itemSize.height * Constants.NonHighlightedItemOffsetFraction
+    
+    let alpha = ratio * (1 - standardItemAlpha) + standardItemAlpha
+    let scale = ratio * (1 - standardItemScale) + standardItemScale
+    let offset = (1 - ratio) * standardItemOffset
+      
+    let scaleTransform = CATransform3DMakeScale(scale, scale, 1)
+    let offsetTransform = CATransform3DMakeTranslation(0.0, -offset, 0.0)
+      
+    attributes.alpha = alpha
+    attributes.transform3D = CATransform3DConcat(scaleTransform, offsetTransform)
+    attributes.zIndex = Int(alpha * 10)
+  }
+  
+  
+  override func prepare() {
+    super.prepare()
+    
+    self.collectionView!.decelerationRate = UIScrollViewDecelerationRateFast
+    let collectionBounds = collectionView!.bounds
+    
+    self.itemSize = calculateConstrainedSize(for: collectionBounds).max
+    self.estimatedItemSize = calculateConstrainedSize(for: collectionBounds).max
+    self.minimumLineSpacing = itemSize.width * Constants.InterLineSpacingFraction
+    self.minimumInteritemSpacing = itemSize.width * Constants.InterLineSpacingFraction
+    
+    let carouselHeight = UIScreen.main.bounds.height*Constants.DefaultCarouselScreenHeightFraction
+    let insetHeight = floor(collectionBounds.height - carouselHeight)
+    let xInset = (collectionBounds.width - self.itemSize.width) / 2
+    self.sectionInset = UIEdgeInsetsMake(insetHeight, xInset, Constants.DefaultFeedBottomOffset, xInset)
+  }
+  
+  
+  override open func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+    return true
+  }
+  
+
+  override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+    let attributes = super.layoutAttributesForElements(in: rect)
+    var attributesCopy = [UICollectionViewLayoutAttributes]()
+    
+    for itemAttributes in attributes! {
+      let itemAttributesCopy = itemAttributes.copy() as! UICollectionViewLayoutAttributes
+      changeLayoutAttributes(itemAttributesCopy)
+      attributesCopy.append(itemAttributesCopy)
+    }
+    return attributesCopy
+  }
+  
+  
+  override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {
+    let layoutAttributes = self.layoutAttributesForElements(in: collectionView!.bounds)
+    let center = collectionView!.bounds.size.width / 2
+    let proposedContentOffsetCenterOrigin = proposedContentOffset.x + center
+    let closest = layoutAttributes!.sorted { abs($0.center.x - proposedContentOffsetCenterOrigin) < abs($1.center.x - proposedContentOffsetCenterOrigin) }.first ?? UICollectionViewLayoutAttributes()
+    let targetContentOffset = CGPoint(x: floor(closest.center.x - center), y: proposedContentOffset.y)
+    
+    return targetContentOffset
+  }
 }
+
 
 
 
