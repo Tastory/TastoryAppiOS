@@ -286,11 +286,11 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   func collectionNode(_ collectionNode: ASCollectionNode, constrainedSizeForItemAt indexPath: IndexPath) -> ASSizeRange {
     if let layout = collectionNode.collectionViewLayout as? MosaicCollectionViewLayout {
-      CCLog.verbose(":collectionView(:MosaicLayout:constrainedSizeForItemAt\(indexPath.item))")
+      //CCLog.verbose(":collectionView(:MosaicLayout:constrainedSizeForItemAt\(indexPath.item))")
       return layout.calculateConstrainedSize(for: collectionNode.bounds)
     }
     else if let layout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
-      CCLog.verbose(":collectionView(:CarouselLayout:constrainedSizeForItemAt\(indexPath.item))")
+      //CCLog.verbose(":collectionView(:CarouselLayout:constrainedSizeForItemAt\(indexPath.item))")
       return layout.calculateConstrainedSize(for: collectionNode.bounds)
     }
     else {
@@ -343,7 +343,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
 
 extension FeedCollectionNodeController: MosaicCollectionViewLayoutDelegate {
   internal func collectionView(_ collectionView: UICollectionView, layout: MosaicCollectionViewLayout, originalItemSizeAtIndexPath: IndexPath) -> CGSize {
-    CCLog.verbose("collectionView(:MosaicLayout:originalItemSizeAt:\(originalItemSizeAtIndexPath.item))")
+    //CCLog.verbose("collectionView(:MosaicLayout:originalItemSizeAt:\(originalItemSizeAtIndexPath.item))")
     return layout.calculateConstrainedSize(for: collectionNode.bounds).max
   }
 }

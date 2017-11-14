@@ -58,9 +58,13 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
   
   
   func calculateSectionInset(for collectionBounds: CGRect, at section: Int) -> UIEdgeInsets {
+    self.minimumLineSpacing = self.itemSize.width * Constants.InterLineSpacingFraction
+    self.minimumInteritemSpacing = self.itemSize.width * Constants.InterLineSpacingFraction
+    
     let carouselHeight = UIScreen.main.bounds.height*Constants.DefaultCarouselScreenHeightFraction
     let insetHeight = floor(collectionBounds.height - carouselHeight)
-    return UIEdgeInsetsMake(insetHeight, 0.0, Constants.DefaultFeedBottomOffset, Constants.DefaultFeedNodeMargin)
+    let xInset = (collectionBounds.width - self.itemSize.width) / 2
+    return UIEdgeInsetsMake(insetHeight, xInset, Constants.DefaultFeedBottomOffset, Constants.DefaultFeedNodeMargin)
   }
   
   
@@ -91,19 +95,7 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
   
   override func prepare() {
     super.prepare()
-    
     self.collectionView!.decelerationRate = UIScrollViewDecelerationRateFast
-    let collectionBounds = collectionView!.bounds
-    
-    self.itemSize = calculateConstrainedSize(for: collectionBounds).max
-    self.estimatedItemSize = calculateConstrainedSize(for: collectionBounds).max
-    self.minimumLineSpacing = itemSize.width * Constants.InterLineSpacingFraction
-    self.minimumInteritemSpacing = itemSize.width * Constants.InterLineSpacingFraction
-    
-    let carouselHeight = UIScreen.main.bounds.height*Constants.DefaultCarouselScreenHeightFraction
-    let insetHeight = floor(collectionBounds.height - carouselHeight)
-    let xInset = (collectionBounds.width - self.itemSize.width) / 2
-    self.sectionInset = UIEdgeInsetsMake(insetHeight, xInset, Constants.DefaultFeedBottomOffset, xInset)
   }
   
   
@@ -115,7 +107,7 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
   override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
     let attributes = super.layoutAttributesForElements(in: rect)
     var attributesCopy = [UICollectionViewLayoutAttributes]()
-    
+
     for itemAttributes in attributes! {
       let itemAttributesCopy = itemAttributes.copy() as! UICollectionViewLayoutAttributes
       changeLayoutAttributes(itemAttributesCopy)
@@ -123,60 +115,15 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
     }
     return attributesCopy
   }
-  
-  
+
+
   override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {
     let layoutAttributes = self.layoutAttributesForElements(in: collectionView!.bounds)
     let center = collectionView!.bounds.size.width / 2
     let proposedContentOffsetCenterOrigin = proposedContentOffset.x + center
     let closest = layoutAttributes!.sorted { abs($0.center.x - proposedContentOffsetCenterOrigin) < abs($1.center.x - proposedContentOffsetCenterOrigin) }.first ?? UICollectionViewLayoutAttributes()
     let targetContentOffset = CGPoint(x: floor(closest.center.x - center), y: proposedContentOffset.y)
-    
+
     return targetContentOffset
   }
 }
-
-
-
-
-//class CarouselCollectionViewLayoutInspector: NSObject, ASCollectionViewLayoutInspecting
-//{
-//  func collectionView(_ collectionView: ASCollectionView, constrainedSizeForNodeAt indexPath: IndexPath) -> ASSizeRange {
-//    let layout = collectionView.collectionViewLayout as! CarouselCollectionViewLayout
-//    CCLog.verbose("ItemSize Width: \(layout._itemSizeAtIndexPath(indexPath: indexPath).width), ItemSize Height: \(layout._itemSizeAtIndexPath(indexPath: indexPath).height)")
-//    return ASSizeRangeMake(layout._itemSizeAtIndexPath(indexPath: indexPath), layout._itemSizeAtIndexPath(indexPath: indexPath))
-//  }
-//
-//  func collectionView(_ collectionView: ASCollectionView, constrainedSizeForSupplementaryNodeOfKind: String, at atIndexPath: IndexPath) -> ASSizeRange
-//  {
-//    let layout = collectionView.collectionViewLayout as! CarouselCollectionViewLayout
-//    return ASSizeRange.init(min: layout._headerSizeForSection(section: atIndexPath.section), max: layout._headerSizeForSection(section: atIndexPath.section))
-//  }
-//
-//  /**
-//   * Asks the inspector for the number of supplementary sections in the collection view for the given kind.
-//   */
-//  func collectionView(_ collectionView: ASCollectionView, numberOfSectionsForSupplementaryNodeOfKind kind: String) -> UInt {
-//    if (kind == UICollectionElementKindSectionHeader) {
-//      return UInt((collectionView.dataSource?.numberOfSections!(in: collectionView))!)
-//    } else {
-//      return 0
-//    }
-//  }
-//
-//  /**
-//   * Asks the inspector for the number of supplementary views for the given kind in the specified section.
-//   */
-//  func collectionView(_ collectionView: ASCollectionView, supplementaryNodesOfKind kind: String, inSection section: UInt) -> UInt {
-//    if (kind == UICollectionElementKindSectionHeader) {
-//      return 1
-//    } else {
-//      return 0
-//    }
-//  }
-//
-//  func scrollableDirections() -> ASScrollDirection {
-//    return ASScrollDirectionVerticalDirections;
-//  }
-//}
-
