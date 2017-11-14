@@ -180,7 +180,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       layout = carouselLayout
     }
     
-    collectionNode.collectionViewLayout.invalidateLayout()
+    //collectionNode.collectionViewLayout.invalidateLayout()  // Don't know why this causes Carousel to Mosaic swap to crash
     collectionNode.view.setCollectionViewLayout(layout, animated: animated)
     collectionNode.relayoutItems()
     

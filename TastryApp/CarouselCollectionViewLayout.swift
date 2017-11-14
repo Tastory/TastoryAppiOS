@@ -8,23 +8,16 @@
 
 import AsyncDisplayKit
 
-protocol CarouselCollectionViewLayoutDelegate: ASCollectionDelegate {
-
-}
-
-
-
 class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
   
   // MARK: - Constants
   struct Constants {
     static let DefaultCarouselScreenHeightFraction: CGFloat = 0.375  // Must match what's not covered by Touch Forwarding View in DiscoverViewController as seen in the Storyboard
     static let DefaultCellNodeAspectRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
-    static let DefaultFeedNodeMargin: CGFloat = 5.0
     static let DefaultFeedBottomOffset: CGFloat = 16.0
     static let NonHighlightedItemAlpha: CGFloat = 0.9
     static let NonHighlightedItemScale: CGFloat = 0.90
-    static let NonHighlightedItemOffsetFraction: CGFloat = 0.05
+    static let NonHighlightedItemOffsetFraction: CGFloat = 0.05  // This is deliberately set to half of 1 - NonHighlightedItemScale. This makes the cells perfectly pegged to be top
     static let InterLineSpacingFraction: CGFloat = -0.025
   }
   
@@ -64,7 +57,7 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
     let carouselHeight = UIScreen.main.bounds.height*Constants.DefaultCarouselScreenHeightFraction
     let insetHeight = floor(collectionBounds.height - carouselHeight)
     let xInset = (collectionBounds.width - self.itemSize.width) / 2
-    return UIEdgeInsetsMake(insetHeight, xInset, Constants.DefaultFeedBottomOffset, Constants.DefaultFeedNodeMargin)
+    return UIEdgeInsetsMake(insetHeight, xInset, Constants.DefaultFeedBottomOffset, xInset)
   }
   
   

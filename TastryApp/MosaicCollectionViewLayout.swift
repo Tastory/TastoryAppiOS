@@ -29,7 +29,7 @@ protocol MosaicCollectionViewLayoutDelegate: ASCollectionDelegate {
 
 
 
-class MosaicCollectionViewLayout: UICollectionViewFlowLayout {
+class MosaicCollectionViewLayout: UICollectionViewLayout {
   
   // MARK: - Constants
   
@@ -70,7 +70,6 @@ class MosaicCollectionViewLayout: UICollectionViewFlowLayout {
     self._sectionInset = UIEdgeInsetsMake(0.0, columnSpacing, 0.0, columnSpacing)
     self.interItemSpacing = UIEdgeInsetsMake(columnSpacing, 0, columnSpacing, 0)
     super.init()
-    self.scrollDirection = .vertical
   }
   
   
@@ -86,9 +85,7 @@ class MosaicCollectionViewLayout: UICollectionViewFlowLayout {
     let cellNodeHeight = cellNodeWidth/Constants.DefaultCellNodeAspectRatio
     
     // Let's just set these accordingly anyways
-    self.itemSize = CGSize(width: cellNodeWidth, height: cellNodeHeight)
-    self.estimatedItemSize = CGSize(width: cellNodeWidth, height: cellNodeHeight)
-    return ASSizeRangeMake(self.itemSize)
+    return ASSizeRangeMake(CGSize(width: cellNodeWidth, height: cellNodeHeight))
   }
   
   
