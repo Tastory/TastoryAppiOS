@@ -37,7 +37,9 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
     static let DefaultColumns: Int = 2
     static let DefaultCellNodeAspectRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
     static let DefaultFeedNodeMargin: CGFloat = 5.0
+    static let ColumnHeightOffsetAsFractionOfFirstItemHeight: [CGFloat] = [0.0, 0.5]
   }
+  
   
   
   // MARK: - Public Instance Variables
@@ -46,18 +48,19 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
   
   var numberOfColumns: Int
   var columnSpacing: CGFloat
-  var _sectionInset: UIEdgeInsets
+  var sectionInset: UIEdgeInsets
   var interItemSpacing: UIEdgeInsets
   var headerHeight: CGFloat
-  var _columnHeights: [[CGFloat]]?
-  var _itemAttributes = [[UICollectionViewLayoutAttributes]]()
-  var _headerAttributes = [UICollectionViewLayoutAttributes]()
-  var _allAttributes = [UICollectionViewLayoutAttributes]()
+  var columnHeights: [[CGFloat]]?
+  var itemAttributes = [[UICollectionViewLayoutAttributes]]()
+  var headerAttributes = [UICollectionViewLayoutAttributes]()
+  var allAttributes = [UICollectionViewLayoutAttributes]()
   
   
   
   // MARK: - Private Instance Variables
-   let feedNodeMargin = Constants.DefaultFeedNodeMargin
+  
+  private let feedNodeMargin = Constants.DefaultFeedNodeMargin
   
   
   
@@ -67,7 +70,7 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
     self.numberOfColumns = Constants.DefaultColumns
     self.columnSpacing = Constants.DefaultFeedNodeMargin
     self.headerHeight = 0.0
-    self._sectionInset = UIEdgeInsetsMake(0.0, columnSpacing, 0.0, columnSpacing)
+    self.sectionInset = UIEdgeInsetsMake(0.0, columnSpacing, 0.0, columnSpacing)
     self.interItemSpacing = UIEdgeInsetsMake(columnSpacing, 0, columnSpacing, 0)
     super.init()
   }
@@ -90,7 +93,7 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
   
   
   func calculateSectionInset(for collectionBounds: CGRect, at section: Int) -> UIEdgeInsets {
-    return UIEdgeInsetsMake(0.0, columnSpacing, 0.0, columnSpacing) // ?? There's _sectionInset and sectionInset. Confused?
+    return UIEdgeInsetsMake(0.0, columnSpacing, 0.0, columnSpacing) // ?? There's sectionInset and sectionInset. Confused?
   }
   
   
@@ -98,10 +101,10 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
     super.prepare()
     guard let collectionView = self.collectionView else { return }
     
-    _itemAttributes = []
-    _allAttributes = []
-    _headerAttributes = []
-    _columnHeights = []
+    itemAttributes = []
+    allAttributes = []
+    headerAttributes = []
+    columnHeights = []
     
     var top: CGFloat = 0
     
@@ -110,50 +113,54 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
     for section in 0 ..< numberOfSections {
       let numberOfItems = collectionView.numberOfItems(inSection: section)
       
-      top += _sectionInset.top
+      top += sectionInset.top
       
       if (headerHeight > 0) {
         let headerSize: CGSize = self._headerSizeForSection(section: section)
         
         let attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, with: NSIndexPath(row: 0, section: section) as IndexPath)
         
-        attributes.frame = CGRect(x: _sectionInset.left, y: top, width: headerSize.width, height: headerSize.height)
-        _headerAttributes.append(attributes)
-        _allAttributes.append(attributes)
+        attributes.frame = CGRect(x: sectionInset.left, y: top, width: headerSize.width, height: headerSize.height)
+        headerAttributes.append(attributes)
+        allAttributes.append(attributes)
         top = attributes.frame.maxY
       }
       
-      _columnHeights?.append([]) //Adding new Section
-      for _ in 0 ..< self.numberOfColumns {
-        self._columnHeights?[section].append(top)
+      columnHeights?.append([]) //Adding new Section
+      for columnIndex in 0 ..< self.numberOfColumns {
+        let firstIndexPath = IndexPath(item: 0, section: section)
+        let firstItemSize = _itemSizeAtIndexPath(indexPath: firstIndexPath)
+        let firstItemHeight = firstItemSize.height
+        let heightForColumn = top + firstItemHeight * Constants.ColumnHeightOffsetAsFractionOfFirstItemHeight[columnIndex]
+        self.columnHeights?[section].append(heightForColumn)
       }
       
       let columnWidth = self._columnWidthForSection(section: section)
       
-      _itemAttributes.append([])
+      itemAttributes.append([])
       for idx in 0 ..< numberOfItems {
         let columnIndex: Int = self._shortestColumnIndexInSection(section: section)
         let indexPath = IndexPath(item: idx, section: section)
         
         let itemSize = self._itemSizeAtIndexPath(indexPath: indexPath);
-        let xOffset = _sectionInset.left + (columnWidth + columnSpacing) * CGFloat(columnIndex)
-        let yOffset = _columnHeights![section][columnIndex]
+        let xOffset = sectionInset.left + (columnWidth + columnSpacing) * CGFloat(columnIndex)
+        let yOffset = columnHeights![section][columnIndex]
         
         let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
         
         attributes.frame = CGRect(x: xOffset, y: yOffset, width: itemSize.width, height: itemSize.height)
         
-        _columnHeights?[section][columnIndex] = attributes.frame.maxY + interItemSpacing.bottom
+        columnHeights?[section][columnIndex] = attributes.frame.maxY + interItemSpacing.bottom
         
-        _itemAttributes[section].append(attributes)
-        _allAttributes.append(attributes)
+        itemAttributes[section].append(attributes)
+        allAttributes.append(attributes)
       }
       
       let columnIndex: Int = self._tallestColumnIndexInSection(section: section)
-      top = (_columnHeights?[section][columnIndex])! - interItemSpacing.bottom + _sectionInset.bottom
+      top = (columnHeights?[section][columnIndex])! - interItemSpacing.bottom + sectionInset.bottom
       
-      for idx in 0 ..< _columnHeights![section].count {
-        _columnHeights![section][idx] = top
+      for idx in 0 ..< columnHeights![section].count {
+        columnHeights![section][idx] = top
       }
     }
   }
@@ -162,7 +169,7 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
   {
     var includedAttributes: [UICollectionViewLayoutAttributes] = []
     // Slow search for small batches
-    for attribute in _allAttributes {
+    for attribute in allAttributes {
       if (attribute.frame.intersects(rect)) {
         includedAttributes.append(attribute)
       }
@@ -170,23 +177,26 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
     return includedAttributes
   }
   
+  
   override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes?
   {
-    guard indexPath.section < _itemAttributes.count,
-      indexPath.item < _itemAttributes[indexPath.section].count
+    guard indexPath.section < itemAttributes.count,
+      indexPath.item < itemAttributes[indexPath.section].count
       else {
         return nil
     }
-    return _itemAttributes[indexPath.section][indexPath.item]
+    return itemAttributes[indexPath.section][indexPath.item]
   }
+  
   
   override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes?
   {
     if (elementKind == UICollectionElementKindSectionHeader) {
-      return _headerAttributes[indexPath.section]
+      return headerAttributes[indexPath.section]
     }
     return nil
   }
+  
   
   override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
     if (!(self.collectionView?.bounds.size.equalTo(newBounds.size))!) {
@@ -195,15 +205,18 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
     return false;
   }
   
+  
   func _widthForSection (section: Int) -> CGFloat
   {
-    return self.collectionView!.bounds.size.width - _sectionInset.left - _sectionInset.right;
+    return self.collectionView!.bounds.size.width - sectionInset.left - sectionInset.right;
   }
+  
   
   func _columnWidthForSection(section: Int) -> CGFloat
   {
     return (self._widthForSection(section: section) - ((CGFloat(numberOfColumns - 1)) * columnSpacing)) / CGFloat(numberOfColumns)
   }
+  
   
   func _itemSizeAtIndexPath(indexPath: IndexPath) -> CGSize
   {
@@ -215,27 +228,30 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
     return size
   }
   
+  
   func _headerSizeForSection(section: Int) -> CGSize
   {
     return CGSize(width: self._widthForSection(section: section), height: headerHeight)
   }
   
+  
   override var collectionViewContentSize: CGSize
   {
     var height: CGFloat = 0
-    if ((_columnHeights?.count)! > 0) {
-      if (_columnHeights?[(_columnHeights?.count)!-1].count)! > 0 {
-        height = (_columnHeights?[(_columnHeights?.count)!-1][0])!
+    if ((columnHeights?.count)! > 0) {
+      if (columnHeights?[(columnHeights?.count)!-1].count)! > 0 {
+        height = (columnHeights?[(columnHeights?.count)!-1][0])!
       }
     }
     return CGSize(width: self.collectionView!.bounds.size.width, height: height)
   }
   
+  
   func _tallestColumnIndexInSection(section: Int) -> Int
   {
     var index: Int = 0;
     var tallestHeight: CGFloat = 0;
-    _ = _columnHeights?[section].enumerated().map { (idx,height) in
+    _ = columnHeights?[section].enumerated().map { (idx,height) in
       if (height > tallestHeight) {
         index = idx;
         tallestHeight = height
@@ -244,11 +260,12 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
     return index
   }
   
+  
   func _shortestColumnIndexInSection(section: Int) -> Int
   {
     var index: Int = 0;
     var shortestHeight: CGFloat = CGFloat.greatestFiniteMagnitude
-    _ = _columnHeights?[section].enumerated().map { (idx,height) in
+    _ = columnHeights?[section].enumerated().map { (idx,height) in
       if (height < shortestHeight) {
         index = idx;
         shortestHeight = height
@@ -256,8 +273,9 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
     }
     return index
   }
-  
 }
+
+
 
 class MosaicCollectionViewLayoutInspector: NSObject, ASCollectionViewLayoutInspecting
 {
