@@ -10,12 +10,18 @@ import UIKit
 
 class SettingsTableViewController: UITableViewController {
   
+  var parentNavController: UINavigationController?
+  
   @objc private func logOutAction(_ sender: UIBarButtonItem) {
     LogOutDismiss.askDiscardIfNeeded(from: self)
   }
   
   @objc private func dismissAction(_ sender: UIBarButtonItem) {
-    dismiss(animated: true, completion: nil)
+    if let parentNavController = parentNavController {
+      parentNavController.popViewController(animated: true)
+    } else {
+      dismiss(animated: true)
+    }
   }
   
   override func viewDidLoad() {
@@ -38,7 +44,7 @@ class SettingsTableViewController: UITableViewController {
     }
     
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
-    var pushViewController: TransitableViewController?
+    var pushViewController: OverlayViewController?
   
     if indexPath.section == 0, indexPath.row == 0 {
       guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileDetailViewController") as? ProfileDetailViewController else {
@@ -93,7 +99,7 @@ class SettingsTableViewController: UITableViewController {
     }
     
     if let viewController = pushViewController {
-      viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
+      viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
       navigationController.pushViewController(viewController, animated: true)
     }
   }

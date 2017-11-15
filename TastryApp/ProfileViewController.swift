@@ -8,24 +8,18 @@
 
 import UIKit
 
-class ProfileViewController: TransitableViewController {
+class ProfileViewController: OverlayViewController {
   
   // MARK: - Private Instance Variables
-  private var feedCollectionViewController: FeedCollectionViewController?
+  private var feedCollectionNodeController: FeedCollectionNodeController?
   fileprivate var activitySpinner: ActivitySpinner!
   
   // MARK: - Public Instance Variable
   var user: FoodieUser?
-  var query: FoodieQuery? {
-    didSet {
-      feedCollectionViewController?.storyQuery = query
-    }
-  }
-  
+  var query: FoodieQuery?
   var stories = [FoodieStory]() {
     didSet {
-      feedCollectionViewController?.storyArray = stories
-      feedCollectionViewController?.reloadData()
+      feedCollectionNodeController?.resetCollectionNode(with: stories)
     }
   }
   
@@ -38,7 +32,7 @@ class ProfileViewController: TransitableViewController {
   
   // MARK: - IBAction
   @IBAction func backAction(_ sender: UIBarButtonItem) {
-    dismiss(animated: true, completion: nil)
+    popDismiss(animated: true)
   }
   
   
@@ -50,16 +44,8 @@ class ProfileViewController: TransitableViewController {
       }
       return
     }
-    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
-    self.present(viewController, animated: true)
-    
-//    let storyboard = UIStoryboard(name: "Settings", bundle: nil)
-//
-//    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsTableViewController") as? SettingsTableViewController else {
-//      CCLog.fatal("Cannot cast ViewController from Storyboard to SettingsTableViewController")
-//    }
-//    let navController = SettingsNavController(rootViewController: viewController)
-//    self.present(navController, animated: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
+    pushPresent(viewController, animated: true)
   }
   
   
@@ -72,7 +58,7 @@ class ProfileViewController: TransitableViewController {
     guard let user = user, user.isRegistered else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
         CCLog.assert("Entered Profile View but no valid registered user specified")
-        self.dismiss(animated: true, completion: nil)
+        self.popDismiss(animated: true)
       }
       return
     }
@@ -114,23 +100,17 @@ class ProfileViewController: TransitableViewController {
       }
       self.stories = stories
     }
-
-    // Setup a Feed VC into the Container View
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FeedCollectionViewController") as? FeedCollectionViewController else {
-      CCLog.fatal("Cannot cast FeedCollectionViewController from Storyboard to FeedCollectionViewController")
-    }
-    viewController.storyQuery = query
-    viewController.storyArray = stories
-    viewController.scrollViewInset = navBar.frame.height
-
-    addChildViewController(viewController)
-    feedContainerView.addSubview(viewController.view)
-    viewController.view.frame = feedContainerView.bounds
-    viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    viewController.didMove(toParentViewController: self)
-    feedCollectionViewController = viewController
-    feedCollectionViewController?.enableEdit = true
+      
+    let nodeController = FeedCollectionNodeController(with: .mosaic, offsetBy: navBar.frame.height, allowLayoutChange: false, adjustScrollViewInset: true)
+    nodeController.storyArray = stories
+    nodeController.enableEdit = true
+    addChildViewController(nodeController)
+    feedContainerView.addSubview(nodeController.view)
+    nodeController.view.frame = feedContainerView.bounds
+    nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    nodeController.didMove(toParentViewController: self)
+    feedCollectionNodeController = nodeController
+    
 
     activitySpinner.apply()
     query!.initStoryQueryAndSearch { (stories, error) in

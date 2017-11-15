@@ -16,8 +16,13 @@ import MapKit
 import CoreLocation
 import SafariServices
 
+
 protocol PreviewControlDelegate {
   func enablePreviewButton(_ isEnabled: Bool)
+}
+
+protocol RestoreStoryDelegate {
+  func updateStory(_ story: FoodieStory)
 }
 
 class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelegate {
@@ -41,11 +46,12 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   fileprivate var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
 
   // MARK: - Public Instance Variable
+  var parentNavController: UINavigationController?
   var workingStory: FoodieStory?
   var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
   var containerVC: MarkupReturnDelegate?
-  var restoreStoryDelegate: restoreStoryDelegate?
+  var restoreStoryDelegate: RestoreStoryDelegate?
   
   // MARK: - Private Instance Variables
   fileprivate var momentViewController = MomentCollectionViewController()
@@ -78,8 +84,9 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     
     // Average the locations of the Moments to create a location suggestion on where to search for a Venue
     viewController.suggestedLocation = averageLocationOfMoments()
-    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
-    self.present(viewController, animated: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
+    parentNavController?.delegate = viewController
+    parentNavController?.pushViewController(viewController, animated: true)
   }
   
   
@@ -99,8 +106,9 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
     viewController.viewingStory = workingStory
     viewController.draftPreview = true
-    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
-    self.present(viewController, animated: true)
+    viewController.setSlideTransition(presentTowards: .up, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
+    parentNavController?.delegate = viewController
+    parentNavController?.pushViewController(viewController, animated: true)
   }
 
   @IBAction func discardStory(_ sender: UIButton) {
@@ -127,7 +135,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
         self.workingStory = nil
 
-        self.dismiss(animated: true, completion: nil)
+        self.vcDismiss()
         self.activitySpinner.remove()
       }
     }
@@ -198,7 +206,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
           // Pop-up Alert Dialog and then Dismiss
           CCLog.info("Story Posted!")
           AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
-            self.dismiss(animated: true, completion: nil)
+            self.vcDismiss()
           }
         }
       }
@@ -292,7 +300,11 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
   @objc private func vcDismiss() {
     // TODO: Data Passback through delegate?
-    dismiss(animated: true, completion: nil)
+    if let parentNavController = parentNavController {
+      parentNavController.popViewController(animated: true)
+    } else {
+      dismiss(animated: true)
+    }
   }
 
   // MARK: - View Controller Life Cycle
@@ -575,7 +587,7 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
 extension StoryEntryViewController: CameraReturnDelegate {
   func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
 
-    dismiss(animated: true) {
+    dismiss(animated: true) {  // This dismiss is for the Camera VC
       self.returnedMoments =  markedupMoments
       // compute the insert index for the collection view
       var indexPaths: [IndexPath] = []

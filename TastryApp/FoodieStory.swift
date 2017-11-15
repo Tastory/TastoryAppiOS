@@ -187,13 +187,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   
   
-  // MARK: - Public Constants
-  struct Constants {
-    static let MomentsToBufferAtATime = 2
-  }
-  
-  
-  
   // MARK: - Public Read-Only Static Variables
   private(set) static var currentStory: FoodieStory?
   
@@ -276,9 +269,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      guard let thumbnail = self.thumbnail else {
-        CCLog.fatal("Story retrieved but thumbnail = nil")
-      }
+//      guard let thumbnail = self.thumbnail else {
+//        CCLog.fatal("Story retrieved but thumbnail = nil")
+//      }
       
       guard let venue = self.venue else {
         CCLog.fatal("Story retrieved but venue = nil")
@@ -296,9 +289,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
           return
         }
         
-        if let childOperation = self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
-          storyOperation.add(childOperation)
-        }
+//        if let childOperation = self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
+//          storyOperation.add(childOperation)
+//        }
         
         if let childOperation = self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
           storyOperation.add(childOperation)

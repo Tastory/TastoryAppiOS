@@ -8,7 +8,7 @@
 
 import UIKit
 
-class EmailResetViewController: TransitableViewController {
+class EmailResetViewController: OverlayViewController {
   
   
   // MARK: - Public Instance Variable
@@ -49,7 +49,7 @@ class EmailResetViewController: TransitableViewController {
   
   
   @IBAction func exitAction(_ sender: ExitButton) {
-    dismiss(animated: true, completion: nil)
+    popDismiss(animated: true)
   }
 
   

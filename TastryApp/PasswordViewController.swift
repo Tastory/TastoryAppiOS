@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PasswordViewController: TransitableViewController {
+class PasswordViewController: OverlayViewController {
   
   var passwordTableViewController: PasswordTableViewController?
   

@@ -169,7 +169,9 @@ class FoodieUser: PFUser {
   
   // MARK: - Types & Enums
   enum OperationType: String {
+    case retrieveInFull
     case retrieveUser
+    case saveInFull
     case saveUser
     case deleteUser
   }
@@ -207,12 +209,26 @@ class FoodieUser: PFUser {
       CCLog.debug ("User Async \(operationType) Operation \(getUniqueIdentifier()) for \(user.getUniqueIdentifier()) Started")
       
       switch operationType {
+      case .retrieveInFull:
+        user.retrieveOpInFull(for: self, from: location, type: localType, forceAnyways: forceAnyways) { error in
+          self.childOperations.removeAll()
+          self.callback?(error)
+          self.finished()
+        }
+        
       case .retrieveUser:
         user.retrieveOpRecursive(for: self, from: location, type: localType, forceAnyways: forceAnyways) { error in
           // Careful here. Make sure nothing in here can race against anything before this point. In case of a sync callback
           self.childOperations.removeAll()
           self.callback?(error)
           //CCLog.debug ("User Async \(self.operationType) Operation \(self.getUniqueIdentifier()) for \(self.user.getUniqueIdentifier()) Finished")
+          self.finished()
+        }
+        
+      case .saveInFull:
+        user.saveOpInFull(for: self, to: location, type: localType) { error in
+          self.childOperations.removeAll()
+          self.callback?(error)
           self.finished()
         }
         
@@ -437,11 +453,11 @@ class FoodieUser: PFUser {
   
   
   static func checkValidFor(username: String) -> ErrorCode? {
-    if username.characters.count < Constants.MinUsernameLength {
+    if username.count < Constants.MinUsernameLength {
       return .usernameTooShort(Constants.MinUsernameLength)
     }
     
-    if username.characters.count > Constants.MaxUsernameLength {
+    if username.count > Constants.MaxUsernameLength {
       return .usernameTooLong(Constants.MaxUsernameLength)
     }
     
@@ -484,11 +500,11 @@ class FoodieUser: PFUser {
   
   static func checkValidFor(password: String, username: String?, email: String?) -> ErrorCode? {
     
-    if password.characters.count < Constants.MinPasswordLength {
+    if password.count < Constants.MinPasswordLength {
       return .passwordTooShort(Constants.MinPasswordLength)
     }
     
-    if password.characters.count > Constants.MaxPasswordLength {
+    if password.count > Constants.MaxPasswordLength {
       return .passwordTooLong(Constants.MaxPasswordLength)
     }
     
@@ -606,6 +622,26 @@ class FoodieUser: PFUser {
         callback?(error)
         return
       }
+      readyBlock?()
+      callback?(nil)
+    }
+  }
+  
+  
+  private func retrieveOpInFull(for userOperation: UserAsyncOperation,
+                                from location: FoodieObject.StorageLocation,
+                                type localType: FoodieObject.LocalType,
+                                forceAnyways: Bool,
+                                withReady readyBlock: SimpleBlock? = nil,
+                                withCompletion callback: SimpleErrorBlock?) {
+    
+    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      
+      if let error = error {
+        CCLog.assert("User.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
       
       self.foodieObject.resetChildOperationVariables()
       
@@ -635,9 +671,18 @@ class FoodieUser: PFUser {
   
   
   private func saveOpRecursive(for userOperation: UserAsyncOperation,
-                               to location: FoodieObject.StorageLocation,
-                               type localType: FoodieObject.LocalType,
-                               withBlock callback: SimpleErrorBlock?) {
+                            to location: FoodieObject.StorageLocation,
+                            type localType: FoodieObject.LocalType,
+                            withBlock callback: SimpleErrorBlock?) {
+    
+    self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+  }
+  
+  
+  private func saveOpInFull(for userOperation: UserAsyncOperation,
+                            to location: FoodieObject.StorageLocation,
+                            type localType: FoodieObject.LocalType,
+                            withBlock callback: SimpleErrorBlock?) {
     
     foodieObject.resetChildOperationVariables()
     
@@ -1066,6 +1111,24 @@ extension FoodieUser: FoodieObjectDelegate {
   static func cancelAll() { return }  // Nothing to cancel on for PFUser types
   
   
+  func retrieveInFull(from location: FoodieObject.StorageLocation,
+                      type localType: FoodieObject.LocalType,
+                      forceAnyways: Bool = false,
+                      withReady readyBlock: SimpleBlock? = nil,
+                      withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
+    
+    CCLog.verbose("Retrieve In Full for User \(getUniqueIdentifier())")
+    
+    let retrieveOperation = UserAsyncOperation(on: .retrieveInFull, for: self, to: location, type: localType, forceAnyways: forceAnyways) { error in
+      readyBlock?()
+      callback?(error)
+    }
+    asyncOperationQueue.addOperation(retrieveOperation)
+    
+    return retrieveOperation
+  }
+  
+  
   // Trigger recursive retrieve, with the retrieve of self first, then the recursive retrieve of the children
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
@@ -1083,10 +1146,25 @@ extension FoodieUser: FoodieObjectDelegate {
   }
   
   
+  func saveInFull(to location: FoodieObject.StorageLocation,
+                  type localType: FoodieObject.LocalType,
+                  withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
+    
+    CCLog.verbose("Save Digest for User \(getUniqueIdentifier())")
+    
+    let saveOperation = UserAsyncOperation(on: .saveInFull, for: self, to: location, type: localType, withBlock: callback)
+    asyncOperationQueue.addOperation(saveOperation)
+    
+    return saveOperation
+  }
+  
+  
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
                      withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
+    
+    CCLog.verbose("Save In Full for User \(getUniqueIdentifier())")
     
     let saveOperation = UserAsyncOperation(on: .saveUser, for: self, to: location, type: localType, withBlock: callback)
     CCLog.debug ("Save User Recursive Operation \(saveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")

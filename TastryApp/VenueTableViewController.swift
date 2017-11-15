@@ -20,7 +20,7 @@ protocol VenueTableReturnDelegate {
 }
 
 
-class VenueTableViewController: TransitableViewController {
+class VenueTableViewController: OverlayViewController {
   
   // MARK: - Types & Enumerations
   
@@ -57,7 +57,7 @@ class VenueTableViewController: TransitableViewController {
   
   // MARK: - IBActions
   @IBAction func rightSwipe(_ sender: UISwipeGestureRecognizer) {
-    dismiss(animated: true, completion: nil)
+    popDismiss(animated: true)  // TODO: Do we still need this?
   }
 
   
@@ -337,7 +337,7 @@ extension VenueTableViewController: UITableViewDelegate {
     
     // Call the delegate's function for returning the venue
     delegate?.venueSearchComplete(venue: venueResultArray[indexPath.row])
-    dismiss(animated: true, completion: nil)
+    popDismiss(animated: true)
   }
   
   // Hide the keyboard if the venue table begins dragging

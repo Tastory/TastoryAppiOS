@@ -41,6 +41,10 @@ struct LogOutDismiss {
         }
       }
       
+      if let navigationController = viewController.navigationController {
+        navigationController.popToRootViewController(animated: false)
+      }
+      
       // Proceed to dismiss regardless
       guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let window = appDelegate.window, let rootViewController = window.rootViewController else {
         AlertDialog.standardPresent(from: viewController, title: .genericInternalError, message: .inconsistencyFatal) { action in

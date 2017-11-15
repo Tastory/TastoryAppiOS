@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SettingsViewController: TransitableViewController {
+class SettingsViewController: OverlayViewController {
   
   var settingsNavController: SettingsNavController?
   
@@ -19,6 +19,8 @@ class SettingsViewController: TransitableViewController {
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsTableViewController") as? SettingsTableViewController else {
       CCLog.fatal("Cannot cast ViewController from Storyboard to SettingsTableViewController")
     }
+    viewController.parentNavController = self.navigationController
+    
     let navController = SettingsNavController(rootViewController: viewController)
     
     addChildViewController(navController)

@@ -64,11 +64,11 @@ class ActivitySpinner {
   }
   
   func remove(with completion: (() -> Void)? = nil) {
-    guard let view = controllerView else {
-      CCLog.fatal("controllerView = nil when applying Activity Spinner")
-    }
-    
     DispatchQueue.main.async {
+      guard let view = self.controllerView else {
+        CCLog.fatal("controllerView = nil when applying Activity Spinner")
+      }
+      
       if let blurEffectView = self.blurEffectView {
         view.sendSubview(toBack: blurEffectView)
         blurEffectView.isHidden = true

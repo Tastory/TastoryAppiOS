@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SignUpViewController: TransitableViewController {
+class SignUpViewController: OverlayViewController {
   
   
   // MARK: - Public Instance Variable
@@ -64,7 +64,7 @@ class SignUpViewController: TransitableViewController {
   
   @IBAction func exitAction(_ sender: UIButton) {
     view.endEditing(true)
-    dismiss(animated: true, completion: nil)
+    popDismiss(animated: true)
   }
   
   
@@ -134,8 +134,8 @@ class SignUpViewController: TransitableViewController {
         viewController.firstLabelText = "Please make sure you confirm your E-mail so you can start posting"
         viewController.secondLabelText = "For now, you can start by checking out what Tasty Stories are around you~"
         viewController.enableResend = false
-        viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
-        self.present(viewController, animated: true)
+        viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: false)
+        self.pushPresent(viewController, animated: true)
       }
     }
   }
@@ -174,7 +174,7 @@ extension SignUpViewController: UITextFieldDelegate {
     switch textField {
     case usernameField:
       warningLabel.text = ""
-      guard var textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinUsernameLength else {
+      guard var textString = textField.text, textString.count >= FoodieUser.Constants.MinUsernameLength else {
         return  // No text, nothing to see here
       }
       
@@ -199,7 +199,7 @@ extension SignUpViewController: UITextFieldDelegate {
       
     case emailField:
       warningLabel.text = ""
-      guard var textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinEmailLength else {
+      guard var textString = textField.text, textString.count >= FoodieUser.Constants.MinEmailLength else {
         return  // No yet an E-mail, nothing to see here
       }
       
@@ -224,7 +224,7 @@ extension SignUpViewController: UITextFieldDelegate {
       
     case passwordField:
       warningLabel.text = ""
-      guard let textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinPasswordLength else {
+      guard let textString = textField.text, textString.count >= FoodieUser.Constants.MinPasswordLength else {
         return  // Not yet a password, nothing to see here
       }
       

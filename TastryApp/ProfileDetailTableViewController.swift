@@ -93,6 +93,7 @@ class ProfileDetailTableViewController: UITableViewController {
   
   
   // MARK: - Public Instance Variable
+  var parentNavigationController: UINavigationController?
   var user: FoodieUser!
 
   
@@ -255,11 +256,11 @@ class ProfileDetailTableViewController: UITableViewController {
           self.user.media = mediaObject
         }
         
-        _ = self.user.saveRecursive(to: .both, type: .cache) { error in
+        _ = self.user.saveInFull(to: .both, type: .cache) { error in
           self.activitySpinner.remove()
           if let error = error {
             AlertDialog.present(from: self, title: "Save User Details Failed", message: "Error - \(error.localizedDescription). Please try again") { action in
-              CCLog.warning("user.saveRecursive Failed. Error - \(error.localizedDescription)")
+              CCLog.warning("user.saveInFull Failed. Error - \(error.localizedDescription)")
             }
             return
           }
@@ -414,7 +415,7 @@ class ProfileDetailTableViewController: UITableViewController {
 
     activitySpinner.apply()
     
-    _ = self.user.retrieveRecursive(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
+    _ = self.user.retrieveInFull(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
       
       if let error = error {
         AlertDialog.standardPresent(from: self, title: .genericNetworkError, message: .networkTryAgain) { action in
@@ -561,7 +562,7 @@ extension ProfileDetailTableViewController: UITextFieldDelegate {
     switch textField {
     case usernameField!:
       self.emailFooterView.warningLabel.text = ""
-      guard var textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinUsernameLength, let username = user.username, textString != username else {
+      guard var textString = textField.text, textString.count >= FoodieUser.Constants.MinUsernameLength, let username = user.username, textString != username else {
         return  // No text, nothing to see here
       }
       
@@ -586,7 +587,7 @@ extension ProfileDetailTableViewController: UITextFieldDelegate {
       
     case emailField!:
       emailFooterView.warningLabel.text = ""
-      guard var textString = textField.text, textString.characters.count >= FoodieUser.Constants.MinEmailLength, let email = user.email, textString != email else {
+      guard var textString = textField.text, textString.count >= FoodieUser.Constants.MinEmailLength, let email = user.email, textString != email else {
         return  // No yet an E-mail, nothing to see here
       }
       
@@ -655,7 +656,11 @@ extension ProfileDetailTableViewController: UIImagePickerControllerDelegate, UIN
     default:
       AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { action in
         CCLog.assert("Media returned from Image Picker is neither a Photo nor a Video")
-        self.dismiss(animated: true, completion: nil)
+        if let parentNavigationController = self.parentNavigationController {
+          parentNavigationController.popViewController(animated: true)
+        } else {
+          self.dismiss(animated: true)
+        }
       }
       return
     }

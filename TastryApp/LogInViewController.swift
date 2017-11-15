@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LogInViewController: TransitableViewController {
+class LogInViewController: OverlayViewController {
   
   
   // MARK: - IBOutlet
@@ -96,8 +96,8 @@ class LogInViewController: TransitableViewController {
     
     viewController.username = usernameField.text
     viewController.password = passwordField.text
-    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: true, dragDirectionIsFixed: true)
-    self.present(viewController, animated: true)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
+    pushPresent(viewController, animated: true)
   }
   
   
@@ -114,8 +114,8 @@ class LogInViewController: TransitableViewController {
     if let logInText = usernameField.text, FoodieUser.checkValidFor(email: logInText) {
       viewController.emailAddress = logInText
     }
-    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: true, dragDirectionIsFixed: true)
-    self.present(viewController, animated: true)
+    viewController.setSlideTransition(presentTowards: .up, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
+    pushPresent(viewController, animated: true)
   }
   
   
@@ -132,14 +132,15 @@ class LogInViewController: TransitableViewController {
     
     AlertDialog.present(from: self, title: "Guest Login", message: "You will not be able to post as a Guest. We highly encourage you to sign-up and log-in for the best experience!") { action in
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController") as? MapViewController else {
+      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverViewController") as? DiscoverViewController else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.fatal("ViewController initiated not of MapViewController Class!!")
+          CCLog.fatal("ViewController initiated not of DiscoverViewController Class!!")
         }
         return
       }
-      viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
-      self.present(viewController, animated: true)
+      let mapNavController = MapNavController(rootViewController: viewController)
+      mapNavController.modalTransitionStyle = .crossDissolve
+      self.present(mapNavController, animated: true)
     }
   }
   
@@ -218,8 +219,8 @@ class LogInViewController: TransitableViewController {
           viewController.enableResend = true
         }
         
-        viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
-        self.present(viewController, animated: true, completion: nil)
+        viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: false)
+        self.pushPresent(viewController, animated: true)
       }
     }
   }

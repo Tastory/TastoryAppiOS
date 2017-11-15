@@ -8,7 +8,7 @@
 
 import UIKit
 
-class IntroViewController: TransitableViewController {
+class IntroViewController: OverlayViewController {
   
   // MARK: - Public Instance Function
   var firstLabelText: String?
@@ -106,14 +106,16 @@ class IntroViewController: TransitableViewController {
   // MARK: - Private Instance Function
   private func presentDiscoverVC() {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MapViewController") as? MapViewController else {
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverViewController") as? DiscoverViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("ViewController initiated not of MapViewController Class!!")
+        CCLog.fatal("ViewController initiated not of DiscoverViewController Class!!")
       }
       return
     }
-    viewController.setTransition(presentTowards: .left, dismissTowards: .right, dismissIsDraggable: false)
-    self.present(viewController, animated: true)
+    
+    let mapNavController = MapNavController(rootViewController: viewController)
+    mapNavController.modalTransitionStyle = .crossDissolve
+    self.present(mapNavController, animated: true)
   }
   
   

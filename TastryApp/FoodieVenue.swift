@@ -609,12 +609,12 @@ class FoodieVenue: FoodiePFObject  {
                 }
                 segment["start"] = startInt
                 
-                guard var end = openSegment["end"] as? String else {
+                guard let end = openSegment["end"] as? String else {
                   break
                 }
                 
                 // Foursquare represents next day with a '+' symbol in front...
-                if end.characters[end.characters.startIndex] == "+" {
+                if end[end.startIndex] == "+" {
                   let index = end.index(end.startIndex, offsetBy: 1)
                   let endSubstring = end[..<index]
                   guard let endInt = Int(endSubstring) else {
