@@ -26,11 +26,15 @@ class FeedCollectionCellNode: ASCellNode {
   
   
   
+  // MARK: - Public Instance Variable
+  var isEditEnabled = false
+  
+  
   // MARK: - Private Instance Variable
   private let coverImageNode: ASNetworkImageNode
   private var coverTitleNode: ASTextNode?
   private var coverTitleBackgroundNode: ASDisplayNode?
-  
+  private let coverEditButton: ASTextNode
   
   
   // MARK: - Public Instance Function
@@ -40,12 +44,16 @@ class FeedCollectionCellNode: ASCellNode {
     }
     
     self.coverImageNode = ASNetworkImageNode()
+    self.coverEditButton = ASTextNode()
     super.init()
     
     coverImageNode.url = FoodieFileObject.getS3URL(for: thumbnailFileName)
     coverImageNode.placeholderColor = UIColor.gray
     coverImageNode.placeholderEnabled = true
     coverImageNode.isLayerBacked = true
+    
+    coverEditButton.attributedText = NSAttributedString(string: "✏️")
+    coverEditButton.maximumNumberOfLines = 1
     
     if let coverTitle = story.title {
       coverTitleNode = ASTextNode()
@@ -109,11 +117,25 @@ class FeedCollectionCellNode: ASCellNode {
       let titleOverlaySpec = ASBackgroundLayoutSpec(child: titleInsetSpec, background: coverTitleBackgroundNode)
       
       // Create Stack with Title Node
-      let coverStackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 5.0, justifyContent: .end, alignItems: .stretch, children: [titleOverlaySpec])
+      var coverStackSpec: ASStackLayoutSpec!
+      
+      if isEditEnabled {
+        let editStackSpec = ASStackLayoutSpec(direction: .horizontal, spacing: 1.0, justifyContent: .end, alignItems: .center, children: [coverEditButton])
+        coverStackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 5.0, justifyContent: .end, alignItems: .stretch, children: [editStackSpec, titleOverlaySpec])
+        
+      } else {
+        coverStackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 5.0, justifyContent: .end, alignItems: .stretch, children: [titleOverlaySpec])
+      }
       
       // Overlay the Cover Stack in front of the Image Node
       let coverOverlaySpec = ASOverlayLayoutSpec(child: coverImageNode, overlay: coverStackSpec)
       
+      finalLayoutSpec = coverOverlaySpec
+      
+    } else if isEditEnabled {
+      let editStackSpec = ASStackLayoutSpec(direction: .horizontal, spacing: 1.0, justifyContent: .end, alignItems: .center, children: [coverEditButton])
+      let coverStackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 5.0, justifyContent: .start, alignItems: .stretch, children: [editStackSpec])
+      let coverOverlaySpec = ASOverlayLayoutSpec(child: coverImageNode, overlay: coverStackSpec)
       finalLayoutSpec = coverOverlaySpec
     }
     

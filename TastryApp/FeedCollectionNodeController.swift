@@ -26,7 +26,6 @@ import AsyncDisplayKit
 
 final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
-  
   // MARK: - Types and Enumeration
   
   @objc enum LayoutType: Int {
@@ -44,6 +43,15 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     static let MosaicPullTranslationForChange: CGFloat = -80
     static let MosaicHighlightThresholdOffset: CGFloat = 20
   }
+  
+  
+  
+  // MARK: - Private Instance Variable
+  
+  private var collectionNode: ASCollectionNode
+  private var allowLayoutChange: Bool
+  private var allPagesFetched: Bool
+  private var lastIndexPath: IndexPath?
   
   
   
@@ -116,11 +124,15 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   
   
-  // MARK: - Private Instance Variable
+  // MARK: - Private Instance Function
+  private func toIndexPath(from storyIndex: Int) -> IndexPath {
+    return IndexPath(row: storyIndex, section: 0)
+  }
   
-  private var collectionNode: ASCollectionNode
-  private var allowLayoutChange: Bool
-  private var allPagesFetched: Bool
+  
+  private func toStoryIndex(from indexPath: IndexPath) -> Int {
+    return indexPath.row
+  }
   
   
   
@@ -180,17 +192,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     collectionNode.frame = view.bounds
   }
 
-  
-  
-  // MARK: - Private Instance Function
-  private func toIndexPath(from storyIndex: Int) -> IndexPath {
-    return IndexPath(row: storyIndex, section: 0)
-  }
-  
-  private func toStoryIndex(from indexPath: IndexPath) -> Int {
-    return indexPath.row
-  }
-  
   
   
   // MARK: - Public Instance Function
