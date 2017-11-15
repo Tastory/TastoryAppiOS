@@ -258,6 +258,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     //collectionNode.collectionViewLayout.invalidateLayout()  // Don't know why this causes Carousel to Mosaic swap to crash
     collectionNode.view.setCollectionViewLayout(layout, animated: animated)
     collectionNode.relayoutItems()
+    collectionNode.delegate = self
     
     delegate?.collectionNodeLayoutChanged?(to: layoutType)
   }
@@ -419,6 +420,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    CCLog.verbose("ScrollViewDidEndDecelerating")
     delegate?.collectionNodeDidEndDecelerating?()
   }
   

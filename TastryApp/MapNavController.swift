@@ -14,8 +14,8 @@ class MapNavController: ASNavigationController {
   // MARK: - Constants
   
   struct Constants {
-    static let MapAnnotationMarginFraction: Double = 0.05
-    static let DefaultMapDelta: CLLocationDegrees = 0.05
+    static let MapAnnotationMarginFraction: Double = 0.08
+    static let DefaultMapDelta: CLLocationDegrees = 0.08
   }
   
   

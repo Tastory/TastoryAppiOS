@@ -91,7 +91,7 @@ class DiscoverViewController: OverlayViewController {
   
   @IBOutlet weak var feedContainerView: UIView!
   @IBOutlet weak var mosaicMapView: UIView!
-  
+  @IBOutlet weak var carouselMapView: UIView!
   
   
   // MARK: - IBActions
@@ -658,9 +658,7 @@ class DiscoverViewController: OverlayViewController {
     
     switch feedCollectionNodeController.layoutType {
     case .carousel:
-      if let touchForwardingView = touchForwardingView {
-        mapNavController.setExposedRect(with: touchForwardingView)
-      }
+      mapNavController.setExposedRect(with: carouselMapView)
       
     case .mosaic:
       mapNavController.setExposedRect(with: mosaicMapView)
@@ -847,8 +845,8 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
     case .carousel:
       if let touchForwardingView = touchForwardingView {
         touchForwardingView.isHidden = false
-        mapNavController.setExposedRect(with: touchForwardingView)
       }
+      mapNavController.setExposedRect(with: carouselMapView)
       mosaicLayoutChangePanRecognizer.isEnabled = true
     }
   }

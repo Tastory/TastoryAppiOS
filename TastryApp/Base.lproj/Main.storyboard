@@ -72,12 +72,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view hidden="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q0a-tw-wYK" userLabel="Obstructed Map View">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="58"/>
+                            </view>
                             <view hidden="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8jX-dd-Jb6" userLabel="Mosaic Map View">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <rect key="frame" x="0.0" y="58" width="375" height="162"/>
+                            </view>
+                            <view hidden="YES" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MLY-sg-NLb" userLabel="Carousel Map View">
+                                <rect key="frame" x="0.0" y="58" width="375" height="359"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QP7-f7-wk1">
-                                <rect key="frame" x="0.0" y="200" width="375" height="467"/>
+                                <rect key="frame" x="0.0" y="220" width="375" height="447"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                                 <connections>
@@ -163,10 +168,12 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="8jX-dd-Jb6" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="0xc-pZ-bYn"/>
+                            <constraint firstItem="8jX-dd-Jb6" firstAttribute="top" secondItem="q0a-tw-wYK" secondAttribute="bottom" id="0xc-pZ-bYn"/>
                             <constraint firstAttribute="trailingMargin" secondItem="S7U-1x-ELZ" secondAttribute="trailing" constant="8" id="4il-4C-MZU"/>
+                            <constraint firstItem="MLY-sg-NLb" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="6bB-H0-xPK"/>
                             <constraint firstItem="S7U-1x-ELZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="8" id="6eR-hs-oI6"/>
                             <constraint firstItem="8yq-x6-CLY" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="8Dq-zq-i2O"/>
+                            <constraint firstItem="0wJ-kE-Bqf" firstAttribute="bottom" secondItem="q0a-tw-wYK" secondAttribute="bottom" constant="-8" id="Amk-kJ-Dgb"/>
                             <constraint firstItem="8jX-dd-Jb6" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="EFc-6u-qjl"/>
                             <constraint firstAttribute="trailing" secondItem="8jX-dd-Jb6" secondAttribute="trailing" id="Ea5-mK-mUk"/>
                             <constraint firstItem="QC2-XK-jf4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="K8O-TB-xfm"/>
@@ -175,15 +182,21 @@
                             <constraint firstItem="8lR-o3-9WI" firstAttribute="top" secondItem="8yq-x6-CLY" secondAttribute="bottom" id="NxP-Lr-oyo"/>
                             <constraint firstItem="0wJ-kE-Bqf" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="PUi-hX-qEd"/>
                             <constraint firstItem="QP7-f7-wk1" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="TPv-Ri-Idi"/>
+                            <constraint firstItem="MLY-sg-NLb" firstAttribute="top" secondItem="q0a-tw-wYK" secondAttribute="bottom" id="VCg-ab-fro"/>
                             <constraint firstItem="QC2-XK-jf4" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Y24-lj-eHA"/>
+                            <constraint firstItem="q0a-tw-wYK" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Y4K-q5-jZ4"/>
                             <constraint firstItem="S7U-1x-ELZ" firstAttribute="bottom" secondItem="oB7-Q1-hCS" secondAttribute="bottom" priority="750" constant="16" id="bKC-RP-rkh"/>
                             <constraint firstItem="1zZ-dd-fcW" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="dFM-J1-5ln"/>
+                            <constraint firstItem="MLY-sg-NLb" firstAttribute="bottom" secondItem="QC2-XK-jf4" secondAttribute="bottom" id="dut-IA-DQu"/>
                             <constraint firstItem="QP7-f7-wk1" firstAttribute="top" secondItem="8jX-dd-Jb6" secondAttribute="bottom" id="h4a-Ee-gf1"/>
                             <constraint firstAttribute="trailingMargin" secondItem="8lR-o3-9WI" secondAttribute="trailing" id="hDa-sq-jeb"/>
                             <constraint firstItem="QP7-f7-wk1" firstAttribute="leading" secondItem="oB7-Q1-hCS" secondAttribute="leading" id="heM-AO-6o5"/>
                             <constraint firstAttribute="trailing" secondItem="QC2-XK-jf4" secondAttribute="trailing" id="hop-HJ-4YV"/>
                             <constraint firstItem="1zZ-dd-fcW" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="is3-jI-Qnz"/>
-                            <constraint firstItem="QP7-f7-wk1" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.7" id="rqE-df-sxp"/>
+                            <constraint firstAttribute="trailing" secondItem="MLY-sg-NLb" secondAttribute="trailing" id="kgm-iY-QbY"/>
+                            <constraint firstItem="q0a-tw-wYK" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="mau-uh-7ar"/>
+                            <constraint firstAttribute="trailing" secondItem="q0a-tw-wYK" secondAttribute="trailing" id="rBC-Tk-N24"/>
+                            <constraint firstItem="QP7-f7-wk1" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.67" id="rqE-df-sxp"/>
                             <constraint firstItem="QC2-XK-jf4" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.625" id="slE-mm-W4b"/>
                             <constraint firstAttribute="trailingMargin" secondItem="0wJ-kE-Bqf" secondAttribute="trailing" id="sre-db-TIA"/>
                             <constraint firstItem="oB7-Q1-hCS" firstAttribute="trailing" secondItem="QP7-f7-wk1" secondAttribute="trailing" id="tHU-hI-SlX"/>
@@ -196,6 +209,7 @@
                     <connections>
                         <outlet property="allStoriesButton" destination="8lR-o3-9WI" id="nPe-7b-jkM"/>
                         <outlet property="cameraButton" destination="m1j-Ft-7un" id="5xu-my-dGT"/>
+                        <outlet property="carouselMapView" destination="MLY-sg-NLb" id="fmY-nc-zXA"/>
                         <outlet property="doubleTapGestureRecognizer" destination="lh5-20-bcQ" id="XwI-na-Qw5"/>
                         <outlet property="draftButton" destination="1zZ-dd-fcW" id="xkV-cw-rjf"/>
                         <outlet property="feedContainerView" destination="QP7-f7-wk1" id="5wA-qf-gbI"/>

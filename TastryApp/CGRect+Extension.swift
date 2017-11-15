@@ -10,8 +10,8 @@ import UIKit
 
 extension CGRect {
   func makeInsetBySubtracting(_ rect: CGRect) -> UIEdgeInsets {
-    let topInset = minY - rect.minY
-    let leftInset = minX - rect.minX
+    let topInset = rect.minY - minY
+    let leftInset = rect.minX - minX
     let bottomInset = maxY - rect.maxY
     let rightInset = maxX - rect.maxX
     
