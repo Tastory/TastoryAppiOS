@@ -135,7 +135,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
         self.workingStory = nil
 
-        self.dismiss(animated: true, completion: nil)
+        self.vcDismiss()
         self.activitySpinner.remove()
       }
     }
@@ -206,7 +206,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
           // Pop-up Alert Dialog and then Dismiss
           CCLog.info("Story Posted!")
           AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
-            self.dismiss(animated: true, completion: nil)
+            self.vcDismiss()
           }
         }
       }
