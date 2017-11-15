@@ -51,6 +51,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   var delegate: FeedCollectionNodeDelegate?
   var storyArray = [FoodieStory]()
+  var enableEdit = false
   
   var layoutType: LayoutType {
     if collectionNode.collectionViewLayout is CarouselCollectionViewLayout {

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -22,12 +21,16 @@
         <scene sceneID="wzA-2G-nOi">
             <objects>
                 <viewController storyboardIdentifier="CameraViewController" id="ImI-Ed-QdP" customClass="CameraViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="qt8-oB-J2w"/>
+                        <viewControllerLayoutGuide type="bottom" id="ld9-ET-76c"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="oEc-gL-EdH">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="30k-mM-bOe" customClass="CameraButton" customModule="TastryApp" customModuleProvider="target">
-                                <rect key="frame" x="147.5" y="587" width="80" height="80"/>
+                                <rect key="frame" x="147.5" y="579" width="80" height="80"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <gestureRecognizers/>
                                 <constraints>
@@ -40,7 +43,7 @@
                                 </connections>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kxo-zQ-usi" customClass="ExitButton" customModule="TastryApp" customModuleProvider="target">
-                                <rect key="frame" x="16" y="607" width="40" height="40"/>
+                                <rect key="frame" x="16" y="599" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="kxo-zQ-usi" secondAttribute="height" multiplier="1:1" id="HhG-Lw-YHk"/>
                                     <constraint firstAttribute="width" constant="40" id="hAd-1m-3pU"/>
@@ -50,7 +53,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hPs-qT-rXL" customClass="ImagePickerButton" customModule="TastryApp" customModuleProvider="target">
-                                <rect key="frame" x="319" y="607" width="40" height="40"/>
+                                <rect key="frame" x="319" y="599" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="ZMe-kb-yeB"/>
                                     <constraint firstAttribute="width" secondItem="hPs-qT-rXL" secondAttribute="height" multiplier="1:1" id="yGW-de-dxW"/>
@@ -61,14 +64,13 @@
                             </button>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="30k-mM-bOe" firstAttribute="centerX" secondItem="XjV-rt-Bwr" secondAttribute="centerX" id="b0a-4t-gdd"/>
+                            <constraint firstItem="30k-mM-bOe" firstAttribute="centerX" secondItem="oEc-gL-EdH" secondAttribute="centerX" id="b0a-4t-gdd"/>
                             <constraint firstAttribute="leadingMargin" secondItem="kxo-zQ-usi" secondAttribute="leading" id="jHg-7x-M0c"/>
                             <constraint firstItem="kxo-zQ-usi" firstAttribute="centerY" secondItem="30k-mM-bOe" secondAttribute="centerY" id="lWT-iL-82h"/>
                             <constraint firstItem="hPs-qT-rXL" firstAttribute="trailing" secondItem="oEc-gL-EdH" secondAttribute="trailingMargin" id="rO6-zC-fkA"/>
-                            <constraint firstItem="XjV-rt-Bwr" firstAttribute="bottom" secondItem="30k-mM-bOe" secondAttribute="bottom" constant="8" symbolic="YES" id="wcu-QE-Qme"/>
+                            <constraint firstItem="ld9-ET-76c" firstAttribute="top" secondItem="30k-mM-bOe" secondAttribute="bottom" constant="8" symbolic="YES" id="wcu-QE-Qme"/>
                             <constraint firstItem="hPs-qT-rXL" firstAttribute="centerY" secondItem="30k-mM-bOe" secondAttribute="centerY" id="zhX-8f-aDC"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="XjV-rt-Bwr"/>
                     </view>
                     <connections>
                         <outlet property="captureButton" destination="30k-mM-bOe" id="xaS-ZF-RGb"/>
@@ -90,6 +92,10 @@
         <scene sceneID="H9q-fk-uJF">
             <objects>
                 <viewController storyboardIdentifier="MarkupViewController" id="3Lz-hF-LGR" customClass="MarkupViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Wru-2j-ls2"/>
+                        <viewControllerLayoutGuide type="bottom" id="NR8-oP-KZt"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="3hs-y9-2cP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -207,10 +213,9 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
-                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="top" secondItem="Uge-bu-QQ2" secondAttribute="top" constant="10" id="1FB-Hs-IxM"/>
-                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="leading" secondItem="Uge-bu-QQ2" secondAttribute="leading" constant="10" id="q5R-kJ-1tY"/>
+                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="top" secondItem="Wru-2j-ls2" secondAttribute="bottom" constant="10" id="1FB-Hs-IxM"/>
+                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="leading" secondItem="3hs-y9-2cP" secondAttribute="leading" constant="10" id="q5R-kJ-1tY"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="Uge-bu-QQ2"/>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
@@ -236,11 +241,14 @@
         <scene sceneID="hr8-zp-Vvh">
             <objects>
                 <viewController storyboardIdentifier="StoryCompositionViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="qja-VH-rV7" customClass="StoryCompositionViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Exz-C7-zzX"/>
+                        <viewControllerLayoutGuide type="bottom" id="Fyy-j4-4sk"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="I8o-dP-osX">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <viewLayoutGuide key="safeArea" id="VY0-9t-LfN"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VB6-Kf-XJB" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -459,7 +467,7 @@
         <scene sceneID="Sf3-nA-ZH6">
             <objects>
                 <collectionViewController storyboardIdentifier="MomentCollectionViewController" id="mqr-nw-IyY" customClass="MomentCollectionViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceHorizontal="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="TGu-A1-lSP">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceHorizontal="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="TGu-A1-lSP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="222"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -471,7 +479,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" reuseIdentifier="MomentCell" id="5yf-rk-zGg" customClass="MomentCollectionViewCell" customModule="TastryApp" customModuleProvider="target">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MomentCell" id="5yf-rk-zGg" customClass="MomentCollectionViewCell" customModule="TastryApp" customModuleProvider="target">
                                 <rect key="frame" x="94" y="0.0" width="124" height="222"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -479,7 +487,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="oF2-s4-G9T">
-                                            <rect key="frame" x="0.0" y="0.0" width="124" height="0.0"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
                                         </imageView>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cSh-jl-knJ">
                                             <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
@@ -509,10 +517,6 @@
                                                 <action selector="deleteMomentButton:" destination="5yf-rk-zGg" eventType="touchUpInside" id="nSU-Cb-ikV"/>
                                             </connections>
                                         </button>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cSh-jl-knJ">
-                                            <rect key="frame" x="0.0" y="0.0" width="124" height="0.0"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        </view>
                                     </subviews>
                                 </view>
                                 <gestureRecognizers/>
@@ -543,13 +547,13 @@
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="≪" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8iO-QC-YKs">
-                                    <rect key="frame" x="8" y="8" width="78" height="206"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="94" height="222"/>
                                     <fontDescription key="fontDescription" name="TimesNewRomanPS-BoldMT" family="Times New Roman" pointSize="40"/>
                                     <color key="textColor" red="1" green="0.20000000000000001" blue="0.066666666669999999" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" +" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zjt-5s-v7V">
-                                    <rect key="frame" x="8" y="8" width="78" height="206"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="94" height="222"/>
                                     <fontDescription key="fontDescription" name="TimesNewRomanPS-BoldMT" family="Times New Roman" pointSize="40"/>
                                     <color key="textColor" red="1" green="0.20000000000000001" blue="0.086274509803921567" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
@@ -618,6 +622,10 @@
         <scene sceneID="Xa7-M7-Itt">
             <objects>
                 <viewController storyboardIdentifier="VenueTableViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="WW3-dq-N2V" customClass="VenueTableViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="fcv-Pk-Bo1"/>
+                        <viewControllerLayoutGuide type="bottom" id="Yue-H4-T8S"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="1Rh-GL-b2t">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -677,14 +685,13 @@
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="y57-UU-pr5" firstAttribute="top" secondItem="1Rh-GL-b2t" secondAttribute="top" id="1pb-fO-xjd"/>
-                            <constraint firstItem="y57-UU-pr5" firstAttribute="leading" secondItem="vEP-wb-otC" secondAttribute="leading" id="HEf-SC-WY3"/>
-                            <constraint firstItem="cR5-xA-VN9" firstAttribute="leading" secondItem="vEP-wb-otC" secondAttribute="leading" id="XeT-we-cxC"/>
-                            <constraint firstItem="vEP-wb-otC" firstAttribute="trailing" secondItem="y57-UU-pr5" secondAttribute="trailing" id="ZI3-ie-VkY"/>
-                            <constraint firstItem="vEP-wb-otC" firstAttribute="trailing" secondItem="cR5-xA-VN9" secondAttribute="trailing" id="pmj-UT-NNF"/>
+                            <constraint firstItem="y57-UU-pr5" firstAttribute="leading" secondItem="1Rh-GL-b2t" secondAttribute="leading" id="HEf-SC-WY3"/>
+                            <constraint firstItem="cR5-xA-VN9" firstAttribute="leading" secondItem="1Rh-GL-b2t" secondAttribute="leading" id="XeT-we-cxC"/>
+                            <constraint firstAttribute="trailing" secondItem="y57-UU-pr5" secondAttribute="trailing" id="ZI3-ie-VkY"/>
+                            <constraint firstAttribute="trailing" secondItem="cR5-xA-VN9" secondAttribute="trailing" id="pmj-UT-NNF"/>
                             <constraint firstItem="cR5-xA-VN9" firstAttribute="top" secondItem="1Rh-GL-b2t" secondAttribute="topMargin" id="qhi-Mm-uWR"/>
                             <constraint firstAttribute="bottom" secondItem="cR5-xA-VN9" secondAttribute="bottom" id="qwN-S8-UK0"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="vEP-wb-otC"/>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="phg-ME-v7Z" appends="YES" id="t6J-DD-wGP"/>
                         </connections>

@@ -103,29 +103,14 @@ class ProfileViewController: OverlayViewController {
       
     let nodeController = FeedCollectionNodeController(with: .mosaic, offsetBy: navBar.frame.height, allowLayoutChange: false, adjustScrollViewInset: true)
     nodeController.storyArray = stories
+    nodeController.enableEdit = true
     addChildViewController(nodeController)
     feedContainerView.addSubview(nodeController.view)
     nodeController.view.frame = feedContainerView.bounds
     nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     nodeController.didMove(toParentViewController: self)
     feedCollectionNodeController = nodeController
-
-    // Setup a Feed VC into the Container View
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FeedCollectionViewController") as? FeedCollectionViewController else {
-      CCLog.fatal("Cannot cast FeedCollectionViewController from Storyboard to FeedCollectionViewController")
-    }
-    viewController.storyQuery = query
-    viewController.storyArray = stories
-    viewController.scrollViewInset = navBar.frame.height
-
-    addChildViewController(viewController)
-    feedContainerView.addSubview(viewController.view)
-    viewController.view.frame = feedContainerView.bounds
-    viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    viewController.didMove(toParentViewController: self)
-    feedCollectionViewController = viewController
-    feedCollectionViewController?.enableEdit = true
+    
 
     activitySpinner.apply()
     query!.initStoryQueryAndSearch { (stories, error) in

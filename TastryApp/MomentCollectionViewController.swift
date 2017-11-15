@@ -213,9 +213,7 @@ class MomentCollectionViewController: UICollectionViewController {
     viewController.mediaObj = media
     viewController.editMomentObj = moment
     viewController.addToExistingStoryOnly = true
-    viewController.setTransition(presentTowards: .up, dismissTowards: .down, dismissIsDraggable: false)
     self.present(viewController, animated: true)
-
   }
 
   private func loadThumbnailImage(to cell: UICollectionViewCell? = nil, in collectionView: UICollectionView, forItemAt indexPath: IndexPath) {
