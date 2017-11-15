@@ -48,12 +48,15 @@ class DiscoverViewController: OverlayViewController {
   
 
   // MARK: - Private Instance Variables
+  private let refreshQueue = DispatchQueue(label: "Discover View Refresh Queue", qos: .userInitiated)
+  
   private var currentMapDelta = Constants.DefaultMaxDelta
   private var locationWatcher: LocationWatch.Context?
   private var lastLocation: CLLocationCoordinate2D? = nil
   private var lastMapDelta: CLLocationDegrees? = nil
   private var storyQuery: FoodieQuery?
   private var storyArray = [FoodieStory]()
+  private var storyAnnotations = [StoryMapAnnotation]()
   private var feedCollectionNodeController: FeedCollectionNodeController!
   
   private var mapNavController: MapNavController {
@@ -108,6 +111,7 @@ class DiscoverViewController: OverlayViewController {
     switch recognizer.state {
     case .began, .ended:
       locationWatcher?.pause()
+      mapNavController.mapView.setUserTrackingMode(.none, animated: false)
     default:
       break
     }
@@ -158,21 +162,27 @@ class DiscoverViewController: OverlayViewController {
     lastLocation = nil
     lastMapDelta = nil
 
-    // Base the span of the new mapView on what the mapView span currently is
-    currentMapDelta = mapNavController.exposedRegion.span.latitudeDelta
-    
-    // Take the lesser of current or default max latitude degrees
-    currentMapDelta = min(currentMapDelta, Constants.DefaultMaxDelta)
+    if mapNavController.mapView.userTrackingMode == .none {
+      // Base the span of the new mapView on what the mapView span currently is
+      currentMapDelta = mapNavController.exposedRegion.span.latitudeDelta
+      
+      // Take the lesser of current or default max latitude degrees
+      currentMapDelta = min(currentMapDelta, Constants.DefaultMaxDelta)
 
-    // Take the greater of current or default min latitude degrees
-    currentMapDelta = max(currentMapDelta, Constants.DefaultMinDelta)
+      // Take the greater of current or default min latitude degrees
+      currentMapDelta = max(currentMapDelta, Constants.DefaultMinDelta)
 
-    // Start updating location again
-    locationWatcher?.resume()
+      // Start updating location again
+      locationWatcher?.resume()
+      mapNavController.mapView.setUserTrackingMode(.follow, animated: true)
+    }
   }
   
   
   @IBAction func searchWithFilter(_ sender: UIButton) {
+    
+    locationWatcher?.pause()
+    mapNavController.mapView.setUserTrackingMode(.none, animated: false)
     
     performQuery { stories, error in
       if let error = error {
@@ -193,13 +203,16 @@ class DiscoverViewController: OverlayViewController {
         return
       }
       
-      self.displayAnnotations(onStories: stories)
-      self.feedCollectionNodeController.resetCollectionNode(with: stories)
+      self.refreshDiscoverView(onStories: stories)
     }
   }
   
   
   @IBAction func allStories(_ sender: UIButton) {
+    
+    locationWatcher?.pause()
+    mapNavController.mapView.setUserTrackingMode(.none, animated: false)
+    
     performQuery(onAllUsers: true) { stories, error in
       if let error = error {
         if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
@@ -219,8 +232,7 @@ class DiscoverViewController: OverlayViewController {
         return
       }
       
-      self.displayAnnotations(onStories: stories)
-      self.feedCollectionNodeController.resetCollectionNode(with: stories)
+      self.refreshDiscoverView(onStories: stories)
     }
   }
   
@@ -363,36 +375,60 @@ class DiscoverViewController: OverlayViewController {
   }
   
   
-  private func displayAnnotations(onStories stories: [FoodieStory]) {
-
-    DispatchQueue.main.async {
-      self.mapNavController.mapView.removeAnnotations(self.mapNavController.mapView.annotations)
-    }
+  private func refreshDiscoverView(onStories stories: [FoodieStory]) {
     
-    for story in stories {
-      _ = story.retrieveDigest(from: .both, type: .cache) { error in
-        if let error = error {
-          AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story Digest - \(error.localizedDescription)") { action in
-            CCLog.warning("Failed to retrieve Story Digest via story.retrieveDigest. Error - \(error.localizedDescription)")
-          }
-          return
-        }
+    DispatchQueue.main.async {
+      self.mapNavController.mapView.removeAnnotations(self.storyAnnotations)
+      self.storyAnnotations = [StoryMapAnnotation]()
       
-        if let venue = story.venue, venue.isDataAvailable == false {
-          CCLog.fatal("Venue \(venue.getUniqueIdentifier()) returned with no Data Available")
-        }
+      self.refreshQueue.async {
+        var outstandingStoryRetrieval = 0
         
-        guard let venue = story.venue, let location = venue.location else {
-          CCLog.warning("No Title, Venue or Location to Story. Skipping Story")
-          return
-        }
-        
-        DispatchQueue.main.async {
-          let annotation = StoryMapAnnotation(title: venue.name ?? "",
-                                              story: story,
-                                              coordinate: CLLocationCoordinate2D(latitude: location.latitude,
-                                                                                 longitude: location.longitude))
-          self.mapNavController.mapView.addAnnotation(annotation)
+        for story in stories {
+          outstandingStoryRetrieval += 1
+          
+          _ = story.retrieveDigest(from: .both, type: .cache) { error in
+            
+            self.refreshQueue.async {
+              outstandingStoryRetrieval -= 1
+            
+              if let error = error {
+                AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story Digest - \(error.localizedDescription)") { action in
+                  CCLog.warning("Failed to retrieve Story Digest via story.retrieveDigest. Error - \(error.localizedDescription)")
+                }
+                return
+              }
+            
+              if let venue = story.venue, venue.isDataAvailable == false {
+                CCLog.fatal("Venue \(venue.getUniqueIdentifier()) returned with no Data Available")
+              }
+              
+              guard let venue = story.venue, let location = venue.location else {
+                CCLog.warning("No Title, Venue or Location to Story. Skipping Story")
+                return
+              }
+              
+              let annotation = StoryMapAnnotation(title: venue.name ?? "",
+                                                  story: story,
+                                                  coordinate: CLLocationCoordinate2D(latitude: location.latitude,
+                                                                                     longitude: location.longitude))
+              
+              self.storyAnnotations.append(annotation)
+              
+              if outstandingStoryRetrieval == 0 {
+                DispatchQueue.main.async {
+                  self.mapNavController.mapView.addAnnotations(self.storyAnnotations)
+                  
+                  self.feedCollectionNodeController.resetCollectionNode(with: stories, completion: {
+                    
+                    self.mapNavController.showRegionExposed(containing: self.storyAnnotations)
+                    self.feedCollectionNodeController.scrollTo(storyIndex: 0)
+                    self.mapNavController.mapView.selectAnnotation(self.storyAnnotations[0], animated: true)
+                  })
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -569,8 +605,7 @@ class DiscoverViewController: OverlayViewController {
             }
             return
           }
-          self.displayAnnotations(onStories: stories)
-          self.feedCollectionNodeController.resetCollectionNode(with: stories)
+          self.refreshDiscoverView(onStories: stories)
         }
         
         self.startLocationWatcher()
@@ -620,9 +655,15 @@ class DiscoverViewController: OverlayViewController {
   
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-    // We always start off with Carousel View
-    if let touchForwardingView = touchForwardingView {
-      mapNavController.setExposedRect(with: touchForwardingView)
+    
+    switch feedCollectionNodeController.layoutType {
+    case .carousel:
+      if let touchForwardingView = touchForwardingView {
+        mapNavController.setExposedRect(with: touchForwardingView)
+      }
+      
+    case .mosaic:
+      mapNavController.setExposedRect(with: mosaicMapView)
     }
   }
   
@@ -636,6 +677,7 @@ class DiscoverViewController: OverlayViewController {
     super.viewDidDisappear(animated)
     // Don't even know when we'll be back. Let the GPS stop if no one else is using it
     locationWatcher?.stop()
+    mapNavController.mapView.setUserTrackingMode(.none, animated: false)
     
     // Keep track of what the location is before we disappear
     lastLocation = mapNavController.exposedRegion.center
@@ -743,7 +785,8 @@ extension DiscoverViewController: UITextFieldDelegate {
 
       // Move map to region as indicated by CLPlacemark
       self.locationWatcher?.pause()
-
+      self.mapNavController.mapView.setUserTrackingMode(.none, animated: false)
+      
       var region: MKCoordinateRegion?
 
       // The coordinate in palcemarks.region is highly inaccurate. So use the location coordinate when possible.
@@ -795,11 +838,11 @@ extension DiscoverViewController: UITextFieldDelegate {
 
 
 extension DiscoverViewController: FeedCollectionNodeDelegate {
+  
   func collectionNodeLayoutChanged(to layoutType: FeedCollectionNodeController.LayoutType) {
     switch layoutType {
     case .mosaic:
       mapNavController.setExposedRect(with: mosaicMapView)
-      break
       
     case .carousel:
       if let touchForwardingView = touchForwardingView {
@@ -807,6 +850,17 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
         mapNavController.setExposedRect(with: touchForwardingView)
       }
       mosaicLayoutChangePanRecognizer.isEnabled = true
+    }
+  }
+  
+  
+  func collectionNodeDidEndDecelerating() {
+    let storyIndex = feedCollectionNodeController.highlightedStoryIndex
+
+    for annotation in mapNavController.mapView.annotations {
+      if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
+        mapNavController.selectInExposedRect(annotation: storyAnnotation)
+      }
     }
   }
 }

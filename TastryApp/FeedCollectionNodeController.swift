@@ -15,8 +15,7 @@ import AsyncDisplayKit
   // FeedCollectionNodeController needs more data
   @objc optional func collectionNodeNeedsNextDataPage(for context: AnyObject)
   
-  // FeedCollectionNodeController displaying Stories with indexes. Array[0] is guarenteed to be the highest item in the CollectionNode's view
-  @objc optional func collectionNodeDisplayingStories(with indexes: [Int])
+  @objc optional func collectionNodeDidEndDecelerating()
   
   @objc optional func collectionNodeLayoutChanged(to layoutType: FeedCollectionNodeController.LayoutType)
 }
@@ -41,6 +40,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     static let DefaultGuestimatedCellNodeWidth: CGFloat = 150.0
     static let DefaultFeedNodeCornerRadiusFraction:CGFloat = 0.05
     static let MosaicPullTranslationForChange: CGFloat = -80
+    static let MosaicHighlightThresholdPoints: CGFloat = 8.0
   }
   
   
@@ -50,6 +50,71 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   var delegate: FeedCollectionNodeDelegate?
   var storyArray = [FoodieStory]()
   
+  var layoutType: LayoutType {
+    if collectionNode.collectionViewLayout is CarouselCollectionViewLayout {
+      return .carousel
+    }
+    else if collectionNode.collectionViewLayout is MosaicCollectionViewLayout {
+      return .mosaic
+    }
+    else {
+      CCLog.fatal("Did not recognize CollectionNode Layout Type")
+    }
+  }
+  
+  var highlightedStoryIndex: Int {
+    
+    if let layout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
+      
+      let cardWidth = layout.itemSize.width + layout.minimumLineSpacing
+      let offset = collectionNode.contentOffset.x
+      let indexPathItemNumber = Int(floor((offset - cardWidth / 2) / cardWidth) + 1)
+      return toStoryIndex(from: IndexPath(item: indexPathItemNumber, section: 0))
+      
+    } else if collectionNode.collectionViewLayout is MosaicCollectionViewLayout {
+    
+      var highestIndexPath: IndexPath?
+      var thresholdIndexPath: IndexPath?
+      var highestFrameYvalue: CGFloat = collectionNode.contentsRect.maxY
+      
+      for visibleIndexPath in collectionNode.indexPathsForVisibleItems {
+        guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: visibleIndexPath) else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            CCLog.assert("Cannot find Layout Attribute for item at IndexPath Section: \(visibleIndexPath.section) Row: \(visibleIndexPath.row)")
+          }
+          break
+        }
+        
+        if layoutAttributes.frame.minY < highestFrameYvalue {
+          highestIndexPath = visibleIndexPath
+          highestFrameYvalue = layoutAttributes.frame.minY
+        }
+        if layoutAttributes.frame.minY > collectionNode.bounds.minY, layoutAttributes.frame.minY < collectionNode.bounds.minY + Constants.MosaicHighlightThresholdPoints {
+          thresholdIndexPath = visibleIndexPath
+        }
+      }
+      
+      if let thresholdIndexPath = thresholdIndexPath {
+        return toStoryIndex(from: thresholdIndexPath)
+      } else if let highestIndexPath = highestIndexPath {
+        return toStoryIndex(from: highestIndexPath)
+      } else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.assert("No threadshold nor highest Index Path")
+        }
+        return 0
+      }
+    } else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.fatal("Did not recognize CollectionNode Layout Type")
+      }
+      return 0
+    }
+  }
+  
+//  var fullyVisibleStoryIndexes
+//  var visibleStoryIndexes
+  
   
   
   // MARK: - Private Instance Variable
@@ -57,7 +122,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   private var collectionNode: ASCollectionNode
   private var allowLayoutChange: Bool
   private var allPagesFetched: Bool
-  private var currentCard = 0
   
   
   
@@ -119,6 +183,17 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
 
   
   
+  // MARK: - Private Instance Function
+  private func toIndexPath(from storyIndex: Int) -> IndexPath {
+    return IndexPath(row: storyIndex, section: 0)
+  }
+  
+  private func toStoryIndex(from indexPath: IndexPath) -> Int {
+    return indexPath.row
+  }
+  
+  
+  
   // MARK: - Public Instance Function
   
   // More Data Fetched, update ColllectionNode
@@ -142,10 +217,10 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   
   // If the parent view have fetched a completly different list of Stories, start from scratch
-  func resetCollectionNode(with stories: [FoodieStory]) {
+  func resetCollectionNode(with stories: [FoodieStory], completion: (() -> Void)? = nil) {
     storyArray = stories
     allPagesFetched = false
-    collectionNode.reloadData()
+    collectionNode.reloadData(completion: completion)
   }
 
   
@@ -185,6 +260,16 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     collectionNode.relayoutItems()
     
     delegate?.collectionNodeLayoutChanged?(to: layoutType)
+  }
+  
+  
+  func scrollTo(storyIndex: Int) {
+    switch layoutType {
+    case .carousel:
+      collectionNode.scrollToItem(at: toIndexPath(from: storyIndex), at: .centeredHorizontally, animated: true)
+    case .mosaic:
+      collectionNode.scrollToItem(at: toIndexPath(from: storyIndex), at: .top, animated: true)
+    }
   }
 }
 
@@ -294,7 +379,10 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       return layout.calculateConstrainedSize(for: collectionNode.bounds)
     }
     else {
-      CCLog.fatal("Did not recognize CollectionNode Layout Type")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.fatal("Did not recognize CollectionNode Layout Type")
+      }
+      return ASSizeRangeZero
     }
   }
   
@@ -307,7 +395,10 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       return layout.calculateSectionInset(for: collectionView.bounds, at: section)
     }
     else {
-      CCLog.fatal("Did not recognize CollectionNode Layout Type")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.fatal("Did not recognize CollectionNode Layout Type")
+      }
+      return UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
     }
   }
   
@@ -328,13 +419,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-    if let layout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
-      let cardWidth = layout.itemSize.width + layout.minimumLineSpacing
-      let offset = scrollView.contentOffset.x
-      currentCard = Int(floor((offset - cardWidth / 2) / cardWidth) + 1)
-      
-      CCLog.verbose("Current Card Number \(currentCard)")
-    }
+    delegate?.collectionNodeDidEndDecelerating?()
   }
   
 }
