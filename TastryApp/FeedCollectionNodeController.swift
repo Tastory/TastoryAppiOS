@@ -73,7 +73,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     }
   }
   
-  var highlightedStoryIndex: Int {
+  var highlightedStoryIndex: Int? {
     
     if let layout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
       
@@ -107,15 +107,15 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
         return toStoryIndex(from: highlightIndexPath)
       } else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-          CCLog.assert("No Highlight Index Path")
+          CCLog.warning("No Highlight Index Path")
         }
-        return 0
+        return nil
       }
     } else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
         CCLog.fatal("Did not recognize CollectionNode Layout Type")
       }
-      return 0
+      return nil
     }
   }
   

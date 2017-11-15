@@ -868,10 +868,11 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
   
   func collectionNodeDidEndDecelerating() {
     if feedCollectionNodeController.layoutType == .carousel {
-      let storyIndex = feedCollectionNodeController.highlightedStoryIndex
-      for annotation in mapNavController.mapView.annotations {
-        if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
-          mapNavController.selectInExposedRect(annotation: storyAnnotation)
+      if let storyIndex = feedCollectionNodeController.highlightedStoryIndex {
+        for annotation in mapNavController.mapView.annotations {
+          if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
+            mapNavController.selectInExposedRect(annotation: storyAnnotation)
+          }
         }
       }
     }
@@ -880,10 +881,11 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
   
   func collectionNodeScrollViewDidEndDragging() {
     if feedCollectionNodeController.layoutType == .mosaic {
-      let storyIndex = feedCollectionNodeController.highlightedStoryIndex
-      for annotation in mapNavController.mapView.annotations {
-        if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
-          mapNavController.selectInExposedRect(annotation: storyAnnotation)
+      if let storyIndex = feedCollectionNodeController.highlightedStoryIndex {
+        for annotation in mapNavController.mapView.annotations {
+          if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
+            mapNavController.selectInExposedRect(annotation: storyAnnotation)
+          }
         }
       }
     }
