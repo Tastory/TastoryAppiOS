@@ -17,6 +17,8 @@ import AsyncDisplayKit
   
   @objc optional func collectionNodeDidEndDecelerating()
   
+  @objc optional func collectionNodeScrollViewDidEndDragging()
+  
   @objc optional func collectionNodeLayoutChanged(to layoutType: FeedCollectionNodeController.LayoutType)
 }
 
@@ -73,9 +75,8 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       
     } else if collectionNode.collectionViewLayout is MosaicCollectionViewLayout {
     
-      var highestIndexPath: IndexPath?
-      var thresholdIndexPath: IndexPath?
-      var highestFrameYvalue: CGFloat = collectionNode.contentsRect.maxY
+      var highlightIndexPath: IndexPath?
+      var smallestPositiveMidYDifference: CGFloat = collectionNode.bounds.height
       
       for visibleIndexPath in collectionNode.indexPathsForVisibleItems {
         guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: visibleIndexPath) else {
@@ -85,22 +86,19 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
           break
         }
         
-        if layoutAttributes.frame.minY < highestFrameYvalue {
-          highestIndexPath = visibleIndexPath
-          highestFrameYvalue = layoutAttributes.frame.minY
-        }
-        if layoutAttributes.frame.minY > collectionNode.bounds.minY, layoutAttributes.frame.minY < collectionNode.bounds.minY + Constants.MosaicHighlightThresholdPoints {
-          thresholdIndexPath = visibleIndexPath
+        let midYDifference = layoutAttributes.frame.midY - collectionNode.bounds.minY
+        
+        if midYDifference > 0, midYDifference < smallestPositiveMidYDifference {
+          highlightIndexPath = visibleIndexPath
+          smallestPositiveMidYDifference = midYDifference
         }
       }
       
-      if let thresholdIndexPath = thresholdIndexPath {
-        return toStoryIndex(from: thresholdIndexPath)
-      } else if let highestIndexPath = highestIndexPath {
-        return toStoryIndex(from: highestIndexPath)
+      if let highlightIndexPath = highlightIndexPath {
+        return toStoryIndex(from: highlightIndexPath)
       } else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-          CCLog.assert("No threadshold nor highest Index Path")
+          CCLog.assert("No Highlight Index Path")
         }
         return 0
       }
@@ -420,8 +418,12 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-    CCLog.verbose("ScrollViewDidEndDecelerating")
     delegate?.collectionNodeDidEndDecelerating?()
+  }
+  
+  
+  func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    delegate?.collectionNodeScrollViewDidEndDragging?()
   }
   
 }

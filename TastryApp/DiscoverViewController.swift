@@ -848,16 +848,30 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       }
       mapNavController.setExposedRect(with: carouselMapView)
       mosaicLayoutChangePanRecognizer.isEnabled = true
+      mapNavController.showRegionExposed(containing: storyAnnotations)
     }
   }
   
   
   func collectionNodeDidEndDecelerating() {
-    let storyIndex = feedCollectionNodeController.highlightedStoryIndex
-
-    for annotation in mapNavController.mapView.annotations {
-      if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
-        mapNavController.selectInExposedRect(annotation: storyAnnotation)
+    if feedCollectionNodeController.layoutType == .carousel {
+      let storyIndex = feedCollectionNodeController.highlightedStoryIndex
+      for annotation in mapNavController.mapView.annotations {
+        if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
+          mapNavController.selectInExposedRect(annotation: storyAnnotation)
+        }
+      }
+    }
+  }
+  
+  
+  func collectionNodeScrollViewDidEndDragging() {
+    if feedCollectionNodeController.layoutType == .mosaic {
+      let storyIndex = feedCollectionNodeController.highlightedStoryIndex
+      for annotation in mapNavController.mapView.annotations {
+        if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
+          mapNavController.selectInExposedRect(annotation: storyAnnotation)
+        }
       }
     }
   }
