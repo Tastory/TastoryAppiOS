@@ -42,7 +42,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     static let DefaultGuestimatedCellNodeWidth: CGFloat = 150.0
     static let DefaultFeedNodeCornerRadiusFraction:CGFloat = 0.05
     static let MosaicPullTranslationForChange: CGFloat = -80
-    static let MosaicHighlightThresholdPoints: CGFloat = 8.0
+    static let MosaicHighlightThresholdOffset: CGFloat = 20
   }
   
   
@@ -76,7 +76,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     } else if collectionNode.collectionViewLayout is MosaicCollectionViewLayout {
     
       var highlightIndexPath: IndexPath?
-      var smallestPositiveMidYDifference: CGFloat = collectionNode.bounds.height
+      var smallestPositiveMidYDifference: CGFloat = collectionNode.bounds.height - Constants.MosaicHighlightThresholdOffset
       
       for visibleIndexPath in collectionNode.indexPathsForVisibleItems {
         guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: visibleIndexPath) else {
@@ -86,7 +86,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
           break
         }
         
-        let midYDifference = layoutAttributes.frame.midY - collectionNode.bounds.minY
+        let midYDifference = layoutAttributes.frame.midY - (collectionNode.bounds.minY + Constants.MosaicHighlightThresholdOffset)
         
         if midYDifference > 0, midYDifference < smallestPositiveMidYDifference {
           highlightIndexPath = visibleIndexPath
