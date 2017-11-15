@@ -135,6 +135,61 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   }
   
   
+  private func displayStoryEntry(_ story: FoodieStory) {
+    FoodieStory.setCurrentStory(to: story)
+    
+    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")
+      }
+      return
+    }
+    
+    guard let mapNavController = navigationController as? MapNavController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("No Navigation Controller or not of MapNavConveroller")
+      }
+      return
+    }
+    
+    viewController.workingStory = story
+    viewController.restoreStoryDelegate = self
+    viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: true)
+    
+    DispatchQueue.main.async {
+      mapNavController.delegate = viewController
+      mapNavController.pushViewController(viewController, animated: true)
+    }
+  }
+  
+  
+  @objc private func editStory(_ sender: TextButtonNode) {
+    let story = storyArray[sender.tag]
+    lastIndexPath = IndexPath(row: sender.tag, section: 0)
+    
+    // Stop all prefetches but the story being viewed
+    FoodieFetch.global.cancelAllBut(for: story)
+    
+    if(FoodieStory.currentStory != nil) {
+      // display the the discard dialog
+      StorySelector.showStoryDiscardDialog(to: self) {
+        FoodieStory.cleanUpDraft() { error in
+          if let error = error  {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+              CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
+            }
+            return
+          }
+          self.displayStoryEntry(story)
+        }
+      }
+    } else {
+      displayStoryEntry(story)
+    }
+  }
+  
+  
   
   // MARK: - Node Controller Lifecycle
   
@@ -292,10 +347,16 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
 
   func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
     let story = storyArray[indexPath.row]
-    let cellNode = FeedCollectionCellNode(story: story)
+    let cellNode = FeedCollectionCellNode(story: story, editEnable: false) //enableEdit)
     cellNode.cornerRadius = Constants.DefaultGuestimatedCellNodeWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
-    cellNode.backgroundColor = UIColor.gray
+    cellNode.backgroundColor = UIColor.lightGray
     cellNode.placeholderEnabled = true
+
+    if enableEdit {
+      cellNode.isLayerBacked = false
+      cellNode.coverEditButton.tag = indexPath.row
+      cellNode.coverEditButton.addTarget(self, action: #selector(editStory(_:)), forControlEvents: .touchUpInside)
+    }
     return { return cellNode }
   }
 }
@@ -334,9 +395,30 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       return
     }
     
-    viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
-    mapNavController.delegate = viewController
-    mapNavController.pushViewController(viewController, animated: true)
+    var shouldRetrieveDigest = false
+    
+    story.executeForDigest(ifNotReady: {
+      CCLog.debug("Digest \(story.getUniqueIdentifier()) not yet loaded")
+      shouldRetrieveDigest = true  // Don't execute the retrieve here. This is actually executed inside of a mutex
+      
+    }, whenReady: {
+      CCLog.debug("Digest \(story.getUniqueIdentifier()) ready to display")
+      DispatchQueue.main.async {
+        viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
+        mapNavController.delegate = viewController
+        mapNavController.pushViewController(viewController, animated: true)
+      }
+    })
+    
+    if shouldRetrieveDigest {
+      let digestOperation = StoryOperation(with: .digest, on: story, completion: nil)
+      FoodieFetch.global.queue(digestOperation, at: .high)
+    } else {
+      CCLog.debug("Direct display for Story \(story.getUniqueIdentifier())")
+      viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
+      mapNavController.delegate = viewController
+      mapNavController.pushViewController(viewController, animated: true)
+    }
     
     // Scroll the selected story to top to make sure it's not off bounds to reduce animation artifact
     guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: indexPath) else {
@@ -420,21 +502,52 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+//    let indexPaths = collectionNode.indexPathsForVisibleItems
+//    
+//    for indexPath in indexPaths {
+//      let storyIndex = toStoryIndex(from: indexPath)
+//      let story = storyArray[storyIndex]
+//      let digestOperation = StoryOperation(with: .digest, on: story, completion: nil)
+//      FoodieFetch.global.queue(digestOperation, at: .low)
+//    }
     delegate?.collectionNodeDidEndDecelerating?()
   }
   
   
   func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+//    let indexPaths = collectionNode.indexPathsForVisibleItems
+//
+//    for indexPath in indexPaths {
+//      let storyIndex = toStoryIndex(from: indexPath)
+//      let story = storyArray[storyIndex]
+//      let digestOperation = StoryOperation(with: .digest, on: story, completion: nil)
+//      FoodieFetch.global.queue(digestOperation, at: .low)
+//    }
     delegate?.collectionNodeScrollViewDidEndDragging?()
   }
   
 }
 
 
-
 extension FeedCollectionNodeController: MosaicCollectionViewLayoutDelegate {
   internal func collectionView(_ collectionView: UICollectionView, layout: MosaicCollectionViewLayout, originalItemSizeAtIndexPath: IndexPath) -> CGSize {
     //CCLog.verbose("collectionView(:MosaicLayout:originalItemSizeAt:\(originalItemSizeAtIndexPath.item))")
     return layout.calculateConstrainedSize(for: collectionNode.bounds).max
+  }
+}
+
+
+extension FeedCollectionNodeController: RestoreStoryDelegate {
+  func updateStory(_ story: FoodieStory) {
+    
+    guard let lastIndexPath = lastIndexPath else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.assert("The lastIndexPath is nil. This value should have been assigned before entering edit")
+      }
+      return
+    }
+    
+    storyArray[lastIndexPath.row] = story
+    collectionNode.reloadItems(at: [lastIndexPath])
   }
 }

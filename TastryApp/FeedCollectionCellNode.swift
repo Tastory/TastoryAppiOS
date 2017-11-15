@@ -27,24 +27,27 @@ class FeedCollectionCellNode: ASCellNode {
   
   
   // MARK: - Public Instance Variable
-  var isEditEnabled = false
+  let coverEditButton: TextButtonNode
+  var isEditEnabled: Bool
+  
   
   
   // MARK: - Private Instance Variable
   private let coverImageNode: ASNetworkImageNode
   private var coverTitleNode: ASTextNode?
   private var coverTitleBackgroundNode: ASDisplayNode?
-  private let coverEditButton: ASTextNode
+  
   
   
   // MARK: - Public Instance Function
-  init(story: FoodieStory) {
+  init(story: FoodieStory, editEnable: Bool) {
     guard let thumbnailFileName = story.thumbnailFileName else {
       CCLog.fatal("No Thumbnail Filename in Story \(story.getUniqueIdentifier())")
     }
     
     self.coverImageNode = ASNetworkImageNode()
-    self.coverEditButton = ASTextNode()
+    self.coverEditButton = TextButtonNode()
+    self.isEditEnabled = editEnable
     super.init()
     
     coverImageNode.url = FoodieFileObject.getS3URL(for: thumbnailFileName)
@@ -52,8 +55,14 @@ class FeedCollectionCellNode: ASCellNode {
     coverImageNode.placeholderEnabled = true
     coverImageNode.isLayerBacked = true
     
-    coverEditButton.attributedText = NSAttributedString(string: "✏️")
-    coverEditButton.maximumNumberOfLines = 1
+    if editEnable {
+      guard let coverFont = UIFont(name: Constants.CoverTitleFontName, size: 20) else {
+        CCLog.fatal("Cannot create UIFont with name \(Constants.CoverTitleFontName)")
+      }
+      coverEditButton.attributedText = NSAttributedString(string: "✏️", attributes: [.font : coverFont])
+      coverEditButton.maximumNumberOfLines = 1
+      coverEditButton.isLayerBacked = !editEnable
+    }
     
     if let coverTitle = story.title {
       coverTitleNode = ASTextNode()

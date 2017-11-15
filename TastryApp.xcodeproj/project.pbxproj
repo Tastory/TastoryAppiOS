@@ -72,6 +72,7 @@
 		8CAA445F1F8C102C0053CD4F /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAA445E1F8C102C0053CD4F /* ProfileViewController.swift */; };
 		8CAA44611F8C12D60053CD4F /* LogOutDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */; };
 		8CAE5BFE1FBC23040069C582 /* Compose.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CAE5BFD1FBC23040069C582 /* Compose.storyboard */; };
+		8CAE5C001FBC403E0069C582 /* TextButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAE5BFF1FBC403E0069C582 /* TextButtonNode.swift */; };
 		8CBBED0F1F9D73FB008D4B12 /* ProfileTableEmailFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBBED0E1F9D73FB008D4B12 /* ProfileTableEmailFooterView.swift */; };
 		8CBBED111F9D740F008D4B12 /* ProfileTableEmailFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CBBED101F9D740F008D4B12 /* ProfileTableEmailFooterView.xib */; };
 		8CBBED151F9D7E94008D4B12 /* ProfileTableSaveFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBBED141F9D7E94008D4B12 /* ProfileTableSaveFooterView.swift */; };
@@ -211,6 +212,7 @@
 		8CAA445E1F8C102C0053CD4F /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutDismiss.swift; sourceTree = "<group>"; };
 		8CAE5BFD1FBC23040069C582 /* Compose.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Compose.storyboard; sourceTree = "<group>"; };
+		8CAE5BFF1FBC403E0069C582 /* TextButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextButtonNode.swift; sourceTree = "<group>"; };
 		8CBBED0E1F9D73FB008D4B12 /* ProfileTableEmailFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableEmailFooterView.swift; sourceTree = "<group>"; };
 		8CBBED101F9D740F008D4B12 /* ProfileTableEmailFooterView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileTableEmailFooterView.xib; sourceTree = "<group>"; };
 		8CBBED141F9D7E94008D4B12 /* ProfileTableSaveFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableSaveFooterView.swift; sourceTree = "<group>"; };
@@ -390,6 +392,7 @@
 				8CE49EB61F64CA06007278C1 /* ImagePickerButton.swift */,
 				8CE49EB01F637918007278C1 /* ExpandButton.swift */,
 				8CE9718E1F9D54AE003D526F /* ProfileImageButton.swift */,
+				8CAE5BFF1FBC403E0069C582 /* TextButtonNode.swift */,
 			);
 			name = Buttons;
 			sourceTree = "<group>";
@@ -1017,6 +1020,7 @@
 				8C7EBAC61F9D477C004E43D8 /* PasswordViewController.swift in Sources */,
 				8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */,
 				8C1ED6F21F5D15A300A8CC94 /* ThumbnailFrameLayer.swift in Sources */,
+				8CAE5C001FBC403E0069C582 /* TextButtonNode.swift in Sources */,
 				8CD02DB51FB8245600768CF8 /* MosaicCollectionViewLayout.swift in Sources */,
 				8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */,
 				8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */,

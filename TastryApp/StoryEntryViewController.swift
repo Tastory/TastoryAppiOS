@@ -51,7 +51,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
   var containerVC: MarkupReturnDelegate?
-  var RestoreStoryDelegate: RestoreStoryDelegate?
+  var restoreStoryDelegate: RestoreStoryDelegate?
   
   // MARK: - Private Instance Variables
   fileprivate var momentViewController = MomentCollectionViewController()
@@ -130,7 +130,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         }
 
         if(story.isEditStory) {
-          self.RestoreStoryDelegate?.updateStory(story)
+          self.restoreStoryDelegate?.updateStory(story)
         }
 
         self.workingStory = nil
@@ -197,7 +197,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
           }
 
           if(story.isEditStory) {
-            self.RestoreStoryDelegate?.updateStory(story)
+            self.restoreStoryDelegate?.updateStory(story)
           }
 
           self.workingStory = nil

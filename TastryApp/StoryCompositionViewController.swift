@@ -12,9 +12,9 @@ class StoryCompositionViewController: OverlayViewController {
   
   var staticTableViewController: StoryEntryViewController?
 
-  var RestoreStoryDelegate: RestoreStoryDelegate? {
+  var restoreStoryDelegate: RestoreStoryDelegate? {
     didSet {
-      staticTableViewController?.RestoreStoryDelegate = RestoreStoryDelegate
+      staticTableViewController?.restoreStoryDelegate = restoreStoryDelegate
     }
   }
 
@@ -52,7 +52,7 @@ class StoryCompositionViewController: OverlayViewController {
     viewController.markupMoment = markupMoment
     viewController.containerVC = self
     viewController.parentNavController = navigationController
-    viewController.RestoreStoryDelegate = RestoreStoryDelegate
+    viewController.restoreStoryDelegate = restoreStoryDelegate
     
     addChildViewController(viewController)
     view.addSubview(viewController.view)
