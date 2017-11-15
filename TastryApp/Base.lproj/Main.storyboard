@@ -75,9 +75,6 @@
                             <view hidden="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q0a-tw-wYK" userLabel="Obstructed Map View">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="58"/>
                             </view>
-                            <view hidden="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8jX-dd-Jb6" userLabel="Mosaic Map View">
-                                <rect key="frame" x="0.0" y="58" width="375" height="162"/>
-                            </view>
                             <view hidden="YES" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MLY-sg-NLb" userLabel="Carousel Map View">
                                 <rect key="frame" x="0.0" y="58" width="375" height="359"/>
                             </view>
@@ -87,6 +84,14 @@
                                 <gestureRecognizers/>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="Sj4-40-4nO" appends="YES" id="LAV-gc-OIe"/>
+                                </connections>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8jX-dd-Jb6" userLabel="Mosaic Map View">
+                                <rect key="frame" x="0.0" y="58" width="375" height="162"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="t9x-jg-cUa" appends="YES" id="m4O-H5-V30"/>
                                 </connections>
                             </view>
                             <view multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QC2-XK-jf4" customClass="TouchForwardingView" customModule="TastryApp" customModuleProvider="target">
@@ -209,6 +214,7 @@
                     <connections>
                         <outlet property="allStoriesButton" destination="8lR-o3-9WI" id="nPe-7b-jkM"/>
                         <outlet property="cameraButton" destination="m1j-Ft-7un" id="5xu-my-dGT"/>
+                        <outlet property="carouselLayoutChangeTapRecognizer" destination="t9x-jg-cUa" id="hnr-jt-DSA"/>
                         <outlet property="carouselMapView" destination="MLY-sg-NLb" id="fmY-nc-zXA"/>
                         <outlet property="doubleTapGestureRecognizer" destination="lh5-20-bcQ" id="XwI-na-Qw5"/>
                         <outlet property="draftButton" destination="1zZ-dd-fcW" id="xkV-cw-rjf"/>
@@ -250,6 +256,11 @@
                         <action selector="mosaicLayoutChangeAction:" destination="BYZ-38-t0r" id="Vi4-hJ-iQQ"/>
                     </connections>
                 </panGestureRecognizer>
+                <tapGestureRecognizer id="t9x-jg-cUa">
+                    <connections>
+                        <action selector="carouselLayoutChangeAction:" destination="BYZ-38-t0r" id="6tB-FM-gDS"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-1162.4000000000001" y="-1352.9556650246307"/>
         </scene>

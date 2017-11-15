@@ -42,7 +42,7 @@ class DiscoverViewController: OverlayViewController {
     static let DefaultMinDelta: CLLocationDegrees = 0.005
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
     
-    static let CarouselPullTranslationForChange: CGFloat = -50.0
+    static let PullTranslationForChange: CGFloat = 50.0
   }
 
   
@@ -73,6 +73,7 @@ class DiscoverViewController: OverlayViewController {
   @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer!
   @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer!
   @IBOutlet weak var mosaicLayoutChangePanRecognizer: UIPanGestureRecognizer!
+  @IBOutlet weak var carouselLayoutChangeTapRecognizer: UITapGestureRecognizer!
   
   @IBOutlet weak var locationField: UITextField!
   @IBOutlet weak var draftButton: UIButton!
@@ -265,8 +266,8 @@ class DiscoverViewController: OverlayViewController {
       fallthrough
     case.changed:
       if directionalTranslation < 0 {
-        if directionalTranslation < Constants.CarouselPullTranslationForChange {
-          CCLog.info("FeedCollectionNode should change layout to Vertical")
+        if directionalTranslation < -Constants.PullTranslationForChange {
+          CCLog.info("FeedCollectionNode should change layout to Mosaic")
           touchForwardingView?.isHidden = true
           mosaicLayoutChangePanRecognizer.isEnabled = false
           feedCollectionNodeController.changeLayout(to: .mosaic, animated: true)
@@ -278,6 +279,12 @@ class DiscoverViewController: OverlayViewController {
     default:
       mosaicLayoutChangePanRecognizer.view?.layer.transform = CATransform3DIdentity
     }
+  }
+  
+  
+  @IBAction func carouselLayoutChangeAction(_ tapGesture: UITapGestureRecognizer) {
+    carouselLayoutChangeTapRecognizer.isEnabled = false
+    feedCollectionNodeController.changeLayout(to: .carousel, animated: true)
   }
   
   
@@ -478,6 +485,8 @@ class DiscoverViewController: OverlayViewController {
     nodeController.didMove(toParentViewController: self)
     feedCollectionNodeController = nodeController
     nodeController.delegate = self
+    
+    carouselLayoutChangeTapRecognizer.isEnabled = false
     
     // Initialize Location Watch manager
     LocationWatch.initializeGlobal()
@@ -841,6 +850,9 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
     switch layoutType {
     case .mosaic:
       mapNavController.setExposedRect(with: mosaicMapView)
+      carouselLayoutChangeTapRecognizer.isEnabled = true
+      view.insertSubview(mosaicMapView, aboveSubview: touchForwardingView!)
+      
       
     case .carousel:
       if let touchForwardingView = touchForwardingView {
@@ -849,6 +861,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       mapNavController.setExposedRect(with: carouselMapView)
       mosaicLayoutChangePanRecognizer.isEnabled = true
       mapNavController.showRegionExposed(containing: storyAnnotations)
+      view.insertSubview(touchForwardingView!, aboveSubview: mosaicMapView)
     }
   }
   
