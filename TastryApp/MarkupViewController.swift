@@ -66,6 +66,8 @@ class MarkupViewController: OverlayViewController {
   
   fileprivate let jotViewController = JotViewController()
   
+  fileprivate var shouldRelayoutSubview = true
+  
   
   // MARK: - IBOutlets
   @IBOutlet weak var saveButton: UIButton?
@@ -80,6 +82,7 @@ class MarkupViewController: OverlayViewController {
   @IBOutlet weak var soundButton: UIButton!
   @IBOutlet weak var colorSlider: UISlider!
   @IBOutlet weak var sizeSlider: UISlider!
+  @IBOutlet weak var mediaView: UIView!
   
   
   // MARK: - IBActions
@@ -524,96 +527,107 @@ class MarkupViewController: OverlayViewController {
     jotViewController.fitOriginalFontSizeToViewWidth = true
     jotViewController.textAlignment = .left
     jotViewController.drawingColor = UIColor.cyan
+    jotViewController.view.backgroundColor = .clear
     jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                              andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
-
-    addChildViewController(jotViewController)
-    view.addSubview(jotViewController.view)
-    view.sendSubview(toBack: jotViewController.view)
-    jotViewController.didMove(toParentViewController: self)
-    jotViewController.view.frame = view.bounds
-
-    // load up jotdata 
-    displayJotMarkups()
+  }
+  
+  
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
     
-    // This section is for initiating the background Image or Video
-    if mediaObj == nil {
-      internalErrorDialog()
-      CCLog.assert("Unexpected, mediaObj == nil ")
-      return
-    } else {
-      mediaObject = mediaObj!
-    }
-    
-    guard let mediaType = mediaObject.mediaType else {
-      internalErrorDialog()
-      CCLog.assert("Unexpected, mediaType == nil")
-      return
-    }
-    
-    // Display the photo
-    if mediaType == .photo {
+    if shouldRelayoutSubview {
+      shouldRelayoutSubview = false
       
-      // Hide the Sound button
-      soundButton.isHidden = true
+      addChildViewController(jotViewController)
+      jotViewController.view.frame = mediaView.bounds
+      mediaView.addSubview(jotViewController.view)
+      jotViewController.didMove(toParentViewController: self)
+      jotViewController.view.layoutIfNeeded()
+      displayJotMarkups()
       
-      photoView = UIImageView(frame: view.bounds)
       
-      guard let imageView = photoView else {
-        displayErrorDialog()
-        CCLog.assert("photoView = UIImageView(frame: _) failed")
+      // This section is for initiating the background Image or Video
+      if mediaObj == nil {
+        internalErrorDialog()
+        CCLog.assert("Unexpected, mediaObj == nil ")
+        return
+      } else {
+        mediaObject = mediaObj!
+      }
+      
+      guard let mediaType = mediaObject.mediaType else {
+        internalErrorDialog()
+        CCLog.assert("Unexpected, mediaType == nil")
         return
       }
       
-      guard let imageBuffer = mediaObject.imageMemoryBuffer else {
-        displayErrorDialog()
-        CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
-        return
-      }
-      
-      imageView.contentMode = .scaleAspectFill
-      imageView.image = UIImage(data: imageBuffer)
-      view.addSubview(imageView)
-      view.sendSubview(toBack: imageView)
-      
-    // Loop the video
-    } else if mediaType == .video {
-      
-      // Make sure the Sound button is shown
-      soundButton.isHidden = false
-      
-      guard let videoURL = (mediaObject.videoExportPlayer?.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.fatal("Cannot get at AVURLAsset.url")
+      // Display the photo
+      if mediaType == .photo {
+        
+        // Hide the Sound button
+        soundButton.isHidden = true
+        
+        photoView = UIImageView(frame: mediaView.bounds)
+        
+        guard let imageView = photoView else {
+          displayErrorDialog()
+          CCLog.assert("photoView = UIImageView(frame: _) failed")
+          return
         }
-        return
-      }
+        
+        guard let imageBuffer = mediaObject.imageMemoryBuffer else {
+          displayErrorDialog()
+          CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
+          return
+        }
+        
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = UIImage(data: imageBuffer)
+        mediaView.addSubview(imageView)
+        mediaView.sendSubview(toBack: imageView)
+        
+      // Loop the video
+      } else if mediaType == .video {
+        
+        // Make sure the Sound button is shown
+        soundButton.isHidden = false
+        
+        guard let videoURL = (mediaObject.videoExportPlayer?.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("Cannot get at AVURLAsset.url")
+          }
+          return
+        }
 
-      avPlayer = AVQueuePlayer()
-      avPlayer?.volume = 1.0
-      soundOn = true
-      avPlayer?.allowsExternalPlayback = false
-      avPlayerLayer = AVPlayerLayer(player: avPlayer)
-      avPlayerLayer!.frame = self.view.bounds
-      avPlayerItem = AVPlayerItem(url: videoURL)
-      avPlayerLooper = AVPlayerLooper(player: avPlayer!, templateItem: avPlayerItem!)
+        avPlayer = AVQueuePlayer()
+        avPlayer?.volume = 1.0
+        soundOn = true
+        avPlayer?.allowsExternalPlayback = false
+        avPlayerLayer = AVPlayerLayer(player: avPlayer)
+        avPlayerLayer!.frame = mediaView.bounds
+        avPlayerItem = AVPlayerItem(url: videoURL)
+        avPlayerLooper = AVPlayerLooper(player: avPlayer!, templateItem: avPlayerItem!)
+        
+        videoView = UIView(frame: mediaView.bounds)
+        videoView!.layer.addSublayer(avPlayerLayer!)
+        mediaView.addSubview(videoView!)
+        mediaView.sendSubview(toBack: videoView!)
+        avPlayer!.play() // TODO: There is some lag with a blank white screen before video starts playing...
       
-      videoView = UIView(frame: self.view.bounds)
-      videoView!.layer.addSublayer(avPlayerLayer!)
-      view.addSubview(videoView!)
-      view.sendSubview(toBack: videoView!)
-      avPlayer!.play() // TODO: There is some lag with a blank white screen before video starts playing...
-    
-    // No image nor video to work on, Fatal
-    } else {
-      CCLog.fatal("Both photoToMarkup and videoToMarkupURL are nil")
+      // No image nor video to work on, Fatal
+      } else {
+        CCLog.fatal("Both photoToMarkup and videoToMarkupURL are nil")
+      }
     }
   }
-
+  
+  
   override func viewWillDisappear(_ animated: Bool) {
     view.endEditing(true)  // Force clear the keyboard
   }
 
+  
   override var prefersStatusBarHidden: Bool {
     return true
   }

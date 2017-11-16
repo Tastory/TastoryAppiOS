@@ -36,7 +36,7 @@ class StoryViewController: OverlayViewController {
   fileprivate var photoTimeRemaining: TimeInterval = 0.0
   fileprivate var soundOn: Bool = true
   fileprivate var isPaused: Bool = false
-  
+  private var viewShouldRelayout: Bool = true
   
   
   // MARK: - IBOutlets
@@ -522,37 +522,48 @@ class StoryViewController: OverlayViewController {
   }
 
   
+  override func viewWillAppear(_ animated: Bool) {
+    viewShouldRelayout = true
+  }
+  
+  
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-    jotViewController.view.frame = videoView.frame
-    avPlayerLayer.frame = videoView.frame
     
-    guard let story = viewingStory else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.assert("Unexpected viewingStory = nil")
-        self.popDismiss(animated: true)
+    if viewShouldRelayout {
+      viewShouldRelayout = false
+      
+      avPlayerLayer.frame = videoView.bounds
+      jotViewController.view.frame = videoView.frame
+      jotViewController.view.layoutIfNeeded()
+      
+      guard let story = viewingStory else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.assert("Unexpected viewingStory = nil")
+          self.popDismiss(animated: true)
+        }
+        return
       }
-      return
-    }
-    
-    guard let moments = story.moments, !moments.isEmpty else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.assert("Unexpected viewingStory.moments = nil or empty")
-        self.popDismiss(animated: true)
+      
+      guard let moments = story.moments, !moments.isEmpty else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.assert("Unexpected viewingStory.moments = nil or empty")
+          self.popDismiss(animated: true)
+        }
+        return
       }
-      return
-    }
-    
-    // If a moment was already in play, just display that again. Otherwise try to display the first moment
-    if currentMoment == nil {
-      currentMoment = moments[0]
-      soundButton.isHidden = true
-      pauseResumeButton.isHidden = true
-      venueButton.isHidden = true
-      authorButton.isHidden = true
-      displayMomentIfLoaded(for: currentMoment!)
-    } else if isPaused {
-      pausePlay()
+      
+      // If a moment was already in play, just display that again. Otherwise try to display the first moment
+      if currentMoment == nil {
+        currentMoment = moments[0]
+        soundButton.isHidden = true
+        pauseResumeButton.isHidden = true
+        venueButton.isHidden = true
+        authorButton.isHidden = true
+        displayMomentIfLoaded(for: currentMoment!)
+      } else if isPaused {
+        pausePlay()
+      }
     }
   }
   
