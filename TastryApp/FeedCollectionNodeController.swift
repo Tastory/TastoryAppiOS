@@ -34,10 +34,10 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   }
   
   
+  
   // MARK: - Private Class Constants
   
   private struct Constants {
-    
     static let DefaultGuestimatedCellNodeWidth: CGFloat = 150.0
     static let DefaultFeedNodeCornerRadiusFraction:CGFloat = 0.05
     static let MosaicPullTranslationForChange: CGFloat = -80
@@ -260,9 +260,26 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    collectionNode.frame = view.bounds
+
+    switch layoutType {
+    case .mosaic:
+      collectionNode.view.alwaysBounceHorizontal = false
+      collectionNode.view.alwaysBounceVertical = true
+      collectionNode.view.decelerationRate = UIScrollViewDecelerationRateNormal
+      
+    case .carousel:
+      collectionNode.view.alwaysBounceVertical = false
+      collectionNode.view.alwaysBounceHorizontal = true
+      collectionNode.view.decelerationRate = UIScrollViewDecelerationRateFast
+    }
   }
 
+  
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    collectionNode.frame = view.frame
+  }
+  
   
   
   // MARK: - Public Instance Function
@@ -308,10 +325,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       let mosaicLayout = MosaicCollectionViewLayout()
       mosaicLayout.delegate = self
       collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
-      // The CollectionView need to bounce even if there's not enough item to fill the view, otherwise user cannot transition to Carousel Layout
-      // Might want to disable this and all bounce for better Animated Transitioning?
-      collectionNode.view.alwaysBounceVertical = true
-      collectionNode.view.alwaysBounceHorizontal = false
       layout = mosaicLayout
       
       if let oldLayout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
@@ -321,8 +334,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     case .carousel:
       let carouselLayout = CarouselCollectionViewLayout()
       collectionNode.layoutInspector = nil
-      collectionNode.view.alwaysBounceVertical = false
-      collectionNode.view.alwaysBounceHorizontal = true
       layout = carouselLayout
     }
     
@@ -330,6 +341,18 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     collectionNode.view.setCollectionViewLayout(layout, animated: animated)
     collectionNode.relayoutItems()
     collectionNode.delegate = self
+    
+    switch layoutType {
+    case .mosaic:
+      collectionNode.view.alwaysBounceHorizontal = false
+      collectionNode.view.alwaysBounceVertical = true
+      collectionNode.view.decelerationRate = UIScrollViewDecelerationRateNormal
+      
+    case .carousel:
+      collectionNode.view.alwaysBounceVertical = false
+      collectionNode.view.alwaysBounceHorizontal = true
+      collectionNode.view.decelerationRate = UIScrollViewDecelerationRateFast
+    }
     
     delegate?.collectionNodeLayoutChanged?(to: layoutType)
   }

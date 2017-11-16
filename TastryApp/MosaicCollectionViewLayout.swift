@@ -99,12 +99,6 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
       return
     }
     
-    // The CollectionView need to bounce even if there's not enough item to fill the view, otherwise user cannot transition to Carousel Layout
-    // Might want to disable this and all bounce for better Animated Transitioning?
-    collectionView.alwaysBounceVertical = true
-    collectionView.alwaysBounceHorizontal = false
-    collectionView.decelerationRate = UIScrollViewDecelerationRateNormal
-    
     columnHeights = []
     itemAttributes = []
     headerAttributes = []

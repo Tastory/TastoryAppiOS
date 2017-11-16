@@ -88,21 +88,6 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
   }
   
   
-  override func prepare() {
-    super.prepare()
-    guard let collectionView = self.collectionView else {
-      CCLog.assert("No Collection View when trying to prepare Layout")
-      return
-    }
-    
-    // The CollectionView need to bounce even if there's not enough item to fill the view, otherwise user cannot transition to Carousel Layout
-    // Might want to disable this and all bounce for better Animated Transitioning?
-    collectionView.alwaysBounceVertical = false
-    collectionView.alwaysBounceHorizontal = true
-    collectionView.decelerationRate = UIScrollViewDecelerationRateFast
-  }
-  
-  
   override open func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
     return true
   }

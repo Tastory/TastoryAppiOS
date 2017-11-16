@@ -204,7 +204,7 @@ class DiscoverViewController: OverlayViewController {
         return
       }
       
-      self.refreshDiscoverView(onStories: stories)
+      self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
     }
   }
   
@@ -233,7 +233,7 @@ class DiscoverViewController: OverlayViewController {
         return
       }
       
-      self.refreshDiscoverView(onStories: stories)
+      self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
     }
   }
   
@@ -382,7 +382,7 @@ class DiscoverViewController: OverlayViewController {
   }
   
   
-  private func refreshDiscoverView(onStories stories: [FoodieStory]) {
+  private func refreshDiscoverView(onStories stories: [FoodieStory], zoomToRegion: Bool, scrollAndSelectStory: Bool) {
     
     DispatchQueue.main.async {
       self.mapNavController.mapView.removeAnnotations(self.storyAnnotations)
@@ -428,9 +428,14 @@ class DiscoverViewController: OverlayViewController {
                   
                   self.feedCollectionNodeController.resetCollectionNode(with: stories, completion: {
                     
-                    self.mapNavController.showRegionExposed(containing: self.storyAnnotations)
-                    self.feedCollectionNodeController.scrollTo(storyIndex: 0)
-                    self.mapNavController.mapView.selectAnnotation(self.storyAnnotations[0], animated: true)
+                    if zoomToRegion {
+                      self.mapNavController.showRegionExposed(containing: self.storyAnnotations)
+                    }
+                    
+                    if scrollAndSelectStory {
+                      self.feedCollectionNodeController.scrollTo(storyIndex: 0)
+                      self.mapNavController.mapView.selectAnnotation(self.storyAnnotations[0], animated: true)
+                    }
                   })
                 }
               }
@@ -614,7 +619,7 @@ class DiscoverViewController: OverlayViewController {
             }
             return
           }
-          self.refreshDiscoverView(onStories: stories)
+          self.refreshDiscoverView(onStories: stories, zoomToRegion: false, scrollAndSelectStory: true)
         }
         
         self.startLocationWatcher()
