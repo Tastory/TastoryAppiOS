@@ -58,20 +58,15 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
   
   
   
-  // MARK: - Private Instance Variables
-  
-  private let feedNodeMargin = Constants.DefaultFeedNodeMargin
-  
-  
   
   // MARK: - Public Instance Functions
   
   required override init() {
     self.numberOfColumns = Constants.DefaultColumns
     self.columnSpacing = Constants.DefaultFeedNodeMargin
-    self.headerHeight = 0.0
     self.sectionInset = UIEdgeInsetsMake(0.0, columnSpacing, 0.0, columnSpacing)
     self.interItemSpacing = UIEdgeInsetsMake(columnSpacing, 0, columnSpacing, 0)
+    self.headerHeight = 0.0
     super.init()
   }
   
@@ -93,18 +88,27 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
   
   
   func calculateSectionInset(for collectionBounds: CGRect, at section: Int) -> UIEdgeInsets {
-    return UIEdgeInsetsMake(0.0, columnSpacing, 0.0, columnSpacing) // ?? There's sectionInset and sectionInset. Confused?
+    return UIEdgeInsetsMake(0.0, columnSpacing, 0.0, columnSpacing)
   }
   
   
   override func prepare() {
     super.prepare()
-    guard let collectionView = self.collectionView else { return }
+    guard let collectionView = self.collectionView else {
+      CCLog.assert("No Collection View when trying to prepare Layout")
+      return
+    }
     
-    itemAttributes = []
-    allAttributes = []
-    headerAttributes = []
+    // The CollectionView need to bounce even if there's not enough item to fill the view, otherwise user cannot transition to Carousel Layout
+    // Might want to disable this and all bounce for better Animated Transitioning?
+    collectionView.alwaysBounceVertical = true
+    collectionView.alwaysBounceHorizontal = false
+    collectionView.decelerationRate = UIScrollViewDecelerationRateNormal
+    
     columnHeights = []
+    itemAttributes = []
+    headerAttributes = []
+    allAttributes = []
     
     var top: CGFloat = 0
     
@@ -116,7 +120,7 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
       top += sectionInset.top
       
       if (headerHeight > 0) {
-        let headerSize: CGSize = self._headerSizeForSection(section: section)
+        let headerSize: CGSize = self.headerSizeForSection(section: section)
         
         let attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, with: NSIndexPath(row: 0, section: section) as IndexPath)
         
@@ -129,20 +133,20 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
       columnHeights?.append([]) //Adding new Section
       for columnIndex in 0 ..< self.numberOfColumns {
         let firstIndexPath = IndexPath(item: 0, section: section)
-        let firstItemSize = _itemSizeAtIndexPath(indexPath: firstIndexPath)
+        let firstItemSize = itemSizeAtIndexPath(indexPath: firstIndexPath)
         let firstItemHeight = firstItemSize.height
         let heightForColumn = top + firstItemHeight * Constants.ColumnHeightOffsetAsFractionOfFirstItemHeight[columnIndex]
         self.columnHeights?[section].append(heightForColumn)
       }
       
-      let columnWidth = self._columnWidthForSection(section: section)
+      let columnWidth = self.columnWidthForSection(section: section)
       
       itemAttributes.append([])
       for idx in 0 ..< numberOfItems {
-        let columnIndex: Int = self._shortestColumnIndexInSection(section: section)
+        let columnIndex: Int = self.shortestColumnIndexInSection(section: section)
         let indexPath = IndexPath(item: idx, section: section)
         
-        let itemSize = self._itemSizeAtIndexPath(indexPath: indexPath);
+        let itemSize = self.itemSizeAtIndexPath(indexPath: indexPath);
         let xOffset = sectionInset.left + (columnWidth + columnSpacing) * CGFloat(columnIndex)
         let yOffset = columnHeights![section][columnIndex]
         
@@ -156,7 +160,7 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
         allAttributes.append(attributes)
       }
       
-      let columnIndex: Int = self._tallestColumnIndexInSection(section: section)
+      let columnIndex: Int = self.tallestColumnIndexInSection(section: section)
       top = (columnHeights?[section][columnIndex])! - interItemSpacing.bottom + sectionInset.bottom
       
       for idx in 0 ..< columnHeights![section].count {
@@ -206,35 +210,6 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
   }
   
   
-  func _widthForSection (section: Int) -> CGFloat
-  {
-    return self.collectionView!.bounds.size.width - sectionInset.left - sectionInset.right;
-  }
-  
-  
-  func _columnWidthForSection(section: Int) -> CGFloat
-  {
-    return (self._widthForSection(section: section) - ((CGFloat(numberOfColumns - 1)) * columnSpacing)) / CGFloat(numberOfColumns)
-  }
-  
-  
-  func _itemSizeAtIndexPath(indexPath: IndexPath) -> CGSize
-  {
-    var size = CGSize(width: self._columnWidthForSection(section: indexPath.section), height: 0)
-    let originalSize = self.delegate!.collectionView(self.collectionView!, layout:self, originalItemSizeAtIndexPath:indexPath)
-    if (originalSize.height > 0 && originalSize.width > 0) {
-      size.height = originalSize.height / originalSize.width * size.width
-    }
-    return size
-  }
-  
-  
-  func _headerSizeForSection(section: Int) -> CGSize
-  {
-    return CGSize(width: self._widthForSection(section: section), height: headerHeight)
-  }
-  
-  
   override var collectionViewContentSize: CGSize
   {
     var height: CGFloat = 0
@@ -247,7 +222,36 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
   }
   
   
-  func _tallestColumnIndexInSection(section: Int) -> Int
+  func widthForSection (section: Int) -> CGFloat
+  {
+    return self.collectionView!.bounds.size.width - sectionInset.left - sectionInset.right;
+  }
+  
+  
+  func columnWidthForSection(section: Int) -> CGFloat
+  {
+    return (self.widthForSection(section: section) - ((CGFloat(numberOfColumns - 1)) * columnSpacing)) / CGFloat(numberOfColumns)
+  }
+  
+  
+  func itemSizeAtIndexPath(indexPath: IndexPath) -> CGSize
+  {
+    var size = CGSize(width: self.columnWidthForSection(section: indexPath.section), height: 0)
+    let originalSize = self.delegate!.collectionView(self.collectionView!, layout:self, originalItemSizeAtIndexPath:indexPath)
+    if (originalSize.height > 0 && originalSize.width > 0) {
+      size.height = originalSize.height / originalSize.width * size.width
+    }
+    return size
+  }
+  
+  
+  func headerSizeForSection(section: Int) -> CGSize
+  {
+    return CGSize(width: self.widthForSection(section: section), height: headerHeight)
+  }
+  
+
+  func tallestColumnIndexInSection(section: Int) -> Int
   {
     var index: Int = 0;
     var tallestHeight: CGFloat = 0;
@@ -261,7 +265,7 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
   }
   
   
-  func _shortestColumnIndexInSection(section: Int) -> Int
+  func shortestColumnIndexInSection(section: Int) -> Int
   {
     var index: Int = 0;
     var shortestHeight: CGFloat = CGFloat.greatestFiniteMagnitude
@@ -281,13 +285,13 @@ class MosaicCollectionViewLayoutInspector: NSObject, ASCollectionViewLayoutInspe
 {
   func collectionView(_ collectionView: ASCollectionView, constrainedSizeForNodeAt indexPath: IndexPath) -> ASSizeRange {
     let layout = collectionView.collectionViewLayout as! MosaicCollectionViewLayout
-    return ASSizeRangeMake(layout._itemSizeAtIndexPath(indexPath: indexPath), layout._itemSizeAtIndexPath(indexPath: indexPath))
+    return ASSizeRangeMake(layout.itemSizeAtIndexPath(indexPath: indexPath), layout.itemSizeAtIndexPath(indexPath: indexPath))
   }
   
   func collectionView(_ collectionView: ASCollectionView, constrainedSizeForSupplementaryNodeOfKind: String, at atIndexPath: IndexPath) -> ASSizeRange
   {
     let layout = collectionView.collectionViewLayout as! MosaicCollectionViewLayout
-    return ASSizeRange.init(min: layout._headerSizeForSection(section: atIndexPath.section), max: layout._headerSizeForSection(section: atIndexPath.section))
+    return ASSizeRange.init(min: layout.headerSizeForSection(section: atIndexPath.section), max: layout.headerSizeForSection(section: atIndexPath.section))
   }
   
   /**

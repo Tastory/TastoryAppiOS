@@ -16,7 +16,7 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
     static let DefaultCellNodeAspectRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
     static let DefaultFeedBottomOffset: CGFloat = 16.0
     static let NonHighlightedItemAlpha: CGFloat = 0.9
-    static let NonHighlightedItemScale: CGFloat = 0.90
+    static let NonHighlightedItemScale: CGFloat = 0.9
     static let NonHighlightedItemOffsetFraction: CGFloat = 0.05  // This is deliberately set to half of 1 - NonHighlightedItemScale. This makes the cells perfectly pegged to be top
     static let InterLineSpacingFraction: CGFloat = -0.025
   }
@@ -40,9 +40,7 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
     var cellNodeHeight = UIScreen.main.bounds.height*Constants.DefaultCarouselScreenHeightFraction-Constants.DefaultFeedBottomOffset
     cellNodeHeight = floor(cellNodeHeight)  // Take the floor to avoid messes
     let cellNodeWidth = cellNodeHeight * Constants.DefaultCellNodeAspectRatio
-    
-    // TOOD: Do we need to allow for a smaller size here so the biggest cell is in the middle? Or do we do that as part of the Layout Attributes?
-    
+
     // Let's just set these accordingly anyways
     self.itemSize = CGSize(width: cellNodeWidth, height: cellNodeHeight)
     self.estimatedItemSize = CGSize(width: cellNodeWidth, height: cellNodeHeight)
@@ -51,6 +49,10 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
   
   
   func calculateSectionInset(for collectionBounds: CGRect, at section: Int) -> UIEdgeInsets {
+    
+    // Setting these here, hacky? Problem is if these are set too early, they conflict because
+    // the previous layout is not fully invalidated. However if it's set too late, then how is
+    // the layout going ot calculate all the cell positions?
     self.minimumLineSpacing = self.itemSize.width * Constants.InterLineSpacingFraction
     self.minimumInteritemSpacing = self.itemSize.width * Constants.InterLineSpacingFraction
     
@@ -88,7 +90,16 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
   
   override func prepare() {
     super.prepare()
-    self.collectionView!.decelerationRate = UIScrollViewDecelerationRateFast
+    guard let collectionView = self.collectionView else {
+      CCLog.assert("No Collection View when trying to prepare Layout")
+      return
+    }
+    
+    // The CollectionView need to bounce even if there's not enough item to fill the view, otherwise user cannot transition to Carousel Layout
+    // Might want to disable this and all bounce for better Animated Transitioning?
+    collectionView.alwaysBounceVertical = false
+    collectionView.alwaysBounceHorizontal = true
+    collectionView.decelerationRate = UIScrollViewDecelerationRateFast
   }
   
   

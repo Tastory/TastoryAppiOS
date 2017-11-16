@@ -483,7 +483,6 @@ class StoryViewController: OverlayViewController {
     super.viewDidLoad()
     
     avPlayerLayer = AVPlayerLayer()
-    avPlayerLayer.frame = videoView.bounds
     videoView.layer.addSublayer(avPlayerLayer)
     
     jotViewController.state = JotViewState.disabled
@@ -522,10 +521,12 @@ class StoryViewController: OverlayViewController {
     dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)  // This is needed so that the Swipe down to dismiss from OverlayViewController will only have an effect if this is not a Swipe Up to Safari
   }
 
+  
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     jotViewController.view.frame = videoView.frame
-
+    avPlayerLayer.frame = videoView.frame
+    
     guard let story = viewingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
         CCLog.assert("Unexpected viewingStory = nil")

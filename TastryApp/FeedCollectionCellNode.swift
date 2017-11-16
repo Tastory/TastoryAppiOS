@@ -14,21 +14,22 @@ class FeedCollectionCellNode: ASCellNode {
   // MARK: - Constants
   struct Constants {
     fileprivate static let CoverPhotoAspectRatio: CGFloat = FoodieGlobal.Constants.DefaultMomentAspectRatio
-    fileprivate static let CoverTitleFontFraction: CGFloat = 0.052  // Of Constrained Size's Height
+    fileprivate static let CoverTitleFontFraction: CGFloat = 0.052  // Of Constrained Size's Height. Hand tuned value for all phones
     fileprivate static let CoverTitleFontName: String = "Avenir-Medium"
-    fileprivate static let CoverTitleMaxNumOfLines: UInt = 3
+    fileprivate static let CoverTitleMaxNumOfLines: UInt = 4  // Hand tuned value for all phones
     fileprivate static let CoverTitleTextColor = UIColor.white
-    fileprivate static let CoverTitleBackgroundBlackAlphas: [CGFloat] = [0.7, 0.0]
+    fileprivate static let CoverTitleBackgroundBlackAlphas: [CGFloat] = [0.7, 0.0]  // Hand tuned value for all phones
     fileprivate static let CoverTitleBackgroundBlackStops: [CGFloat] = [0.0, 1.0]
-    fileprivate static let CoverTitleInsetWidthFraction: CGFloat = 0.050
-    fileprivate static let CoverTitleInsetHeightFraction: CGFloat = 0.045
+    fileprivate static let CoverTitleInsetWidthFraction: CGFloat = 0.050  // Hand tuned value for all phones
+    fileprivate static let CoverTitleInsetHeightFraction: CGFloat = 0.045  // Hand tuned value for all phones
+    fileprivate static let CoverEditButtonFontFraction: CGFloat = 0.08  // Hand tuned value for all phones
+    fileprivate static let CoverEditButtonInsetFraction: CGFloat = 0.02 // Hand tune value for all phones
   }
   
   
   
   // MARK: - Public Instance Variable
-  let coverEditButton: TextButtonNode
-  var isEditEnabled: Bool
+  var coverEditButton: TextButtonNode?
   
   
   
@@ -40,14 +41,12 @@ class FeedCollectionCellNode: ASCellNode {
   
   
   // MARK: - Public Instance Function
-  init(story: FoodieStory, editEnable: Bool) {
+  init(story: FoodieStory, edit editEnabled: Bool) {
     guard let thumbnailFileName = story.thumbnailFileName else {
       CCLog.fatal("No Thumbnail Filename in Story \(story.getUniqueIdentifier())")
     }
     
     self.coverImageNode = ASNetworkImageNode()
-    self.coverEditButton = TextButtonNode()
-    self.isEditEnabled = editEnable
     super.init()
     
     coverImageNode.url = FoodieFileObject.getS3URL(for: thumbnailFileName)
@@ -55,13 +54,13 @@ class FeedCollectionCellNode: ASCellNode {
     coverImageNode.placeholderEnabled = true
     coverImageNode.isLayerBacked = true
     
-    if editEnable {
-      guard let coverFont = UIFont(name: Constants.CoverTitleFontName, size: 20) else {
-        CCLog.fatal("Cannot create UIFont with name \(Constants.CoverTitleFontName)")
-      }
-      coverEditButton.attributedText = NSAttributedString(string: "✏️", attributes: [.font : coverFont])
-      coverEditButton.maximumNumberOfLines = 1
-      coverEditButton.isLayerBacked = !editEnable
+    if editEnabled {
+      coverEditButton = TextButtonNode()
+      coverEditButton!.maximumNumberOfLines = 1
+      coverEditButton!.isLayerBacked = false
+      
+    } else {
+      enableSubtreeRasterization()
     }
     
     if let coverTitle = story.title {
@@ -83,7 +82,7 @@ class FeedCollectionCellNode: ASCellNode {
       coverTitleBackgroundNode!.isOpaque = false
     }
     automaticallyManagesSubnodes = true
-    enableSubtreeRasterization()
+    
   }
   
     
@@ -93,7 +92,24 @@ class FeedCollectionCellNode: ASCellNode {
     
     // If there's no title, then this will be returned
     var finalLayoutSpec: ASLayoutSpec = coverImageWrapperSpec
-
+    
+    // Prepare if there is a coverEditButton
+    var editStackSpec: ASStackLayoutSpec?
+    
+    if let coverEditButton = coverEditButton {
+      // Creating Edit Button with just a Pencil Emoji for now
+      guard let editButtonFont = UIFont(name: Constants.CoverTitleFontName,
+                                        size: Constants.CoverEditButtonFontFraction * constrainedSize.max.height) else {
+        CCLog.fatal("Cannot create UIFont with name \(Constants.CoverTitleFontName)")
+      }
+      coverEditButton.attributedText = NSAttributedString(string: "✏️", attributes: [.font : editButtonFont])
+      
+      let editInsetOffset: CGFloat = Constants.CoverEditButtonInsetFraction * constrainedSize.min.height
+      let editInsets = UIEdgeInsetsMake(editInsetOffset, editInsetOffset, editInsetOffset, editInsetOffset)
+      let editInsetSpec = ASInsetLayoutSpec(insets: editInsets, child: coverEditButton)
+      editStackSpec = ASStackLayoutSpec(direction: .horizontal, spacing: 1.0, justifyContent: .start, alignItems: .center, children: [editInsetSpec])
+    }
+    
     if let coverTitleNode = coverTitleNode {
       guard let coverTitleBackgroundNode = coverTitleBackgroundNode else {
         CCLog.fatal("FeedCellNode has titleNode but no titleBackgroundNode")
@@ -128,12 +144,10 @@ class FeedCollectionCellNode: ASCellNode {
       // Create Stack with Title Node
       var coverStackSpec: ASStackLayoutSpec!
       
-      if isEditEnabled {
-        let editStackSpec = ASStackLayoutSpec(direction: .horizontal, spacing: 1.0, justifyContent: .end, alignItems: .center, children: [coverEditButton])
-        coverStackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 5.0, justifyContent: .end, alignItems: .stretch, children: [editStackSpec, titleOverlaySpec])
-        
+      if let editStackSpec = editStackSpec {
+        coverStackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 1.0, justifyContent: .spaceBetween, alignItems: .stretch, children: [editStackSpec, titleOverlaySpec])
       } else {
-        coverStackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 5.0, justifyContent: .end, alignItems: .stretch, children: [titleOverlaySpec])
+        coverStackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 1.0, justifyContent: .end, alignItems: .stretch, children: [titleOverlaySpec])
       }
       
       // Overlay the Cover Stack in front of the Image Node
@@ -141,9 +155,8 @@ class FeedCollectionCellNode: ASCellNode {
       
       finalLayoutSpec = coverOverlaySpec
       
-    } else if isEditEnabled {
-      let editStackSpec = ASStackLayoutSpec(direction: .horizontal, spacing: 1.0, justifyContent: .end, alignItems: .center, children: [coverEditButton])
-      let coverStackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 5.0, justifyContent: .start, alignItems: .stretch, children: [editStackSpec])
+    } else if let editStackSpec = editStackSpec {
+      let coverStackSpec = ASStackLayoutSpec(direction: .vertical, spacing: 1.0, justifyContent: .start, alignItems: .stretch, children: [editStackSpec])
       let coverOverlaySpec = ASOverlayLayoutSpec(child: coverImageNode, overlay: coverStackSpec)
       finalLayoutSpec = coverOverlaySpec
     }

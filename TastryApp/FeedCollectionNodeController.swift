@@ -155,18 +155,41 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     
     viewController.workingStory = story
     viewController.restoreStoryDelegate = self
-    viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: true)
     
-    DispatchQueue.main.async {
-      mapNavController.delegate = viewController
-      mapNavController.pushViewController(viewController, animated: true)
+    var shouldRetrieveDigest = false
+    
+    story.executeForDigest(ifNotReady: {
+      CCLog.debug("Digest \(story.getUniqueIdentifier()) not yet loaded for Story Edit")
+      shouldRetrieveDigest = true  // Don't execute the retrieve here. This is actually executed inside of a mutex
+      
+    }, whenReady: {
+      CCLog.debug("Digest \(story.getUniqueIdentifier()) ready to display for Story Edit")
+      DispatchQueue.main.async {
+        viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)
+        mapNavController.delegate = viewController
+        mapNavController.pushViewController(viewController, animated: true)
+      }
+    })
+    
+    if shouldRetrieveDigest {
+      let digestOperation = StoryOperation(with: .digest, on: story, completion: nil)
+      FoodieFetch.global.queue(digestOperation, at: .high)
+    } else {
+      CCLog.debug("Direct Story Edit for \(story.getUniqueIdentifier())")
+      
+      DispatchQueue.main.async {
+        viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)
+        mapNavController.delegate = viewController
+        mapNavController.pushViewController(viewController, animated: true)
+      }
     }
   }
   
   
   @objc private func editStory(_ sender: TextButtonNode) {
-    let story = storyArray[sender.tag]
     lastIndexPath = IndexPath(row: sender.tag, section: 0)
+    let storyIndex = toStoryIndex(from: lastIndexPath!)
+    let story = storyArray[storyIndex]
     
     // Stop all prefetches but the story being viewed
     FoodieFetch.global.cancelAllBut(for: story)
@@ -213,19 +236,12 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
         collectionNode.contentInset = UIEdgeInsetsMake(contentInset, 0.0, 0.0, 0.0)
       }
       
-      // The CollectionView need to bounce even if there's not enough item to fill the view, otherwise user cannot transition to Carousel Layout
-      // Might want to disable this and all bounce for better Animated Transitioning?
-      collectionNode.view.alwaysBounceVertical = true
-      collectionNode.view.alwaysBounceHorizontal = false
       super.init(node: collectionNode)
       mosaicLayout.delegate = self
       
     case .carousel:
       collectionNode = ASCollectionNode(collectionViewLayout: CarouselCollectionViewLayout())
       collectionNode.contentInset = UIEdgeInsetsMake(0.0, contentInset, 0.0, 0.0)
-      
-      collectionNode.view.alwaysBounceVertical = false
-      collectionNode.view.alwaysBounceHorizontal = true
       super.init(node: collectionNode)
     }
     
@@ -347,15 +363,20 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
 
   func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
     let story = storyArray[indexPath.row]
-    let cellNode = FeedCollectionCellNode(story: story, editEnable: false) //enableEdit)
+    let cellNode = FeedCollectionCellNode(story: story, edit: enableEdit)
     cellNode.cornerRadius = Constants.DefaultGuestimatedCellNodeWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
     cellNode.backgroundColor = UIColor.lightGray
     cellNode.placeholderEnabled = true
 
     if enableEdit {
-      cellNode.isLayerBacked = false
-      cellNode.coverEditButton.tag = indexPath.row
-      cellNode.coverEditButton.addTarget(self, action: #selector(editStory(_:)), forControlEvents: .touchUpInside)
+      guard let coverEditButton = cellNode.coverEditButton else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("Edit enabeld but coverEditButton is nil")
+        }
+        return { return cellNode }
+      }
+      coverEditButton.tag = indexPath.row
+      coverEditButton.addTarget(self, action: #selector(editStory(_:)), forControlEvents: .touchUpInside)
     }
     return { return cellNode }
   }
