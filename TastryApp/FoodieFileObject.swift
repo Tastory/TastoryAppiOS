@@ -84,8 +84,8 @@ class FoodieFileObject {
   
   // MARK: - Constants
   struct Constants {
-    static let S3BucketKey = "tastry-dev-howard"
-    static let CloudFrontUrl = URL(string: "https://d2srw5n3q738u6.cloudfront.net/")!
+    static let S3BucketKey = "tastry-master"
+    static let CloudFrontUrl = URL(string: "https://d2zy9a8xd3cswc.cloudfront.net/")!
     static let DraftStoryMediaFolderUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieObject.LocalType.draft.rawValue, isDirectory: true)
     static let CleanCrashLogFolderUrl = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("CleanCrashLog", isDirectory: true)  // Cleanroom Logger will be responsible for creating this directory
     static let CacheFoodieMediaFolderUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent(FoodieObject.LocalType.cache.rawValue, isDirectory: true)
