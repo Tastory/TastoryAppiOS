@@ -9,6 +9,8 @@
 
 import UIKit
 import AVFoundation
+import ImageIO
+import MobileCoreServices
 
 class FoodieMedia: FoodieFileObject {
   
@@ -382,8 +384,43 @@ extension FoodieMedia: FoodieObjectDelegate {
         callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
         return
       }
-      self.save(buffer: memoryBuffer, to: localType, withBlock: callback)
-      
+
+      let fileUrl = FoodieFileObject.getFileURL(for: localType, with: fileName) as CFURL
+      let destination = CGImageDestinationCreateWithURL(fileUrl, kUTTypeJPEG, 1, nil)!
+      let jfifProperties = [kCGImagePropertyJFIFIsProgressive: kCFBooleanTrue] as NSDictionary
+      let properties = [
+        kCGImageDestinationLossyCompressionQuality: 0.6,
+        kCGImagePropertyJFIFDictionary: jfifProperties
+        ] as NSDictionary
+
+      guard var bufferImage = UIImage(data: memoryBuffer) else {
+        CCLog.fatal("Failed to load buffer as UIImage")
+        callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
+        return
+      }
+
+      // downsize to 1080
+      if(bufferImage.size.height > 1080) {
+        let newSize = CGSize(width: 608.0, height: 1080.0)
+        UIGraphicsBeginImageContextWithOptions(newSize, false, bufferImage.scale);
+        bufferImage.draw(in: CGRect(origin: CGPoint.zero, size: newSize))
+        bufferImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+      }
+
+      guard let cgImage = bufferImage.cgImage else {
+        CCLog.fatal("cgImage is nil from bufferImage")
+        callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
+        return
+      }
+
+      CGImageDestinationAddImage(destination, cgImage, properties)
+      if(CGImageDestinationFinalize(destination)) {
+        callback?(nil)
+      } else {
+        callback?(ErrorCode.saveToLocalCompletedWithNoOutputFile)
+      }
+
     case .video:
       guard let videoExportPlayer = self.videoExportPlayer else {
         callback?(ErrorCode.saveToLocalWithNilVideoExportPlayer)
