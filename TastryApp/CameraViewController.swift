@@ -55,6 +55,10 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
 
   // MARK: - IBActions
 
+  @IBAction func switchSelfieMode(_ sender: Any) {
+    switchCamera()
+  }
+  
   @IBAction func launchImagePicker(_ sender: Any) {
 
     if(enableMultiPicker) {
@@ -131,7 +135,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     
     // Swifty Cam Setup
     cameraDelegate = self
-    doubleTapCameraSwitch = false
+    doubleTapCameraSwitch = true
     videoQuality = .resolution1280x720  // .high is 16x9, but .medium is 4x3
     
     if let pickerButton = pickerButton {

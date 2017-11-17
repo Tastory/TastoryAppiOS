@@ -59,13 +59,21 @@
                                     <action selector="launchImagePicker:" destination="ImI-Ed-QdP" eventType="touchUpInside" id="GqK-N0-etg"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XSJ-qc-qe0">
+                                <rect key="frame" x="324" y="59" width="36" height="36"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" image="SelfieIcon"/>
+                                <connections>
+                                    <action selector="switchSelfieMode:" destination="ImI-Ed-QdP" eventType="touchUpInside" id="EfC-Xt-QwR"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="30k-mM-bOe" firstAttribute="centerX" secondItem="E20-j0-dru" secondAttribute="centerX" id="b0a-4t-gdd"/>
                             <constraint firstAttribute="leadingMargin" secondItem="kxo-zQ-usi" secondAttribute="leading" id="jHg-7x-M0c"/>
                             <constraint firstItem="kxo-zQ-usi" firstAttribute="centerY" secondItem="30k-mM-bOe" secondAttribute="centerY" id="lWT-iL-82h"/>
                             <constraint firstItem="hPs-qT-rXL" firstAttribute="trailing" secondItem="oEc-gL-EdH" secondAttribute="trailingMargin" id="rO6-zC-fkA"/>
-                            <constraint firstItem="E20-j0-dru" firstAttribute="bottom" secondItem="30k-mM-bOe" secondAttribute="bottom" constant="8" symbolic="YES" id="wcu-QE-Qme"/>
+                            <constraint firstItem="E20-j0-dru" firstAttribute="bottom" secondItem="30k-mM-bOe" secondAttribute="bottom" symbolic="YES" id="wcu-QE-Qme"/>
                             <constraint firstItem="hPs-qT-rXL" firstAttribute="centerY" secondItem="30k-mM-bOe" secondAttribute="centerY" id="zhX-8f-aDC"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="E20-j0-dru"/>
@@ -713,4 +721,7 @@
             <point key="canvasLocation" x="2974" y="-1863"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="SelfieIcon" width="40" height="36"/>
+    </resources>
 </document>
