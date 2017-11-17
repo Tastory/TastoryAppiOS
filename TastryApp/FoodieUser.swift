@@ -1088,18 +1088,25 @@ class FoodieUser: PFUser {
 
 extension FoodieUser: FoodieObjectDelegate {
   var isRetrieved: Bool {
-    
     guard isDataAvailable else {
       return false  // Don't go further if the parent isn't even retrieved
     }
+    return true
+  }
 
+  
+  var isFullyRetrieved: Bool {
+    guard isDataAvailable else {
+      return false  // Don't go further if the parent isn't even retrieved
+    }
+    
     if let media = media {
       return media.isRetrieved
     }
     return true
   }
 
-
+  
   static func deleteAll(from localType: FoodieObject.LocalType,
                         withBlock callback: SimpleErrorBlock?) {
     unpinAllObjectsInBackground(withName: localType.rawValue) { success, error in

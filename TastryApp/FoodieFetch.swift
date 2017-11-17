@@ -135,7 +135,7 @@ class FoodieFetch {
   // Object list should be sorted in decending order of priority for Pre-fetching
   func cancelAllBut(_ objects: [AnyObject]) {
     DispatchQueue.global(qos: .utility).async {
-      guard let stories = objects as? [FoodieStory] else {
+      guard var stories = objects as? [FoodieStory] else {
         CCLog.fatal("Expected objects to be of FoodieStory type")
       }
       
@@ -152,7 +152,7 @@ class FoodieFetch {
         CCLog.debug(debugStoryIdentifiers)
       #endif
       
-      var storiesNeedingPrefetch = [FoodieStory]()
+      //var storiesNeedingPrefetch = stories
       
       for operation in self.fetchQueue.operations {
         if let storyOp = operation as? StoryOperation {
@@ -171,25 +171,30 @@ class FoodieFetch {
             #endif
             storyOp.cancel()
             
-          } else if type != .next {
-            storiesNeedingPrefetch.append(story)
+          } else if type == .next {
+            if let indexToRemove = stories.index(where: { $0 === story } ) {
+              stories.remove(at: indexToRemove)
+            }
           }
         }
       }
       
-      if storiesNeedingPrefetch.count > 0 {
+      if stories.count > 0 {
         debugStoryIdentifiers = "StoryIdentifiers:"
-        CCLog.info("Expected that there should already be Story Prefech.next for the following Stories, but didn't. Executing them now")
         
         for story in stories {
-          if storiesNeedingPrefetch.contains(where: { $0 === story}) {
-            let momentOperation = StoryOperation.createRecursive(with: .next, on: story, at: .low)
-            self.queue(momentOperation, at: .low)
-            debugStoryIdentifiers += " \(story.getUniqueIdentifier())"
-          }
+          let momentOperation = StoryOperation.createRecursive(with: .next, on: story, at: .low)
+          self.queue(momentOperation, at: .low)
+          debugStoryIdentifiers += " \(story.getUniqueIdentifier())"
         }
-        
-        CCLog.info(debugStoryIdentifiers)
+      
+        #if DEBUG
+          CCLog.info("#Prefetch - Expected that there should already be Story Prefech.next for the following Stories, but didn't. Executing them now")
+          CCLog.info("#Prefetch - \(debugStoryIdentifiers)")
+        #else
+          CCLog.debug("Expected that there should already be Story Prefech.next for the following Stories, but didn't. Executing them now")
+          CCLog.debug("debugStoryIdentifiers")
+        #endif
       }
     }
   }

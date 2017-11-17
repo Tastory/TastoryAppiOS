@@ -10,6 +10,12 @@ import UIKit
 
 class ProfileViewController: OverlayViewController {
   
+  // MARK: - Constants
+  struct Constants {
+    static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.5
+  }
+  
+  
   // MARK: - Private Instance Variables
   private var feedCollectionNodeController: FeedCollectionNodeController?
   fileprivate var activitySpinner: ActivitySpinner!
@@ -109,6 +115,7 @@ class ProfileViewController: OverlayViewController {
     nodeController.view.frame = feedContainerView.bounds
     nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     nodeController.didMove(toParentViewController: self)
+    nodeController.delegate = self
     feedCollectionNodeController = nodeController
     
 
@@ -137,5 +144,31 @@ class ProfileViewController: OverlayViewController {
 extension ProfileViewController: UINavigationBarDelegate {
   func position(for bar: UIBarPositioning) -> UIBarPosition {
     return UIBarPosition.topAttached
+  }
+}
+
+extension ProfileViewController: FeedCollectionNodeDelegate {
+  
+  func collectionNodeDidStopScrolling() {
+    
+    guard let feedCollectionNodeController = feedCollectionNodeController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("Expected FeedCollectionNodeController")
+      }
+      return
+    }
+    
+//    if let storyIndex = feedCollectionNodeController.highlightedStoryIndex {
+//      for annotation in mapNavController.mapView.annotations {
+//        if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
+//          mapNavController.selectInExposedRect(annotation: storyAnnotation)
+//        }
+//      }
+//    }
+    
+    // Do Prefetching
+    let storiesIndexes = feedCollectionNodeController.getStoryIndexesVisible(forOver: Constants.PercentageOfStoryVisibleToStartPrefetch)
+    let storiesShouldPrefetch = storiesIndexes.map { stories[$0] }
+    FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
   }
 }

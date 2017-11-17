@@ -825,7 +825,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       return false  // Don't go further if even the parent isn't retrieved
     }
     
-    guard let thumbnail = thumbnail, let venue = venue, let author = author else {
+    guard let venue = venue, let author = author else {  // We don't need to retrieve Thumbnail anymore. ASDK will take care of that!
       // If anything is nil, just re-retrieve? CCLog.assert("Thumbnail, Markups and Venue should all be not nil")
       return false
     }
@@ -837,7 +837,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       }
     }
     
-    return thumbnail.isRetrieved && venue.isRetrieved && markupsAreRetrieved && author.isRetrieved
+    return venue.isRetrieved && markupsAreRetrieved && author.isRetrieved
   }
   
   
