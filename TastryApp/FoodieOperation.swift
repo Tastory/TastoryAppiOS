@@ -25,7 +25,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   enum OperationType: String {
     case digest
     case moment
-    case nextMoment
+    case next
   }
 
   
@@ -58,9 +58,9 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   
   
   // MARK: - Public Static Functions
-  static func createRecursive(with type: OperationType = .nextMoment, on story: FoodieStory, at priority: Operation.QueuePriority) -> StoryOperation {
-    guard type == .nextMoment else {
-      CCLog.fatal("Only .nextMoment is supported for recursive Story Prefetching")
+  static func createRecursive(with type: OperationType = .next, on story: FoodieStory, at priority: Operation.QueuePriority) -> StoryOperation {
+    guard type == .next else {
+      CCLog.fatal("Only .next is supported for recursive Story Prefetching")
     }
     
     return StoryOperation(with: type, on: story) { error in
@@ -129,7 +129,16 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
         self.finished()
       }
       
-    case .nextMoment:
+    case .next:
+      // See if the digest is even retrieved first
+      if !story.isDigestRetrieved {
+        childOperation = story.retrieveDigest(from: .both, type: .cache) { error in //withReady: nil
+          self.callback?(error)
+          self.finished()
+        }
+        return
+      }
+      
       // Find the next unfetched moment first
       guard let moments = story.moments else {
         CCLog.assert("No Moments in Story for Fetch Operation")

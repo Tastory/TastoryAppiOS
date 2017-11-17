@@ -43,6 +43,7 @@ class DiscoverViewController: OverlayViewController {
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
     
     static let PullTranslationForChange: CGFloat = 50.0
+    static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.6
   }
 
   
@@ -873,29 +874,19 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
   }
   
   
-  func collectionNodeDidEndDecelerating() {
-    if feedCollectionNodeController.layoutType == .carousel {
-      if let storyIndex = feedCollectionNodeController.highlightedStoryIndex {
-        for annotation in mapNavController.mapView.annotations {
-          if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
-            mapNavController.selectInExposedRect(annotation: storyAnnotation)
-          }
+  func collectionNodeDidStopScrolling() {
+    if let storyIndex = feedCollectionNodeController.highlightedStoryIndex {
+      for annotation in mapNavController.mapView.annotations {
+        if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
+          mapNavController.selectInExposedRect(annotation: storyAnnotation)
         }
       }
     }
-  }
-  
-  
-  func collectionNodeScrollViewDidEndDragging() {
-    if feedCollectionNodeController.layoutType == .mosaic {
-      if let storyIndex = feedCollectionNodeController.highlightedStoryIndex {
-        for annotation in mapNavController.mapView.annotations {
-          if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
-            mapNavController.selectInExposedRect(annotation: storyAnnotation)
-          }
-        }
-      }
-    }
+    
+    // Do Prefetching
+    let storiesIndexes = feedCollectionNodeController.getStoryIndexesVisible(forOver: Constants.PercentageOfStoryVisibleToStartPrefetch)
+    let storiesShouldPrefetch = storiesIndexes.map { storyArray[$0] }
+    FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
   }
 }
 

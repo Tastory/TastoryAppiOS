@@ -86,7 +86,7 @@ class FoodieFetch {
     }
   }
   
-  func cancelAllBut(for object: AnyObject) {
+  func cancelAllButOne(_ object: AnyObject) {
     
     DispatchQueue.global(qos: .utility).async {
       guard let story = object as? FoodieStory else {
@@ -117,19 +117,83 @@ class FoodieFetch {
             }
             storyOp.cancel()
             
-          } else if let operationType = storyOp.type as? StoryOperation.OperationType, operationType == .nextMoment {
+          } else if let operationType = storyOp.type as? StoryOperation.OperationType, operationType == .next {
             needsToPrefetchNextMoment = false
           }
         }
       }
       
       if needsToPrefetchNextMoment {
-        CCLog.info("Expected that there should already be a Story Prefech.nextMoment for \(story.getUniqueIdentifier()), but didn't. Executing one now")
-        let momentOperation = StoryOperation.createRecursive(with: .nextMoment, on: story, at: .low)
+        CCLog.info("Expected that there should already be a Story Prefech.next for \(story.getUniqueIdentifier()), but didn't. Executing one now")
+        let momentOperation = StoryOperation.createRecursive(with: .next, on: story, at: .low)
         self.queue(momentOperation, at: .low)
       }
     }
   }
+  
+  
+  // Object list should be sorted in decending order of priority for Pre-fetching
+  func cancelAllBut(_ objects: [AnyObject]) {
+    DispatchQueue.global(qos: .utility).async {
+      guard let stories = objects as? [FoodieStory] else {
+        CCLog.fatal("Expected objects to be of FoodieStory type")
+      }
+      
+      var debugStoryIdentifiers = "Story Identifiers:"
+      for story in stories {
+        debugStoryIdentifiers += " \(story.getUniqueIdentifier())"
+      }
+      
+      #if DEBUG
+        CCLog.info("#Prefetch - Cancel All aside from the following Stories. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
+        CCLog.info("#Prefetch - \(debugStoryIdentifiers)")
+      #else
+        CCLog.debug("Cancel All but Story \(story.getUniqueIdentifier()). Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
+        CCLog.debug(debugStoryIdentifiers)
+      #endif
+      
+      var storiesNeedingPrefetch = [FoodieStory]()
+      
+      for operation in self.fetchQueue.operations {
+        if let storyOp = operation as? StoryOperation {
+          
+          guard let story = storyOp.object as? FoodieStory, let type = storyOp.type as? StoryOperation.OperationType else {
+            CCLog.fatal("storyOp.object not a story!")
+          }
+          
+          // Cancel anything that is not of the current story
+          if !objects.contains(where: { $0 === storyOp.object }) {
+            
+            #if DEBUG
+              CCLog.info("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
+            #else
+              CCLog.debug("Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount) outstanding")
+            #endif
+            storyOp.cancel()
+            
+          } else if type != .next {
+            storiesNeedingPrefetch.append(story)
+          }
+        }
+      }
+      
+      if storiesNeedingPrefetch.count > 0 {
+        debugStoryIdentifiers = "StoryIdentifiers:"
+        CCLog.info("Expected that there should already be Story Prefech.next for the following Stories, but didn't. Executing them now")
+        
+        for story in stories {
+          if storiesNeedingPrefetch.contains(where: { $0 === story}) {
+            let momentOperation = StoryOperation.createRecursive(with: .next, on: story, at: .low)
+            self.queue(momentOperation, at: .low)
+            debugStoryIdentifiers += " \(story.getUniqueIdentifier())"
+          }
+        }
+        
+        CCLog.info(debugStoryIdentifiers)
+      }
+    }
+  }
+  
   
   func cancelAll() {
     CCLog.info("Cancelling All Prefetch Operations!")

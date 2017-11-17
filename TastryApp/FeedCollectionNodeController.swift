@@ -17,9 +17,10 @@ import AsyncDisplayKit
   
   @objc optional func collectionNodeDidEndDecelerating()
   
-  @objc optional func collectionNodeScrollViewDidEndDragging()
+  @objc optional func collectionNodeDidStopScrolling()
   
   @objc optional func collectionNodeLayoutChanged(to layoutType: FeedCollectionNodeController.LayoutType)
+  
 }
 
 
@@ -75,15 +76,15 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   var highlightedStoryIndex: Int? {
     
-    if let layout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
-      
+    switch layoutType {
+    case .carousel:
+      let layout = collectionNode.collectionViewLayout as! CarouselCollectionViewLayout
       let cardWidth = layout.itemSize.width + layout.minimumLineSpacing
       let offset = collectionNode.contentOffset.x
       let indexPathItemNumber = Int(floor((offset - cardWidth / 2) / cardWidth) + 1)
       return toStoryIndex(from: IndexPath(item: indexPathItemNumber, section: 0))
       
-    } else if collectionNode.collectionViewLayout is MosaicCollectionViewLayout {
-    
+    case .mosaic:
       var highlightIndexPath: IndexPath?
       var smallestPositiveMidYDifference: CGFloat = collectionNode.bounds.height - Constants.MosaicHighlightThresholdOffset
       
@@ -109,16 +110,8 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
         CCLog.warning("No Highlight Index Path")
         return nil
       }
-    } else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.fatal("Did not recognize CollectionNode Layout Type")
-      }
-      return nil
     }
   }
-  
-//  var fullyVisibleStoryIndexes
-//  var visibleStoryIndexes
   
   
   
@@ -190,7 +183,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     let story = storyArray[storyIndex]
     
     // Stop all prefetches but the story being viewed
-    FoodieFetch.global.cancelAllBut(for: story)
+    FoodieFetch.global.cancelAllButOne(story)
     
     if(FoodieStory.currentStory != nil) {
       // display the the discard dialog
@@ -364,6 +357,68 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       collectionNode.scrollToItem(at: toIndexPath(from: storyIndex), at: .top, animated: true)
     }
   }
+  
+  
+  // Get an array of Story Indexes that is visible for over the threadshold percentage stated
+  // If threshold is nil, all visible Story indexes will be returned no matter how little of it is visble
+  // The array of Story indexes always comes sorted in decreasing percentage visible
+  
+  func getStoryIndexesVisible(forOver thresholdPercentage: CGFloat = 0.00) -> [Int] {
+    
+    var visibleStoryIndexes = [Int]()
+    var visiblePercentages = [CGFloat]()
+    
+    for visibleIndexPath in collectionNode.indexPathsForVisibleItems {
+      
+      guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: visibleIndexPath) else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.assert("Cannot find Layout Attribute for item at IndexPath Section: \(visibleIndexPath.section) Row: \(visibleIndexPath.row)")
+        }
+        break
+      }
+      
+      var percentageVisible: CGFloat!
+      
+      switch layoutType {
+      case .carousel:
+        var visibleMin = layoutAttributes.frame.minX
+        var visibleMax = layoutAttributes.frame.maxX
+        
+        if visibleMin < collectionNode.bounds.minX {
+          visibleMin = collectionNode.bounds.minX
+        }
+        if visibleMax > collectionNode.bounds.maxX {
+          visibleMax = collectionNode.bounds.maxX
+        }
+        percentageVisible = (visibleMax - visibleMin) / layoutAttributes.frame.width
+        
+      case .mosaic:
+        var visibleMin = layoutAttributes.frame.minY
+        var visibleMax = layoutAttributes.frame.maxY
+        
+        if visibleMin < collectionNode.bounds.minY {
+          visibleMin = collectionNode.bounds.minY
+        }
+        if visibleMax > collectionNode.bounds.maxY {
+          visibleMax = collectionNode.bounds.maxY
+        }
+        percentageVisible = (visibleMax - visibleMin) / layoutAttributes.frame.height
+      }
+      
+      if percentageVisible > thresholdPercentage {
+        // Find where to insert this Story Index
+        if let index = visiblePercentages.index(where: { $0 < percentageVisible }) {
+          visibleStoryIndexes.insert(toStoryIndex(from: visibleIndexPath), at: index)
+          visiblePercentages.insert(percentageVisible, at: index)
+        } else {
+          visibleStoryIndexes.append(toStoryIndex(from: visibleIndexPath))
+          visiblePercentages.append(percentageVisible)
+        }
+      }
+    }
+    
+    return visibleStoryIndexes
+  }
 }
 
 
@@ -412,7 +467,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   func collectionNode(_ collectionNode: ASCollectionNode, didSelectItemAt indexPath: IndexPath) {
     let story = storyArray[indexPath.row]
     // Stop all prefetches but the story being viewed
-    FoodieFetch.global.cancelAllBut(for: story)
+    FoodieFetch.global.cancelAllButOne(story)
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
@@ -544,31 +599,22 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-//    let indexPaths = collectionNode.indexPathsForVisibleItems
-//    
-//    for indexPath in indexPaths {
-//      let storyIndex = toStoryIndex(from: indexPath)
-//      let story = storyArray[storyIndex]
-//      let digestOperation = StoryOperation(with: .digest, on: story, completion: nil)
-//      FoodieFetch.global.queue(digestOperation, at: .low)
-//    }
-    delegate?.collectionNodeDidEndDecelerating?()
+    delegate?.collectionNodeDidStopScrolling?()
   }
   
   
   func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-//    let indexPaths = collectionNode.indexPathsForVisibleItems
-//
-//    for indexPath in indexPaths {
-//      let storyIndex = toStoryIndex(from: indexPath)
-//      let story = storyArray[storyIndex]
-//      let digestOperation = StoryOperation(with: .digest, on: story, completion: nil)
-//      FoodieFetch.global.queue(digestOperation, at: .low)
-//    }
-    delegate?.collectionNodeScrollViewDidEndDragging?()
+    if !decelerate {
+      delegate?.collectionNodeDidStopScrolling?()
+    }
   }
   
+  
+  func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+    delegate?.collectionNodeDidStopScrolling?()
+  }
 }
+
 
 
 extension FeedCollectionNodeController: MosaicCollectionViewLayoutDelegate {

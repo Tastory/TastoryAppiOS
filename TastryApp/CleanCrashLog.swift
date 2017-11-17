@@ -75,7 +75,7 @@ class CCLog {
   
   // TODO: - Consider User Information & Key Value Information on Crash
   
-  static func verbose(_ description: String, function: String = #function, file: String = #file, line: Int = #line) {
+  static func verbose(_ description: String, function: String = #function, file: String = #file, line: Int = #line, seperator: String? = nil) {
     Log.verbose?.message(description, function: function, filePath: file, fileLine: line)
   }
   
