@@ -106,9 +106,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       if let highlightIndexPath = highlightIndexPath {
         return toStoryIndex(from: highlightIndexPath)
       } else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-          CCLog.warning("No Highlight Index Path")
-        }
+        CCLog.warning("No Highlight Index Path")
         return nil
       }
     } else {

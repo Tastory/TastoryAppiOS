@@ -384,6 +384,8 @@ class DiscoverViewController: OverlayViewController {
   
   private func refreshDiscoverView(onStories stories: [FoodieStory], zoomToRegion: Bool, scrollAndSelectStory: Bool) {
     
+    // TODO: - Empty results current does nothing. No Empty Message, no Clearing of the last result. Nothing
+    
     DispatchQueue.main.async {
       self.mapNavController.mapView.removeAnnotations(self.storyAnnotations)
       self.storyAnnotations = [StoryMapAnnotation]()
