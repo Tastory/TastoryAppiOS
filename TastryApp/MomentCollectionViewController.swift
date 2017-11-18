@@ -256,7 +256,7 @@ class MomentCollectionViewController: UICollectionViewController {
         reusableCell.deleteButton.isHidden = false
       }
     } else {
-      CCLog.debug("No cell provided or found for story \(self.workingStory.getUniqueIdentifier()))!!!")
+      //CCLog.verbose("No cell provided or found for story \(self.workingStory.getUniqueIdentifier()))!!!")
       collectionView.reloadItems(at: [indexPath])
     }
   }

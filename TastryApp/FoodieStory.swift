@@ -19,7 +19,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var type: Int // Really enum for the thumbnail type. Allow videos in the future?
   @NSManaged var aspectRatio: Double
   @NSManaged var width: Int
-  @NSManaged var markups: Array<FoodieMarkup>? // Array of PFObjects as FoodieMarkup for the thumbnail
   
   @NSManaged var title: String? // Title for the Story
   @NSManaged var venue: FoodieVenue? // Pointer to the Restaurant object
@@ -269,9 +268,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-//      guard let thumbnail = self.thumbnail else {
-//        CCLog.fatal("Story retrieved but thumbnail = nil")
-//      }
+      // Not retrieving Thumbnail for Digest
       
       guard let venue = self.venue else {
         CCLog.fatal("Story retrieved but venue = nil")
@@ -289,21 +286,11 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
           return
         }
         
-//        if let childOperation = self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
-//          storyOperation.add(childOperation)
-//        }
-        
         if let childOperation = self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
           storyOperation.add(childOperation)
         }
         
-        if let markups = self.markups {
-          for markup in markups {
-            if let childOperation = self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
-              storyOperation.add(childOperation)
-            }
-          }
-        }
+        // There will be no Markups for Story Covers
         
         if localType != .draft {
           if let childOperation  = self.foodieObject.retrieveChild(author, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
@@ -341,14 +328,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
       // We are not gonna save the User here either
       
-      if let markups = self.markups {
-        for markup in markups {
-          if let childOperation = self.foodieObject.saveChild(markup, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
-            storyOperation.add(childOperation)
-          }
-          childOperationPending = true
-        }
-      }
+      // There will be no Markups for Story Covers
       
       if let venue = self.venue {
         if let childOperation = self.foodieObject.saveChild(venue, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
@@ -410,13 +390,13 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
           }
         }
         
-        if let markups = self.markups {
-          for markup in markups {
-            if let childOperation = self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withCompletion: callback) {
-              storyOperation.add(childOperation)
-            }
-          }
-        }
+//        if let markups = self.markups {
+//          for markup in markups {
+//            if let childOperation = self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withCompletion: callback) {
+//              storyOperation.add(childOperation)
+//            }
+//          }
+//        }
         
         if let venue = self.venue {
           if let childOperation = self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withCompletion: callback) {
@@ -466,14 +446,14 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         }
       }
       
-      if let markups = self.markups {
-        for markup in markups {
-          if let childOperation = self.foodieObject.saveChild(markup, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
-            storyOperation.add(childOperation)
-          }
-          childOperationPending = true
-        }
-      }
+//      if let markups = self.markups {
+//        for markup in markups {
+//          if let childOperation = self.foodieObject.saveChild(markup, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
+//            storyOperation.add(childOperation)
+//          }
+//          childOperationPending = true
+//        }
+//      }
       
       if let venue = self.venue {
         if let childOperation = self.foodieObject.saveChild(venue, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
@@ -528,15 +508,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
             childOperationPending = true
           }
         }
-          
-        if let markups = self.markups {
-          for markup in markups {
-            if let childOperation = self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
-              storyOperation.add(childOperation)
-            }
-            childOperationPending = true
-          }
-        }
+        
+        // There will be no Markups for Story Covers
 
         if let venue = self.venue {
           if let childOperation = self.foodieObject.deleteChild(venue, from: .local, type: localType, on: self.childOperationQueue, withBlock: nil) { // Don't ever delete venues from the server
@@ -592,11 +565,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       //        }
       //      }
       
-      if let markups = self.markups {
-        for markup in markups {
-          markup.cancelRetrieveFromServerRecursive()
-        }
-      }
+      // There will be no Markups for Story Covers
       
       if let venue = self.venue {
         venue.cancelRetrieveFromServerRecursive()
@@ -620,11 +589,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     //      }
     //    }
     
-    if let markups = markups {
-      for markup in markups {
-        markup.cancelSaveToServerRecursive()
-      }
-    }
+    // There will be no Markups for Story Covers
     
     if let venue = venue {
       venue.cancelSaveToServerRecursive()
@@ -830,14 +795,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       return false
     }
     
-    var markupsAreRetrieved = true
-    if let markups = markups {
-      for markup in markups {
-        markupsAreRetrieved = markupsAreRetrieved && markup.isRetrieved
-      }
-    }
+    // There will be no Markups for Story Covers
     
-    return venue.isRetrieved && markupsAreRetrieved && author.isRetrieved
+    return venue.isRetrieved && author.isRetrieved
   }
   
   

@@ -99,12 +99,12 @@ class AVExportPlayer: NSObject {
       return
     }
     
-    CCLog.debug("Observed Value for keyPath changed - \(keyPath) on AVExport Player \(uniqueIdentifier)")
+    //CCLog.verbose("Observed Value for keyPath changed - \(keyPath) on AVExport Player \(uniqueIdentifier)")
     
     switch keyPath {
     case #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackLikelyToKeepUp), #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackBufferEmpty):
       DispatchQueue.main.async {
-        CCLog.debug("Determine if playing for AVExport Player \(self.uniqueIdentifier)")
+        //CCLog.verbose("Determine if playing for AVExport Player \(self.uniqueIdentifier)")
         self.determineIfPlaying()
       }
     
@@ -153,7 +153,7 @@ class AVExportPlayer: NSObject {
     
     if let avExportSession = avExportSession {
       if avExportSession.status == .completed {
-        CCLog.verbose("Switching AVAsset URL to completed Output File")
+        // CCLog.verbose("Switching AVAsset URL to completed Output File")
         
         // Swap AVPlayer's backing file to local Cache. It's assumed that the Cache file will always exist if the AVPlayer is still in Memory.
         // If the app quits and a cache clean up occurs, the AVPlayer will get reinitialized next time against the network instead.
@@ -346,7 +346,7 @@ class AVExportPlayer: NSObject {
     
   deinit {
     // This essentially is a Cancel for everything. So let's cancel everything, clean-up, and call it
-    CCLog.verbose("AVExportPlayer Deinit")
+//    CCLog.verbose("AVExportPlayer Deinit")
 //    if let periodicObserver = periodicObserver {
 //      avPlayer?.removeTimeObserver(periodicObserver)
 //    }

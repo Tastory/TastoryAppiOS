@@ -250,7 +250,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
-    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidLoad")
+    CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidLoad")
     if let dragGestureRecognizer = dragGestureRecognizer {
       view.addGestureRecognizer(dragGestureRecognizer)
     }
@@ -262,54 +262,54 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillAppear")
+    CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillAppear")
   }
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     navigationController?.delegate = self
-    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidAppear")
+    CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidAppear")
   }
   
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
-    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillDisappear")
+    CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewWillDisappear")
   }
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidDisappear")
+    CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidDisappear")
   }
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
-    CCLog.warning("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") didReceiveMemoryWarning")
+    CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") didReceiveMemoryWarning")
   }
   
   func topViewWillResignActive() {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
-    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") was top view when application Will Resign Active")
+    CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") was top view when application Will Resign Active")
   }
   
   func topViewDidEnterBackground() {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") was top view when application Did Enter Background")
+    CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") was top view when application Did Enter Background")
   }
   
   func topViewWillEnterForeground() {
     // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") was top view when application Will Enter Foreground")
+    CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") was top view when application Will Enter Foreground")
   }
   
   func topViewDidBecomeActive() {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") was top view when application Did Become Active")
+    CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") was top view when application Did Become Active")
   }
   
   deinit {
-    CCLog.verbose("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") deinit")
+    CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") deinit")
   }
 }
 

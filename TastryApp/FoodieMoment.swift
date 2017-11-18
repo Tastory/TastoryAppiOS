@@ -97,7 +97,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
-          
         }
         
       case .saveMoment:
