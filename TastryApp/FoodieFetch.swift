@@ -183,7 +183,7 @@ class FoodieFetch {
         debugStoryIdentifiers = "StoryIdentifiers:"
         
         for story in stories {
-          let momentOperation = StoryOperation.createRecursive(with: .next, on: story, at: .low)
+          let momentOperation = StoryOperation.createRecursive(with: .first, on: story, at: .low)
           self.queue(momentOperation, at: .low)
           debugStoryIdentifiers += " \(story.getUniqueIdentifier())"
         }

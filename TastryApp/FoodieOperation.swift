@@ -25,6 +25,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   enum OperationType: String {
     case digest
     case moment
+    case first
     case next
   }
 
@@ -33,11 +34,14 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   enum ErrorCode: LocalizedError {
     
     case allMomentsForStoryRetrieved
+    case firstMomentForStoryRetrieved
     
     var errorDescription: String? {
       switch self {
       case .allMomentsForStoryRetrieved:
         return NSLocalizedString("All moments for Story have been retrieved", comment: "An error type actually describing a successful completion of a long running series of operations")
+      case .firstMomentForStoryRetrieved:
+        return NSLocalizedString("First moment for Story have been retrieved", comment: "An error type actually describing a successful completion of a long running series of operations")
       }
     }
     
@@ -59,8 +63,8 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   
   // MARK: - Public Static Functions
   static func createRecursive(with type: OperationType = .next, on story: FoodieStory, at priority: Operation.QueuePriority) -> StoryOperation {
-    guard type == .next else {
-      CCLog.fatal("Only .next is supported for recursive Story Prefetching")
+    if type != .next && type != .first {
+      CCLog.fatal("Only .first and .next is supported for recursive Story Prefetching")
     }
     
     return StoryOperation(with: type, on: story) { error in
@@ -124,12 +128,12 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       guard let moments = story.moments  else {
         CCLog.fatal("Story has no moments")
       }
-      childOperation = moments[momentNumber].retrieveRecursive(from: .both, type: .cache) { error in
+      childOperation = moments[momentNumber].retrieveMedia(from: .both, type: .cache) { error in
         self.callback?(error)
         self.finished()
       }
       
-    case .next:
+    case .first:
       // See if the digest is even retrieved first
       if !story.isDigestRetrieved {
         childOperation = story.retrieveDigest(from: .both, type: .cache) { error in //withReady: nil
@@ -145,10 +149,36 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
         return
       }
       
+      if !moments[0].isMediaReady {
+          
+        #if DEBUG
+          CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment 0 is \(moments[0].getUniqueIdentifier())")
+        #else
+          CCLog.debug("Moment 0 to fetch for Story \(story.getUniqueIdentifier()) is \(moments[0].getUniqueIdentifier())")
+        #endif
+          
+        childOperation = moments[0].retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
+          self.callback?(error)
+          self.finished()
+        }
+        return
+      }
+      
+      // All Moments have been Retrieved!
+      self.callback?(ErrorCode.firstMomentForStoryRetrieved)
+      self.finished()
+      
+    case .next:
+      // Find the next unfetched moment first
+      guard let moments = story.moments else {
+        CCLog.assert("No Moments in Story for Fetch Operation")
+        return
+      }
+      
       var momentNum = 0
       for moment in moments {
         momentNum += 1
-        if !moment.isRetrieved {
+        if !moment.isMediaReady {
           
           #if DEBUG
             CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment \(momentNum)/\(moments.count) is \(moment.getUniqueIdentifier())")
@@ -156,7 +186,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
             CCLog.debug("Moment \(momentNum)/\(moments.count) to fetch for Story \(story.getUniqueIdentifier()) is \(moment.getUniqueIdentifier())")
           #endif
           
-          childOperation = moment.retrieveRecursive(from: .both, type: .cache) { error in //withReady: nil
+          childOperation = moment.retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
             self.callback?(error)
             self.finished()
           }

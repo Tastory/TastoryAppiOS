@@ -320,8 +320,9 @@ class StoryViewController: OverlayViewController {
       if draftPreview {
         _ = moment.retrieveRecursive(from: .local, type: .draft, withCompletion: nil)
       } else {
-        let momentOperation = StoryOperation(with: .moment, on: story, for: story.getIndexOf(moment), completion: nil)
-        FoodieFetch.global.queue(momentOperation, at: .high)
+        // ??? Should we even bother with this double-confirm fetch?
+//        let momentOperation = StoryOperation(with: .moment, on: story, for: story.getIndexOf(moment), completion: nil)
+//        FoodieFetch.global.queue(momentOperation, at: .high)
       }
     } else {
       CCLog.info("Moment \(moment.getUniqueIdentifier()) displaying")

@@ -43,7 +43,7 @@ class DiscoverViewController: OverlayViewController {
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
     
     static let PullTranslationForChange: CGFloat = 50.0
-    static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.5
+    static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.9
   }
 
   
@@ -875,17 +875,17 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
   
   
   func collectionNodeDidStopScrolling() {
-    if let storyIndex = feedCollectionNodeController.highlightedStoryIndex {
-      for annotation in mapNavController.mapView.annotations {
-        if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
-          mapNavController.selectInExposedRect(annotation: storyAnnotation)
+    if let storyIndex = self.feedCollectionNodeController.highlightedStoryIndex {
+      for annotation in self.mapNavController.mapView.annotations {
+        if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === self.storyArray[storyIndex] {
+          self.mapNavController.selectInExposedRect(annotation: storyAnnotation)
         }
       }
     }
-    
-    // Do Prefetching
-    let storiesIndexes = feedCollectionNodeController.getStoryIndexesVisible(forOver: Constants.PercentageOfStoryVisibleToStartPrefetch)
-    let storiesShouldPrefetch = storiesIndexes.map { storyArray[$0] }
+      
+    // Do Prefetching? In reality doing this slows down the whole app. And assets don't seem to be ready any quicker.... If not slower all together.....
+    let storiesIndexes = self.feedCollectionNodeController.getStoryIndexesVisible(forOver: Constants.PercentageOfStoryVisibleToStartPrefetch)
+    let storiesShouldPrefetch = storiesIndexes.map { self.storyArray[$0] }
     FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
   }
 }

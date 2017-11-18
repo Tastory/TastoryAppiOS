@@ -23,7 +23,6 @@ class FoodieFileObject {
     case fileManagerReadLocalFailed
     case fileManagerSaveLocalFailed
     case fileManagerRemoveItemLocalFailed
-    case urlSessionDownloadNotUrlError
     case urlSessionDownloadHttpResponseNil
     case urlSessionDownloadHttpResponseFailed
     case urlSessionDownloadTempUrlNil
@@ -49,8 +48,6 @@ class FoodieFileObject {
         return NSLocalizedString("Data.write failed", comment: "Error description for an exception error code")
       case .fileManagerRemoveItemLocalFailed:
         return NSLocalizedString("FileManager.removeItem failed", comment: "Error description for an exception error code")
-      case .urlSessionDownloadNotUrlError:
-        return NSLocalizedString("DownloadSession.downloadTask error not a URLError", comment: "Error description for an exception error code")
       case .urlSessionDownloadHttpResponseNil:
         return NSLocalizedString("DownloadSession.downloadTask HTTP Response nil", comment: "Error description for an exception error code")
       case .urlSessionDownloadHttpResponseFailed:
@@ -259,17 +256,16 @@ class FoodieFileObject {
         let downloadEndTime = PrecisionTime.now()
         
         if let error = error {
-          guard let urlError = error as? URLError else {
-            CCLog.assert("Download of \(fileName) from CloudFront resulted in error not of URLError type - \(error.localizedDescription)")
-            callback?(FileErrorCode.urlSessionDownloadNotUrlError)
-            return
-          }
-          
           CCLog.warning("Download of \(fileName) from CloudFront resulted in error - \(error.localizedDescription)")
-          if !retrieveRetry.attemptRetryBasedOnURLError(urlError,
-                                                        after: Constants.AwsRetryDelay,
-                                                        withQoS: .utility) {
-            callback?(urlError)
+          
+          if let urlError = error as? URLError {
+            if !retrieveRetry.attemptRetryBasedOnURLError(urlError,
+                                                          after: Constants.AwsRetryDelay,
+                                                          withQoS: .utility) {
+              callback?(urlError)
+            }
+          } else {
+            callback?(error)
           }
           return
         }

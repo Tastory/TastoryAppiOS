@@ -12,7 +12,7 @@ class ProfileViewController: OverlayViewController {
   
   // MARK: - Constants
   struct Constants {
-    static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.5
+    static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.9
   }
   
   
