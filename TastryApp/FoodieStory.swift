@@ -390,13 +390,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
           }
         }
         
-//        if let markups = self.markups {
-//          for markup in markups {
-//            if let childOperation = self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withCompletion: callback) {
-//              storyOperation.add(childOperation)
-//            }
-//          }
-//        }
+//      // There will be no Markups for Story Covers
         
         if let venue = self.venue {
           if let childOperation = self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withCompletion: callback) {
@@ -446,14 +440,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         }
       }
       
-//      if let markups = self.markups {
-//        for markup in markups {
-//          if let childOperation = self.foodieObject.saveChild(markup, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
-//            storyOperation.add(childOperation)
-//          }
-//          childOperationPending = true
-//        }
-//      }
+      // There will be no Markups for Story Covers
       
       if let venue = self.venue {
         if let childOperation = self.foodieObject.saveChild(venue, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {

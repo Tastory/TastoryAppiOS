@@ -43,7 +43,7 @@ class DiscoverViewController: OverlayViewController {
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
     
     static let PullTranslationForChange: CGFloat = 50.0
-    static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.9
+    static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.7
   }
 
   
