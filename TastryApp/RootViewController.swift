@@ -41,7 +41,7 @@ class RootViewController: UIViewController {
   override func viewDidAppear(_ animated: Bool) {
     if let currentUser = FoodieUser.current, currentUser.isRegistered {
       
-      _ = currentUser.retrieveRecursive(from: .both, type: .cache, forceAnyways: true) { error in
+      currentUser.retrieveRecursive(from: .both, type: .cache, forceAnyways: true) { error in
         if let error = error {
           CCLog.warning("Retrieve latest copy of Current User failed with Error - \(error.localizedDescription)")
         }

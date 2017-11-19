@@ -530,7 +530,7 @@ class DiscoverViewController: OverlayViewController {
           }
 
           if(!story.isEditStory) {
-            _ = story.retrieveRecursive(from: .local, type: .draft, forceAnyways: false) { error in
+            story.retrieveRecursive(from: .local, type: .draft, forceAnyways: false, for: nil) { error in
 
               if let retrieveError = error {
                 FoodieObject.deleteAll(from: .draft) { error in

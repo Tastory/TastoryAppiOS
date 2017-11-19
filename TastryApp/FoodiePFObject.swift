@@ -80,7 +80,7 @@ class FoodiePFObject: PFObject {
     }
     
     // See if this is already in memory, if so no need to do anything
-    if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
+    if isDataAvailable && !forceAnyways {
       CCLog.verbose("\(delegate.foodieObjectType())(\(getUniqueIdentifier())) Data Available and not Forcing Anyways. Calling back with nil")
       callback?(nil)
       return
@@ -128,7 +128,7 @@ class FoodiePFObject: PFObject {
     }
     
     // See if this is already in memory, if so no need to do anything
-    if isDataAvailable && !forceAnyways {  // TODO: Does isDataAvailabe need critical mutex protection?
+    if isDataAvailable && !forceAnyways {
       CCLog.verbose("\(delegate.foodieObjectType())(\(getUniqueIdentifier())) Data Available and not Forcing Anyways. Calling back with nil")
       callback?(nil)
       return

@@ -61,8 +61,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     //var error: Error?
     var callback: ((Error?) -> Void)?
     
-    private var childOperations = [AsyncOperation]()
-    
     init(on operationType: OperationType,
          for moment: FoodieMoment,
          to location: FoodieObject.StorageLocation,
@@ -115,10 +113,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       }
     }
     
-    func add(_ childOperation: AsyncOperation) {
-      childOperations.append(childOperation)
-    }
-    
     override func cancel() {
       self.stateQueue.async {
         // Cancel regardless
@@ -127,25 +121,28 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         CCLog.debug("Cancel for Moment \(self.moment.getUniqueIdentifier()), Executing = \(self.isExecuting)")
         
         if self.isExecuting {
-          self.moment.childOperationQueue.async {
-            // Cancel all child operations
-            for operation in self.childOperations {
-              operation.cancel()
-            }
-            
-            switch self.operationType {
-            case .retrieveMoment:
-              self.moment.cancelRetrieveOpRecursive()
-            case .retrieveMedia:
-              self.moment.cancelRetrieveOpMedia()
-            case .saveMoment:
-              self.moment.cancelSaveOpRecursive()
-            default:
-              break
-            }
+          SwiftMutex.lock(&self.moment.criticalMutex)
+          
+          // Cancel all child operations
+          for operation in self.childOperations {
+            operation.cancel()
           }
-        } else {
+          
+          switch self.operationType {
+          case .retrieveMoment:
+            self.moment.cancelRetrieveOpRecursive()
+          case .retrieveMedia:
+            self.moment.cancelRetrieveOpMedia()
+          case .saveMoment:
+            self.moment.cancelSaveOpRecursive()
+          default:
+            break
+          }
+          SwiftMutex.unlock(&self.moment.criticalMutex)
+          
+        } else if !self.isFinished {
           self.callback?(ErrorCode.operationCancelled)
+          //self.finished()  // Calling isFinished when it's not executing causes problems
         }
       }
     }
@@ -182,7 +179,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Public Instance Variables
 
   var isEditMoment: Bool { return objectId != nil }
-
+  var criticalMutex = SwiftMutex.create()
+  
   var media: FoodieMedia? {
     didSet {
       mediaFileName = media!.foodieFileName
@@ -196,7 +194,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  var childOperationQueue = DispatchQueue(label: "Child Operation Queue", qos: .userInitiated)
   
   
   // MARK: - Private Instance Variables
@@ -257,28 +254,31 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      self.foodieObject.resetChildOperationVariables()
+      // Calculate how many outstanding children operations there will be before hand
+      // This helps avoiding the need of a lock
+      var outstandingChildOperations = 2   // media & thumbnail to start
       
-      self.childOperationQueue.async {
-        guard !momentOperation.isCancelled else {
-          callback?(ErrorCode.operationCancelled)
-          return
-        }
+      if let markups = self.markups {
+        outstandingChildOperations += markups.count
+      }
+      
+      // Can we just use a mutex lock then?
+      SwiftMutex.lock(&self.criticalMutex)
+      defer { SwiftMutex.unlock(&self.criticalMutex) }
+      
+      guard !momentOperation.isCancelled else {
+        CCLog.verbose("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()) early return due to cancel")
+        callback?(ErrorCode.operationCancelled)
+        return
+      }
+      
+      self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+      self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
+      self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
         
-        if let childOperation = self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
-          momentOperation.add(childOperation)
-        }
-        
-        if let childOperation = self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
-          momentOperation.add(childOperation)
-        }
-        
-        if let markups = self.markups {
-          for markup in markups {
-            if let childOperation = self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
-              momentOperation.add(childOperation)
-            }
-          }
+      if let markups = self.markups {
+        for markup in markups {
+          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
         }
       }
     }
@@ -306,24 +306,30 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      self.foodieObject.resetChildOperationVariables()
+      // Calculate how many outstanding children operations there will be before hand
+      // This helps avoiding the need of a lock
+      var outstandingChildOperations = 1   // media to start
       
-      self.childOperationQueue.async {
-        guard !momentOperation.isCancelled else {
-          callback?(ErrorCode.operationCancelled)
-          return
-        }
+      if let markups = self.markups {
+        outstandingChildOperations += markups.count
+      }
+      
+      // Can we just use a mutex lock then?
+      SwiftMutex.lock(&self.criticalMutex)
+      defer { SwiftMutex.unlock(&self.criticalMutex) }
+      
+      guard !momentOperation.isCancelled else {
+        CCLog.verbose("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()) early return due to cancel")
+        callback?(ErrorCode.operationCancelled)
+        return
+      }
+      
+      self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+      self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
         
-        if let childOperation = self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
-          momentOperation.add(childOperation)
-        }
-        
-        if let markups = self.markups {
-          for markup in markups {
-            if let childOperation = self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, on: self.childOperationQueue, withReady: self.executeReady, withCompletion: callback) {
-              momentOperation.add(childOperation)
-            }
-          }
+      if let markups = self.markups {
+        for markup in markups {
+          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
         }
       }
     }
@@ -336,41 +342,47 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                                type localType: FoodieObject.LocalType,
                                withBlock callback: SimpleErrorBlock?) {
     
-    foodieObject.resetChildOperationVariables()
+    // Calculate how many outstanding children operations there will be before hand
+    // This helps avoiding the need of a lock
+    var outstandingChildOperations = 0
     
-    childOperationQueue.async {
-      guard !momentOperation.isCancelled else {
-        callback?(ErrorCode.operationCancelled)
-        return
-      }
-      var childOperationPending = false
-      
-      if let media = self.media {
-        if let childOperation = self.foodieObject.saveChild(media, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
-          momentOperation.add(childOperation)
-        }
-        childOperationPending = true
-      }
-      
-      if let markups = self.markups {
-        for markup in markups {
-          if let childOperation = self.foodieObject.saveChild(markup, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
-            momentOperation.add(childOperation)
-          }
-          childOperationPending = true
-        }
-      }
-      
-      if let thumbnail = self.thumbnail {
-        if let childOperation = self.foodieObject.saveChild(thumbnail, to: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
-          momentOperation.add(childOperation)
-        }
-        childOperationPending = true
-      }
-      
-      if !childOperationPending {
-        CCLog.assert("No child saves pending. Then why is this even saved?")
-        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+    if media != nil { outstandingChildOperations += 1 }
+    if thumbnail != nil { outstandingChildOperations += 1 }
+    
+    if let markups = self.markups {
+      outstandingChildOperations += markups.count
+    }
+    
+    // Can we just use a mutex lock then?
+    SwiftMutex.lock(&criticalMutex)
+    defer { SwiftMutex.unlock(&criticalMutex) }
+    
+    guard !momentOperation.isCancelled else {
+      CCLog.verbose("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()) early return due to cancel")
+      callback?(ErrorCode.operationCancelled)
+      return
+    }
+    
+    // If there's no child op, then just save and return
+    guard outstandingChildOperations != 0 else {
+      CCLog.assert("No child saves pending. Then why is this even saved?")
+      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      return
+    }
+    
+    foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+    
+    if let media = media {
+      foodieObject.saveChild(media, to: location, type: localType, for: momentOperation, withBlock: callback)
+    }
+    
+    if let thumbnail = thumbnail {
+      foodieObject.saveChild(thumbnail, to: location, type: localType, for: momentOperation, withBlock: callback)
+    }
+    
+    if let markups = markups {
+      for markup in markups {
+        foodieObject.saveChild(markup, to: location, type: localType, for: momentOperation, withBlock: callback)
       }
     }
   }
@@ -399,16 +411,16 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           
           // Do best effort delete of all children
           if let media = self.media {
-            _ = self.foodieObject.deleteChild(media, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
+            self.foodieObject.deleteChild(media, from: location, type: localType, for: nil, withBlock: nil)
           }
           
           if let thumbnail = self.thumbnail {
-            _ = self.foodieObject.deleteChild(thumbnail, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
+            self.foodieObject.deleteChild(thumbnail, from: location, type: localType, for: nil, withBlock: nil)
           }
           
           if let markups = self.markups {
             for markup in markups {
-              _ = self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: nil)
+              self.foodieObject.deleteChild(markup, from: location, type: localType, for: nil, withBlock: nil)
             }
           }
           
@@ -417,43 +429,48 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           return
         }
         
-        self.foodieObject.resetChildOperationVariables()
+        // Calculate how many outstanding children operations there will be before hand
+        // This helps avoiding the need of a lock
+        var outstandingChildOperations = 0
         
-        self.childOperationQueue.async {
-          guard !momentOperation.isCancelled else {
-            callback?(ErrorCode.operationCancelled)
-            return
-          }
+        if self.media != nil { outstandingChildOperations += 1 }
+        if self.thumbnail != nil { outstandingChildOperations += 1 }
+        
+        if let markups = self.markups {
+          outstandingChildOperations += markups.count
+        }
+        
+        // Can we just use a mutex lock then?
+        SwiftMutex.lock(&self.criticalMutex)
+        defer { SwiftMutex.unlock(&self.criticalMutex) }
+        
+        guard !momentOperation.isCancelled else {
+          CCLog.verbose("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()) early return due to cancel")
+          callback?(ErrorCode.operationCancelled)
+          return
+        }
           
-          var childOperationPending = false
+        // If there's no child op, then just delete and return
+        guard outstandingChildOperations != 0 else {
+          CCLog.assert("No child deletes pending. Is this okay?")
+          callback?(error)
+          return
+        }
+        
+        self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+        
+        // check for media and thumbnails to be deleted from this object
+        if let media = self.media {
+          self.foodieObject.deleteChild(media, from: location, type: localType, for: momentOperation, withBlock: callback)
+        }
           
-          // check for media and thumbnails to be deleted from this object
-          if let media = self.media {
-            if let childOperation = self.foodieObject.deleteChild(media, from: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
-              momentOperation.add(childOperation)
-            }
-            childOperationPending = true
-          }
+        if let thumbnail = self.thumbnail {
+          self.foodieObject.deleteChild(thumbnail, from: location, type: localType, for: momentOperation, withBlock: callback)
+        }
           
-          if let thumbnail = self.thumbnail {
-            if let childOperation = self.foodieObject.deleteChild(thumbnail, from: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
-              momentOperation.add(childOperation)
-            }
-            childOperationPending = true
-          }
-          
-          if let markups = self.markups {
-            for markup in markups {
-              if let childOperation = self.foodieObject.deleteChild(markup, from: location, type: localType, on: self.childOperationQueue, withBlock: callback) {
-                momentOperation.add(childOperation)
-              }
-              childOperationPending = true
-            }
-          }
-          
-          if !childOperationPending {
-            CCLog.assert("No child deletes pending. Is this okay?")
-            callback?(error)
+        if let markups = self.markups {
+          for markup in markups {
+            self.foodieObject.deleteChild(markup, from: location, type: localType, for: momentOperation, withBlock: callback)
           }
         }
       }
@@ -683,29 +700,30 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
+                         for parentOperation: AsyncOperation? = nil,
                          withReady readyBlock: SimpleBlock? = nil,
-                         withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
+                         withCompletion callback: SimpleErrorBlock?) {
     
     CCLog.verbose("Retrieve Recursive for Moment \(getUniqueIdentifier())")
     
     let retrieveOperation = MomentAsyncOperation(on: .retrieveMoment, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    parentOperation?.add(retrieveOperation)  // Add to parent for cancel purposes
     asyncOperationQueue.addOperation(retrieveOperation)
-    
-    return retrieveOperation
   }
   
   
   func retrieveMedia(from location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
                      forceAnyways: Bool = false,
+                     for parentOperation: AsyncOperation? = nil,
                      withReady readyBlock: SimpleBlock? = nil,
-                     withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
+                     withCompletion callback: SimpleErrorBlock?) -> AsyncOperation {
     
-    CCLog.verbose("Retrieve Recursive for Moment \(getUniqueIdentifier())")
+    CCLog.verbose("Retrieve Media for Moment \(getUniqueIdentifier())")
     
     let retrieveOperation = MomentAsyncOperation(on: .retrieveMedia, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    parentOperation?.add(retrieveOperation)
     asyncOperationQueue.addOperation(retrieveOperation)
-    
     return retrieveOperation
   }
   
@@ -713,28 +731,28 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
-                     withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
+                     for parentOperation: AsyncOperation? = nil,
+                     withBlock callback: SimpleErrorBlock?)  {
     
     CCLog.verbose("Save Recursive for Moment \(getUniqueIdentifier())")
     
     let saveOperation = MomentAsyncOperation(on: .saveMoment, for: self, to: location, type: localType, withBlock: callback)
+    parentOperation?.add(saveOperation)
     asyncOperationQueue.addOperation(saveOperation)
-    
-    return saveOperation
   }
   
   
   // Trigger recursive delete against all child objects.
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
-                       withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
+                       for parentOperation: AsyncOperation? = nil,
+                       withBlock callback: SimpleErrorBlock?) {
     
     CCLog.verbose("Delete Recursive for Moment \(getUniqueIdentifier())")
     
     let deleteOperation = MomentAsyncOperation(on: .deleteMoment, for: self, to: location, type: localType, withBlock: callback)
+    parentOperation?.add(deleteOperation)
     asyncOperationQueue.addOperation(deleteOperation)
-    
-    return deleteOperation
   }
   
   

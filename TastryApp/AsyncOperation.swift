@@ -44,6 +44,8 @@ open class AsyncOperation: Operation {
   }
   
   public let stateQueue = DispatchQueue(label: "Asycn State Critical Section Queue", qos: .userInitiated)
+  
+  var childOperations = [AsyncOperation]()  // TODO: this should really either be a seperate sub-class, or a protocol
 }
 
 
@@ -79,6 +81,10 @@ extension AsyncOperation {
   open func finished() {
     // This is not put in the stateQueue. So make sure no caller of this can race against start() or main()
     state = .Finished
+  }
+  
+  func add(_ childOperation: AsyncOperation) {
+    childOperations.append(childOperation)
   }
   
   func getUniqueIdentifier() -> String { return String(describing: UnsafeRawPointer(Unmanaged.passUnretained(self).toOpaque())) }

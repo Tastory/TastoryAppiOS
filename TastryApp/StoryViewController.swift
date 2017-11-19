@@ -211,10 +211,8 @@ class StoryViewController: OverlayViewController {
       
     } else if mediaType == .video {
       guard let videoExportPlayer = media.videoExportPlayer, let avPlayer = videoExportPlayer.avPlayer else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-          CCLog.assert("MediaObject.videoExportPlayer == nil")
-          self.popDismiss(animated: true)
-        }
+        CCLog.warning("MediaObject.videoExportPlayer == nil")
+        self.popDismiss(animated: true)
         return
       }
 
@@ -318,7 +316,7 @@ class StoryViewController: OverlayViewController {
     if shouldRetrieveMoment {
       self.activitySpinner.apply(below: self.tapBackwardGestureRecognizer)
       if draftPreview {
-        _ = moment.retrieveRecursive(from: .local, type: .draft, withCompletion: nil)
+        moment.retrieveRecursive(from: .local, type: .draft, withCompletion: nil)
       } else {
         // ??? Should we even bother with this double-confirm fetch?
 //        let momentOperation = StoryOperation(with: .moment, on: story, for: story.getIndexOf(moment), completion: nil)

@@ -53,7 +53,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   
   
   // MARK: - Private Instance Variable
-  private var childOperation: AsyncOperation?
+  private var prefetchOperation: AsyncOperation?
   
   
   // MARK: - Public Instance Variables
@@ -112,7 +112,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
         CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation started")
       #endif
       
-      childOperation = story.retrieveDigest(from: .both, type: .cache) { error in
+      prefetchOperation = story.retrieveDigest(from: .both, type: .cache) { error in
         self.callback?(error)
         self.finished()
       }
@@ -128,7 +128,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       guard let moments = story.moments  else {
         CCLog.fatal("Story has no moments")
       }
-      childOperation = moments[momentNumber].retrieveMedia(from: .both, type: .cache) { error in
+      prefetchOperation = moments[momentNumber].retrieveMedia(from: .both, type: .cache) { error in
         self.callback?(error)
         self.finished()
       }
@@ -136,7 +136,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
     case .first:
       // See if the digest is even retrieved first
       if !story.isDigestRetrieved {
-        childOperation = story.retrieveDigest(from: .both, type: .cache) { error in //withReady: nil
+        prefetchOperation = story.retrieveDigest(from: .both, type: .cache) { error in //withReady: nil
           self.callback?(error)
           self.finished()
         }
@@ -157,7 +157,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
           CCLog.debug("Moment 0 to fetch for Story \(story.getUniqueIdentifier()) is \(moments[0].getUniqueIdentifier())")
         #endif
           
-        childOperation = moments[0].retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
+        prefetchOperation = moments[0].retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
           self.callback?(error)
           self.finished()
         }
@@ -186,7 +186,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
             CCLog.debug("Moment \(momentNum)/\(moments.count) to fetch for Story \(story.getUniqueIdentifier()) is \(moment.getUniqueIdentifier())")
           #endif
           
-          childOperation = moment.retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
+          prefetchOperation = moment.retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
             self.callback?(error)
             self.finished()
           }
@@ -202,8 +202,8 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   
   override func cancel() {
     super.cancel()
-    if let childOperation = childOperation {
-      childOperation.cancel()
+    if let prefetchOperation = prefetchOperation {
+      prefetchOperation.cancel()
     }
   }
 }

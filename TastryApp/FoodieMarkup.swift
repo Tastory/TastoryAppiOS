@@ -39,38 +39,35 @@ extension FoodieMarkup: FoodieObjectDelegate {
   func retrieveRecursive(from location: FoodieObject.StorageLocation,
                          type localType: FoodieObject.LocalType,
                          forceAnyways: Bool = false,
+                         for parentOperation: AsyncOperation? = nil,
                          withReady readyBlock: SimpleBlock? = nil,
-                         withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
+                         withCompletion callback: SimpleErrorBlock?) {
     
     // Retrieve self. This object have no children
     foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
       if error == nil { readyBlock?() }
       callback?(error)
     }
-    
-    return nil
   }
   
   
   // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
-                     withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
+                     for parentOperation: AsyncOperation? = nil,
+                     withBlock callback: SimpleErrorBlock?) {
 
-    self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-    
-    return nil
+    foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
   }
   
   
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
-                       withBlock callback: SimpleErrorBlock?) -> AsyncOperation? {
+                       for parentOperation: AsyncOperation? = nil,
+                       withBlock callback: SimpleErrorBlock?) {
 
     // Delete self. For now, this object has no children
     foodieObject.deleteObject(from: location, type: localType, withBlock: callback)
-    
-    return nil
   }
   
   

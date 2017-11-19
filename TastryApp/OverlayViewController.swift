@@ -165,6 +165,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
               }
               return
             }
+            CCLog.verbose("Executing Put Back for \(self.restorationIdentifier != nil ? self.restorationIdentifier! : "")")
             animator.putBack(presentingView, to: popFromSuperView, at: popFromOriginalCenter)
           })
           

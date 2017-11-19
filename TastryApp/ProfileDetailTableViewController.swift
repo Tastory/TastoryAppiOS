@@ -415,7 +415,7 @@ class ProfileDetailTableViewController: UITableViewController {
 
     activitySpinner.apply()
     
-    _ = self.user.retrieveInFull(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
+    self.user.retrieveInFull(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
       
       if let error = error {
         AlertDialog.standardPresent(from: self, title: .genericNetworkError, message: .networkTryAgain) { action in
