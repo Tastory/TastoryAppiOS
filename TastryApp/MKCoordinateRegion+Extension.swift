@@ -9,8 +9,28 @@
 import MapKit
 
 extension MKCoordinateRegion {
+
+  var latitudinalMeters: CLLocationDistance {   // North South
+    let mapRect = self.toMapRect()
+    let mapMidX = MKMapRectGetMidX(mapRect)
+    let mapMinY = MKMapRectGetMinY(mapRect)
+    let mapMaxY = MKMapRectGetMaxY(mapRect)
+    let mapMinPoint = MKMapPoint(x: mapMidX, y: mapMinY)
+    let mapMaxPoint = MKMapPoint(x: mapMidX, y: mapMaxY)
+    return MKMetersBetweenMapPoints(mapMinPoint, mapMaxPoint)
+  }
   
- func toMapRect() -> MKMapRect {
+  var longitudinalMeters: CLLocationDistance {  // East West
+    let mapRect = self.toMapRect()
+    let mapMidY = MKMapRectGetMidY(mapRect)
+    let mapMinX = MKMapRectGetMinX(mapRect)
+    let mapMaxX = MKMapRectGetMaxX(mapRect)
+    let mapMinPoint = MKMapPoint(x: mapMinX, y: mapMidY)
+    let mapMaxPoint = MKMapPoint(x: mapMaxX, y: mapMidY)
+    return MKMetersBetweenMapPoints(mapMinPoint, mapMaxPoint)
+  }
+  
+  func toMapRect() -> MKMapRect {
     let topLeft = CLLocationCoordinate2D(latitude: self.center.latitude + (self.span.latitudeDelta/2), longitude: self.center.longitude - (self.span.longitudeDelta/2))
     let bottomRight = CLLocationCoordinate2D(latitude: self.center.latitude - (self.span.latitudeDelta/2), longitude: self.center.longitude + (self.span.longitudeDelta/2))
     

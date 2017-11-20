@@ -11,10 +11,13 @@ import UIKit
 final class TouchForwardingView: UIView {
   
   final var passthroughViews: [UIView] = []
+  final var touchBlock: (() -> Void)?
   
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
     guard let hitView = super.hitTest(point, with: event) else { return nil }
     guard hitView == self else { return hitView }
+    
+    touchBlock?()
     
     for passthroughView in passthroughViews {
       let point = convert(point, to: passthroughView)

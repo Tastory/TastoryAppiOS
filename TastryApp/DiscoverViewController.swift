@@ -36,43 +36,30 @@ class DiscoverViewController: OverlayViewController {
   
   // MARK: - Class Constants
   fileprivate struct Constants {
-    static let DefaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
-                                                              longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
-    static let DefaultMaxDelta: CLLocationDegrees = 0.05
-    static let DefaultMinDelta: CLLocationDegrees = 0.005
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
-    
-    static let PullTranslationForChange: CGFloat = 50.0
+    static let PullTranslationForChange: CGFloat = 50.0  // In Points
     static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.7
   }
 
   
 
   // MARK: - Private Instance Variables
-  private let refreshQueue = DispatchQueue(label: "Discover View Refresh Queue", qos: .userInitiated)
+  private var feedCollectionNodeController: FeedCollectionNodeController!
+  private var mapNavController: MapNavController?
   
-  private var currentMapDelta = Constants.DefaultMaxDelta
-  private var locationWatcher: LocationWatch.Context?
-  private var lastLocation: CLLocationCoordinate2D? = nil
-  private var lastMapDelta: CLLocationDegrees? = nil
+  private var lastMapRegion: MKCoordinateRegion?
+  private var lastMapWasTracking: Bool = false
+  private var lastSelectedAnnotationIndex: Int?
+  private var highlightedStoryIndex: Int?
+  private var mosaicMapWidth: CLLocationDistance?
+  
   private var storyQuery: FoodieQuery?
   private var storyArray = [FoodieStory]()
   private var storyAnnotations = [StoryMapAnnotation]()
-  private var feedCollectionNodeController: FeedCollectionNodeController!
-  
-  private var mapNavController: MapNavController {
-    guard let mapNavController = navigationController as? MapNavController else {
-      CCLog.fatal("Expected navigationController to be of type MapNavController")
-    }
-    return mapNavController
-  }
+
   
   
   // MARK: - IBOutlets
-  @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer!
-  @IBOutlet weak var pinchGestureRecognizer: UIPinchGestureRecognizer!
-  @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer!
-  @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer!
   @IBOutlet weak var mosaicLayoutChangePanRecognizer: UIPanGestureRecognizer!
   @IBOutlet weak var carouselLayoutChangeTapRecognizer: UITapGestureRecognizer!
   
@@ -87,6 +74,10 @@ class DiscoverViewController: OverlayViewController {
     didSet {
       if let touchForwardingView = touchForwardingView, let mapNavController = navigationController as? MapNavController {
         touchForwardingView.passthroughViews = [mapNavController.mapView]
+        touchForwardingView.touchBlock = {
+          self.locationField?.resignFirstResponder()
+          self.mapNavController?.stopTracking()
+        }
       }
     }
   }
@@ -96,30 +87,9 @@ class DiscoverViewController: OverlayViewController {
   @IBOutlet weak var carouselMapView: UIView!
   
   
+  
   // MARK: - IBActions
-  @IBAction func singleTapGestureDetected(_ sender: UITapGestureRecognizer) {
-    // Dismiss keyboard if any gestures detected against Map
-    locationField?.resignFirstResponder()
-  }
 
-  
-  // Pan, Pinch, Double-Tap gestures all routed here
-  @IBAction func mapGestureDetected(_ recognizer: UIGestureRecognizer) {
-
-    // Dismiss keyboard if any gestures detected against Map
-    locationField?.resignFirstResponder()
-
-    // Stop updating location if any gestures detected against Map
-    switch recognizer.state {
-    case .began, .ended:
-      locationWatcher?.pause()
-      mapNavController.mapView.setUserTrackingMode(.none, animated: false)
-    default:
-      break
-    }
-  }
-  
-  
   @IBAction func launchDraftStory(_ sender: Any) {
     // This is used for viewing the draft story to be used with update story later
     // Hide the button as needed, due to problems with empty draft story and saving an empty story is problematic
@@ -156,35 +126,13 @@ class DiscoverViewController: OverlayViewController {
   
   
   @IBAction func currentLocationReturn(_ sender: UIButton) {
-
     // Clear the text field while at it
     locationField?.text = ""
-    
-    // Clear last location, we want the map to find the current location if the view resumes
-    lastLocation = nil
-    lastMapDelta = nil
-
-    if mapNavController.mapView.userTrackingMode == .none {
-      // Base the span of the new mapView on what the mapView span currently is
-      currentMapDelta = mapNavController.exposedRegion.span.latitudeDelta
-      
-      // Take the lesser of current or default max latitude degrees
-      currentMapDelta = min(currentMapDelta, Constants.DefaultMaxDelta)
-
-      // Take the greater of current or default min latitude degrees
-      currentMapDelta = max(currentMapDelta, Constants.DefaultMinDelta)
-
-      // Start updating location again
-      locationWatcher?.resume()
-      mapNavController.mapView.setUserTrackingMode(.follow, animated: true)
-    }
+    mapNavController?.showCurrentRegionExposed(animated: true)
   }
   
   
   @IBAction func searchWithFilter(_ sender: UIButton) {
-    
-    locationWatcher?.pause()
-    mapNavController.mapView.setUserTrackingMode(.none, animated: false)
     
     performQuery { stories, error in
       if let error = error {
@@ -211,9 +159,6 @@ class DiscoverViewController: OverlayViewController {
   
   
   @IBAction func allStories(_ sender: UIButton) {
-    
-    locationWatcher?.pause()
-    mapNavController.mapView.setUserTrackingMode(.none, animated: false)
     
     performQuery(onAllUsers: true) { stories, error in
       if let error = error {
@@ -322,7 +267,13 @@ class DiscoverViewController: OverlayViewController {
     var searchMapRect = MKMapRect()
     
     if mapRect == nil {
-      searchMapRect = mapNavController.exposedMapRect
+      guard let mapController = mapNavController else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.assert("mapNavController == nil")
+        }
+        return
+      }
+      searchMapRect = mapController.exposedMapRect
     } else {
       searchMapRect = mapRect!
     }
@@ -386,91 +337,53 @@ class DiscoverViewController: OverlayViewController {
   private func refreshDiscoverView(onStories stories: [FoodieStory], zoomToRegion: Bool, scrollAndSelectStory: Bool) {
     
     // TODO: - Empty results current does nothing. No Empty Message, no Clearing of the last result. Nothing
+
+    var newAnnotations = [StoryMapAnnotation]()
+    var outstandingStoryRetrieval = stories.count
     
-    DispatchQueue.main.async {
-      self.mapNavController.mapView.removeAnnotations(self.storyAnnotations)
-      self.storyAnnotations = [StoryMapAnnotation]()
-      
-      self.refreshQueue.async {
-        var outstandingStoryRetrieval = 0
+    for story in stories {
+      _ = story.retrieveDigest(from: .both, type: .cache) { error in
+        outstandingStoryRetrieval -= 1
         
-        for story in stories {
-          outstandingStoryRetrieval += 1
-          
-          _ = story.retrieveDigest(from: .both, type: .cache) { error in
+        if let error = error {
+          AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story Digest - \(error.localizedDescription)") { action in
+            CCLog.warning("Failed to retrieve Story Digest via story.retrieveDigest. Error - \(error.localizedDescription)")
+          }
+          return
+        }
+      
+        guard let venue = story.venue, let location = venue.location, venue.isDataAvailable else {
+          CCLog.assert("No Title, Venue or Location to Story. Skipping Story")
+          return
+        }
+        
+        let annotation = StoryMapAnnotation(title: venue.name ?? "",
+                                            story: story,
+                                            coordinate: CLLocationCoordinate2D(latitude: location.latitude,
+                                                                               longitude: location.longitude))
+        newAnnotations.append(annotation)
+        
+        if outstandingStoryRetrieval == 0 {
+          DispatchQueue.main.async {
+            self.mapNavController?.remove(annotations: self.storyAnnotations)
+            self.mapNavController?.add(annotations: newAnnotations)
+            self.storyAnnotations = newAnnotations
             
-            self.refreshQueue.async {
-              outstandingStoryRetrieval -= 1
+            if zoomToRegion {
+              self.mapNavController?.showRegionExposed(containing: newAnnotations)
+            }
             
-              if let error = error {
-                AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story Digest - \(error.localizedDescription)") { action in
-                  CCLog.warning("Failed to retrieve Story Digest via story.retrieveDigest. Error - \(error.localizedDescription)")
-                }
-                return
-              }
+            if scrollAndSelectStory {
+              self.mapNavController?.select(annotation: self.storyAnnotations[0], animated: true)
+            }
             
-              if let venue = story.venue, venue.isDataAvailable == false {
-                CCLog.fatal("Venue \(venue.getUniqueIdentifier()) returned with no Data Available")
-              }
-              
-              guard let venue = story.venue, let location = venue.location else {
-                CCLog.warning("No Title, Venue or Location to Story. Skipping Story")
-                return
-              }
-              
-              let annotation = StoryMapAnnotation(title: venue.name ?? "",
-                                                  story: story,
-                                                  coordinate: CLLocationCoordinate2D(latitude: location.latitude,
-                                                                                     longitude: location.longitude))
-              
-              self.storyAnnotations.append(annotation)
-              
-              if outstandingStoryRetrieval == 0 {
-                DispatchQueue.main.async {
-                  self.mapNavController.mapView.addAnnotations(self.storyAnnotations)
-                  
-                  self.feedCollectionNodeController.resetCollectionNode(with: stories, completion: {
-                    
-                    if zoomToRegion {
-                      self.mapNavController.showRegionExposed(containing: self.storyAnnotations)
-                    }
-                    
-                    if scrollAndSelectStory {
-                      self.feedCollectionNodeController.scrollTo(storyIndex: 0)
-                      self.mapNavController.mapView.selectAnnotation(self.storyAnnotations[0], animated: true)
-                    }
-                  })
-                }
+            self.feedCollectionNodeController.resetCollectionNode(with: stories) {
+              if scrollAndSelectStory {
+                self.feedCollectionNodeController.scrollTo(storyIndex: 0)
               }
             }
           }
         }
-      }
-    }
-  }
-  
-  
-  private func applyDefaultMapLocation() {
-    // Provide a default Map Region incase Location Update is slow or user denies authorization
-    let startMapLocation: CLLocationCoordinate2D = lastLocation ?? Constants.DefaultCLCoordinate2D
-    let startMapDelta: CLLocationDegrees = lastMapDelta ?? Constants.DefaultMaxDelta
-    let region = MKCoordinateRegion(center: startMapLocation,
-                                    span: MKCoordinateSpan(latitudeDelta: startMapDelta, longitudeDelta: startMapDelta))
-    mapNavController.setRegionExposed(region, animated: true)
-  }
-  
-  
-  private func startLocationWatcher() {
-    // Start/Restart the Location Watcher
-    locationWatcher = LocationWatch.global.start(butPaused: (lastLocation != nil)) { (location, error) in
-      if let error = error {
-        CCLog.warning("LocationWatch returned error - \(error.localizedDescription)")
-        return
-      }
-      
-      if let location = location {
-        let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: self.currentMapDelta, longitudeDelta: self.currentMapDelta))
-        DispatchQueue.main.async { self.mapNavController.setRegionExposed(region, animated: true) }
       }
     }
   }
@@ -481,10 +394,7 @@ class DiscoverViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    if let touchForwardingView = touchForwardingView {
-      touchForwardingView.passthroughViews = [mapNavController.mapView]
-    }
-    
+    // Setup the Feed Node Controller first
     let nodeController = FeedCollectionNodeController(with: .carousel, allowLayoutChange: true, adjustScrollViewInset: false)
     addChildViewController(nodeController)
     feedContainerView.addSubview(nodeController.view)
@@ -493,17 +403,9 @@ class DiscoverViewController: OverlayViewController {
     nodeController.didMove(toParentViewController: self)
     feedCollectionNodeController = nodeController
     nodeController.delegate = self
-    
     carouselLayoutChangeTapRecognizer.isEnabled = false
     
-    // Initialize Location Watch manager
-    LocationWatch.initializeGlobal()
-    
-    // Do any additional setup after loading the view.
-    panGestureRecognizer?.delegate = self
-    pinchGestureRecognizer?.delegate = self
-    doubleTapGestureRecognizer?.delegate = self
-    singleTapGestureRecognizer?.delegate = self
+    // Setup all the IBOutlet Delegates
     locationField?.delegate = self
     
     // If current story is nil, double check and see if there are any in Local Datastore
@@ -564,18 +466,40 @@ class DiscoverViewController: OverlayViewController {
   }
 
   
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
  
-    // There should already be pins on the map, do nothing
-    if storyQuery != nil {
-      self.startLocationWatcher()
+    FoodieFetch.global.cancelAll()
+    
+    guard let mapController = navigationController as? MapNavController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("No Map Navigation Controller. Cannot Proceed")
+      }
+      return
     }
     
-    // No pins on the map, but this is not the first time. Just go to last location
-    else if lastLocation != nil {
-      applyDefaultMapLocation()
-      self.startLocationWatcher()
+    mapNavController = mapController
+    
+    if let touchForwardingView = touchForwardingView {
+      touchForwardingView.passthroughViews = [mapController.mapView]
+      touchForwardingView.touchBlock = {
+        self.locationField?.resignFirstResponder()
+        self.mapNavController?.stopTracking()
+      }
+    }
+    
+    // Resume from last map region
+    if let mapRegion = lastMapRegion {
+      mapController.showRegionExposed(mapRegion, animated: true)
+      
+      if lastMapWasTracking {
+        mapController.startTracking()
+      }
+      
+      if let annotationIndex = lastSelectedAnnotationIndex {
+        let annotationToSelect = storyAnnotations[annotationIndex]
+        mapController.select(annotation: annotationToSelect, animated: true)
+      }
     }
     
     // First time on the map. Try to get the location, and get an initial query if successful
@@ -585,8 +509,8 @@ class DiscoverViewController: OverlayViewController {
           AlertDialog.present(from: self, title: "Location Error", message: error.localizedDescription) { _ in
             CCLog.warning("LocationWatch.get() returned error - \(error.localizedDescription)")
           }
-          self.applyDefaultMapLocation()
-          self.startLocationWatcher()
+          mapController.showDefaultRegionExposed(animated: true)
+          mapController.startTracking()
           return
         }
         
@@ -594,14 +518,15 @@ class DiscoverViewController: OverlayViewController {
           AlertDialog.present(from: self, title: "Location Error", message: "Obtained invalid location information") { _ in
             CCLog.warning("LocationWatch.get() returned locaiton = nil")
           }
-          self.applyDefaultMapLocation()
-          self.startLocationWatcher()
+          mapController.showDefaultRegionExposed(animated: true)
+          mapController.startTracking()
           return
         }
         
-        // Move the map to the initial location
-        let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: self.currentMapDelta, longitudeDelta: self.currentMapDelta))
-        DispatchQueue.main.async { self.mapNavController.setRegionExposed(region, animated: true) }
+        // Move the map to the initial location as a fallback incase the query fails
+        DispatchQueue.main.async { mapController.showCurrentRegionExposed(animated: true) }
+
+        let region = MKCoordinateRegionMakeWithDistance(location.coordinate, mapController.defaultMapWidth, mapController.defaultMapWidth)
         
         // Do an Initial Search near the Current Location
         self.performQuery(at: region.toMapRect()) { stories, error in
@@ -622,10 +547,8 @@ class DiscoverViewController: OverlayViewController {
             }
             return
           }
-          self.refreshDiscoverView(onStories: stories, zoomToRegion: false, scrollAndSelectStory: true)
+          self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
         }
-        
-        self.startLocationWatcher()
       }
     }
     
@@ -675,39 +598,39 @@ class DiscoverViewController: OverlayViewController {
     
     switch feedCollectionNodeController.layoutType {
     case .carousel:
-      mapNavController.setExposedRect(with: carouselMapView)
+      mapNavController?.setExposedRect(with: carouselMapView)
       
     case .mosaic:
-      mapNavController.setExposedRect(with: mosaicMapView)
+      mapNavController?.setExposedRect(with: mosaicMapView)
     }
   }
   
   
-  override func viewDidAppear(_ animated: Bool) {
-    FoodieFetch.global.cancelAll()
-  }
-  
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    // Don't even know when we'll be back. Let the GPS stop if no one else is using it
-    locationWatcher?.stop()
-    mapNavController.mapView.setUserTrackingMode(.none, animated: false)
     
     // Keep track of what the location is before we disappear
-    lastLocation = mapNavController.exposedRegion.center
-    lastMapDelta = mapNavController.exposedRegion.span.latitudeDelta
+    guard let mapNavController = mapNavController else {
+      CCLog.assert("No when DiscoverViewController is to disappear? Unexpected")
+      return
+    }
+    
+    // Save the Map Region to resume when we get back to this view next time around
+    lastMapRegion = mapNavController.exposedRegion
+    lastMapWasTracking = mapNavController.isTracking
+    if let selectedAnnotation = mapNavController.selectedAnnotation,
+      let annotationIndex = storyAnnotations.index(where: { $0 === selectedAnnotation }) {
+      lastSelectedAnnotationIndex = annotationIndex
+    } else {
+      lastSelectedAnnotationIndex = nil
+    }
+    
+    // Release the mapNavController
+    mapNavController.stopTracking()
+    self.mapNavController = nil
   }
 }
-
-
-
-extension DiscoverViewController: UIGestureRecognizerDelegate {
-  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-    return true
-  }
-}
-
 
 
 extension DiscoverViewController: UITextFieldDelegate {
@@ -722,14 +645,21 @@ extension DiscoverViewController: UITextFieldDelegate {
       }
     }
     
+    guard let mapNavController = mapNavController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("No Map Nav Controller")
+      }
+      return true
+    }
+    
     guard let location = textField.text else {
       // No text in location field
       return true
     }
-
+    
     let clRegion = CLCircularRegion(center: mapNavController.exposedRegion.center,
-                                    radius: mapNavController.exposedRegion.span.height*Double(FoodieGlobal.Constants.DefaultMomentAspectRatio)/2,
-                                    identifier: "currentCLRegion")  // TODO: 16:9 assumption is not good enough
+                                    radius: mapNavController.exposedRegion.longitudinalMeters/2,
+                                    identifier: "currentCLRegion")
     let geocoder = CLGeocoder()
 
     geocoder.geocodeAddressString(location, in: clRegion) { (placemarks, error) in
@@ -798,24 +728,20 @@ extension DiscoverViewController: UITextFieldDelegate {
         index = index + 1
       }
 
-      // Move map to region as indicated by CLPlacemark
-      self.locationWatcher?.pause()
-      self.mapNavController.mapView.setUserTrackingMode(.none, animated: false)
-      
-      var region: MKCoordinateRegion?
+      var region: MKCoordinateRegion!
 
-      // The coordinate in palcemarks.region is highly inaccurate. So use the location coordinate when possible.
+      // The coordinate in placemarks.region is highly inaccurate. So use the location coordinate when possible.
       if let coordinate = placemarks[0].location?.coordinate, let clRegion = placemarks[0].region as? CLCircularRegion {
         // Determine region via placemark.locaiton.coordinate if possible
-        region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(height: clRegion.radius*2*1.39))  // 1.39 is between square and 16:9 // TODO: 16:9 assumption is not good enough
+        region = MKCoordinateRegionMakeWithDistance(coordinate, 2*clRegion.radius, 2*clRegion.radius)
 
       } else if let coordinate = placemarks[0].location?.coordinate {
         // Determine region via placemark.location.coordinate and default max delta if clRegion is not available
-        region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: Constants.DefaultMaxDelta, longitudeDelta: Constants.DefaultMaxDelta))
+        region = MKCoordinateRegionMakeWithDistance(coordinate, mapNavController.defaultMapWidth, mapNavController.defaultMapWidth)
 
       } else if let clRegion = placemarks[0].region as? CLCircularRegion {
         // Determine region via placemarks.region as fall back
-        region = MKCoordinateRegion(center: clRegion.center, span: MKCoordinateSpan(height: clRegion.radius*2))
+        region = MKCoordinateRegionMakeWithDistance(clRegion.center, 2*clRegion.radius, 2*clRegion.radius)
 
       } else {
         CCLog.assert("Placemark contained no location")
@@ -826,9 +752,7 @@ extension DiscoverViewController: UITextFieldDelegate {
         return
       }
 
-      if let region = region {
-        self.mapNavController.setRegionExposed(region, animated: true)
-      }
+      mapNavController.showRegionExposed(region, animated: true)
     }
 
     // Get rid of the keybaord
@@ -855,30 +779,57 @@ extension DiscoverViewController: UITextFieldDelegate {
 extension DiscoverViewController: FeedCollectionNodeDelegate {
   
   func collectionNodeLayoutChanged(to layoutType: FeedCollectionNodeController.LayoutType) {
+    
     switch layoutType {
     case .mosaic:
-      mapNavController.setExposedRect(with: mosaicMapView)
+      mosaicMapWidth = mapNavController?.boundedMapWidth()
+      mapNavController?.setExposedRect(with: mosaicMapView)
       carouselLayoutChangeTapRecognizer.isEnabled = true
       view.insertSubview(mosaicMapView, aboveSubview: touchForwardingView!)
       
+      if let highlightedStoryIndex = highlightedStoryIndex {
+        feedCollectionNodeController.scrollTo(storyIndex: highlightedStoryIndex)
+      }
       
     case .carousel:
       if let touchForwardingView = touchForwardingView {
         touchForwardingView.isHidden = false
       }
-      mapNavController.setExposedRect(with: carouselMapView)
+      mapNavController?.setExposedRect(with: carouselMapView)
       mosaicLayoutChangePanRecognizer.isEnabled = true
-      mapNavController.showRegionExposed(containing: storyAnnotations)
+      mapNavController?.showRegionExposed(containing: storyAnnotations)
       view.insertSubview(touchForwardingView!, aboveSubview: mosaicMapView)
+      
+      if let highlightedStoryIndex = highlightedStoryIndex {
+        feedCollectionNodeController.scrollTo(storyIndex: highlightedStoryIndex)
+      }
     }
   }
   
   
   func collectionNodeDidStopScrolling() {
+    
+    guard let mapController = mapNavController else {
+      CCLog.fatal("Expected Map Nav Controller")
+    }
+    
     if let storyIndex = self.feedCollectionNodeController.highlightedStoryIndex {
-      for annotation in self.mapNavController.mapView.annotations {
-        if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === self.storyArray[storyIndex] {
-          self.mapNavController.selectInExposedRect(annotation: storyAnnotation)
+      self.highlightedStoryIndex = storyIndex
+      
+      for annotation in self.storyAnnotations {
+        if annotation.story === self.storyArray[storyIndex] {
+          switch feedCollectionNodeController.layoutType {
+          case .mosaic:
+            let mapWidth = mosaicMapWidth ?? mapController.defaultMapWidth
+            let mosaicMapAspectRatio = mosaicMapView.bounds.width/mosaicMapView.bounds.height
+            let mapHeight = mapWidth/CLLocationDistance(mosaicMapAspectRatio)
+            let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, mapHeight/2, mapWidth/2)  // Not sure about why /2, but it works
+            mapController.showRegionExposed(region, animated: true)
+            
+          case .carousel:
+            mapController.showRegionExposed(containing: self.storyAnnotations)
+          }
+          mapController.select(annotation: annotation, animated: true)
         }
       }
     }

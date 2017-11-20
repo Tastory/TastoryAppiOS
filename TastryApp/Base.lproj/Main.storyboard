@@ -98,12 +98,6 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="507.66666666666669"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
-                                <connections>
-                                    <outletCollection property="gestureRecognizers" destination="sGA-Ma-qQh" appends="YES" id="VVe-vx-4eP"/>
-                                    <outletCollection property="gestureRecognizers" destination="tiz-ix-wUH" appends="YES" id="pwX-Bm-1ay"/>
-                                    <outletCollection property="gestureRecognizers" destination="MR4-rr-fyd" appends="YES" id="wuS-1z-ghf"/>
-                                    <outletCollection property="gestureRecognizers" destination="lh5-20-bcQ" appends="YES" id="rVz-C9-OAb"/>
-                                </connections>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="70" translatesAutoresizingMaskIntoConstraints="NO" id="S7U-1x-ELZ">
                                 <rect key="frame" x="24" y="764" width="327" height="30"/>
@@ -216,41 +210,17 @@
                         <outlet property="cameraButton" destination="m1j-Ft-7un" id="5xu-my-dGT"/>
                         <outlet property="carouselLayoutChangeTapRecognizer" destination="t9x-jg-cUa" id="hnr-jt-DSA"/>
                         <outlet property="carouselMapView" destination="MLY-sg-NLb" id="fmY-nc-zXA"/>
-                        <outlet property="doubleTapGestureRecognizer" destination="lh5-20-bcQ" id="XwI-na-Qw5"/>
                         <outlet property="draftButton" destination="1zZ-dd-fcW" id="xkV-cw-rjf"/>
                         <outlet property="feedContainerView" destination="QP7-f7-wk1" id="5wA-qf-gbI"/>
                         <outlet property="locationField" destination="0wJ-kE-Bqf" id="udw-u7-LkJ"/>
                         <outlet property="logoutButton" destination="xAk-Bi-Jwa" id="sAq-I6-br1"/>
                         <outlet property="mosaicLayoutChangePanRecognizer" destination="Sj4-40-4nO" id="fbE-TI-okl"/>
                         <outlet property="mosaicMapView" destination="8jX-dd-Jb6" id="aoN-ur-v8b"/>
-                        <outlet property="panGestureRecognizer" destination="MR4-rr-fyd" id="vfj-Nn-0Ym"/>
-                        <outlet property="pinchGestureRecognizer" destination="tiz-ix-wUH" id="V93-v5-YL6"/>
                         <outlet property="profileButton" destination="A3t-Ta-aKO" id="B2K-m7-Nv7"/>
-                        <outlet property="singleTapGestureRecognizer" destination="sGA-Ma-qQh" id="5Qj-Nw-LGt"/>
                         <outlet property="touchForwardingView" destination="QC2-XK-jf4" id="9um-UP-md1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="sGA-Ma-qQh">
-                    <connections>
-                        <action selector="singleTapGestureDetected:" destination="BYZ-38-t0r" id="gTv-J5-CYO"/>
-                    </connections>
-                </tapGestureRecognizer>
-                <tapGestureRecognizer numberOfTapsRequired="2" id="lh5-20-bcQ">
-                    <connections>
-                        <action selector="mapGestureDetected:" destination="BYZ-38-t0r" id="DOD-ym-U97"/>
-                    </connections>
-                </tapGestureRecognizer>
-                <pinchGestureRecognizer id="tiz-ix-wUH">
-                    <connections>
-                        <action selector="mapGestureDetected:" destination="BYZ-38-t0r" id="jae-xd-a5Z"/>
-                    </connections>
-                </pinchGestureRecognizer>
-                <panGestureRecognizer minimumNumberOfTouches="1" id="MR4-rr-fyd">
-                    <connections>
-                        <action selector="mapGestureDetected:" destination="BYZ-38-t0r" id="ndz-pu-DoI"/>
-                    </connections>
-                </panGestureRecognizer>
                 <panGestureRecognizer minimumNumberOfTouches="1" id="Sj4-40-4nO" userLabel="Mosaic Layout Change Pan Recognizer">
                     <connections>
                         <action selector="mosaicLayoutChangeAction:" destination="BYZ-38-t0r" id="Vi4-hJ-iQQ"/>

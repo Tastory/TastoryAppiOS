@@ -9,21 +9,34 @@
 
 import AsyncDisplayKit
 
+protocol MapNavDelegate {
+  func mapNavigationController(_ mapNavController: MapNavController, selectedAnnotation annotation: MKAnnotation)
+}
+
+
+
 class MapNavController: ASNavigationController {
 
   // MARK: - Constants
   
   struct Constants {
-    static let MapAnnotationMarginFraction: Double = 0.08
-    static let DefaultMapDelta: CLLocationDegrees = 0.08
+    static let DefaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
+                                                              longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
+    static let DefaultMinMapWidth: CLLocationDistance = 1000 // 1km
+    static let DefaultMapWidth: CLLocationDistance = 3000 // 3km
+    static let DefaultMaxMapWidth: CLLocationDistance = 8000  // 8km
+    
+    static let MapAnnotationMarginFraction: Double = 0.1
   }
   
   
   
   // MARK: - Private Instance Functions
   
+  private var locationWatcher: LocationWatch.Context!
   private var exposedRectInset: UIEdgeInsets?
   private var exposedRect: CGRect?
+  private var currentMapWidth: CLLocationDistance?
   
   
   
@@ -35,7 +48,6 @@ class MapNavController: ASNavigationController {
     return exposedRegion.toMapRect()
   }
   
-  
   var exposedRegion: MKCoordinateRegion {
     if let exposedRect = exposedRect {
       return mapView.convert(exposedRect, toRegionFrom: mapView)
@@ -44,9 +56,37 @@ class MapNavController: ASNavigationController {
     }
   }
   
+  var defaultMapWidth: CLLocationDistance { return Constants.DefaultMapWidth }
+  var minMapWidth: CLLocationDistance { return Constants.DefaultMinMapWidth }
+  var maxMapWidth: CLLocationDistance { return Constants.DefaultMaxMapWidth }
+  
+  var selectedAnnotation: MKAnnotation? {
+    if mapView.selectedAnnotations.count <= 0 {
+      return nil
+    } else {
+      return mapView.selectedAnnotations[0]
+    }
+  }
+  
+  var isTracking: Bool {
+    return locationWatcher.isStarted
+  }
+  
   
   
   // MARK: - Public Instance Functions
+  
+  func boundedMapWidth() -> CLLocationDistance {
+    // Base the span of the new mapView on what the mapView span currently is
+    var mapWidth = exposedRegion.longitudinalMeters
+    
+    // Take the lesser of current or default max latitude degrees
+    mapWidth = min(mapWidth, maxMapWidth)
+    
+    // Take the greater of current or default min latitude degrees
+    return max(mapWidth, minMapWidth)
+  }
+  
   
   func setExposedRect(with exposedView: UIView) {
     guard let exposedSuperview = exposedView.superview else {
@@ -58,7 +98,9 @@ class MapNavController: ASNavigationController {
   }
   
   
-  func setRegionExposed(_ region: MKCoordinateRegion, animated: Bool) {
+  func showRegionExposed(_ region: MKCoordinateRegion, animated: Bool, turnOffTracking: Bool = true) {
+    if turnOffTracking { stopTracking() }
+    
     if let exposedRectInset = exposedRectInset {
       mapView.setVisibleMapRect(region.toMapRect(), edgePadding: exposedRectInset, animated: animated)
     } else {
@@ -67,7 +109,9 @@ class MapNavController: ASNavigationController {
   }
   
 
-  func setMapRectExposed(_ mapRect: MKMapRect, animated: Bool) {
+  func showMapRectExposed(_ mapRect: MKMapRect, animated: Bool, turnOffTracking: Bool = true) {
+    if turnOffTracking { stopTracking() }
+    
     if let exposedRectInset = exposedRectInset {
       mapView.setVisibleMapRect(mapRect, edgePadding: exposedRectInset, animated: animated)
     } else {
@@ -76,52 +120,32 @@ class MapNavController: ASNavigationController {
   }
   
   
-  func selectInExposedRect(annotation: MKAnnotation) {
-    let annotationMapPoint = MKMapPointForCoordinate(annotation.coordinate)
-    let currentMapRect = exposedMapRect
-    
-    if MKMapRectContainsPoint(currentMapRect, annotationMapPoint) {
-      mapView.selectAnnotation(annotation, animated: true)
-      return
+  func showDefaultRegionExposed(animated: Bool) {
+    let region = MKCoordinateRegionMakeWithDistance(Constants.DefaultCLCoordinate2D, defaultMapWidth, defaultMapWidth)
+    showRegionExposed(region, animated: true)
+  }
+  
+  
+  func showCurrentRegionExposed(animated: Bool) {
+    // Base the span of the new mapView on what the mapView span currently is
+    if !isTracking {
+      currentMapWidth = boundedMapWidth()
     }
+    startTracking()
+  }
+  
+  
+  func selectCenteredInExposedRect(annotation: MKAnnotation, turnOffTracking: Bool = true) {
+    if turnOffTracking { stopTracking() }
     
-    var newOrigin = currentMapRect.origin
-    let mapSize = currentMapRect.size
-    let marginWidth = mapSize.width * Constants.MapAnnotationMarginFraction
-    let marginHeight = mapSize.height * Constants.MapAnnotationMarginFraction
-    
-    if annotationMapPoint.x < MKMapRectGetMinX(currentMapRect) {
-      let offset = annotationMapPoint.x - marginWidth - MKMapRectGetMinX(currentMapRect)
-      newOrigin.x = currentMapRect.origin.x + offset
-      
-    } else if annotationMapPoint.x > MKMapRectGetMaxX(currentMapRect) {
-      let offset = annotationMapPoint.x + marginWidth - MKMapRectGetMaxX(currentMapRect)
-      newOrigin.x = currentMapRect.origin.x + offset
-    }
-    
-    if annotationMapPoint.y < MKMapRectGetMinY(currentMapRect) {
-      let offset = annotationMapPoint.y - marginHeight - MKMapRectGetMinY(currentMapRect)
-      newOrigin.y = currentMapRect.origin.y + offset
-      
-    } else if annotationMapPoint.y > MKMapRectGetMaxY(currentMapRect) {
-      let offset = annotationMapPoint.y + marginHeight - MKMapRectGetMaxY(currentMapRect)
-      newOrigin.y = currentMapRect.origin.y + offset
-    }
-    
-    setMapRectExposed(MKMapRect(origin: newOrigin, size: mapSize), animated: true)
+    let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, boundedMapWidth(), boundedMapWidth())
+    showRegionExposed(region, animated: true)
     mapView.selectAnnotation(annotation, animated: true)
   }
   
   
-  func selectCenteredInExposedRect(annotation: MKAnnotation) {
-    let coordinate = annotation.coordinate
-    let mapSpan = MKCoordinateSpan(latitudeDelta: Constants.DefaultMapDelta, longitudeDelta: Constants.DefaultMapDelta)
-    setRegionExposed(MKCoordinateRegionMake(coordinate, mapSpan), animated: true)
-    mapView.selectAnnotation(annotation, animated: true)
-  }
-  
-  
-  func showRegionExposed(containing annotations: [MKAnnotation]) {
+  func showRegionExposed(containing annotations: [MKAnnotation], turnOffTracking: Bool = true) {
+    if turnOffTracking { stopTracking() }
     
     let initialMapPoint = MKMapPointForCoordinate(annotations[0].coordinate)
     var mapMinX: Double = initialMapPoint.x
@@ -156,7 +180,44 @@ class MapNavController: ASNavigationController {
     let finalMapRect = MKMapRectMake(mapMinX, mapMinY, mapWidth, mapHeight)
     
     // Display Map
-    setMapRectExposed(finalMapRect, animated: true)
+    showMapRectExposed(finalMapRect, animated: true)
+  }
+  
+  
+  // Annotation Management
+  
+  func select(annotation: MKAnnotation, animated: Bool) {
+    mapView.selectAnnotation(annotation, animated: animated)
+  }
+  
+  func add(annotation: MKAnnotation) {
+    mapView.addAnnotation(annotation)
+  }
+  
+  func add(annotations: [MKAnnotation]) {
+    mapView.addAnnotations(annotations)
+  }
+  
+  func remove(annotation: MKAnnotation) {
+    mapView.removeAnnotation(annotation)
+  }
+  
+  func remove(annotations: [MKAnnotation]) {
+    mapView.removeAnnotations(annotations)
+  }
+  
+  
+  // Map Tracking Management
+  
+  func stopTracking() {
+    CCLog.verbose("MapNav Stop Tracking")
+    locationWatcher.pause()
+  }
+  
+  
+  func startTracking() {
+    CCLog.verbose("MapNav Start Tracking")
+    locationWatcher.resume()
   }
   
   
@@ -165,6 +226,8 @@ class MapNavController: ASNavigationController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    LocationWatch.initializeGlobal()
     
     setNavigationBarHidden(true, animated: false)
     setToolbarHidden(true, animated: false)
@@ -176,16 +239,33 @@ class MapNavController: ASNavigationController {
     mapView.showsCompass = false
     mapView.showsScale = false
     mapView.showsUserLocation = true
-    mapView.setUserTrackingMode(.follow, animated: true)
+    mapView.setUserTrackingMode(.none, animated: false)
     
     view.addSubview(mapView)
     view.sendSubview(toBack: mapView)
+    
+    // Start/Restart the Location Watcher
+    locationWatcher = LocationWatch.global.start() { (location, error) in
+      if let error = error {
+        CCLog.warning("LocationWatch returned error - \(error.localizedDescription)")
+        return
+      }
+      
+      if let location = location {
+        let region = MKCoordinateRegionMakeWithDistance(location.coordinate,
+                                                        self.currentMapWidth ?? self.defaultMapWidth,
+                                                        self.currentMapWidth ?? self.defaultMapWidth)
+        DispatchQueue.main.async { self.showRegionExposed(region, animated: true, turnOffTracking: false) }
+      }
+    }
   }
+  
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     CCLog.warning("Received Memory Warning")
   }
+  
   
   func topViewWillResignActive() {
     if let topViewController = topViewController as? OverlayViewController {
@@ -193,17 +273,20 @@ class MapNavController: ASNavigationController {
     }
   }
   
+  
   func topViewDidEnterBackground() {
     if let topViewController = topViewController as? OverlayViewController {
       topViewController.topViewDidEnterBackground()
     }
   }
   
+  
   func topViewWillEnterForeground() {
     if let topViewController = topViewController as? OverlayViewController {
       topViewController.topViewWillEnterForeground()
     }
   }
+  
   
   func topViewDidBecomeActive() {
     if let topViewController = topViewController as? OverlayViewController {
