@@ -39,7 +39,6 @@ class MapNavController: ASNavigationController {
   private var currentMapWidth: CLLocationDistance?
   
   
-  
   // MARK: - Public Instance Variable
   
   var mapDelegate: MapNavControllerDelegate?
@@ -302,6 +301,20 @@ extension MapNavController: MKMapViewDelegate {
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
     if let annotation = view.annotation {
       mapDelegate?.mapNavController(self, didSelect: annotation)
+    }
+  }
+  
+  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+    if annotation is MKUserLocation {
+      return nil
+    }
+    else if #available(iOS 11.0, *) {
+      let markerAnnotationView = MKMarkerAnnotationView()
+      markerAnnotationView.titleVisibility = .visible
+      markerAnnotationView.displayPriority = .required
+      return markerAnnotationView
+    } else {
+      return nil
     }
   }
 }

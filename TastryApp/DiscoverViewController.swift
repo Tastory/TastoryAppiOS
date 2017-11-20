@@ -819,7 +819,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
             let mapWidth = mosaicMapWidth ?? MapNavController.Constants.DefaultMapWidth
             let mosaicMapAspectRatio = mosaicMapView.bounds.width/mosaicMapView.bounds.height
             let mapHeight = mapWidth/CLLocationDistance(mosaicMapAspectRatio)
-            let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, mapHeight/2, mapWidth/2)  // Not sure about why /2, but it works
+            let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, mapHeight/3, mapWidth/3)  // divided by 3 is hand tuned
             self.lastMapRegion = region
             
             mapNavController?.showRegionExposed(region, animated: true)
@@ -834,8 +834,10 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       
     // Do Prefetching? In reality doing this slows down the whole app. And assets don't seem to be ready any quicker.... If not slower all together.....
     let storiesIndexes = self.feedCollectionNodeController.getStoryIndexesVisible(forOver: Constants.PercentageOfStoryVisibleToStartPrefetch)
-    let storiesShouldPrefetch = storiesIndexes.map { self.storyArray[$0] }
-    FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
+    if storiesIndexes.count > 0 {
+      let storiesShouldPrefetch = storiesIndexes.map { self.storyArray[$0] }
+      FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
+    }
   }
 }
 
@@ -843,7 +845,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
 extension DiscoverViewController: MapNavControllerDelegate {
   func mapNavController(_ mapNavController: MapNavController, didSelect annotation: MKAnnotation) {
     
-    if let storyAnnotation = annotation as? StoryMapAnnotation {
+    if let storyAnnotation = annotation as? StoryMapAnnotation, feedCollectionNodeController.layoutType == .carousel {
       for index in 0..<storyArray.count {
         if storyAnnotation.story === storyArray[index] {
           feedCollectionNodeController.scrollTo(storyIndex: index)
