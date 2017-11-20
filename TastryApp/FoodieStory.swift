@@ -370,10 +370,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      guard let venue = self.venue else {
-        CCLog.fatal("Story retrieved but venue = nil")
-      }
-      
       guard let author = self.author else {
         CCLog.fatal("Story retrieved but author = nil")
       }
@@ -385,13 +381,13 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       
       // Calculate how many outstanding children operations there will be before hand
       // This helps avoiding the need of a lock
-      var outstandingChildOperations = 2   // venue & thumbnail to start
+      var outstandingChildOperations = 1   // just thumbnail to start
+      if self.venue != nil { outstandingChildOperations += 1 }
+      if localType != .draft { outstandingChildOperations += 1 }
       
       if let moments = self.moments {
         outstandingChildOperations += moments.count
       }
-      
-      if localType != .draft { outstandingChildOperations += 1 }
       
       // Can we just use a mutex lock then?
       SwiftMutex.lock(&self.criticalMutex)
@@ -405,7 +401,11 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       // There will be no Markups for Story Covers
       
       self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
-      self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, for: storyOperation, withCompletion: callback)
+      
+      if let venue = self.venue {
+        self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, for: storyOperation, withCompletion: callback)
+      }
+      
       self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, for: storyOperation, withCompletion: callback)
         
       if let moments = self.moments {

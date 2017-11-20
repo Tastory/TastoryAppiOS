@@ -136,7 +136,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     // Swifty Cam Setup
     cameraDelegate = self
     doubleTapCameraSwitch = true
-    videoQuality = .iframe960x540  // .high is 16x9, but .medium is 4x3
+    videoQuality = .resolution1920x1080  // .high is 16x9, but .medium is 4x3
     maximumVideoDuration = 15.0
     
     if let pickerButton = pickerButton {
