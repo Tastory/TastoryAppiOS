@@ -479,6 +479,7 @@ class DiscoverViewController: OverlayViewController {
     }
     
     mapNavController = mapController
+    mapController.mapDelegate = self
     
     if let touchForwardingView = touchForwardingView {
       touchForwardingView.passthroughViews = [mapController.mapView]
@@ -547,6 +548,7 @@ class DiscoverViewController: OverlayViewController {
             }
             return
           }
+          
           self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
         }
       }
@@ -606,29 +608,26 @@ class DiscoverViewController: OverlayViewController {
   }
   
   
-  
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
     
     // Keep track of what the location is before we disappear
-    guard let mapNavController = mapNavController else {
-      CCLog.assert("No when DiscoverViewController is to disappear? Unexpected")
-      return
+    if let mapNavController = mapNavController {
+      // Save the Map Region to resume when we get back to this view next time around
+      lastMapRegion = mapNavController.exposedRegion
+      lastMapWasTracking = mapNavController.isTracking
+      if let selectedAnnotation = mapNavController.selectedAnnotation,
+        let annotationIndex = storyAnnotations.index(where: { $0 === selectedAnnotation }) {
+        lastSelectedAnnotationIndex = annotationIndex
+      } else {
+        lastSelectedAnnotationIndex = nil
+      }
+      
+      // Release the mapNavController
+      mapNavController.stopTracking()
+      mapNavController.mapDelegate = nil
+      self.mapNavController = nil
     }
-    
-    // Save the Map Region to resume when we get back to this view next time around
-    lastMapRegion = mapNavController.exposedRegion
-    lastMapWasTracking = mapNavController.isTracking
-    if let selectedAnnotation = mapNavController.selectedAnnotation,
-      let annotationIndex = storyAnnotations.index(where: { $0 === selectedAnnotation }) {
-      lastSelectedAnnotationIndex = annotationIndex
-    } else {
-      lastSelectedAnnotationIndex = nil
-    }
-    
-    // Release the mapNavController
-    mapNavController.stopTracking()
-    self.mapNavController = nil
   }
 }
 
@@ -808,28 +807,27 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
   
   
   func collectionNodeDidStopScrolling() {
-    
-    guard let mapController = mapNavController else {
-      CCLog.fatal("Expected Map Nav Controller")
-    }
-    
-    if let storyIndex = self.feedCollectionNodeController.highlightedStoryIndex {
+    if let storyIndex = self.feedCollectionNodeController.highlightedStoryIndex, storyIndex < storyArray.count {
       self.highlightedStoryIndex = storyIndex
       
       for annotation in self.storyAnnotations {
         if annotation.story === self.storyArray[storyIndex] {
+          self.lastSelectedAnnotationIndex = self.storyAnnotations.index(where: {$0 === annotation})
+          
           switch feedCollectionNodeController.layoutType {
           case .mosaic:
-            let mapWidth = mosaicMapWidth ?? mapController.defaultMapWidth
+            let mapWidth = mosaicMapWidth ?? MapNavController.Constants.DefaultMapWidth
             let mosaicMapAspectRatio = mosaicMapView.bounds.width/mosaicMapView.bounds.height
             let mapHeight = mapWidth/CLLocationDistance(mosaicMapAspectRatio)
             let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, mapHeight/2, mapWidth/2)  // Not sure about why /2, but it works
-            mapController.showRegionExposed(region, animated: true)
+            self.lastMapRegion = region
+            
+            mapNavController?.showRegionExposed(region, animated: true)
             
           case .carousel:
-            mapController.showRegionExposed(containing: self.storyAnnotations)
+            mapNavController?.showRegionExposed(containing: self.storyAnnotations)
           }
-          mapController.select(annotation: annotation, animated: true)
+          mapNavController?.select(annotation: annotation, animated: true)
         }
       }
     }
@@ -841,6 +839,20 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
   }
 }
 
+
+extension DiscoverViewController: MapNavControllerDelegate {
+  func mapNavController(_ mapNavController: MapNavController, didSelect annotation: MKAnnotation) {
+    
+    if let storyAnnotation = annotation as? StoryMapAnnotation {
+      for index in 0..<storyArray.count {
+        if storyAnnotation.story === storyArray[index] {
+          feedCollectionNodeController.scrollTo(storyIndex: index)
+          break
+        }
+      }
+    }
+  }
+}
 
 
 extension DiscoverViewController: CameraReturnDelegate {

@@ -9,8 +9,8 @@
 
 import AsyncDisplayKit
 
-protocol MapNavDelegate {
-  func mapNavigationController(_ mapNavController: MapNavController, selectedAnnotation annotation: MKAnnotation)
+protocol MapNavControllerDelegate {
+  func mapNavController(_ mapNavController: MapNavController, didSelect annotation: MKAnnotation)
 }
 
 
@@ -42,6 +42,7 @@ class MapNavController: ASNavigationController {
   
   // MARK: - Public Instance Variable
   
+  var mapDelegate: MapNavControllerDelegate?
   var mapView: MKMapView!
   
   var exposedMapRect: MKMapRect {
@@ -234,6 +235,7 @@ class MapNavController: ASNavigationController {
     
     // Create Map and set Default Map Configurations
     mapView = MKMapView(frame: view.bounds)
+    mapView.delegate = self
     mapView.isRotateEnabled = false
     mapView.isPitchEnabled = false
     mapView.showsCompass = false
@@ -291,6 +293,15 @@ class MapNavController: ASNavigationController {
   func topViewDidBecomeActive() {
     if let topViewController = topViewController as? OverlayViewController {
       topViewController.topViewDidBecomeActive()
+    }
+  }
+}
+
+
+extension MapNavController: MKMapViewDelegate {
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    if let annotation = view.annotation {
+      mapDelegate?.mapNavController(self, didSelect: annotation)
     }
   }
 }
