@@ -25,7 +25,7 @@ class CameraButtonRingLayer: CAShapeLayer {
   let smallStrokeDuration: CFTimeInterval = CameraViewController.GlobalConstants.animateInDuration
   let smallToLargeDuration: CFTimeInterval = CameraViewController.GlobalConstants.cameraButtonOnDuration
   let largeToSmallDuration: CFTimeInterval = CameraViewController.GlobalConstants.cameraButtonOffDuration
-  let largeUnstrokeDuration: CFTimeInterval = 10.0 // need to match recording max duration
+  let largeUnstrokeDuration: CFTimeInterval = 15.0 // need to match recording max duration
   
   
   convenience init (frame: CGRect) {

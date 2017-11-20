@@ -389,7 +389,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       let destination = CGImageDestinationCreateWithURL(fileUrl, kUTTypeJPEG, 1, nil)!
       let jfifProperties = [kCGImagePropertyJFIFIsProgressive: kCFBooleanTrue] as NSDictionary
       let properties = [
-        kCGImageDestinationLossyCompressionQuality: 0.6,
+        kCGImageDestinationLossyCompressionQuality: 0.5,
         kCGImagePropertyJFIFDictionary: jfifProperties
         ] as NSDictionary
 

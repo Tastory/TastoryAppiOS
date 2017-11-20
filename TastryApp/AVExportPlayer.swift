@@ -229,7 +229,7 @@ class AVExportPlayer: NSObject {
   }
   
 
-  func exportAsync(to exportURL: URL, thru tempURL: URL, using preset: String = AVAssetExportPreset1280x720, with outputType: AVFileType = .mov, completion callback: ((Error?) -> Void)? = nil) {
+  func exportAsync(to exportURL: URL, thru tempURL: URL, using preset: String = AVAssetExportPreset960x540, with outputType: AVFileType = .mov, completion callback: ((Error?) -> Void)? = nil) {
     
     guard let avPlayer = self.avPlayer else {
       CCLog.fatal("avPlayer == nil. Cannot check whether needed to switch AVPlayer backing to Local File")
