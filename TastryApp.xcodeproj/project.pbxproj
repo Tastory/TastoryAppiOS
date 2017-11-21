@@ -31,6 +31,7 @@
 		8C1FF1311F7CA6C10062312C /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FF1301F7CA6C10062312C /* LogInViewController.swift */; };
 		8C1FF1331F7CA7240062312C /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FF1321F7CA7240062312C /* SignUpViewController.swift */; };
 		8C1FF1351F7DA1760062312C /* FoodieRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FF1341F7DA1760062312C /* FoodieRole.swift */; };
+		8C2EFCEB1FC3AF4E00937E3C /* MainVectors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */; };
 		8C2F796F1F4C0D9A00851334 /* SwiftRetry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */; };
 		8C2F79731F4E23F700851334 /* LocationWatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F79721F4E23F700851334 /* LocationWatch.swift */; };
 		8C2F79771F4E3E6E00851334 /* ThreadSafeDLL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F79761F4E3E6E00851334 /* ThreadSafeDLL.swift */; };
@@ -168,6 +169,7 @@
 		8C1FF1301F7CA6C10062312C /* LogInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		8C1FF1321F7CA7240062312C /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		8C1FF1341F7DA1760062312C /* FoodieRole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieRole.swift; sourceTree = "<group>"; };
+		8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MainVectors.xcassets; sourceTree = "<group>"; };
 		8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftRetry.swift; sourceTree = "<group>"; };
 		8C2F79721F4E23F700851334 /* LocationWatch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationWatch.swift; sourceTree = "<group>"; };
 		8C2F79761F4E3E6E00851334 /* ThreadSafeDLL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadSafeDLL.swift; sourceTree = "<group>"; };
@@ -326,10 +328,18 @@
 			name = Shared;
 			sourceTree = "<group>";
 		};
-		8C40B20A1F1466A10030B5B5 /* Supporting Files */ = {
+		8C2EFCE91FC3AF0800937E3C /* Assets */ = {
 			isa = PBXGroup;
 			children = (
 				8CBF558A1E7F7EDF00F4B1CD /* Assets.xcassets */,
+				8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */,
+			);
+			name = Assets;
+			sourceTree = "<group>";
+		};
+		8C40B20A1F1466A10030B5B5 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
 				8CBF558F1E7F7EDF00F4B1CD /* Info.plist */,
 				8C40B20B1F1466D40030B5B5 /* Jot-Bridging-Header.h */,
 				8C841B471F623E670002A5A2 /* RATreeView-Bridging-Header.h */,
@@ -494,6 +504,7 @@
 		8CD328D71E8B2B4B00E5254F /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				8C2EFCE91FC3AF0800937E3C /* Assets */,
 				8CD02DAF1FB8155C00768CF8 /* Layout */,
 				8C889ECD1F9D5F7000E8CC56 /* Storyboards */,
 				8C889ECE1F9D5FC500E8CC56 /* Cell, Headers/Footers */,
@@ -769,6 +780,7 @@
 				8CBBED111F9D740F008D4B12 /* ProfileTableEmailFooterView.xib in Resources */,
 				8CBF55891E7F7EDF00F4B1CD /* Main.storyboard in Resources */,
 				8CD5A4E51F9C078D00CFD670 /* Settings.storyboard in Resources */,
+				8C2EFCEB1FC3AF4E00937E3C /* MainVectors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

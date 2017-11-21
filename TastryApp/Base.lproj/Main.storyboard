@@ -21,10 +21,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lJy-T9-lHq">
-                                <rect key="frame" x="0.0" y="44" width="375" height="768"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </view>
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BOa-s9-47I">
                                 <rect key="frame" x="0.0" y="44" width="375" height="44"/>
                                 <items>
@@ -42,6 +38,10 @@
                                     </navigationItem>
                                 </items>
                             </navigationBar>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lJy-T9-lHq">
+                                <rect key="frame" x="0.0" y="44" width="375" height="768"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -73,10 +73,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view hidden="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q0a-tw-wYK" userLabel="Obstructed Map View">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="82"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="121"/>
                             </view>
                             <view hidden="YES" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MLY-sg-NLb" userLabel="Carousel Map View">
-                                <rect key="frame" x="0.0" y="82.000000000000028" width="375" height="425.66666666666674"/>
+                                <rect key="frame" x="0.0" y="120.99999999999997" width="375" height="382.33333333333326"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QP7-f7-wk1">
                                 <rect key="frame" x="0.0" y="268" width="375" height="544"/>
@@ -87,7 +87,7 @@
                                 </connections>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8jX-dd-Jb6" userLabel="Mosaic Map View">
-                                <rect key="frame" x="0.0" y="82" width="375" height="186"/>
+                                <rect key="frame" x="0.0" y="121" width="375" height="147"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                                 <connections>
@@ -95,33 +95,37 @@
                                 </connections>
                             </view>
                             <view multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QC2-XK-jf4" customClass="TouchForwardingView" customModule="TastryApp" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="507.66666666666669"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="503.33333333333331"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                             </view>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="70" translatesAutoresizingMaskIntoConstraints="NO" id="S7U-1x-ELZ">
-                                <rect key="frame" x="24" y="764" width="327" height="30"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="70" translatesAutoresizingMaskIntoConstraints="NO" id="S7U-1x-ELZ" userLabel="Bottom Buttons Stack">
+                                <rect key="frame" x="26" y="766" width="323" height="30"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
-                                        <rect key="frame" x="0.0" y="0.0" width="54" height="30"/>
-                                        <state key="normal" title="Camera"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
+                                        <rect key="frame" x="0.0" y="0.0" width="126.66666666666667" height="30"/>
+                                        <state key="normal" image="Discover-CameraButton"/>
                                         <connections>
                                             <action selector="launchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="k45-JV-u3I"/>
                                         </connections>
                                     </button>
-                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q4U-bc-G8m">
-                                        <rect key="frame" x="228" y="0.0" width="99" height="30"/>
+                                    <view hidden="YES" opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hvu-EM-6lf">
+                                        <rect key="frame" x="161.66666666666666" y="-10" width="0.0" height="50"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </view>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="q4U-bc-G8m">
+                                        <rect key="frame" x="196.66666666666666" y="1" width="126.33333333333334" height="28"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xAk-Bi-Jwa">
-                                                <rect key="frame" x="0.0" y="0.0" width="55" height="30"/>
-                                                <state key="normal" title="Log Out"/>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xAk-Bi-Jwa">
+                                                <rect key="frame" x="0.0" y="0.0" width="63" height="28"/>
+                                                <state key="normal" image="Discover-LogoutButton"/>
                                                 <connections>
                                                     <action selector="logOutAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="77B-XM-jf3"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A3t-Ta-aKO">
-                                                <rect key="frame" x="55" y="0.0" width="44" height="30"/>
-                                                <state key="normal" title="Profile"/>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A3t-Ta-aKO">
+                                                <rect key="frame" x="63.000000000000028" y="0.0" width="63.333333333333343" height="28"/>
+                                                <state key="normal" image="Discover-ProfileButton"/>
                                                 <connections>
                                                     <action selector="profileAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LLt-lz-SBf"/>
                                                 </connections>
@@ -130,77 +134,110 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Location to search" textAlignment="center" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
-                                <rect key="frame" x="16" y="44" width="343" height="30"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes"/>
-                            </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8yq-x6-CLY" userLabel="Search Button">
-                                <rect key="frame" x="311" y="82" width="48" height="30"/>
-                                <state key="normal" title="Search"/>
-                                <connections>
-                                    <action selector="searchWithFilter:" destination="BYZ-38-t0r" eventType="touchUpInside" id="VMj-jO-WoY"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sNl-Tb-SAf" userLabel="Current Button">
-                                <rect key="frame" x="161.66666666666666" y="82" width="52" height="30"/>
-                                <state key="normal" title="Current"/>
-                                <connections>
-                                    <action selector="currentLocationReturn:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eE7-yk-10G"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1zZ-dd-fcW">
-                                <rect key="frame" x="16" y="82" width="35" height="30"/>
-                                <state key="normal" title="Draft"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="q7R-1K-TkS" userLabel="Search Stack">
+                                <rect key="frame" x="16" y="0.0" width="343" height="86"/>
+                                <subviews>
+                                    <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H8k-Zq-JMl">
+                                        <rect key="frame" x="0.0" y="0.0" width="343" height="44"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </view>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" baselineRelativeArrangement="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ErC-N9-Y0m" userLabel="Location Stack">
+                                        <rect key="frame" x="0.0" y="50" width="343" height="27"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PIh-Rz-RIF">
+                                                <rect key="frame" x="0.0" y="0.6666666666666643" width="45.666666666666664" height="26"/>
+                                                <state key="normal" image="Discover-SearchMagnifier"/>
+                                            </button>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Location to Search" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
+                                                <rect key="frame" x="45.666666666666657" y="3" width="258.66666666666674" height="21"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes" textContentType="location"/>
+                                            </textField>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9xC-Zn-CZy">
+                                                <rect key="frame" x="304.33333333333331" y="0.6666666666666643" width="38.666666666666686" height="26"/>
+                                                <state key="normal" image="Discover-FilterButton"/>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Discover-SearchTextLine" translatesAutoresizingMaskIntoConstraints="NO" id="NyU-a4-n4g">
+                                        <rect key="frame" x="0.0" y="83" width="343" height="3"/>
+                                    </imageView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="H8k-Zq-JMl" firstAttribute="top" secondItem="q7R-1K-TkS" secondAttribute="top" id="nlY-9g-Zws"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="UxH-nM-VsY" userLabel="Middle Stack">
+                                <rect key="frame" x="65.666666666666686" y="92" width="244" height="39"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8yq-x6-CLY" userLabel="Search Button">
+                                        <rect key="frame" x="0.0" y="0.0" width="116" height="39"/>
+                                        <state key="normal" image="Discover-SearchHereButton"/>
+                                        <connections>
+                                            <action selector="searchWithFilter:" destination="BYZ-38-t0r" eventType="touchUpInside" id="VMj-jO-WoY"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8lR-o3-9WI" userLabel="All Button">
+                                        <rect key="frame" x="118" y="0.0" width="126" height="39"/>
+                                        <state key="normal" image="Discover-SearchHiddenButton"/>
+                                        <connections>
+                                            <action selector="allStories:" destination="BYZ-38-t0r" eventType="touchUpInside" id="rUI-uX-Iqo"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1zZ-dd-fcW">
+                                <rect key="frame" x="16" y="92" width="29" height="29"/>
+                                <state key="normal" image="Discover-DraftButton"/>
                                 <connections>
                                     <action selector="launchDraftStory:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Kpk-L1-VSN"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8lR-o3-9WI" userLabel="All Button">
-                                <rect key="frame" x="329" y="112" width="30" height="30"/>
-                                <state key="normal" title="All"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sNl-Tb-SAf" userLabel="Current Button">
+                                <rect key="frame" x="333" y="92" width="26" height="29"/>
+                                <state key="normal" image="Discover-CurrentLocationButton"/>
                                 <connections>
-                                    <action selector="allStories:" destination="BYZ-38-t0r" eventType="touchUpInside" id="rUI-uX-Iqo"/>
+                                    <action selector="currentLocationReturn:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eE7-yk-10G"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="8jX-dd-Jb6" firstAttribute="top" secondItem="q0a-tw-wYK" secondAttribute="bottom" id="0xc-pZ-bYn"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="S7U-1x-ELZ" secondAttribute="trailing" constant="8" id="4il-4C-MZU"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="S7U-1x-ELZ" secondAttribute="trailing" constant="10" id="4il-4C-MZU"/>
+                            <constraint firstItem="oB7-Q1-hCS" firstAttribute="top" secondItem="H8k-Zq-JMl" secondAttribute="bottom" id="4k5-AR-13X"/>
                             <constraint firstItem="MLY-sg-NLb" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="6bB-H0-xPK"/>
-                            <constraint firstItem="S7U-1x-ELZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="8" id="6eR-hs-oI6"/>
-                            <constraint firstItem="8yq-x6-CLY" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="8Dq-zq-i2O"/>
-                            <constraint firstItem="0wJ-kE-Bqf" firstAttribute="bottom" secondItem="q0a-tw-wYK" secondAttribute="bottom" constant="-8" id="Amk-kJ-Dgb"/>
+                            <constraint firstItem="S7U-1x-ELZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="10" id="6eR-hs-oI6"/>
+                            <constraint firstItem="UxH-nM-VsY" firstAttribute="top" secondItem="sNl-Tb-SAf" secondAttribute="top" id="7vV-fa-bR5"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="q7R-1K-TkS" secondAttribute="trailing" id="DXJ-bf-W4S"/>
                             <constraint firstItem="8jX-dd-Jb6" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="EFc-6u-qjl"/>
                             <constraint firstAttribute="trailing" secondItem="8jX-dd-Jb6" secondAttribute="trailing" id="Ea5-mK-mUk"/>
+                            <constraint firstItem="q7R-1K-TkS" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="HXr-Ng-BFA"/>
+                            <constraint firstItem="q7R-1K-TkS" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="IEj-VO-cPD"/>
                             <constraint firstItem="QC2-XK-jf4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="K8O-TB-xfm"/>
-                            <constraint firstItem="sNl-Tb-SAf" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="MR7-TB-A71"/>
-                            <constraint firstItem="0wJ-kE-Bqf" firstAttribute="top" secondItem="oB7-Q1-hCS" secondAttribute="top" symbolic="YES" id="Nbp-8y-0cy"/>
-                            <constraint firstItem="8lR-o3-9WI" firstAttribute="top" secondItem="8yq-x6-CLY" secondAttribute="bottom" id="NxP-Lr-oyo"/>
-                            <constraint firstItem="0wJ-kE-Bqf" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="PUi-hX-qEd"/>
+                            <constraint firstItem="oB7-Q1-hCS" firstAttribute="top" secondItem="q7R-1K-TkS" secondAttribute="bottom" constant="-42" id="Nck-fr-xd7"/>
+                            <constraint firstItem="q0a-tw-wYK" firstAttribute="bottom" secondItem="sNl-Tb-SAf" secondAttribute="bottom" id="SnE-qj-GeG"/>
                             <constraint firstItem="QP7-f7-wk1" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="TPv-Ri-Idi"/>
+                            <constraint firstItem="UxH-nM-VsY" firstAttribute="centerX" secondItem="oB7-Q1-hCS" secondAttribute="centerX" id="U7N-LO-XOc"/>
                             <constraint firstItem="MLY-sg-NLb" firstAttribute="top" secondItem="q0a-tw-wYK" secondAttribute="bottom" id="VCg-ab-fro"/>
+                            <constraint firstItem="UxH-nM-VsY" firstAttribute="top" secondItem="q7R-1K-TkS" secondAttribute="bottom" constant="6" id="WKj-TG-bcd"/>
+                            <constraint firstItem="1zZ-dd-fcW" firstAttribute="leading" secondItem="q7R-1K-TkS" secondAttribute="leading" id="XQe-K1-4aN"/>
                             <constraint firstItem="QC2-XK-jf4" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Y24-lj-eHA"/>
                             <constraint firstItem="q0a-tw-wYK" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Y4K-q5-jZ4"/>
-                            <constraint firstItem="S7U-1x-ELZ" firstAttribute="bottom" secondItem="oB7-Q1-hCS" secondAttribute="bottom" priority="750" constant="16" id="bKC-RP-rkh"/>
-                            <constraint firstItem="1zZ-dd-fcW" firstAttribute="top" secondItem="0wJ-kE-Bqf" secondAttribute="bottom" constant="8" id="dFM-J1-5ln"/>
+                            <constraint firstItem="S7U-1x-ELZ" firstAttribute="bottom" secondItem="oB7-Q1-hCS" secondAttribute="bottom" priority="750" constant="18" id="bKC-RP-rkh"/>
                             <constraint firstItem="MLY-sg-NLb" firstAttribute="bottom" secondItem="QC2-XK-jf4" secondAttribute="bottom" id="dut-IA-DQu"/>
+                            <constraint firstItem="UxH-nM-VsY" firstAttribute="top" secondItem="1zZ-dd-fcW" secondAttribute="top" id="eps-HS-H0B"/>
                             <constraint firstItem="QP7-f7-wk1" firstAttribute="top" secondItem="8jX-dd-Jb6" secondAttribute="bottom" id="h4a-Ee-gf1"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="8lR-o3-9WI" secondAttribute="trailing" id="hDa-sq-jeb"/>
                             <constraint firstItem="QP7-f7-wk1" firstAttribute="leading" secondItem="oB7-Q1-hCS" secondAttribute="leading" id="heM-AO-6o5"/>
                             <constraint firstAttribute="trailing" secondItem="QC2-XK-jf4" secondAttribute="trailing" id="hop-HJ-4YV"/>
-                            <constraint firstItem="1zZ-dd-fcW" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="is3-jI-Qnz"/>
+                            <constraint firstItem="sNl-Tb-SAf" firstAttribute="trailing" secondItem="q7R-1K-TkS" secondAttribute="trailing" id="jsE-fY-uvA"/>
                             <constraint firstAttribute="trailing" secondItem="MLY-sg-NLb" secondAttribute="trailing" id="kgm-iY-QbY"/>
                             <constraint firstItem="q0a-tw-wYK" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="mau-uh-7ar"/>
                             <constraint firstAttribute="trailing" secondItem="q0a-tw-wYK" secondAttribute="trailing" id="rBC-Tk-N24"/>
                             <constraint firstItem="QP7-f7-wk1" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.67" id="rqE-df-sxp"/>
-                            <constraint firstItem="QC2-XK-jf4" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.625" id="slE-mm-W4b"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="0wJ-kE-Bqf" secondAttribute="trailing" id="sre-db-TIA"/>
+                            <constraint firstItem="QC2-XK-jf4" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.62" id="slE-mm-W4b"/>
                             <constraint firstItem="oB7-Q1-hCS" firstAttribute="trailing" secondItem="QP7-f7-wk1" secondAttribute="trailing" id="tHU-hI-SlX"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="8yq-x6-CLY" secondAttribute="trailing" id="uUg-YT-GMX"/>
-                            <constraint firstItem="sNl-Tb-SAf" firstAttribute="centerX" secondItem="oB7-Q1-hCS" secondAttribute="centerX" id="wdT-rv-LuQ"/>
                             <constraint firstItem="S7U-1x-ELZ" firstAttribute="bottom" relation="lessThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="bottom" constant="-8" id="zJo-0q-e0B"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="oB7-Q1-hCS"/>
@@ -424,4 +461,16 @@
             <point key="canvasLocation" x="-1162" y="-2059"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Discover-CameraButton" width="30" height="30"/>
+        <image name="Discover-CurrentLocationButton" width="26" height="29"/>
+        <image name="Discover-DraftButton" width="29" height="29"/>
+        <image name="Discover-FilterButton" width="22" height="26"/>
+        <image name="Discover-LogoutButton" width="29" height="26"/>
+        <image name="Discover-ProfileButton" width="22" height="28"/>
+        <image name="Discover-SearchHereButton" width="116" height="39"/>
+        <image name="Discover-SearchHiddenButton" width="126" height="39"/>
+        <image name="Discover-SearchMagnifier" width="26" height="26"/>
+        <image name="Discover-SearchTextLine" width="357" height="3"/>
+    </resources>
 </document>
