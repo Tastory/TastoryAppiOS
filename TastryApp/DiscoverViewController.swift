@@ -39,6 +39,7 @@ class DiscoverViewController: OverlayViewController {
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
     static let PullTranslationForChange: CGFloat = 50.0  // In Points
     static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.7
+    static let BackgroundBlackAlpha: CGFloat = 0.3
   }
 
   
@@ -52,6 +53,7 @@ class DiscoverViewController: OverlayViewController {
   private var lastSelectedAnnotationIndex: Int?
   private var highlightedStoryIndex: Int?
   private var mosaicMapWidth: CLLocationDistance?
+  private var initialLayout = true
   
   private var storyQuery: FoodieQuery?
   private var storyArray = [FoodieStory]()
@@ -82,9 +84,11 @@ class DiscoverViewController: OverlayViewController {
     }
   }
   
+  @IBOutlet weak var searchBackgroundView: UIView!
   @IBOutlet weak var feedContainerView: UIView!
   @IBOutlet weak var mosaicMapView: UIView!
   @IBOutlet weak var carouselMapView: UIView!
+  @IBOutlet weak var feedBackgroundView: UIView!
   
   
   
@@ -598,12 +602,31 @@ class DiscoverViewController: OverlayViewController {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
-    switch feedCollectionNodeController.layoutType {
-    case .carousel:
-      mapNavController?.setExposedRect(with: carouselMapView)
+    if initialLayout {
+      initialLayout = false
+      switch feedCollectionNodeController.layoutType {
+      case .carousel:
+        mapNavController?.setExposedRect(with: carouselMapView)
+        
+      case .mosaic:
+        mapNavController?.setExposedRect(with: mosaicMapView)
+      }
       
-    case .mosaic:
-      mapNavController?.setExposedRect(with: mosaicMapView)
+      // Setup Gradient Backgrounds
+      let initialBlackLevel = UIColor.black.withAlphaComponent(Constants.BackgroundBlackAlpha)
+      let searchGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
+                                            endingAt: CGPoint(x: 0.5, y: 1.0),
+                                            with: [initialBlackLevel, .clear])
+      searchGradientNode.isOpaque = false
+      searchBackgroundView.addSubnode(searchGradientNode)
+      searchGradientNode.frame = searchBackgroundView.bounds
+      
+      let feedGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
+                                          endingAt: CGPoint(x: 0.5, y: 0.0),
+                                          with: [initialBlackLevel, .clear])
+      feedGradientNode.isOpaque = false
+      feedBackgroundView.addSubnode(feedGradientNode)
+      feedGradientNode.frame = feedBackgroundView.bounds
     }
   }
   

@@ -294,10 +294,9 @@ class StoryViewController: OverlayViewController {
   
   
   fileprivate func displayMomentIfLoaded(for moment: FoodieMoment) {
-    guard let story = viewingStory else {
-      CCLog.fatal("viewingStory = nil")
-    }
-    
+//    guard let story = viewingStory else {
+//      CCLog.fatal("viewingStory = nil")
+//    }
     var shouldRetrieveMoment = false
     
     moment.execute(ifNotReady: {

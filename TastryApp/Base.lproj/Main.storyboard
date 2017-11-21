@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -72,7 +73,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view hidden="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q0a-tw-wYK" userLabel="Obstructed Map View">
+                            <view opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mLg-YP-WIi">
+                                <rect key="frame" x="0.0" y="540" width="375" height="272"/>
+                            </view>
+                            <view opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q0a-tw-wYK" userLabel="Search Background View">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="121"/>
                             </view>
                             <view hidden="YES" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MLY-sg-NLb" userLabel="Carousel Map View">
@@ -210,6 +214,8 @@
                             <constraint firstItem="MLY-sg-NLb" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="6bB-H0-xPK"/>
                             <constraint firstItem="S7U-1x-ELZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="10" id="6eR-hs-oI6"/>
                             <constraint firstItem="UxH-nM-VsY" firstAttribute="top" secondItem="sNl-Tb-SAf" secondAttribute="top" id="7vV-fa-bR5"/>
+                            <constraint firstAttribute="trailing" secondItem="mLg-YP-WIi" secondAttribute="trailing" id="8Hj-hv-m8z"/>
+                            <constraint firstAttribute="bottom" secondItem="mLg-YP-WIi" secondAttribute="bottom" id="8JC-DE-8Ws"/>
                             <constraint firstAttribute="trailingMargin" secondItem="q7R-1K-TkS" secondAttribute="trailing" id="DXJ-bf-W4S"/>
                             <constraint firstItem="8jX-dd-Jb6" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="EFc-6u-qjl"/>
                             <constraint firstAttribute="trailing" secondItem="8jX-dd-Jb6" secondAttribute="trailing" id="Ea5-mK-mUk"/>
@@ -222,9 +228,11 @@
                             <constraint firstItem="UxH-nM-VsY" firstAttribute="centerX" secondItem="oB7-Q1-hCS" secondAttribute="centerX" id="U7N-LO-XOc"/>
                             <constraint firstItem="MLY-sg-NLb" firstAttribute="top" secondItem="q0a-tw-wYK" secondAttribute="bottom" id="VCg-ab-fro"/>
                             <constraint firstItem="UxH-nM-VsY" firstAttribute="top" secondItem="q7R-1K-TkS" secondAttribute="bottom" constant="6" id="WKj-TG-bcd"/>
+                            <constraint firstItem="mLg-YP-WIi" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Wzy-eH-MVR"/>
                             <constraint firstItem="1zZ-dd-fcW" firstAttribute="leading" secondItem="q7R-1K-TkS" secondAttribute="leading" id="XQe-K1-4aN"/>
                             <constraint firstItem="QC2-XK-jf4" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Y24-lj-eHA"/>
                             <constraint firstItem="q0a-tw-wYK" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Y4K-q5-jZ4"/>
+                            <constraint firstItem="QP7-f7-wk1" firstAttribute="centerY" secondItem="mLg-YP-WIi" secondAttribute="top" id="afC-ed-ksW"/>
                             <constraint firstItem="S7U-1x-ELZ" firstAttribute="bottom" secondItem="oB7-Q1-hCS" secondAttribute="bottom" priority="750" constant="18" id="bKC-RP-rkh"/>
                             <constraint firstItem="MLY-sg-NLb" firstAttribute="bottom" secondItem="QC2-XK-jf4" secondAttribute="bottom" id="dut-IA-DQu"/>
                             <constraint firstItem="UxH-nM-VsY" firstAttribute="top" secondItem="1zZ-dd-fcW" secondAttribute="top" id="eps-HS-H0B"/>
@@ -248,12 +256,14 @@
                         <outlet property="carouselLayoutChangeTapRecognizer" destination="t9x-jg-cUa" id="hnr-jt-DSA"/>
                         <outlet property="carouselMapView" destination="MLY-sg-NLb" id="fmY-nc-zXA"/>
                         <outlet property="draftButton" destination="1zZ-dd-fcW" id="xkV-cw-rjf"/>
+                        <outlet property="feedBackgroundView" destination="mLg-YP-WIi" id="jLF-W8-OPE"/>
                         <outlet property="feedContainerView" destination="QP7-f7-wk1" id="5wA-qf-gbI"/>
                         <outlet property="locationField" destination="0wJ-kE-Bqf" id="udw-u7-LkJ"/>
                         <outlet property="logoutButton" destination="xAk-Bi-Jwa" id="sAq-I6-br1"/>
                         <outlet property="mosaicLayoutChangePanRecognizer" destination="Sj4-40-4nO" id="fbE-TI-okl"/>
                         <outlet property="mosaicMapView" destination="8jX-dd-Jb6" id="aoN-ur-v8b"/>
                         <outlet property="profileButton" destination="A3t-Ta-aKO" id="B2K-m7-Nv7"/>
+                        <outlet property="searchBackgroundView" destination="q0a-tw-wYK" id="oXf-uF-GDT"/>
                         <outlet property="touchForwardingView" destination="QC2-XK-jf4" id="9um-UP-md1"/>
                     </connections>
                 </viewController>
