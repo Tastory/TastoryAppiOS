@@ -68,6 +68,7 @@ class DiscoverViewController: OverlayViewController {
   
   @IBOutlet weak var locationField: UITextField!
   @IBOutlet weak var draftButton: UIButton!
+  @IBOutlet weak var currentLocationButton: UIButton!
   @IBOutlet weak var cameraButton: UIButton!
   @IBOutlet weak var logoutButton: UIButton!
   @IBOutlet weak var profileButton: UIButton!
@@ -91,6 +92,8 @@ class DiscoverViewController: OverlayViewController {
   @IBOutlet weak var carouselMapView: UIView!
   @IBOutlet weak var feedBackgroundView: UIView!
   
+  @IBOutlet weak var searchStack: UIStackView!
+  @IBOutlet weak var middleStack: UIStackView!
   
   
   // MARK: - IBActions
@@ -112,6 +115,7 @@ class DiscoverViewController: OverlayViewController {
       viewController.workingStory = FoodieStory.currentStory
     }
     
+    appearanceForAllUI(alphaValue: 0.0, animated: true)
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
   }
@@ -125,6 +129,9 @@ class DiscoverViewController: OverlayViewController {
       }
       return
     }
+    
+    appearanceForAllUI(alphaValue: 0.0, animated: true)
+    
     viewController.cameraReturnDelegate = self
     present(viewController, animated: true)  // Use regular present for the Camera for now. Not including the camera as part of the MapNavController for now
   }
@@ -206,6 +213,9 @@ class DiscoverViewController: OverlayViewController {
       }
       return
     }
+    
+    appearanceForAllUI(alphaValue: 0.0, animated: true)
+    
     viewController.user = FoodieUser.current
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
@@ -394,6 +404,48 @@ class DiscoverViewController: OverlayViewController {
   }
   
   
+  private func appearanceForAllUI(alphaValue: CGFloat, animated: Bool) {
+    appearanceForTopUI(alphaValue: alphaValue, animated: animated)
+    appearanceForFeedUI(alphaValue: alphaValue, animated: animated)
+  }
+    
+  
+  private func appearanceForTopUI(alphaValue: CGFloat, animated: Bool) {
+    if animated {
+      UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
+        self.searchStack.alpha = alphaValue
+        self.middleStack.alpha = alphaValue
+        self.draftButton.alpha = alphaValue
+        self.currentLocationButton.alpha = alphaValue
+        self.searchBackgroundView.alpha = alphaValue
+      })
+    } else {
+      self.searchStack.alpha = alphaValue
+      self.middleStack.alpha = alphaValue
+      self.draftButton.alpha = alphaValue
+      self.currentLocationButton.alpha = alphaValue
+      self.searchBackgroundView.alpha = alphaValue
+    }
+  }
+
+  
+  private func appearanceForFeedUI(alphaValue: CGFloat, animated: Bool) {
+    if animated {
+      UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
+        self.cameraButton.alpha = alphaValue
+        self.profileButton.alpha = alphaValue
+        self.feedBackgroundView.alpha = alphaValue
+        self.feedContainerView.alpha = alphaValue
+      })
+    } else {
+      self.cameraButton.alpha = alphaValue
+      self.profileButton.alpha = alphaValue
+      self.feedBackgroundView.alpha = alphaValue
+      self.feedContainerView.alpha = alphaValue
+    }
+  }
+  
+  
   
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
@@ -470,6 +522,40 @@ class DiscoverViewController: OverlayViewController {
     }
   }
 
+  
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    
+    if initialLayout {
+      initialLayout = false
+      
+      // Setup Gradient Backgrounds
+      let initialBlackLevel = UIColor.black.withAlphaComponent(Constants.BackgroundBlackAlpha)
+      let searchGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
+                                            endingAt: CGPoint(x: 0.5, y: 1.0),
+                                            with: [initialBlackLevel, .clear])
+      searchGradientNode.isOpaque = false
+      searchBackgroundView.addSubnode(searchGradientNode)
+      searchGradientNode.frame = searchBackgroundView.bounds
+      
+      let feedGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
+                                          endingAt: CGPoint(x: 0.5, y: 0.0),
+                                          with: [initialBlackLevel, .clear])
+      feedGradientNode.isOpaque = false
+      feedBackgroundView.addSubnode(feedGradientNode)
+      feedGradientNode.frame = feedBackgroundView.bounds
+    }
+    
+    // Layout changed, so set Exposed Rect accordingly
+    switch feedCollectionNodeController.layoutType {
+    case .carousel:
+      mapNavController?.setExposedRect(with: carouselMapView)
+      
+    case .mosaic:
+      mapNavController?.setExposedRect(with: mosaicMapView)
+    }
+  }
+  
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
@@ -591,45 +677,31 @@ class DiscoverViewController: OverlayViewController {
         }
       }
     }
-  }
-
-  
-  override func viewDidLayoutSubviews() {
-    super.viewDidLayoutSubviews()
     
-    if initialLayout {
-      initialLayout = false
-      
-      // Setup Gradient Backgrounds
-      let initialBlackLevel = UIColor.black.withAlphaComponent(Constants.BackgroundBlackAlpha)
-      let searchGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
-                                            endingAt: CGPoint(x: 0.5, y: 1.0),
-                                            with: [initialBlackLevel, .clear])
-      searchGradientNode.isOpaque = false
-      searchBackgroundView.addSubnode(searchGradientNode)
-      searchGradientNode.frame = searchBackgroundView.bounds
-      
-      let feedGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
-                                          endingAt: CGPoint(x: 0.5, y: 0.0),
-                                          with: [initialBlackLevel, .clear])
-      feedGradientNode.isOpaque = false
-      feedBackgroundView.addSubnode(feedGradientNode)
-      feedGradientNode.frame = feedBackgroundView.bounds
+    if self.feedCollectionNodeController.layoutType == .carousel {
+      appearanceForTopUI(alphaValue: 1.0, animated: true)
     }
-    
-    // Layout changed, so set Exposed Rect accordingly
-    switch feedCollectionNodeController.layoutType {
-    case .carousel:
-      mapNavController?.setExposedRect(with: carouselMapView)
-      
-    case .mosaic:
-      mapNavController?.setExposedRect(with: mosaicMapView)
+    appearanceForFeedUI(alphaValue: 1.0, animated: true)
+    setNeedsStatusBarAppearanceUpdate()
+  }
+  
+  
+  override var preferredStatusBarStyle: UIStatusBarStyle {
+    if let feedController = self.feedCollectionNodeController, feedController.layoutType == .carousel {
+      return .lightContent
+    } else {
+      return .default
     }
   }
   
   
-  override func viewDidDisappear(_ animated: Bool) {
-    super.viewDidDisappear(animated)
+  override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+    return .fade
+  }
+  
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
     
     // Keep track of what the location is before we disappear
     if let mapNavController = mapNavController {
@@ -807,6 +879,10 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       carouselLayoutChangeTapRecognizer.isEnabled = true
       view.insertSubview(mosaicMapView, aboveSubview: touchForwardingView!)
       
+      // Hide top buttons
+      appearanceForTopUI(alphaValue: 0.0, animated: true)
+      self.setNeedsStatusBarAppearanceUpdate()
+      
       if let highlightedStoryIndex = highlightedStoryIndex {
         feedCollectionNodeController.scrollTo(storyIndex: highlightedStoryIndex)
       }
@@ -819,6 +895,10 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       mosaicLayoutChangePanRecognizer.isEnabled = true
       mapNavController?.showRegionExposed(containing: storyAnnotations)
       view.insertSubview(touchForwardingView!, aboveSubview: mosaicMapView)
+      
+      // Should we show top buttons?
+      appearanceForTopUI(alphaValue: 1.0, animated: true)
+      setNeedsStatusBarAppearanceUpdate()
       
       if let highlightedStoryIndex = highlightedStoryIndex {
         feedCollectionNodeController.scrollTo(storyIndex: highlightedStoryIndex)
@@ -837,10 +917,10 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
           
           switch feedCollectionNodeController.layoutType {
           case .mosaic:
-            let mapWidth = mosaicMapWidth ?? MapNavController.Constants.DefaultMapWidth
+            let mapWidth = MapNavController.Constants.DefaultMinMapWidth
             let mosaicMapAspectRatio = mosaicMapView.bounds.width/mosaicMapView.bounds.height
             let mapHeight = mapWidth/CLLocationDistance(mosaicMapAspectRatio)
-            let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, mapHeight/3, mapWidth/3)  // divided by 3 is hand tuned
+            let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, mapHeight/2, mapWidth/2)  // divided by 2 is hand tuned
             self.lastMapRegion = region
             
             mapNavController?.showRegionExposed(region, animated: true)
@@ -912,6 +992,8 @@ extension DiscoverViewController: CameraReturnDelegate {
       
       viewController.workingStory = workingStory!
       viewController.returnedMoments = markedupMoments
+      
+      self.appearanceForFeedUI(alphaValue: 0.0, animated: true)
       
       self.dismiss(animated: true) {  // This dismiss is for the CameraViewController to call on
         viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)

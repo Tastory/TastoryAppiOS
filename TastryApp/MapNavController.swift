@@ -35,7 +35,7 @@ class MapNavController: ASNavigationController {
   
   // MARK: - Private Instance Variables
   
-  private var locationWatcher: LocationWatch.Context!
+  private var locationWatcher: LocationWatch.Context?
   private var exposedRectInset: UIEdgeInsets?
   private var exposedRect: CGRect?
   private var currentMapWidth: CLLocationDistance?
@@ -212,14 +212,14 @@ class MapNavController: ASNavigationController {
   func stopTracking() {
     CCLog.verbose("MapNav Stop Tracking")
     isTracking = false
-    locationWatcher.pause()
+    locationWatcher?.pause()
   }
   
   
   func startTracking() {
     CCLog.verbose("MapNav Start Tracking")
     isTracking = true
-    locationWatcher.resume()
+    locationWatcher?.resume()
   }
   
   
@@ -279,9 +279,15 @@ class MapNavController: ASNavigationController {
   }
   
   
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    if isTracking { locationWatcher?.resume() }
+  }
+  
+  
   override func viewDidDisappear(_ animated: Bool) {
-    locationWatcher.stop()
-    locationWatcher = nil
+    super.viewDidDisappear(animated)
+    locationWatcher?.pause()
   }
   
   
