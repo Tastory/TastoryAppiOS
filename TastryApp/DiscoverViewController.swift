@@ -850,6 +850,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
             mapNavController?.showRegionExposed(region, animated: true)
             
           case .carousel:
+            // TODO: Does the exposed map already show the annotation? Only zoom to all annotations if not already shown
             mapNavController?.showRegionExposed(containing: self.storyAnnotations)
           }
           mapNavController?.select(annotation: annotation, animated: true)
