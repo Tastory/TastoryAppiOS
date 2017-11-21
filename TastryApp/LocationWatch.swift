@@ -132,16 +132,17 @@ class LocationWatch: NSObject {
   // MARK: - Public Static Functions
   func get(withBlock callback: @escaping LocationErrorBlock) {
     
-    let watcher = Context()
-    watcher.callback = callback
-    watcher.continuous = false
-    watcher.state = .started
-    watcherDLL.add(toTail: watcher)
-    
     if let location = currentLocation {
-      DispatchQueue.global(qos: .userInitiated).async { watcher.callback(location, nil) }
+      DispatchQueue.global(qos: .userInitiated).async { callback(location, nil) }
+    } else {
+      let watcher = Context()
+      watcher.callback = callback
+      watcher.continuous = false
+      watcher.state = .started
+      
+      watcherDLL.add(toTail: watcher)
+      manager.startUpdatingLocation()
     }
-    manager.startUpdatingLocation()
   }
   
   func start(butPaused: Bool = false, withBlock callback: @escaping LocationErrorBlock) -> Context {

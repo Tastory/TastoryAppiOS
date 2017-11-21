@@ -62,6 +62,7 @@ class DiscoverViewController: OverlayViewController {
   
   
   // MARK: - IBOutlets
+  
   @IBOutlet weak var mosaicLayoutChangePanRecognizer: UIPanGestureRecognizer!
   @IBOutlet weak var carouselLayoutChangeTapRecognizer: UITapGestureRecognizer!
   
@@ -70,6 +71,7 @@ class DiscoverViewController: OverlayViewController {
   @IBOutlet weak var cameraButton: UIButton!
   @IBOutlet weak var logoutButton: UIButton!
   @IBOutlet weak var profileButton: UIButton!
+  @IBOutlet weak var searchButton: UIButton!
   @IBOutlet weak var allStoriesButton: UIButton!
   
   @IBOutlet weak var touchForwardingView: TouchForwardingView? {
@@ -78,7 +80,6 @@ class DiscoverViewController: OverlayViewController {
         touchForwardingView.passthroughViews = [mapNavController.mapView]
         touchForwardingView.touchBlock = {
           self.locationField?.resignFirstResponder()
-          self.mapNavController?.stopTracking()
         }
       }
     }
@@ -93,7 +94,7 @@ class DiscoverViewController: OverlayViewController {
   
   
   // MARK: - IBActions
-
+  
   @IBAction func launchDraftStory(_ sender: Any) {
     // This is used for viewing the draft story to be used with update story later
     // Hide the button as needed, due to problems with empty draft story and saving an empty story is problematic
@@ -157,6 +158,8 @@ class DiscoverViewController: OverlayViewController {
         return
       }
       
+      self.searchButton.isHidden = true
+      self.allStoriesButton.isHidden = true
       self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
     }
   }
@@ -183,6 +186,8 @@ class DiscoverViewController: OverlayViewController {
         return
       }
       
+      self.searchButton.isHidden = true
+      self.allStoriesButton.isHidden = true
       self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
     }
   }
@@ -377,10 +382,6 @@ class DiscoverViewController: OverlayViewController {
               self.mapNavController?.showRegionExposed(containing: newAnnotations)
             }
             
-            if scrollAndSelectStory {
-              self.mapNavController?.select(annotation: self.storyAnnotations[0], animated: true)
-            }
-            
             self.feedCollectionNodeController.resetCollectionNode(with: stories) {
               if scrollAndSelectStory {
                 self.feedCollectionNodeController.scrollTo(storyIndex: 0)
@@ -489,7 +490,6 @@ class DiscoverViewController: OverlayViewController {
       touchForwardingView.passthroughViews = [mapController.mapView]
       touchForwardingView.touchBlock = {
         self.locationField?.resignFirstResponder()
-        self.mapNavController?.stopTracking()
       }
     }
     
@@ -565,7 +565,6 @@ class DiscoverViewController: OverlayViewController {
     cameraButton.isHidden = true
     logoutButton.isHidden = false
     profileButton.isHidden = true
-    allStoriesButton.isHidden = true
     
     // But we should refresh the user before determining for good
     if let user = FoodieUser.current, user.isRegistered {
@@ -588,10 +587,6 @@ class DiscoverViewController: OverlayViewController {
         } else if verified {
           DispatchQueue.main.async {
             self.cameraButton.isHidden = false
-            
-            if user.roleLevel >= FoodieRole.Level.moderator.rawValue {
-              self.allStoriesButton.isHidden = false
-            }
           }
         }
       }
@@ -655,6 +650,7 @@ class DiscoverViewController: OverlayViewController {
     }
   }
 }
+
 
 
 extension DiscoverViewController: UITextFieldDelegate {
@@ -869,6 +865,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
 
 
 extension DiscoverViewController: MapNavControllerDelegate {
+  
   func mapNavController(_ mapNavController: MapNavController, didSelect annotation: MKAnnotation) {
     
     if let storyAnnotation = annotation as? StoryMapAnnotation, feedCollectionNodeController.layoutType == .carousel {
@@ -878,6 +875,16 @@ extension DiscoverViewController: MapNavControllerDelegate {
           break
         }
       }
+    }
+  }
+  
+  
+  func mapNavControllerWasMovedByUser(_ mapNavController: MapNavController) {
+    self.mapNavController?.stopTracking()
+    self.searchButton?.isHidden = false
+    
+    if let user = FoodieUser.current, user.isRegistered, user.roleLevel >= FoodieRole.Level.moderator.rawValue {
+      self.allStoriesButton.isHidden = false
     }
   }
 }

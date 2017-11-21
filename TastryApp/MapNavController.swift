@@ -9,8 +9,10 @@
 
 import AsyncDisplayKit
 
-protocol MapNavControllerDelegate {
-  func mapNavController(_ mapNavController: MapNavController, didSelect annotation: MKAnnotation)
+@objc protocol MapNavControllerDelegate {
+  @objc optional func mapNavController(_ mapNavController: MapNavController, didSelect annotation: MKAnnotation)
+  
+  @objc optional func mapNavControllerWasMovedByUser(_ mapNavController: MapNavController)
 }
 
 
@@ -31,7 +33,7 @@ class MapNavController: ASNavigationController {
   
   
   
-  // MARK: - Private Instance Functions
+  // MARK: - Private Instance Variables
   
   private var locationWatcher: LocationWatch.Context!
   private var exposedRectInset: UIEdgeInsets?
@@ -68,9 +70,7 @@ class MapNavController: ASNavigationController {
     }
   }
   
-  var isTracking: Bool {
-    return locationWatcher.isStarted
-  }
+  var isTracking: Bool = false
   
   
   
@@ -211,13 +211,24 @@ class MapNavController: ASNavigationController {
   
   func stopTracking() {
     CCLog.verbose("MapNav Stop Tracking")
+    isTracking = false
     locationWatcher.pause()
   }
   
   
   func startTracking() {
     CCLog.verbose("MapNav Start Tracking")
+    isTracking = true
     locationWatcher.resume()
+  }
+  
+  
+  
+  // MARK: - Private Instance Functions
+  @objc private func mapWasDragged(_ panRecognizer: UIGestureRecognizer) {
+    if panRecognizer.state == .began {
+      mapDelegate?.mapNavControllerWasMovedByUser?(self)
+    }
   }
   
   
@@ -245,7 +256,13 @@ class MapNavController: ASNavigationController {
     view.addSubview(mapView)
     view.sendSubview(toBack: mapView)
     
+    // Add a Pan Gesture Recognizer to the Map View to detect User initiated Map movement
+    let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(mapWasDragged(_:)))
+    panGestureRecognizer.delegate = self
+    mapView.addGestureRecognizer(panGestureRecognizer)
+    
     // Start/Restart the Location Watcher
+    isTracking = true
     locationWatcher = LocationWatch.global.start() { (location, error) in
       if let error = error {
         CCLog.warning("LocationWatch returned error - \(error.localizedDescription)")
@@ -259,6 +276,12 @@ class MapNavController: ASNavigationController {
         DispatchQueue.main.async { self.showRegionExposed(region, animated: true, turnOffTracking: false) }
       }
     }
+  }
+  
+  
+  override func viewDidDisappear(_ animated: Bool) {
+    locationWatcher.stop()
+    locationWatcher = nil
   }
   
   
@@ -300,7 +323,7 @@ class MapNavController: ASNavigationController {
 extension MapNavController: MKMapViewDelegate {
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
     if let annotation = view.annotation {
-      mapDelegate?.mapNavController(self, didSelect: annotation)
+      mapDelegate?.mapNavController?(self, didSelect: annotation)
     }
   }
   
@@ -316,5 +339,12 @@ extension MapNavController: MKMapViewDelegate {
     } else {
       return nil
     }
+  }
+}
+
+
+extension MapNavController: UIGestureRecognizerDelegate {
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    return true
   }
 }

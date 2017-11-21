@@ -104,31 +104,31 @@
                                 <gestureRecognizers/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="70" translatesAutoresizingMaskIntoConstraints="NO" id="S7U-1x-ELZ" userLabel="Bottom Buttons Stack">
-                                <rect key="frame" x="26" y="766" width="323" height="30"/>
+                                <rect key="frame" x="26" y="796" width="323" height="0.0"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
-                                        <rect key="frame" x="0.0" y="0.0" width="126.66666666666667" height="30"/>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
+                                        <rect key="frame" x="-26" y="-15" width="0.0" height="30"/>
                                         <state key="normal" image="Discover-CameraButton"/>
                                         <connections>
                                             <action selector="launchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="k45-JV-u3I"/>
                                         </connections>
                                     </button>
                                     <view hidden="YES" opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hvu-EM-6lf">
-                                        <rect key="frame" x="161.66666666666666" y="-10" width="0.0" height="50"/>
+                                        <rect key="frame" x="-26" y="-25" width="0.0" height="50"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="q4U-bc-G8m">
-                                        <rect key="frame" x="196.66666666666666" y="1" width="126.33333333333334" height="28"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="323" height="0.0"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xAk-Bi-Jwa">
-                                                <rect key="frame" x="0.0" y="0.0" width="63" height="28"/>
+                                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xAk-Bi-Jwa">
+                                                <rect key="frame" x="-26" y="-796" width="0.0" height="28"/>
                                                 <state key="normal" image="Discover-LogoutButton"/>
                                                 <connections>
                                                     <action selector="logOutAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="77B-XM-jf3"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A3t-Ta-aKO">
-                                                <rect key="frame" x="63.000000000000028" y="0.0" width="63.333333333333343" height="28"/>
+                                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A3t-Ta-aKO">
+                                                <rect key="frame" x="-26" y="-796" width="0.0" height="28"/>
                                                 <state key="normal" image="Discover-ProfileButton"/>
                                                 <connections>
                                                     <action selector="profileAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LLt-lz-SBf"/>
@@ -173,17 +173,17 @@
                                 </constraints>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="UxH-nM-VsY" userLabel="Middle Stack">
-                                <rect key="frame" x="65.666666666666686" y="92" width="244" height="39"/>
+                                <rect key="frame" x="187.66666666666666" y="92" width="0.0" height="0.0"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8yq-x6-CLY" userLabel="Search Button">
-                                        <rect key="frame" x="0.0" y="0.0" width="116" height="39"/>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8yq-x6-CLY" userLabel="Search Button">
+                                        <rect key="frame" x="-187.66666666666666" y="-92" width="0.0" height="39"/>
                                         <state key="normal" image="Discover-SearchHereButton"/>
                                         <connections>
                                             <action selector="searchWithFilter:" destination="BYZ-38-t0r" eventType="touchUpInside" id="VMj-jO-WoY"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8lR-o3-9WI" userLabel="All Button">
-                                        <rect key="frame" x="118" y="0.0" width="126" height="39"/>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8lR-o3-9WI" userLabel="All Button">
+                                        <rect key="frame" x="-187.66666666666666" y="-92" width="0.0" height="39"/>
                                         <state key="normal" image="Discover-SearchHiddenButton"/>
                                         <connections>
                                             <action selector="allStories:" destination="BYZ-38-t0r" eventType="touchUpInside" id="rUI-uX-Iqo"/>
@@ -191,7 +191,7 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1zZ-dd-fcW">
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1zZ-dd-fcW">
                                 <rect key="frame" x="16" y="92" width="29" height="29"/>
                                 <state key="normal" image="Discover-DraftButton"/>
                                 <connections>
@@ -264,6 +264,7 @@
                         <outlet property="mosaicMapView" destination="8jX-dd-Jb6" id="aoN-ur-v8b"/>
                         <outlet property="profileButton" destination="A3t-Ta-aKO" id="B2K-m7-Nv7"/>
                         <outlet property="searchBackgroundView" destination="q0a-tw-wYK" id="oXf-uF-GDT"/>
+                        <outlet property="searchButton" destination="8yq-x6-CLY" id="IE5-TV-ULt"/>
                         <outlet property="touchForwardingView" destination="QC2-XK-jf4" id="9um-UP-md1"/>
                     </connections>
                 </viewController>
