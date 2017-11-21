@@ -399,10 +399,32 @@ extension FoodieMedia: FoodieObjectDelegate {
         return
       }
 
+      let imageSize = bufferImage.size
+
+      guard var cgImage = bufferImage.cgImage else {
+        CCLog.assert("cgImage is nil from bufferImage")
+        callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
+        return
+      }
+
+      if(imageSize.width > imageSize.height) {
+        // horizontal image need to crop
+        let cropWidth = ((imageSize.height / 16) * 9)
+        guard let cropImage = cgImage.cropping(to: CGRect(x: ((imageSize.width/2) - (cropWidth/2)) , y: 0, width: cropWidth, height: imageSize.height)) else {
+          CCLog.assert("cropImage is nil after cropping")
+          callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
+          return
+        }
+        bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: .up)
+      }
+
       // downsize to 1080p
-      if(bufferImage.size.height >= 1920) {
+      if(imageSize.height >= 1920) {
         let newSize = CGSize(width: 1080, height: 1920)
         UIGraphicsBeginImageContextWithOptions(newSize, false, bufferImage.scale);
+
+        bufferImage.draw(in: CGRect(origin: CGPoint.zero, size: newSize))
+        bufferImage = UIGraphicsGetImageFromCurrentImageContext()!
 
         guard let context = UIGraphicsGetCurrentContext() else {
           CCLog.assert("Failed to get UIGraphic current context")
@@ -411,15 +433,13 @@ extension FoodieMedia: FoodieObjectDelegate {
         }
         context.translateBy(x: 0, y: 0)
 
-        bufferImage.draw(in: CGRect(origin: CGPoint.zero, size: newSize))
-        bufferImage = UIGraphicsGetImageFromCurrentImageContext()!
+        if(bufferImage.cgImage == nil) {
+          CCLog.assert("cgImage is nil from bufferImage")
+          callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
+          return
+        }
+        cgImage = bufferImage.cgImage!
         UIGraphicsEndImageContext()
-      }
-
-      guard let cgImage = bufferImage.cgImage else {
-        CCLog.assert("cgImage is nil from bufferImage")
-        callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
-        return
       }
 
       CGImageDestinationAddImage(destination, cgImage, properties)
@@ -435,67 +455,22 @@ extension FoodieMedia: FoodieObjectDelegate {
         return
       }
 
-     if !FoodieFileObject.checkIfExists(for: fileName, in: localType) {
-
-        guard let sourceAsset = videoExportPlayer.avPlayer?.currentItem?.asset as? AVURLAsset else {
-          //TODO new error msg needed
-          callback?(ErrorCode.saveToLocalVideoExportPlayerHasNoAVURLAsset)
-          return
-        }
-
-      guard let sourceURL = (videoExportPlayer.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
-        callback?(ErrorCode.saveToLocalVideoExportPlayerHasNoAVURLAsset)
+      guard !FoodieFileObject.checkIfExists(for: fileName, in: localType) else {
+        CCLog.info("SaveToLocal attempt despite \(FoodieFileObject.getFileURL(for: localType, with: fileName)) already exists")
+        callback?(nil)
         return
       }
 
-        guard let exportSession = AVAssetExportSession(asset: sourceAsset, presetName: AVAssetExportPreset960x540) else {
-          // TODO new error msg
-          callback?(ErrorCode.saveToLocalWithNilVideoExportPlayer)
-          return
-        }
-
-        exportSession.outputURL = FoodieFileObject.getFileURL(for: localType, with: fileName)
-        exportSession.outputFileType = AVFileType.mov
-        exportSession.shouldOptimizeForNetworkUse = true
-        exportSession.exportAsynchronously { () -> Void in
-          let error = exportSession.error
-          if error == nil {
-            videoExportPlayer.initAVPlayer(from: FoodieFileObject.getFileURL(for: localType, with: fileName))
-          }
-          // remove the tmp file
-          do {
-            if localType == .draft {
-              try FileManager.default.removeItem(at: sourceURL)
-            }
-          } catch {
-            CCLog.assert("Failed to copy from \(sourceURL.absoluteString) to \(localType) as \(fileName)")
-            callback?(FileErrorCode.fileManagerRemoveItemLocalFailed)
-            return
-          }
-
+      videoExportPlayer.exportAsync(to: FoodieFileObject.getFileURL(for: localType, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
+        if let error = error {
+          CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
           callback?(error)
+        } else if FoodieFileObject.checkIfExists(for: fileName, in: localType) {
+          callback?(nil)
+        } else {
+          callback?(ErrorCode.saveToLocalCompletedWithNoOutputFile)
         }
-     } else {
-      CCLog.debug("File \(fileName) already exist. Skipping Copy")
-      callback?(nil)
-    }
-
-//        guard !FoodieFileObject.checkIfExists(for: fileName, in: localType) else {
-//          CCLog.info("SaveToLocal attempt despite \(FoodieFileObject.getFileURL(for: localType, with: fileName)) already exists")
-//          callback?(nil)
-//          return
-//        }
-//
-//        videoExportPlayer.exportAsync(to: FoodieFileObject.getFileURL(for: localType, with: fileName)) { error in
-//          if let error = error {
-//            CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
-//            callback?(error)
-//          } else if FoodieFileObject.checkIfExists(for: fileName, in: localType) {
-//            callback?(nil)
-//          } else {
-//            callback?(ErrorCode.saveToLocalCompletedWithNoOutputFile)
-//          }
-//        }
+      }
     }
   }
   
