@@ -39,7 +39,7 @@ class DiscoverViewController: OverlayViewController {
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
     static let PullTranslationForChange: CGFloat = 50.0  // In Points
     static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.7
-    static let BackgroundBlackAlpha: CGFloat = 0.3
+    static let BackgroundBlackAlpha: CGFloat = 0.5
   }
 
   
@@ -604,13 +604,6 @@ class DiscoverViewController: OverlayViewController {
     
     if initialLayout {
       initialLayout = false
-      switch feedCollectionNodeController.layoutType {
-      case .carousel:
-        mapNavController?.setExposedRect(with: carouselMapView)
-        
-      case .mosaic:
-        mapNavController?.setExposedRect(with: mosaicMapView)
-      }
       
       // Setup Gradient Backgrounds
       let initialBlackLevel = UIColor.black.withAlphaComponent(Constants.BackgroundBlackAlpha)
@@ -627,6 +620,15 @@ class DiscoverViewController: OverlayViewController {
       feedGradientNode.isOpaque = false
       feedBackgroundView.addSubnode(feedGradientNode)
       feedGradientNode.frame = feedBackgroundView.bounds
+    }
+    
+    // Layout changed, so set Exposed Rect accordingly
+    switch feedCollectionNodeController.layoutType {
+    case .carousel:
+      mapNavController?.setExposedRect(with: carouselMapView)
+      
+    case .mosaic:
+      mapNavController?.setExposedRect(with: mosaicMapView)
     }
   }
   

@@ -252,7 +252,7 @@ class MapNavController: ASNavigationController {
         return
       }
       
-      if let location = location {
+      if let location = location, self.isTracking {
         let region = MKCoordinateRegionMakeWithDistance(location.coordinate,
                                                         self.currentMapWidth ?? self.defaultMapWidth,
                                                         self.currentMapWidth ?? self.defaultMapWidth)

@@ -22,6 +22,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lJy-T9-lHq">
+                                <rect key="frame" x="0.0" y="44" width="375" height="768"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BOa-s9-47I">
                                 <rect key="frame" x="0.0" y="44" width="375" height="44"/>
                                 <items>
@@ -39,10 +43,6 @@
                                     </navigationItem>
                                 </items>
                             </navigationBar>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lJy-T9-lHq">
-                                <rect key="frame" x="0.0" y="44" width="375" height="768"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -77,10 +77,10 @@
                                 <rect key="frame" x="0.0" y="540" width="375" height="272"/>
                             </view>
                             <view opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q0a-tw-wYK" userLabel="Search Background View">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="121"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="127"/>
                             </view>
                             <view hidden="YES" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MLY-sg-NLb" userLabel="Carousel Map View">
-                                <rect key="frame" x="0.0" y="120.99999999999997" width="375" height="382.33333333333326"/>
+                                <rect key="frame" x="0.0" y="126.99999999999997" width="375" height="372.33333333333326"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QP7-f7-wk1">
                                 <rect key="frame" x="0.0" y="268" width="375" height="544"/>
@@ -91,7 +91,7 @@
                                 </connections>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8jX-dd-Jb6" userLabel="Mosaic Map View">
-                                <rect key="frame" x="0.0" y="121" width="375" height="147"/>
+                                <rect key="frame" x="0.0" y="127" width="375" height="141"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                                 <connections>
@@ -99,7 +99,7 @@
                                 </connections>
                             </view>
                             <view multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QC2-XK-jf4" customClass="TouchForwardingView" customModule="TastryApp" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="503.33333333333331"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="499.33333333333331"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                             </view>
@@ -223,7 +223,7 @@
                             <constraint firstItem="q7R-1K-TkS" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="IEj-VO-cPD"/>
                             <constraint firstItem="QC2-XK-jf4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="K8O-TB-xfm"/>
                             <constraint firstItem="oB7-Q1-hCS" firstAttribute="top" secondItem="q7R-1K-TkS" secondAttribute="bottom" constant="-42" id="Nck-fr-xd7"/>
-                            <constraint firstItem="q0a-tw-wYK" firstAttribute="bottom" secondItem="sNl-Tb-SAf" secondAttribute="bottom" id="SnE-qj-GeG"/>
+                            <constraint firstItem="q0a-tw-wYK" firstAttribute="bottom" secondItem="sNl-Tb-SAf" secondAttribute="bottom" constant="6" id="SnE-qj-GeG"/>
                             <constraint firstItem="QP7-f7-wk1" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="TPv-Ri-Idi"/>
                             <constraint firstItem="UxH-nM-VsY" firstAttribute="centerX" secondItem="oB7-Q1-hCS" secondAttribute="centerX" id="U7N-LO-XOc"/>
                             <constraint firstItem="MLY-sg-NLb" firstAttribute="top" secondItem="q0a-tw-wYK" secondAttribute="bottom" id="VCg-ab-fro"/>
@@ -244,7 +244,7 @@
                             <constraint firstItem="q0a-tw-wYK" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="mau-uh-7ar"/>
                             <constraint firstAttribute="trailing" secondItem="q0a-tw-wYK" secondAttribute="trailing" id="rBC-Tk-N24"/>
                             <constraint firstItem="QP7-f7-wk1" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.67" id="rqE-df-sxp"/>
-                            <constraint firstItem="QC2-XK-jf4" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.62" id="slE-mm-W4b"/>
+                            <constraint firstItem="QC2-XK-jf4" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.615" id="slE-mm-W4b"/>
                             <constraint firstItem="oB7-Q1-hCS" firstAttribute="trailing" secondItem="QP7-f7-wk1" secondAttribute="trailing" id="tHU-hI-SlX"/>
                             <constraint firstItem="S7U-1x-ELZ" firstAttribute="bottom" relation="lessThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="bottom" constant="-8" id="zJo-0q-e0B"/>
                         </constraints>
