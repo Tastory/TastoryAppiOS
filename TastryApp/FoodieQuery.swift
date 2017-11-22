@@ -13,6 +13,7 @@ class FoodieQuery {
   
   // MARK: - Types & Enumerations
   typealias StoriesErrorBlock = ([FoodieStory]?, Error?) -> Void
+  typealias StoriesQueryBlock = ([FoodieStory]?, FoodieQuery?, Error?) -> Void
   typealias VenuesErrorBlock = ([FoodieVenue]?, Error?) -> Void
   
   enum LocationType: String {

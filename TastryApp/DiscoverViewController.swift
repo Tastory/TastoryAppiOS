@@ -39,7 +39,9 @@ class DiscoverViewController: OverlayViewController {
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
     static let PullTranslationForChange: CGFloat = 50.0  // In Points
     static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.7
-    static let BackgroundBlackAlpha: CGFloat = 0.5
+    static let BackgroundBlackAlpha: CGFloat = 0.7
+    static let SearchBackgroundBlackAlpha: CGFloat = 0.5
+    static let FeedBackgroundBlackAlpha: CGFloat = 0.7
     static let SearchBarFontName = FoodieFont.Raleway.SemiBold
     static let SearchBarFontSize: CGFloat = 15.0
     static let SearchBarTextShadowAlpha: CGFloat = 0.25
@@ -63,6 +65,8 @@ class DiscoverViewController: OverlayViewController {
   private var storyArray = [FoodieStory]()
   private var storyAnnotations = [StoryMapAnnotation]()
   
+  private var searchGradientNode: GradientNode!
+  private var feedGradientNode: GradientNode!
   
   
   // MARK: - IBOutlets
@@ -98,6 +102,16 @@ class DiscoverViewController: OverlayViewController {
   
   @IBOutlet weak var searchStack: UIStackView!
   @IBOutlet weak var middleStack: UIStackView!
+  
+  @IBOutlet weak var noStoriesMosaicView: UIImageView!
+  @IBOutlet weak var noStoriesCarouselView: UIView!
+  
+  @IBOutlet var searchBackgroundMosaicConstraint: NSLayoutConstraint!
+  @IBOutlet var searchBackgroundCarouselConstraint: NSLayoutConstraint!
+  
+  @IBOutlet var feedBackgroundCarouselConstraint: NSLayoutConstraint!
+  @IBOutlet var feedBackgroundMosaicConstraint: NSLayoutConstraint!
+  
   
   
   // MARK: - IBActions
@@ -150,7 +164,7 @@ class DiscoverViewController: OverlayViewController {
   
   @IBAction func searchWithFilter(_ sender: UIButton) {
     
-    performQuery { stories, error in
+    performQuery { stories, query, error in
       if let error = error {
         if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
           AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
@@ -169,6 +183,8 @@ class DiscoverViewController: OverlayViewController {
         return
       }
       
+      self.storyQuery = query
+      self.storyArray = stories
       self.searchButton.isHidden = true
       self.allStoriesButton.isHidden = true
       self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
@@ -178,7 +194,7 @@ class DiscoverViewController: OverlayViewController {
   
   @IBAction func allStories(_ sender: UIButton) {
     
-    performQuery(onAllUsers: true) { stories, error in
+    performQuery(onAllUsers: true) { stories, query, error in
       if let error = error {
         if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
           AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
@@ -197,6 +213,8 @@ class DiscoverViewController: OverlayViewController {
         return
       }
       
+      self.storyQuery = query
+      self.storyArray = stories
       self.searchButton.isHidden = true
       self.allStoriesButton.isHidden = true
       self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
@@ -285,7 +303,7 @@ class DiscoverViewController: OverlayViewController {
   }
   
   
-  private func performQuery(onAllUsers: Bool = false, at mapRect: MKMapRect? = nil, withBlock callback: FoodieQuery.StoriesErrorBlock?) {
+  private func performQuery(onAllUsers: Bool = false, at mapRect: MKMapRect? = nil, withBlock callback: FoodieQuery.StoriesQueryBlock?) {
     
     var searchMapRect = MKMapRect()
     
@@ -310,31 +328,31 @@ class DiscoverViewController: OverlayViewController {
     
     // We are going to limit search to a maximum of 1 degree of of Latitude (approximately 111km)
     guard (northEastCoordinate.latitude - southWestCoordinate.latitude) < Constants.QueryMaxLatDelta else {
-      callback?(nil, ErrorCode.mapQueryExceededMaxLat)
+      callback?(nil, nil, ErrorCode.mapQueryExceededMaxLat)
       return
     }
     
-    storyQuery = FoodieQuery()
-    storyQuery!.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
+    let query = FoodieQuery()
+    query.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
     
     if !onAllUsers {
       // Add Filter so only Post by Users > Limited User && Posts by Yourself can be seen
-      storyQuery!.addRoleFilter(min: .user, max: nil)
+      query.addRoleFilter(min: .user, max: nil)
       
       if let currentUser = FoodieUser.current, currentUser.isRegistered {
-        storyQuery!.addAuthorsFilter(users: [currentUser])
+        query.addAuthorsFilter(users: [currentUser])
       }
     }
     
-    storyQuery!.setSkip(to: 0)
-    storyQuery!.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)
-    _ = storyQuery!.addArrangement(type: .creationTime, direction: .descending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
+    query.setSkip(to: 0)
+    query.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)
+    _ = query.addArrangement(type: .creationTime, direction: .descending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
 
     let activitySpinner = ActivitySpinner(addTo: view)
     activitySpinner.apply()
     
     // Actually do the Query
-    storyQuery!.initStoryQueryAndSearch { (stories, error) in
+    query.initStoryQueryAndSearch { (stories, error) in
       
       activitySpinner.remove()
       
@@ -342,7 +360,7 @@ class DiscoverViewController: OverlayViewController {
         AlertDialog.present(from: self, title: "Query Failed", message: error.localizedDescription) { action in
           CCLog.assert("Create Story Query & Search failed with error: \(error.localizedDescription)")
         }
-        callback?(nil, error)
+        callback?(nil, nil, error)
         return
       }
       
@@ -351,18 +369,48 @@ class DiscoverViewController: OverlayViewController {
         CCLog.fatal("Create Story Query & Search returned with nil Story Array")
       }
       
-      self.storyArray = storyArray
-      callback?(storyArray, nil)
+      callback?(storyArray, query, nil)
     }
   }
   
   
   private func refreshDiscoverView(onStories stories: [FoodieStory], zoomToRegion: Bool, scrollAndSelectStory: Bool) {
     
-    // TODO: - Empty results current does nothing. No Empty Message, no Clearing of the last result. Nothing
-
     var newAnnotations = [StoryMapAnnotation]()
     var outstandingStoryRetrieval = stories.count
+    
+    if outstandingStoryRetrieval <= 0 {
+      DispatchQueue.main.async {
+        self.mapNavController?.remove(annotations: self.storyAnnotations)
+        self.storyAnnotations = newAnnotations
+        
+        if #available(iOS 11.0, *) {
+          self.feedCollectionNodeController.resetCollectionNode(with: stories) {
+            switch self.feedCollectionNodeController.layoutType {
+            case .carousel:
+              self.noStoriesCarouselView.isHidden = false
+              
+            case .mosaic:
+              self.noStoriesMosaicView.isHidden = false
+            }
+            self.feedContainerView.isHidden = true
+          }
+        }
+          
+        // Works around weird CollectionView crash with iOS 10
+        else {
+          switch self.feedCollectionNodeController.layoutType {
+          case .carousel:
+            self.noStoriesCarouselView.isHidden = false
+            
+          case .mosaic:
+            self.noStoriesMosaicView.isHidden = false
+          }
+          self.feedContainerView.isHidden = true
+        }
+      }
+      return
+    }
     
     for story in stories {
       _ = story.retrieveDigest(from: .both, type: .cache) { error in
@@ -388,6 +436,10 @@ class DiscoverViewController: OverlayViewController {
         
         if outstandingStoryRetrieval == 0 {
           DispatchQueue.main.async {
+            self.noStoriesMosaicView.isHidden = true
+            self.noStoriesCarouselView.isHidden = true
+            self.feedContainerView.isHidden = false
+            
             self.mapNavController?.remove(annotations: self.storyAnnotations)
             self.mapNavController?.add(annotations: newAnnotations)
             self.storyAnnotations = newAnnotations
@@ -421,14 +473,12 @@ class DiscoverViewController: OverlayViewController {
         self.middleStack.alpha = alphaValue
         self.draftButton.alpha = alphaValue
         self.currentLocationButton.alpha = alphaValue
-        self.searchBackgroundView.alpha = alphaValue
       })
     } else {
       self.searchStack.alpha = alphaValue
       self.middleStack.alpha = alphaValue
       self.draftButton.alpha = alphaValue
       self.currentLocationButton.alpha = alphaValue
-      self.searchBackgroundView.alpha = alphaValue
     }
   }
 
@@ -440,12 +490,16 @@ class DiscoverViewController: OverlayViewController {
         self.profileButton.alpha = alphaValue
         self.feedBackgroundView.alpha = alphaValue
         self.feedContainerView.alpha = alphaValue
+        self.noStoriesCarouselView.alpha = alphaValue
+        self.noStoriesMosaicView.alpha = alphaValue
       })
     } else {
       self.cameraButton.alpha = alphaValue
       self.profileButton.alpha = alphaValue
       self.feedBackgroundView.alpha = alphaValue
       self.feedContainerView.alpha = alphaValue
+      self.noStoriesCarouselView.alpha = alphaValue
+      self.noStoriesMosaicView.alpha = alphaValue
     }
   }
   
@@ -496,6 +550,22 @@ class DiscoverViewController: OverlayViewController {
                                       NSAttributedStringKey.shadow.rawValue : shadow]
     locationField.font = searchBarFont
     locationField.textColor = .white
+    
+    
+    // Setup Background Gradient Views
+    let searchBackgroundBlackLevel = UIColor.black.withAlphaComponent(Constants.SearchBackgroundBlackAlpha)
+    searchGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
+                                          endingAt: CGPoint(x: 0.5, y: 1.0),
+                                          with: [searchBackgroundBlackLevel, .clear])
+    searchGradientNode.isOpaque = false
+    searchBackgroundView.addSubnode(searchGradientNode)
+    
+    let feedBackgroundBlackLevel = UIColor.black.withAlphaComponent(Constants.FeedBackgroundBlackAlpha)
+    feedGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
+                                        endingAt: CGPoint(x: 0.5, y: 0.0),
+                                        with: [feedBackgroundBlackLevel, .clear])
+    feedGradientNode.isOpaque = false
+    feedBackgroundView.addSubnode(feedGradientNode)
     
     // If current story is nil, double check and see if there are any in Local Datastore
     if FoodieStory.currentStory == nil {
@@ -558,25 +628,9 @@ class DiscoverViewController: OverlayViewController {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
-    if initialLayout {
-      initialLayout = false
-      
-      // Setup Gradient Backgrounds
-      let initialBlackLevel = UIColor.black.withAlphaComponent(Constants.BackgroundBlackAlpha)
-      let searchGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
-                                            endingAt: CGPoint(x: 0.5, y: 1.0),
-                                            with: [initialBlackLevel, .clear])
-      searchGradientNode.isOpaque = false
-      searchBackgroundView.addSubnode(searchGradientNode)
-      searchGradientNode.frame = searchBackgroundView.bounds
-      
-      let feedGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
-                                          endingAt: CGPoint(x: 0.5, y: 0.0),
-                                          with: [initialBlackLevel, .clear])
-      feedGradientNode.isOpaque = false
-      feedBackgroundView.addSubnode(feedGradientNode)
-      feedGradientNode.frame = feedBackgroundView.bounds
-    }
+    searchGradientNode.frame = searchBackgroundView.bounds
+    feedGradientNode.frame = feedBackgroundView.bounds
+
     
     // Layout changed, so set Exposed Rect accordingly
     switch feedCollectionNodeController.layoutType {
@@ -652,7 +706,7 @@ class DiscoverViewController: OverlayViewController {
         let region = MKCoordinateRegionMakeWithDistance(location.coordinate, mapController.defaultMapWidth, mapController.defaultMapWidth)
         
         // Do an Initial Search near the Current Location
-        self.performQuery(at: region.toMapRect()) { stories, error in
+        self.performQuery(at: region.toMapRect()) { stories, query, error in
           if let error = error {
             if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
               AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
@@ -671,6 +725,8 @@ class DiscoverViewController: OverlayViewController {
             return
           }
           
+          self.storyQuery = query
+          self.storyArray = stories
           self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
         }
       }
@@ -719,11 +775,7 @@ class DiscoverViewController: OverlayViewController {
   
   
   override var preferredStatusBarStyle: UIStatusBarStyle {
-    if let feedController = self.feedCollectionNodeController, feedController.layoutType == .carousel {
-      return .lightContent
-    } else {
-      return .default
-    }
+    return .lightContent
   }
   
   
@@ -955,7 +1007,13 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       
       // Hide top buttons
       appearanceForTopUI(alphaValue: 0.0, animated: true)
-      self.setNeedsStatusBarAppearanceUpdate()
+      
+      UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
+        self.searchBackgroundCarouselConstraint.isActive = false
+        self.feedBackgroundCarouselConstraint.isActive = false
+        self.searchBackgroundMosaicConstraint.isActive = true
+        self.feedBackgroundMosaicConstraint.isActive = true
+      })
       
       if let highlightedStoryIndex = highlightedStoryIndex {
         feedCollectionNodeController.scrollTo(storyIndex: highlightedStoryIndex)
@@ -972,7 +1030,13 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       
       // Should we show top buttons?
       appearanceForTopUI(alphaValue: 1.0, animated: true)
-      setNeedsStatusBarAppearanceUpdate()
+      
+      UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
+        self.searchBackgroundMosaicConstraint.isActive = false
+        self.feedBackgroundMosaicConstraint.isActive = false
+        self.searchBackgroundCarouselConstraint.isActive = true
+        self.feedBackgroundCarouselConstraint.isActive = true
+      })
       
       if let highlightedStoryIndex = highlightedStoryIndex {
         feedCollectionNodeController.scrollTo(storyIndex: highlightedStoryIndex)
@@ -1002,7 +1066,8 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
           case .carousel:
             // TODO: Does the exposed map already show the annotation? Only zoom to all annotations if not already shown
             mapNavController?.showRegionExposed(containing: self.storyAnnotations)
-            middleStack.isHidden = true
+            allStoriesButton.isHidden = true
+            searchButton.isHidden = true
           }
           mapNavController?.select(annotation: annotation, animated: true)
         }

@@ -440,9 +440,19 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
   func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
     let story = storyArray[indexPath.row]
     let cellNode = FeedCollectionCellNode(story: story, edit: enableEdit)
-    cellNode.cornerRadius = Constants.DefaultGuestimatedCellNodeWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
-    cellNode.backgroundColor = UIColor.lightGray
+    cellNode.layer.cornerRadius = Constants.DefaultGuestimatedCellNodeWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
     cellNode.placeholderEnabled = true
+    cellNode.backgroundColor = UIColor.lightGray
+    
+    // TODO: Nice to Have, shadow underneath the cards
+//    cellNode.clipsToBounds = true
+//
+//    cellNode.layer.backgroundColor = UIColor.lightGray.cgColor
+//    cellNode.layer.shadowPath = UIBezierPath(roundedRect: cellNode.bounds, cornerRadius: cellNode.cornerRadius).cgPath
+//    cellNode.layer.shadowOffset = CGSize(width: 0.0, height: 8.0)
+//    cellNode.layer.shadowColor = UIColor.black.cgColor
+//    cellNode.layer.shadowRadius = 4.0
+//    cellNode.layer.shadowOpacity = 1.0
 
     if enableEdit {
       guard let coverEditButton = cellNode.coverEditButton else {
