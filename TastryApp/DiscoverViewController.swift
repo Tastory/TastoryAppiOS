@@ -40,6 +40,10 @@ class DiscoverViewController: OverlayViewController {
     static let PullTranslationForChange: CGFloat = 50.0  // In Points
     static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.7
     static let BackgroundBlackAlpha: CGFloat = 0.5
+    static let SearchBarFontName = FoodieFont.Raleway.SemiBold
+    static let SearchBarFontSize: CGFloat = 15.0
+    static let SearchBarTextShadowAlpha: CGFloat = 0.25
+    static let SearchBarPlaceholderColor = UIColor.lightGray
   }
 
   
@@ -58,7 +62,7 @@ class DiscoverViewController: OverlayViewController {
   private var storyQuery: FoodieQuery?
   private var storyArray = [FoodieStory]()
   private var storyAnnotations = [StoryMapAnnotation]()
-
+  
   
   
   // MARK: - IBOutlets
@@ -465,6 +469,34 @@ class DiscoverViewController: OverlayViewController {
     // Setup all the IBOutlet Delegates
     locationField?.delegate = self
     
+    // Setup placeholder text for the Search text field
+    guard let searchBarFont = UIFont(name: Constants.SearchBarFontName, size: Constants.SearchBarFontSize) else {
+      CCLog.fatal("Cannot create UIFont with name \(Constants.SearchBarFontName)")
+    }
+    let placeholderString = locationField.placeholder
+    let paragraphStyle = NSMutableParagraphStyle()
+    paragraphStyle.alignment = .left
+    
+    let shadow = NSShadow()
+    shadow.shadowOffset = CGSize(width: 0.0, height: 1.0)
+    shadow.shadowColor = UIColor.black.withAlphaComponent(Constants.SearchBarTextShadowAlpha)
+    shadow.shadowBlurRadius = 1.0
+    
+    let attributedPlaceholderText = NSAttributedString(string: placeholderString?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
+                                                       attributes: [.font : searchBarFont,
+                                                                    .foregroundColor : UIColor.white,
+                                                                    .paragraphStyle : paragraphStyle,
+                                                                    .shadow : shadow])
+    
+    locationField.attributedPlaceholder = attributedPlaceholderText
+    locationField.defaultTextAttributes = [NSAttributedStringKey.paragraphStyle.rawValue : paragraphStyle, NSAttributedStringKey.shadow.rawValue : shadow]
+    locationField.typingAttributes = [NSAttributedStringKey.font.rawValue : searchBarFont,
+                                      NSAttributedStringKey.foregroundColor.rawValue : UIColor.white,
+                                      NSAttributedStringKey.paragraphStyle.rawValue : paragraphStyle,
+                                      NSAttributedStringKey.shadow.rawValue : shadow]
+    locationField.font = searchBarFont
+    locationField.textColor = .white
+    
     // If current story is nil, double check and see if there are any in Local Datastore
     if FoodieStory.currentStory == nil {
       
@@ -856,13 +888,55 @@ extension DiscoverViewController: UITextFieldDelegate {
   func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
     if textField === locationField {
       // Set the text field color back to black once user starts editing. Might have been set to Red for errors.
-      textField.textColor = UIColor.black
+      textField.textColor = UIColor.white
+      
+      guard let searchBarFont = UIFont(name: Constants.SearchBarFontName, size: Constants.SearchBarFontSize) else {
+        CCLog.fatal("Cannot create UIFont with name \(Constants.SearchBarFontName)")
+      }
+      let placeholderString = textField.placeholder
+      let paragraphStyle = NSMutableParagraphStyle()
+      paragraphStyle.alignment = .left
+      
+      let shadow = NSShadow()
+      shadow.shadowOffset = CGSize(width: 0.0, height: 1.0)
+      shadow.shadowColor = UIColor.black.withAlphaComponent(Constants.SearchBarTextShadowAlpha)
+      shadow.shadowBlurRadius = 1.0
+      
+      let attributedPlaceholderText = NSAttributedString(string: placeholderString?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
+                                                         attributes: [.font : searchBarFont,
+                                                                      .foregroundColor : Constants.SearchBarPlaceholderColor,
+                                                                      .paragraphStyle : paragraphStyle,
+                                                                      .shadow : shadow])
+      
+      textField.attributedPlaceholder = attributedPlaceholderText
       return true
 
     } else {
       CCLog.assert("Unexpected call of textFieldShoudlBeginEditing on textField \(textField.placeholder ?? "")")
       return false
     }
+  }
+  
+  func textFieldDidEndEditing(_ textField: UITextField) {
+    guard let searchBarFont = UIFont(name: Constants.SearchBarFontName, size: Constants.SearchBarFontSize) else {
+      CCLog.fatal("Cannot create UIFont with name \(Constants.SearchBarFontName)")
+    }
+    let placeholderString = textField.placeholder
+    let paragraphStyle = NSMutableParagraphStyle()
+    paragraphStyle.alignment = .left
+    
+    let shadow = NSShadow()
+    shadow.shadowOffset = CGSize(width: 0.0, height: 1.0)
+    shadow.shadowColor = UIColor.black.withAlphaComponent(Constants.SearchBarTextShadowAlpha)
+    shadow.shadowBlurRadius = 1.0
+    
+    let attributedPlaceholderText = NSAttributedString(string: placeholderString?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
+                                                       attributes: [.font : searchBarFont,
+                                                                    .foregroundColor : UIColor.white,
+                                                                    .paragraphStyle : paragraphStyle,
+                                                                    .shadow : shadow])
+    
+    textField.attributedPlaceholder = attributedPlaceholderText
   }
 }
 
@@ -928,6 +1002,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
           case .carousel:
             // TODO: Does the exposed map already show the annotation? Only zoom to all annotations if not already shown
             mapNavController?.showRegionExposed(containing: self.storyAnnotations)
+            middleStack.isHidden = true
           }
           mapNavController?.select(annotation: annotation, animated: true)
         }
@@ -993,7 +1068,7 @@ extension DiscoverViewController: CameraReturnDelegate {
       viewController.workingStory = workingStory!
       viewController.returnedMoments = markedupMoments
       
-      self.appearanceForFeedUI(alphaValue: 0.0, animated: true)
+      self.appearanceForAllUI(alphaValue: 0.0, animated: true)
       
       self.dismiss(animated: true) {  // This dismiss is for the CameraViewController to call on
         viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)

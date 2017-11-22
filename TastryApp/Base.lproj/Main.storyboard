@@ -149,17 +149,17 @@
                                         <rect key="frame" x="0.0" y="50" width="343" height="27"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PIh-Rz-RIF">
-                                                <rect key="frame" x="0.0" y="0.6666666666666643" width="45.666666666666664" height="26"/>
+                                                <rect key="frame" x="0.0" y="0.6666666666666643" width="52.333333333333336" height="26"/>
                                                 <state key="normal" image="Discover-SearchMagnifier"/>
                                             </button>
-                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Location to Search" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
-                                                <rect key="frame" x="45.666666666666657" y="3" width="258.66666666666674" height="21"/>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Jump to Location" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
+                                                <rect key="frame" x="52.333333333333329" y="4.6666666666666643" width="246.33333333333337" height="18"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes" textContentType="location"/>
                                             </textField>
                                             <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9xC-Zn-CZy">
-                                                <rect key="frame" x="304.33333333333331" y="0.6666666666666643" width="38.666666666666686" height="26"/>
+                                                <rect key="frame" x="298.66666666666669" y="0.6666666666666643" width="44.333333333333314" height="26"/>
                                                 <state key="normal" image="Discover-FilterButton"/>
                                             </button>
                                         </subviews>
