@@ -370,10 +370,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      guard let venue = self.venue else {
-        CCLog.fatal("Story retrieved but venue = nil")
-      }
-      
       guard let author = self.author else {
         CCLog.fatal("Story retrieved but author = nil")
       }
@@ -385,13 +381,13 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       
       // Calculate how many outstanding children operations there will be before hand
       // This helps avoiding the need of a lock
-      var outstandingChildOperations = 2   // venue & thumbnail to start
+      var outstandingChildOperations = 1   // just thumbnail to start
+      if self.venue != nil { outstandingChildOperations += 1 }
+      if localType != .draft { outstandingChildOperations += 1 }
       
       if let moments = self.moments {
         outstandingChildOperations += moments.count
       }
-      
-      if localType != .draft { outstandingChildOperations += 1 }
       
       // Can we just use a mutex lock then?
       SwiftMutex.lock(&self.criticalMutex)
@@ -405,7 +401,11 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       // There will be no Markups for Story Covers
       
       self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
-      self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, for: storyOperation, withCompletion: callback)
+      
+      if let venue = self.venue {
+        self.foodieObject.retrieveChild(venue, from: location, type: localType, forceAnyways: forceAnyways, for: storyOperation, withCompletion: callback)
+      }
+      
       self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, for: storyOperation, withCompletion: callback)
         
       if let moments = self.moments {
@@ -691,37 +691,48 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       CCLog.fatal("No Working Story on Pre Save")
     }
 
-    // Save Story to Local 
-    story.saveDigest(to: .local, type: .draft, for: nil) { error in
-
-      if let error = error {
-        CCLog.warning("Story pre-save to Local resulted in error - \(error.localizedDescription)")
-        callback?(error)
-        return
-      }
-      CCLog.debug("Completed pre-saving Story to Local")
-
-      guard let object = object else {
-        CCLog.debug("No Foodie Object supplied on preSave(), skipping Object Server save")
-        callback?(nil)
-        return
-      }
+    // Save Journal only if no object supplied
+    guard let object = object else {
+      CCLog.debug("No Foodie Object supplied on preSave(), skipping Object Server save")
       
-      // The only reason why this is working is because story.saveDigest actually saves every single child PFObjects also.
-      // Otherwise if a Moment PreSave to .both is stuck waiting for a large media upload and the user kills the app,
-      // the Moment save to Parse Database (and Server) actually takes place after the server save completes...
-
-      // Okay screw this, add an extra step to save to Local first. Then save to Both. Just to make double sure in case
-      // One day we somehow turn off recursive child saves on Parse
-      object.saveRecursive(to: .local, type: .draft, for: nil) { error in
-
+      // Save Story to Local
+      story.saveDigest(to: .local, type: .draft, for: nil) { error in
+        
         if let error = error {
-          CCLog.warning("\(object.foodieObjectType()) pre-save to local resulted in error - \(error.localizedDescription)")
+          CCLog.warning("Story pre-save to Local resulted in error - \(error.localizedDescription)")
           callback?(error)
           return
         }
+        
+        CCLog.debug("Completed pre-saving Story to Local")
+        callback?(nil)
+      }
+      return
+    }
+    
+    // TODO: - !!!!! If the user quit the app after Markups are pre-saved to draft, but Moment is not yet pinned, then the entire Draft gets trashed
+    // Solution is probably to compartmentalize such that a single corrupted Moment won't scrap the entire Draft
+    object.saveRecursive(to: .local, type: .draft, for: nil) { error in
+      
+      if let error = error {
+        CCLog.warning("\(object.foodieObjectType()) pre-save to local resulted in error - \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      CCLog.debug("Completed Pre-Saving \(object.foodieObjectType()) to Local")
+      
+      // Save Story to Local
+      story.saveDigest(to: .local, type: .draft, for: nil) { error in
 
-        CCLog.debug("Completed Pre-Saving \(object.foodieObjectType()) to Local")
+        if let error = error {
+          CCLog.warning("Story pre-save to Local resulted in error - \(error.localizedDescription)")
+          callback?(error)
+          return
+        }
+        CCLog.debug("Completed pre-saving Story to Local")
+
+        // Finally save the Moment to Server
         object.saveRecursive(to: .both, type: .draft, for: nil) { error in
 
           if let error = error {

@@ -75,8 +75,8 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
       let imagePickerController = UIImagePickerController()
       imagePickerController.sourceType = .photoLibrary
       imagePickerController.mediaTypes = [kUTTypeImage, kUTTypeMovie] as [String]
-      imagePickerController.videoQuality = .typeIFrame1280x720
-      imagePickerController.videoMaximumDuration = TimeInterval(20.0)
+      imagePickerController.videoQuality = .typeIFrame960x540
+      imagePickerController.videoMaximumDuration = TimeInterval(15.0)
       imagePickerController.allowsEditing = false  // Hand the editing to an explicit Editor
       imagePickerController.delegate = self
       self.present(imagePickerController, animated: true, completion: nil)
@@ -136,7 +136,8 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     // Swifty Cam Setup
     cameraDelegate = self
     doubleTapCameraSwitch = true
-    videoQuality = .resolution1280x720  // .high is 16x9, but .medium is 4x3
+    videoQuality = .resolution1920x1080  // .high is 16x9, but .medium is 4x3
+    maximumVideoDuration = 15.0
     
     if let pickerButton = pickerButton {
       view.bringSubview(toFront: pickerButton)
@@ -609,8 +610,8 @@ extension CameraViewController: UIImagePickerControllerDelegate {
 
         let videoEditor = UIVideoEditorController()
         videoEditor.videoPath = moviePath
-        videoEditor.videoQuality = .typeIFrame1280x720
-        videoEditor.videoMaximumDuration = TimeInterval(20.0)
+        videoEditor.videoQuality = .typeIFrame960x540
+        videoEditor.videoMaximumDuration = TimeInterval(15.0)
         videoEditor.delegate = self
         present(videoEditor, animated: true, completion: nil)
         return
