@@ -370,11 +370,12 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
             workingStory.thumbnailFileName = returnedMoment.thumbnailFileName
             workingStory.thumbnail = returnedMoment.thumbnail
           }
-
+          previewButton.isEnabled = false
           FoodieStory.preSave(returnedMoment) { (error) in
             if error != nil {  // Error code should've already been printed to the Debug log from preSave()
               AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .internalTryAgain)
             }
+            self.previewButton.isEnabled = true
             //self.returnedMoment = nil  // We should be in a state where whom is the returned Moment should no longer matter
           }
         }
