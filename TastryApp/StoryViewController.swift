@@ -46,8 +46,11 @@ class StoryViewController: OverlayViewController {
   @IBOutlet weak var tapBackwardGestureRecognizer: UIView!
   @IBOutlet weak var venueButton: UIButton!
   @IBOutlet weak var authorButton: UIButton!
-  @IBOutlet weak var soundButton: UIButton!
-  @IBOutlet weak var pauseResumeButton: UIButton!
+  @IBOutlet weak var swipeLabel: UILabel!
+  @IBOutlet weak var playButton: UIButton!
+  @IBOutlet weak var pauseButton: UIButton!
+  @IBOutlet weak var soundOnbutton: UIButton!
+  @IBOutlet weak var soundOffButton: UIButton!
   
   
   

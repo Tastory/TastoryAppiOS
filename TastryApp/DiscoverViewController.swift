@@ -39,9 +39,8 @@ class DiscoverViewController: OverlayViewController {
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
     static let PullTranslationForChange: CGFloat = 50.0  // In Points
     static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.7
-    static let BackgroundBlackAlpha: CGFloat = 0.7
-    static let SearchBackgroundBlackAlpha: CGFloat = 0.5
-    static let FeedBackgroundBlackAlpha: CGFloat = 0.7
+    static let SearchBackgroundBlackAlpha: CGFloat = 0.6
+    static let FeedBackgroundBlackAlpha: CGFloat = 0.8
     static let SearchBarFontName = FoodieFont.Raleway.SemiBold
     static let SearchBarFontSize: CGFloat = 15.0
     static let SearchBarTextShadowAlpha: CGFloat = 0.25
@@ -59,7 +58,6 @@ class DiscoverViewController: OverlayViewController {
   private var lastSelectedAnnotationIndex: Int?
   private var highlightedStoryIndex: Int?
   private var mosaicMapWidth: CLLocationDistance?
-  private var initialLayout = true
   
   private var storyQuery: FoodieQuery?
   private var storyArray = [FoodieStory]()
