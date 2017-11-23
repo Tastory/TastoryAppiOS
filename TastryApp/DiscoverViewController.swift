@@ -538,7 +538,7 @@ class DiscoverViewController: OverlayViewController {
                     CCLog.warning("Delete All resulted in Error - \(deleteError.localizedDescription)")
                   }
                   AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { action in
-                    CCLog.assert("Retrieve Recursive on Draft Story \(story.getUniqueIdentifier()) resulted in error. Clearing Draft Pin and Directory - \(retrieveError.localizedDescription)")
+                    CCLog.warning("Retrieve Recursive on Draft Story \(story.getUniqueIdentifier()) resulted in error. Clearing Draft Pin and Directory - \(retrieveError.localizedDescription)")
                   }
                 }
                 return
