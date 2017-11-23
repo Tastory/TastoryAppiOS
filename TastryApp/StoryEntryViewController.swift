@@ -540,7 +540,9 @@ extension StoryEntryViewController: UITextFieldDelegate {
     let newLength = text.utf16.count + string.utf16.count - range.length
     
     if textField === titleTextField {
-      titleLengthLabel?.text = String(Constants.MaxTitleLength - newLength)
+      var remainingLength = Constants.MaxTitleLength - newLength
+      if remainingLength == -1 { remainingLength = 0 }
+      titleLengthLabel?.text = String(remainingLength)
       return newLength <= Constants.MaxTitleLength // Bool
     }
     else if textField === linkTextField {
@@ -552,7 +554,9 @@ extension StoryEntryViewController: UITextFieldDelegate {
       return true
     }
     else if textField === swipeTextField {
-      swipeLengthLabel?.text = String(Constants.MaxSwipeMessageLength - newLength)
+      var remainingLength = Constants.MaxSwipeMessageLength - newLength
+      if remainingLength == -1 { remainingLength = 0 }
+      swipeLengthLabel?.text = String(remainingLength)
       return newLength <= Constants.MaxSwipeMessageLength
     } else {
       return true
