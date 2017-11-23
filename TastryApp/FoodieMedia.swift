@@ -13,7 +13,15 @@ import ImageIO
 import MobileCoreServices
 
 class FoodieMedia: FoodieFileObject {
-  
+
+  // MARK: - Constants
+  struct Constant {
+    fileprivate static let imgMaxHeight = 1920
+    fileprivate static let imgMaxWidth = 1080
+    fileprivate static let heightAspect = 16
+    fileprivate static let widthAspect = 9
+  }
+
   // MARK: - Error Types
   enum ErrorCode: LocalizedError {
     
@@ -380,6 +388,13 @@ extension FoodieMedia: FoodieObjectDelegate {
     
     switch type {
     case .photo:
+
+      guard !FoodieFileObject.checkIfExists(for: fileName, in: localType) else {
+        CCLog.info("\(FoodieFileObject.getFileURL(for: localType, with: fileName)) already exists")
+        callback?(nil)
+        return
+      }
+
       guard let memoryBuffer = self.imageMemoryBuffer else {
         callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
         return
@@ -407,20 +422,33 @@ extension FoodieMedia: FoodieObjectDelegate {
         return
       }
 
-      if(imageSize.width > imageSize.height) {
-        // horizontal image need to crop
-        let cropWidth = ((imageSize.height / 16) * 9)
-        guard let cropImage = cgImage.cropping(to: CGRect(x: ((imageSize.width/2) - (cropWidth/2)) , y: 0, width: cropWidth, height: imageSize.height)) else {
-          CCLog.assert("cropImage is nil after cropping")
-          callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
-          return
+      if(imageSize.width > ((imageSize.height/heightAspect) * widthAspect)) {
+
+        let cropWidth = ((imageSize.height / heightAspect) * widthAspect)
+        if(bufferImage.imageOrientation == .right) {
+          //portrait photo bigger than 16/9
+          guard let cropImage = cgImage.cropping(to: CGRect(x: 0, y:(((imageSize.width/2) - (cropWidth/2))) , width: imageSize.height, height: cropWidth)) else {
+            CCLog.assert("cropImage is nil after cropping")
+            callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
+            return
+          }
+          bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
+        } else {
+          // defualt imageOrientation is .up
+          // horizontal image need to crop
+
+          guard let cropImage = cgImage.cropping(to: CGRect(x: ((imageSize.width/2) - (cropWidth/2)) , y: 0, width: cropWidth, height: imageSize.height)) else {
+            CCLog.assert("cropImage is nil after cropping")
+            callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
+            return
+          }
+          bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
         }
-        bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: .up)
       }
 
-      // downsize to 1080p
-      if(imageSize.height >= 1920) {
-        let newSize = CGSize(width: 1080, height: 1920)
+      // downsize image to 1080p
+      if(imageSize.height >= imgMaxHeight) {
+        let newSize = CGSize(width: imgMaxWidth, height: imgMaxHeight)
         UIGraphicsBeginImageContextWithOptions(newSize, false, bufferImage.scale);
 
         bufferImage.draw(in: CGRect(origin: CGPoint.zero, size: newSize))
@@ -450,14 +478,15 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
 
     case .video:
-      guard let videoExportPlayer = self.videoExportPlayer else {
-        callback?(ErrorCode.saveToLocalWithNilVideoExportPlayer)
+
+      guard !FoodieFileObject.checkIfExists(for: fileName, in: localType) else {
+        CCLog.info("\(FoodieFileObject.getFileURL(for: localType, with: fileName)) already exists")
+        callback?(nil)
         return
       }
 
-      guard !FoodieFileObject.checkIfExists(for: fileName, in: localType) else {
-        CCLog.info("SaveToLocal attempt despite \(FoodieFileObject.getFileURL(for: localType, with: fileName)) already exists")
-        callback?(nil)
+      guard let videoExportPlayer = self.videoExportPlayer else {
+        callback?(ErrorCode.saveToLocalWithNilVideoExportPlayer)
         return
       }
 
