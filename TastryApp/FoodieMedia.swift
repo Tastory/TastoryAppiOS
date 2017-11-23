@@ -15,11 +15,11 @@ import MobileCoreServices
 class FoodieMedia: FoodieFileObject {
 
   // MARK: - Constants
-  struct Constant {
-    fileprivate static let imgMaxHeight = 1920
-    fileprivate static let imgMaxWidth = 1080
-    fileprivate static let heightAspect = 16
-    fileprivate static let widthAspect = 9
+  struct Constants {
+    fileprivate static let imgMaxHeight = CGFloat(1920)
+    fileprivate static let imgMaxWidth = CGFloat(1080)
+    fileprivate static let heightAspect = CGFloat(16)
+    fileprivate static let widthAspect = CGFloat(9)
   }
 
   // MARK: - Error Types
@@ -422,9 +422,9 @@ extension FoodieMedia: FoodieObjectDelegate {
         return
       }
 
-      if(imageSize.width > ((imageSize.height/heightAspect) * widthAspect)) {
+      if(CGFloat(imageSize.width) > (((CGFloat(imageSize.height)/Constants.heightAspect) * Constants.widthAspect))) {
 
-        let cropWidth = ((imageSize.height / heightAspect) * widthAspect)
+        let cropWidth = ((imageSize.height / Constants.heightAspect) * Constants.widthAspect)
         if(bufferImage.imageOrientation == .right) {
           //portrait photo bigger than 16/9
           guard let cropImage = cgImage.cropping(to: CGRect(x: 0, y:(((imageSize.width/2) - (cropWidth/2))) , width: imageSize.height, height: cropWidth)) else {
@@ -443,12 +443,13 @@ extension FoodieMedia: FoodieObjectDelegate {
             return
           }
           bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
+          cgImage = cropImage
         }
       }
 
       // downsize image to 1080p
-      if(imageSize.height >= imgMaxHeight) {
-        let newSize = CGSize(width: imgMaxWidth, height: imgMaxHeight)
+      if(imageSize.height >= Constants.imgMaxHeight) {
+        let newSize = CGSize(width: Constants.imgMaxWidth, height: Constants.imgMaxHeight)
         UIGraphicsBeginImageContextWithOptions(newSize, false, bufferImage.scale);
 
         bufferImage.draw(in: CGRect(origin: CGPoint.zero, size: newSize))
@@ -460,6 +461,7 @@ extension FoodieMedia: FoodieObjectDelegate {
           return
         }
         context.translateBy(x: 0, y: 0)
+        UIGraphicsEndImageContext()
 
         if(bufferImage.cgImage == nil) {
           CCLog.assert("cgImage is nil from bufferImage")
@@ -467,7 +469,6 @@ extension FoodieMedia: FoodieObjectDelegate {
           return
         }
         cgImage = bufferImage.cgImage!
-        UIGraphicsEndImageContext()
       }
 
       CGImageDestinationAddImage(destination, cgImage, properties)
