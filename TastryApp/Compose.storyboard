@@ -109,20 +109,18 @@
                                     <constraint firstAttribute="width" secondItem="Zde-mf-qQe" secondAttribute="height" multiplier="9:16" id="LGf-op-N9P"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Da-16-S86">
-                                <rect key="frame" x="327" y="762" width="34" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Da-16-S86">
+                                <rect key="frame" x="272" y="749" width="80" height="57"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" title="💾"/>
+                                <state key="normal" image="Markup-Next"/>
                                 <connections>
                                     <action selector="saveButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="X5X-lL-CO1"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jIA-aA-ex6">
-                                <rect key="frame" x="325" y="723" width="44" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jIA-aA-ex6">
+                                <rect key="frame" x="315" y="720" width="64" height="36"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                <state key="normal" title="🔉"/>
+                                <state key="normal" image="StoryMarkup-SoundOn"/>
                                 <connections>
                                     <action selector="soundButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="dkQ-EQ-R1s"/>
                                 </connections>
@@ -137,12 +135,11 @@
                                     <action selector="exitButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="I3i-Pm-8CT"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NrF-32-VrF">
-                                <rect key="frame" x="293" y="15" width="30" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NrF-32-VrF">
+                                <rect key="frame" x="295" y="19" width="27" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" name="TimesNewRomanPS-BoldMT" family="Times New Roman" pointSize="28"/>
                                 <size key="titleShadowOffset" width="2" height="2"/>
-                                <state key="normal" title="T">
+                                <state key="normal" image="Markup-Text">
                                     <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
                                     <color key="titleShadowColor" red="1" green="1" blue="1" alpha="0.59999999999999998" colorSpace="calibratedRGB"/>
                                 </state>
@@ -150,20 +147,10 @@
                                     <action selector="textButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hEs-po-5DG"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xf3-yP-YWE">
-                                <rect key="frame" x="257" y="15" width="30" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ti7-uM-Tfb">
+                                <rect key="frame" x="312" y="10" width="64" height="40"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" title="🍴"/>
-                                <connections>
-                                    <action selector="foodButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="Y2p-Gw-jh1"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ti7-uM-Tfb">
-                                <rect key="frame" x="329" y="15" width="30" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <state key="normal" title="✏️"/>
+                                <state key="normal" image="Markup-Pencil"/>
                                 <connections>
                                     <action selector="drawButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="l8o-q3-L1i"/>
                                 </connections>
@@ -182,38 +169,34 @@
                                     <action selector="sizeSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="jep-QK-70b"/>
                                 </connections>
                             </slider>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Nh-We-bhr">
-                                <rect key="frame" x="294" y="48" width="30" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Nh-We-bhr">
+                                <rect key="frame" x="258" y="43" width="66" height="40"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" title="🔲"/>
+                                <state key="normal" image="Markup-Background"/>
                                 <connections>
                                     <action selector="bgndButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="KgV-2q-twe"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PR5-g3-wOV">
-                                <rect key="frame" x="258" y="48" width="30" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PR5-g3-wOV">
+                                <rect key="frame" x="213" y="43" width="64" height="40"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="22"/>
-                                <state key="normal" title="📏"/>
+                                <state key="normal" image="Markup-Align"/>
                                 <connections>
                                     <action selector="alignButton:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="N4j-ax-KF6"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rbc-ru-Sbr">
-                                <rect key="frame" x="331" y="48" width="30" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rbc-ru-Sbr">
+                                <rect key="frame" x="314" y="43" width="64" height="40"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" title="🗑"/>
+                                <state key="normal" image="Markup-Trash"/>
                                 <connections>
                                     <action selector="deleteButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hLO-Li-p13"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CKF-go-XiM">
-                                <rect key="frame" x="331" y="48" width="30" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CKF-go-XiM">
+                                <rect key="frame" x="314" y="87" width="64" height="40"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" title="🔙"/>
+                                <state key="normal" image="Markup-Undo"/>
                                 <connections>
                                     <action selector="undoButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="1WG-ao-Czh"/>
                                 </connections>
@@ -238,7 +221,6 @@
                         <outlet property="deleteButton" destination="rbc-ru-Sbr" id="O9F-DD-yX6"/>
                         <outlet property="drawButton" destination="ti7-uM-Tfb" id="q0A-uU-x0k"/>
                         <outlet property="exitButton" destination="KrM-3z-Z5X" id="m5z-DF-hS2"/>
-                        <outlet property="foodButton" destination="Xf3-yP-YWE" id="aJ7-SR-Oxo"/>
                         <outlet property="mediaView" destination="Zde-mf-qQe" id="9pi-YP-hXk"/>
                         <outlet property="saveButton" destination="5Da-16-S86" id="Yd6-y9-sg5"/>
                         <outlet property="sizeSlider" destination="gQS-fe-hw8" id="hs9-ZM-YPo"/>
@@ -767,6 +749,14 @@
     </scenes>
     <resources>
         <image name="Entry-OpenLink" width="16" height="16"/>
+        <image name="Markup-Align" width="40" height="40"/>
+        <image name="Markup-Background" width="42" height="40"/>
+        <image name="Markup-Next" width="56" height="57"/>
+        <image name="Markup-Pencil" width="40" height="40"/>
+        <image name="Markup-Text" width="40" height="40"/>
+        <image name="Markup-Trash" width="40" height="40"/>
+        <image name="Markup-Undo" width="40" height="40"/>
         <image name="SelfieIcon" width="40" height="36"/>
+        <image name="StoryMarkup-SoundOn" width="40" height="36"/>
     </resources>
 </document>

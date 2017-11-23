@@ -28,6 +28,7 @@ protocol MarkupReturnDelegate {
 class MarkupViewController: OverlayViewController {
   
   // MARK: - Constants
+  
   struct Constants {
     static let SizeSliderMaxFont: Float = 64.0
     static let SizeSliderMinFont: Float = 10.0
@@ -42,7 +43,9 @@ class MarkupViewController: OverlayViewController {
   ]
   
   
+  
   // MARK: - Public Instance Variables
+  
   var editMomentObj: FoodieMoment?
   var fontArrayIndex = 0
   var mediaObj: FoodieMedia?
@@ -50,7 +53,10 @@ class MarkupViewController: OverlayViewController {
   var markupReturnDelegate: MarkupReturnDelegate?
   var addToExistingStoryOnly = false
 
+  
+  
   // MARK: - Private Instance Variables
+  
   fileprivate var avPlayer: AVQueuePlayer?
   fileprivate var avPlayerLayer: AVPlayerLayer?
   fileprivate var avPlayerItem: AVPlayerItem?
@@ -69,12 +75,13 @@ class MarkupViewController: OverlayViewController {
   fileprivate var shouldRelayoutSubview = true
   
   
+  
   // MARK: - IBOutlets
+  
   @IBOutlet weak var saveButton: UIButton?
   @IBOutlet weak var exitButton: ExitButton?
   @IBOutlet weak var textButton: UIButton!
   @IBOutlet weak var drawButton: UIButton!
-  @IBOutlet weak var foodButton: UIButton!
   @IBOutlet weak var bgndButton: UIButton!
   @IBOutlet weak var alignButton: UIButton!
   @IBOutlet weak var deleteButton: UIButton!
@@ -85,10 +92,13 @@ class MarkupViewController: OverlayViewController {
   @IBOutlet weak var mediaView: UIView!
   
   
+  
   // MARK: - IBActions
+  
   @IBAction func exitButtonAction(_ sender: UIButton) {
     dismiss(animated: true, completion: nil)
   }
+  
   
   @IBAction func textButtonAction(_ sender: UIButton) {
     if jotViewController.state != .editingText {
@@ -114,6 +124,7 @@ class MarkupViewController: OverlayViewController {
     }
   }
   
+  
   @IBAction func bgndButtonAction(_ sender: UIButton) {
     var whiteValue = jotViewController.whiteValue
     var alphaValue = jotViewController.alphaValue
@@ -136,6 +147,7 @@ class MarkupViewController: OverlayViewController {
     jotViewController.alphaValue = alphaValue
   }
   
+  
   @IBAction func alignButton(_ sender: UIButton) {
     var alignment = jotViewController.textAlignment
     
@@ -151,12 +163,6 @@ class MarkupViewController: OverlayViewController {
     }
     
     jotViewController.textAlignment = alignment
-  }
-  
-  
-  @IBAction func foodButtonAction(_ sender: UIButton) {
-    jotViewController.state = .editingText
-    undoButton.isHidden = true
   }
   
   
@@ -347,6 +353,7 @@ class MarkupViewController: OverlayViewController {
 
   
   // MARK - Public Instance Functions
+  
   func cleanupAndReturn(markedUpMoments: [FoodieMoment], suggestedStory: FoodieStory ){
     // Stop if there might be video looping
     self.avPlayer?.pause()  // TODO: - Do we need to free the avPlayer memory or something?
@@ -359,7 +366,10 @@ class MarkupViewController: OverlayViewController {
     delegate.markupComplete(markedupMoments: markedUpMoments, suggestedStory: suggestedStory)
   }
 
+  
+  
   // MARK: - Private Instance Functions
+  
   private func displayJotMarkups()
   {
     guard let moment = editMomentObj else {
@@ -426,6 +436,7 @@ class MarkupViewController: OverlayViewController {
     }
   }
 
+  
   private func getNextFont(size: CGFloat) -> UIFont {
     fontArrayIndex += 1
     if fontArrayIndex >= FontChoiceArray.count { fontArrayIndex = 0 }
@@ -435,6 +446,7 @@ class MarkupViewController: OverlayViewController {
       return UIFont.boldSystemFont(ofSize: size)
     }
   }
+  
   
   // Generic error dialog box to the user on internal errors
   func internalErrorDialog() {
@@ -467,6 +479,7 @@ class MarkupViewController: OverlayViewController {
     }
   }
 
+  
   // Generic error dialog box to the user on save errors
   fileprivate func saveErrorDialog() {
     if self.presentedViewController == nil {
@@ -499,7 +512,9 @@ class MarkupViewController: OverlayViewController {
   }
   
   
+  
   // MARK: - View Controller Lifecycle
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -531,6 +546,7 @@ class MarkupViewController: OverlayViewController {
     jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                              andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
   }
+  
   
   
   override func viewDidLayoutSubviews() {
@@ -632,6 +648,7 @@ class MarkupViewController: OverlayViewController {
     return true
   }
 }
+
 
 
 extension MarkupViewController: JotViewControllerDelegate {

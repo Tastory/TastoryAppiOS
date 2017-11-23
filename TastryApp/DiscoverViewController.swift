@@ -471,12 +471,15 @@ class DiscoverViewController: OverlayViewController {
         self.middleStack.alpha = alphaValue
         self.draftButton.alpha = alphaValue
         self.currentLocationButton.alpha = alphaValue
+        self.searchBackgroundView.alpha = alphaValue
+        
       })
     } else {
       self.searchStack.alpha = alphaValue
       self.middleStack.alpha = alphaValue
       self.draftButton.alpha = alphaValue
       self.currentLocationButton.alpha = alphaValue
+      self.searchBackgroundView.alpha = alphaValue
     }
   }
 
