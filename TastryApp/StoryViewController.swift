@@ -30,6 +30,7 @@ class StoryViewController: OverlayViewController {
   
   
   // MARK: - Private Instance Variables
+  private var isAppearanceLayout: Bool = true
   
   private let jotViewController = JotViewController()
   private var currentMoment: FoodieMoment?
@@ -40,8 +41,8 @@ class StoryViewController: OverlayViewController {
   private var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
   private var photoTimeRemaining: TimeInterval = 0.0
   private var isPaused: Bool = false
-  private var viewShouldLayout: Bool = true
   private var muteObserver: NSKeyValueObservation?
+  
   
   
   
@@ -576,14 +577,14 @@ class StoryViewController: OverlayViewController {
     if let author = story.author, let username = author.username {
       authorButton.setTitle(username, for: .normal)
     } else {
-      CCLog.assert("Cannot get at username from Story \(story.getUniqueIdentifier)")
+      CCLog.warning("Cannot get at username from Story \(story.getUniqueIdentifier)")
       authorButton.isHidden = true
     }
     
     if let venue = story.venue, let venueName = venue.name {
       venueButton.setTitle(venueName, for: .normal)
     } else {
-      CCLog.assert("Cannot get at venue name from Story \(story.getUniqueIdentifier)")
+      CCLog.info("Cannot get at venue name from Story \(story.getUniqueIdentifier)")
       venueButton.isHidden = true
     }
     
@@ -604,15 +605,15 @@ class StoryViewController: OverlayViewController {
 
   
   override func viewWillAppear(_ animated: Bool) {
-    viewShouldLayout = true
+    isAppearanceLayout = true
   }
   
   
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
-    if viewShouldLayout {
-      viewShouldLayout = false
+    if isAppearanceLayout {
+      isAppearanceLayout = false
       
       avPlayerLayer.frame = videoView.bounds
       jotViewController.view.frame = videoView.frame

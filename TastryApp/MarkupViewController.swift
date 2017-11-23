@@ -35,7 +35,11 @@ class MarkupViewController: OverlayViewController {
     static let SizeSliderDefaultFont: Float = 36.0
   }
   
-  let FontChoiceArray: [String] = [
+  
+  
+  // MARK: - Public Static Variables
+  
+  static let FontChoiceArray: [String] = [
     "BoldSystemFont",
     "BodoniSvtyTwoOSITCTT-Book",
     "Futura-Medium",
@@ -46,86 +50,85 @@ class MarkupViewController: OverlayViewController {
   
   // MARK: - Public Instance Variables
   
+  var markupReturnDelegate: MarkupReturnDelegate?
   var editMomentObj: FoodieMoment?
-  var fontArrayIndex = 0
   var mediaObj: FoodieMedia?
   var mediaLocation: CLLocation?
-  var markupReturnDelegate: MarkupReturnDelegate?
   var addToExistingStoryOnly = false
 
   
   
   // MARK: - Private Instance Variables
+  private var isInitialLayout = true
   
-  fileprivate var avPlayer: AVQueuePlayer?
-  fileprivate var avPlayerLayer: AVPlayerLayer?
-  fileprivate var avPlayerItem: AVPlayerItem?
-  fileprivate var avPlayerLooper: AVPlayerLooper?
+  private let jotViewController = JotViewController()
+  private var photoView: UIImageView?
+  private var videoView: UIView?
   
-  fileprivate var videoView: UIView?
-  fileprivate var photoView: UIImageView?
+  private var avPlayer: AVQueuePlayer?
+  private var avPlayerLayer: AVPlayerLayer?
+  private var avPlayerItem: AVPlayerItem?
+  private var avPlayerLooper: AVPlayerLooper?
   
-  fileprivate var thumbnailObject: FoodieMedia?
-  fileprivate var mediaObject: FoodieMedia!
+  private var thumbnailObject: FoodieMedia?
+  private var mediaObject: FoodieMedia!
 
-  fileprivate var soundOn = true
-  
-  fileprivate let jotViewController = JotViewController()
-  
-  fileprivate var shouldRelayoutSubview = true
+  private var soundOn = true
+  private var fontArrayIndex = 0
   
   
   
   // MARK: - IBOutlets
   
-  @IBOutlet weak var saveButton: UIButton?
-  @IBOutlet weak var exitButton: ExitButton?
+  @IBOutlet weak var mediaView: UIView!
+  @IBOutlet weak var exitButton: UIButton!
+  @IBOutlet weak var backButton: UIButton!
   @IBOutlet weak var textButton: UIButton!
   @IBOutlet weak var drawButton: UIButton!
-  @IBOutlet weak var bgndButton: UIButton!
-  @IBOutlet weak var alignButton: UIButton!
   @IBOutlet weak var deleteButton: UIButton!
+  @IBOutlet weak var alignButton: UIButton!
+  @IBOutlet weak var backgroundButton: UIButton!
+  @IBOutlet weak var fontButton: UIButton!
+  @IBOutlet weak var drawingIcon: UIButton!
   @IBOutlet weak var undoButton: UIButton!
-  @IBOutlet weak var soundButton: UIButton!
+  @IBOutlet weak var soundOnButton: UIButton!
+  @IBOutlet weak var soundOffButton: UIButton!
   @IBOutlet weak var colorSlider: UISlider!
   @IBOutlet weak var sizeSlider: UISlider!
-  @IBOutlet weak var mediaView: UIView!
+  @IBOutlet weak var nextButton: UIButton!
   
   
   
   // MARK: - IBActions
   
   @IBAction func exitButtonAction(_ sender: UIButton) {
-    dismiss(animated: true, completion: nil)
+    dismiss(animated: true, completion: nil)  // This is okay as long as we never present this as part of any Navigation Controllers
   }
   
   
-  @IBAction func textButtonAction(_ sender: UIButton) {
-    if jotViewController.state != .editingText {
-      jotViewController.state = .editingText
-      undoButton.isHidden = true
-    } else {
-      jotViewController.font = getNextFont(size: jotViewController.fontSize)
-      CCLog.verbose("New Font Selected: \(jotViewController.font.fontName)")
+  @IBAction func backButtonAction(_ sender: UIButton) {
+  }
+  
+  
+  @IBAction func alignButtonAction(_ sender: UIButton) {
+    var alignment = jotViewController.textAlignment
+    
+    switch alignment {
+    case .left:
+      alignment = .center
+    case .center:
+      alignment = .right
+    case .right:
+      alignment = .left
+    default:
+      alignment = .left
     }
-  }
-
-  
-  @IBAction func drawButtonAction(_ sender: UIButton) {
-    if jotViewController.state == .text {
-      
-      view.endEditing(true)
-      
-      jotViewController.state = JotViewState.drawing
-      deleteButton.isHidden = true
-      bgndButton.isHidden = true
-      alignButton.isHidden = true
-      undoButton.isHidden = false
-    }
+    
+    jotViewController.textAlignment = alignment
   }
   
   
-  @IBAction func bgndButtonAction(_ sender: UIButton) {
+  @IBAction func backgroundButtonAction(_ sender: UIButton) {
     var whiteValue = jotViewController.whiteValue
     var alphaValue = jotViewController.alphaValue
     
@@ -148,21 +151,47 @@ class MarkupViewController: OverlayViewController {
   }
   
   
-  @IBAction func alignButton(_ sender: UIButton) {
-    var alignment = jotViewController.textAlignment
-    
-    switch alignment {
-    case .left:
-      alignment = .center
-    case .center:
-      alignment = .right
-    case .right:
-      alignment = .left
-    default:
-      alignment = .left
+  @IBAction func fontButtonAction(_ sender: UIButton) {
+    jotViewController.font = getNextFont(size: jotViewController.fontSize)
+    CCLog.verbose("New Font Selected: \(jotViewController.font.fontName)")
+  }
+  
+  
+  
+  @IBAction func textButtonAction(_ sender: UIButton) {
+    jotViewController.state = .editingText
+    undoButton.isHidden = true
+  }
+
+  
+  @IBAction func drawButtonAction(_ sender: UIButton) {
+    view.endEditing(true)
+    jotViewController.state = JotViewState.drawing
+    deleteButton.isHidden = true
+    backgroundButton.isHidden = true
+    alignButton.isHidden = true
+    undoButton.isHidden = false
+  }
+  
+  
+  @IBAction func undoButtonAction(_ sender: UIButton) {
+    jotViewController.undoDrawing()
+  }
+  
+  
+  @IBAction func deleteButtonAction(_ sender: UIButton) {
+    jotViewController.deleteSelectedLabel()
+  }
+  
+  
+  @IBAction func soundButtonAction(_ sender: UIButton) {
+    if soundOn {
+      avPlayer?.volume = 0.0
+      soundOn = false
+    } else {
+      avPlayer?.volume = 1.0
+      soundOn = true
     }
-    
-    jotViewController.textAlignment = alignment
   }
   
   
@@ -232,30 +261,8 @@ class MarkupViewController: OverlayViewController {
     jotViewController.fontSize = fontSize
   }
   
-  
-  @IBAction func undoButtonAction(_ sender: UIButton) {
-    jotViewController.undoDrawing()
-  }
-  
-  
-  @IBAction func deleteButtonAction(_ sender: UIButton) {
-    jotViewController.deleteSelectedLabel()
-  }
-  
-  
-  @IBAction func soundButtonAction(_ sender: UIButton) {
-    
-    if soundOn {
-      avPlayer?.volume = 0.0
-      soundOn = false
-    } else {
-      avPlayer?.volume = 1.0
-      soundOn = true
-    }
-  }
-  
-  
-  @IBAction func saveButtonAction(_ sender: UIButton) {
+
+  @IBAction func nextButtonAction(_ sender: UIButton) {
     
     // TODO: Don't let user click save (Gray it out until Thumbnail creation completed)
     
@@ -351,22 +358,7 @@ class MarkupViewController: OverlayViewController {
     // TODO: - Scenario 2 - We are editing an existing Story, not the Current Draft Story
   }
 
-  
-  // MARK - Public Instance Functions
-  
-  func cleanupAndReturn(markedUpMoments: [FoodieMoment], suggestedStory: FoodieStory ){
-    // Stop if there might be video looping
-    self.avPlayer?.pause()  // TODO: - Do we need to free the avPlayer memory or something?
-    
-    // Returned Markedup-Moment back to Presenting View Controller
-    guard let delegate = self.markupReturnDelegate else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
-      CCLog.fatal("Unexpected. markupReturnDelegate became nil. Unable to proceed")
-    }
-    delegate.markupComplete(markedupMoments: markedUpMoments, suggestedStory: suggestedStory)
-  }
 
-  
   
   // MARK: - Private Instance Functions
   
@@ -437,10 +429,23 @@ class MarkupViewController: OverlayViewController {
   }
 
   
+  private func cleanupAndReturn(markedUpMoments: [FoodieMoment], suggestedStory: FoodieStory ){
+    // Stop if there might be video looping
+    self.avPlayer?.pause()  // TODO: - Do we need to free the avPlayer memory or something?
+    
+    // Returned Markedup-Moment back to Presenting View Controller
+    guard let delegate = self.markupReturnDelegate else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
+      CCLog.fatal("Unexpected. markupReturnDelegate became nil. Unable to proceed")
+    }
+    delegate.markupComplete(markedupMoments: markedUpMoments, suggestedStory: suggestedStory)
+  }
+  
+  
   private func getNextFont(size: CGFloat) -> UIFont {
     fontArrayIndex += 1
-    if fontArrayIndex >= FontChoiceArray.count { fontArrayIndex = 0 }
-    if fontArrayIndex != 0, let newFont = UIFont(name: FontChoiceArray[fontArrayIndex], size: size) {
+    if fontArrayIndex >= MarkupViewController.FontChoiceArray.count { fontArrayIndex = 0 }
+    if fontArrayIndex != 0, let newFont = UIFont(name: MarkupViewController.FontChoiceArray[fontArrayIndex], size: size) {
       return newFont
     } else {
       return UIFont.boldSystemFont(ofSize: size)
@@ -448,67 +453,57 @@ class MarkupViewController: OverlayViewController {
   }
   
   
-  // Generic error dialog box to the user on internal errors
-  func internalErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when a Markup Image view internal error occured",
-                                              message: "An internal error has occured. Please try again",
-                                              messageComment: "Alert dialog message when a Markup Image view internal error occured",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for generic MarkupImageView errors",
-                                     style: .default)
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-
-  // Generic error dialog box to the user when displaying photo or video
-  fileprivate func displayErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when Markup Image view has problem displaying photo or video",
-                                              message: "Error displaying media. Please try again",
-                                              messageComment: "Alert dialog message when Markup Image view has problem displaying photo or video",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for error when displaying photo or video in MarkupImageView",
-                                     style: .default)
-
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-
-  
-  // Generic error dialog box to the user on save errors
-  fileprivate func saveErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when Markup Image view has problem saving",
-                                              message: "Error saving Story. Please try again",
-                                              messageComment: "Alert dialog message when Markup Image view has problem saving",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for MarkupImageView save errors",
-                                     style: .default)
-      self.present(alertController, animated: true, completion: nil)
-    }
+  private func textModeMinimumUI() {
+    exitButton.isHidden = false
+    backButton.isHidden = true
+    alignButton.isHidden = true
+    backgroundButton.isHidden = true
+    fontButton.isHidden = true
+    drawingIcon.isHidden = true
+    undoButton.isHidden = true
+    textButton.isHidden = false
+    drawButton.isHidden = false
+    deleteButton.isHidden = true
+    soundOnButton.isHidden = true
+    soundOffButton.isHidden = true
+    colorSlider.isHidden = true
+    sizeSlider.isHidden = true
   }
   
-  // Generic error dialog box to the user when adding Moments
-  fileprivate func addErrorDialog() {
-    if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
-                                              titleComment: "Alert diaglogue title when Markup Image view has problem adding a Moment",
-                                              message: "Error adding Moment. Please try again",
-                                              messageComment: "Alert dialog message when Markup Image view has problem adding a Moment",
-                                              preferredStyle: .alert)
-      alertController.addAlertAction(title: "OK",
-                                     comment: "Button in alert dialog box for error when adding Moments in MarkupImageView",
-                                     style: .default)
-      
-      self.present(alertController, animated: true, completion: nil)
-    }
+  
+  private func textEditModeMinimumUI() {
+    exitButton.isHidden = true
+    backButton.isHidden = false
+    alignButton.isHidden = false
+    backgroundButton.isHidden = false
+    fontButton.isHidden = false
+    drawingIcon.isHidden = true
+    undoButton.isHidden = true
+    textButton.isHidden = true
+    drawButton.isHidden = true
+    deleteButton.isHidden = true
+    soundOnButton.isHidden = true
+    soundOffButton.isHidden = true
+    colorSlider.isHidden = false
+    sizeSlider.isHidden = false
+  }
+  
+  
+  private func drawModeMinimumUI() {
+    exitButton.isHidden = true
+    backButton.isHidden = false
+    alignButton.isHidden = true
+    backgroundButton.isHidden = true
+    fontButton.isHidden = true
+    drawingIcon.isHidden = false
+    undoButton.isHidden = false
+    textButton.isHidden = true
+    drawButton.isHidden = true
+    deleteButton.isHidden = true
+    soundOnButton.isHidden = true
+    soundOffButton.isHidden = true
+    colorSlider.isHidden = false
+    sizeSlider.isHidden = false
   }
   
   
@@ -518,12 +513,8 @@ class MarkupViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    // Setup the UI first - Assume text mode to start
-    foodButton.isHidden = true  // TODO: Unhide this later when want to implement the Food Tag Button
-    undoButton.isHidden = true
-    deleteButton.isHidden = false
-    bgndButton.isHidden = false
-    alignButton.isHidden = false
+    
+    
     colorSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
     colorSlider.value = 0.0  // Cuz default color is white
     sizeSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
@@ -545,6 +536,11 @@ class MarkupViewController: OverlayViewController {
     jotViewController.view.backgroundColor = .clear
     jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                              andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
+    
+    addChildViewController(jotViewController)
+    mediaView.addSubview(jotViewController.view)
+    jotViewController.didMove(toParentViewController: self)
+    
   }
   
   
@@ -552,49 +548,57 @@ class MarkupViewController: OverlayViewController {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
-    if shouldRelayoutSubview {
-      shouldRelayoutSubview = false
+    if isInitialLayout {
+      isInitialLayout = false
       
-      addChildViewController(jotViewController)
+      // Setup the UI first - Assume text mode to start
+      textModeMinimumUI()
+      soundOffButton.isHidden = false
+      
       jotViewController.view.frame = mediaView.bounds
-      mediaView.addSubview(jotViewController.view)
-      jotViewController.didMove(toParentViewController: self)
       jotViewController.view.layoutIfNeeded()
       displayJotMarkups()
       
-      
       // This section is for initiating the background Image or Video
       if mediaObj == nil {
-        internalErrorDialog()
-        CCLog.assert("Unexpected, mediaObj == nil ")
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+          CCLog.assert("Unexpected, mediaObj == nil ")
+          self.dismiss(animated: true, completion: nil)
+        }
         return
       } else {
         mediaObject = mediaObj!
       }
       
       guard let mediaType = mediaObject.mediaType else {
-        internalErrorDialog()
-        CCLog.assert("Unexpected, mediaType == nil")
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+          CCLog.assert("Unexpected, mediaType == nil")
+        }
         return
       }
       
       // Display the photo
       if mediaType == .photo {
         
-        // Hide the Sound button
-        soundButton.isHidden = true
+        // Hide the Sound buttons
+        soundOnButton.isHidden = true
+        soundOffButton.isHidden = true
         
         photoView = UIImageView(frame: mediaView.bounds)
         
         guard let imageView = photoView else {
-          displayErrorDialog()
-          CCLog.assert("photoView = UIImageView(frame: _) failed")
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+            CCLog.assert("photoView = UIImageView(frame: _) failed")
+            self.dismiss(animated: true, completion: nil)
+          }
           return
         }
         
         guard let imageBuffer = mediaObject.imageMemoryBuffer else {
-          displayErrorDialog()
-          CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+            CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
+            self.dismiss(animated: true, completion: nil)
+          }
           return
         }
         
@@ -607,11 +611,13 @@ class MarkupViewController: OverlayViewController {
       } else if mediaType == .video {
         
         // Make sure the Sound button is shown
-        soundButton.isHidden = false
+        soundOnButton.isHidden = false
+        soundOffButton.isHidden = true
         
         guard let videoURL = (mediaObject.videoExportPlayer?.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-            CCLog.fatal("Cannot get at AVURLAsset.url")
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+            CCLog.assert("Cannot get at AVURLAsset.url")
+            self.dismiss(animated: true, completion: nil)
           }
           return
         }
@@ -633,7 +639,11 @@ class MarkupViewController: OverlayViewController {
       
       // No image nor video to work on, Fatal
       } else {
-        CCLog.fatal("Both photoToMarkup and videoToMarkupURL are nil")
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+          CCLog.assert("Both photoToMarkup and videoToMarkupURL are nil")
+          self.dismiss(animated: true, completion: nil)
+        }
+        return
       }
     }
   }
@@ -655,7 +665,7 @@ extension MarkupViewController: JotViewControllerDelegate {
   
   func jotViewController(_ jotViewController: JotViewController, isEditingText isEditing: Bool) {
     deleteButton.isHidden = false
-    bgndButton.isHidden = false
+    backgroundButton.isHidden = false
     alignButton.isHidden = false
     
   }
@@ -663,7 +673,7 @@ extension MarkupViewController: JotViewControllerDelegate {
   func jotViewController(_ jotViewController: JotViewController!, didSelectLabel labelInfo: [AnyHashable : Any]!) {
     if jotViewController.state == .text || jotViewController.state == .editingText {
       deleteButton.isHidden = false
-      bgndButton.isHidden = false
+      backgroundButton.isHidden = false
       alignButton.isHidden = false
     }
   }

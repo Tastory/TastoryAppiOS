@@ -103,128 +103,172 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zde-mf-qQe">
-                                <rect key="frame" x="-0.66666666666665719" y="77.333333333333314" width="375.33333333333326" height="667.33333333333348"/>
+                                <rect key="frame" x="0.0" y="72.333333333333314" width="375" height="667.33333333333348"/>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="Zde-mf-qQe" secondAttribute="height" multiplier="9:16" id="LGf-op-N9P"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Da-16-S86">
-                                <rect key="frame" x="272" y="749" width="80" height="57"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                <state key="normal" image="Markup-Next"/>
-                                <connections>
-                                    <action selector="saveButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="X5X-lL-CO1"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jIA-aA-ex6">
-                                <rect key="frame" x="315" y="720" width="64" height="36"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                <state key="normal" image="StoryMarkup-SoundOn"/>
-                                <connections>
-                                    <action selector="soundButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="dkQ-EQ-R1s"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KrM-3z-Z5X" customClass="ExitButton" customModule="TastryApp" customModuleProvider="target">
-                                <rect key="frame" x="10" y="54" width="40" height="40"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="40" id="4py-wd-BeH"/>
-                                    <constraint firstAttribute="width" secondItem="KrM-3z-Z5X" secondAttribute="height" multiplier="1:1" id="pSH-Qf-XE1"/>
-                                </constraints>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KrM-3z-Z5X">
+                                <rect key="frame" x="12" y="92.333333333333329" width="32" height="32"/>
+                                <state key="normal" image="Markup-Cross"/>
                                 <connections>
                                     <action selector="exitButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="I3i-Pm-8CT"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NrF-32-VrF">
-                                <rect key="frame" x="295" y="19" width="27" height="22"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <size key="titleShadowOffset" width="2" height="2"/>
-                                <state key="normal" image="Markup-Text">
-                                    <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                    <color key="titleShadowColor" red="1" green="1" blue="1" alpha="0.59999999999999998" colorSpace="calibratedRGB"/>
-                                </state>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NJG-pX-rxm">
+                                <rect key="frame" x="12" y="92.333333333333329" width="32" height="32"/>
+                                <state key="normal" image="Markup-Back"/>
                                 <connections>
-                                    <action selector="textButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hEs-po-5DG"/>
+                                    <action selector="backButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="2EE-r0-yr6"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ti7-uM-Tfb">
-                                <rect key="frame" x="312" y="10" width="64" height="40"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" image="Markup-Pencil"/>
-                                <connections>
-                                    <action selector="drawButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="l8o-q3-L1i"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Ao6-hj-RWt">
+                                <rect key="frame" x="118" y="92.333333333333329" width="140" height="39.999999999999986"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PR5-g3-wOV">
+                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                        <state key="normal" image="Markup-Align"/>
+                                        <connections>
+                                            <action selector="alignButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="aRY-MM-hYg"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Nh-We-bhr">
+                                        <rect key="frame" x="48" y="0.0" width="42" height="40"/>
+                                        <state key="normal" image="Markup-Background"/>
+                                        <connections>
+                                            <action selector="backgroundButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="EDq-zO-SQF"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k2K-CX-jqS">
+                                        <rect key="frame" x="98" y="0.0" width="42" height="40"/>
+                                        <state key="normal" image="Markup-Font"/>
+                                        <connections>
+                                            <action selector="fontButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="pEr-xF-b9E"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="9oy-YC-tz3">
+                                <rect key="frame" x="144" y="92.333333333333329" width="88" height="39.999999999999986"/>
+                                <subviews>
+                                    <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KbB-2G-dkp">
+                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                        <state key="normal" image="Markup-Pencil"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CKF-go-XiM">
+                                        <rect key="frame" x="48" y="0.0" width="40" height="40"/>
+                                        <state key="normal" image="Markup-Undo"/>
+                                        <connections>
+                                            <action selector="undoButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="1WG-ao-Czh"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="F9M-T0-ZY7">
+                                <rect key="frame" x="323" y="92.333333333333314" width="40" height="136"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NrF-32-VrF">
+                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                        <size key="titleShadowOffset" width="2" height="2"/>
+                                        <state key="normal" image="Markup-Text">
+                                            <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="titleShadowColor" red="1" green="1" blue="1" alpha="0.59999999999999998" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="textButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hEs-po-5DG"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ti7-uM-Tfb">
+                                        <rect key="frame" x="0.0" y="48.000000000000014" width="40" height="40"/>
+                                        <state key="normal" image="Markup-Pencil"/>
+                                        <connections>
+                                            <action selector="drawButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="l8o-q3-L1i"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rbc-ru-Sbr">
+                                        <rect key="frame" x="0.0" y="96.000000000000014" width="40" height="39.999999999999986"/>
+                                        <state key="normal" image="Markup-Trash"/>
+                                        <connections>
+                                            <action selector="deleteButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hLO-Li-p13"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="eZh-sa-B78">
-                                <rect key="frame" x="242" y="181" width="204" height="31"/>
+                                <rect key="frame" x="-71" y="224" width="204" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="colorSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="j3f-dm-ZYb"/>
                                 </connections>
                             </slider>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jIA-aA-ex6">
+                                <rect key="frame" x="12" y="691.66666666666663" width="40" height="40"/>
+                                <state key="normal" image="StoryMarkup-SoundOnButton"/>
+                                <connections>
+                                    <action selector="soundButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="dkQ-EQ-R1s"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lmH-xM-Ly2">
+                                <rect key="frame" x="12" y="691.66666666666663" width="40" height="40"/>
+                                <state key="normal" image="StoryMarkup-SoundOffButton"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Da-16-S86">
+                                <rect key="frame" x="309" y="672.66666666666663" width="56" height="57"/>
+                                <state key="normal" image="Markup-Next"/>
+                                <connections>
+                                    <action selector="nextButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="6tx-y7-SSr"/>
+                                </connections>
+                            </button>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="gQS-fe-hw8">
-                                <rect key="frame" x="267" y="384" width="154" height="31"/>
+                                <rect key="frame" x="-47" y="371" width="154" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="sizeSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="jep-QK-70b"/>
                                 </connections>
                             </slider>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Nh-We-bhr">
-                                <rect key="frame" x="258" y="43" width="66" height="40"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" image="Markup-Background"/>
-                                <connections>
-                                    <action selector="bgndButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="KgV-2q-twe"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PR5-g3-wOV">
-                                <rect key="frame" x="213" y="43" width="64" height="40"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" image="Markup-Align"/>
-                                <connections>
-                                    <action selector="alignButton:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="N4j-ax-KF6"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rbc-ru-Sbr">
-                                <rect key="frame" x="314" y="43" width="64" height="40"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" image="Markup-Trash"/>
-                                <connections>
-                                    <action selector="deleteButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="hLO-Li-p13"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CKF-go-XiM">
-                                <rect key="frame" x="314" y="87" width="64" height="40"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" image="Markup-Undo"/>
-                                <connections>
-                                    <action selector="undoButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="1WG-ao-Czh"/>
-                                </connections>
-                            </button>
                         </subviews>
-                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
                         <constraints>
-                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="top" secondItem="tQl-5t-QC4" secondAttribute="top" constant="10" id="1FB-Hs-IxM"/>
-                            <constraint firstItem="Zde-mf-qQe" firstAttribute="width" secondItem="tQl-5t-QC4" secondAttribute="width" id="hY8-O2-PrH"/>
-                            <constraint firstItem="Zde-mf-qQe" firstAttribute="centerX" secondItem="tQl-5t-QC4" secondAttribute="centerX" id="iYm-c0-sLX"/>
-                            <constraint firstItem="Zde-mf-qQe" firstAttribute="centerY" secondItem="tQl-5t-QC4" secondAttribute="centerY" id="lho-rL-pNy"/>
-                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="leading" secondItem="tQl-5t-QC4" secondAttribute="leading" constant="10" id="q5R-kJ-1tY"/>
+                            <constraint firstItem="F9M-T0-ZY7" firstAttribute="trailing" secondItem="Zde-mf-qQe" secondAttribute="trailing" constant="-12" id="0fm-J3-V6u"/>
+                            <constraint firstItem="jIA-aA-ex6" firstAttribute="bottom" secondItem="Zde-mf-qQe" secondAttribute="bottom" constant="-8" id="1bK-Ii-fcJ"/>
+                            <constraint firstItem="jIA-aA-ex6" firstAttribute="leading" secondItem="Zde-mf-qQe" secondAttribute="leading" constant="12" id="IYr-ic-p3d"/>
+                            <constraint firstItem="lmH-xM-Ly2" firstAttribute="bottom" secondItem="Zde-mf-qQe" secondAttribute="bottom" constant="-8" id="KBd-8P-Rw0"/>
+                            <constraint firstItem="lmH-xM-Ly2" firstAttribute="leading" secondItem="Zde-mf-qQe" secondAttribute="leading" constant="12" id="Nxe-JZ-xWB"/>
+                            <constraint firstItem="5Da-16-S86" firstAttribute="trailing" secondItem="Zde-mf-qQe" secondAttribute="trailing" constant="-10" id="QWu-fS-FER"/>
+                            <constraint firstItem="Ao6-hj-RWt" firstAttribute="centerX" secondItem="Zde-mf-qQe" secondAttribute="centerX" id="VG7-0D-PQ7"/>
+                            <constraint firstItem="F9M-T0-ZY7" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="20" id="WZW-Au-O7x"/>
+                            <constraint firstItem="5Da-16-S86" firstAttribute="bottom" secondItem="Zde-mf-qQe" secondAttribute="bottom" constant="-10" id="ZLB-hc-IXQ"/>
+                            <constraint firstItem="Ao6-hj-RWt" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="20" id="hKZ-fA-uCf"/>
+                            <constraint firstItem="Zde-mf-qQe" firstAttribute="width" secondItem="3hs-y9-2cP" secondAttribute="width" id="hY8-O2-PrH"/>
+                            <constraint firstItem="Zde-mf-qQe" firstAttribute="centerX" secondItem="3hs-y9-2cP" secondAttribute="centerX" id="iYm-c0-sLX"/>
+                            <constraint firstItem="NJG-pX-rxm" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="20" id="jy3-nX-nlO"/>
+                            <constraint firstItem="Zde-mf-qQe" firstAttribute="centerY" secondItem="3hs-y9-2cP" secondAttribute="centerY" id="lho-rL-pNy"/>
+                            <constraint firstItem="9oy-YC-tz3" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="20" id="pTM-Mb-1bJ"/>
+                            <constraint firstItem="9oy-YC-tz3" firstAttribute="centerX" secondItem="Zde-mf-qQe" secondAttribute="centerX" id="stO-tq-WNp"/>
+                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="20" id="tgH-Cj-J3N"/>
+                            <constraint firstItem="KrM-3z-Z5X" firstAttribute="leading" secondItem="Zde-mf-qQe" secondAttribute="leading" constant="12" id="ukG-24-g4V"/>
+                            <constraint firstItem="NJG-pX-rxm" firstAttribute="leading" secondItem="Zde-mf-qQe" secondAttribute="leading" constant="12" id="vAI-lV-7fB"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="tQl-5t-QC4"/>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
                         <outlet property="alignButton" destination="PR5-g3-wOV" id="57O-Ed-F2h"/>
-                        <outlet property="bgndButton" destination="8Nh-We-bhr" id="j0r-St-SjA"/>
+                        <outlet property="backButton" destination="NJG-pX-rxm" id="yY2-9i-4cZ"/>
+                        <outlet property="backgroundButton" destination="8Nh-We-bhr" id="sBi-L8-Mmn"/>
                         <outlet property="colorSlider" destination="eZh-sa-B78" id="BSi-1v-y6r"/>
                         <outlet property="deleteButton" destination="rbc-ru-Sbr" id="O9F-DD-yX6"/>
                         <outlet property="drawButton" destination="ti7-uM-Tfb" id="q0A-uU-x0k"/>
+                        <outlet property="drawingIcon" destination="KbB-2G-dkp" id="3vn-dG-ONv"/>
                         <outlet property="exitButton" destination="KrM-3z-Z5X" id="m5z-DF-hS2"/>
+                        <outlet property="fontButton" destination="k2K-CX-jqS" id="cTB-10-ruG"/>
                         <outlet property="mediaView" destination="Zde-mf-qQe" id="9pi-YP-hXk"/>
-                        <outlet property="saveButton" destination="5Da-16-S86" id="Yd6-y9-sg5"/>
+                        <outlet property="nextButton" destination="5Da-16-S86" id="yYI-Ss-UrV"/>
                         <outlet property="sizeSlider" destination="gQS-fe-hw8" id="hs9-ZM-YPo"/>
-                        <outlet property="soundButton" destination="jIA-aA-ex6" id="avY-Fm-oRe"/>
+                        <outlet property="soundOffButton" destination="lmH-xM-Ly2" id="G24-Pi-6ex"/>
+                        <outlet property="soundOnButton" destination="jIA-aA-ex6" id="sPq-cK-Y0E"/>
                         <outlet property="textButton" destination="NrF-32-VrF" id="hHX-SI-gF3"/>
                         <outlet property="undoButton" destination="CKF-go-XiM" id="ep2-Fd-5Fw"/>
                     </connections>
@@ -750,13 +794,17 @@
     <resources>
         <image name="Entry-OpenLink" width="16" height="16"/>
         <image name="Markup-Align" width="40" height="40"/>
+        <image name="Markup-Back" width="32" height="32"/>
         <image name="Markup-Background" width="42" height="40"/>
+        <image name="Markup-Cross" width="32" height="32"/>
+        <image name="Markup-Font" width="42" height="40"/>
         <image name="Markup-Next" width="56" height="57"/>
         <image name="Markup-Pencil" width="40" height="40"/>
         <image name="Markup-Text" width="40" height="40"/>
         <image name="Markup-Trash" width="40" height="40"/>
         <image name="Markup-Undo" width="40" height="40"/>
         <image name="SelfieIcon" width="40" height="36"/>
-        <image name="StoryMarkup-SoundOn" width="40" height="36"/>
+        <image name="StoryMarkup-SoundOffButton" width="40" height="40"/>
+        <image name="StoryMarkup-SoundOnButton" width="40" height="40"/>
     </resources>
 </document>

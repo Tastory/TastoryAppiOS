@@ -380,7 +380,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dzk-89-di2">
-                                <rect key="frame" x="0.0" y="691" width="375" height="48.666666666666629"/>
+                                <rect key="frame" x="0.0" y="687" width="375" height="52.666666666666629"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="ZiO-0U-WG2" userLabel="Author Venue Time Stack">
@@ -432,29 +432,29 @@
                                 </subviews>
                             </stackView>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cOp-iU-bG1" userLabel="Play Button">
-                                <rect key="frame" x="331" y="698.66666666666663" width="36" height="36"/>
+                                <rect key="frame" x="327" y="694.66666666666663" width="40" height="40"/>
                                 <state key="normal" image="StoryMarkup-PlayButton"/>
                                 <connections>
                                     <action selector="playAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="CG9-Xu-8h5"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7rC-KB-BnZ" userLabel="Pause Button">
-                                <rect key="frame" x="331" y="699" width="36" height="36"/>
+                                <rect key="frame" x="327" y="695" width="40" height="40"/>
                                 <state key="normal" image="StoryMarkup-PauseButton"/>
                                 <connections>
                                     <action selector="pauseAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="A61-W1-58v"/>
                                 </connections>
                             </button>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t4S-lT-gBv" userLabel="SoundOn Button">
-                                <rect key="frame" x="8" y="699" width="40" height="36"/>
-                                <state key="normal" image="StoryMarkup-SoundOn"/>
+                                <rect key="frame" x="8" y="695" width="40" height="40"/>
+                                <state key="normal" image="StoryMarkup-SoundOnButton"/>
                                 <connections>
                                     <action selector="soundOnAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="89H-Iu-eGB"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dOo-DQ-GbZ" userLabel="SoundOff Button">
-                                <rect key="frame" x="8" y="698.66666666666663" width="40" height="36"/>
-                                <state key="normal" image="StoryMarkup-SoundOff"/>
+                                <rect key="frame" x="8" y="694.66666666666663" width="40" height="40"/>
+                                <state key="normal" image="StoryMarkup-SoundOffButton"/>
                                 <connections>
                                     <action selector="soundOffAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="Bpx-5U-g7F"/>
                                 </connections>
@@ -596,10 +596,10 @@
         <image name="Discover-SearchHiddenButton" width="126" height="39"/>
         <image name="Discover-SearchMagnifier" width="26" height="26"/>
         <image name="Discover-SearchTextLine" width="357" height="3"/>
-        <image name="StoryMarkup-PauseButton" width="36" height="36"/>
-        <image name="StoryMarkup-PlayButton" width="36" height="36"/>
-        <image name="StoryMarkup-SoundOff" width="40" height="36"/>
-        <image name="StoryMarkup-SoundOn" width="40" height="36"/>
+        <image name="StoryMarkup-PauseButton" width="40" height="40"/>
+        <image name="StoryMarkup-PlayButton" width="40" height="40"/>
+        <image name="StoryMarkup-SoundOffButton" width="40" height="40"/>
+        <image name="StoryMarkup-SoundOnButton" width="40" height="40"/>
         <image name="StoryMarkup-SwipeUpArrow" width="22" height="12"/>
     </resources>
 </document>
