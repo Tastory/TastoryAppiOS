@@ -14,58 +14,67 @@ import Jot
 class StoryViewController: OverlayViewController {
   
   // MARK: - Constants
+  
   struct Constants {
     static let MomentsViewingTimeInterval = 5.0
+    static let BackgroundGradientBlackAlpha: CGFloat = 0.38
   }
   
   
+  
   // MARK: - Public Instance Variables
+  
   var draftPreview: Bool = false
   var viewingStory: FoodieStory?
   
   
+  
   // MARK: - Private Instance Variables
   
-  fileprivate let jotViewController = JotViewController()
-  fileprivate var currentMoment: FoodieMoment?
-  fileprivate var currentExportPlayer: AVExportPlayer?
-  fileprivate var photoTimer: Timer?
-  fileprivate var swipeUpGestureRecognizer: UISwipeGestureRecognizer!  // Set by ViewDidLoad
-  fileprivate var avPlayerLayer: AVPlayerLayer!  // Set by ViewDidLoad
-  fileprivate var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
-  fileprivate var photoTimeRemaining: TimeInterval = 0.0
-  fileprivate var soundOn: Bool = true
-  fileprivate var isPaused: Bool = false
-  private var viewShouldRelayout: Bool = true
+  private let jotViewController = JotViewController()
+  private var currentMoment: FoodieMoment?
+  private var currentExportPlayer: AVExportPlayer?
+  private var photoTimer: Timer?
+  private var swipeUpGestureRecognizer: UISwipeGestureRecognizer!  // Set by ViewDidLoad
+  private var avPlayerLayer: AVPlayerLayer!  // Set by ViewDidLoad
+  private var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
+  private var photoTimeRemaining: TimeInterval = 0.0
+  private var isPaused: Bool = false
+  private var viewShouldLayout: Bool = true
+  private var muteObserver: NSKeyValueObservation?
+  
   
   
   // MARK: - IBOutlets
+  
   @IBOutlet weak var photoView: UIImageView!
   @IBOutlet weak var videoView: UIView!
+  @IBOutlet weak var topStackBackgroundView: UIView!
+  @IBOutlet weak var bottomStackBackgroundView: UIView!
   @IBOutlet weak var tapForwardGestureRecognizer: UIView!
   @IBOutlet weak var tapBackwardGestureRecognizer: UIView!
   @IBOutlet weak var venueButton: UIButton!
   @IBOutlet weak var authorButton: UIButton!
+  @IBOutlet weak var swipeStack: UIStackView!
   @IBOutlet weak var swipeLabel: UILabel!
   @IBOutlet weak var playButton: UIButton!
   @IBOutlet weak var pauseButton: UIButton!
-  @IBOutlet weak var soundOnbutton: UIButton!
+  @IBOutlet weak var soundOnButton: UIButton!
   @IBOutlet weak var soundOffButton: UIButton!
   
   
   
   // MARK: - IBActions
+  
   @IBAction func tapForward(_ sender: UITapGestureRecognizer) {
     CCLog.info("User tapped Forward")
     displayNextMoment()
   }
 
-  
   @IBAction func tapBackward(_ sender: UITapGestureRecognizer) {
     CCLog.info("User tapped Backward")
     displayPreviousMoment()
   }
-  
   
   @IBAction func venueAction(_ sender: UIButton) {
     CCLog.info("User tapped Venue")
@@ -78,11 +87,7 @@ class StoryViewController: OverlayViewController {
     }
 
     if let venue = story.venue, let foursquareURLString = venue.foursquareURL, let foursquareURL = URL(string: foursquareURLString) {
-      // Pause if playing
-      if !isPaused {
-        pausePlay()
-      }
-
+      pause()
       CCLog.info("Opening Safari View for \(foursquareURLString)")
       let safariViewController = SFSafariViewController(url: foursquareURL)
       safariViewController.delegate = self
@@ -92,17 +97,25 @@ class StoryViewController: OverlayViewController {
   }
   
   
-  @IBAction func authorAction(_ sender: UIButton) {
-    CCLog.info("User tapped Author")
+  @IBAction func authorAction(_ sender: UIButton) { CCLog.info("User tapped Author") }
+  
+  @IBAction func pauseAction(_ sender: UIButton) { pause() }
+  
+  @IBAction func playAction(_ sender: UIButton) { play() }
+  
+  @IBAction func soundOnAction(_ sender: UIButton) {
+    AudioControl.unmute()
+  }
+  
+  @IBAction func soundOffAction(_ sender: UIButton) {
+    AudioControl.mute()
   }
   
   
-  @IBAction func pausePlayToggle(_ sender: UIButton) {
-    pausePlay()
-  }
   
+  // MARK: - Private Instance Functions
   
-  @IBAction func soundToggle(_ sender: UIButton) {
+  private func updateAVMute(audioControl: AudioControl) {
     
     guard let playingMoment = currentMoment else {
       // Not playing any moment, Sound button should do nothing and just return
@@ -112,39 +125,51 @@ class StoryViewController: OverlayViewController {
     guard let avPlayer = currentExportPlayer?.avPlayer else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
         CCLog.assert("Expected AVExportPlayer")
+        self.popDismiss(animated: true)
       }
       return
     }
+
+    if playingMoment.playSound {
+      if !audioControl.isAppMuted {
+        avPlayer.volume = 1.0
+        soundOnButton.isHidden = true
+        soundOffButton.isHidden = false
+      } else {
+        avPlayer.volume = 0.0
+        soundOffButton.isHidden = true
+        soundOnButton.isHidden = false
+      }
     
-    soundOn = !soundOn
-    
-    if playingMoment.playSound && soundOn {
-      avPlayer.volume = 1.0
-    } else {
+  } else {
       avPlayer.volume = 0.0
+      soundOffButton.isHidden = true
+      soundOnButton.isHidden = true
     }
   }
   
   
-  // MARK: - Private Instance Functions
-  
-  fileprivate func pausePlay() {
-    if let photoTimer = photoTimer {
-      
-      if photoTimer.isValid {
-        // Photo is 'playing'. Pause photo timer
-        photoTimeRemaining = photoTimer.fireDate.timeIntervalSinceNow
-        photoTimer.invalidate()
-        pauseStateTrack()
-        
-      } else {
-        // Photo is 'paused'. Restart photo timer from where left off
-        self.photoTimer = Timer.scheduledTimer(withTimeInterval: photoTimeRemaining,
-                                               repeats: false) { [weak self] timer in
-                                                self?.displayNextMoment()
-        }
-        resumeStateTrack()
+  private func displaySwipeStackIfNeeded() {
+    guard let story = viewingStory else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.assert("Unexpected, viewingStory = nil")
       }
+      return
+    }
+    
+    if let storyLinkString = story.storyURL, URL(string: URL.addHttpIfNeeded(to: storyLinkString)) != nil {
+      swipeStack.isHidden = false
+    }
+  }
+  
+  
+  private func pause() {
+    
+    if let photoTimer = photoTimer {
+      // Photo is 'playing'. Pause photo timer
+      photoTimeRemaining = photoTimer.fireDate.timeIntervalSinceNow
+      photoTimer.invalidate()
+      
     } else {
       guard let avPlayer = currentExportPlayer?.avPlayer else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
@@ -154,22 +179,49 @@ class StoryViewController: OverlayViewController {
         return
       }
       
-      if avPlayer.rate != 0.0 {
-        // Video is playing. Pause the video
-        avPlayer.pause()
-        pauseStateTrack()
-        
-      } else {
-        // Video is paused. Restarted the video
-        avPlayer.play()
-        resumeStateTrack()
-      }
+      // Video is playing. Pause the video
+      avPlayer.pause()
     }
+    
+    // Update the app states
+    isPaused = true
+    pauseButton.isHidden = true
+    playButton.isHidden = false
   }
   
   
+  private func play() {
+    if let photoTimer = photoTimer {
+      
+      // Double check that timer is paused before restarting. It's not safe to replace timers otherwise
+      if !photoTimer.isValid {
+        // Photo is 'paused'. Restart photo timer from where left off
+        self.photoTimer = Timer.scheduledTimer(withTimeInterval: photoTimeRemaining,
+                                               repeats: false) { [weak self] timer in
+                                                self?.displayNextMoment() }
+      }
+      
+    } else {
+      guard let avPlayer = currentExportPlayer?.avPlayer else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          CCLog.assert("No AVPlayer for StoryVC when trying to pause/reumse")
+          self.popDismiss(animated: true)
+        }
+        return
+      }
+      
+      // Video is paused. Restart the video
+      avPlayer.play()
+    }
+    
+    // Update the app states
+    isPaused = false
+    pauseButton.isHidden = false
+    playButton.isHidden = true
+  }
   
-  fileprivate func displayMoment(_ moment: FoodieMoment) {
+  
+  private func displayMoment(_ moment: FoodieMoment) {
     
     guard let media = moment.media else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
@@ -201,9 +253,12 @@ class StoryViewController: OverlayViewController {
       view.insertSubview(photoView, belowSubview: jotViewController.view)
 
       // UI Update - Really should group some of the common UI stuff into some sort of function?
-      pauseResumeButton.isHidden = false
+      pauseButton.isHidden = false
       venueButton.isHidden = false
       authorButton.isHidden = false
+      displaySwipeStackIfNeeded()
+      topStackBackgroundView.isHidden = false
+      bottomStackBackgroundView.isHidden = false
       activitySpinner.remove()
       
       // Create timer for advancing to the next media? // TODO: Should not be a fixed time
@@ -296,10 +351,8 @@ class StoryViewController: OverlayViewController {
   }
   
   
-  fileprivate func displayMomentIfLoaded(for moment: FoodieMoment) {
-//    guard let story = viewingStory else {
-//      CCLog.fatal("viewingStory = nil")
-//    }
+  private func displayMomentIfLoaded(for moment: FoodieMoment) {
+
     var shouldRetrieveMoment = false
     
     moment.execute(ifNotReady: {
@@ -331,12 +384,10 @@ class StoryViewController: OverlayViewController {
   }
   
   
-  fileprivate func stopVideoTimerAndObservers(for moment: FoodieMoment) {
-    pauseResumeButton.isHidden = true
-    soundButton.isHidden = true
-    venueButton.isHidden = true
-    authorButton.isHidden = true
-    resumeStateTrack()
+  private func stopAndClear() {
+    hideAllUI()
+    isPaused = false
+    
     photoTimer?.invalidate()
     photoTimer = nil
     currentExportPlayer?.avPlayer?.pause()
@@ -344,30 +395,51 @@ class StoryViewController: OverlayViewController {
     // avPlayerLayer.player = nil  // !!! Taking a risk here. So that video transitions will be a touch quicker
     currentExportPlayer?.layerDisconnected()
     currentExportPlayer = nil
-  }
-  
-  
-  fileprivate func cleanUp() {
-    // TODO: Clean-up before dismissing
-    if let moment = currentMoment {
-      stopVideoTimerAndObservers(for: moment)
-    }
+    
     jotViewController.clearAll()
   }
   
   
-  fileprivate func pauseStateTrack() {
-    isPaused = true
+  private func appearanceForAllUI(alphaValue: CGFloat, animated: Bool) {
+    if animated {
+      UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
+        self.pauseButton.alpha = alphaValue
+        self.playButton.alpha = alphaValue
+        self.soundOnButton.alpha = alphaValue
+        self.soundOffButton.alpha = alphaValue
+        self.venueButton.alpha = alphaValue
+        self.authorButton.alpha = alphaValue
+        self.swipeStack.alpha = alphaValue
+        self.topStackBackgroundView.alpha = alphaValue
+        self.bottomStackBackgroundView.alpha = alphaValue
+      }
+    } else {
+      pauseButton.alpha = alphaValue
+      playButton.alpha = alphaValue
+      soundOnButton.alpha = alphaValue
+      soundOffButton.alpha = alphaValue
+      venueButton.alpha = alphaValue
+      authorButton.alpha = alphaValue
+      swipeStack.alpha = alphaValue
+      topStackBackgroundView.alpha = alphaValue
+      bottomStackBackgroundView.alpha = alphaValue
+    }
   }
   
   
-  fileprivate func resumeStateTrack() {
-    isPaused = false
+  private func hideAllUI() {
+    pauseButton.isHidden = true
+    playButton.isHidden = true
+    soundOnButton.isHidden = true
+    soundOffButton.isHidden = true
+    venueButton.isHidden = true
+    authorButton.isHidden = true
+    swipeStack.isHidden = true
+    topStackBackgroundView.isHidden = true
+    bottomStackBackgroundView.isHidden = true
+    
   }
   
-  
-  
-  // MARK: - Public Instance Functions
   
   @objc private func swipeUp(_ sender: UISwipeGestureRecognizer) {
     CCLog.info("User swiped Up")
@@ -380,11 +452,7 @@ class StoryViewController: OverlayViewController {
     }
     
     if let storyLinkString = story.storyURL, let storyLinkUrl = URL(string: URL.addHttpIfNeeded(to: storyLinkString)) {
-      
-      // Pause if playing
-      if !isPaused {
-        pausePlay()
-      }
+      pause()
       
       CCLog.info("Opening Safari View for \(storyLinkString)")
       let safariViewController = SFSafariViewController(url: storyLinkUrl)
@@ -422,8 +490,7 @@ class StoryViewController: OverlayViewController {
       return
     }
     
-    jotViewController.clearAll()
-    stopVideoTimerAndObservers(for: moment)
+    stopAndClear()
     
     // Figure out what is the next moment and display it
     let nextIndex = story.getIndexOf(moment) + 1
@@ -438,7 +505,7 @@ class StoryViewController: OverlayViewController {
   
   
   // Display the previous Moment based on what the current Moment is
-  func displayPreviousMoment() {
+  private func displayPreviousMoment() {
     
     guard let story = viewingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
@@ -464,8 +531,7 @@ class StoryViewController: OverlayViewController {
       return
     }
     
-    jotViewController.clearAll()
-    stopVideoTimerAndObservers(for: moment)
+    stopAndClear()
     
     // Figure out what is the previous moment is and display it
     let index = story.getIndexOf(moment)
@@ -483,8 +549,16 @@ class StoryViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    if draftPreview {
+      view.backgroundColor = .black
+    } else {
+      view.backgroundColor = .clear
+    }
+    
     avPlayerLayer = AVPlayerLayer()
     videoView.layer.addSublayer(avPlayerLayer)
+    
+    muteObserver = AudioControl.observeMuteState(withBlock: updateAVMute)
     
     jotViewController.state = JotViewState.disabled
     jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
@@ -502,15 +576,21 @@ class StoryViewController: OverlayViewController {
     if let author = story.author, let username = author.username {
       authorButton.setTitle(username, for: .normal)
     } else {
-      CCLog.warning("Cannot get at username from Story \(story.getUniqueIdentifier)")
+      CCLog.assert("Cannot get at username from Story \(story.getUniqueIdentifier)")
       authorButton.isHidden = true
     }
     
     if let venue = story.venue, let venueName = venue.name {
       venueButton.setTitle(venueName, for: .normal)
     } else {
-      CCLog.warning("Cannot get at venue name from Story \(story.getUniqueIdentifier)")
+      CCLog.assert("Cannot get at venue name from Story \(story.getUniqueIdentifier)")
       venueButton.isHidden = true
+    }
+    
+    if let swipeMessage = story.swipeMessage {
+      swipeLabel.text = swipeMessage
+    } else {
+      swipeLabel.isHidden = true
     }
     
     activitySpinner = ActivitySpinner(addTo: view)
@@ -524,19 +604,35 @@ class StoryViewController: OverlayViewController {
 
   
   override func viewWillAppear(_ animated: Bool) {
-    viewShouldRelayout = true
+    viewShouldLayout = true
   }
   
   
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
-    if viewShouldRelayout {
-      viewShouldRelayout = false
+    if viewShouldLayout {
+      viewShouldLayout = false
       
       avPlayerLayer.frame = videoView.bounds
       jotViewController.view.frame = videoView.frame
       jotViewController.view.layoutIfNeeded()
+      
+      // Setup Background Gradient Views
+      let backgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.BackgroundGradientBlackAlpha)
+      let topGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
+                                        endingAt: CGPoint(x: 0.5, y: 1.0),
+                                        with: [backgroundBlackAlpha, .clear])
+      topGradientNode.isOpaque = false
+      topGradientNode.frame = topStackBackgroundView.bounds
+      topStackBackgroundView.addSubnode(topGradientNode)
+      
+      let bottomGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
+                                      endingAt: CGPoint(x: 0.5, y: 0.0),
+                                      with: [backgroundBlackAlpha, .clear])
+      bottomGradientNode.isOpaque = false
+      bottomGradientNode.frame = bottomStackBackgroundView.bounds
+      bottomStackBackgroundView.addSubnode(bottomGradientNode)
       
       guard let story = viewingStory else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
@@ -557,21 +653,19 @@ class StoryViewController: OverlayViewController {
       // If a moment was already in play, just display that again. Otherwise try to display the first moment
       if currentMoment == nil {
         currentMoment = moments[0]
-        soundButton.isHidden = true
-        pauseResumeButton.isHidden = true
-        venueButton.isHidden = true
-        authorButton.isHidden = true
+        hideAllUI()
         displayMomentIfLoaded(for: currentMoment!)
-      } else if isPaused {
-        pausePlay()
-      }
+        
+      } else { play() }
     }
   }
   
   
+  
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    cleanUp()
+    stopAndClear()
+    muteObserver?.invalidate()
     
     // Cancel All potential Prefetch associated with the Story before exiting
     if let story = viewingStory {
@@ -597,12 +691,7 @@ class StoryViewController: OverlayViewController {
 
 // MARK: - Safari View Controller Did Finish Delegate Conformance
 extension StoryViewController: SFSafariViewControllerDelegate {
-  
-  func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-    if isPaused {
-      pausePlay()
-    }
-  }
+  func safariViewControllerDidFinish(_ controller: SFSafariViewController) { play() }
 }
 
 
@@ -611,31 +700,19 @@ extension StoryViewController: SFSafariViewControllerDelegate {
 extension StoryViewController: AVPlayAndExportDelegate {
  
   func avExportPlayer(isLikelyToKeepUp avExportPlayer: AVExportPlayer) {
-    if let avExportPlayer = currentExportPlayer, let avPlayer = avExportPlayer.avPlayer {
-      // So this is a playing video, should we turn on the sound? Sound button?
-      avPlayer.volume = 0.0
-      
-      // Should we show the sound button?
-      if currentMoment?.playSound ?? false {
-        soundButton.isHidden = false
-        if soundOn {
-          avPlayer.volume = 1.0
-        }
-      } else {
-        soundButton?.isHidden = true
-      }
-    }
-    pauseResumeButton.isHidden = false
+    updateAVMute(audioControl: AudioControl.global)
+    pauseButton.isHidden = isPaused  // isLikelyToKeepUp can be called when paused, so UI update needs to be correct for that
+    playButton.isHidden = !isPaused
     venueButton.isHidden = false
     authorButton.isHidden = false
+    displaySwipeStackIfNeeded()
+    topStackBackgroundView.isHidden = false
+    bottomStackBackgroundView.isHidden = false
     activitySpinner.remove()
   }
   
   func avExportPlayer(isWaitingForData avExportPlayer: AVExportPlayer) {
-    soundButton.isHidden = true
-    pauseResumeButton.isHidden = true
-    venueButton.isHidden = true
-    authorButton.isHidden = true
+    hideAllUI()
     activitySpinner.apply(below: tapBackwardGestureRecognizer)
   }
   

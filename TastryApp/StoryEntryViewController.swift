@@ -29,20 +29,23 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   
   // MARK: - Private Static Constants
   fileprivate struct Constants {
-    static let mapHeight: CGFloat = floor(UIScreen.main.bounds.height/4)
-    static let momentHeight: CGFloat = floor(UIScreen.main.bounds.height/3)
-    static let placeholderColor = UIColor(red: 0xC8/0xFF, green: 0xC8/0xFF, blue: 0xC8/0xFF, alpha: 1.0)
-    static let defaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
+    static let MapHeight: CGFloat = floor(UIScreen.main.bounds.height/4)
+    static let MomentHeight: CGFloat = floor(UIScreen.main.bounds.height/3)
+    static let PlaceholderColor = UIColor(red: 0xC8/0xFF, green: 0xC8/0xFF, blue: 0xC8/0xFF, alpha: 1.0)
+    static let DefaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
                                                               longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
-    static let defaultDelta: CLLocationDegrees = 0.05
-    static let suggestedDelta: CLLocationDegrees = 0.02
-    static let venueDelta: CLLocationDegrees = 0.005
+    static let DefaultDelta: CLLocationDegrees = 0.05
+    static let SuggestedDelta: CLLocationDegrees = 0.02
+    static let VenueDelta: CLLocationDegrees = 0.005
+    
+    static let MaxTitleLength: Int = 50
+    static let MaxSwipeMessageLength: Int = 20
   }
 
 
   // MARK: - Private Instance Constants
   fileprivate let sectionOneView = UIView()
-  fileprivate let mapView = MKMapView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: Constants.mapHeight))
+  fileprivate let mapView = MKMapView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: Constants.MapHeight))
   fileprivate var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
 
   // MARK: - Public Instance Variable
@@ -59,8 +62,12 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
   // MARK: - IBOutlets
   @IBOutlet weak var titleTextField: UITextField?
+  @IBOutlet weak var titleLengthLabel: UILabel?
   @IBOutlet weak var venueButton: UIButton?
   @IBOutlet weak var linkTextField: UITextField?
+  @IBOutlet weak var openLinkButton: UIButton!
+  @IBOutlet weak var swipeTextField: UITextField?
+  @IBOutlet weak var swipeLengthLabel: UILabel?
   @IBOutlet weak var previewButton: UIButton!
   @IBOutlet weak var discardButton: UIButton!
   @IBOutlet weak var tagsTextView: UITextViewWithPlaceholder? {
@@ -241,6 +248,18 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   }
   
   
+  @IBAction func editedSwipe(_ sender: UITextField) {
+    guard let text = sender.text, let story = workingStory, text != story.swipeMessage, text != "" else {
+      // Nothing changed, don't do anything
+      return
+    }
+    
+    CCLog.info("User edited Swipe Message of Story")
+    story.swipeMessage = text
+    FoodieStory.preSave(nil, withBlock: nil)
+  }
+  
+  
   // MARK: - Private Instance Functions
   fileprivate func averageLocationOfMoments() -> CLLocation? {
     
@@ -318,16 +337,19 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
     momentViewController.workingStory = workingStory
-    momentViewController.momentHeight = Constants.momentHeight
+    momentViewController.momentHeight = Constants.MomentHeight
     momentViewController.cameraReturnDelegate = self
     momentViewController.previewControlDelegate = self
     momentViewController.containerVC = containerVC
-
 
     self.addChildViewController(momentViewController)
 
     titleTextField?.delegate = self
     linkTextField?.delegate = self
+    swipeTextField?.delegate = self
+    
+    titleLengthLabel?.text = String(Constants.MaxTitleLength)
+    swipeLengthLabel?.text = String(Constants.MaxSwipeMessageLength)
     
     let keyboardDismissRecognizer = UITapGestureRecognizer(target: self, action: #selector(keyboardDismiss))
     keyboardDismissRecognizer.numberOfTapsRequired = 1
@@ -391,23 +413,30 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         venueButton?.setTitleColor(.black, for: .normal)
       } else {
         venueButton?.setTitle("Venue", for: .normal)
-        venueButton?.setTitleColor(Constants.placeholderColor, for: .normal)
+        venueButton?.setTitleColor(Constants.PlaceholderColor, for: .normal)
       }
       
       if let storyURL = workingStory.storyURL, storyURL != "" {
         linkTextField?.text = storyURL
+        openLinkButton.isHidden = false
+      } else {
+        openLinkButton.isHidden = true
+      }
+      
+      if let swipeMessage = workingStory.swipeMessage {
+        swipeTextField?.text = swipeMessage
       }
 
       // Lets update the map location to the top here
       // If there's a Venue, use that location first. Usually if a venue have been freshly selected, it wouldn't have been confirmed in time. So another update is done in venueSearchComplete()
       if let latitude = workingStory.venue?.location?.latitude,
         let longitude = workingStory.venue?.location?.longitude {
-        updateStoryEntryMap(withCoordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: Constants.venueDelta, venueName: workingStory.venue?.name)
+        updateStoryEntryMap(withCoordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: Constants.VenueDelta, venueName: workingStory.venue?.name)
       }
       
       // Otherwise use the average location of the Moments
       else if let momentsLocation = averageLocationOfMoments() {
-        updateStoryEntryMap(withCoordinate: momentsLocation.coordinate, span: Constants.suggestedDelta)
+        updateStoryEntryMap(withCoordinate: momentsLocation.coordinate, span: Constants.SuggestedDelta)
       }
       
       // Try to get a current location using the GPS
@@ -415,10 +444,10 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
         LocationWatch.global.get { (location, error) in
           if let error = error {
             CCLog.warning("StoryEntryVC with no Venue or Moments Location. Getting location through LocationWatch also resulted in error - \(error.localizedDescription)")
-            //self.updateStoryEntryMap(withCoordinate: Constants.defaultCLCoordinate2D, span: Constants.defaultDelta)  Just let it be a view of the entire North America I guess?
+            //self.updateStoryEntryMap(withCoordinate: Constants.DefaultCLCoordinate2D, span: Constants.DefaultDelta)  Just let it be a view of the entire North America I guess?
             return
           } else if let location = location {
-            self.updateStoryEntryMap(withCoordinate: location.coordinate, span: Constants.suggestedDelta)
+            self.updateStoryEntryMap(withCoordinate: location.coordinate, span: Constants.SuggestedDelta)
           }
         }
       }
@@ -466,9 +495,9 @@ extension StoryEntryViewController {
   override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
     switch section {
     case 0:
-      return Constants.mapHeight
+      return Constants.MapHeight
     case 1:
-      return Constants.momentHeight
+      return Constants.MomentHeight
     default:
       return 0
     }
@@ -485,7 +514,7 @@ extension StoryEntryViewController {
   
   override func scrollViewDidScroll(_ scrollView: UIScrollView) {
     let currentOffset = scrollView.contentOffset.y
-    let height = Constants.mapHeight - currentOffset
+    let height = Constants.MapHeight - currentOffset
     
     if height <= 10 {
       // CCLog.verbose("Height tried to be < 10")
@@ -504,6 +533,30 @@ extension StoryEntryViewController: UITextFieldDelegate {
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     textField.resignFirstResponder()
     return true
+  }
+  
+  func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    guard let text = textField.text else { return true }
+    let newLength = text.utf16.count + string.utf16.count - range.length
+    
+    if textField === titleTextField {
+      titleLengthLabel?.text = String(Constants.MaxTitleLength - newLength)
+      return newLength <= Constants.MaxTitleLength // Bool
+    }
+    else if textField === linkTextField {
+      if newLength > 0 {
+        openLinkButton.isHidden = false
+      } else {
+        openLinkButton.isHidden = true
+      }
+      return true
+    }
+    else if textField === swipeTextField {
+      swipeLengthLabel?.text = String(Constants.MaxSwipeMessageLength - newLength)
+      return newLength <= Constants.MaxSwipeMessageLength
+    } else {
+      return true
+    }
   }
 }
 
@@ -569,7 +622,7 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
           
           // Update the map again here
           if let latitude = venueToUpdate.location?.latitude, let longitude = venueToUpdate.location?.longitude {
-            self.updateStoryEntryMap(withCoordinate: CLLocationCoordinate2DMake(latitude, longitude), span: Constants.venueDelta, venueName: venueToUpdate.name)
+            self.updateStoryEntryMap(withCoordinate: CLLocationCoordinate2DMake(latitude, longitude), span: Constants.VenueDelta, venueName: venueToUpdate.name)
           }
           
           // Pre-save only the Story to Local only

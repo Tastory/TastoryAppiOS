@@ -24,6 +24,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var venue: FoodieVenue? // Pointer to the Restaurant object
   @NSManaged var author: FoodieUser?  // Pointer? To the Authoring User
   @NSManaged var storyURL: String? // URL to the Story article
+  @NSManaged var swipeMessage: String? // Custom message underneath the swipe arrow indicator
   @NSManaged var tags: Array<String>? // Array of Strings, unstructured
 
   @NSManaged var storyRating: Double // TODO: Placeholder for later rev

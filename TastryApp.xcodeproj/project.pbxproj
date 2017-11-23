@@ -74,6 +74,7 @@
 		8CAE5BFE1FBC23040069C582 /* Compose.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CAE5BFD1FBC23040069C582 /* Compose.storyboard */; };
 		8CAE5C001FBC403E0069C582 /* TextButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAE5BFF1FBC403E0069C582 /* TextButtonNode.swift */; };
 		8CB207441FC6511500AFFD31 /* AudioControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB207431FC6511400AFFD31 /* AudioControl.swift */; };
+		8CB207461FC693CB00AFFD31 /* ComposeVectors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8CB207451FC693CB00AFFD31 /* ComposeVectors.xcassets */; };
 		8CBBED0F1F9D73FB008D4B12 /* ProfileTableEmailFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBBED0E1F9D73FB008D4B12 /* ProfileTableEmailFooterView.swift */; };
 		8CBBED111F9D740F008D4B12 /* ProfileTableEmailFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CBBED101F9D740F008D4B12 /* ProfileTableEmailFooterView.xib */; };
 		8CBBED151F9D7E94008D4B12 /* ProfileTableSaveFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBBED141F9D7E94008D4B12 /* ProfileTableSaveFooterView.swift */; };
@@ -234,6 +235,7 @@
 		8CAE5BFD1FBC23040069C582 /* Compose.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Compose.storyboard; sourceTree = "<group>"; };
 		8CAE5BFF1FBC403E0069C582 /* TextButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextButtonNode.swift; sourceTree = "<group>"; };
 		8CB207431FC6511400AFFD31 /* AudioControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioControl.swift; sourceTree = "<group>"; };
+		8CB207451FC693CB00AFFD31 /* ComposeVectors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ComposeVectors.xcassets; sourceTree = "<group>"; };
 		8CBBED0E1F9D73FB008D4B12 /* ProfileTableEmailFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableEmailFooterView.swift; sourceTree = "<group>"; };
 		8CBBED101F9D740F008D4B12 /* ProfileTableEmailFooterView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileTableEmailFooterView.xib; sourceTree = "<group>"; };
 		8CBBED141F9D7E94008D4B12 /* ProfileTableSaveFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableSaveFooterView.swift; sourceTree = "<group>"; };
@@ -373,6 +375,7 @@
 				8CF40C601FC50C2B00615D43 /* Fonts */,
 				8CBF558A1E7F7EDF00F4B1CD /* Assets.xcassets */,
 				8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */,
+				8CB207451FC693CB00AFFD31 /* ComposeVectors.xcassets */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -845,6 +848,7 @@
 				8C56A9141FA16F6C00D3204B /* PasswordTableSaveFooterView.xib in Resources */,
 				8CF40C821FC50CBE00615D43 /* Raleway-SemiBoldItalic.ttf in Resources */,
 				8C889ED11F9D614C00E8CC56 /* ProfileTableHeaderView.xib in Resources */,
+				8CB207461FC693CB00AFFD31 /* ComposeVectors.xcassets in Resources */,
 				8CF40C741FC50CBE00615D43 /* Raleway-BlackItalic.ttf in Resources */,
 				8CAE5BFE1FBC23040069C582 /* Compose.storyboard in Resources */,
 				8CF40C7F1FC50CBE00615D43 /* Raleway-MediumItalic.ttf in Resources */,
