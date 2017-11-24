@@ -62,13 +62,13 @@ public class Slider: UIControl {
   }
 
   
-  required public init(orientation: Orientation) {
+  required public init(orientation: Orientation, initialProgress: CGFloat = 0.0) {
     self.orientation = orientation
 
-    progress = 0.0
+    progress = initialProgress
     
     trackView = UIView()
-    trackView.backgroundColor = UIColor.white.withAlphaComponent(0.8)
+    trackView.backgroundColor = UIColor.white.withAlphaComponent(0.7)
     trackView.isUserInteractionEnabled = false
 
     trackView.layer.masksToBounds = true
@@ -109,7 +109,9 @@ public class Slider: UIControl {
     // Set default preview center
     case .horizontal where knobView.center.y != bounds.midY,
          .vertical where knobView.center.x != bounds.midX:
-      centerKnob(at: .zero)
+      
+      let knobPoint = CGPoint(x: progress * bounds.width, y: progress * bounds.height)
+      centerKnob(at: knobPoint)
 
     // Adjust preview view size if needed
     case .horizontal where autoresizesSubviews:

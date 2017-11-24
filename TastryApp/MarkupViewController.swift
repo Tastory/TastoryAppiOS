@@ -69,8 +69,8 @@ class MarkupViewController: OverlayViewController {
   
   private var thumbnailObject: FoodieMedia?
 
-  private var colorSlider: ColorSlider?
-  private var sizeSlider: Slider?
+  private var colorSlider: ColorSlider!
+  private var sizeSlider: Slider!
   
   private var soundOn = true
   private var fontArrayIndex = 0
@@ -90,6 +90,12 @@ class MarkupViewController: OverlayViewController {
   @IBOutlet weak var fontButton: UIButton!
   @IBOutlet weak var drawingIcon: UIButton!
   @IBOutlet weak var undoButton: UIButton!
+  
+  @IBOutlet weak var fontLargeIcon: UIButton!
+  @IBOutlet weak var strokeLargeIcon: UIButton!
+  @IBOutlet weak var fontSmallIcon: UIButton!
+  @IBOutlet weak var strokeSmallIcon: UIButton!
+
   @IBOutlet weak var soundOnButton: UIButton!
   @IBOutlet weak var soundOffButton: UIButton!
   @IBOutlet weak var nextButton: UIButton!
@@ -324,7 +330,7 @@ class MarkupViewController: OverlayViewController {
   @objc private func sizeSliderChanged(_ slider: Slider) {
     view.endEditing(true)
 
-    let fontSize = slider.progress*(Constants.SizeSliderMaxFont-Constants.SizeSliderMinFont)+Constants.SizeSliderMinFont
+    let fontSize = (1-slider.progress)*(Constants.SizeSliderMaxFont-Constants.SizeSliderMinFont)+Constants.SizeSliderMinFont
     jotViewController.fontSize = fontSize
     jotViewController.drawingStrokeWidth = fontSize/2
   }
@@ -431,8 +437,13 @@ class MarkupViewController: OverlayViewController {
     undoButton.isHidden = true
     textButton.isHidden = false
     drawButton.isHidden = false
-    colorSlider?.isHidden = true
-    sizeSlider?.isHidden = true
+    
+    fontLargeIcon.isHidden = true
+    fontSmallIcon.isHidden = true
+    strokeLargeIcon.isHidden = true
+    strokeSmallIcon.isHidden = true
+    colorSlider.isHidden = true
+    sizeSlider.isHidden = true
     
     if jotViewController.labelIsSelected() {
       deleteButton.isHidden = false
@@ -453,8 +464,13 @@ class MarkupViewController: OverlayViewController {
     textButton.isHidden = true
     drawButton.isHidden = true
     deleteButton.isHidden = true
-    colorSlider?.isHidden = false
-    sizeSlider?.isHidden = false
+    
+    strokeLargeIcon.isHidden = true
+    strokeSmallIcon.isHidden = true
+    fontLargeIcon.isHidden = false
+    fontSmallIcon.isHidden = false
+    colorSlider.isHidden = false
+    sizeSlider.isHidden = false
   }
   
   
@@ -468,8 +484,13 @@ class MarkupViewController: OverlayViewController {
     textButton.isHidden = true
     drawButton.isHidden = true
     deleteButton.isHidden = true
-    colorSlider?.isHidden = false
-    sizeSlider?.isHidden = false
+    
+    fontLargeIcon.isHidden = true
+    fontSmallIcon.isHidden = true
+    strokeLargeIcon.isHidden = false
+    strokeSmallIcon.isHidden = false
+    colorSlider.isHidden = false
+    sizeSlider.isHidden = false
     
     if jotViewController.canUndoDrawing() {
       undoButton.isHidden = false
@@ -540,33 +561,34 @@ class MarkupViewController: OverlayViewController {
     
     // Initialize Sliders
     colorSlider = ColorSlider(orientation: .vertical, previewSide: .left)
-    colorSlider!.addTarget(self, action: #selector(colorSliderChanged(_:)), for: .valueChanged)
+    colorSlider.addTarget(self, action: #selector(colorSliderChanged(_:)), for: .valueChanged)
     
-    view.addSubview(colorSlider!)
-    view.bringSubview(toFront: colorSlider!)
+    view.addSubview(colorSlider)
+    view.bringSubview(toFront: colorSlider)
     
-    colorSlider!.translatesAutoresizingMaskIntoConstraints = false
+    colorSlider.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
-      colorSlider!.topAnchor.constraint(equalTo: mediaView.topAnchor, constant: 70.0),
-      colorSlider!.centerXAnchor.constraint(equalTo: mediaView.trailingAnchor, constant: -28.0),
-      colorSlider!.widthAnchor.constraint(equalToConstant: 15.0),
-      colorSlider!.heightAnchor.constraint(equalToConstant: 150.0),
+      colorSlider.topAnchor.constraint(equalTo: mediaView.topAnchor, constant: 35.0),
+      colorSlider.centerXAnchor.constraint(equalTo: mediaView.trailingAnchor, constant: -30.0),
+      colorSlider.widthAnchor.constraint(equalToConstant: 15.0),
+      colorSlider.heightAnchor.constraint(equalToConstant: 140.0),
     ])
     
-    sizeSlider = Slider(orientation: .vertical)
-    sizeSlider!.addTarget(self, action: #selector(sizeSliderChanged(_:)), for: .valueChanged)
-   
-    view.addSubview(sizeSlider!)
-    view.bringSubview(toFront: sizeSlider!)
+    let initialProgress = 1 - (Constants.SizeSliderDefaultFont/(Constants.SizeSliderMaxFont - Constants.SizeSliderMinFont))
+    sizeSlider = Slider(orientation: .vertical, initialProgress: initialProgress)
+    sizeSlider.addTarget(self, action: #selector(sizeSliderChanged(_:)), for: .valueChanged)
     
-    sizeSlider!.translatesAutoresizingMaskIntoConstraints = false
+    view.addSubview(sizeSlider)
+    view.bringSubview(toFront: sizeSlider)
+    
+    sizeSlider.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
-      sizeSlider!.topAnchor.constraint(equalTo: colorSlider!.bottomAnchor, constant: 20.0),
-      sizeSlider!.centerXAnchor.constraint(equalTo: mediaView.trailingAnchor, constant: -28.0),
-      sizeSlider!.widthAnchor.constraint(equalToConstant: 15.0),
-      sizeSlider!.heightAnchor.constraint(equalToConstant: 100.0),
+      sizeSlider.topAnchor.constraint(equalTo: mediaView.topAnchor, constant: 233.0),
+      sizeSlider.centerXAnchor.constraint(equalTo: mediaView.trailingAnchor, constant: -30.0),
+      sizeSlider.widthAnchor.constraint(equalToConstant: 15.0),
+      sizeSlider.heightAnchor.constraint(equalToConstant: 50.0),
     ])
   }
   

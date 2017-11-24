@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -123,7 +124,7 @@
                                     <action selector="backButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="2EE-r0-yr6"/>
                                 </connections>
                             </button>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Ao6-hj-RWt">
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Ao6-hj-RWt" userLabel="Text Tools Stack">
                                 <rect key="frame" x="118" y="92.333333333333329" width="140" height="39.999999999999986"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PR5-g3-wOV">
@@ -149,7 +150,7 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="9oy-YC-tz3">
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="9oy-YC-tz3" userLabel="Draw Tools Stack">
                                 <rect key="frame" x="144" y="92.333333333333329" width="88" height="39.999999999999986"/>
                                 <subviews>
                                     <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KbB-2G-dkp">
@@ -165,7 +166,7 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="F9M-T0-ZY7">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="F9M-T0-ZY7" userLabel="Markup Modes Stack">
                                 <rect key="frame" x="323" y="92.333333333333314" width="40" height="136"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NrF-32-VrF">
@@ -195,6 +196,22 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Tj-ua-wB7">
+                                <rect key="frame" x="325" y="265.33333333333331" width="40" height="40"/>
+                                <state key="normal" image="Markup-Text"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Yw-fX-dhO">
+                                <rect key="frame" x="329" y="270.33333333333331" width="32" height="32"/>
+                                <state key="normal" image="Markup-CircleLarge"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6TK-KM-GKg">
+                                <rect key="frame" x="331" y="367.33333333333331" width="28" height="28"/>
+                                <state key="normal" image="Markup-FontSmall"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VIh-U6-q7Y">
+                                <rect key="frame" x="331" y="367.33333333333331" width="28" height="28"/>
+                                <state key="normal" image="Markup-CircleSmall"/>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jIA-aA-ex6">
                                 <rect key="frame" x="12" y="692" width="40" height="40"/>
                                 <state key="normal" image="StoryMarkup-SoundOnButton"/>
@@ -222,23 +239,31 @@
                         <constraints>
                             <constraint firstItem="F9M-T0-ZY7" firstAttribute="trailing" secondItem="Zde-mf-qQe" secondAttribute="trailing" constant="-12" id="0fm-J3-V6u"/>
                             <constraint firstItem="jIA-aA-ex6" firstAttribute="bottom" secondItem="Zde-mf-qQe" secondAttribute="bottom" constant="-8" id="1bK-Ii-fcJ"/>
+                            <constraint firstItem="7Tj-ua-wB7" firstAttribute="centerX" secondItem="Zde-mf-qQe" secondAttribute="trailing" constant="-30" id="3WR-FQ-sVI"/>
+                            <constraint firstItem="6TK-KM-GKg" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="295" id="54b-ep-TI3"/>
                             <constraint firstItem="jIA-aA-ex6" firstAttribute="leading" secondItem="Zde-mf-qQe" secondAttribute="leading" constant="12" id="IYr-ic-p3d"/>
+                            <constraint firstItem="VIh-U6-q7Y" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="295" id="Iua-YG-E9C"/>
                             <constraint firstItem="lmH-xM-Ly2" firstAttribute="bottom" secondItem="Zde-mf-qQe" secondAttribute="bottom" constant="-8" id="KBd-8P-Rw0"/>
                             <constraint firstItem="lmH-xM-Ly2" firstAttribute="leading" secondItem="Zde-mf-qQe" secondAttribute="leading" constant="12" id="Nxe-JZ-xWB"/>
                             <constraint firstItem="5Da-16-S86" firstAttribute="trailing" secondItem="Zde-mf-qQe" secondAttribute="trailing" constant="-10" id="QWu-fS-FER"/>
                             <constraint firstItem="Ao6-hj-RWt" firstAttribute="centerX" secondItem="Zde-mf-qQe" secondAttribute="centerX" id="VG7-0D-PQ7"/>
+                            <constraint firstItem="7Tj-ua-wB7" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="193" id="VjJ-kc-RjP"/>
                             <constraint firstItem="F9M-T0-ZY7" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="20" id="WZW-Au-O7x"/>
                             <constraint firstItem="5Da-16-S86" firstAttribute="bottom" secondItem="Zde-mf-qQe" secondAttribute="bottom" constant="-10" id="ZLB-hc-IXQ"/>
+                            <constraint firstItem="6TK-KM-GKg" firstAttribute="centerX" secondItem="Zde-mf-qQe" secondAttribute="trailing" constant="-30" id="aUR-Ht-VdH"/>
                             <constraint firstItem="Ao6-hj-RWt" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="20" id="hKZ-fA-uCf"/>
                             <constraint firstItem="Zde-mf-qQe" firstAttribute="width" secondItem="3hs-y9-2cP" secondAttribute="width" id="hY8-O2-PrH"/>
                             <constraint firstItem="Zde-mf-qQe" firstAttribute="centerX" secondItem="3hs-y9-2cP" secondAttribute="centerX" id="iYm-c0-sLX"/>
                             <constraint firstItem="NJG-pX-rxm" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="20" id="jy3-nX-nlO"/>
                             <constraint firstItem="Zde-mf-qQe" firstAttribute="centerY" secondItem="3hs-y9-2cP" secondAttribute="centerY" id="lho-rL-pNy"/>
                             <constraint firstItem="9oy-YC-tz3" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="20" id="pTM-Mb-1bJ"/>
+                            <constraint firstItem="6Yw-fX-dhO" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="198" id="rhe-2f-q5r"/>
                             <constraint firstItem="9oy-YC-tz3" firstAttribute="centerX" secondItem="Zde-mf-qQe" secondAttribute="centerX" id="stO-tq-WNp"/>
                             <constraint firstItem="KrM-3z-Z5X" firstAttribute="top" secondItem="Zde-mf-qQe" secondAttribute="top" constant="20" id="tgH-Cj-J3N"/>
                             <constraint firstItem="KrM-3z-Z5X" firstAttribute="leading" secondItem="Zde-mf-qQe" secondAttribute="leading" constant="12" id="ukG-24-g4V"/>
                             <constraint firstItem="NJG-pX-rxm" firstAttribute="leading" secondItem="Zde-mf-qQe" secondAttribute="leading" constant="12" id="vAI-lV-7fB"/>
+                            <constraint firstItem="6Yw-fX-dhO" firstAttribute="centerX" secondItem="Zde-mf-qQe" secondAttribute="trailing" constant="-30" id="xsn-dB-Z0I"/>
+                            <constraint firstItem="VIh-U6-q7Y" firstAttribute="centerX" secondItem="Zde-mf-qQe" secondAttribute="trailing" constant="-30" id="yzX-cY-Ad3"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="tQl-5t-QC4"/>
                     </view>
@@ -252,10 +277,14 @@
                         <outlet property="drawingIcon" destination="KbB-2G-dkp" id="3vn-dG-ONv"/>
                         <outlet property="exitButton" destination="KrM-3z-Z5X" id="m5z-DF-hS2"/>
                         <outlet property="fontButton" destination="k2K-CX-jqS" id="cTB-10-ruG"/>
+                        <outlet property="fontLargeIcon" destination="7Tj-ua-wB7" id="Vsn-EH-Ctw"/>
+                        <outlet property="fontSmallIcon" destination="6TK-KM-GKg" id="D31-cB-QMc"/>
                         <outlet property="mediaView" destination="Zde-mf-qQe" id="9pi-YP-hXk"/>
                         <outlet property="nextButton" destination="5Da-16-S86" id="yYI-Ss-UrV"/>
                         <outlet property="soundOffButton" destination="lmH-xM-Ly2" id="G24-Pi-6ex"/>
                         <outlet property="soundOnButton" destination="jIA-aA-ex6" id="sPq-cK-Y0E"/>
+                        <outlet property="strokeLargeIcon" destination="6Yw-fX-dhO" id="meh-J7-YFD"/>
+                        <outlet property="strokeSmallIcon" destination="VIh-U6-q7Y" id="TAK-ix-zye"/>
                         <outlet property="textButton" destination="NrF-32-VrF" id="hHX-SI-gF3"/>
                         <outlet property="undoButton" destination="CKF-go-XiM" id="ep2-Fd-5Fw"/>
                     </connections>
@@ -783,8 +812,11 @@
         <image name="Markup-Align" width="40" height="40"/>
         <image name="Markup-Back" width="32" height="32"/>
         <image name="Markup-Background" width="42" height="40"/>
+        <image name="Markup-CircleLarge" width="32" height="32"/>
+        <image name="Markup-CircleSmall" width="28" height="28"/>
         <image name="Markup-Cross" width="32" height="32"/>
         <image name="Markup-Font" width="42" height="40"/>
+        <image name="Markup-FontSmall" width="28" height="28"/>
         <image name="Markup-Next" width="56" height="57"/>
         <image name="Markup-Pencil" width="40" height="40"/>
         <image name="Markup-Text" width="40" height="40"/>
