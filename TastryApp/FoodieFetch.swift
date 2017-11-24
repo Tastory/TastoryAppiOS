@@ -74,7 +74,7 @@ class FoodieFetch {
             #if DEBUG
               CCLog.info("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
             #else
-              CCLog.debug("Completion Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount) outstanding")
+              CCLog.debug("Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
             #endif
             } else {
               CCLog.warning("storyOp.object not a story!")
@@ -148,7 +148,7 @@ class FoodieFetch {
         CCLog.info("#Prefetch - Cancel All aside from the following Stories. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
         CCLog.info("#Prefetch - \(debugStoryIdentifiers)")
       #else
-        CCLog.debug("Cancel All but Story \(story.getUniqueIdentifier()). Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
+        CCLog.debug("Cancel All aside from the following Stories. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
         CCLog.debug(debugStoryIdentifiers)
       #endif
       
@@ -167,7 +167,7 @@ class FoodieFetch {
             #if DEBUG
               CCLog.info("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
             #else
-              CCLog.debug("Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount) outstanding")
+              CCLog.debug("Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount) outstanding before cancel")
             #endif
             storyOp.cancel()
             

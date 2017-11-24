@@ -122,7 +122,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       #if DEBUG
         CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation with \(momentNumber) started")
       #else
-        CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation started")
+        CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation with \(momentNumber) started")
       #endif
       
       guard let moments = story.moments  else {
@@ -154,7 +154,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
         #if DEBUG
           CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment 0 is \(moments[0].getUniqueIdentifier())")
         #else
-          CCLog.debug("Moment 0 to fetch for Story \(story.getUniqueIdentifier()) is \(moments[0].getUniqueIdentifier())")
+          CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) at Moment 0 is \(moments[0].getUniqueIdentifier())")
         #endif
           
         prefetchOperation = moments[0].retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
@@ -183,7 +183,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
           #if DEBUG
             CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment \(momentNum)/\(moments.count) is \(moment.getUniqueIdentifier())")
           #else
-            CCLog.debug("Moment \(momentNum)/\(moments.count) to fetch for Story \(story.getUniqueIdentifier()) is \(moment.getUniqueIdentifier())")
+            CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) at Moment \(momentNum)/\(moments.count) is \(moment.getUniqueIdentifier())")
           #endif
           
           prefetchOperation = moment.retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
