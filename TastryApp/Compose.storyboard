@@ -195,13 +195,6 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="eZh-sa-B78">
-                                <rect key="frame" x="-71" y="224" width="204" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <action selector="colorSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="j3f-dm-ZYb"/>
-                                </connections>
-                            </slider>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jIA-aA-ex6">
                                 <rect key="frame" x="12" y="692" width="40" height="40"/>
                                 <state key="normal" image="StoryMarkup-SoundOnButton"/>
@@ -223,13 +216,6 @@
                                     <action selector="nextButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="6tx-y7-SSr"/>
                                 </connections>
                             </button>
-                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="gQS-fe-hw8">
-                                <rect key="frame" x="-47" y="371" width="154" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <action selector="sizeSliderChanged:" destination="3Lz-hF-LGR" eventType="valueChanged" id="jep-QK-70b"/>
-                                </connections>
-                            </slider>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
@@ -261,7 +247,6 @@
                         <outlet property="alignButton" destination="PR5-g3-wOV" id="57O-Ed-F2h"/>
                         <outlet property="backButton" destination="NJG-pX-rxm" id="yY2-9i-4cZ"/>
                         <outlet property="backgroundButton" destination="8Nh-We-bhr" id="sBi-L8-Mmn"/>
-                        <outlet property="colorSlider" destination="eZh-sa-B78" id="BSi-1v-y6r"/>
                         <outlet property="deleteButton" destination="rbc-ru-Sbr" id="O9F-DD-yX6"/>
                         <outlet property="drawButton" destination="ti7-uM-Tfb" id="q0A-uU-x0k"/>
                         <outlet property="drawingIcon" destination="KbB-2G-dkp" id="3vn-dG-ONv"/>
@@ -269,7 +254,6 @@
                         <outlet property="fontButton" destination="k2K-CX-jqS" id="cTB-10-ruG"/>
                         <outlet property="mediaView" destination="Zde-mf-qQe" id="9pi-YP-hXk"/>
                         <outlet property="nextButton" destination="5Da-16-S86" id="yYI-Ss-UrV"/>
-                        <outlet property="sizeSlider" destination="gQS-fe-hw8" id="hs9-ZM-YPo"/>
                         <outlet property="soundOffButton" destination="lmH-xM-Ly2" id="G24-Pi-6ex"/>
                         <outlet property="soundOnButton" destination="jIA-aA-ex6" id="sPq-cK-Y0E"/>
                         <outlet property="textButton" destination="NrF-32-VrF" id="hHX-SI-gF3"/>

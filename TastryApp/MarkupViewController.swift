@@ -18,7 +18,7 @@ import ImageIO
 import CoreLocation
 import AVFoundation
 import Jot
-
+import ColorSlider
 
 protocol MarkupReturnDelegate {
   func markupComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?)
@@ -68,8 +68,10 @@ class MarkupViewController: OverlayViewController {
   private var avPlayerLayer: AVPlayerLayer?
   
   private var thumbnailObject: FoodieMedia?
-  private var mediaObject: FoodieMedia!
 
+  private var colorSlider: ColorSlider?
+  private var sizeSlider: ColorSlider?
+  
   private var soundOn = true
   private var fontArrayIndex = 0
   
@@ -90,8 +92,6 @@ class MarkupViewController: OverlayViewController {
   @IBOutlet weak var undoButton: UIButton!
   @IBOutlet weak var soundOnButton: UIButton!
   @IBOutlet weak var soundOffButton: UIButton!
-  @IBOutlet weak var colorSlider: UISlider!
-  @IBOutlet weak var sizeSlider: UISlider!
   @IBOutlet weak var nextButton: UIButton!
   
   
@@ -205,75 +205,16 @@ class MarkupViewController: OverlayViewController {
     soundOnButton.isHidden = false
   }
   
-  
-  @IBAction func colorSliderChanged(_ sender: UISlider) {
-    
-    let sliderValue = Double(sender.value)
-    let solidPct = 0.005
-    let rsvdPct = 0.1
-    var hueValue = 0.0
-    var satValue = 0.0
-    var valValue = 0.0
-    var currentColor: UIColor!
-    
-    view.endEditing(true)
-    
-    // We are gonna cut up the slider. First 5% fades from white. Last 5% fades to black.
-    // Gonna only allow 90% of the Hue pie, so it doesn't loop back to Red
-    
-    // Case so it's forced to Full White when slider is less than 0.5%
-    if sliderValue < solidPct {
-      valValue = 1.0
-      satValue = 0.0
-      hueValue = 0.0
-      
-    // Case for transition from White to Grey to Red
-    } else if sliderValue < rsvdPct {
-      valValue = (fabs(sliderValue - (rsvdPct/2)) + (rsvdPct/2)) / rsvdPct
-      satValue = (sliderValue - (rsvdPct/2)) / (rsvdPct/2) // We are gonna double up so the Redness fades doubly fast
-      hueValue = 0.0
-      
-    // Case for transition from Purple to Grey to Black
-    } else if sliderValue > (1.0 - rsvdPct) {
-      valValue = 1.0 - ((sliderValue - (1.0 - rsvdPct)) / rsvdPct)
-      satValue = 1.0 - ((sliderValue - (1.0 - rsvdPct)) / (rsvdPct/2)) // Saturation decreases double speed
-      hueValue = 1.0 - (2*rsvdPct)
-      
-    // Case for forcing Full Black when slider is more than 99.5%
-    } else if sliderValue > (1.0 - solidPct) {
-      valValue = 0.0
-      satValue = 0.0
-      hueValue = 1.0 - (2*rsvdPct)
-      
-    // Case for middle 90% of the slider
-    } else {
-      hueValue = sliderValue - rsvdPct
-      satValue = 1.0
-      valValue = 1.0
-    }
-    
-    //print("Current Color - Slider = \(sliderValue) Hue = \(hueValue) Saturation = \(satValue) Value = \(valValue)")
-    currentColor = UIColor(hue: CGFloat(hueValue), saturation: CGFloat(satValue), brightness: CGFloat(valValue), alpha: 1.0)
-    
-    jotViewController.drawingColor = currentColor
-    jotViewController.textColor = currentColor
-    
-    // Change the slider track and knob color accordingly
-    colorSlider.minimumTrackTintColor = currentColor
-    colorSlider.thumbTintColor = currentColor
-  }
-  
-  
-  @IBAction func sizeSliderChanged(_ sender: UISlider) {
-    let fontSize = CGFloat(sender.value)
-    
-    view.endEditing(true)
-    jotViewController.fontSize = fontSize
-    jotViewController.drawingStrokeWidth = fontSize/2
-  }
-  
 
   @IBAction func nextButtonAction(_ sender: UIButton) {
+    
+    guard let mediaObj = mediaObj else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.assert("Unexpected, mediaObj == nil ")
+        self.dismiss(animated: true, completion: nil)
+      }
+      return
+    }
     
     // TODO: Don't let user click save (Gray it out until Thumbnail creation completed)
     
@@ -284,7 +225,7 @@ class MarkupViewController: OverlayViewController {
     if(editMomentObj != nil) {
       momentObj = editMomentObj!
     } else {
-      momentObj = FoodieMoment(foodieMedia: mediaObject) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
+      momentObj = FoodieMoment(foodieMedia: mediaObj) // viewDidLoad should have resolved the issue with mediaObj == nil by now)
     }
 
     momentObj.set(location: mediaLocation)
@@ -372,6 +313,21 @@ class MarkupViewController: OverlayViewController {
 
   
   // MARK: - Private Instance Functions
+  
+  @objc private func colorSliderChanged(_ slider: ColorSlider) {
+    view.endEditing(true)
+    jotViewController.drawingColor = slider.color
+    jotViewController.textColor = slider.color
+  }
+  
+  
+  @objc private func sizeSliderChanged(_ slider: ColorSlider) {
+    view.endEditing(true)
+//    let fontSize = CGFloat(sender.value)
+//    jotViewController.fontSize = fontSize
+//    jotViewController.drawingStrokeWidth = fontSize/2
+  }
+  
   
   private func displayJotMarkups()
   {
@@ -474,8 +430,8 @@ class MarkupViewController: OverlayViewController {
     undoButton.isHidden = true
     textButton.isHidden = false
     drawButton.isHidden = false
-    colorSlider.isHidden = true
-    sizeSlider.isHidden = true
+    colorSlider?.isHidden = true
+    sizeSlider?.isHidden = true
     
     if jotViewController.labelIsSelected() {
       deleteButton.isHidden = false
@@ -496,8 +452,8 @@ class MarkupViewController: OverlayViewController {
     textButton.isHidden = true
     drawButton.isHidden = true
     deleteButton.isHidden = true
-    colorSlider.isHidden = false
-    sizeSlider.isHidden = false
+    colorSlider?.isHidden = false
+    sizeSlider?.isHidden = false
   }
   
   
@@ -511,8 +467,8 @@ class MarkupViewController: OverlayViewController {
     textButton.isHidden = true
     drawButton.isHidden = true
     deleteButton.isHidden = true
-    colorSlider.isHidden = false
-    sizeSlider.isHidden = false
+    colorSlider?.isHidden = false
+    sizeSlider?.isHidden = false
     
     if jotViewController.canUndoDrawing() {
       undoButton.isHidden = false
@@ -529,18 +485,16 @@ class MarkupViewController: OverlayViewController {
     super.viewDidLoad()
     
     // Initialize Media
-    if mediaObj == nil {
+    guard let mediaObj = mediaObj else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("Unexpected, mediaObj == nil ")
         self.dismiss(animated: true, completion: nil)
       }
       return
-    } else {
-      mediaObject = mediaObj!
     }
     
     // Create AV Objects if Video
-    guard let mediaType = mediaObject.mediaType else {
+    guard let mediaType = mediaObj.mediaType else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("Unexpected, mediaType == nil")
       }
@@ -548,7 +502,7 @@ class MarkupViewController: OverlayViewController {
     }
     
     if mediaType == .video {
-      guard let videoURL = (mediaObject.videoExportPlayer?.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
+      guard let videoURL = (mediaObj.videoExportPlayer?.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("Cannot get at AVURLAsset.url")
           self.dismiss(animated: true, completion: nil)
@@ -583,13 +537,24 @@ class MarkupViewController: OverlayViewController {
     mediaView.addSubview(jotViewController.view)
     jotViewController.didMove(toParentViewController: self)
     
-    // Initialize Control UI Values
-    colorSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
-    colorSlider.value = 0.0  // Cuz default color is white
-    sizeSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
-    sizeSlider.minimumValue = Constants.SizeSliderMinFont
-    sizeSlider.maximumValue = Constants.SizeSliderMaxFont
-    sizeSlider.setValue(Constants.SizeSliderDefaultFont, animated: false)
+    // Initialize Sliders
+    colorSlider = ColorSlider(orientation: .vertical, previewSide: .left)
+    colorSlider!.addTarget(self, action: #selector(colorSliderChanged(_:)), for: .valueChanged)
+    
+    view.addSubview(colorSlider!)
+    view.bringSubview(toFront: colorSlider!)
+    
+    colorSlider!.translatesAutoresizingMaskIntoConstraints = false
+    
+    NSLayoutConstraint.activate([
+      colorSlider!.topAnchor.constraint(equalTo: mediaView.topAnchor, constant: 70.0),
+      colorSlider!.centerXAnchor.constraint(equalTo: exitButton.centerXAnchor),
+      colorSlider!.widthAnchor.constraint(equalToConstant: 15.0),
+      colorSlider!.heightAnchor.constraint(equalToConstant: 150.0),
+    ])
+    
+    sizeSlider = ColorSlider(orientation: .vertical, previewSide: .right)
+    
   }
   
   
@@ -598,6 +563,14 @@ class MarkupViewController: OverlayViewController {
     
     if isInitialLayout {
       isInitialLayout = false
+      
+      guard let mediaObj = mediaObj else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+          CCLog.assert("Unexpected, mediaObj == nil ")
+          self.dismiss(animated: true, completion: nil)
+        }
+        return
+      }
       
       // Update Frame for JotVC based on Autolayout results
       jotViewController.view.frame = mediaView.bounds
@@ -610,7 +583,7 @@ class MarkupViewController: OverlayViewController {
       textModeMinimumUI()
       
       // Initialize the background Image or Video
-      guard let mediaType = mediaObject.mediaType else {
+      guard let mediaType = mediaObj.mediaType else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("Unexpected, mediaType == nil")
         }
@@ -624,9 +597,9 @@ class MarkupViewController: OverlayViewController {
         soundOnButton.isHidden = true
         soundOffButton.isHidden = true
         
-        guard let imageBuffer = mediaObject.imageMemoryBuffer else {
+        guard let imageBuffer = mediaObj.imageMemoryBuffer else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-            CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
+            CCLog.assert("Unexpected, mediaObj.imageMemoryBuffer == nil")
             self.dismiss(animated: true, completion: nil)
           }
           return
