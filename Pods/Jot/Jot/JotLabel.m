@@ -70,7 +70,7 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
 		CGPoint labelCenter = self.center;
 		CGRect scaledFrame = CGRectMake(0.f,
 										0.f,
-										_unscaledFrame.size.width * self.scale * 1.03f,
+										_unscaledFrame.size.width * self.scale * 1.03f,  // 1.0X is for extra space around left and right of labels
 										_unscaledFrame.size.height * self.scale * 1.03f);
 		CGAffineTransform labelTransform = self.transform;
 		self.transform = CGAffineTransformIdentity;
@@ -92,7 +92,7 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
 		CGRect scaledFrame = CGRectMake(0.f,
 										0.f,
 										_unscaledFrame.size.width * _scale * 1.03f,
-											 _unscaledFrame.size.height* _scale * 1.03f);
+                    _unscaledFrame.size.height * _scale * 1.03f);
 		CGFloat currentFontSize = self.unscaledFontSize * _scale;
 		self.font = [self.font fontWithSize:currentFontSize];
 		
@@ -123,8 +123,8 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
 	if (_fitOriginalFontSizeToViewWidth) {
 		temporarySizingLabel.numberOfLines = 0;
 		insetViewRect = CGRectInset(self.superview.bounds,
-									_initialTextInsets.left + _initialTextInsets.right,
-									_initialTextInsets.top + _initialTextInsets.bottom);
+									(_initialTextInsets.left + _initialTextInsets.right)/2,
+									(_initialTextInsets.top + _initialTextInsets.bottom)/2);
 	} else {
 		temporarySizingLabel.numberOfLines = 1;
 		insetViewRect = CGRectMake(0.f, 0.f, CGFLOAT_MAX, CGFLOAT_MAX);

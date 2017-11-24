@@ -180,6 +180,13 @@ class MarkupViewController: OverlayViewController {
   
   @IBAction func deleteButtonAction(_ sender: UIButton) {
     jotViewController.deleteSelectedLabel()
+    
+    // See if need
+    if jotViewController.labelIsSelected() {
+      deleteButton.isHidden = false
+    } else {
+      deleteButton.isHidden = true
+    }
   }
   
   
@@ -567,10 +574,7 @@ class MarkupViewController: OverlayViewController {
     jotViewController.drawingColor = UIColor.white
     jotViewController.whiteValue = 0.0
     jotViewController.alphaValue = 0.0
-    
     jotViewController.fitOriginalFontSizeToViewWidth = true
-    jotViewController.textEditingInsets = UIEdgeInsetsMake(60, 40, 60, 40)
-    
     jotViewController.view.backgroundColor = .clear
     jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                              andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
@@ -595,13 +599,15 @@ class MarkupViewController: OverlayViewController {
     if isInitialLayout {
       isInitialLayout = false
       
-      // Setup the UI first - Assume text mode to start
-      textModeMinimumUI()
-      
       // Update Frame for JotVC based on Autolayout results
       jotViewController.view.frame = mediaView.bounds
+      jotViewController.textEditingInsets = UIEdgeInsetsMake(60, 40, 60, 40)
+      jotViewController.initialTextInsets = UIEdgeInsetsMake(60, 40, 60, 40)
       jotViewController.view.layoutIfNeeded()
       displayJotMarkups()
+      
+      // Setup the UI first - Assume text mode to start
+      textModeMinimumUI()
       
       // Initialize the background Image or Video
       guard let mediaType = mediaObject.mediaType else {

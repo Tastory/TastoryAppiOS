@@ -170,6 +170,8 @@ static const CGFloat iPhone6HeightPoints = 667.0;
                 self.textEditView.textString = @"";
                 self.textEditView.font = label.font;
                 self.textEditView.textColor = label.textColor;
+                self.textEditView.alphaValue = self.alphaValue;
+                self.textEditView.whiteValue = self.whiteValue;
                 self.lastTapPoint = CGPointZero;
             }
         }
@@ -229,12 +231,14 @@ static const CGFloat iPhone6HeightPoints = 667.0;
 {
   _whiteValue = whiteValue;
   self.textView.whiteValue = whiteValue;
+  self.textEditView.whiteValue = whiteValue;
 }
 
 - (void)setAlphaValue:(CGFloat)alphaValue
 {
   _alphaValue = alphaValue;
   self.textView.alphaValue = alphaValue;
+  self.textEditView.alphaValue = alphaValue;
 }
   
 - (void)setInitialTextInsets:(UIEdgeInsets)initialTextInsets
@@ -400,6 +404,12 @@ static const CGFloat iPhone6HeightPoints = 667.0;
         self.textEditView.textString = label.text;
         self.textEditView.font = label.font;
         self.textEditView.textColor = label.textColor;
+        
+        CGFloat bgWhiteValue;
+        CGFloat bgAlphaValue;
+        [[UIColor colorWithCGColor: label.layer.backgroundColor] getWhite: &bgWhiteValue alpha: &bgAlphaValue];
+        self.textEditView.whiteValue = bgWhiteValue;
+        self.textEditView.alphaValue = bgAlphaValue;
       }
       else {
         // a tap on a blank space

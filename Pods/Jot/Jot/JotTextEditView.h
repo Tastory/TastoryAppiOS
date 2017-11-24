@@ -101,6 +101,13 @@
  */
 @property (nonatomic) BOOL adjustContentInsetsOnKeyboardFrameChange;
 
+/**
+ *  Greyscale & alpha value of the textView background color
+ */
+@property (nonatomic, assign) CGFloat whiteValue;
+@property (nonatomic, assign) CGFloat alphaValue;
+
+
 @end
 
 
