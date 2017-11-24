@@ -39,7 +39,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     static let VenueDelta: CLLocationDegrees = 0.005
     
     static let MaxTitleLength: Int = 50
-    static let MaxSwipeMessageLength: Int = 20
+    static let MaxSwipeMessageLength: Int = 15
   }
 
 

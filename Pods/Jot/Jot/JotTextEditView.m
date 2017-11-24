@@ -160,7 +160,7 @@
         _textEditingInsets = textEditingInsets;
       
         [self.textView mas_updateConstraints:^(MASConstraintMaker *make) {
-          make.edges.equalTo(self.textContainer).insets(_textEditingInsets);
+          make.edges.equalTo(self.textContainer).insets(textEditingInsets);
         }];
 
         [self.textView layoutIfNeeded];

@@ -102,7 +102,10 @@ class StoryViewController: OverlayViewController {
   
   @IBAction func pauseAction(_ sender: UIButton) { pause() }
   
-  @IBAction func playAction(_ sender: UIButton) { play() }
+  @IBAction func playAction(_ sender: UIButton) {
+    CCLog.debug("Calling play()")
+    play()
+  }
   
   @IBAction func soundOnAction(_ sender: UIButton) {
     AudioControl.unmute()
@@ -204,10 +207,7 @@ class StoryViewController: OverlayViewController {
       
     } else {
       guard let avPlayer = currentExportPlayer?.avPlayer else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-          CCLog.assert("No AVPlayer for StoryVC when trying to pause/reumse")
-          self.popDismiss(animated: true)
-        }
+        CCLog.warning("Attempting to play() despite avPlayer = nil, is this normal?")
         return
       }
       
@@ -657,7 +657,10 @@ class StoryViewController: OverlayViewController {
         hideAllUI()
         displayMomentIfLoaded(for: currentMoment!)
         
-      } else { play() }
+      } else {
+        CCLog.debug("Calling play()")
+        play()
+      }
     }
   }
   
@@ -692,7 +695,10 @@ class StoryViewController: OverlayViewController {
 
 // MARK: - Safari View Controller Did Finish Delegate Conformance
 extension StoryViewController: SFSafariViewControllerDelegate {
-  func safariViewControllerDidFinish(_ controller: SFSafariViewController) { play() }
+  func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+    CCLog.debug("Calling play()")
+    play()
+  }
 }
 
 
