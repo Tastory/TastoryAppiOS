@@ -30,9 +30,9 @@ class MarkupViewController: OverlayViewController {
   // MARK: - Constants
   
   struct Constants {
-    static let SizeSliderMaxFont: Float = 64.0
-    static let SizeSliderMinFont: Float = 10.0
-    static let SizeSliderDefaultFont: Float = 36.0
+    static let SizeSliderMaxFont: CGFloat = 64.0
+    static let SizeSliderMinFont: CGFloat = 10.0
+    static let SizeSliderDefaultFont: CGFloat = 36.0
   }
   
   
@@ -70,7 +70,7 @@ class MarkupViewController: OverlayViewController {
   private var thumbnailObject: FoodieMedia?
 
   private var colorSlider: ColorSlider?
-  private var sizeSlider: ColorSlider?
+  private var sizeSlider: Slider?
   
   private var soundOn = true
   private var fontArrayIndex = 0
@@ -321,11 +321,12 @@ class MarkupViewController: OverlayViewController {
   }
   
   
-  @objc private func sizeSliderChanged(_ slider: ColorSlider) {
+  @objc private func sizeSliderChanged(_ slider: Slider) {
     view.endEditing(true)
-//    let fontSize = CGFloat(sender.value)
-//    jotViewController.fontSize = fontSize
-//    jotViewController.drawingStrokeWidth = fontSize/2
+
+    let fontSize = slider.progress*(Constants.SizeSliderMaxFont-Constants.SizeSliderMinFont)+Constants.SizeSliderMinFont
+    jotViewController.fontSize = fontSize
+    jotViewController.drawingStrokeWidth = fontSize/2
   }
   
   
@@ -548,13 +549,25 @@ class MarkupViewController: OverlayViewController {
     
     NSLayoutConstraint.activate([
       colorSlider!.topAnchor.constraint(equalTo: mediaView.topAnchor, constant: 70.0),
-      colorSlider!.centerXAnchor.constraint(equalTo: exitButton.centerXAnchor),
+      colorSlider!.centerXAnchor.constraint(equalTo: mediaView.trailingAnchor, constant: -28.0),
       colorSlider!.widthAnchor.constraint(equalToConstant: 15.0),
       colorSlider!.heightAnchor.constraint(equalToConstant: 150.0),
     ])
     
-    sizeSlider = ColorSlider(orientation: .vertical, previewSide: .right)
+    sizeSlider = Slider(orientation: .vertical)
+    sizeSlider!.addTarget(self, action: #selector(sizeSliderChanged(_:)), for: .valueChanged)
+   
+    view.addSubview(sizeSlider!)
+    view.bringSubview(toFront: sizeSlider!)
     
+    sizeSlider!.translatesAutoresizingMaskIntoConstraints = false
+    
+    NSLayoutConstraint.activate([
+      sizeSlider!.topAnchor.constraint(equalTo: colorSlider!.bottomAnchor, constant: 20.0),
+      sizeSlider!.centerXAnchor.constraint(equalTo: mediaView.trailingAnchor, constant: -28.0),
+      sizeSlider!.widthAnchor.constraint(equalToConstant: 15.0),
+      sizeSlider!.heightAnchor.constraint(equalToConstant: 100.0),
+    ])
   }
   
   
