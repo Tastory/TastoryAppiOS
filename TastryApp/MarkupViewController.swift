@@ -62,13 +62,10 @@ class MarkupViewController: OverlayViewController {
   private var isInitialLayout = true
   
   private let jotViewController = JotViewController()
-  private var photoView: UIImageView?
-  private var videoView: UIView?
   
   private var avPlayer: AVQueuePlayer?
-  private var avPlayerLayer: AVPlayerLayer?
-  private var avPlayerItem: AVPlayerItem?
   private var avPlayerLooper: AVPlayerLooper?
+  private var avPlayerLayer: AVPlayerLayer?
   
   private var thumbnailObject: FoodieMedia?
   private var mediaObject: FoodieMedia!
@@ -107,6 +104,9 @@ class MarkupViewController: OverlayViewController {
   
   
   @IBAction func backButtonAction(_ sender: UIButton) {
+    view.endEditing(true)
+    jotViewController.state = .text
+    textModeMinimumUI()
   }
   
   
@@ -160,17 +160,14 @@ class MarkupViewController: OverlayViewController {
   
   @IBAction func textButtonAction(_ sender: UIButton) {
     jotViewController.state = .editingText
-    undoButton.isHidden = true
+    textEditModeMinimumUI()
   }
 
   
   @IBAction func drawButtonAction(_ sender: UIButton) {
     view.endEditing(true)
-    jotViewController.state = JotViewState.drawing
-    deleteButton.isHidden = true
-    backgroundButton.isHidden = true
-    alignButton.isHidden = true
-    undoButton.isHidden = false
+    jotViewController.state = .drawing
+    drawModeMinimumUI()
   }
   
   
@@ -184,14 +181,19 @@ class MarkupViewController: OverlayViewController {
   }
   
   
-  @IBAction func soundButtonAction(_ sender: UIButton) {
-    if soundOn {
-      avPlayer?.volume = 0.0
-      soundOn = false
-    } else {
-      avPlayer?.volume = 1.0
-      soundOn = true
-    }
+  @IBAction func soundOnButtonAction(_ sender: UIButton) {
+    soundOnButton.isHidden = true
+    soundOn = true
+    avPlayer?.volume = 1.0
+    soundOffButton.isHidden = false
+  }
+  
+  
+  @IBAction func soundOffButtonAction(_ sender: UIButton) {
+    soundOffButton.isHidden = true
+    soundOn = false
+    avPlayer?.volume = 0.0
+    soundOnButton.isHidden = false
   }
   
   
@@ -278,8 +280,8 @@ class MarkupViewController: OverlayViewController {
 
     momentObj.set(location: mediaLocation)
     momentObj.playSound = soundOn
-
     momentObj.clearMarkups()
+    
     // Serialize the Jot Markup into Foodie Markups
     if let jotDictionary = jotViewController.serialize() {
 
@@ -464,8 +466,6 @@ class MarkupViewController: OverlayViewController {
     textButton.isHidden = false
     drawButton.isHidden = false
     deleteButton.isHidden = true
-    soundOnButton.isHidden = true
-    soundOffButton.isHidden = true
     colorSlider.isHidden = true
     sizeSlider.isHidden = true
   }
@@ -482,8 +482,6 @@ class MarkupViewController: OverlayViewController {
     textButton.isHidden = true
     drawButton.isHidden = true
     deleteButton.isHidden = true
-    soundOnButton.isHidden = true
-    soundOffButton.isHidden = true
     colorSlider.isHidden = false
     sizeSlider.isHidden = false
   }
@@ -500,8 +498,6 @@ class MarkupViewController: OverlayViewController {
     textButton.isHidden = true
     drawButton.isHidden = true
     deleteButton.isHidden = true
-    soundOnButton.isHidden = true
-    soundOffButton.isHidden = true
     colorSlider.isHidden = false
     sizeSlider.isHidden = false
   }
@@ -513,16 +509,42 @@ class MarkupViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    // Initialize Media
+    if mediaObj == nil {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.assert("Unexpected, mediaObj == nil ")
+        self.dismiss(animated: true, completion: nil)
+      }
+      return
+    } else {
+      mediaObject = mediaObj!
+    }
     
+    // Create AV Objects if Video
+    guard let mediaType = mediaObject.mediaType else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.assert("Unexpected, mediaType == nil")
+      }
+      return
+    }
     
-    colorSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
-    colorSlider.value = 0.0  // Cuz default color is white
-    sizeSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
-    sizeSlider.minimumValue = Constants.SizeSliderMinFont
-    sizeSlider.maximumValue = Constants.SizeSliderMaxFont
-    sizeSlider.setValue(Constants.SizeSliderDefaultFont, animated: false)
+    if mediaType == .video {
+      guard let videoURL = (mediaObject.videoExportPlayer?.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+          CCLog.assert("Cannot get at AVURLAsset.url")
+          self.dismiss(animated: true, completion: nil)
+        }
+        return
+      }
+      
+      let avPlayerItem = AVPlayerItem(url: videoURL)
+      avPlayer = AVQueuePlayer()
+      avPlayer!.allowsExternalPlayback = false
+      avPlayerLooper = AVPlayerLooper(player: avPlayer!, templateItem: avPlayerItem)
+      avPlayerLayer = AVPlayerLayer(player: avPlayer)
+    }
     
-    // This section setups the JotViewController with default initial values
+    // Setup JotViewController with default initial values
     jotViewController.delegate = self
     jotViewController.state = JotViewState.text
     jotViewController.textColor = UIColor.black
@@ -532,7 +554,7 @@ class MarkupViewController: OverlayViewController {
     jotViewController.alphaValue = 0.0
     jotViewController.fitOriginalFontSizeToViewWidth = true
     jotViewController.textAlignment = .left
-    jotViewController.drawingColor = UIColor.cyan
+    jotViewController.drawingColor = UIColor.white
     jotViewController.view.backgroundColor = .clear
     jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                              andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
@@ -541,8 +563,14 @@ class MarkupViewController: OverlayViewController {
     mediaView.addSubview(jotViewController.view)
     jotViewController.didMove(toParentViewController: self)
     
+    // Initialize Control UI Values
+    colorSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
+    colorSlider.value = 0.0  // Cuz default color is white
+    sizeSlider.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
+    sizeSlider.minimumValue = Constants.SizeSliderMinFont
+    sizeSlider.maximumValue = Constants.SizeSliderMaxFont
+    sizeSlider.setValue(Constants.SizeSliderDefaultFont, animated: false)
   }
-  
   
   
   override func viewDidLayoutSubviews() {
@@ -553,23 +581,13 @@ class MarkupViewController: OverlayViewController {
       
       // Setup the UI first - Assume text mode to start
       textModeMinimumUI()
-      soundOffButton.isHidden = false
       
+      // Update Frame for JotVC based on Autolayout results
       jotViewController.view.frame = mediaView.bounds
       jotViewController.view.layoutIfNeeded()
       displayJotMarkups()
       
-      // This section is for initiating the background Image or Video
-      if mediaObj == nil {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-          CCLog.assert("Unexpected, mediaObj == nil ")
-          self.dismiss(animated: true, completion: nil)
-        }
-        return
-      } else {
-        mediaObject = mediaObj!
-      }
-      
+      // Initialize the background Image or Video
       guard let mediaType = mediaObject.mediaType else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("Unexpected, mediaType == nil")
@@ -584,16 +602,6 @@ class MarkupViewController: OverlayViewController {
         soundOnButton.isHidden = true
         soundOffButton.isHidden = true
         
-        photoView = UIImageView(frame: mediaView.bounds)
-        
-        guard let imageView = photoView else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-            CCLog.assert("photoView = UIImageView(frame: _) failed")
-            self.dismiss(animated: true, completion: nil)
-          }
-          return
-        }
-        
         guard let imageBuffer = mediaObject.imageMemoryBuffer else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
             CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
@@ -602,6 +610,7 @@ class MarkupViewController: OverlayViewController {
           return
         }
         
+        let imageView = UIImageView(frame: mediaView.bounds)
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(data: imageBuffer)
         mediaView.addSubview(imageView)
@@ -611,33 +620,20 @@ class MarkupViewController: OverlayViewController {
       } else if mediaType == .video {
         
         // Make sure the Sound button is shown
-        soundOnButton.isHidden = false
-        soundOffButton.isHidden = true
+        soundOnButton.isHidden = true
+        soundOffButton.isHidden = false
         
-        guard let videoURL = (mediaObject.videoExportPlayer?.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-            CCLog.assert("Cannot get at AVURLAsset.url")
-            self.dismiss(animated: true, completion: nil)
-          }
-          return
-        }
-
-        avPlayer = AVQueuePlayer()
-        avPlayer?.volume = 1.0
-        soundOn = true
-        avPlayer?.allowsExternalPlayback = false
-        avPlayerLayer = AVPlayerLayer(player: avPlayer)
         avPlayerLayer!.frame = mediaView.bounds
-        avPlayerItem = AVPlayerItem(url: videoURL)
-        avPlayerLooper = AVPlayerLooper(player: avPlayer!, templateItem: avPlayerItem!)
+        let videoView = UIView(frame: mediaView.bounds)
+        videoView.layer.addSublayer(avPlayerLayer!)
+        mediaView.addSubview(videoView)
+        mediaView.sendSubview(toBack: videoView)
         
-        videoView = UIView(frame: mediaView.bounds)
-        videoView!.layer.addSublayer(avPlayerLayer!)
-        mediaView.addSubview(videoView!)
-        mediaView.sendSubview(toBack: videoView!)
+        soundOn = true
+        avPlayer!.volume = 1.0
         avPlayer!.play() // TODO: There is some lag with a blank white screen before video starts playing...
       
-      // No image nor video to work on, Fatal
+      // No Image nor Video to work on, Fatal
       } else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("Both photoToMarkup and videoToMarkupURL are nil")
@@ -664,9 +660,7 @@ class MarkupViewController: OverlayViewController {
 extension MarkupViewController: JotViewControllerDelegate {
   
   func jotViewController(_ jotViewController: JotViewController, isEditingText isEditing: Bool) {
-    deleteButton.isHidden = false
-    backgroundButton.isHidden = false
-    alignButton.isHidden = false
+    textEditModeMinimumUI()
     
   }
   
@@ -675,6 +669,7 @@ extension MarkupViewController: JotViewControllerDelegate {
       deleteButton.isHidden = false
       backgroundButton.isHidden = false
       alignButton.isHidden = false
+      fontButton.isHidden = false
     }
   }
 }

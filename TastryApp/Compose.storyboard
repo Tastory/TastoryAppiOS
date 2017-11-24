@@ -206,12 +206,15 @@
                                 <rect key="frame" x="12" y="691.66666666666663" width="40" height="40"/>
                                 <state key="normal" image="StoryMarkup-SoundOnButton"/>
                                 <connections>
-                                    <action selector="soundButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="dkQ-EQ-R1s"/>
+                                    <action selector="soundOnButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="5ZF-o8-XSr"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lmH-xM-Ly2">
                                 <rect key="frame" x="12" y="691.66666666666663" width="40" height="40"/>
                                 <state key="normal" image="StoryMarkup-SoundOffButton"/>
+                                <connections>
+                                    <action selector="soundOffButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="RJ5-By-odb"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Da-16-S86">
                                 <rect key="frame" x="309" y="672.66666666666663" width="56" height="57"/>
