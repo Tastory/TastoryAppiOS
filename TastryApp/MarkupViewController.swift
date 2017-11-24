@@ -552,8 +552,6 @@ class MarkupViewController: OverlayViewController {
     jotViewController.alphaValue = 0.0
     jotViewController.fitOriginalFontSizeToViewWidth = true
     jotViewController.view.backgroundColor = .clear
-    jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
-                                             andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
     
     addChildViewController(jotViewController)
     mediaView.addSubview(jotViewController.view)
@@ -611,6 +609,8 @@ class MarkupViewController: OverlayViewController {
       jotViewController.view.frame = mediaView.bounds
       jotViewController.textEditingInsets = UIEdgeInsetsMake(60, 40, 60, 40)
       jotViewController.initialTextInsets = UIEdgeInsetsMake(60, 40, 60, 40)
+      jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
+                                               andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
       jotViewController.view.layoutIfNeeded()
       displayJotMarkups()
       

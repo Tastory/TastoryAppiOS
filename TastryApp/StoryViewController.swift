@@ -562,8 +562,6 @@ class StoryViewController: OverlayViewController {
     muteObserver = AudioControl.observeMuteState(withBlock: updateAVMute)
     
     jotViewController.state = JotViewState.disabled
-    jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
-                                             andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
     addChildViewController(jotViewController)
     
     view.addSubview(jotViewController.view)
@@ -617,6 +615,8 @@ class StoryViewController: OverlayViewController {
       
       avPlayerLayer.frame = videoView.bounds
       jotViewController.view.frame = videoView.frame
+      jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
+                                               andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
       jotViewController.view.layoutIfNeeded()
       
       // Setup Background Gradient Views
