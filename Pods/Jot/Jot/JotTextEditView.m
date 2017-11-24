@@ -110,10 +110,10 @@
         } else {
             CGFloat screenSpaceRemaining = CGRectGetHeight([UIScreen mainScreen].applicationFrame) - CGRectGetHeight(keyboardRectEnd);
             [self mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.top.equalTo(self.superview).offset(screenSpaceRemaining/6);
+                make.top.equalTo(self.superview);
                 make.left.equalTo(self.superview);
                 make.right.equalTo(self.superview);
-                make.height.equalTo(@(screenSpaceRemaining/3));
+                make.height.equalTo(@(screenSpaceRemaining));
             }];
         }
         

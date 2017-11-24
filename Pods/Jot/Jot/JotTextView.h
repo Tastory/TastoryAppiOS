@@ -91,6 +91,11 @@
  */
 @property (nonatomic, assign) BOOL fitOriginalFontSizeToViewWidth;
 
+@property (nonatomic, strong) JotLabel *selectedLabel;
+
+
+
+
 /**
  *  Clears all the texts from the drawing, giving a blank slate.
  *
@@ -116,6 +121,7 @@
  *  @return return the selected label, or nil
  */
 - (JotLabel*)selectLabelAtPosition:(CGPoint)point;
+
 
 /**
  *  Deselects the label

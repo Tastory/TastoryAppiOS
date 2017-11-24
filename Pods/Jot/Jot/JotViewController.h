@@ -254,6 +254,9 @@ typedef NS_ENUM(NSUInteger, JotViewState){
 - (void)deSelectLabel;
 
 
+- (BOOL)labelIsSelected;
+
+
 /**
  *  Overlays the drawing and text on the given background image at the full
  *  resolution of the image provided in the UIImageView on setup.

@@ -12,7 +12,7 @@
 
 @interface JotTextView ()
 
-@property (nonatomic, strong) JotLabel *selectedLabel;
+//@property (nonatomic, strong) JotLabel *selectedLabel;
 @property (nonatomic, strong) NSMutableArray <JotLabel*> *labels;
 @property (nonatomic, strong) UIView *textEditingContainer;
 @property (nonatomic, strong) UITextView *textEditingView;
@@ -203,6 +203,7 @@
 	}
 	return label;
 }
+
 
 - (void)deselectLabel {
 	if (_selectedLabel) {

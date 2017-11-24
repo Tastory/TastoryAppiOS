@@ -354,6 +354,15 @@ static const CGFloat iPhone6HeightPoints = 667.0;
     [self.textView deselectLabel];
 }
 
+- (BOOL)labelIsSelected {
+  if (self.textView.selectedLabel) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
 #pragma mark - Output UIImage
 
 - (UIImage *)drawOnImage

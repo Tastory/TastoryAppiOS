@@ -106,7 +106,7 @@ class MarkupViewController: OverlayViewController {
   @IBAction func backButtonAction(_ sender: UIButton) {
     view.endEditing(true)
     jotViewController.state = .text
-    textModeMinimumUI()
+    textModeMinimumUI()  // Setting the state to .text doesn't always trigger the delegate...
   }
   
   
@@ -132,8 +132,7 @@ class MarkupViewController: OverlayViewController {
     var whiteValue = jotViewController.whiteValue
     var alphaValue = jotViewController.alphaValue
     
-    view.endEditing(true)
-    jotViewController.state = .text
+    //jotViewController.state = .text
     
     if whiteValue == 0.0, alphaValue == 0.0 {
       whiteValue = 0.0
@@ -160,19 +159,22 @@ class MarkupViewController: OverlayViewController {
   
   @IBAction func textButtonAction(_ sender: UIButton) {
     jotViewController.state = .editingText
-    textEditModeMinimumUI()
+    //textEditModeMinimumUI()  // This will always trigger the delegate, so updating UI in the delegate only instead
   }
 
   
   @IBAction func drawButtonAction(_ sender: UIButton) {
     view.endEditing(true)
     jotViewController.state = .drawing
-    drawModeMinimumUI()
+    drawModeMinimumUI()  // Must call this here. drawBegan only pertains to actually drawing, not the draw mode
   }
   
   
   @IBAction func undoButtonAction(_ sender: UIButton) {
     jotViewController.undoDrawing()
+    if !jotViewController.canUndoDrawing() {
+      undoButton.isHidden = true
+    }
   }
   
   
@@ -259,8 +261,8 @@ class MarkupViewController: OverlayViewController {
     let fontSize = CGFloat(sender.value)
     
     view.endEditing(true)
-    
     jotViewController.fontSize = fontSize
+    jotViewController.drawingStrokeWidth = fontSize/2
   }
   
 
@@ -465,9 +467,14 @@ class MarkupViewController: OverlayViewController {
     undoButton.isHidden = true
     textButton.isHidden = false
     drawButton.isHidden = false
-    deleteButton.isHidden = true
     colorSlider.isHidden = true
     sizeSlider.isHidden = true
+    
+    if jotViewController.labelIsSelected() {
+      deleteButton.isHidden = false
+    } else {
+      deleteButton.isHidden = true
+    }
   }
   
   
@@ -494,12 +501,17 @@ class MarkupViewController: OverlayViewController {
     backgroundButton.isHidden = true
     fontButton.isHidden = true
     drawingIcon.isHidden = false
-    undoButton.isHidden = false
     textButton.isHidden = true
     drawButton.isHidden = true
     deleteButton.isHidden = true
     colorSlider.isHidden = false
     sizeSlider.isHidden = false
+    
+    if jotViewController.canUndoDrawing() {
+      undoButton.isHidden = false
+    } else {
+      undoButton.isHidden = true
+    }
   }
   
   
@@ -549,12 +561,16 @@ class MarkupViewController: OverlayViewController {
     jotViewController.state = JotViewState.text
     jotViewController.textColor = UIColor.black
     jotViewController.font = getNextFont(size: CGFloat(Constants.SizeSliderDefaultFont))
+    jotViewController.textAlignment = .left
     jotViewController.fontSize = CGFloat(Constants.SizeSliderDefaultFont)
+    jotViewController.drawingStrokeWidth = CGFloat(Constants.SizeSliderDefaultFont)/2
+    jotViewController.drawingColor = UIColor.white
     jotViewController.whiteValue = 0.0
     jotViewController.alphaValue = 0.0
+    
     jotViewController.fitOriginalFontSizeToViewWidth = true
-    jotViewController.textAlignment = .left
-    jotViewController.drawingColor = UIColor.white
+    jotViewController.textEditingInsets = UIEdgeInsetsMake(60, 40, 60, 40)
+    
     jotViewController.view.backgroundColor = .clear
     jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                              andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
@@ -660,16 +676,30 @@ class MarkupViewController: OverlayViewController {
 extension MarkupViewController: JotViewControllerDelegate {
   
   func jotViewController(_ jotViewController: JotViewController, isEditingText isEditing: Bool) {
-    textEditModeMinimumUI()
-    
+    if isEditing {
+      CCLog.verbose("JotViewController is Editing")
+      textEditModeMinimumUI()
+    } else {
+      CCLog.verbose("JotViewController is not Editing")
+      textModeMinimumUI()
+    }
+  }
+  
+  func drawingBegan() {
+    CCLog.verbose("JotViewController began Drawing")
+    undoButton.isHidden = false
+  }
+  
+  func drawingEnded() {
+    CCLog.verbose("JotViewController ended Drawing")
   }
   
   func jotViewController(_ jotViewController: JotViewController!, didSelectLabel labelInfo: [AnyHashable : Any]!) {
     if jotViewController.state == .text || jotViewController.state == .editingText {
       deleteButton.isHidden = false
-      backgroundButton.isHidden = false
-      alignButton.isHidden = false
-      fontButton.isHidden = false
+//      backgroundButton.isHidden = false
+//      alignButton.isHidden = false
+//      fontButton.isHidden = false
     }
   }
 }
