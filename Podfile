@@ -18,6 +18,7 @@ target 'TastryApp' do
   pod 'RATreeView', :inhibit_warnings => true
   pod 'TLPhotoPicker', :inhibit_warnings => true
   pod 'Texture', :inhibit_warnings => true
+  pod 'ColorSlider', '~> 4.0'
   
   target 'TastryAppTests' do
     inherit! :search_paths

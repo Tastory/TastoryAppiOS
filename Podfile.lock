@@ -5,6 +5,7 @@ PODS:
   - AWSS3 (2.6.4):
     - AWSCore (= 2.6.4)
   - Bolts/Tasks (1.8.4)
+  - ColorSlider (4.1)
   - Crashlytics (3.9.0):
     - Fabric (~> 1.7.0)
   - Fabric (1.7.0)
@@ -44,6 +45,7 @@ PODS:
 DEPENDENCIES:
   - AWSCognito
   - AWSS3
+  - ColorSlider (~> 4.0)
   - Crashlytics
   - Fabric
   - HTTPStatusCodes (~> 3.1.2)
@@ -75,6 +77,7 @@ SPEC CHECKSUMS:
   AWSCore: f5611be1c3edc38dbf9d6da0a5d2b6c4841d1c05
   AWSS3: f7a10f4c6bae46efc9a4588a1480a6761edcbc45
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
+  ColorSlider: 3dc3b5c31b5a74aa1232c44eae06453ce59ecf36
   Crashlytics: 64aad5dd97249dd3ff94b979fea140144590cdd3
   Fabric: e6be012366472553807dada21243c5ab8d904151
   HTTPStatusCodes: 88155ba36826366a898a7b4f34d311f49083d546
@@ -90,6 +93,6 @@ SPEC CHECKSUMS:
   Texture: c3f06e344aa091667b7a56002e525cde674d021a
   TLPhotoPicker: d850050494b9dcac0b585cf2d49ad2accf692d25
 
-PODFILE CHECKSUM: 2cf622eb8453c1adb930241e04ef0ab13b1d6772
+PODFILE CHECKSUM: 737cf150eae8dd16b03b09b048d2832b65b5584c
 
 COCOAPODS: 1.2.0

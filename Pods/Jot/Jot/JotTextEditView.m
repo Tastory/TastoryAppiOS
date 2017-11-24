@@ -145,6 +145,12 @@
         _textString = textString;
         self.textView.text = textString;
         [self.textView setContentOffset:CGPointZero animated:NO];
+      
+        CGFloat height = MIN(self.textView.contentSize.height, self.textView.bounds.size.height);
+        self.textBackground.frame = CGRectMake(self.textView.frame.origin.x,
+                                               self.textView.frame.origin.y,
+                                               self.textView.contentSize.width,
+                                               height);
     }
 }
 
