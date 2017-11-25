@@ -1114,29 +1114,28 @@ extension DiscoverViewController: MapNavControllerDelegate {
 extension DiscoverViewController: CameraReturnDelegate {
   func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
     DispatchQueue.main.async {  // UI Work. We don't know which thread we might be in, so guarentee execute in Main thread
-      let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")
-        }
-        return
-      }
-      var workingStory: FoodieStory?
-      
-      if let story = suggestedStory {
-        workingStory = story
-      } else if let story = FoodieStory.currentStory {
-        workingStory = story
-      } else {
-        workingStory = FoodieStory()
-      }
-      
-      viewController.workingStory = workingStory!
-      viewController.returnedMoments = markedupMoments
-      
-      self.appearanceForAllUI(alphaValue: 0.0, animated: true)
-      
       self.dismiss(animated: true) {  // This dismiss is for the CameraViewController to call on
+        
+        let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+        guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")
+          }
+          return
+        }
+        var workingStory: FoodieStory?
+        
+        if let story = suggestedStory {
+          workingStory = story
+        } else if let story = FoodieStory.currentStory {
+          workingStory = story
+        } else {
+          workingStory = FoodieStory()
+        }
+        
+        viewController.workingStory = workingStory!
+        viewController.returnedMoments = markedupMoments
+        self.appearanceForAllUI(alphaValue: 0.0, animated: true)
         viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
         self.pushPresent(viewController, animated: true)  // This pushPresent is from the DiscoverViewController to present the Composition VC
       }

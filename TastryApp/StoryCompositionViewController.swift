@@ -39,27 +39,27 @@ class StoryCompositionViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as? StoryEntryViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("ViewController initiated not of StoryEntryViewController Class!!")
-      }
-      return
-    }
-    
-    viewController.workingStory = workingStory
-    viewController.returnedMoments = returnedMoments
-    viewController.markupMoment = markupMoment
-    viewController.containerVC = self
-    viewController.parentNavController = navigationController
-    viewController.restoreStoryDelegate = restoreStoryDelegate
-    
-    addChildViewController(viewController)
-    view.addSubview(viewController.view)
-    viewController.view.frame = view.bounds
-    viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    viewController.didMove(toParentViewController: self)
-    staticTableViewController = viewController
+//    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+//    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as? StoryEntryViewController else {
+//      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+//        CCLog.fatal("ViewController initiated not of StoryEntryViewController Class!!")
+//      }
+//      return
+//    }
+//    
+//    viewController.workingStory = workingStory
+//    viewController.returnedMoments = returnedMoments
+//    viewController.markupMoment = markupMoment
+//    viewController.containerVC = self
+//    viewController.parentNavController = navigationController
+//    viewController.restoreStoryDelegate = restoreStoryDelegate
+//    
+//    addChildViewController(viewController)
+//    view.addSubview(viewController.view)
+//    viewController.view.frame = view.bounds
+//    viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+//    viewController.didMove(toParentViewController: self)
+//    staticTableViewController = viewController
   }
 }
 

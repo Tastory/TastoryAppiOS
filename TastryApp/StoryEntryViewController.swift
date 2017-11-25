@@ -45,7 +45,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 
   // MARK: - Private Instance Constants
   fileprivate let sectionOneView = UIView()
-  fileprivate let mapView = MKMapView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: Constants.MapHeight))
+  fileprivate let mapView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: Constants.MapHeight))
   fileprivate var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
 
   // MARK: - Public Instance Variable
@@ -288,28 +288,26 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   }
 
   fileprivate func updateStoryEntryMap(withCoordinate coordinate: CLLocationCoordinate2D, span: CLLocationDegrees, venueName: String? = nil) {
-    let region = MKCoordinateRegion(center: coordinate,
-                                    span: MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span))
-    DispatchQueue.main.async {
-      self.mapView.setRegion(region, animated: true)
-      
-      // Remove all annotations each time
-      self.mapView.removeAnnotations(self.mapView.annotations)
-      
-      // Add back if an annotation is requested
-      if let name = venueName {
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = coordinate
-        annotation.title = name
-        self.mapView.addAnnotation(annotation)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { self.mapView.selectAnnotation(annotation, animated: true) }  // This makes the Annotation title pop-up after a slight delay
-      }
-    }
+//    let region = MKCoordinateRegion(center: coordinate,
+//                                    span: MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span))
+//    DispatchQueue.main.async {
+//      self.mapView.setRegion(region, animated: true)
+//
+//      // Remove all annotations each time
+//      self.mapView.removeAnnotations(self.mapView.annotations)
+//
+//      // Add back if an annotation is requested
+//      if let name = venueName {
+//        let annotation = MKPointAnnotation()
+//        annotation.coordinate = coordinate
+//        annotation.title = name
+//        self.mapView.addAnnotation(annotation)
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { self.mapView.selectAnnotation(annotation, animated: true) }  // This makes the Annotation title pop-up after a slight delay
+//      }
+//    }
   }
-  
-  
-  
 
+  
 
   // MARK: - Public Instace Functions
 
@@ -326,12 +324,15 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     }
   }
 
+  
+  
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
     
     // Setup the View, Moment VC, Text Fields, Keyboards, etc.
-    mapView.showsUserLocation = true
+    mapView.isHidden = true
+    mapView.alpha = 0
     sectionOneView.addSubview(mapView)
     
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
@@ -358,6 +359,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     activitySpinner = ActivitySpinner(addTo: view, blurStyle: .dark, spinnerStyle: .whiteLarge)
     // TODO: Do we need to download the Story itself first? How can we tell?
   }
+  
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
@@ -508,25 +510,25 @@ extension StoryEntryViewController {
   }
 }
 
-
-// MARK: - Scroll View Delegate
-extension StoryEntryViewController {
-  
-  override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-    let currentOffset = scrollView.contentOffset.y
-    let height = Constants.MapHeight - currentOffset
-    
-    if height <= 10 {
-      // CCLog.verbose("Height tried to be < 10")
-      mapView.isHidden = true
-    } else {
-      mapView.isHidden = false
-      mapView.frame = CGRect(x: 0, y: currentOffset, width: self.view.bounds.width, height: height)
-    }
-  }
-}
-
-
+//
+//// MARK: - Scroll View Delegate
+//extension StoryEntryViewController {
+//
+//  override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//    let currentOffset = scrollView.contentOffset.y
+//    let height = Constants.MapHeight - currentOffset
+//
+//    if height <= 10 {
+//      // CCLog.verbose("Height tried to be < 10")
+//      mapView.isHidden = true
+//    } else {
+//      mapView.isHidden = false
+//      mapView.frame = CGRect(x: 0, y: currentOffset, width: self.view.bounds.width, height: height)
+//    }
+//  }
+//}
+//
+//
 
 // MARK: - Text Fields' Delegate
 extension StoryEntryViewController: UITextFieldDelegate {
