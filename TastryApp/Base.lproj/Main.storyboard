@@ -162,18 +162,18 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" baselineRelativeArrangement="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ErC-N9-Y0m" userLabel="Location Stack">
                                         <rect key="frame" x="0.0" y="50" width="343" height="27"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PIh-Rz-RIF">
-                                                <rect key="frame" x="0.0" y="0.6666666666666643" width="51" height="26"/>
+                                            <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PIh-Rz-RIF">
+                                                <rect key="frame" x="0.0" y="0.6666666666666643" width="52.666666666666664" height="26"/>
                                                 <state key="normal" image="Discover-SearchMagnifier"/>
                                             </button>
                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Jump to Location" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
-                                                <rect key="frame" x="51" y="4.6666666666666643" width="249" height="18"/>
+                                                <rect key="frame" x="52.666666666666686" y="4.6666666666666643" width="246" height="18"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="15"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes" textContentType="location"/>
                                             </textField>
-                                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9xC-Zn-CZy">
-                                                <rect key="frame" x="300" y="0.6666666666666643" width="43" height="26"/>
+                                            <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" enabled="NO" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9xC-Zn-CZy">
+                                                <rect key="frame" x="298.66666666666669" y="0.6666666666666643" width="44.333333333333314" height="26"/>
                                                 <state key="normal" image="Discover-FilterButton"/>
                                             </button>
                                         </subviews>
@@ -384,10 +384,10 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="ZiO-0U-WG2" userLabel="Author Venue Time Stack">
-                                <rect key="frame" x="14" y="84.333333333333329" width="115" height="40"/>
+                                <rect key="frame" x="14" y="84.333333333333329" width="109" height="40"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NkP-5B-uyd">
-                                        <rect key="frame" x="0.0" y="0.0" width="115" height="20"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="109" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="UM2-Dx-qJm"/>
                                         </constraints>
@@ -402,7 +402,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uqd-o4-gnC">
-                                        <rect key="frame" x="0.0" y="20" width="76" height="20"/>
+                                        <rect key="frame" x="0.0" y="20" width="71" height="20"/>
                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="13"/>
                                         <size key="titleShadowOffset" width="0.0" height="1"/>
                                         <state key="normal" title="VenueName">
@@ -416,13 +416,13 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="eTa-IA-SsO">
-                                <rect key="frame" x="158.66666666666666" y="699.33333333333337" width="59.333333333333343" height="28.333333333333371"/>
+                                <rect key="frame" x="160" y="699.33333333333337" width="56.666666666666657" height="28.333333333333371"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="StoryMarkup-SwipeUpArrow" translatesAutoresizingMaskIntoConstraints="NO" id="DvN-vq-oUI">
-                                        <rect key="frame" x="18.666666666666686" y="0.0" width="22" height="12"/>
+                                        <rect key="frame" x="17.333333333333343" y="0.0" width="22" height="12"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swipe Up" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f5Y-qe-Xu1">
-                                        <rect key="frame" x="0.0" y="11.999999999999998" width="59.333333333333336" height="16.333333333333329"/>
+                                        <rect key="frame" x="0.0" y="11.999999999999998" width="56.666666666666664" height="16.333333333333329"/>
                                         <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="13"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
