@@ -45,6 +45,7 @@ class DiscoverViewController: OverlayViewController {
     static let SearchBarFontSize: CGFloat = 15.0
     static let SearchBarTextShadowAlpha: CGFloat = 0.25
     static let SearchBarPlaceholderColor = UIColor.lightGray
+    static let UIDisappearanceDuration = FoodieGlobal.Constants.DefaultUIDisappearanceDuration
   }
 
   
@@ -131,7 +132,7 @@ class DiscoverViewController: OverlayViewController {
       viewController.workingStory = FoodieStory.currentStory
     }
     
-    appearanceForAllUI(alphaValue: 0.0, animated: true)
+    appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
   }
@@ -146,7 +147,7 @@ class DiscoverViewController: OverlayViewController {
       return
     }
     
-    appearanceForAllUI(alphaValue: 0.0, animated: true)
+    appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
     
     viewController.cameraReturnDelegate = self
     present(viewController, animated: true)  // Use regular present for the Camera for now. Not including the camera as part of the MapNavController for now
@@ -234,7 +235,7 @@ class DiscoverViewController: OverlayViewController {
       return
     }
     
-    appearanceForAllUI(alphaValue: 0.0, animated: true)
+    appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
     
     viewController.user = FoodieUser.current
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
@@ -458,21 +459,22 @@ class DiscoverViewController: OverlayViewController {
   }
   
   
-  private func appearanceForAllUI(alphaValue: CGFloat, animated: Bool) {
-    appearanceForTopUI(alphaValue: alphaValue, animated: animated)
-    appearanceForFeedUI(alphaValue: alphaValue, animated: animated)
+  private func appearanceForAllUI(alphaValue: CGFloat, animated: Bool,
+                                  duration: TimeInterval = FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
+    appearanceForTopUI(alphaValue: alphaValue, animated: animated, duration: duration)
+    appearanceForFeedUI(alphaValue: alphaValue, animated: animated, duration: duration)
   }
     
   
-  private func appearanceForTopUI(alphaValue: CGFloat, animated: Bool) {
+  private func appearanceForTopUI(alphaValue: CGFloat, animated: Bool,
+                                  duration: TimeInterval = FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
     if animated {
-      UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
+      UIView.animate(withDuration: duration, animations: {
         self.searchStack.alpha = alphaValue
         self.middleStack.alpha = alphaValue
         self.draftButton.alpha = alphaValue
         self.currentLocationButton.alpha = alphaValue
         self.searchBackgroundView.alpha = alphaValue
-        
       })
     } else {
       self.searchStack.alpha = alphaValue
@@ -484,9 +486,10 @@ class DiscoverViewController: OverlayViewController {
   }
 
   
-  private func appearanceForFeedUI(alphaValue: CGFloat, animated: Bool) {
+  private func appearanceForFeedUI(alphaValue: CGFloat, animated: Bool,
+                                   duration: TimeInterval = FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
     if animated {
-      UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
+      UIView.animate(withDuration: duration, animations: {
         self.cameraButton.alpha = alphaValue
         self.profileButton.alpha = alphaValue
         self.feedBackgroundView.alpha = alphaValue
@@ -624,7 +627,7 @@ class DiscoverViewController: OverlayViewController {
       }
     }
   }
-
+  
   
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
@@ -776,7 +779,6 @@ class DiscoverViewController: OverlayViewController {
       appearanceForTopUI(alphaValue: 1.0, animated: true)
     }
     appearanceForFeedUI(alphaValue: 1.0, animated: true)
-    setNeedsStatusBarAppearanceUpdate()
   }
   
   
@@ -1014,11 +1016,16 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       // Hide top buttons
       appearanceForTopUI(alphaValue: 0.0, animated: true)
       
+      self.searchBackgroundCarouselConstraint.isActive = false
+      self.feedBackgroundCarouselConstraint.isActive = false
+      self.searchBackgroundMosaicConstraint.isActive = true
+      self.feedBackgroundMosaicConstraint.isActive = true
+      
       UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
-        self.searchBackgroundCarouselConstraint.isActive = false
-        self.feedBackgroundCarouselConstraint.isActive = false
-        self.searchBackgroundMosaicConstraint.isActive = true
-        self.feedBackgroundMosaicConstraint.isActive = true
+        self.searchBackgroundView.alpha = 1.0
+        self.view.updateConstraintsIfNeeded()
+        self.searchBackgroundView.layoutIfNeeded()
+        self.feedBackgroundView.layoutIfNeeded()
       })
       
       if let highlightedStoryIndex = highlightedStoryIndex {
@@ -1037,11 +1044,15 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       // Should we show top buttons?
       appearanceForTopUI(alphaValue: 1.0, animated: true)
       
+      self.searchBackgroundMosaicConstraint.isActive = false
+      self.feedBackgroundMosaicConstraint.isActive = false
+      self.searchBackgroundCarouselConstraint.isActive = true
+      self.feedBackgroundCarouselConstraint.isActive = true
+      
       UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
-        self.searchBackgroundMosaicConstraint.isActive = false
-        self.feedBackgroundMosaicConstraint.isActive = false
-        self.searchBackgroundCarouselConstraint.isActive = true
-        self.feedBackgroundCarouselConstraint.isActive = true
+        self.view.updateConstraintsIfNeeded()
+        self.searchBackgroundView.layoutIfNeeded()
+        self.feedBackgroundView.layoutIfNeeded()
       })
       
       if let highlightedStoryIndex = highlightedStoryIndex {
@@ -1140,7 +1151,7 @@ extension DiscoverViewController: CameraReturnDelegate {
         
         viewController.workingStory = workingStory!
         viewController.returnedMoments = markedupMoments
-        self.appearanceForAllUI(alphaValue: 0.0, animated: true)
+        self.appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
         viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
         self.pushPresent(viewController, animated: true)  // This pushPresent is from the DiscoverViewController to present the Entry VC
       }

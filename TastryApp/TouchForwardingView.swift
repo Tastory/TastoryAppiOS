@@ -25,7 +25,7 @@ final class TouchForwardingView: UIView {
         return passthroughHitView
       }
     }
-    return self
+    return nil
   }
   
   override init(frame: CGRect) {

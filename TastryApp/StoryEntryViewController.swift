@@ -17,16 +17,18 @@ protocol PreviewControlDelegate {
   func enablePreviewButton(_ isEnabled: Bool)
 }
 
+
 protocol RestoreStoryDelegate {
   func updateStory(_ story: FoodieStory)
 }
+
 
 class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelegate {
   
   // MARK: - Private Static Constants
   
   private struct Constants {
-    static let VenueMapWidth: CLLocationDistance = 500 // 500m
+    static let VenueMapWidth: CLLocationDistance = 300 // 300m
     
     static let MaxTitleLength: Int = 50
     static let MaxSwipeMessageLength: Int = 15
@@ -34,6 +36,9 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     static let StackShadowOffset = CGSize(width: -1.0, height: -2.0)
     static let StackShadowRadius: CGFloat = 3.0
     static let StackShadowOpacity: Float = 0.30
+    
+    static let BackgroundGradientBlackAlpha: CGFloat = 0.3
+    static let UIDisappearanceDuration = FoodieGlobal.Constants.DefaultUIDisappearanceDuration
   }
   
 
@@ -57,12 +62,14 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   // MARK: - Private Instance Variables
   
   private var momentViewController = MomentCollectionViewController()
-
+  private var isAppearanceLayout = true
+  
 
   
   // MARK: - IBOutlets
   
   @IBOutlet weak var mapExposedView: UIView!
+  @IBOutlet weak var topGradientBackground: TouchForwardingView!
   @IBOutlet weak var scrollView: UIScrollView!
   @IBOutlet weak var momentCellView: UIView!
   @IBOutlet weak var titleIcon: UIButton!
@@ -156,7 +163,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
         self.workingStory = nil
 
-        self.vcDismiss()
+        self.popDismiss(animated: true)
         self.activitySpinner.remove()
       }
     }
@@ -228,7 +235,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           // Pop-up Alert Dialog and then Dismiss
           CCLog.info("Story Posted!")
           AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
-            self.vcDismiss()
+            self.popDismiss(animated: true)
           }
         }
       }
@@ -274,6 +281,10 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     FoodieStory.preSave(nil, withBlock: nil)
   }
   
+  
+  @IBAction func backAction(_ sender: UIButton) {
+    popDismiss(animated: true)
+  }
   
   
   // MARK: - Private Instance Functions
@@ -326,14 +337,20 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   }
 
 
+  private func appearanceForAllUI(alphaValue: CGFloat, animated: Bool,
+                                  duration: TimeInterval = FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
+    if animated {
+      UIView.animate(withDuration: duration) {
+        self.topGradientBackground.alpha = alphaValue
+      }
+    } else {
+      topGradientBackground.alpha = alphaValue
+    }
+  }
+  
+  
   @objc private func keyboardDismiss() {
     self.view.endEditing(true)
-  }
-
-  
-  @objc private func vcDismiss() {
-    // TODO: Data Passback through delegate?
-    popDismiss(animated: true)
   }
   
   
@@ -378,15 +395,6 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     linkTextField?.delegate = self
     swipeTextField?.delegate = self
     
-    titleLengthLabel?.text = String(Constants.MaxTitleLength)
-    swipeLengthLabel?.text = String(Constants.MaxSwipeMessageLength)
-    
-    if isEditing {
-      savePostButton?.setTitle("Save", for: .normal)
-    } else {
-      savePostButton?.setTitle("Post", for: .normal)
-    }
-    
     let keyboardDismissRecognizer = UITapGestureRecognizer(target: self, action: #selector(keyboardDismiss))
     keyboardDismissRecognizer.numberOfTapsRequired = 1
     keyboardDismissRecognizer.numberOfTouchesRequired = 1
@@ -395,8 +403,6 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-    
-    self.view.clipsToBounds = false
     
     // Drop Shadow at the back of the Stack View
     scrollView.layer.masksToBounds = false
@@ -453,9 +459,13 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       }
 
       // Update all the fields here?
-      if let title = workingStory.title {
+      if let title = workingStory.title, title != "" {
         titleTextField?.text = title
         titleIcon?.alpha = 1.0
+        titleLengthLabel?.text = String(Constants.MaxTitleLength - title.count)
+      } else {
+        titleIcon?.alpha = 0.3
+        titleLengthLabel?.text = String(Constants.MaxTitleLength)
       }
       
       if let venueName = workingStory.venue?.name {
@@ -470,20 +480,53 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       
       if let storyURL = workingStory.storyURL, storyURL != "" {
         linkTextField?.text = storyURL
-        openLinkButton.isHidden = false
         linkIcon.alpha = 1.0
+        openLinkButton.isHidden = false
       } else {
-        openLinkButton.isHidden = true
         linkIcon.alpha = 0.3
+        openLinkButton.isHidden = true
       }
       
-      if let swipeMessage = workingStory.swipeMessage {
+      if let swipeMessage = workingStory.swipeMessage, swipeMessage != "" {
         swipeTextField?.text = swipeMessage
         swipeIcon.alpha = 1.0
+        swipeLengthLabel?.text = String(Constants.MaxSwipeMessageLength - swipeMessage.count)
+      } else {
+        swipeIcon.alpha = 0.3
+        swipeLengthLabel?.text = String(Constants.MaxSwipeMessageLength)
       }
+      
+      if isEditing {
+        discardButton?.setTitle("Discard Changes", for: .normal)
+        savePostButton?.setTitle("Save", for: .normal)
+      } else {
+        discardButton?.setTitle("Discard", for: .normal)
+        savePostButton?.setTitle("Post", for: .normal)
+      }
+      
+      appearanceForAllUI(alphaValue: 0.0, animated: false)
+      isAppearanceLayout = true
     }
   }
   
+  
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    
+    if isAppearanceLayout {
+      isAppearanceLayout = false
+      
+      // Setup Background Gradient Views
+      let backgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.BackgroundGradientBlackAlpha)
+      let topGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
+                                         endingAt: CGPoint(x: 0.5, y: 1.0),
+                                         with: [backgroundBlackAlpha, .clear])
+      topGradientNode.isOpaque = false
+      topGradientNode.frame = topGradientBackground.bounds
+      topGradientBackground.addSubnode(topGradientNode)
+      topGradientBackground.sendSubview(toBack: topGradientNode.view)
+    }
+  }
   
   
   override func viewDidAppear(_ animated: Bool) {
@@ -533,11 +576,14 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         }
       }
     }
+    
+    appearanceForAllUI(alphaValue: 1.0, animated: true)
   }
   
   
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
+    appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
     self.mapNavController = nil
     view.endEditing(true)
   }
@@ -548,6 +594,16 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     
     // We should clear this so we don't assume that we still have a returned moment
     returnedMoments.removeAll()
+  }
+  
+  
+  override var preferredStatusBarStyle: UIStatusBarStyle {
+    return .lightContent
+  }
+  
+  
+  override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+    return .fade
   }
   
   

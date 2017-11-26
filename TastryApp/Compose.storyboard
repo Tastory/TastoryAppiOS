@@ -125,7 +125,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NJG-pX-rxm">
                                 <rect key="frame" x="12" y="92.666666666666671" width="32" height="32"/>
-                                <state key="normal" image="Markup-Back"/>
+                                <state key="normal" image="EntryMarkup-Back"/>
                                 <connections>
                                     <action selector="backButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="2EE-r0-yr6"/>
                                 </connections>
@@ -307,7 +307,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="94G-0d-Gjv">
+                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="94G-0d-Gjv">
                                 <rect key="frame" x="0.0" y="43.999999999999986" width="375" height="168.66666666666663"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
@@ -562,7 +562,7 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c59-Or-st2" userLabel="Save/Discard Cell">
                                                 <rect key="frame" x="0.0" y="565.66666666666674" width="375" height="800"/>
                                                 <subviews>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="3lO-3o-7d5">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="3lO-3o-7d5">
                                                         <rect key="frame" x="15" y="15" width="345" height="50"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R4O-3Y-EjS">
@@ -614,6 +614,23 @@
                                     <constraint firstItem="37f-WV-Phh" firstAttribute="top" secondItem="HXH-Y5-Ju0" secondAttribute="bottom" id="bs9-cW-UcK"/>
                                 </constraints>
                             </scrollView>
+                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sbC-fK-FJI" customClass="TouchForwardingView" customModule="TastryApp" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="79"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A7j-Ak-CS7">
+                                        <rect key="frame" x="15" y="44" width="32" height="32"/>
+                                        <state key="normal" image="EntryMarkup-Back"/>
+                                        <connections>
+                                            <action selector="backAction:" destination="qja-VH-rV7" eventType="touchUpInside" id="ra7-Lt-9Ns"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="A7j-Ak-CS7" firstAttribute="leading" secondItem="sbC-fK-FJI" secondAttribute="leading" constant="15" id="Bj1-L3-qgA"/>
+                                    <constraint firstItem="A7j-Ak-CS7" firstAttribute="centerY" secondItem="sbC-fK-FJI" secondAttribute="bottom" constant="-19" id="wxc-iO-rMp"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -622,6 +639,10 @@
                             <constraint firstItem="STb-w9-4sJ" firstAttribute="leading" secondItem="I8o-dP-osX" secondAttribute="leading" id="Eje-Lv-qlB"/>
                             <constraint firstItem="94G-0d-Gjv" firstAttribute="leading" secondItem="m2e-JR-enO" secondAttribute="leading" id="LAs-Le-cyr"/>
                             <constraint firstItem="STb-w9-4sJ" firstAttribute="top" secondItem="I8o-dP-osX" secondAttribute="top" id="RT4-Cy-ftV"/>
+                            <constraint firstAttribute="trailing" secondItem="sbC-fK-FJI" secondAttribute="trailing" id="ZB1-kO-oLy"/>
+                            <constraint firstItem="sbC-fK-FJI" firstAttribute="leading" secondItem="I8o-dP-osX" secondAttribute="leading" id="cRy-4a-Gtw"/>
+                            <constraint firstItem="sbC-fK-FJI" firstAttribute="top" secondItem="I8o-dP-osX" secondAttribute="top" id="cfL-m9-SmW"/>
+                            <constraint firstItem="m2e-JR-enO" firstAttribute="top" secondItem="sbC-fK-FJI" secondAttribute="bottom" constant="-35" id="csG-th-cCZ"/>
                             <constraint firstItem="94G-0d-Gjv" firstAttribute="height" secondItem="m2e-JR-enO" secondAttribute="height" multiplier="0.23" id="jXt-5M-qLL"/>
                             <constraint firstItem="m2e-JR-enO" firstAttribute="trailing" secondItem="94G-0d-Gjv" secondAttribute="trailing" id="uMS-Je-e8s"/>
                             <constraint firstAttribute="bottom" secondItem="STb-w9-4sJ" secondAttribute="bottom" id="xt9-fD-2TH"/>
@@ -646,6 +667,7 @@
                         <outlet property="titleIcon" destination="azx-pW-d8t" id="HDj-Ua-KRO"/>
                         <outlet property="titleLengthLabel" destination="rV1-7C-DT8" id="2W7-PB-UuA"/>
                         <outlet property="titleTextField" destination="yGa-MF-Thx" id="aLm-7k-9St"/>
+                        <outlet property="topGradientBackground" destination="sbC-fK-FJI" id="4BD-ok-tUz"/>
                         <outlet property="venueButton" destination="J5u-Se-d4s" id="bYq-LX-RxN"/>
                         <outlet property="venueIcon" destination="YGs-my-9hB" id="hhr-TI-kva"/>
                     </connections>
@@ -862,8 +884,8 @@
         <image name="Entry-SwipeMessage" width="24" height="24"/>
         <image name="Entry-Title" width="26" height="26"/>
         <image name="Entry-Venue" width="24" height="24"/>
+        <image name="EntryMarkup-Back" width="32" height="32"/>
         <image name="Markup-Align" width="40" height="40"/>
-        <image name="Markup-Back" width="32" height="32"/>
         <image name="Markup-Background" width="42" height="40"/>
         <image name="Markup-CircleLarge" width="32" height="32"/>
         <image name="Markup-CircleSmall" width="28" height="28"/>

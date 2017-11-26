@@ -37,6 +37,7 @@ struct FoodieGlobal {
     static let DefaultServerRequestRetryCount = 3
     static let DefaultServerRequestRetryDelay = 3.0
     static let DefaultTransitionAnimationDuration: TimeInterval = 0.4
+    static let DefaultUIDisappearanceDuration: TimeInterval = 0.1
     static let DefaultTransitionUnderVCAlpha: CGFloat = 0.1
     static let DefaultMomentAspectRatio: CGFloat = 9/16
     static let DefaultSlideVCGapSize: CGFloat = 5.0
