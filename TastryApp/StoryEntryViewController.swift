@@ -35,6 +35,10 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     
     static let MaxTitleLength: Int = 50
     static let MaxSwipeMessageLength: Int = 15
+    
+    static let StackShadowOffset = CGSize(width: -1.0, height: -2.0)
+    static let StackShadowRadius: CGFloat = 3.0
+    static let StackShadowOpacity: Float = 0.30
   }
   
 
@@ -373,7 +377,6 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       momentViewController.view.rightAnchor.constraint(equalTo: momentCellView.rightAnchor, constant: 0.0),
     ])
     
-    // scrollView.delegate = self
     titleTextField?.delegate = self
     linkTextField?.delegate = self
     swipeTextField?.delegate = self
@@ -395,6 +398,15 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+    
+    self.view.clipsToBounds = false
+    
+    // Drop Shadow at the back of the Stack View
+    scrollView.layer.masksToBounds = false
+    scrollView.layer.shadowColor = UIColor.black.cgColor
+    scrollView.layer.shadowOffset = Constants.StackShadowOffset
+    scrollView.layer.shadowRadius = Constants.StackShadowRadius
+    scrollView.layer.shadowOpacity = Constants.StackShadowOpacity
   }
   
   
