@@ -669,9 +669,14 @@ class DiscoverViewController: OverlayViewController {
     // Resume from last map region
     if let mapRegion = lastMapRegion {
       mapController.showRegionExposed(mapRegion, animated: true)
+      mapController.removeAllAnnotations()
       
       if lastMapWasTracking {
         mapController.startTracking()
+      }
+      
+      if storyAnnotations.count > 0 {
+        mapController.add(annotations: storyAnnotations)
       }
       
       if let annotationIndex = lastSelectedAnnotationIndex {

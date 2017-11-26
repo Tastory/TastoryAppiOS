@@ -58,6 +58,7 @@ class MapNavController: ASNavigationController {
     }
   }
   
+  var defaultCoordinate: CLLocationCoordinate2D { return Constants.DefaultCLCoordinate2D }
   var defaultMapWidth: CLLocationDistance { return Constants.DefaultMapWidth }
   var minMapWidth: CLLocationDistance { return Constants.DefaultMinMapWidth }
   var maxMapWidth: CLLocationDistance { return Constants.DefaultMaxMapWidth }
@@ -204,6 +205,10 @@ class MapNavController: ASNavigationController {
   
   func remove(annotations: [MKAnnotation]) {
     mapView.removeAnnotations(annotations)
+  }
+  
+  func removeAllAnnotations() {
+    mapView.removeAnnotations(mapView.annotations)
   }
   
   

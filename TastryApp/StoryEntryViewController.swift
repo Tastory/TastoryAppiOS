@@ -26,12 +26,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   // MARK: - Private Static Constants
   
   private struct Constants {
-    static let PlaceholderColor = UIColor(red: 0xC8/0xFF, green: 0xC8/0xFF, blue: 0xC8/0xFF, alpha: 1.0)
-    static let DefaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
-                                                              longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
-    static let DefaultDelta: CLLocationDegrees = 0.05
-    static let SuggestedDelta: CLLocationDegrees = 0.02
-    static let VenueDelta: CLLocationDegrees = 0.005
+    static let VenueMapWidth: CLLocationDistance = 500 // 500m
     
     static let MaxTitleLength: Int = 50
     static let MaxSwipeMessageLength: Int = 15
@@ -46,7 +41,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   // MARK: - Private Instance Constants
   
   private var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
-
+  private var mapNavController: MapNavController?
+  
   
   
   // MARK: - Public Instance Variable
@@ -66,6 +62,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   
   // MARK: - IBOutlets
   
+  @IBOutlet weak var mapExposedView: UIView!
   @IBOutlet weak var scrollView: UIScrollView!
   @IBOutlet weak var momentCellView: UIView!
   @IBOutlet weak var titleIcon: UIButton!
@@ -308,24 +305,24 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   }
 
   
-  private func updateStoryEntryMap(withCoordinate coordinate: CLLocationCoordinate2D, span: CLLocationDegrees, venueName: String? = nil) {
-//    let region = MKCoordinateRegion(center: coordinate,
-//                                    span: MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span))
-//    DispatchQueue.main.async {
-//      self.mapView.setRegion(region, animated: true)
-//
-//      // Remove all annotations each time
-//      self.mapView.removeAnnotations(self.mapView.annotations)
-//
-//      // Add back if an annotation is requested
-//      if let name = venueName {
-//        let annotation = MKPointAnnotation()
-//        annotation.coordinate = coordinate
-//        annotation.title = name
-//        self.mapView.addAnnotation(annotation)
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { self.mapView.selectAnnotation(annotation, animated: true) }  // This makes the Annotation title pop-up after a slight delay
-//      }
-//    }
+  private func updateStoryEntryMap(with region: MKCoordinateRegion, venueName: String? = nil) {
+    DispatchQueue.main.async {
+      guard let story = self.workingStory else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
+        CCLog.fatal("No Working Story for Story Entry")
+      }
+      
+      self.mapNavController?.removeAllAnnotations()
+      self.mapNavController?.showRegionExposed(region, animated: true)
+
+      // Add back if an annotation is requested
+      if let name = venueName {
+        let annotation = StoryMapAnnotation(title: name, story: story, coordinate: region.center)
+        self.mapNavController?.add(annotation: annotation)
+        self.mapNavController?.select(annotation: annotation, animated: true)
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { self.mapNavController?.select(annotation: annotation, animated: true) }  // This makes the Annotation title pop-up after a slight delay
+      }
+    }
   }
 
 
@@ -458,40 +455,69 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       // Update all the fields here?
       if let title = workingStory.title {
         titleTextField?.text = title
+        titleIcon?.alpha = 1.0
       }
       
       if let venueName = workingStory.venue?.name {
         venueButton?.setTitle(venueName, for: .normal)
         venueButton?.alpha = 1.0
+        venueIcon?.alpha = 1.0
       } else {
         venueButton?.setTitle("Venue", for: .normal)
         venueButton?.alpha = 0.3
+        venueIcon?.alpha = 0.3
       }
       
       if let storyURL = workingStory.storyURL, storyURL != "" {
         linkTextField?.text = storyURL
         openLinkButton.isHidden = false
+        linkIcon.alpha = 1.0
       } else {
         openLinkButton.isHidden = true
+        linkIcon.alpha = 0.3
       }
       
       if let swipeMessage = workingStory.swipeMessage {
         swipeTextField?.text = swipeMessage
+        swipeIcon.alpha = 1.0
       }
-
+    }
+  }
+  
+  
+  
+  override func viewDidAppear(_ animated: Bool) {
+    guard let mapController = navigationController as? MapNavController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("No Map Navigation Controller. Cannot Proceed")
+      }
+      return
+    }
+    
+    mapNavController = mapController
+    //mapController.mapDelegate = self
+    mapController.setExposedRect(with: mapExposedView)
+    
+    if let workingStory = workingStory {
       // Lets update the map location to the top here
       // If there's a Venue, use that location first. Usually if a venue have been freshly selected, it wouldn't have been confirmed in time. So another update is done in venueSearchComplete()
       if let latitude = workingStory.venue?.location?.latitude,
         let longitude = workingStory.venue?.location?.longitude {
-        updateStoryEntryMap(withCoordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: Constants.VenueDelta, venueName: workingStory.venue?.name)
+        
+        let region = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+                                                        Constants.VenueMapWidth, Constants.VenueMapWidth)
+        updateStoryEntryMap(with: region, venueName: workingStory.venue?.name)
       }
-      
-      // Otherwise use the average location of the Moments
+        
+        // Otherwise use the average location of the Moments
       else if let momentsLocation = averageLocationOfMoments() {
-        updateStoryEntryMap(withCoordinate: momentsLocation.coordinate, span: Constants.SuggestedDelta)
+        let region = MKCoordinateRegionMakeWithDistance(momentsLocation.coordinate,
+                                                        mapController.minMapWidth,
+                                                        mapController.minMapWidth)
+        updateStoryEntryMap(with: region, venueName: workingStory.venue?.name)
       }
-      
-      // Try to get a current location using the GPS
+        
+        // Try to get a current location using the GPS
       else {
         LocationWatch.global.get { (location, error) in
           if let error = error {
@@ -499,7 +525,10 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             //self.updateStoryEntryMap(withCoordinate: Constants.DefaultCLCoordinate2D, span: Constants.DefaultDelta)  Just let it be a view of the entire North America I guess?
             return
           } else if let location = location {
-            self.updateStoryEntryMap(withCoordinate: location.coordinate, span: Constants.SuggestedDelta)
+            let region = MKCoordinateRegionMakeWithDistance(location.coordinate,
+                                                            mapController.defaultMapWidth,
+                                                            mapController.defaultMapWidth)
+            self.updateStoryEntryMap(with: region, venueName: workingStory.venue?.name)
           }
         }
       }
@@ -509,6 +538,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
+    self.mapNavController = nil
     view.endEditing(true)
   }
   
@@ -642,7 +672,17 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
           
           // Update the map again here
           if let latitude = venueToUpdate.location?.latitude, let longitude = venueToUpdate.location?.longitude {
-            self.updateStoryEntryMap(withCoordinate: CLLocationCoordinate2DMake(latitude, longitude), span: Constants.VenueDelta, venueName: venueToUpdate.name)
+            
+            guard let mapController = self.navigationController as? MapNavController else {
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+                CCLog.fatal("No Map Navigation Controller. Cannot Proceed")
+              }
+              return
+            }
+            
+            let region = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+                                                            Constants.VenueMapWidth, Constants.VenueMapWidth)
+            self.updateStoryEntryMap(with: region, venueName: venueToUpdate.name)
           }
           
           // Pre-save only the Story to Local only

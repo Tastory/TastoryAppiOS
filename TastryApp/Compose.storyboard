@@ -110,7 +110,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zde-mf-qQe">
-                                <rect key="frame" x="0.0" y="72.666666666666686" width="375" height="667"/>
+                                <rect key="frame" x="0.0" y="72.666666666666686" width="375" height="666.66666666666652"/>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="Zde-mf-qQe" secondAttribute="height" multiplier="9:16" id="LGf-op-N9P"/>
@@ -131,7 +131,7 @@
                                 </connections>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Ao6-hj-RWt" userLabel="Text Tools Stack">
-                                <rect key="frame" x="118" y="92.666666666666671" width="140" height="40.000000000000014"/>
+                                <rect key="frame" x="118.33333333333331" y="92.666666666666671" width="140" height="40.000000000000014"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="center" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PR5-g3-wOV">
                                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
@@ -141,14 +141,14 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="center" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Nh-We-bhr">
-                                        <rect key="frame" x="48" y="0.0" width="42" height="40"/>
+                                        <rect key="frame" x="48.000000000000014" y="0.0" width="42" height="40"/>
                                         <state key="normal" image="Markup-Background"/>
                                         <connections>
                                             <action selector="backgroundButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="EDq-zO-SQF"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="center" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k2K-CX-jqS">
-                                        <rect key="frame" x="98" y="0.0" width="42" height="40"/>
+                                        <rect key="frame" x="98.000000000000014" y="0.0" width="41.999999999999986" height="40"/>
                                         <state key="normal" image="Markup-Font"/>
                                         <connections>
                                             <action selector="fontButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="pEr-xF-b9E"/>
@@ -157,7 +157,7 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="9oy-YC-tz3" userLabel="Draw Tools Stack">
-                                <rect key="frame" x="144" y="92.666666666666671" width="88" height="40.000000000000014"/>
+                                <rect key="frame" x="144.33333333333334" y="92.666666666666671" width="88" height="40.000000000000014"/>
                                 <subviews>
                                     <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KbB-2G-dkp">
                                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
@@ -226,7 +226,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lmH-xM-Ly2">
-                                <rect key="frame" x="12" y="691.66666666666663" width="40" height="40"/>
+                                <rect key="frame" x="12" y="691.33333333333337" width="40" height="40"/>
                                 <state key="normal" image="StoryMarkup-SoundOffButton"/>
                                 <connections>
                                     <action selector="soundOffButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="RJ5-By-odb"/>
@@ -307,23 +307,16 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="94G-0d-Gjv">
+                                <rect key="frame" x="0.0" y="43.999999999999986" width="375" height="168.66666666666663"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" showsHorizontalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" translatesAutoresizingMaskIntoConstraints="NO" id="STb-w9-4sJ">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HXH-Y5-Ju0">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="203.66666666666666"/>
-                                        <subviews>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="94G-0d-Gjv">
-                                                <rect key="frame" x="0.0" y="56.999999999999986" width="375" height="146.66666666666663"/>
-                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            </view>
-                                        </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="trailing" secondItem="94G-0d-Gjv" secondAttribute="trailing" id="SPc-kZ-bbF"/>
-                                            <constraint firstAttribute="bottom" secondItem="94G-0d-Gjv" secondAttribute="bottom" id="kOf-nM-a5Q"/>
-                                            <constraint firstItem="94G-0d-Gjv" firstAttribute="leading" secondItem="HXH-Y5-Ju0" secondAttribute="leading" id="lyR-XA-hGM"/>
-                                        </constraints>
                                     </view>
                                     <stackView contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="37f-WV-Phh">
                                         <rect key="frame" x="0.0" y="203.66666666666663" width="375" height="1365.666666666667"/>
@@ -339,7 +332,7 @@
                                                         <state key="normal" title="Button" image="Entry-Title"/>
                                                     </button>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Title (Required)" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yGa-MF-Thx">
-                                                        <rect key="frame" x="51" y="15.666666666666686" width="285.33333333333331" height="19"/>
+                                                        <rect key="frame" x="51" y="16" width="285" height="19"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="16"/>
                                                         <textInputTraits key="textInputTraits" autocapitalizationType="words" keyboardType="alphabet" returnKeyType="done"/>
@@ -348,7 +341,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="799" text="50" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rV1-7C-DT8">
-                                                        <rect key="frame" x="346.33333333333331" y="18.333333333333343" width="13.666666666666686" height="14"/>
+                                                        <rect key="frame" x="346" y="18" width="14" height="14.333333333333336"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -381,7 +374,7 @@
                                                 <rect key="frame" x="0.0" y="294.66666666666663" width="375" height="44"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ANT-0N-UCv">
-                                                        <rect key="frame" x="149" y="5" width="78" height="24"/>
+                                                        <rect key="frame" x="148.33333333333334" y="5" width="80" height="24"/>
                                                         <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="14"/>
                                                         <state key="normal" title=" Preview" image="Entry-Preview">
                                                             <color key="titleColor" red="0.98039215686274506" green="0.035294117647058823" blue="0.035294117647058823" alpha="1" colorSpace="calibratedRGB"/>
@@ -416,7 +409,7 @@
                                                         <state key="normal" title="Button" image="Entry-Venue"/>
                                                     </button>
                                                     <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J5u-Se-d4s">
-                                                        <rect key="frame" x="49" y="7.6666666666666288" width="311" height="29"/>
+                                                        <rect key="frame" x="49" y="7.3333333333332575" width="311" height="29"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
                                                         <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
                                                         <state key="normal" title="Venue (Required)">
@@ -455,7 +448,7 @@
                                                         <state key="normal" image="Entry-SwipeLink"/>
                                                     </button>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Swipe Up Link" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="zCa-Em-ilB">
-                                                        <rect key="frame" x="49" y="13.666666666666629" width="285" height="17"/>
+                                                        <rect key="frame" x="49" y="13.333333333333258" width="285" height="17"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits" autocorrectionType="no" textContentType="url"/>
@@ -504,7 +497,7 @@
                                                         <state key="normal" image="Entry-SwipeMessage"/>
                                                     </button>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Swipe Up Message" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ehg-y5-HB3">
-                                                        <rect key="frame" x="49" y="13.666666666666629" width="287.33333333333331" height="17"/>
+                                                        <rect key="frame" x="49" y="13.333333333333258" width="289" height="17"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences" keyboardType="alphabet"/>
@@ -513,7 +506,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="800" text="15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QxI-Em-dBD">
-                                                        <rect key="frame" x="346.33333333333331" y="15.333333333333258" width="13.666666666666686" height="14"/>
+                                                        <rect key="frame" x="348" y="15.666666666666629" width="12" height="14.333333333333336"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66000000000000003" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -624,10 +617,13 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="m2e-JR-enO" firstAttribute="top" secondItem="94G-0d-Gjv" secondAttribute="top" id="9Fw-rW-gac"/>
                             <constraint firstAttribute="trailing" secondItem="STb-w9-4sJ" secondAttribute="trailing" id="ENh-fb-YQa"/>
                             <constraint firstItem="STb-w9-4sJ" firstAttribute="leading" secondItem="I8o-dP-osX" secondAttribute="leading" id="Eje-Lv-qlB"/>
+                            <constraint firstItem="94G-0d-Gjv" firstAttribute="leading" secondItem="m2e-JR-enO" secondAttribute="leading" id="LAs-Le-cyr"/>
                             <constraint firstItem="STb-w9-4sJ" firstAttribute="top" secondItem="I8o-dP-osX" secondAttribute="top" id="RT4-Cy-ftV"/>
-                            <constraint firstItem="94G-0d-Gjv" firstAttribute="height" secondItem="m2e-JR-enO" secondAttribute="height" multiplier="0.2" id="Sde-Du-B4z"/>
+                            <constraint firstItem="94G-0d-Gjv" firstAttribute="height" secondItem="m2e-JR-enO" secondAttribute="height" multiplier="0.23" id="jXt-5M-qLL"/>
+                            <constraint firstItem="m2e-JR-enO" firstAttribute="trailing" secondItem="94G-0d-Gjv" secondAttribute="trailing" id="uMS-Je-e8s"/>
                             <constraint firstAttribute="bottom" secondItem="STb-w9-4sJ" secondAttribute="bottom" id="xt9-fD-2TH"/>
                             <constraint firstItem="MQX-MN-PZC" firstAttribute="height" secondItem="I8o-dP-osX" secondAttribute="height" multiplier="0.3" id="xzW-eC-Gng"/>
                         </constraints>
@@ -637,6 +633,7 @@
                         <outlet property="discardButton" destination="R4O-3Y-EjS" id="yQr-Us-5yN"/>
                         <outlet property="linkIcon" destination="EVn-2D-L2K" id="6Va-hb-DHz"/>
                         <outlet property="linkTextField" destination="zCa-Em-ilB" id="vx5-zi-dfC"/>
+                        <outlet property="mapExposedView" destination="94G-0d-Gjv" id="6iG-9X-yZn"/>
                         <outlet property="momentCellView" destination="MQX-MN-PZC" id="saG-xJ-FRV"/>
                         <outlet property="openLinkButton" destination="TDd-7o-3uv" id="S4l-4D-w7r"/>
                         <outlet property="previewButton" destination="ANT-0N-UCv" id="bnX-c0-qPR"/>
@@ -684,7 +681,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
                                         </imageView>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BCS-cR-mdn">
-                                            <rect key="frame" x="98.666666666666671" y="1" width="24.333333333333329" height="24.666666666666668"/>
+                                            <rect key="frame" x="98.333333333333329" y="1" width="24.666666666666671" height="24.666666666666668"/>
                                             <rect key="contentStretch" x="1" y="0.0" width="1" height="1"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" secondItem="BCS-cR-mdn" secondAttribute="height" multiplier="1:1" id="8FL-D3-oha"/>
