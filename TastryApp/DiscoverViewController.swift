@@ -118,9 +118,9 @@ class DiscoverViewController: OverlayViewController {
     // This is used for viewing the draft story to be used with update story later
     // Hide the button as needed, due to problems with empty draft story and saving an empty story is problematic
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as? StoryEntryViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")
+        CCLog.fatal("ViewController initiated not of StoryEntryViewController Class!!")
       }
       return
     }
@@ -736,7 +736,7 @@ class DiscoverViewController: OverlayViewController {
     // Don't bother showing the Draft Button if there's no Draft
     draftButton.isHidden = FoodieStory.currentStory == nil
     
-    // Don't allow user to go to the Camera and thus Story composition unless they are logged-in with E-mail verified
+    // Don't allow user to go to the Camera and thus Story Entry unless they are logged-in with E-mail verified
     cameraButton.isHidden = true
     logoutButton.isHidden = false
     profileButton.isHidden = true
@@ -1117,9 +1117,9 @@ extension DiscoverViewController: CameraReturnDelegate {
       self.dismiss(animated: true) {  // This dismiss is for the CameraViewController to call on
         
         let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-        guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
+        guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as? StoryEntryViewController else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-            CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")
+            CCLog.fatal("ViewController initiated not of StoryEntryViewController Class!!")
           }
           return
         }
@@ -1137,7 +1137,7 @@ extension DiscoverViewController: CameraReturnDelegate {
         viewController.returnedMoments = markedupMoments
         self.appearanceForAllUI(alphaValue: 0.0, animated: true)
         viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
-        self.pushPresent(viewController, animated: true)  // This pushPresent is from the DiscoverViewController to present the Composition VC
+        self.pushPresent(viewController, animated: true)  // This pushPresent is from the DiscoverViewController to present the Entry VC
       }
     }
   }

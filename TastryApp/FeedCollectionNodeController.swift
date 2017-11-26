@@ -130,9 +130,9 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     FoodieStory.setCurrentStory(to: story)
     
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryCompositionViewController") as? StoryCompositionViewController else {
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as? StoryEntryViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("ViewController initiated not of StoryCompositionViewController Class!!")
+        CCLog.fatal("ViewController initiated not of StoryEntryViewController Class!!")
       }
       return
     }

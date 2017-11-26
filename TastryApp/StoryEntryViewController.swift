@@ -5,10 +5,6 @@
 //  Created by Howard Lee on 2017-03-26.
 //  Copyright © 2017 Tastry. All rights reserved.
 //
-//  This is a reusable Story Entry View Controller
-//  Input  - storyUnderEdit: Story that this View Controller should be working on
-//           newOrEdit: Is this a local Story that's being drafted, or an existing Story that's being edited?
-//  Output - Save or Discard will have different action depending on if this is Drafting or Editing mode
 //
 
 import UIKit
@@ -25,12 +21,11 @@ protocol RestoreStoryDelegate {
   func updateStory(_ story: FoodieStory)
 }
 
-class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelegate {
+class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelegate {
   
   // MARK: - Private Static Constants
-  fileprivate struct Constants {
-    static let MapHeight: CGFloat = floor(UIScreen.main.bounds.height/4)
-    static let MomentHeight: CGFloat = floor(UIScreen.main.bounds.height/3)
+  
+  private struct Constants {
     static let PlaceholderColor = UIColor(red: 0xC8/0xFF, green: 0xC8/0xFF, blue: 0xC8/0xFF, alpha: 1.0)
     static let DefaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
                                                               longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
@@ -41,26 +36,34 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     static let MaxTitleLength: Int = 50
     static let MaxSwipeMessageLength: Int = 15
   }
+  
 
 
   // MARK: - Private Instance Constants
-  fileprivate let sectionOneView = UIView()
-  fileprivate let mapView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: Constants.MapHeight))
-  fileprivate var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
+  
+  private var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
 
+  
+  
   // MARK: - Public Instance Variable
-  var parentNavController: UINavigationController?
+  
   var workingStory: FoodieStory?
   var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
-  var containerVC: MarkupReturnDelegate?
   var restoreStoryDelegate: RestoreStoryDelegate?
   
+  
+  
   // MARK: - Private Instance Variables
-  fileprivate var momentViewController = MomentCollectionViewController()
+  
+  private var momentViewController = MomentCollectionViewController()
 
 
+  
   // MARK: - IBOutlets
+  
+  @IBOutlet weak var scrollView: UIScrollView!
+  @IBOutlet weak var momentCellView: UIView!
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var titleLengthLabel: UILabel?
   @IBOutlet weak var venueButton: UIButton?
@@ -72,10 +75,13 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   @IBOutlet weak var discardButton: UIButton!
   @IBOutlet weak var tagsTextView: UITextViewWithPlaceholder? {
     didSet {
-      tagsTextView?.placeholder = "Tags"
+      tagsTextView?.placeholder = "Tags (Placeholder)"
+      tagsTextView?.font = UIFont(name: "Raleway-Regular", size: 14.0)
+      tagsTextView?.isEditable = false
     }
   }
 
+  
 
   // MARK: - IBActions
   @IBAction func venueClicked(_ sender: UIButton) {
@@ -92,8 +98,8 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     // Average the locations of the Moments to create a location suggestion on where to search for a Venue
     viewController.suggestedLocation = averageLocationOfMoments()
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
-    parentNavController?.delegate = viewController
-    parentNavController?.pushViewController(viewController, animated: true)
+    navigationController?.delegate = viewController
+    pushPresent(viewController, animated: true)
   }
   
   
@@ -108,16 +114,18 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     }
   }
   
+  
   @IBAction func previewStory(_ sender: Any) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
     viewController.viewingStory = workingStory
     viewController.draftPreview = true
     viewController.setSlideTransition(presentTowards: .up, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
-    parentNavController?.delegate = viewController
-    parentNavController?.pushViewController(viewController, animated: true)
+    navigationController?.delegate = viewController
+    pushPresent(viewController, animated: true)
   }
 
+  
   @IBAction func discardStory(_ sender: UIButton) {
     StorySelector.showStoryDiscardDialog(to: self,
                                          message: "Are you sure you want to discard your edited Story?",
@@ -148,6 +156,7 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     }
   }
 
+  
   @IBAction func postStory(_ sender: UIButton) {
     guard let story = workingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
@@ -260,8 +269,10 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
   }
   
   
+  
   // MARK: - Private Instance Functions
-  fileprivate func averageLocationOfMoments() -> CLLocation? {
+  
+  private func averageLocationOfMoments() -> CLLocation? {
     
     var numValidCoordinates = 0
     var sumLatitude: Double?
@@ -287,7 +298,8 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     }
   }
 
-  fileprivate func updateStoryEntryMap(withCoordinate coordinate: CLLocationCoordinate2D, span: CLLocationDegrees, venueName: String? = nil) {
+  
+  private func updateStoryEntryMap(withCoordinate coordinate: CLLocationCoordinate2D, span: CLLocationDegrees, venueName: String? = nil) {
 //    let region = MKCoordinateRegion(center: coordinate,
 //                                    span: MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span))
 //    DispatchQueue.main.async {
@@ -307,44 +319,55 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
 //    }
   }
 
-  
-
-  // MARK: - Public Instace Functions
 
   @objc private func keyboardDismiss() {
     self.view.endEditing(true)
   }
 
+  
   @objc private func vcDismiss() {
     // TODO: Data Passback through delegate?
-    if let parentNavController = parentNavController {
-      parentNavController.popViewController(animated: true)
-    } else {
-      dismiss(animated: true)
+    popDismiss(animated: true)
+  }
+  
+  
+  @objc private func keyboardWillShow(_ notification: NSNotification) {
+    if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+      scrollView.contentInset.bottom = keyboardSize.height
     }
   }
-
+  
+  @objc private func keyboardWillHide(_ notification: NSNotification) {
+    scrollView.contentInset.bottom = 0
+  }
+  
   
   
   // MARK: - View Controller Life Cycle
+  
   override func viewDidLoad() {
     super.viewDidLoad()
-    
-    // Setup the View, Moment VC, Text Fields, Keyboards, etc.
-    mapView.isHidden = true
-    mapView.alpha = 0
-    sectionOneView.addSubview(mapView)
     
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     momentViewController = storyboard.instantiateViewController(withIdentifier: "MomentCollectionViewController") as! MomentCollectionViewController
     momentViewController.workingStory = workingStory
-    momentViewController.momentHeight = Constants.MomentHeight
     momentViewController.cameraReturnDelegate = self
     momentViewController.previewControlDelegate = self
-    momentViewController.containerVC = containerVC
+    momentViewController.containerVC = self
 
-    self.addChildViewController(momentViewController)
-
+    addChildViewController(momentViewController)
+    momentCellView.addSubview(momentViewController.view)
+    momentViewController.didMove(toParentViewController: self)
+    momentViewController.view.translatesAutoresizingMaskIntoConstraints = false
+    
+    NSLayoutConstraint.activate([
+      momentViewController.view.topAnchor.constraint(equalTo: momentCellView.topAnchor, constant: 0.0),
+      momentViewController.view.bottomAnchor.constraint(equalTo: momentCellView.bottomAnchor, constant: 0.0),
+      momentViewController.view.leftAnchor.constraint(equalTo: momentCellView.leftAnchor, constant: 0.0),
+      momentViewController.view.rightAnchor.constraint(equalTo: momentCellView.rightAnchor, constant: 0.0),
+    ])
+    
+    // scrollView.delegate = self
     titleTextField?.delegate = self
     linkTextField?.delegate = self
     swipeTextField?.delegate = self
@@ -355,9 +378,11 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     let keyboardDismissRecognizer = UITapGestureRecognizer(target: self, action: #selector(keyboardDismiss))
     keyboardDismissRecognizer.numberOfTapsRequired = 1
     keyboardDismissRecognizer.numberOfTouchesRequired = 1
-    tableView.addGestureRecognizer(keyboardDismissRecognizer)
+    view.addGestureRecognizer(keyboardDismissRecognizer)
     activitySpinner = ActivitySpinner(addTo: view, blurStyle: .dark, spinnerStyle: .whiteLarge)
-    // TODO: Do we need to download the Story itself first? How can we tell?
+    
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(noti:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(noti:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
   }
   
   
@@ -385,7 +410,8 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
             CCLog.assert("returnedMoment expected to match markupMoment")
           }
         } else {
-
+          
+          CCLog.verbose("ViewWillAppear Add Moment \(returnedMoment.getUniqueIdentifier)")
           workingStory.add(moment: returnedMoment)
           // If there wasn't any moments before, we got to make this the default thumbnail for the Story
           // Got to do this also when removing moments!!!
@@ -412,10 +438,10 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
       
       if let venueName = workingStory.venue?.name {
         venueButton?.setTitle(venueName, for: .normal)
-        venueButton?.setTitleColor(.black, for: .normal)
+        venueButton?.alpha = 1.0
       } else {
         venueButton?.setTitle("Venue", for: .normal)
-        venueButton?.setTitleColor(Constants.PlaceholderColor, for: .normal)
+        venueButton?.alpha = 0.3
       }
       
       if let storyURL = workingStory.storyURL, storyURL != "" {
@@ -456,10 +482,12 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     }
   }
   
+  
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
     view.endEditing(true)
   }
+  
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
@@ -468,67 +496,13 @@ class StoryEntryViewController: UITableViewController, UIGestureRecognizerDelega
     returnedMoments.removeAll()
   }
   
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    
-    CCLog.warning("didReceiveMemoryWarning")
-  }
   
-}
-
-
-
-// MARK: - Table View Data Source
-extension StoryEntryViewController {
-  
-  override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-    switch section {
-    case 0:
-      return sectionOneView
-    case 1:
-      momentViewController.willMove(toParentViewController: self)
-      //momentViewController.didMove(toParentViewController: self)
-      return momentViewController.collectionView! as UIView
-    default:
-      return nil
-    }
-  }
-  
-  override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    switch section {
-    case 0:
-      return Constants.MapHeight
-    case 1:
-      return Constants.MomentHeight
-    default:
-      return 0
-    }
-  }
-  
-  override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-    return 1
+  deinit {
+    NotificationCenter.default.removeObserver(self)
   }
 }
 
-//
-//// MARK: - Scroll View Delegate
-//extension StoryEntryViewController {
-//
-//  override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//    let currentOffset = scrollView.contentOffset.y
-//    let height = Constants.MapHeight - currentOffset
-//
-//    if height <= 10 {
-//      // CCLog.verbose("Height tried to be < 10")
-//      mapView.isHidden = true
-//    } else {
-//      mapView.isHidden = false
-//      mapView.frame = CGRect(x: 0, y: currentOffset, width: self.view.bounds.width, height: height)
-//    }
-//  }
-//}
-//
-//
+
 
 // MARK: - Text Fields' Delegate
 extension StoryEntryViewController: UITextFieldDelegate {
@@ -565,6 +539,7 @@ extension StoryEntryViewController: UITextFieldDelegate {
     }
   }
 }
+
 
 
 // MARK: - Venue Table Return Delegate
@@ -622,7 +597,7 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
           if let name = venueToUpdate.name {
             DispatchQueue.main.async {
               self.venueButton?.setTitle(name, for: .normal)
-              self.venueButton?.setTitleColor(.black, for: .normal)
+              self.venueButton?.alpha = 1.0
             }
           }
           
@@ -644,6 +619,8 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
   }
 }
 
+
+
 extension StoryEntryViewController: CameraReturnDelegate {
   func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
 
@@ -657,7 +634,10 @@ extension StoryEntryViewController: CameraReturnDelegate {
         if(workingStory.moments != nil) {
           itemIndex += (workingStory.moments!.count - 1)
 
+          
+          
           for moment in markedupMoments {
+            CCLog.verbose("Capture Complete Add Moment \(moment.getUniqueIdentifier())")
             indexPaths.append(IndexPath( item: (itemIndex) , section: 0))
             itemIndex += 1
             workingStory.add(moment: moment)
@@ -679,6 +659,8 @@ extension StoryEntryViewController: CameraReturnDelegate {
   }
 }
 
+
+
 extension StoryEntryViewController: PreviewControlDelegate {
   func enablePreviewButton(_ isEnabled: Bool) {
     DispatchQueue.main.async {
@@ -686,4 +668,18 @@ extension StoryEntryViewController: PreviewControlDelegate {
     }
   }
 }
+
+
+
+extension StoryEntryViewController: MarkupReturnDelegate {
+  func markupComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
+    self.returnedMoments = markedupMoments
+    
+    if(markedupMoments.count > 0) {
+      self.markupMoment = markedupMoments.first
+    }
+    dismiss(animated: true, completion: nil)  // This dismiss is for the MarkupVC to call, not for the Story Entry VC
+  }
+}
+
 

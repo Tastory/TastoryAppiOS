@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		29421A9ED1630C24163C5213 /* Pods_TastryApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9837F6E6016D51C9060037BC /* Pods_TastryApp.framework */; };
-		8C030E4A1F88A42400B93EAC /* StoryCompositionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C030E491F88A42400B93EAC /* StoryCompositionViewController.swift */; };
 		8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590481EC65B0000027E91 /* RootViewController.swift */; };
 		8C05904B1EC6671400027E91 /* UIStoryboard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */; };
 		8C0590511EC7E6A400027E91 /* FoodieMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590501EC7E6A400027E91 /* FoodieMedia.swift */; };
@@ -168,7 +167,6 @@
 		0B88724D551A16DEFECF8D13 /* Pods-TastryApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastryApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-TastryApp/Pods-TastryApp.release.xcconfig"; sourceTree = "<group>"; };
 		17F360FAB38094392D222249 /* Pods-TastryAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastryAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TastryAppTests/Pods-TastryAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4B3DBF493BCE72101729EF1C /* Pods_TastryAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TastryAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8C030E491F88A42400B93EAC /* StoryCompositionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCompositionViewController.swift; sourceTree = "<group>"; };
 		8C0590481EC65B0000027E91 /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+Extension.swift"; sourceTree = "<group>"; };
 		8C0590501EC7E6A400027E91 /* FoodieMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMedia.swift; sourceTree = "<group>"; };
@@ -637,7 +635,6 @@
 			children = (
 				8C9AD0611E8F615D005F337E /* MarkupViewController.swift */,
 				8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */,
-				8C030E491F88A42400B93EAC /* StoryCompositionViewController.swift */,
 				8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */,
 				8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */,
 				8C3254A41F40240900895572 /* VenueTableViewController.swift */,
@@ -1198,7 +1195,6 @@
 				8CE0DE1E1F89B12800F258E5 /* PercentInteractor.swift in Sources */,
 				8CBBED0F1F9D73FB008D4B12 /* ProfileTableEmailFooterView.swift in Sources */,
 				8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */,
-				8C030E4A1F88A42400B93EAC /* StoryCompositionViewController.swift in Sources */,
 				8CD5A4E71F9C161800CFD670 /* ProfileDetailTableViewController.swift in Sources */,
 				8CAA445F1F8C102C0053CD4F /* ProfileViewController.swift in Sources */,
 				8CCDDA0A1FB3E80200B066E7 /* TouchForwardingView.swift in Sources */,
