@@ -64,15 +64,20 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   
   @IBOutlet weak var scrollView: UIScrollView!
   @IBOutlet weak var momentCellView: UIView!
+  @IBOutlet weak var titleIcon: UIButton!
   @IBOutlet weak var titleTextField: UITextField?
   @IBOutlet weak var titleLengthLabel: UILabel?
+  @IBOutlet weak var venueIcon: UIButton!
   @IBOutlet weak var venueButton: UIButton?
+  @IBOutlet weak var linkIcon: UIButton!
   @IBOutlet weak var linkTextField: UITextField?
   @IBOutlet weak var openLinkButton: UIButton!
+  @IBOutlet weak var swipeIcon: UIButton!
   @IBOutlet weak var swipeTextField: UITextField?
   @IBOutlet weak var swipeLengthLabel: UILabel?
   @IBOutlet weak var previewButton: UIButton!
   @IBOutlet weak var discardButton: UIButton!
+  @IBOutlet weak var savePostButton: UIButton!
   @IBOutlet weak var tagsTextView: UITextViewWithPlaceholder? {
     didSet {
       tagsTextView?.placeholder = "Tags (Placeholder)"
@@ -333,7 +338,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   
   @objc private func keyboardWillShow(_ notification: NSNotification) {
     if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-      scrollView.contentInset.bottom = keyboardSize.height
+      // 20 as arbitrary value so there's some space between the text field in focus and the top of the keyboard
+      scrollView.contentInset.bottom = keyboardSize.height + 20
     }
   }
   
@@ -375,14 +381,20 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     titleLengthLabel?.text = String(Constants.MaxTitleLength)
     swipeLengthLabel?.text = String(Constants.MaxSwipeMessageLength)
     
+    if isEditing {
+      savePostButton?.setTitle("Save", for: .normal)
+    } else {
+      savePostButton?.setTitle("Post", for: .normal)
+    }
+    
     let keyboardDismissRecognizer = UITapGestureRecognizer(target: self, action: #selector(keyboardDismiss))
     keyboardDismissRecognizer.numberOfTapsRequired = 1
     keyboardDismissRecognizer.numberOfTouchesRequired = 1
     view.addGestureRecognizer(keyboardDismissRecognizer)
     activitySpinner = ActivitySpinner(addTo: view, blurStyle: .dark, spinnerStyle: .whiteLarge)
     
-    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(noti:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(noti:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
   }
   
   
@@ -519,13 +531,21 @@ extension StoryEntryViewController: UITextFieldDelegate {
       var remainingLength = Constants.MaxTitleLength - newLength
       if remainingLength == -1 { remainingLength = 0 }
       titleLengthLabel?.text = String(remainingLength)
+      
+      if newLength > 0 {
+        titleIcon.alpha = 1.0
+      } else {
+        titleIcon.alpha = 0.3
+      }
       return newLength <= Constants.MaxTitleLength // Bool
     }
     else if textField === linkTextField {
       if newLength > 0 {
         openLinkButton.isHidden = false
+        linkIcon.alpha = 1.0
       } else {
         openLinkButton.isHidden = true
+        linkIcon.alpha = 0.3
       }
       return true
     }
@@ -533,6 +553,12 @@ extension StoryEntryViewController: UITextFieldDelegate {
       var remainingLength = Constants.MaxSwipeMessageLength - newLength
       if remainingLength == -1 { remainingLength = 0 }
       swipeLengthLabel?.text = String(remainingLength)
+      
+      if newLength > 0 {
+        swipeIcon.alpha = 1.0
+      } else {
+        swipeIcon.alpha = 0.3
+      }
       return newLength <= Constants.MaxSwipeMessageLength
     } else {
       return true
@@ -598,6 +624,7 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
             DispatchQueue.main.async {
               self.venueButton?.setTitle(name, for: .normal)
               self.venueButton?.alpha = 1.0
+              self.venueIcon?.alpha = 1.0
             }
           }
           

@@ -20,7 +20,6 @@
 		8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */; };
 		8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A0D7E1E88F711001DE075 /* CameraButton.swift */; };
 		8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71F51ED1602F00D2E4F8 /* FoodieGlobal.swift */; };
-		8C1D4E241EDCECCD00939B2C /* FeedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */; };
 		8C1ED6EF1F5D15A300A8CC94 /* CameraButtonLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6EA1F5D15A300A8CC94 /* CameraButtonLayer.swift */; };
 		8C1ED6F01F5D15A300A8CC94 /* CameraButtonRingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6EB1F5D15A300A8CC94 /* CameraButtonRingLayer.swift */; };
 		8C1ED6F21F5D15A300A8CC94 /* ThumbnailFrameLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1ED6ED1F5D15A300A8CC94 /* ThumbnailFrameLayer.swift */; };
@@ -179,7 +178,6 @@
 		8C1A0D7C1E88EA34001DE075 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		8C1A0D7E1E88F711001DE075 /* CameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraButton.swift; sourceTree = "<group>"; };
 		8C1C71F51ED1602F00D2E4F8 /* FoodieGlobal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieGlobal.swift; sourceTree = "<group>"; };
-		8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedCollectionViewCell.swift; sourceTree = "<group>"; };
 		8C1ED6EA1F5D15A300A8CC94 /* CameraButtonLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraButtonLayer.swift; sourceTree = "<group>"; };
 		8C1ED6EB1F5D15A300A8CC94 /* CameraButtonRingLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraButtonRingLayer.swift; sourceTree = "<group>"; };
 		8C1ED6ED1F5D15A300A8CC94 /* ThumbnailFrameLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailFrameLayer.swift; sourceTree = "<group>"; };
@@ -416,7 +414,6 @@
 		8C889ECE1F9D5FC500E8CC56 /* Cell, Headers/Footers */ = {
 			isa = PBXGroup;
 			children = (
-				8C1D4E231EDCECCD00939B2C /* FeedCollectionViewCell.swift */,
 				8CCC7EFF1FA5A32F0049AF00 /* FeedCollectionCellNode.swift */,
 				8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */,
 				8C1089301EADC11B00457E66 /* MomentHeaderReusableView.swift */,
@@ -1151,7 +1148,6 @@
 				8C1ED6EF1F5D15A300A8CC94 /* CameraButtonLayer.swift in Sources */,
 				8C1089331EADC13700457E66 /* MomentFooterReusableView.swift in Sources */,
 				8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */,
-				8C1D4E241EDCECCD00939B2C /* FeedCollectionViewCell.swift in Sources */,
 				8CBBED151F9D7E94008D4B12 /* ProfileTableSaveFooterView.swift in Sources */,
 				8C1A0D7D1E88EA34001DE075 /* CameraViewController.swift in Sources */,
 				8CD5A4E91F9C16AC00CFD670 /* PasswordTableViewController.swift in Sources */,

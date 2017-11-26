@@ -12,11 +12,12 @@ class MomentCollectionViewController: UICollectionViewController {
 
   // MARK: - Private Class Constants
   fileprivate struct Constants {
-    static let momentCellReuseId = "MomentCell"
-    static let headerElementReuseId = "MomentHeader"
-    static let footerElementReuseId = "MomentFooter"
-    static let interitemSpacing: CGFloat = 2
-    static let headerFooterToCellWidthRatio: CGFloat = 3/4
+    static let MomentCellReuseId = "MomentCell"
+    static let HeaderElementReuseId = "MomentHeader"
+    static let FooterElementReuseId = "MomentFooter"
+    static let SectionInsetSpacing: CGFloat = 12
+    static let InteritemSpacing: CGFloat = 8
+    static let HeaderFooterToCellWidthRatio: CGFloat = 1.0
   }
 
   // MARK: - Public Instance Variables
@@ -65,7 +66,7 @@ class MomentCollectionViewController: UICollectionViewController {
           // If the oldIndexPath is same as the pressed indexPath, nothing to do here really.
           if oldIndexPath != indexPath {
             if let oldCell = myCollectionView.cellForItem(at: oldIndexPath) as? MomentCollectionViewCell {
-              oldCell.thumbFrameView.isHidden = true
+              oldCell.thumbFrameLayer?.isHidden = true
             } else {
               myCollectionView.reloadItems(at: [oldIndexPath])
             }
@@ -83,7 +84,7 @@ class MomentCollectionViewController: UICollectionViewController {
     currentStory.thumbnail = momentArray[indexPath.item].thumbnail
 
     // Unhide the Thumbnail Frame to give feedback to user that this is the Story Thumbnail
-    cell.thumbFrameView.isHidden = false
+    cell.thumbFrameLayer?.isHidden = false
   }
 
   @objc private func thumbnailGesture(_ sender: UIGestureRecognizer) {
@@ -225,29 +226,28 @@ class MomentCollectionViewController: UICollectionViewController {
       let moment = momentArray[indexPath.item]
 
       if(reusableCell.indexPath == indexPath) {
-        if(reusableCell.viewButton.gestureRecognizers == nil) {
+        reusableCell.configureLayers()
+        
+        if reusableCell.momentThumb.gestureRecognizers == nil {
           let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.thumbnailGesture(_:)))
           tapRecognizer.numberOfTapsRequired = 1
-          reusableCell.viewButton.isUserInteractionEnabled = true
-          reusableCell.viewButton.addGestureRecognizer(tapRecognizer)
+          reusableCell.momentThumb.isUserInteractionEnabled = true
+          reusableCell.momentThumb.addGestureRecognizer(tapRecognizer)
 
           let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.editMoment(_:)))
           doubleTapRecognizer.numberOfTapsRequired = 2
-          reusableCell.viewButton.addGestureRecognizer(doubleTapRecognizer)
+          reusableCell.momentThumb.addGestureRecognizer(doubleTapRecognizer)
           tapRecognizer.require(toFail: doubleTapRecognizer)
         }
 
         reusableCell.momentThumb.image = UIImage(data: moment.thumbnail!.imageMemoryBuffer!)
 
-        // Should Thumbnail frame be hidden?
-        reusableCell.createFrameLayer()
         if self.workingStory.thumbnailFileName != nil, self.workingStory.thumbnailFileName == moment.thumbnailFileName {
-          reusableCell.thumbFrameView.isHidden = false
+          reusableCell.thumbFrameLayer?.isHidden = false
         } else {
-          reusableCell.thumbFrameView.isHidden = true
+          reusableCell.thumbFrameLayer?.isHidden = true
         }
 
-        reusableCell.delegate = self
         reusableCell.activityIndicator.stopAnimating()
         reusableCell.deleteButton.isHidden = false
       }
@@ -314,15 +314,16 @@ extension MomentCollectionViewController {
   }
 
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.momentCellReuseId, for: indexPath) as! MomentCollectionViewCell
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.MomentCellReuseId, for: indexPath) as! MomentCollectionViewCell
 
-    cell.momentThumb.image = UIImage()
     cell.indexPath = indexPath
+    cell.delegate = self
+    
     cell.activityIndicator.isHidden = false
     cell.activityIndicator.hidesWhenStopped = true
     cell.activityIndicator.startAnimating()
     cell.deleteButton.isHidden = true
-    cell.thumbFrameView.isHidden = true
+    cell.thumbFrameLayer?.isHidden = true
 
     guard let momentArray = workingStory.moments else {
       CCLog.warning("No Moments for workingStory \(workingStory.getUniqueIdentifier())")
@@ -387,9 +388,16 @@ extension MomentCollectionViewController {
 
     switch kind {
     case UICollectionElementKindSectionHeader:
-      reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.headerElementReuseId, for: indexPath)
+      guard let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.HeaderElementReuseId, for: indexPath) as? MomentHeaderReusableView else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.assert("UICollectionElementKindSectionFooter dequeued is not MomentHeaderReusableView")
+        }
+        return reusableView
+      }
+      reusableView = headerView
+      
     case UICollectionElementKindSectionFooter:
-      guard let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.footerElementReuseId, for: indexPath) as? MomentFooterReusableView else {
+      guard let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.FooterElementReuseId, for: indexPath) as? MomentFooterReusableView else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
           CCLog.assert("UICollectionElementKindSectionFooter dequeued is not MomentFooterReusableView")
         }
@@ -397,6 +405,7 @@ extension MomentCollectionViewController {
       }
       footerView.addMomentButton.addTarget(self, action: #selector(openCamera), for: .touchUpInside)
       reusableView = footerView
+      
     default:
       CCLog.fatal("Unrecognized Kind '\(kind)' for Supplementary Element")
     }
@@ -419,13 +428,13 @@ extension MomentCollectionViewController {
   }
   
   
-  // MARK: - Scroll View Delegate Conformance
-  
-  override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-    if scrollView.contentOffset.x <= 0 {
-      openCamera()
-    }
-  }
+//  // MARK: - Scroll View Delegate Conformance
+//
+//  override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//    if scrollView.contentOffset.x <= 0 {
+//      openCamera()
+//    }
+//  }
 }
 
 
@@ -434,38 +443,39 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-    let height = collectionView.bounds.height - 2*Constants.interitemSpacing
+    let height = collectionView.bounds.height - 2*Constants.SectionInsetSpacing
     let width = height * FoodieGlobal.Constants.DefaultMomentAspectRatio
     return CGSize(width: width, height: height)
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-    return Constants.interitemSpacing
+    return Constants.InteritemSpacing
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-    return Constants.interitemSpacing
+    return Constants.InteritemSpacing
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
 
-    let height = collectionView.bounds.height - 2*Constants.interitemSpacing
-    let width = height * FoodieGlobal.Constants.DefaultMomentAspectRatio * Constants.headerFooterToCellWidthRatio
+    let height = collectionView.bounds.height - 2*Constants.SectionInsetSpacing
+    let width = height * FoodieGlobal.Constants.DefaultMomentAspectRatio
     
     // Now we know the width, also set the Collection View Content Inset here
-    collectionView.contentInset = UIEdgeInsetsMake(0.0, -width, 0.0, 0.0)
-    return CGSize(width: width, height: height)
+    collectionView.contentInset = UIEdgeInsetsMake(0.0, -width, 0.0, Constants.InteritemSpacing)
+    return CGSize(width: width, height: collectionView.bounds.height)
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
 
-    let height = collectionView.bounds.height - 2*Constants.interitemSpacing
-    let width = height * FoodieGlobal.Constants.DefaultMomentAspectRatio * Constants.headerFooterToCellWidthRatio
-    return CGSize(width: width, height: height)
+    let height = collectionView.bounds.height - 2*Constants.SectionInsetSpacing
+    let width = height * FoodieGlobal.Constants.DefaultMomentAspectRatio
+    
+    return CGSize(width: width, height: collectionView.bounds.height)
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-    return UIEdgeInsetsMake(Constants.interitemSpacing, Constants.interitemSpacing, Constants.interitemSpacing, Constants.interitemSpacing)
+    return UIEdgeInsetsMake(Constants.SectionInsetSpacing, Constants.InteritemSpacing, Constants.SectionInsetSpacing, Constants.InteritemSpacing)
   }
 }
 
