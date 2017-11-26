@@ -628,10 +628,14 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     if position != nil {
       CCLog.assert("FoodieStory.add(to position:) not yet implemented. Adding to 'end' position")
     }
-    
     // Temporary Code?
     if self.moments != nil {
-      self.moments!.append(moment)
+
+      if(self.moments!.contains(moment)) {
+        CCLog.assert("Failed to add a moment as it already exists within this story")
+      } else {
+        self.moments!.append(moment)
+      }
     } else {
       self.moments = [moment]
     }

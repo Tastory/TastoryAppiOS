@@ -418,6 +418,10 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     
     if let workingStory = workingStory {
 
+      // compute the insert index for the collection view
+      var indexPaths: [IndexPath] = []
+      var itemIndex = 1
+
       for returnedMoment in returnedMoments {
         // Let's figure out what to do with the returned Moment
         if markupMoment != nil {
@@ -437,7 +441,13 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             CCLog.assert("returnedMoment expected to match markupMoment")
           }
         } else {
-          
+
+          if(workingStory.moments != nil) {
+            itemIndex += (workingStory.moments!.count - 1)
+            indexPaths.append(IndexPath( item: (itemIndex) , section: 0))
+            itemIndex += 1
+          }
+
           CCLog.verbose("ViewWillAppear Add Moment \(returnedMoment.getUniqueIdentifier)")
           workingStory.add(moment: returnedMoment)
           // If there wasn't any moments before, we got to make this the default thumbnail for the Story
@@ -455,6 +465,17 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             self.previewButton.isEnabled = true
             //self.returnedMoment = nil  // We should be in a state where whom is the returned Moment should no longer matter
           }
+        }
+      }
+
+      if(!indexPaths.isEmpty) {
+        guard let collectionView = self.momentViewController.collectionView else {
+          CCLog.fatal("collection view from momentViewController is nil")
+        }
+
+        // insert items only if the UIcollectionView is loaded previously
+        if(!collectionView.visibleCells.isEmpty){
+          collectionView.insertItems(at: indexPaths)
         }
       }
 
@@ -758,39 +779,9 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
 
 extension StoryEntryViewController: CameraReturnDelegate {
   func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
-
-    dismiss(animated: true) {  // This dismiss is for the Camera VC
-      self.returnedMoments =  markedupMoments
-      // compute the insert index for the collection view
-      var indexPaths: [IndexPath] = []
-      var itemIndex = 1
-
-      if let workingStory = self.workingStory {
-        if(workingStory.moments != nil) {
-          itemIndex += (workingStory.moments!.count - 1)
-
-          
-          
-          for moment in markedupMoments {
-            CCLog.verbose("Capture Complete Add Moment \(moment.getUniqueIdentifier())")
-            indexPaths.append(IndexPath( item: (itemIndex) , section: 0))
-            itemIndex += 1
-            workingStory.add(moment: moment)
-          }
-
-          for moment in markedupMoments {
-            FoodieStory.preSave(moment, withBlock: nil)
-          }
-
-          guard let collectionView = self.momentViewController.collectionView else {
-            CCLog.fatal("collection view from momentViewController is nil")
-          }
-          collectionView.insertItems(at: indexPaths)
-        }
-      }
-
-      self.markupMoment = nil
-    }
+    returnedMoments = markedupMoments
+    markupMoment = nil
+    dismiss(animated: true)
   }
 }
 
