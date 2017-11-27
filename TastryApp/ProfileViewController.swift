@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import SafariServices
 
 class ProfileViewController: OverlayViewController {
   
@@ -83,6 +84,17 @@ class ProfileViewController: OverlayViewController {
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
   }
+  
+  
+  @IBAction func websiteTapAction(_ sender: UITapGestureRecognizer) {
+    if let websiteString = websiteLabel.text, let websiteUrl = URL(string: URL.addHttpIfNeeded(to: websiteString)) {
+      CCLog.info("Opening Safari View for \(websiteUrl)")
+      let safariViewController = SFSafariViewController(url: websiteUrl)
+      safariViewController.modalPresentationStyle = .overFullScreen
+      self.present(safariViewController, animated: true, completion: nil)
+    }
+  }
+  
   
   
   @IBAction func addPhotoAction(_ sender: UIButton) {

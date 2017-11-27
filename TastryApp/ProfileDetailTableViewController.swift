@@ -120,8 +120,7 @@ class ProfileDetailTableViewController: UITableViewController {
     CCLog.info("User tapped Website Preview")
     
     if let linkText = websiteField?.text, let url = URL(string: URL.addHttpIfNeeded(to: linkText)) {
-      websiteField?.text = URL.addHttpIfNeeded(to: linkText)
-      websiteString = URL.addHttpIfNeeded(to: linkText)
+      websiteString = linkText
       
       CCLog.info("Opening Safari View for \(url)")
       let safariViewController = SFSafariViewController(url: url)
@@ -185,9 +184,14 @@ class ProfileDetailTableViewController: UITableViewController {
     emailField?.text = email
     
     // See if there's a web address. If so check for validity and changed if needed
-    if let urlString = websiteString {
-      websiteString = URL.addHttpIfNeeded(to: urlString)
-      websiteField?.text = urlString
+    if let urlString = websiteString?.trimmingCharacters(in: .whitespacesAndNewlines), urlString != "" {
+      if URL(string: URL.addHttpIfNeeded(to: urlString)) != nil {
+        websiteField?.text = urlString
+      } else {
+        AlertDialog.present(from: self, title: "Invalid Web Address", message: "Please enter a valid Web Address URL")
+        CCLog.info("User entered invalid web address URL - \(urlString)")
+        return
+      }
     }
     
     // Check for validity and availability before allowing to save

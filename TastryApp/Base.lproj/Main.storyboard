@@ -43,10 +43,10 @@
                                 <rect key="frame" x="0.0" y="337.33333333333326" width="375" height="440.66666666666674"/>
                                 <subviews>
                                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesSelf" translatesAutoresizingMaskIntoConstraints="NO" id="AMX-lO-lJU">
-                                        <rect key="frame" x="52" y="122" width="270" height="197"/>
+                                        <rect key="frame" x="52" y="122.66666666666669" width="270" height="197"/>
                                     </imageView>
                                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesOthers" translatesAutoresizingMaskIntoConstraints="NO" id="ETg-wA-zyO">
-                                        <rect key="frame" x="52" y="122" width="270" height="197"/>
+                                        <rect key="frame" x="52" y="122.66666666666669" width="270" height="197"/>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -136,12 +136,25 @@
                                                     <constraint firstItem="neT-9F-S2G" firstAttribute="height" secondItem="hM8-0o-Mjt" secondAttribute="height" id="CIM-Il-cKj"/>
                                                 </constraints>
                                             </stackView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="900" verticalHuggingPriority="300" verticalCompressionResistancePriority="800" text="domain.me/username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="PZf-fE-H2X">
+                                            <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NlV-PS-Ebg">
                                                 <rect key="frame" x="0.0" y="26" width="344" height="16.333333333333329"/>
-                                                <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
-                                                <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
+                                                <subviews>
+                                                    <label opaque="NO" contentMode="left" horizontalHuggingPriority="900" verticalHuggingPriority="300" verticalCompressionResistancePriority="800" text="domain.me/username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="PZf-fE-H2X">
+                                                        <rect key="frame" x="0.0" y="0.0" width="137" height="16.333333333333332"/>
+                                                        <gestureRecognizers/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                        <connections>
+                                                            <outletCollection property="gestureRecognizers" destination="JcB-kz-f5q" appends="YES" id="hvQ-4y-b9k"/>
+                                                        </connections>
+                                                    </label>
+                                                    <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="qGM-28-cti">
+                                                        <rect key="frame" x="137" y="0.0" width="207" height="16.333333333333332"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    </view>
+                                                </subviews>
+                                            </stackView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="700" text="Always looking for new and interesting experiences. Love telling stories. Eats all the time. Follow me on my Instagram!" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="r9U-GH-GMa">
                                                 <rect key="frame" x="0.0" y="47.333333333333314" width="344" height="28"/>
                                                 <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
@@ -229,6 +242,11 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D8H-kQ-saV" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="JcB-kz-f5q">
+                    <connections>
+                        <action selector="websiteTapAction:" destination="Mls-rg-2Ue" id="mVH-y7-pgn"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-412" y="-1353.3733133433284"/>
         </scene>
