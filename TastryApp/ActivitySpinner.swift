@@ -16,7 +16,6 @@ class ActivitySpinner {
   var controllerView: UIView? = nil
   
   init(addTo view: UIView, blurStyle: UIBlurEffectStyle = .regular, spinnerStyle: UIActivityIndicatorViewStyle = .whiteLarge) {
-    DispatchQueue.main.async {
       let blurEffect = UIBlurEffect(style: blurStyle)
       self.blurEffectView = UIVisualEffectView(effect: blurEffect)
       view.addSubview(self.blurEffectView!)
@@ -27,7 +26,6 @@ class ActivitySpinner {
       self.activityView!.isHidden = true
       view.sendSubview(toBack: self.activityView!)
       self.controllerView = view
-    }
   }
   
   func apply(below subview: UIView? = nil, with completion: (() -> Void)? = nil) {

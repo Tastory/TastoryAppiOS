@@ -53,7 +53,7 @@ class DiscoverViewController: OverlayViewController {
   // MARK: - Private Instance Variables
   private var feedCollectionNodeController: FeedCollectionNodeController!
   private var mapNavController: MapNavController?
-  
+  private var activitySpinner: ActivitySpinner!
   private var lastMapRegion: MKCoordinateRegion?
   private var lastMapWasTracking: Bool = false
   private var lastSelectedAnnotationIndex: Int?
@@ -347,13 +347,11 @@ class DiscoverViewController: OverlayViewController {
     query.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)
     _ = query.addArrangement(type: .creationTime, direction: .descending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
 
-    let activitySpinner = ActivitySpinner(addTo: view)
     activitySpinner.apply()
     
     // Actually do the Query
     query.initStoryQueryAndSearch { (stories, error) in
-      
-      activitySpinner.remove()
+      self.activitySpinner.remove()
       
       if let error = error {
         AlertDialog.present(from: self, title: "Query Failed", message: error.localizedDescription) { action in
@@ -526,6 +524,8 @@ class DiscoverViewController: OverlayViewController {
     
     // Setup all the IBOutlet Delegates
     locationField?.delegate = self
+    
+    activitySpinner = ActivitySpinner(addTo: view)
     
     // Setup placeholder text for the Search text field
     guard let searchBarFont = UIFont(name: Constants.SearchBarFontName, size: Constants.SearchBarFontSize) else {

@@ -11,6 +11,11 @@ import UIKit
 class LogInViewController: OverlayViewController {
   
   
+  // MARK: - Private Instance Variable
+  private var activitySpinner: ActivitySpinner! // Initialize in ViewDidLoad
+  
+  
+  
   // MARK: - IBOutlet
   
   @IBOutlet weak var titleLabel: UILabel!
@@ -155,13 +160,10 @@ class LogInViewController: OverlayViewController {
   private func logIn(for username: String, using password: String) {
     
     view.endEditing(true)
-    
-    let activitySpinner = ActivitySpinner(addTo: view, blurStyle: .prominent)
     activitySpinner.apply()
     
     FoodieUser.logIn(for: username, using: password) { (user, error) in
-      
-      activitySpinner.remove()
+      self.activitySpinner.remove()
       
       if let error = error {
         AlertDialog.present(from: self, title: "Login Failed", message: error.localizedDescription) { action in
@@ -231,6 +233,7 @@ class LogInViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     facebookButton.layer.cornerRadius = 5.0
+    activitySpinner = ActivitySpinner(addTo: view, blurStyle: .prominent)
     
     // Gonna wipe all previous user state if you ever get here
     if FoodieStory.currentStory != nil {

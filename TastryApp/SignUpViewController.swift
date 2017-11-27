@@ -18,6 +18,12 @@ class SignUpViewController: OverlayViewController {
   
   
   
+  // MARK: - Private Instance Variable
+  
+  private var activitySpinner: ActivitySpinner!
+  
+  
+  
   // MARK: - IBOutlet
   
   @IBOutlet weak var titleLabel: UILabel!
@@ -108,13 +114,12 @@ class SignUpViewController: OverlayViewController {
     user.email = email
     user.password = password
     
-    let activitySpinner = ActivitySpinner(addTo: view)
     activitySpinner.apply()
     
     // Don't bother with checking whether things are available. Sign-up to find out
     // SignUp also checks for username/e-mail/password validity
     user.signUp { error in
-      activitySpinner.remove()
+      self.activitySpinner.remove()
       
       // Handle all known error cases
       if let error = error {
@@ -150,6 +155,8 @@ class SignUpViewController: OverlayViewController {
     usernameField.delegate = self
     emailField.delegate = self
     passwordField.delegate = self
+    
+    activitySpinner = ActivitySpinner(addTo: view)
   }
   
   
@@ -206,11 +213,6 @@ extension SignUpViewController: UITextFieldDelegate {
       // Lower cased emails only too
       textString = textString.lowercased()
       textField.text = textString
-      
-//      if !FoodieUser.checkValidFor(email: textString) {
-//        warningLabel.text = "Address entered is not of valid E-mail address format"
-//        return
-//      }
       
       FoodieUser.checkUserAvailFor(email: textString) { (success, error) in
         DispatchQueue.main.async {
