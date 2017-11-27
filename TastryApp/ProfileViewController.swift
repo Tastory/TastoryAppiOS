@@ -6,7 +6,7 @@
 //  Copyright © 2017 Tastry. All rights reserved.
 //
 
-import UIKit
+import AsyncDisplayKit
 
 class ProfileViewController: OverlayViewController {
   
@@ -14,6 +14,13 @@ class ProfileViewController: OverlayViewController {
   
   struct Constants {
     static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.9
+    static let StackShadowOffset = FoodieGlobal.Constants.DefaultUIShadowOffset
+    static let StackShadowRadius = FoodieGlobal.Constants.DefaultUIShadowRadius
+    static let StackShadowOpacity = FoodieGlobal.Constants.DefaultUIShadowOpacity
+    
+    static let TopGradientBlackAlpha: CGFloat = 0.3
+    static let BottomGradientBlackAlpha: CGFloat = 0.7
+    static let UIDisappearanceDuration = FoodieGlobal.Constants.DefaultUIDisappearanceDuration
   }
   
   
@@ -21,8 +28,11 @@ class ProfileViewController: OverlayViewController {
   // MARK: - Private Instance Variables
   
   private var feedCollectionNodeController: FeedCollectionNodeController?
+  private var mapNavController: MapNavController?
+  private var avatarImageNode: ASNetworkImageNode?
   private var activitySpinner: ActivitySpinner!
   private var isInitialLayout = true
+  private var isAppearanceLayout = true
   
   
   
@@ -33,6 +43,7 @@ class ProfileViewController: OverlayViewController {
   var stories = [FoodieStory]() {
     didSet {
       feedCollectionNodeController?.resetCollectionNode(with: stories)
+      feedCollectionNodeController?.scrollTo(storyIndex: 0)
     }
   }
   
@@ -41,9 +52,11 @@ class ProfileViewController: OverlayViewController {
   // MARK: - IBOutlet
   
   @IBOutlet weak var feedContainerView: UIView!
+  @IBOutlet weak var topGradientBackground: UIView!
   @IBOutlet weak var mapExposedView: UIView!
   @IBOutlet weak var profileUIView: UIView!
-  @IBOutlet weak var avatarView: UIView!
+  @IBOutlet weak var avatarFrameView: UIImageView!
+  @IBOutlet weak var addPhotoButton: UIButton!
   @IBOutlet weak var followButton: UIButton!
   @IBOutlet weak var settingsButton: UIButton!
   @IBOutlet weak var shareButton: UIButton!
@@ -52,6 +65,8 @@ class ProfileViewController: OverlayViewController {
   @IBOutlet weak var usernameLabel: UILabel!
   @IBOutlet weak var websiteLabel: UILabel!
   @IBOutlet weak var bioLabel: UILabel!
+  @IBOutlet weak var noStoriesSelfImageView: UIImageView!
+  @IBOutlet weak var noStoriesOthersImageView: UIImageView!
   
   
   
@@ -67,6 +82,90 @@ class ProfileViewController: OverlayViewController {
     }
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
+  }
+  
+  
+  @IBAction func addPhotoAction(_ sender: UIButton) {
+    let storyboard = UIStoryboard(name: "Settings", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsViewController") as? SettingsViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of SettingsViewController Class!!")
+      }
+      return
+    }
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
+    pushPresent(viewController, animated: true)
+  }
+  
+  
+  @IBAction func backAction(_ sender: UIButton) {
+    popDismiss(animated: true)
+  }
+  
+  
+  
+  // MARK: - Private Instance Functions
+  
+  private func updateProfileMap(with story: FoodieStory) {
+    let minMapWidth = mapNavController?.minMapWidth ?? MapNavController.Constants.DefaultMinMapWidth
+    
+    if let venue = story.venue, venue.isDataAvailable {
+      guard let location = venue.location else {
+        CCLog.warning("Venue with no Location")
+        return
+      }
+      
+      DispatchQueue.main.async {
+        let coordinate = CLLocationCoordinate2DMake(location.latitude, location.longitude)
+        let region = MKCoordinateRegionMakeWithDistance(coordinate, minMapWidth, minMapWidth)
+        
+        self.mapNavController?.removeAllAnnotations()
+        self.mapNavController?.showRegionExposed(region, animated: true)
+        
+        // Add back if an annotation is requested
+        if let name = venue.name {
+          let annotation = StoryMapAnnotation(title: name, story: story, coordinate: region.center)
+          self.mapNavController?.add(annotation: annotation)
+          self.mapNavController?.select(annotation: annotation, animated: true)
+        }
+      }
+    }
+  }
+  
+  
+  private func retrieveStoryDigests(_ stories: [FoodieStory]) {
+    for story in stories {
+      _ = story.retrieveDigest(from: .both, type: .cache) { error in
+        if let error = error {
+          AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story Digest - \(error.localizedDescription)") { action in
+            CCLog.warning("Failed to retrieve Story Digest via story.retrieveDigest. Error - \(error.localizedDescription)")
+          }
+          return
+        }
+        guard let venue = story.venue, venue.location != nil, venue.isDataAvailable else {
+          CCLog.assert("No Title, Venue or Location to Story. Skipping Story")
+          return
+        }
+      }
+    }
+  }
+  
+  
+  private func appearanceForAllUI(alphaValue: CGFloat, animated: Bool,
+                                  duration: TimeInterval = FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
+    if animated {
+      UIView.animate(withDuration: duration) {
+        self.topGradientBackground.alpha = alphaValue
+        self.feedContainerView.alpha = alphaValue
+        self.noStoriesSelfImageView.alpha = alphaValue
+        self.noStoriesOthersImageView.alpha = alphaValue
+      }
+    } else {
+      topGradientBackground.alpha = alphaValue
+      feedContainerView.alpha = alphaValue
+      noStoriesSelfImageView.alpha = alphaValue
+      noStoriesOthersImageView.alpha = alphaValue
+    }
   }
   
   
@@ -88,6 +187,13 @@ class ProfileViewController: OverlayViewController {
     followButton.imageView?.contentMode = .scaleAspectFit
     shareButton.imageView?.contentMode = .scaleAspectFit
     filterButton.imageView?.contentMode = .scaleAspectFit
+    
+    // Drop Shadow at the back of the UI View
+    profileUIView.layer.masksToBounds = false
+    profileUIView.layer.shadowColor = UIColor.black.cgColor
+    profileUIView.layer.shadowOffset = Constants.StackShadowOffset
+    profileUIView.layer.shadowRadius = Constants.StackShadowRadius
+    profileUIView.layer.shadowOpacity = Constants.StackShadowOpacity
     
     // Query everything by this user
     query = FoodieQuery()
@@ -117,12 +223,35 @@ class ProfileViewController: OverlayViewController {
         }
         return
       }
-      self.stories = stories
+      
+      // Show empty message if applicable
+      if stories.count <= 0 {
+        if user === FoodieUser.current {
+          self.noStoriesSelfImageView.isHidden = false
+          self.noStoriesOthersImageView.isHidden = true
+          self.feedContainerView.isHidden = true
+        } else {
+          self.noStoriesSelfImageView.isHidden = true
+          self.noStoriesOthersImageView.isHidden = false
+          self.feedContainerView.isHidden = true
+        }
+      } else {
+        self.noStoriesSelfImageView.isHidden = true
+        self.noStoriesOthersImageView.isHidden = true
+        self.feedContainerView.isHidden = false
+        
+        self.retrieveStoryDigests(stories)
+        self.stories = stories
+      }
     }
+    
+    appearanceForAllUI(alphaValue: 0.0, animated: false)
   }
   
   
   override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    
     guard let user = user, user.isRegistered else {
       AlertDialog.present(from: self, title: "Profile Error", message: "The specified user profile belongs to an unregistered user") { _ in
         CCLog.assert("Entered Profile View but no valid registered user specified")
@@ -130,6 +259,26 @@ class ProfileViewController: OverlayViewController {
       }
       return
     }
+    
+    if let avatarFileName = user.profileMediaFileName {
+      if let mediaTypeString = user.profileMediaType, let mediaType = FoodieMediaType(rawValue: mediaTypeString), mediaType == .photo {
+        // Only Photo Avatars are supported at the moment
+        avatarImageNode = ASNetworkImageNode()
+        avatarImageNode!.url = FoodieFileObject.getS3URL(for: avatarFileName)
+        avatarImageNode!.contentMode = .scaleAspectFill
+        avatarImageNode!.placeholderColor = UIColor.white
+        avatarImageNode!.placeholderEnabled = true
+        //avatarImageNode!.isLayerBacked = true
+        
+        addPhotoButton.isHidden = true
+      } else {
+        CCLog.warning("Unsupported Avatar Media Type - \(user.profileMediaType ?? "Media Type == nil")")
+        addPhotoButton.isHidden = false
+      }
+    } else {
+      addPhotoButton.isHidden = false
+    }
+    
     
     guard let username = user.username else {
       AlertDialog.present(from: self, title: "User Error", message: "User has no username. Please try another user") { _ in
@@ -165,13 +314,17 @@ class ProfileViewController: OverlayViewController {
     }
     
     // Hide all the other buttons for now
-//    followButton.isHidden = true
-//    shareButton.isHidden = true
-//    filterButton.isHidden = true
+    followButton.isHidden = true
+    shareButton.isHidden = true
+    filterButton.isHidden = true
+    
+    isAppearanceLayout = true
   }
   
   
   override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    
     if isInitialLayout {
       isInitialLayout = false
       let nodeController = FeedCollectionNodeController(with: .mosaic,
@@ -187,8 +340,83 @@ class ProfileViewController: OverlayViewController {
       nodeController.didMove(toParentViewController: self)
       nodeController.delegate = self
       feedCollectionNodeController = nodeController
+      
+      if let avatarImageNode = avatarImageNode {
+        avatarImageNode.frame = avatarFrameView.frame.insetBy(dx: 2.0, dy: 2.0)
+        view.addSubnode(avatarImageNode)
+        view.insertSubview(avatarImageNode.view, belowSubview: avatarFrameView)
+        
+        // Mask the avatar
+        guard let maskImage = UIImage(named: "Profile-BloatedSquareMask") else {
+          CCLog.fatal("Cannot get at Profile-BloatedSquareMask in Resource Bundle")
+        }
+        
+        let maskLayer = CALayer()
+        maskLayer.contents = maskImage.cgImage
+        maskLayer.frame = avatarImageNode.bounds
+        avatarImageNode.layer.mask = maskLayer
+      }
+    }
+    
+    if isAppearanceLayout {
+      isAppearanceLayout = false
+      
+      // Setup Background Gradient Views
+      let topBackgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.TopGradientBlackAlpha)
+      let topGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
+                                         endingAt: CGPoint(x: 0.5, y: 1.0),
+                                         with: [topBackgroundBlackAlpha, .clear])
+      topGradientNode.isOpaque = false
+      topGradientNode.frame = topGradientBackground.bounds
+      topGradientBackground.addSubnode(topGradientNode)
+      topGradientBackground.sendSubview(toBack: topGradientNode.view)
+      
+      let bottomBackgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.BottomGradientBlackAlpha)
+      let bottomGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
+                                            endingAt: CGPoint(x: 0.5, y: 0.0),
+                                            with: [bottomBackgroundBlackAlpha, .clear])
+      bottomGradientNode.isOpaque = false
+      bottomGradientNode.frame = feedContainerView.bounds
+      feedContainerView.addSubnode(bottomGradientNode)
+      feedContainerView.sendSubview(toBack: bottomGradientNode.view)
     }
   }
+  
+  
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    
+    guard let mapController = navigationController as? MapNavController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("No Map Navigation Controller. Cannot Proceed")
+      }
+      return
+    }
+    
+    mapNavController = mapController
+    //mapController.mapDelegate = self
+    mapController.setExposedRect(with: mapExposedView)
+    
+    appearanceForAllUI(alphaValue: 1.0, animated: true)
+  }
+  
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
+    mapNavController = nil
+  }
+  
+  
+  override var preferredStatusBarStyle: UIStatusBarStyle {
+    return .lightContent
+  }
+  
+  
+  override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+    return .fade
+  }
+  
 }
 
 
@@ -204,13 +432,9 @@ extension ProfileViewController: FeedCollectionNodeDelegate {
       return
     }
     
-//    if let storyIndex = feedCollectionNodeController.highlightedStoryIndex {
-//      for annotation in mapNavController.mapView.annotations {
-//        if let storyAnnotation = annotation as? StoryMapAnnotation, storyAnnotation.story === storyArray[storyIndex] {
-//          mapNavController.selectInExposedRect(annotation: storyAnnotation)
-//        }
-//      }
-//    }
+    if let storyIndex = feedCollectionNodeController.highlightedStoryIndex, storyIndex < stories.count {
+      updateProfileMap(with: stories[storyIndex])
+    }
     
     // Do Prefetching
     let storiesIndexes = feedCollectionNodeController.getStoryIndexesVisible(forOver: Constants.PercentageOfStoryVisibleToStartPrefetch)

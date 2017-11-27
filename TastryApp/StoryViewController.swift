@@ -98,7 +98,36 @@ class StoryViewController: OverlayViewController {
   }
   
   
-  @IBAction func authorAction(_ sender: UIButton) { CCLog.info("User tapped Author") }
+  @IBAction func authorAction(_ sender: UIButton) {
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("ViewController initiated not of ProfileViewController Class!!")
+      }
+      return
+    }
+    
+    guard let story = viewingStory else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("viewingStory = nil")
+      }
+      return
+    }
+    
+    guard let author = story.author, author.isDataAvailable else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        CCLog.assert("viewingStory.author = nil, or isDataAvailable = false")
+      }
+      return
+    }
+    
+    viewController.user = author
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
+    
+    removePopBgOverlay()
+    pushPresent(viewController, animated: true)
+  }
+  
   
   @IBAction func pauseAction(_ sender: UIButton) { pause() }
   
@@ -354,6 +383,12 @@ class StoryViewController: OverlayViewController {
   
   private func displayMomentIfLoaded(for moment: FoodieMoment) {
 
+    guard let story = viewingStory else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("viewingStory = nil")
+      }
+      return
+    }
     var shouldRetrieveMoment = false
     
     moment.execute(ifNotReady: {
@@ -374,9 +409,8 @@ class StoryViewController: OverlayViewController {
       if draftPreview {
         moment.retrieveRecursive(from: .local, type: .draft, withCompletion: nil)
       } else {
-        // ??? Should we even bother with this double-confirm fetch?
-//        let momentOperation = StoryOperation(with: .moment, on: story, for: story.getIndexOf(moment), completion: nil)
-//        FoodieFetch.global.queue(momentOperation, at: .high)
+        let momentOperation = StoryOperation(with: .moment, on: story, for: story.getIndexOf(moment), completion: nil)
+        FoodieFetch.global.queue(momentOperation, at: .high)
       }
     } else {
       CCLog.info("Moment \(moment.getUniqueIdentifier()) displaying")
@@ -668,15 +702,21 @@ class StoryViewController: OverlayViewController {
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    stopAndClear()
-    muteObserver?.invalidate()
+    pause()
     
-    // Cancel All potential Prefetch associated with the Story before exiting
+    // Cancel All potential Prefetch associated with the Story before disappearing
     if let story = viewingStory {
       FoodieFetch.global.cancel(for: story)
     } else {
       CCLog.assert("Expected a viewingStory even tho dismissing")
     }
+  }
+  
+  
+  deinit {
+    CCLog.verbose("StoryVC Stop, Clear, Invalidate and Deinit")
+    stopAndClear()
+    muteObserver?.invalidate()
   }
   
   

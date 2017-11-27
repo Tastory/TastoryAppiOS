@@ -80,13 +80,13 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     case .carousel:
       let layout = collectionNode.collectionViewLayout as! CarouselCollectionViewLayout
       let cardWidth = layout.itemSize.width + layout.minimumLineSpacing
-      let offset = collectionNode.contentOffset.x
+      let offset = collectionNode.contentOffset.x - collectionNode.contentInset.left
       let indexPathItemNumber = Int(floor((offset - cardWidth / 2) / cardWidth) + 1)
       return toStoryIndex(from: IndexPath(item: indexPathItemNumber, section: 0))
       
     case .mosaic:
       var highlightIndexPath: IndexPath?
-      var smallestPositiveMidYDifference: CGFloat = collectionNode.bounds.height - Constants.MosaicHighlightThresholdOffset
+      var smallestPositiveMidYDifference: CGFloat = collectionNode.bounds.height - collectionNode.contentInset.top - Constants.MosaicHighlightThresholdOffset
       
       for visibleIndexPath in collectionNode.indexPathsForVisibleItems {
         guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: visibleIndexPath) else {
@@ -96,7 +96,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
           break
         }
         
-        let midYDifference = layoutAttributes.frame.midY - (collectionNode.bounds.minY + Constants.MosaicHighlightThresholdOffset)
+        let midYDifference = layoutAttributes.frame.midY - (collectionNode.bounds.minY + collectionNode.contentInset.top + Constants.MosaicHighlightThresholdOffset)
         
         if midYDifference > 0, midYDifference < smallestPositiveMidYDifference {
           highlightIndexPath = visibleIndexPath

@@ -106,6 +106,10 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         bgOverlayView.alpha = 0.0
         containerView.addSubview(bgOverlayView)
         containerView.bringSubview(toFront: bgOverlayView)
+        
+        if let overlayVC = toVC as? OverlayViewController {
+          overlayVC.bgOverlayView = bgOverlayView
+        }
       }
       
       // Remove the popFromView and place it in the container view for animation, temporarily

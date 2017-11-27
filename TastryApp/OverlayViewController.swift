@@ -30,6 +30,12 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   var interactor: PercentInteractor?
   var dragGestureRecognizer: UIPanGestureRecognizer?
   var touchPointCenterOffset: CGPoint?
+  var bgOverlayView: UIView?
+  
+  
+  // MARK: - Private Instance Variables
+  
+  private var bgRestorationRequired = false
   
   
   
@@ -247,6 +253,16 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   }
   
   
+  func removePopBgOverlay() {
+    bgRestorationRequired = true
+    if let bgOverlayView = bgOverlayView {
+      UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
+        bgOverlayView.alpha = 0.0
+      })
+    }
+  }
+  
+  
   
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
@@ -269,6 +285,12 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     navigationController?.delegate = self
+    
+    if let bgOverlayView = bgOverlayView, bgRestorationRequired {
+      UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
+        bgOverlayView.alpha = 1.0
+      })
+    }
     CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidAppear")
   }
   

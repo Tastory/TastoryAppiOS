@@ -33,9 +33,9 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     static let MaxTitleLength: Int = 50
     static let MaxSwipeMessageLength: Int = 15
     
-    static let StackShadowOffset = CGSize(width: -1.0, height: -2.0)
-    static let StackShadowRadius: CGFloat = 3.0
-    static let StackShadowOpacity: Float = 0.30
+    static let StackShadowOffset = FoodieGlobal.Constants.DefaultUIShadowOffset
+    static let StackShadowRadius = FoodieGlobal.Constants.DefaultUIShadowRadius
+    static let StackShadowOpacity = FoodieGlobal.Constants.DefaultUIShadowOpacity
     
     static let BackgroundGradientBlackAlpha: CGFloat = 0.3
     static let UIDisappearanceDuration = FoodieGlobal.Constants.DefaultUIDisappearanceDuration
@@ -111,7 +111,6 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     // Average the locations of the Moments to create a location suggestion on where to search for a Venue
     viewController.suggestedLocation = averageLocationOfMoments()
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
-    navigationController?.delegate = viewController
     pushPresent(viewController, animated: true)
   }
   
@@ -134,7 +133,6 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     viewController.viewingStory = workingStory
     viewController.draftPreview = true
     viewController.setSlideTransition(presentTowards: .up, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
-    navigationController?.delegate = viewController
     pushPresent(viewController, animated: true)
   }
 
@@ -551,6 +549,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   
   
   override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
     guard let mapController = navigationController as? MapNavController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
         CCLog.fatal("No Map Navigation Controller. Cannot Proceed")
@@ -749,13 +748,6 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
           
           // Update the map again here
           if let latitude = venueToUpdate.location?.latitude, let longitude = venueToUpdate.location?.longitude {
-            
-            guard let mapController = self.navigationController as? MapNavController else {
-              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-                CCLog.fatal("No Map Navigation Controller. Cannot Proceed")
-              }
-              return
-            }
             
             let region = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
                                                             Constants.VenueMapWidth, Constants.VenueMapWidth)
