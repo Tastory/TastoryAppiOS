@@ -32,7 +32,6 @@ class ProfileViewController: OverlayViewController {
   
   
   // MARK: - IBOutlet
-  @IBOutlet weak var navBar: UINavigationBar!
   @IBOutlet weak var feedContainerView: UIView!
   
   
@@ -59,8 +58,6 @@ class ProfileViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    navBar.delegate = self
-
     guard let user = user, user.isRegistered else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
         CCLog.assert("Entered Profile View but no valid registered user specified")
@@ -73,7 +70,7 @@ class ProfileViewController: OverlayViewController {
     //    if let username = user.username {
     //      navBar.topItem?.title = username
     //    } else {
-    navBar.topItem?.title = "Your Stories"
+    // navBar.topItem?.title = "Your Stories"
     //    }
 
     // Query everything by this user
@@ -107,12 +104,11 @@ class ProfileViewController: OverlayViewController {
       self.stories = stories
     }
       
-    let nodeController = FeedCollectionNodeController(with: .mosaic, offsetBy: navBar.frame.height, allowLayoutChange: false, adjustScrollViewInset: true)
+    let nodeController = FeedCollectionNodeController(with: .mosaic, offsetBy: 99.9, allowLayoutChange: false, adjustScrollViewInset: true)
     nodeController.storyArray = stories
     nodeController.enableEdit = true
     addChildViewController(nodeController)
-    feedContainerView.addSubview(nodeController.view)
-    nodeController.view.frame = feedContainerView.bounds
+    // TODO: Autolayout In Code
     nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     nodeController.didMove(toParentViewController: self)
     nodeController.delegate = self
@@ -138,12 +134,6 @@ class ProfileViewController: OverlayViewController {
       }
       self.stories = stories
     }
-  }
-}
-
-extension ProfileViewController: UINavigationBarDelegate {
-  func position(for bar: UIBarPositioning) -> UIBarPosition {
-    return UIBarPosition.topAttached
   }
 }
 

@@ -318,6 +318,14 @@
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="203.66666666666666"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </view>
+                                    <visualEffectView hidden="YES" opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xx9-1h-xsG">
+                                        <rect key="frame" x="0.0" y="203.66666666666663" width="375" height="1365.666666666667"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="4ew-JG-MRb">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="1365.666666666667"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        </view>
+                                        <blurEffect style="light"/>
+                                    </visualEffectView>
                                     <stackView contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="37f-WV-Phh">
                                         <rect key="frame" x="0.0" y="203.66666666666663" width="375" height="1365.666666666667"/>
                                         <subviews>
@@ -332,7 +340,7 @@
                                                         <state key="normal" title="Button" image="Entry-Title"/>
                                                     </button>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Title (Required)" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yGa-MF-Thx">
-                                                        <rect key="frame" x="51" y="16" width="285" height="19"/>
+                                                        <rect key="frame" x="51" y="16" width="285.33333333333331" height="19"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="16"/>
                                                         <textInputTraits key="textInputTraits" autocapitalizationType="words" keyboardType="alphabet" returnKeyType="done"/>
@@ -341,7 +349,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="799" text="50" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rV1-7C-DT8">
-                                                        <rect key="frame" x="346" y="18" width="14" height="14.333333333333336"/>
+                                                        <rect key="frame" x="346.33333333333331" y="18.333333333333343" width="13.666666666666686" height="14"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -374,7 +382,7 @@
                                                 <rect key="frame" x="0.0" y="294.66666666666663" width="375" height="44"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ANT-0N-UCv">
-                                                        <rect key="frame" x="148.33333333333334" y="5" width="80" height="24"/>
+                                                        <rect key="frame" x="149.33333333333334" y="5" width="78" height="24"/>
                                                         <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="14"/>
                                                         <state key="normal" title=" Preview" image="Entry-Preview">
                                                             <color key="titleColor" red="0.98039215686274506" green="0.035294117647058823" blue="0.035294117647058823" alpha="1" colorSpace="calibratedRGB"/>
@@ -497,7 +505,7 @@
                                                         <state key="normal" image="Entry-SwipeMessage"/>
                                                     </button>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Swipe Up Message" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ehg-y5-HB3">
-                                                        <rect key="frame" x="49" y="13.333333333333258" width="289" height="17"/>
+                                                        <rect key="frame" x="49" y="13.333333333333258" width="287.33333333333331" height="17"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences" keyboardType="alphabet"/>
@@ -506,7 +514,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="800" text="15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QxI-Em-dBD">
-                                                        <rect key="frame" x="348" y="15.666666666666629" width="12" height="14.333333333333336"/>
+                                                        <rect key="frame" x="346.33333333333331" y="16" width="13.666666666666686" height="14"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66000000000000003" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -536,7 +544,7 @@
                                                 <subviews>
                                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ZZh-82-fN2" customClass="UITextViewWithPlaceholder" customModule="TastryApp" customModuleProvider="target">
                                                         <rect key="frame" x="20" y="15" width="335" height="60"/>
-                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="zM2-Af-BTA"/>
                                                         </constraints>
@@ -597,21 +605,25 @@
                                                 </constraints>
                                             </view>
                                         </subviews>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </stackView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
+                                    <constraint firstItem="xx9-1h-xsG" firstAttribute="top" secondItem="37f-WV-Phh" secondAttribute="top" id="1Uf-aB-ykB"/>
                                     <constraint firstItem="HXH-Y5-Ju0" firstAttribute="leading" secondItem="STb-w9-4sJ" secondAttribute="leading" id="5UF-Ue-1kM"/>
                                     <constraint firstItem="37f-WV-Phh" firstAttribute="width" secondItem="STb-w9-4sJ" secondAttribute="width" id="6TS-Hw-yJB"/>
+                                    <constraint firstItem="xx9-1h-xsG" firstAttribute="leading" secondItem="37f-WV-Phh" secondAttribute="leading" id="6d1-qw-Jgd"/>
                                     <constraint firstItem="37f-WV-Phh" firstAttribute="leading" secondItem="STb-w9-4sJ" secondAttribute="leading" id="AIu-iL-HDz"/>
                                     <constraint firstItem="HXH-Y5-Ju0" firstAttribute="height" secondItem="STb-w9-4sJ" secondAttribute="height" multiplier="0.25" id="DVc-GQ-9OG"/>
                                     <constraint firstItem="37f-WV-Phh" firstAttribute="height" secondItem="STb-w9-4sJ" secondAttribute="height" priority="250" id="Eer-i1-u4f"/>
                                     <constraint firstAttribute="trailing" secondItem="HXH-Y5-Ju0" secondAttribute="trailing" id="FAu-f5-4ZL"/>
+                                    <constraint firstItem="xx9-1h-xsG" firstAttribute="trailing" secondItem="37f-WV-Phh" secondAttribute="trailing" id="HCI-OO-u2T"/>
                                     <constraint firstItem="HXH-Y5-Ju0" firstAttribute="top" secondItem="STb-w9-4sJ" secondAttribute="top" id="LDF-oZ-xQb"/>
                                     <constraint firstAttribute="bottom" secondItem="37f-WV-Phh" secondAttribute="bottom" constant="-700" id="NUg-d9-K0z"/>
                                     <constraint firstAttribute="trailing" secondItem="37f-WV-Phh" secondAttribute="trailing" id="TQ9-F0-8Ui"/>
                                     <constraint firstItem="37f-WV-Phh" firstAttribute="top" secondItem="HXH-Y5-Ju0" secondAttribute="bottom" id="bs9-cW-UcK"/>
+                                    <constraint firstItem="xx9-1h-xsG" firstAttribute="bottom" secondItem="37f-WV-Phh" secondAttribute="bottom" id="ujW-hG-PVF"/>
                                 </constraints>
                             </scrollView>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sbC-fK-FJI" customClass="TouchForwardingView" customModule="TastryApp" customModuleProvider="target">
@@ -683,7 +695,7 @@
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceHorizontal="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="TGu-A1-lSP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="222"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="OoU-Aa-vB2">
                             <size key="itemSize" width="124" height="222"/>
@@ -724,7 +736,7 @@
                                         </activityIndicatorView>
                                     </subviews>
                                 </view>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstItem="oF2-s4-G9T" firstAttribute="top" secondItem="5yf-rk-zGg" secondAttribute="top" id="2W1-aU-anS"/>
