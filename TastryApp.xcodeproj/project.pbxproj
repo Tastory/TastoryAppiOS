@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		29421A9ED1630C24163C5213 /* Pods_TastryApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9837F6E6016D51C9060037BC /* Pods_TastryApp.framework */; };
 		8C02CC7C1FCAC6E300D38F47 /* MomentCollectionAddCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C02CC7B1FCAC6E300D38F47 /* MomentCollectionAddCell.swift */; };
+		8C02CC7E1FCC1A2000D38F47 /* MomentAddFooterReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C02CC7D1FCC1A2000D38F47 /* MomentAddFooterReusableView.swift */; };
 		8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590481EC65B0000027E91 /* RootViewController.swift */; };
 		8C05904B1EC6671400027E91 /* UIStoryboard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */; };
 		8C0590511EC7E6A400027E91 /* FoodieMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590501EC7E6A400027E91 /* FoodieMedia.swift */; };
@@ -166,6 +167,7 @@
 		17F360FAB38094392D222249 /* Pods-TastryAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastryAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TastryAppTests/Pods-TastryAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4B3DBF493BCE72101729EF1C /* Pods_TastryAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TastryAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C02CC7B1FCAC6E300D38F47 /* MomentCollectionAddCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentCollectionAddCell.swift; sourceTree = "<group>"; };
+		8C02CC7D1FCC1A2000D38F47 /* MomentAddFooterReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentAddFooterReusableView.swift; sourceTree = "<group>"; };
 		8C0590481EC65B0000027E91 /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+Extension.swift"; sourceTree = "<group>"; };
 		8C0590501EC7E6A400027E91 /* FoodieMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMedia.swift; sourceTree = "<group>"; };
@@ -415,6 +417,7 @@
 				8CCC7EFF1FA5A32F0049AF00 /* FeedCollectionCellNode.swift */,
 				8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */,
 				8C02CC7B1FCAC6E300D38F47 /* MomentCollectionAddCell.swift */,
+				8C02CC7D1FCC1A2000D38F47 /* MomentAddFooterReusableView.swift */,
 				8C889ECB1F9D5F4900E8CC56 /* ProfileTableHeaderView.swift */,
 				8C889ED01F9D614C00E8CC56 /* ProfileTableHeaderView.xib */,
 				8CBBED0E1F9D73FB008D4B12 /* ProfileTableEmailFooterView.swift */,
@@ -1112,6 +1115,7 @@
 				8CF44DA61F86F422007E905A /* CameraCrossLayer.swift in Sources */,
 				8CD5A4E41F9BFED300CFD670 /* SettingsTableViewController.swift in Sources */,
 				8C7EBAC61F9D477C004E43D8 /* PasswordViewController.swift in Sources */,
+				8C02CC7E1FCC1A2000D38F47 /* MomentAddFooterReusableView.swift in Sources */,
 				8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */,
 				8C1ED6F21F5D15A300A8CC94 /* ThumbnailFrameLayer.swift in Sources */,
 				8CAE5C001FBC403E0069C582 /* TextButtonNode.swift in Sources */,
@@ -1381,7 +1385,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Master;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Howard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1406,7 +1410,7 @@
 				INFOPLIST_FILE = TastryApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Master;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastry.TastryApp.iOS.Dev.Howard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

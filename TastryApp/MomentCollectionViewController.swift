@@ -13,8 +13,8 @@ class MomentCollectionViewController: UICollectionViewController {
   // MARK: - Private Class Constants
   fileprivate struct Constants {
     static let MomentCellReuseId = "MomentCell"
-    static let AddCellReuseId = "AddCell"
-    static let SectionInsetSpacing: CGFloat = 12
+    static let FooterElementReuseId = "MomentFooter"
+    static let SectionInsetSpacing: CGFloat = 8
     static let InteritemSpacing: CGFloat = 8
   }
 
@@ -304,7 +304,7 @@ extension MomentCollectionViewController {
 
   override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     if let moments = workingStory.moments {
-      return moments.count + 1
+      return moments.count
     } else {
       CCLog.verbose("No Moments in Working Story")
       return 0
@@ -315,13 +315,6 @@ extension MomentCollectionViewController {
     
     guard let momentArray = workingStory.moments else {
       CCLog.fatal("No Moments for workingStory \(workingStory.getUniqueIdentifier())")
-    }
-    
-    if indexPath.item == momentArray.count {
-      let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.AddCellReuseId, for: indexPath) as! MomentCollectionAddCell
-      cell.configureLayers()
-      cell.addButton.addTarget(self, action: #selector(openCamera), for: .touchUpInside)
-      return cell
     }
     
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.MomentCellReuseId, for: indexPath) as! MomentCollectionViewCell
@@ -387,7 +380,28 @@ extension MomentCollectionViewController {
     return cell
   }
 
-
+  
+  override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    var reusableView: UICollectionReusableView!
+    
+    switch kind {
+    case UICollectionElementKindSectionFooter:
+      guard let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.FooterElementReuseId, for: indexPath) as? MomentAddFooterReusableView else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.assert("UICollectionElementKindSectionFooter dequeued is not MomentAddFooterReusableView")
+        }
+        return reusableView
+      }
+      footerView.addMomentButton.addTarget(self, action: #selector(openCamera), for: .touchUpInside)
+      reusableView = footerView
+      
+    default:
+      CCLog.fatal("Unrecognized Kind '\(kind)' for Supplementary Element")
+    }
+    return reusableView
+  }
+  
+  
   override func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
     guard let momentArray = workingStory.moments else {
       CCLog.debug("No Moments for workingStory")
@@ -422,6 +436,12 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
     return Constants.InteritemSpacing
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+    let height = collectionView.bounds.height - 2*Constants.InteritemSpacing
+    let width = height * FoodieGlobal.Constants.DefaultMomentAspectRatio + Constants.SectionInsetSpacing
+    return CGSize(width: width, height: collectionView.bounds.height)
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
