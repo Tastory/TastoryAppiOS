@@ -56,8 +56,8 @@ class ProfileViewController: OverlayViewController {
   @IBOutlet weak var topGradientBackground: UIView!
   @IBOutlet weak var mapExposedView: UIView!
   @IBOutlet weak var profileUIView: UIView!
+  @IBOutlet weak var emptyAvatarImageView: UIImageView!
   @IBOutlet weak var avatarFrameView: UIImageView!
-  @IBOutlet weak var addPhotoButton: UIButton!
   @IBOutlet weak var followButton: UIButton!
   @IBOutlet weak var settingsButton: UIButton!
   @IBOutlet weak var shareButton: UIButton!
@@ -93,20 +93,6 @@ class ProfileViewController: OverlayViewController {
       safariViewController.modalPresentationStyle = .overFullScreen
       self.present(safariViewController, animated: true, completion: nil)
     }
-  }
-  
-  
-  
-  @IBAction func addPhotoAction(_ sender: UIButton) {
-    let storyboard = UIStoryboard(name: "Settings", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsNavViewController") as? SettingsNavViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("ViewController initiated not of SettingsNavViewController Class!!")
-      }
-      return
-    }
-    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
-    pushPresent(viewController, animated: true)
   }
   
   
@@ -282,13 +268,13 @@ class ProfileViewController: OverlayViewController {
         avatarImageNode!.placeholderEnabled = true
         //avatarImageNode!.isLayerBacked = true
         
-        addPhotoButton.isHidden = true
+        emptyAvatarImageView.isHidden = true
       } else {
         CCLog.warning("Unsupported Avatar Media Type - \(user.profileMediaType ?? "Media Type == nil")")
-        addPhotoButton.isHidden = false
+        emptyAvatarImageView.isHidden = false
       }
     } else {
-      addPhotoButton.isHidden = false
+      emptyAvatarImageView.isHidden = false
     }
     
     
@@ -344,7 +330,12 @@ class ProfileViewController: OverlayViewController {
                                                         allowLayoutChange: false,
                                                         adjustScrollViewInset: true)
       nodeController.storyArray = stories
-      nodeController.enableEdit = true
+      
+      if user === FoodieUser.current {
+        nodeController.enableEdit = true
+      } else {
+        nodeController.enableEdit = false
+      }
       addChildViewController(nodeController)
       feedContainerView.addSubnode(nodeController.node)
       nodeController.node.frame = feedContainerView.bounds

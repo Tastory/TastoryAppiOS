@@ -43,10 +43,10 @@
                                 <rect key="frame" x="0.0" y="338.33333333333326" width="375" height="439.66666666666674"/>
                                 <subviews>
                                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesSelf" translatesAutoresizingMaskIntoConstraints="NO" id="AMX-lO-lJU">
-                                        <rect key="frame" x="52" y="122.33333333333337" width="270" height="197"/>
+                                        <rect key="frame" x="52" y="121.33333333333337" width="270" height="197"/>
                                     </imageView>
                                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesOthers" translatesAutoresizingMaskIntoConstraints="NO" id="ETg-wA-zyO">
-                                        <rect key="frame" x="52" y="122.33333333333337" width="270" height="197"/>
+                                        <rect key="frame" x="52" y="121.33333333333337" width="270" height="197"/>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -171,36 +171,33 @@
                                     <constraint firstAttribute="trailing" secondItem="sPh-PF-K39" secondAttribute="trailing" constant="15" id="U4p-I1-vYM"/>
                                 </constraints>
                             </view>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ProfileDetails-Empty" translatesAutoresizingMaskIntoConstraints="NO" id="0Ae-af-Oo9">
+                                <rect key="frame" x="19.333333333333336" y="143" width="91.666666666666657" height="92"/>
+                            </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-BloatedSquareFrame" translatesAutoresizingMaskIntoConstraints="NO" id="Pgw-9P-CO9">
                                 <rect key="frame" x="18.000000000000007" y="142" width="93.666666666666686" height="94"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="Pgw-9P-CO9" secondAttribute="height" multiplier="1:1" id="AQw-vN-GGf"/>
                                 </constraints>
                             </imageView>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K7W-IV-X19">
-                                <rect key="frame" x="18.000000000000007" y="142" width="93.666666666666686" height="94"/>
-                                <state key="normal" image="Profile-BloatedSquareAdd"/>
-                                <connections>
-                                    <action selector="addPhotoAction:" destination="Mls-rg-2Ue" eventType="touchUpInside" id="hbH-j1-ez8"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="ayV-BF-5uO" secondAttribute="bottom" id="0dq-gv-7PF"/>
                             <constraint firstItem="voX-A0-jf6" firstAttribute="top" secondItem="1js-VP-5AG" secondAttribute="bottom" constant="-35" id="5YK-sv-1pl"/>
+                            <constraint firstItem="0Ae-af-Oo9" firstAttribute="centerY" secondItem="Pgw-9P-CO9" secondAttribute="centerY" id="6bD-mw-ojP"/>
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="centerY" secondItem="Zwc-TB-L9A" secondAttribute="top" id="7dp-Us-ROZ"/>
                             <constraint firstItem="sPh-PF-K39" firstAttribute="top" secondItem="Pgw-9P-CO9" secondAttribute="bottom" constant="8" id="AZO-vz-4PQ"/>
                             <constraint firstItem="1js-VP-5AG" firstAttribute="top" secondItem="IWZ-hZ-UC9" secondAttribute="top" id="Baa-Dy-4SK"/>
                             <constraint firstItem="eRP-BC-T40" firstAttribute="trailing" secondItem="Zwc-TB-L9A" secondAttribute="trailing" constant="-15" id="CFW-u6-pwF"/>
+                            <constraint firstItem="0Ae-af-Oo9" firstAttribute="centerX" secondItem="Pgw-9P-CO9" secondAttribute="centerX" id="CTI-OY-9xf"/>
                             <constraint firstItem="ayV-BF-5uO" firstAttribute="top" secondItem="Zwc-TB-L9A" secondAttribute="top" id="DOr-Q5-Fzy"/>
                             <constraint firstItem="Zwc-TB-L9A" firstAttribute="height" relation="lessThanOrEqual" secondItem="voX-A0-jf6" secondAttribute="height" multiplier="0.25" id="GWi-rx-KVH"/>
                             <constraint firstAttribute="trailing" secondItem="1js-VP-5AG" secondAttribute="trailing" id="IKG-kE-gTP"/>
-                            <constraint firstItem="K7W-IV-X19" firstAttribute="leading" secondItem="Pgw-9P-CO9" secondAttribute="leading" id="IMn-FN-b2q"/>
-                            <constraint firstItem="K7W-IV-X19" firstAttribute="trailing" secondItem="Pgw-9P-CO9" secondAttribute="trailing" id="Jhm-SH-bqJ"/>
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="width" secondItem="Zwc-TB-L9A" secondAttribute="width" multiplier="0.25" id="KtR-Fh-Ble"/>
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="bottom" secondItem="eRP-BC-T40" secondAttribute="bottom" id="McF-47-aWv"/>
                             <constraint firstItem="ayV-BF-5uO" firstAttribute="leading" secondItem="IWZ-hZ-UC9" secondAttribute="leading" id="Os4-9c-ixw"/>
+                            <constraint firstItem="0Ae-af-Oo9" firstAttribute="width" secondItem="Pgw-9P-CO9" secondAttribute="width" multiplier="0.98" id="UDc-jH-kZt"/>
                             <constraint firstItem="w1V-ap-EBM" firstAttribute="top" secondItem="Zwc-TB-L9A" secondAttribute="bottom" id="UXV-sK-HZV"/>
                             <constraint firstAttribute="trailing" secondItem="Zwc-TB-L9A" secondAttribute="trailing" id="V2d-be-adB"/>
                             <constraint firstAttribute="trailing" secondItem="ayV-BF-5uO" secondAttribute="trailing" id="aME-yI-Xga"/>
@@ -211,10 +208,9 @@
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="leading" secondItem="sPh-PF-K39" secondAttribute="leading" constant="2" id="m6p-xP-ttw"/>
                             <constraint firstItem="eRP-BC-T40" firstAttribute="leading" secondItem="Pgw-9P-CO9" secondAttribute="trailing" constant="10" id="mHg-Ft-XR2"/>
                             <constraint firstItem="voX-A0-jf6" firstAttribute="trailing" secondItem="w1V-ap-EBM" secondAttribute="trailing" id="mZ0-pL-Ged"/>
-                            <constraint firstItem="K7W-IV-X19" firstAttribute="top" secondItem="Pgw-9P-CO9" secondAttribute="top" id="pWc-1e-nzi"/>
                             <constraint firstItem="Zwc-TB-L9A" firstAttribute="leading" secondItem="IWZ-hZ-UC9" secondAttribute="leading" id="rYP-sG-kti"/>
-                            <constraint firstItem="K7W-IV-X19" firstAttribute="bottom" secondItem="Pgw-9P-CO9" secondAttribute="bottom" id="spO-tJ-72K"/>
                             <constraint firstItem="voX-A0-jf6" firstAttribute="top" secondItem="zzE-Jd-3Do" secondAttribute="top" constant="-20" id="tiY-N4-m22"/>
+                            <constraint firstItem="0Ae-af-Oo9" firstAttribute="height" secondItem="Pgw-9P-CO9" secondAttribute="height" multiplier="0.98" id="vsY-xE-sfU"/>
                             <constraint firstItem="w1V-ap-EBM" firstAttribute="leading" secondItem="voX-A0-jf6" secondAttribute="leading" id="wRz-LX-nyy"/>
                             <constraint firstItem="voX-A0-jf6" firstAttribute="bottom" secondItem="w1V-ap-EBM" secondAttribute="bottom" id="wYC-aM-C5g"/>
                             <constraint firstItem="voX-A0-jf6" firstAttribute="trailing" secondItem="zzE-Jd-3Do" secondAttribute="trailing" id="yh3-Zg-p5H"/>
@@ -223,9 +219,9 @@
                         <viewLayoutGuide key="safeArea" id="voX-A0-jf6"/>
                     </view>
                     <connections>
-                        <outlet property="addPhotoButton" destination="K7W-IV-X19" id="TnH-lH-FeP"/>
                         <outlet property="avatarFrameView" destination="Pgw-9P-CO9" id="PF6-cx-EOc"/>
                         <outlet property="bioLabel" destination="r9U-GH-GMa" id="dRV-xN-VA0"/>
+                        <outlet property="emptyAvatarImageView" destination="0Ae-af-Oo9" id="l0m-Kc-GpA"/>
                         <outlet property="feedContainerView" destination="ayV-BF-5uO" id="LXi-8a-D9o"/>
                         <outlet property="filterButton" destination="rZt-p7-VAc" id="Hru-1c-eK8"/>
                         <outlet property="followButton" destination="t0a-m1-CUw" id="pN1-aq-CAE"/>
@@ -768,7 +764,6 @@
         <image name="Discover-SearchMagnifier" width="26" height="26"/>
         <image name="Discover-SearchTextLine" width="357" height="3"/>
         <image name="EntryMarkup-Back" width="32" height="32"/>
-        <image name="Profile-BloatedSquareAdd" width="90" height="90"/>
         <image name="Profile-BloatedSquareFrame" width="90" height="90"/>
         <image name="Profile-FilterButton" width="58" height="22"/>
         <image name="Profile-FollowButton" width="68" height="22"/>
@@ -776,6 +771,7 @@
         <image name="Profile-NoStoriesSelf" width="270" height="197"/>
         <image name="Profile-SettingsButton" width="75" height="22"/>
         <image name="Profile-ShareButton" width="62" height="22"/>
+        <image name="ProfileDetails-Empty" width="116" height="116"/>
         <image name="StoryMarkup-PauseButton" width="40" height="40"/>
         <image name="StoryMarkup-PlayButton" width="40" height="40"/>
         <image name="StoryMarkup-SoundOffButton" width="40" height="40"/>

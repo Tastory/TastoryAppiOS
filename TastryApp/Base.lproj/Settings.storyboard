@@ -360,11 +360,11 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="u90-qZ-nP5">
                                                 <rect key="frame" x="0.0" y="0.0" width="320" height="180"/>
                                                 <subviews>
-                                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="AddProfileIcon" translatesAutoresizingMaskIntoConstraints="NO" id="WWl-S3-sCG">
-                                                        <rect key="frame" x="100" y="30" width="120" height="120"/>
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ProfileDetails-Empty" translatesAutoresizingMaskIntoConstraints="NO" id="WWl-S3-sCG">
+                                                        <rect key="frame" x="102" y="32" width="116" height="116"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="height" constant="120" id="Oht-b4-han"/>
-                                                            <constraint firstAttribute="width" constant="120" id="zVM-uq-pEp"/>
+                                                            <constraint firstAttribute="height" constant="116" id="Oht-b4-han"/>
+                                                            <constraint firstAttribute="width" constant="116" id="zVM-uq-pEp"/>
                                                         </constraints>
                                                     </imageView>
                                                     <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="ProfileDetails-FrameShadow" translatesAutoresizingMaskIntoConstraints="NO" id="OCD-GC-2ng">
@@ -797,7 +797,7 @@
                                                 <rect key="frame" x="0.0" y="178" width="320" height="635"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Warning Message" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MEa-gd-pUc">
-                                                        <rect key="frame" x="112.5" y="15" width="96.5" height="14"/>
+                                                        <rect key="frame" x="112" y="15" width="96.5" height="14"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
@@ -864,9 +864,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="AddProfileIcon" width="120" height="120"/>
         <image name="Entry-OpenLink" width="16" height="16"/>
         <image name="ProfileDetails-ButtonFrame" width="174" height="40"/>
+        <image name="ProfileDetails-Empty" width="116" height="116"/>
         <image name="ProfileDetails-FrameShadow" width="144" height="144"/>
         <image name="Settings-RightArrowDark" width="8" height="14"/>
     </resources>
