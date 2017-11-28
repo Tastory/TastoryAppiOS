@@ -161,6 +161,13 @@ class ProfileDetailViewController: OverlayViewController {
   
   @objc private func saveUser() {
     
+    // Get a last minute update of the fields
+    username = usernameField?.text
+    email = emailField?.text
+    fullName = fullNameField?.text
+    websiteString = websiteField?.text
+    biography = biographyField?.text
+    
     guard var username = username else {
       CCLog.warning("username = nil")
       return
@@ -303,9 +310,11 @@ class ProfileDetailViewController: OverlayViewController {
       if !self.user.isEmailVerified {
         self.emailButton.isHidden = false
         self.emailLabel.isHidden = false
+        self.view.layoutIfNeeded()
       } else {
         self.emailButton.isHidden = true
         self.emailLabel.isHidden = true
+        self.view.layoutIfNeeded()
       }
       
       if self.unsavedChanges {
@@ -536,8 +545,10 @@ extension ProfileDetailViewController: UITextFieldDelegate {
     if textField === websiteField {
       if newLength > 0 {
         websiteButton.isHidden = false
+        self.view.layoutIfNeeded()
       } else {
         websiteButton.isHidden = true
+        self.view.layoutIfNeeded()
       }
 
     }
