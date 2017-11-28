@@ -22,7 +22,7 @@ class UITextViewWithPlaceholder: UITextView {
   
   var placeholder: String? {
     didSet{
-      if let placeholder = placeholder{
+      if let placeholder = placeholder {
         text = placeholder
       }
     }
@@ -39,7 +39,7 @@ class UITextViewWithPlaceholder: UITextView {
   }
   
   
-  override internal var textColor: UIColor?{
+  override internal var textColor: UIColor? {
     didSet{
       if let textColor = textColor, textColor != placeholderTextColour{
         originalTextColour = textColor
@@ -98,6 +98,18 @@ class UITextViewWithPlaceholder: UITextView {
     super.init(coder: aDecoder)
     removePadding()
     addPlaceholderObserver()
+  }
+  
+  
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    setup()
+  }
+
+  
+  func setup() {
+    textContainerInset = UIEdgeInsets.zero
+    textContainer.lineFragmentPadding = 0
   }
   
   

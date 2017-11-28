@@ -75,9 +75,9 @@ class ProfileViewController: OverlayViewController {
   
   @IBAction func settingsAction(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsViewController") as? SettingsViewController else {
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsNavViewController") as? SettingsNavViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("ViewController initiated not of SettingsViewController Class!!")
+        CCLog.fatal("ViewController initiated not of SettingsNavViewController Class!!")
       }
       return
     }
@@ -99,9 +99,9 @@ class ProfileViewController: OverlayViewController {
   
   @IBAction func addPhotoAction(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsViewController") as? SettingsViewController else {
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsNavViewController") as? SettingsNavViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("ViewController initiated not of SettingsViewController Class!!")
+        CCLog.fatal("ViewController initiated not of SettingsNavViewController Class!!")
       }
       return
     }

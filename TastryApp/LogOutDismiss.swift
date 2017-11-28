@@ -31,7 +31,7 @@ struct LogOutDismiss {
   
   private static func logOutAndDismiss(from viewController: UIViewController) {
     
-    let activitySpinner = ActivitySpinner(addTo: viewController.view)
+    let activitySpinner = ActivitySpinner(addTo: viewController.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
     activitySpinner.apply()
     
     FoodieUser.logOutAndDeleteDraft { error in
