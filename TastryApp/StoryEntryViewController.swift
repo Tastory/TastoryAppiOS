@@ -139,7 +139,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   
   @IBAction func discardStory(_ sender: UIButton) {
     StorySelector.showStoryDiscardDialog(to: self,
-                                         message: "Are you sure you want to discard your edited Story?",
+                                         message: "Are you sure you want to discard changes to your story?",
                                          title: "Discard Edit") {
       self.activitySpinner.apply()
       FoodieStory.cleanUpDraft() { error in

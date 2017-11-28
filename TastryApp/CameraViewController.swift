@@ -23,7 +23,15 @@ protocol CameraReturnDelegate {
 
 
 class CameraViewController: SwiftyCamViewController, UINavigationControllerDelegate {  // View needs to comply to certain protocols going forward?
-  
+
+  // MARK: - Constants
+  struct Constants {
+    fileprivate static let imgMaxHeight = CGFloat(1920)
+    fileprivate static let imgMaxWidth = CGFloat(1080)
+    fileprivate static let heightAspect = CGFloat(16)
+    fileprivate static let widthAspect = CGFloat(9)
+  }
+
   // MARK: - Global Constants
   struct GlobalConstants {
     static let animateInDuration: CFTimeInterval = 0.7  // Duration for things to animate in when the camera view initially loads
@@ -299,8 +307,8 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
 
     let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
-    mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))  // TOOD: Is this main thread? If so do this conversion else where? Not like the user can do anything else tho? Pop-up a spinner instead?
-    
+    imageFormatter(mediaObject, image: image)
+
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
@@ -576,6 +584,105 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       }
     }
   }
+
+  private func imageFormatter(_ media:FoodieMedia, image bufferImage: UIImage) {
+
+    var bufferImage = bufferImage
+
+    guard let fileName = media.foodieFileName else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.assert("the file name is missing from this foodieMedia")
+      }
+      return
+    }
+
+    let fileUrl = FoodieFileObject.getFileURL(for: .draft, with: fileName) as CFURL
+    let destination = CGImageDestinationCreateWithURL(fileUrl, kUTTypeJPEG, 1, nil)!
+    let jfifProperties = [kCGImagePropertyJFIFIsProgressive: kCFBooleanTrue] as NSDictionary
+    let properties = [
+      kCGImageDestinationLossyCompressionQuality: 0.5,
+      kCGImagePropertyJFIFDictionary: jfifProperties
+      ] as NSDictionary
+
+    let imageSize = bufferImage.size
+
+    guard var cgImage = bufferImage.cgImage else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.assert("cgImage is nil from bufferImage")
+      }
+      return
+    }
+
+    if(CGFloat(imageSize.width) > (((CGFloat(imageSize.height)/Constants.heightAspect) * Constants.widthAspect))) {
+
+      let cropWidth = ((imageSize.height / Constants.heightAspect) * Constants.widthAspect)
+      if(bufferImage.imageOrientation == .right) {
+        //portrait photo bigger than 16/9
+        guard let cropImage = cgImage.cropping(to: CGRect(x: 0, y:(((imageSize.width/2) - (cropWidth/2))) , width: imageSize.height, height: cropWidth)) else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.assert("cropImage is nil after cropping")
+          }
+          return
+        }
+        bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
+      } else {
+        // defualt imageOrientation is .up
+        // horizontal image need to crop
+
+        guard let cropImage = cgImage.cropping(to: CGRect(x: ((imageSize.width/2) - (cropWidth/2)) , y: 0, width: cropWidth, height: imageSize.height)) else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.assert("cropImage is nil after cropping")
+          }
+          return
+        }
+        bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
+        cgImage = cropImage
+      }
+    }
+
+    // downsize image to 1080p
+    if(imageSize.height >= Constants.imgMaxHeight) {
+      let newSize = CGSize(width: Constants.imgMaxWidth, height: Constants.imgMaxHeight)
+      UIGraphicsBeginImageContextWithOptions(newSize, false, bufferImage.scale);
+
+      bufferImage.draw(in: CGRect(origin: CGPoint.zero, size: newSize))
+      bufferImage = UIGraphicsGetImageFromCurrentImageContext()!
+
+      guard let context = UIGraphicsGetCurrentContext() else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+           CCLog.assert("Failed to get UIGraphic current context")
+        }
+        return
+      }
+      context.translateBy(x: 0, y: 0)
+      UIGraphicsEndImageContext()
+
+      if(bufferImage.cgImage == nil) {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.assert("cgImage is nil from bufferImage")
+        }
+        return
+      }
+      cgImage = bufferImage.cgImage!
+    }
+
+    CGImageDestinationAddImage(destination, cgImage, properties)
+    if(!CGImageDestinationFinalize(destination)) {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.assert("Failed to format the image")
+      }
+      return
+    }
+
+    do {
+      try media.imageMemoryBuffer = Data(contentsOf: fileUrl as URL)
+    } catch {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.assert("Failed to get image data from the file url")
+      }
+      return
+    }
+  }
 }
 
 extension CameraViewController: UIImagePickerControllerDelegate {
@@ -641,7 +748,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       }
 
       mediaObject = FoodieMedia(for: mediaName, localType: .draft, mediaType: .photo)
-      mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(image, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+      imageFormatter(mediaObject, image: image)
 
     default:
       AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { action in

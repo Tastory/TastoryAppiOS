@@ -14,14 +14,6 @@ import MobileCoreServices
 
 class FoodieMedia: FoodieFileObject {
 
-  // MARK: - Constants
-  struct Constants {
-    fileprivate static let imgMaxHeight = CGFloat(1920)
-    fileprivate static let imgMaxWidth = CGFloat(1080)
-    fileprivate static let heightAspect = CGFloat(16)
-    fileprivate static let widthAspect = CGFloat(9)
-  }
-
   // MARK: - Error Types
   enum ErrorCode: LocalizedError {
     
@@ -388,95 +380,11 @@ extension FoodieMedia: FoodieObjectDelegate {
     
     switch type {
     case .photo:
-
-      guard !FoodieFileObject.checkIfExists(for: fileName, in: localType) else {
-        CCLog.info("\(FoodieFileObject.getFileURL(for: localType, with: fileName)) already exists")
-        callback?(nil)
-        return
-      }
-
       guard let memoryBuffer = self.imageMemoryBuffer else {
         callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
         return
       }
-
-      let fileUrl = FoodieFileObject.getFileURL(for: localType, with: fileName) as CFURL
-      let destination = CGImageDestinationCreateWithURL(fileUrl, kUTTypeJPEG, 1, nil)!
-      let jfifProperties = [kCGImagePropertyJFIFIsProgressive: kCFBooleanTrue] as NSDictionary
-      let properties = [
-        kCGImageDestinationLossyCompressionQuality: 0.5,
-        kCGImagePropertyJFIFDictionary: jfifProperties
-        ] as NSDictionary
-
-      guard var bufferImage = UIImage(data: memoryBuffer) else {
-        CCLog.assert("Failed to load buffer as UIImage")
-        callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
-        return
-      }
-
-      let imageSize = bufferImage.size
-
-      guard var cgImage = bufferImage.cgImage else {
-        CCLog.assert("cgImage is nil from bufferImage")
-        callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
-        return
-      }
-
-      if(CGFloat(imageSize.width) > (((CGFloat(imageSize.height)/Constants.heightAspect) * Constants.widthAspect))) {
-
-        let cropWidth = ((imageSize.height / Constants.heightAspect) * Constants.widthAspect)
-        if(bufferImage.imageOrientation == .right) {
-          //portrait photo bigger than 16/9
-          guard let cropImage = cgImage.cropping(to: CGRect(x: 0, y:(((imageSize.width/2) - (cropWidth/2))) , width: imageSize.height, height: cropWidth)) else {
-            CCLog.assert("cropImage is nil after cropping")
-            callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
-            return
-          }
-          bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
-        } else {
-          // defualt imageOrientation is .up
-          // horizontal image need to crop
-
-          guard let cropImage = cgImage.cropping(to: CGRect(x: ((imageSize.width/2) - (cropWidth/2)) , y: 0, width: cropWidth, height: imageSize.height)) else {
-            CCLog.assert("cropImage is nil after cropping")
-            callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
-            return
-          }
-          bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
-          cgImage = cropImage
-        }
-      }
-
-      // downsize image to 1080p
-      if(imageSize.height >= Constants.imgMaxHeight) {
-        let newSize = CGSize(width: Constants.imgMaxWidth, height: Constants.imgMaxHeight)
-        UIGraphicsBeginImageContextWithOptions(newSize, false, bufferImage.scale);
-
-        bufferImage.draw(in: CGRect(origin: CGPoint.zero, size: newSize))
-        bufferImage = UIGraphicsGetImageFromCurrentImageContext()!
-
-        guard let context = UIGraphicsGetCurrentContext() else {
-          CCLog.assert("Failed to get UIGraphic current context")
-          callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
-          return
-        }
-        context.translateBy(x: 0, y: 0)
-        UIGraphicsEndImageContext()
-
-        if(bufferImage.cgImage == nil) {
-          CCLog.assert("cgImage is nil from bufferImage")
-          callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
-          return
-        }
-        cgImage = bufferImage.cgImage!
-      }
-
-      CGImageDestinationAddImage(destination, cgImage, properties)
-      if(CGImageDestinationFinalize(destination)) {
-        callback?(nil)
-      } else {
-        callback?(ErrorCode.saveToLocalCompletedWithNoOutputFile)
-      }
+      self.save(buffer: memoryBuffer, to: localType, withBlock: callback)
 
     case .video:
 
