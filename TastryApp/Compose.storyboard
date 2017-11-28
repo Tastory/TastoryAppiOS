@@ -14,6 +14,9 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
+        <array key="Raleway-Medium.ttf">
+            <string>Raleway-Medium</string>
+        </array>
         <array key="Raleway-Regular.ttf">
             <string>Raleway-Regular</string>
         </array>
@@ -338,7 +341,7 @@
                                                         <state key="normal" title="Button" image="Entry-Title"/>
                                                     </button>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Title (Required)" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yGa-MF-Thx">
-                                                        <rect key="frame" x="51" y="16" width="285.33333333333331" height="19"/>
+                                                        <rect key="frame" x="51" y="16" width="285" height="19"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="16"/>
                                                         <textInputTraits key="textInputTraits" autocapitalizationType="words" keyboardType="alphabet" returnKeyType="done"/>
@@ -347,7 +350,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="799" text="50" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rV1-7C-DT8">
-                                                        <rect key="frame" x="346.33333333333331" y="18.333333333333343" width="13.666666666666686" height="14"/>
+                                                        <rect key="frame" x="346" y="18" width="14" height="14.333333333333336"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -380,7 +383,7 @@
                                                 <rect key="frame" x="0.0" y="294.66666666666663" width="375" height="44"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ANT-0N-UCv">
-                                                        <rect key="frame" x="149.33333333333334" y="5" width="78" height="24"/>
+                                                        <rect key="frame" x="148.33333333333334" y="5" width="80" height="24"/>
                                                         <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="14"/>
                                                         <state key="normal" title=" Preview" image="Entry-Preview">
                                                             <color key="titleColor" red="0.98039215686274506" green="0.035294117647058823" blue="0.035294117647058823" alpha="1" colorSpace="calibratedRGB"/>
@@ -503,7 +506,7 @@
                                                         <state key="normal" image="Entry-SwipeMessage"/>
                                                     </button>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Swipe Up Message" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ehg-y5-HB3">
-                                                        <rect key="frame" x="49" y="13.333333333333258" width="287.33333333333331" height="17"/>
+                                                        <rect key="frame" x="49" y="13.333333333333258" width="289" height="17"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences" keyboardType="alphabet"/>
@@ -512,7 +515,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="800" text="15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QxI-Em-dBD">
-                                                        <rect key="frame" x="346.33333333333331" y="16" width="13.666666666666686" height="14"/>
+                                                        <rect key="frame" x="348" y="15.666666666666629" width="12" height="14.333333333333336"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66000000000000003" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -790,7 +793,7 @@
         <!--Venue Table View Controller-->
         <scene sceneID="Xa7-M7-Itt">
             <objects>
-                <viewController storyboardIdentifier="VenueTableViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="WW3-dq-N2V" customClass="VenueTableViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="VenueTableViewController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="WW3-dq-N2V" customClass="VenueTableViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1Rh-GL-b2t">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -807,17 +810,17 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yzK-Rf-cN6">
-                                                    <rect key="frame" x="15" y="5" width="33.333333333333336" height="20.333333333333332"/>
+                                                    <rect key="frame" x="14.999999999999998" y="7" width="29.333333333333332" height="16.666666666666668"/>
                                                     <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
+                                                    <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                                                    <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="guT-IY-1FO">
-                                                    <rect key="frame" x="14.999999999999996" y="25.333333333333332" width="43.666666666666664" height="14.333333333333334"/>
+                                                    <rect key="frame" x="15" y="23.666666666666668" width="43" height="14.333333333333334"/>
                                                     <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                    <nil key="textColor"/>
+                                                    <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
+                                                    <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="0.5" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -826,39 +829,111 @@
                                 </prototypes>
                             </tableView>
                             <stackView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="y57-UU-pr5">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="156"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="201"/>
                                 <subviews>
                                     <view opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="375" placeholderIntrinsicHeight="20" translatesAutoresizingMaskIntoConstraints="NO" id="NzM-Iv-Gfw">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
-                                        <color key="backgroundColor" red="0.78854066133499146" green="0.78752297163009644" blue="0.80913728475570679" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="88"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xeE-NM-jtC">
+                                                <rect key="frame" x="8" y="56" width="22" height="22"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="22" id="lsy-yG-PwD"/>
+                                                    <constraint firstAttribute="width" constant="22" id="z7y-oY-FAQ"/>
+                                                </constraints>
+                                                <state key="normal" image="Settings-LeftArrowDark"/>
+                                                <connections>
+                                                    <action selector="leftBarButtonAction:" destination="WW3-dq-N2V" eventType="touchUpInside" id="xDa-wB-RoH"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="xeE-NM-jtC" firstAttribute="leading" secondItem="NzM-Iv-Gfw" secondAttribute="leading" constant="8" id="uTF-qR-E7w"/>
+                                        </constraints>
                                     </view>
-                                    <searchBar opaque="NO" contentMode="redraw" text="" placeholder="Venue name to search" translatesAutoresizingMaskIntoConstraints="NO" id="qJC-s3-KyN">
-                                        <rect key="frame" x="0.0" y="44" width="375" height="56"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </searchBar>
-                                    <searchBar opaque="NO" contentMode="redraw" text="" placeholder="Location to search near" translatesAutoresizingMaskIntoConstraints="NO" id="X26-2v-yRG">
-                                        <rect key="frame" x="0.0" y="100" width="375" height="56"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </searchBar>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Em3-GP-JO4">
+                                        <rect key="frame" x="0.0" y="88" width="375" height="56"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" verticalHuggingPriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="4Lb-Ja-RHX">
+                                                <rect key="frame" x="0.0" y="0.0" width="6" height="56"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="6" id="tKK-hq-NVA"/>
+                                                </constraints>
+                                            </view>
+                                            <searchBar opaque="NO" contentMode="redraw" searchBarStyle="minimal" text="" placeholder="Venue name to search" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qJC-s3-KyN">
+                                                <rect key="frame" x="6" y="0.0" width="363" height="56"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <offsetWrapper key="searchFieldBackgroundPositionAdjustment" horizontal="0.0" vertical="-2"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </searchBar>
+                                            <view contentMode="scaleToFill" verticalHuggingPriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="dE3-CA-Q6n">
+                                                <rect key="frame" x="369" y="0.0" width="6" height="56"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="6" id="UuU-fe-QrD"/>
+                                                </constraints>
+                                            </view>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mh1-FD-178">
+                                        <rect key="frame" x="0.0" y="144" width="375" height="56"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" verticalHuggingPriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="Jzf-JP-94f">
+                                                <rect key="frame" x="0.0" y="0.0" width="6" height="56"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="6" id="H28-Jd-Qdi"/>
+                                                </constraints>
+                                            </view>
+                                            <searchBar opaque="NO" contentMode="redraw" searchBarStyle="minimal" text="" placeholder="Location to search near" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X26-2v-yRG">
+                                                <rect key="frame" x="6" y="0.0" width="363" height="56"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <offsetWrapper key="searchTextPositionAdjustment" horizontal="0.0" vertical="0.0"/>
+                                                <offsetWrapper key="searchFieldBackgroundPositionAdjustment" horizontal="0.0" vertical="-6"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </searchBar>
+                                            <view contentMode="scaleToFill" verticalHuggingPriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="ua7-Fl-XjM">
+                                                <rect key="frame" x="369" y="0.0" width="6" height="56"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="6" id="4MG-OA-dYs"/>
+                                                </constraints>
+                                            </view>
+                                        </subviews>
+                                    </stackView>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iHf-sb-IMu" userLabel="Line">
+                                        <rect key="frame" x="0.0" y="200" width="375" height="1"/>
+                                        <color key="backgroundColor" red="0.91372549020000005" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="1" id="YjT-DY-N0c"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
                             </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose Venue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ogf-bS-Ofz">
+                                <rect key="frame" x="133.66666666666666" y="57.333333333333343" width="108.33333333333334" height="19"/>
+                                <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="16"/>
+                                <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="y57-UU-pr5" firstAttribute="top" secondItem="1Rh-GL-b2t" secondAttribute="top" id="1pb-fO-xjd"/>
+                            <constraint firstItem="Ogf-bS-Ofz" firstAttribute="centerY" secondItem="NzM-Iv-Gfw" secondAttribute="bottom" constant="-22" id="DAQ-ew-YlU"/>
+                            <constraint firstItem="xeE-NM-jtC" firstAttribute="centerY" secondItem="Ogf-bS-Ofz" secondAttribute="centerY" id="Dic-a4-Kbe"/>
                             <constraint firstItem="y57-UU-pr5" firstAttribute="leading" secondItem="RMB-z7-BQB" secondAttribute="leading" id="HEf-SC-WY3"/>
+                            <constraint firstItem="Ogf-bS-Ofz" firstAttribute="centerX" secondItem="NzM-Iv-Gfw" secondAttribute="centerX" id="NCX-md-Qv9"/>
                             <constraint firstItem="cR5-xA-VN9" firstAttribute="leading" secondItem="RMB-z7-BQB" secondAttribute="leading" id="XeT-we-cxC"/>
                             <constraint firstItem="RMB-z7-BQB" firstAttribute="trailing" secondItem="y57-UU-pr5" secondAttribute="trailing" id="ZI3-ie-VkY"/>
                             <constraint firstItem="RMB-z7-BQB" firstAttribute="trailing" secondItem="cR5-xA-VN9" secondAttribute="trailing" id="pmj-UT-NNF"/>
-                            <constraint firstItem="cR5-xA-VN9" firstAttribute="top" secondItem="1Rh-GL-b2t" secondAttribute="topMargin" id="qhi-Mm-uWR"/>
+                            <constraint firstItem="cR5-xA-VN9" firstAttribute="top" secondItem="RMB-z7-BQB" secondAttribute="top" id="qhi-Mm-uWR"/>
                             <constraint firstAttribute="bottom" secondItem="cR5-xA-VN9" secondAttribute="bottom" id="qwN-S8-UK0"/>
-                            <constraint firstItem="RMB-z7-BQB" firstAttribute="top" secondItem="NzM-Iv-Gfw" secondAttribute="bottom" id="vuE-1C-Vwn"/>
+                            <constraint firstItem="RMB-z7-BQB" firstAttribute="top" secondItem="NzM-Iv-Gfw" secondAttribute="bottom" constant="-44" id="vuE-1C-Vwn"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="RMB-z7-BQB"/>
-                        <connections>
-                            <outletCollection property="gestureRecognizers" destination="phg-ME-v7Z" appends="YES" id="t6J-DD-wGP"/>
-                        </connections>
                     </view>
                     <connections>
                         <outlet property="locationSearchBar" destination="X26-2v-yRG" id="9HX-hL-8Yn"/>
@@ -868,13 +943,8 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2l1-BT-1pl" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <swipeGestureRecognizer direction="right" id="phg-ME-v7Z">
-                    <connections>
-                        <action selector="rightSwipe:" destination="WW3-dq-N2V" id="spR-wA-7kt"/>
-                    </connections>
-                </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2230" y="-1865"/>
+            <point key="canvasLocation" x="2229.5999999999999" y="-1865.0246305418721"/>
         </scene>
     </scenes>
     <resources>
@@ -900,6 +970,7 @@
         <image name="Markup-Trash" width="40" height="40"/>
         <image name="Markup-Undo" width="40" height="40"/>
         <image name="SelfieIcon" width="40" height="36"/>
+        <image name="Settings-LeftArrowDark" width="8" height="14"/>
         <image name="StoryMarkup-SoundOffButton" width="40" height="40"/>
         <image name="StoryMarkup-SoundOnButton" width="40" height="40"/>
     </resources>

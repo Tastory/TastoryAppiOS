@@ -56,10 +56,10 @@ class VenueTableViewController: OverlayViewController {
   
   
   // MARK: - IBActions
-  @IBAction func rightSwipe(_ sender: UISwipeGestureRecognizer) {
-    popDismiss(animated: true)  // TODO: Do we still need this?
+  @IBAction func leftBarButtonAction(_ sender: UIButton) {
+    popDismiss(animated: true)
   }
-
+  
   
   fileprivate func venueSearchCallback(_ venueArray: [FoodieVenue]?, _ geocode: FoodieVenue.Geocode?, _ error: Error?) {
     
@@ -153,11 +153,15 @@ class VenueTableViewController: OverlayViewController {
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
+    
     venueSearchBar.delegate = self
     locationSearchBar.delegate = self
     venueTableView.delegate = self
     venueTableView.dataSource = self
     
+    // Update the appearance
+    UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor]
+
     // Update the UI
     if let suggestedVenueName = suggestedVenue?.name {
       venueSearchBar.text = suggestedVenueName
