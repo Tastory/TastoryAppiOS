@@ -138,33 +138,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
   
   @IBAction func discardStory(_ sender: UIButton) {
-    StorySelector.showStoryDiscardDialog(to: self,
-                                         message: "Are you sure you want to discard changes to your story?",
-                                         title: "Discard Edit") {
-      self.activitySpinner.apply()
-      FoodieStory.cleanUpDraft() { error in
-        if let error = error {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-            self.activitySpinner.remove()
-            CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
-          }
-        }
-
-        guard let story = self.workingStory else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
-          CCLog.fatal("No Working Story when discarding story")
-        }
-
-        if(story.isEditStory) {
-          self.restoreStoryDelegate?.updateStory(story)
-        }
-
-        self.workingStory = nil
-
-        self.popDismiss(animated: true)
-        self.activitySpinner.remove()
-      }
-    }
+    askDiscardAndDismiss()
   }
 
   
@@ -281,11 +255,60 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   
   
   @IBAction func backAction(_ sender: UIButton) {
-    popDismiss(animated: true)
+    guard let story = self.workingStory else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
+      CCLog.fatal("No Working Story when discarding story")
+    }
+    
+    if story.isEditStory {
+      askDiscardAndDismiss()
+    } else {
+      popDismiss(animated: true)
+    }
   }
   
   
   // MARK: - Private Instance Functions
+  
+  private func askDiscardAndDismiss() {
+    guard let story = self.workingStory else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
+      CCLog.fatal("No Working Story when discarding story")
+    }
+    
+    var discardTitle: String
+    var discardMessage: String
+    
+    if story.isEditStory {
+      discardTitle = "Discard Edit"
+      discardMessage = "Are you sure you want to discard the changes to your story?"
+    } else {
+      discardTitle = "Discard Story"
+      discardMessage = "Are you sure? Your associated image, video and edits will be gone."
+    }
+    
+    StorySelector.showStoryDiscardDialog(to: self, message: discardMessage, title: discardTitle) {
+      self.activitySpinner.apply()
+      FoodieStory.cleanUpDraft() { error in
+        if let error = error {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            self.activitySpinner.remove()
+            CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
+          }
+        }
+        
+        if(story.isEditStory) {
+          self.restoreStoryDelegate?.updateStory(story)
+        }
+        
+        self.workingStory = nil
+        
+        self.popDismiss(animated: true)
+        self.activitySpinner.remove()
+      }
+    }
+  }
+  
   
   private func averageLocationOfMoments() -> CLLocation? {
     
@@ -515,7 +538,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         swipeLengthLabel?.text = String(Constants.MaxSwipeMessageLength)
       }
       
-      if isEditing {
+      if workingStory.isEditStory {
         discardButton?.setTitle("Discard Changes", for: .normal)
         savePostButton?.setTitle("Save", for: .normal)
       } else {
