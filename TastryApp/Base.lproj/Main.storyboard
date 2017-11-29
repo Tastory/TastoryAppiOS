@@ -43,10 +43,10 @@
                                 <rect key="frame" x="0.0" y="337.33333333333326" width="375" height="440.66666666666674"/>
                                 <subviews>
                                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesSelf" translatesAutoresizingMaskIntoConstraints="NO" id="AMX-lO-lJU">
-                                        <rect key="frame" x="52" y="122" width="270" height="197"/>
+                                        <rect key="frame" x="52" y="122.66666666666669" width="270" height="197"/>
                                     </imageView>
                                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesOthers" translatesAutoresizingMaskIntoConstraints="NO" id="ETg-wA-zyO">
-                                        <rect key="frame" x="52" y="122" width="270" height="197"/>
+                                        <rect key="frame" x="52" y="122.66666666666669" width="270" height="197"/>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -171,7 +171,7 @@
                                     <constraint firstAttribute="trailing" secondItem="sPh-PF-K39" secondAttribute="trailing" constant="15" id="U4p-I1-vYM"/>
                                 </constraints>
                             </view>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ProfileDetails-Empty" translatesAutoresizingMaskIntoConstraints="NO" id="0Ae-af-Oo9">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Avatar-Empty1" translatesAutoresizingMaskIntoConstraints="NO" id="0Ae-af-Oo9">
                                 <rect key="frame" x="19.333333333333336" y="143" width="91.666666666666657" height="92"/>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-BloatedSquareFrame" translatesAutoresizingMaskIntoConstraints="NO" id="Pgw-9P-CO9">
@@ -751,6 +751,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="Avatar-Empty1" width="90" height="90"/>
         <image name="Discover-CameraButton" width="30" height="30"/>
         <image name="Discover-CurrentLocationButton" width="26" height="29"/>
         <image name="Discover-DraftButton" width="29" height="29"/>
@@ -771,7 +772,6 @@
         <image name="Profile-NoStoriesSelf" width="270" height="197"/>
         <image name="Profile-SettingsButton" width="75" height="22"/>
         <image name="Profile-ShareButton" width="62" height="22"/>
-        <image name="ProfileDetails-Empty" width="116" height="116"/>
         <image name="StoryMarkup-PauseButton" width="40" height="40"/>
         <image name="StoryMarkup-PlayButton" width="40" height="40"/>
         <image name="StoryMarkup-SoundOffButton" width="40" height="40"/>
