@@ -68,7 +68,6 @@ class MomentCollectionViewCell: UICollectionViewCell {
     self.layer.shadowRadius = Constants.CellCornerRadius
     self.layer.shadowOpacity = Constants.CellShadowOpacity
     
-    CCLog.verbose("Cell Shadow Path Rect Width: \(layer.bounds.width), Height: \(layer.bounds.height)")
     self.layer.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: layer.cornerRadius).cgPath
     
     momentThumb.layer.masksToBounds = true
