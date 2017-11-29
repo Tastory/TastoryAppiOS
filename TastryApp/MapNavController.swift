@@ -19,6 +19,14 @@ import AsyncDisplayKit
 
 class MapNavController: ASNavigationController {
 
+  // MARK: - Struct & Enum Definition
+  
+  struct MapState {
+    fileprivate var region: MKCoordinateRegion
+    fileprivate var tracking: Bool
+  }
+  
+  
   // MARK: - Constants
   
   struct Constants {
@@ -45,6 +53,10 @@ class MapNavController: ASNavigationController {
   
   var mapDelegate: MapNavControllerDelegate?
   var mapView: MKMapView!
+  
+  var currentMapState: MapState {
+    return MapState(region: mapView.region, tracking: isTracking)
+  }
   
   var exposedMapRect: MKMapRect {
     return exposedRegion.toMapRect()
@@ -182,6 +194,12 @@ class MapNavController: ASNavigationController {
     
     // Display Map
     showMapRectExposed(finalMapRect, animated: true)
+  }
+  
+  
+  func resumeMapState(_ mapState: MapState, animated: Bool) {
+    mapView.setRegion(mapState.region, animated: animated)
+    if mapState.tracking { startTracking() }
   }
   
   

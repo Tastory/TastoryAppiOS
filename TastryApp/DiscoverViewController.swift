@@ -54,8 +54,7 @@ class DiscoverViewController: OverlayViewController {
   private var feedCollectionNodeController: FeedCollectionNodeController!
   private var mapNavController: MapNavController?
   private var activitySpinner: ActivitySpinner!
-  private var lastMapRegion: MKCoordinateRegion?
-  private var lastMapWasTracking: Bool = false
+  private var lastMapState: MapNavController.MapState?
   private var lastSelectedAnnotationIndex: Int?
   private var highlightedStoryIndex: Int?
   private var mosaicMapWidth: CLLocationDistance?
@@ -68,8 +67,8 @@ class DiscoverViewController: OverlayViewController {
   private var feedGradientNode: GradientNode!
   
   
-  // MARK: - IBOutlets
   
+  // MARK: - IBOutlets
   @IBOutlet weak var mosaicLayoutChangePanRecognizer: UIPanGestureRecognizer!
   @IBOutlet weak var carouselLayoutChangeTapRecognizer: UITapGestureRecognizer!
   
@@ -113,8 +112,8 @@ class DiscoverViewController: OverlayViewController {
   
   
   
-  // MARK: - IBActions
   
+  // MARK: - IBActions
   @IBAction func launchDraftStory(_ sender: Any) {
     // This is used for viewing the draft story to be used with update story later
     // Hide the button as needed, due to problems with empty draft story and saving an empty story is problematic
@@ -670,13 +669,9 @@ class DiscoverViewController: OverlayViewController {
     }
     
     // Resume from last map region
-    if let mapRegion = lastMapRegion {
-      mapController.showRegionExposed(mapRegion, animated: true)
+    if let mapState = lastMapState {
+      mapController.resumeMapState(mapState, animated: true)
       mapController.removeAllAnnotations()
-      
-      if lastMapWasTracking {
-        mapController.startTracking()
-      }
       
       if storyAnnotations.count > 0 {
         mapController.add(annotations: storyAnnotations)
@@ -798,8 +793,7 @@ class DiscoverViewController: OverlayViewController {
     // Keep track of what the location is before we disappear
     if let mapNavController = mapNavController {
       // Save the Map Region to resume when we get back to this view next time around
-      lastMapRegion = mapNavController.exposedRegion
-      lastMapWasTracking = mapNavController.isTracking
+      lastMapState = mapNavController.currentMapState
       if let selectedAnnotation = mapNavController.selectedAnnotation,
         let annotationIndex = storyAnnotations.index(where: { $0 === selectedAnnotation }) {
         lastSelectedAnnotationIndex = annotationIndex
@@ -1076,8 +1070,6 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
             let mosaicMapAspectRatio = mosaicMapView.bounds.width/mosaicMapView.bounds.height
             let mapHeight = mapWidth/CLLocationDistance(mosaicMapAspectRatio)
             let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, mapHeight/2, mapWidth/2)  // divided by 2 is hand tuned
-            self.lastMapRegion = region
-            
             mapNavController?.showRegionExposed(region, animated: true)
             
           case .carousel:
