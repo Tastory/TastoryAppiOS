@@ -127,8 +127,8 @@ class MapNavController: ASNavigationController {
   
   
   
-  @objc private func mapWasDragged(_ panRecognizer: UIGestureRecognizer) {
-    if panRecognizer.state == .began {
+  @objc private func mapWasDragged(_ recognizer: UIGestureRecognizer) {
+    if recognizer.state == .began {
       mapDelegate?.mapNavControllerWasMovedByUser?(self)
     }
   }
@@ -341,6 +341,11 @@ class MapNavController: ASNavigationController {
     let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(mapWasDragged(_:)))
     panGestureRecognizer.delegate = self
     mapView.addGestureRecognizer(panGestureRecognizer)
+    
+    // Add a Pan Gesture Recognizer to the Map View to detect User initiated Map movement
+    let pinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(mapWasDragged(_:)))
+    pinchGestureRecognizer.delegate = self
+    mapView.addGestureRecognizer(pinchGestureRecognizer)
     
     // Start/Restart the Location Watcher
     isTracking = true
