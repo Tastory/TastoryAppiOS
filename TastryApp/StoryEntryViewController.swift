@@ -442,13 +442,13 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       // compute the insert index for the collection view
       var indexPaths: [IndexPath] = []
       var itemIndex = 1
-
+      
       for returnedMoment in returnedMoments {
         // Let's figure out what to do with the returned Moment
         if markupMoment != nil {
           // So there is a Moment under markup. The returned Moment should match this.
           if returnedMoment === markupMoment {
-
+            
             // save to local
             _ = returnedMoment.saveRecursive(to: .local, type: .draft) { error in
               if let error = error {
@@ -462,13 +462,13 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             CCLog.assert("returnedMoment expected to match markupMoment")
           }
         } else {
-
-          if(workingStory.moments != nil) {
+          
+          if workingStory.moments != nil {
             itemIndex += (workingStory.moments!.count - 1)
             indexPaths.append(IndexPath( item: (itemIndex) , section: 0))
             itemIndex += 1
           }
-
+          
           CCLog.verbose("ViewWillAppear Add Moment \(returnedMoment.getUniqueIdentifier)")
           workingStory.add(moment: returnedMoment)
           // If there wasn't any moments before, we got to make this the default thumbnail for the Story
@@ -489,6 +489,9 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         }
       }
 
+      // Clear returned moments or will get messy if the view gets partial dismissed and comes back (interactable transitions)
+      returnedMoments.removeAll()
+      
       if(!indexPaths.isEmpty) {
         guard let collectionView = self.momentViewController.collectionView else {
           CCLog.fatal("collection view from momentViewController is nil")

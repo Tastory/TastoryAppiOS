@@ -632,8 +632,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     if self.moments != nil {
 
       if(self.moments!.contains(moment)) {
-        CCLog.assert("Failed to add a moment as it already exists within this story")
+        CCLog.assert("Failed to add Moment \(moment.getUniqueIdentifier()) as it already exists within Story \(self.getUniqueIdentifier())")
       } else {
+        CCLog.debug("Adding Moment \(moment.getUniqueIdentifier()) to Story \(self.getUniqueIdentifier())")
         self.moments!.append(moment)
       }
     } else {
