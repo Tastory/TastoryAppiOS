@@ -14,8 +14,8 @@ class FeedCollectionCellNode: ASCellNode {
   // MARK: - Constants
   struct Constants {
     fileprivate static let CoverPhotoAspectRatio: CGFloat = FoodieGlobal.Constants.DefaultMomentAspectRatio
-    fileprivate static let CoverTitleFontFraction: CGFloat = 0.052  // Of Constrained Size's Height. Hand tuned value for all phones
-    fileprivate static let CoverTitleFontName: String = "Avenir-Medium"
+    fileprivate static let CoverTitleFontFraction: CGFloat = 0.050  // Of Constrained Size's Height. Hand tuned value for all phones
+    fileprivate static let CoverTitleFontName: String = "Raleway-SemiBold"
     fileprivate static let CoverTitleMaxNumOfLines: UInt = 4  // Hand tuned value for all phones
     fileprivate static let CoverTitleTextColor = UIColor.white
     fileprivate static let CoverTitleBackgroundBlackAlphas: [CGFloat] = [0.7, 0.0]  // Hand tuned value for all phones
@@ -51,6 +51,7 @@ class FeedCollectionCellNode: ASCellNode {
     
     coverImageNode.url = FoodieFileObject.getS3URL(for: thumbnailFileName)
     coverImageNode.placeholderColor = UIColor.gray
+    coverImageNode.backgroundColor = UIColor.clear
     coverImageNode.placeholderEnabled = true
     coverImageNode.isLayerBacked = true
     

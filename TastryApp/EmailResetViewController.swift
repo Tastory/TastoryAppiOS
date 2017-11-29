@@ -39,7 +39,7 @@ class EmailResetViewController: OverlayViewController {
     FoodieUser.resetPassword(with: email) { error in
       if let error = error {
         CCLog.warning("Reset request for \(email) failed - \(error.localizedDescription)")
-        AlertDialog.standardPresent(from: self, title: .genericNetworkError, message: .networkTryAgain)
+        AlertDialog.present(from: self, title: "Reset Error", message: error.localizedDescription)
         return
       }
       
