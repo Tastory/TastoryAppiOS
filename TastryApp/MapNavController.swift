@@ -47,6 +47,7 @@ class MapNavController: ASNavigationController {
   private var exposedRectInset: UIEdgeInsets?
   private var exposedRect: CGRect?
   private var currentMapWidth: CLLocationDistance?
+
   
   
   // MARK: - Public Instance Variable
@@ -59,7 +60,11 @@ class MapNavController: ASNavigationController {
   }
   
   var exposedMapRect: MKMapRect {
-    return exposedRegion.toMapRect()
+    if let exposedRect = exposedRect {
+      return convert(mapViewRect: exposedRect)
+    } else {
+      return mapView.visibleMapRect
+    }
   }
   
   var exposedRegion: MKCoordinateRegion {
@@ -84,6 +89,49 @@ class MapNavController: ASNavigationController {
   }
   
   var isTracking: Bool = false
+  
+  
+  
+  // MARK: - Private Instance Functions
+  
+  private func convert(mapViewPoint: CGPoint) -> MKMapPoint {
+    let visibleMapRect = mapView.visibleMapRect
+    let mapBounds = mapView.bounds
+    
+    let mapScaleX = visibleMapRect.size.width/Double(mapBounds.width)
+    let mapScaleY = visibleMapRect.size.height/Double(mapBounds.height)
+    
+    let mapPointX = visibleMapRect.origin.x + mapScaleX * Double(mapViewPoint.x)
+    let mapPointY = visibleMapRect.origin.y + mapScaleY * Double(mapViewPoint.y)
+    
+    return MKMapPointMake(mapPointX, mapPointY)
+  }
+  
+  
+  private func convert(mapViewRect: CGRect) -> MKMapRect {
+    let visibleMapRect = mapView.visibleMapRect
+    let mapBounds = mapView.bounds
+    
+    let mapScaleX = visibleMapRect.size.width/Double(mapBounds.width)
+    let mapScaleY = visibleMapRect.size.height/Double(mapBounds.height)
+    
+    let mapOriginX = visibleMapRect.origin.x + mapScaleX * Double(mapViewRect.origin.x)
+    let mapOriginY = visibleMapRect.origin.y + mapScaleY * Double(mapViewRect.origin.y)
+    let mapSizeWidth = mapScaleX * Double(mapViewRect.size.width)
+    let mapSizeHeight = mapScaleY * Double(mapViewRect.size.height)
+    
+    let mapPoint = MKMapPointMake(mapOriginX, mapOriginY)
+    let mapSize = MKMapSize(width: mapSizeWidth, height: mapSizeHeight)
+    return MKMapRect(origin: mapPoint, size: mapSize)
+  }
+  
+  
+  
+  @objc private func mapWasDragged(_ panRecognizer: UIGestureRecognizer) {
+    if panRecognizer.state == .began {
+      mapDelegate?.mapNavControllerWasMovedByUser?(self)
+    }
+  }
   
   
   
@@ -148,16 +196,10 @@ class MapNavController: ASNavigationController {
   }
   
   
-  func selectCenteredInExposedRect(annotation: MKAnnotation, turnOffTracking: Bool = true) {
-    if turnOffTracking { stopTracking() }
+  func showRegionExposed(containing annotations: [MKAnnotation],
+                         onlyIfCurrentTooBig tooBigOnly: Bool = false,
+                         turnOffTracking: Bool = true) {
     
-    let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, boundedMapWidth(), boundedMapWidth())
-    showRegionExposed(region, animated: true)
-    mapView.selectAnnotation(annotation, animated: true)
-  }
-  
-  
-  func showRegionExposed(containing annotations: [MKAnnotation], turnOffTracking: Bool = true) {
     if turnOffTracking { stopTracking() }
     
     let initialMapPoint = MKMapPointForCoordinate(annotations[0].coordinate)
@@ -192,8 +234,23 @@ class MapNavController: ASNavigationController {
     mapMaxY = mapMinY + mapHeight
     let finalMapRect = MKMapRectMake(mapMinX, mapMinY, mapWidth, mapHeight)
     
-    // Display Map
-    showMapRectExposed(finalMapRect, animated: true)
+    // Only if current Map View is too small?
+    if tooBigOnly {
+      var currentMapRect: MKMapRect
+      if let exposedRect = exposedRect {
+        currentMapRect = convert(mapViewRect: exposedRect)
+      } else {
+        currentMapRect = mapView.visibleMapRect
+      }
+      
+      if MKMapRectContainsRect(currentMapRect, finalMapRect) {
+        showMapRectExposed(finalMapRect, animated: true)
+      }
+      else { /* Otherwise just don't do anything */ }
+      
+    } else {
+      showMapRectExposed(finalMapRect, animated: true)
+    }
   }
   
   
@@ -229,6 +286,12 @@ class MapNavController: ASNavigationController {
     mapView.removeAnnotations(mapView.annotations)
   }
   
+  func isAnnotationExposed(_ annotation: MKAnnotation) -> Bool {
+    let mapPoint = MKMapPointForCoordinate(annotation.coordinate)
+    return MKMapRectContainsPoint(exposedMapRect, mapPoint)
+  }
+  
+  
   
   // Map Tracking Management
   
@@ -247,12 +310,7 @@ class MapNavController: ASNavigationController {
   
   
   
-  // MARK: - Private Instance Functions
-  @objc private func mapWasDragged(_ panRecognizer: UIGestureRecognizer) {
-    if panRecognizer.state == .began {
-      mapDelegate?.mapNavControllerWasMovedByUser?(self)
-    }
-  }
+
   
   
   

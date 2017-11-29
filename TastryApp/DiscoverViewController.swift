@@ -1074,7 +1074,17 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
             
           case .carousel:
             // TODO: Does the exposed map already show the annotation? Only zoom to all annotations if not already shown
-            mapNavController?.showRegionExposed(containing: self.storyAnnotations)
+            if let mapController = mapNavController {
+              if mapController.isAnnotationExposed(annotation) {
+                
+                // Is annotation already currently in exposed map? If so only change the map if the current map view is bigger than needed
+                mapController.showRegionExposed(containing: self.storyAnnotations, onlyIfCurrentTooBig: true)
+              } else {
+                
+                // If annotation is not shown, just go and show all the annotations
+                mapController.showRegionExposed(containing: self.storyAnnotations)
+              }
+            }
             allStoriesButton.isHidden = true
             searchButton.isHidden = true
           }
