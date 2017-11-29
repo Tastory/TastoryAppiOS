@@ -33,8 +33,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eFe-1j-Dmf" userLabel="9:16 View">
+                                <rect key="frame" x="0.0" y="72.666666666666686" width="375" height="667"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="eFe-1j-Dmf" secondAttribute="height" multiplier="9:16" id="NdK-sb-j4g"/>
+                                </constraints>
+                            </view>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="30k-mM-bOe" customClass="CameraButton" customModule="TastryApp" customModuleProvider="target">
-                                <rect key="frame" x="147.66666666666666" y="698" width="80" height="80"/>
+                                <rect key="frame" x="147.66666666666666" y="649.66666666666663" width="80" height="80"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <gestureRecognizers/>
                                 <constraints>
@@ -47,7 +54,7 @@
                                 </connections>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kxo-zQ-usi" customClass="ExitButton" customModule="TastryApp" customModuleProvider="target">
-                                <rect key="frame" x="16" y="718" width="40" height="40"/>
+                                <rect key="frame" x="20" y="669.66666666666663" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="kxo-zQ-usi" secondAttribute="height" multiplier="1:1" id="HhG-Lw-YHk"/>
                                     <constraint firstAttribute="width" constant="40" id="hAd-1m-3pU"/>
@@ -57,7 +64,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hPs-qT-rXL" customClass="ImagePickerButton" customModule="TastryApp" customModuleProvider="target">
-                                <rect key="frame" x="319" y="718" width="40" height="40"/>
+                                <rect key="frame" x="319" y="669.66666666666663" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="ZMe-kb-yeB"/>
                                     <constraint firstAttribute="width" secondItem="hPs-qT-rXL" secondAttribute="height" multiplier="1:1" id="yGW-de-dxW"/>
@@ -66,8 +73,8 @@
                                     <action selector="launchImagePicker:" destination="ImI-Ed-QdP" eventType="touchUpInside" id="GqK-N0-etg"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XSJ-qc-qe0">
-                                <rect key="frame" x="315" y="82" width="40" height="36"/>
+                            <button opaque="NO" alpha="0.80000000000000004" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XSJ-qc-qe0">
+                                <rect key="frame" x="315" y="27.666666666666671" width="40" height="36"/>
                                 <state key="normal" image="SelfieIcon"/>
                                 <connections>
                                     <action selector="switchSelfieMode:" destination="ImI-Ed-QdP" eventType="touchUpInside" id="EfC-Xt-QwR"/>
@@ -75,14 +82,18 @@
                             </button>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="E20-j0-dru" firstAttribute="trailing" secondItem="XSJ-qc-qe0" secondAttribute="trailing" constant="20" id="JQI-5Y-0wg"/>
+                            <constraint firstAttribute="top" secondItem="XSJ-qc-qe0" secondAttribute="top" priority="800" constant="-20" id="5mu-5h-fdX"/>
+                            <constraint firstItem="E20-j0-dru" firstAttribute="trailing" secondItem="XSJ-qc-qe0" secondAttribute="trailing" constant="20" id="BKc-uh-q1i"/>
+                            <constraint firstItem="kxo-zQ-usi" firstAttribute="centerY" secondItem="30k-mM-bOe" secondAttribute="centerY" id="MII-YR-lP5"/>
+                            <constraint firstItem="hPs-qT-rXL" firstAttribute="centerY" secondItem="30k-mM-bOe" secondAttribute="centerY" id="VLa-mP-e9h"/>
+                            <constraint firstItem="eFe-1j-Dmf" firstAttribute="centerX" secondItem="E20-j0-dru" secondAttribute="centerX" id="ZcP-Mj-KKd"/>
+                            <constraint firstItem="eFe-1j-Dmf" firstAttribute="width" secondItem="oEc-gL-EdH" secondAttribute="width" id="aMg-Vq-QEx"/>
                             <constraint firstItem="30k-mM-bOe" firstAttribute="centerX" secondItem="E20-j0-dru" secondAttribute="centerX" id="b0a-4t-gdd"/>
-                            <constraint firstItem="XSJ-qc-qe0" firstAttribute="top" secondItem="E20-j0-dru" secondAttribute="top" constant="38" id="fUC-mr-xvk"/>
-                            <constraint firstAttribute="leadingMargin" secondItem="kxo-zQ-usi" secondAttribute="leading" id="jHg-7x-M0c"/>
-                            <constraint firstItem="kxo-zQ-usi" firstAttribute="centerY" secondItem="30k-mM-bOe" secondAttribute="centerY" id="lWT-iL-82h"/>
+                            <constraint firstItem="eFe-1j-Dmf" firstAttribute="centerY" secondItem="oEc-gL-EdH" secondAttribute="centerY" id="dMC-cw-lHY"/>
+                            <constraint firstItem="XSJ-qc-qe0" firstAttribute="top" relation="greaterThanOrEqual" secondItem="eFe-1j-Dmf" secondAttribute="top" constant="-45" id="fUC-mr-xvk"/>
+                            <constraint firstAttribute="leading" secondItem="kxo-zQ-usi" secondAttribute="leading" constant="-20" id="jHg-7x-M0c"/>
                             <constraint firstItem="hPs-qT-rXL" firstAttribute="trailing" secondItem="oEc-gL-EdH" secondAttribute="trailingMargin" id="rO6-zC-fkA"/>
-                            <constraint firstItem="E20-j0-dru" firstAttribute="bottom" secondItem="30k-mM-bOe" secondAttribute="bottom" symbolic="YES" id="wcu-QE-Qme"/>
-                            <constraint firstItem="hPs-qT-rXL" firstAttribute="centerY" secondItem="30k-mM-bOe" secondAttribute="centerY" id="zhX-8f-aDC"/>
+                            <constraint firstItem="eFe-1j-Dmf" firstAttribute="bottom" secondItem="30k-mM-bOe" secondAttribute="bottom" constant="10" id="wcu-QE-Qme"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="E20-j0-dru"/>
                     </view>
@@ -111,7 +122,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zde-mf-qQe">
-                                <rect key="frame" x="0.0" y="72.666666666666686" width="375" height="666.66666666666652"/>
+                                <rect key="frame" x="0.0" y="72.666666666666686" width="375" height="667"/>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="Zde-mf-qQe" secondAttribute="height" multiplier="9:16" id="LGf-op-N9P"/>
@@ -132,7 +143,7 @@
                                 </connections>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Ao6-hj-RWt" userLabel="Text Tools Stack">
-                                <rect key="frame" x="118.33333333333331" y="92.666666666666671" width="140" height="40.000000000000014"/>
+                                <rect key="frame" x="117.66666666666669" y="92.666666666666671" width="140" height="40.000000000000014"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="center" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PR5-g3-wOV">
                                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
@@ -142,14 +153,14 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="center" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Nh-We-bhr">
-                                        <rect key="frame" x="48.000000000000014" y="0.0" width="42" height="40"/>
+                                        <rect key="frame" x="47.999999999999986" y="0.0" width="42" height="40"/>
                                         <state key="normal" image="Markup-Background"/>
                                         <connections>
                                             <action selector="backgroundButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="EDq-zO-SQF"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="center" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k2K-CX-jqS">
-                                        <rect key="frame" x="98.000000000000014" y="0.0" width="41.999999999999986" height="40"/>
+                                        <rect key="frame" x="97.999999999999986" y="0.0" width="42.000000000000014" height="40"/>
                                         <state key="normal" image="Markup-Font"/>
                                         <connections>
                                             <action selector="fontButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="pEr-xF-b9E"/>
@@ -158,7 +169,7 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="9oy-YC-tz3" userLabel="Draw Tools Stack">
-                                <rect key="frame" x="144.33333333333334" y="92.666666666666671" width="88" height="40.000000000000014"/>
+                                <rect key="frame" x="143.66666666666666" y="92.666666666666671" width="88" height="40.000000000000014"/>
                                 <subviews>
                                     <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KbB-2G-dkp">
                                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
@@ -227,7 +238,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lmH-xM-Ly2">
-                                <rect key="frame" x="12" y="691.33333333333337" width="40" height="40"/>
+                                <rect key="frame" x="12" y="691.66666666666663" width="40" height="40"/>
                                 <state key="normal" image="StoryMarkup-SoundOffButton"/>
                                 <connections>
                                     <action selector="soundOffButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="RJ5-By-odb"/>
@@ -350,7 +361,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="799" text="50" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rV1-7C-DT8">
-                                                        <rect key="frame" x="346" y="18" width="14" height="14.333333333333336"/>
+                                                        <rect key="frame" x="346" y="18.666666666666686" width="14" height="14.333333333333336"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -383,7 +394,7 @@
                                                 <rect key="frame" x="0.0" y="294.66666666666663" width="375" height="44"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ANT-0N-UCv">
-                                                        <rect key="frame" x="148.33333333333334" y="5" width="80" height="24"/>
+                                                        <rect key="frame" x="147.66666666666666" y="5" width="80" height="24"/>
                                                         <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="14"/>
                                                         <state key="normal" title=" Preview" image="Entry-Preview">
                                                             <color key="titleColor" red="0.98039215686274506" green="0.035294117647058823" blue="0.035294117647058823" alpha="1" colorSpace="calibratedRGB"/>
@@ -418,7 +429,7 @@
                                                         <state key="normal" title="Button" image="Entry-Venue"/>
                                                     </button>
                                                     <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J5u-Se-d4s">
-                                                        <rect key="frame" x="49" y="7.3333333333332575" width="311" height="29"/>
+                                                        <rect key="frame" x="49" y="7.6666666666666288" width="311" height="29"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
                                                         <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
                                                         <state key="normal" title="Venue (Required)">
@@ -457,7 +468,7 @@
                                                         <state key="normal" image="Entry-SwipeLink"/>
                                                     </button>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Swipe Up Link" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="zCa-Em-ilB">
-                                                        <rect key="frame" x="49" y="13.333333333333258" width="285" height="17"/>
+                                                        <rect key="frame" x="49" y="13.666666666666629" width="285" height="17"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits" autocorrectionType="no" textContentType="url"/>
@@ -506,7 +517,7 @@
                                                         <state key="normal" image="Entry-SwipeMessage"/>
                                                     </button>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Swipe Up Message" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ehg-y5-HB3">
-                                                        <rect key="frame" x="49" y="13.333333333333258" width="289" height="17"/>
+                                                        <rect key="frame" x="49" y="13.666666666666629" width="289" height="17"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences" keyboardType="alphabet"/>
@@ -716,7 +727,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
                                         </imageView>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BCS-cR-mdn">
-                                            <rect key="frame" x="98.333333333333329" y="1" width="24.666666666666671" height="24.666666666666668"/>
+                                            <rect key="frame" x="98.666666666666671" y="1" width="24.333333333333329" height="24.666666666666668"/>
                                             <rect key="contentStretch" x="1" y="0.0" width="1" height="1"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" secondItem="BCS-cR-mdn" secondAttribute="height" multiplier="1:1" id="8FL-D3-oha"/>
@@ -835,7 +846,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="88"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xeE-NM-jtC">
-                                                <rect key="frame" x="8" y="56" width="22" height="22"/>
+                                                <rect key="frame" x="8" y="55" width="22" height="22"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="22" id="lsy-yG-PwD"/>
                                                     <constraint firstAttribute="width" constant="22" id="z7y-oY-FAQ"/>
@@ -864,7 +875,7 @@
                                             <searchBar opaque="NO" contentMode="redraw" searchBarStyle="minimal" text="" placeholder="Venue name to search" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qJC-s3-KyN">
                                                 <rect key="frame" x="6" y="0.0" width="363" height="56"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <offsetWrapper key="searchFieldBackgroundPositionAdjustment" horizontal="0.0" vertical="-2"/>
+                                                <offsetWrapper key="searchFieldBackgroundPositionAdjustment" horizontal="0.0" vertical="0.0"/>
                                                 <textInputTraits key="textInputTraits"/>
                                             </searchBar>
                                             <view contentMode="scaleToFill" verticalHuggingPriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="dE3-CA-Q6n">
@@ -890,7 +901,7 @@
                                                 <rect key="frame" x="6" y="0.0" width="363" height="56"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <offsetWrapper key="searchTextPositionAdjustment" horizontal="0.0" vertical="0.0"/>
-                                                <offsetWrapper key="searchFieldBackgroundPositionAdjustment" horizontal="0.0" vertical="-6"/>
+                                                <offsetWrapper key="searchFieldBackgroundPositionAdjustment" horizontal="0.0" vertical="-5"/>
                                                 <textInputTraits key="textInputTraits"/>
                                             </searchBar>
                                             <view contentMode="scaleToFill" verticalHuggingPriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="ua7-Fl-XjM">
@@ -912,7 +923,7 @@
                                 </subviews>
                             </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose Venue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ogf-bS-Ofz">
-                                <rect key="frame" x="133.66666666666666" y="57.333333333333343" width="108.33333333333334" height="19"/>
+                                <rect key="frame" x="133.66666666666666" y="57" width="108.33333333333334" height="19"/>
                                 <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="16"/>
                                 <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>

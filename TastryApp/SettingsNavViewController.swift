@@ -10,6 +10,14 @@ import AsyncDisplayKit
 
 class SettingsNavViewController: OverlayViewController {
   
+  // MARK: - Constants
+  struct Constants {
+    static let StackShadowOffset = FoodieGlobal.Constants.DefaultUIShadowOffset
+    static let StackShadowRadius = FoodieGlobal.Constants.DefaultUIShadowRadius
+    static let StackShadowOpacity = FoodieGlobal.Constants.DefaultUIShadowOpacity
+  }
+  
+  
   var settingsNavController: ASNavigationController?
   
   override func viewDidLoad() {
@@ -33,6 +41,13 @@ class SettingsNavViewController: OverlayViewController {
     view.addSubview(navController.view)
     navController.didMove(toParentViewController: self)
     settingsNavController = navController
+    
+    // Drop Shadow at the back of the View
+    view.layer.masksToBounds = false
+    view.layer.shadowColor = UIColor.black.cgColor
+    view.layer.shadowOffset = Constants.StackShadowOffset
+    view.layer.shadowRadius = Constants.StackShadowRadius
+    view.layer.shadowOpacity = Constants.StackShadowOpacity
   }
   
   

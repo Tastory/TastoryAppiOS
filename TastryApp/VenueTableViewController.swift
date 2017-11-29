@@ -26,9 +26,12 @@ class VenueTableViewController: OverlayViewController {
   
   
   // MARK: - Constants
-  struct Constants {
-    fileprivate static let defaultLocationPlaceholderText = "Location to search near"
-    fileprivate static let searchBarSearchDelay = 0.5
+  private struct Constants {
+    static let DefaultLocationPlaceholderText = "Location to search near"
+    static let SearchBarSearchDelay = 0.5
+    static let StackShadowOffset = FoodieGlobal.Constants.DefaultUIShadowOffset
+    static let StackShadowRadius = FoodieGlobal.Constants.DefaultUIShadowRadius
+    static let StackShadowOpacity = FoodieGlobal.Constants.DefaultUIShadowOpacity
   }
   
   
@@ -39,13 +42,13 @@ class VenueTableViewController: OverlayViewController {
   
   
   // MARK: - Private Instance Variables
-  fileprivate var venueName: String?
-  fileprivate var venueResultArray: [FoodieVenue]?
-  fileprivate var currentLocation: CLLocation?
-  fileprivate var nearLocation: String?
-  fileprivate var isVenueSearchUnderWay: Bool = false
-  fileprivate var isVenueSearchPending: Bool = false
-  fileprivate var searchMutex = SwiftMutex.create()
+  private var venueName: String?
+  private var venueResultArray: [FoodieVenue]?
+  private var currentLocation: CLLocation?
+  private var nearLocation: String?
+  private var isVenueSearchUnderWay: Bool = false
+  private var isVenueSearchPending: Bool = false
+  private var searchMutex = SwiftMutex.create()
   
   
   // MARK: - IBOutlet
@@ -61,7 +64,7 @@ class VenueTableViewController: OverlayViewController {
   }
   
   
-  fileprivate func venueSearchCallback(_ venueArray: [FoodieVenue]?, _ geocode: FoodieVenue.Geocode?, _ error: Error?) {
+  private func venueSearchCallback(_ venueArray: [FoodieVenue]?, _ geocode: FoodieVenue.Geocode?, _ error: Error?) {
     
     // Error Handle First
     if let error = error as? FoodieVenue.ErrorCode {
@@ -143,7 +146,7 @@ class VenueTableViewController: OverlayViewController {
       } else {
         CCLog.warning("No useful location to base the search on")
         //AlertDialog.present(from: self, title: "Cannot Determine Location", message: "Please enter a location to perform Venue Search")
-        self.locationSearchBar.placeholder = Constants.defaultLocationPlaceholderText
+        self.locationSearchBar.placeholder = Constants.DefaultLocationPlaceholderText
         self.locationSearchBar.setNeedsDisplay()
       }
     }
@@ -162,6 +165,13 @@ class VenueTableViewController: OverlayViewController {
     // Update the appearance
     UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor]
 
+    // Drop Shadow at the back of the View
+    view.layer.masksToBounds = false
+    view.layer.shadowColor = UIColor.black.cgColor
+    view.layer.shadowOffset = Constants.StackShadowOffset
+    view.layer.shadowRadius = Constants.StackShadowRadius
+    view.layer.shadowOpacity = Constants.StackShadowOpacity
+    
     // Update the UI
     if let suggestedVenueName = suggestedVenue?.name {
       venueSearchBar.text = suggestedVenueName
@@ -171,7 +181,7 @@ class VenueTableViewController: OverlayViewController {
     if suggestedLocation != nil {
       locationSearchBar.placeholder = "Search near location of Moments"
     } else {
-      locationSearchBar.placeholder = Constants.defaultLocationPlaceholderText
+      locationSearchBar.placeholder = Constants.DefaultLocationPlaceholderText
     }
     
     // Let's just get location once everytime we enter this screen.
@@ -228,7 +238,7 @@ extension VenueTableViewController: UISearchBarDelegate {
       if let venueSearchText = venueSearchBar.text {
         venueName = venueSearchText
         NSObject.cancelPreviousPerformRequests(withTarget: #selector(fullVenueSearch))
-        self.perform(#selector(fullVenueSearch), with: nil, afterDelay: Constants.searchBarSearchDelay)
+        self.perform(#selector(fullVenueSearch), with: nil, afterDelay: Constants.SearchBarSearchDelay)
       } else {
         venueName = ""
       }
