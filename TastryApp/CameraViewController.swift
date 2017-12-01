@@ -759,12 +759,10 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       // Go into Video Clip trimming if the Video can be edited
       if UIVideoEditorController.canEditVideo(atPath: moviePath) {
 
-        let videoEditor = UIVideoEditorController()
-        videoEditor.videoPath = moviePath
-        videoEditor.videoQuality = .typeIFrame960x540
-        videoEditor.videoMaximumDuration = TimeInterval(15.0)
-        videoEditor.delegate = self
-        present(videoEditor, animated: true, completion: nil)
+        let storyboard = UIStoryboard(name: "Trimmer", bundle: nil)
+        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VideoTrimmerViewController") as! VideoTrimmerViewController
+        viewController.avAsset = AVAsset(url: movieUrl as URL)
+        present(viewController, animated: true, completion: nil)
         return
 
       } else {

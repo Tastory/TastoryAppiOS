@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina5_9" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Video Trimmer View Controller-->
+        <scene sceneID="03u-bL-W10">
+            <objects>
+                <viewController storyboardIdentifier="VideoTrimmerViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="pGH-aq-W0x" customClass="VideoTrimmerViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="2Hf-KG-fMX">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qJi-nx-1Fd">
+                                <rect key="frame" x="0.0" y="111" width="375" height="667"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="qJi-nx-1Fd" secondAttribute="height" multiplier="9:16" id="UHs-hK-I7u"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AeH-xu-HlU" userLabel="Cancel">
+                                <rect key="frame" x="15" y="732" width="36" height="36"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="36" id="2xe-dL-LCZ"/>
+                                    <constraint firstAttribute="width" constant="36" id="qGX-Wd-DOQ"/>
+                                </constraints>
+                                <state key="normal" image="Markup-Cross"/>
+                                <connections>
+                                    <action selector="cancel:" destination="pGH-aq-W0x" eventType="touchUpInside" id="Ejj-AS-SmG"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oF9-sM-Bcw">
+                                <rect key="frame" x="169" y="732" width="36" height="36"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="36" id="faF-Tb-NiB"/>
+                                    <constraint firstAttribute="width" constant="36" id="z1D-HW-egv"/>
+                                </constraints>
+                                <state key="normal" title="Play" image="StoryMarkup-PlayButton"/>
+                                <connections>
+                                    <action selector="play:" destination="pGH-aq-W0x" eventType="touchUpInside" id="g90-zA-Hpg"/>
+                                </connections>
+                            </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Ld-Wf-qzC" customClass="TrimmerView" customModule="PryntTrimmerView">
+                                <rect key="frame" x="0.0" y="44" width="375" height="59"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qq2-h7-u8r">
+                                <rect key="frame" x="309" y="718" width="56" height="57"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="56" id="N58-8R-tVy"/>
+                                    <constraint firstAttribute="height" constant="57" id="pJQ-9T-zZz"/>
+                                </constraints>
+                                <state key="normal" title="Select" image="Markup-Next"/>
+                                <connections>
+                                    <action selector="selectAsset:" destination="pGH-aq-W0x" eventType="touchUpInside" id="Dqo-iA-rtB"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="qJi-nx-1Fd" firstAttribute="top" secondItem="2Ld-Wf-qzC" secondAttribute="bottom" constant="8" symbolic="YES" id="R1K-Le-nMb"/>
+                            <constraint firstItem="qJi-nx-1Fd" firstAttribute="top" secondItem="2Hf-KG-fMX" secondAttribute="top" constant="111" id="S9f-4Y-xMd"/>
+                            <constraint firstItem="G1C-56-cqi" firstAttribute="bottom" secondItem="AeH-xu-HlU" secondAttribute="bottom" constant="10" id="WNH-Fu-2tB"/>
+                            <constraint firstItem="G1C-56-cqi" firstAttribute="trailing" secondItem="qq2-h7-u8r" secondAttribute="trailing" constant="10" id="XQd-X4-Gtr"/>
+                            <constraint firstItem="2Ld-Wf-qzC" firstAttribute="top" secondItem="G1C-56-cqi" secondAttribute="top" id="a4O-8d-kEF"/>
+                            <constraint firstItem="qJi-nx-1Fd" firstAttribute="trailing" secondItem="2Ld-Wf-qzC" secondAttribute="trailing" id="aJM-6x-UCN"/>
+                            <constraint firstItem="AeH-xu-HlU" firstAttribute="leading" secondItem="G1C-56-cqi" secondAttribute="leading" constant="15" id="cnn-oz-e16"/>
+                            <constraint firstAttribute="trailing" secondItem="qJi-nx-1Fd" secondAttribute="trailing" id="em6-ls-ydu"/>
+                            <constraint firstItem="G1C-56-cqi" firstAttribute="bottom" secondItem="oF9-sM-Bcw" secondAttribute="bottom" constant="10" id="pqo-V8-mmX"/>
+                            <constraint firstItem="qJi-nx-1Fd" firstAttribute="leading" secondItem="2Hf-KG-fMX" secondAttribute="leading" id="qcW-3f-5kO"/>
+                            <constraint firstItem="oF9-sM-Bcw" firstAttribute="centerX" secondItem="qJi-nx-1Fd" secondAttribute="centerX" id="sIY-6H-3C8"/>
+                            <constraint firstItem="qJi-nx-1Fd" firstAttribute="leading" secondItem="2Ld-Wf-qzC" secondAttribute="leading" id="yub-ct-D52"/>
+                            <constraint firstItem="G1C-56-cqi" firstAttribute="bottom" secondItem="qq2-h7-u8r" secondAttribute="bottom" constant="3" id="zsW-CC-hJk"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="G1C-56-cqi"/>
+                    </view>
+                    <connections>
+                        <outlet property="playButton" destination="oF9-sM-Bcw" id="zf9-DH-E1d"/>
+                        <outlet property="playerView" destination="qJi-nx-1Fd" id="v0L-7R-Cd2"/>
+                        <outlet property="selectAssetButton" destination="qq2-h7-u8r" id="oAc-Kz-hKA"/>
+                        <outlet property="trimmerView" destination="2Ld-Wf-qzC" id="WBS-ib-aAQ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6YI-ff-S5T" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="32.799999999999997" y="-605.17241379310349"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="Markup-Cross" width="32" height="32"/>
+        <image name="Markup-Next" width="56" height="57"/>
+        <image name="StoryMarkup-PlayButton" width="40" height="40"/>
+    </resources>
+</document>
