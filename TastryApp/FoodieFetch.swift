@@ -44,47 +44,33 @@ class FoodieFetch {
       guard let storyOp = operation as? StoryOperation, let story = storyOp.object as? FoodieStory, let type = storyOp.type as? StoryOperation.OperationType else {
         CCLog.fatal("Expecting storyOp, story and type")
       }
-      
-      #if DEBUG
-        CCLog.info("#Prefetch - Queuing Story \(story.getUniqueIdentifier()) for \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount + 1) outstanding")
-      #else
-      CCLog.debug("Queuing Story \(story.getUniqueIdentifier()) for \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount + 1) outstanding")
-      #endif
+
+      CCLog.debug("#Prefetch - Queuing Story \(story.getUniqueIdentifier()) for \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount + 1) outstanding")
     
       operation.queuePriority = priority
-      operation.completionBlock = {
-        #if DEBUG
-          CCLog.info("#Prefetch - Completion for Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount) outstanding")
-        #else
-          CCLog.debug("Completion for Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount) outstanding")
-        #endif
+      operation.completionBlock = { [unowned self] in
+        CCLog.debug("#Prefetch - Completion for Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount) outstanding")
       }
       self.fetchQueue.addOperation(operation)
     }
   }
   
+  
   func cancel(for object: AnyObject) {
-
     DispatchQueue.global(qos: .utility).async {
       for operation in self.fetchQueue.operations {
-        if let storyOp = operation as? StoryOperation {
-          if storyOp.object === object {
-            
-            if let story = storyOp.object as? FoodieStory, let type = storyOp.type as? StoryOperation.OperationType {
-            #if DEBUG
-              CCLog.info("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
-            #else
-              CCLog.debug("Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
-            #endif
-            } else {
-              CCLog.warning("storyOp.object not a story!")
-            }
-            storyOp.cancel()
+        if let storyOp = operation as? StoryOperation, storyOp.object === object {
+          if let story = storyOp.object as? FoodieStory, let type = storyOp.type as? StoryOperation.OperationType {
+            CCLog.debug("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
+          } else {
+            CCLog.warning("storyOp.object not a story!")
           }
+          storyOp.cancel()
         }
       }
     }
   }
+  
   
   func cancelAllButOne(_ object: AnyObject) {
     
@@ -92,11 +78,7 @@ class FoodieFetch {
       guard let story = object as? FoodieStory else {
         CCLog.fatal("Expected object to be of FoodieStory type")
       }
-      #if DEBUG
-        CCLog.info("#Prefetch - Cancel All but Story \(story.getUniqueIdentifier()). Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
-      #else
-        CCLog.debug("Cancel All but Story \(story.getUniqueIdentifier()). Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
-      #endif
+      CCLog.info("#Prefetch - Cancel All but Story \(story.getUniqueIdentifier()). Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
       
       var needsToPrefetchNextMoment = true
       
@@ -107,25 +89,21 @@ class FoodieFetch {
           if storyOp.object !== object {
             
             if let story = storyOp.object as? FoodieStory, let type = storyOp.type as? StoryOperation.OperationType {
-              #if DEBUG
-                CCLog.info("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
-              #else
-                CCLog.debug("Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount) outstanding")
-              #endif
-            }  else {
-              CCLog.warning("storyOp.object not a story!")
+              CCLog.debug("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount) outstanding")
+            } else {
+              CCLog.warning("#Prefetch - storyOp.object not a story!")
             }
             storyOp.cancel()
             
-          } else if let operationType = storyOp.type as? StoryOperation.OperationType, operationType == .next {
+          } else if let operationType = storyOp.type as? StoryOperation.OperationType, operationType == .recursive {
             needsToPrefetchNextMoment = false
           }
         }
       }
       
       if needsToPrefetchNextMoment {
-        CCLog.info("Expected that there should already be a Story Prefech.next for \(story.getUniqueIdentifier()), but didn't. Executing one now")
-        let momentOperation = StoryOperation.createRecursive(with: .next, on: story, at: .low)
+        CCLog.info("#Prefetch - Expected that there should already be a Story Prefech.recursive for \(story.getUniqueIdentifier()), but didn't. Executing one now")
+        let momentOperation = StoryOperation.createRecursive(with: .recursive, on: story, at: .low)
         self.queue(momentOperation, at: .low)
       }
     }
@@ -134,6 +112,7 @@ class FoodieFetch {
   
   // Object list should be sorted in decending order of priority for Pre-fetching
   func cancelAllBut(_ objects: [AnyObject]) {
+    
     DispatchQueue.global(qos: .utility).async {
       guard var stories = objects as? [FoodieStory] else {
         CCLog.fatal("Expected objects to be of FoodieStory type")
@@ -144,15 +123,8 @@ class FoodieFetch {
         debugStoryIdentifiers += " \(story.getUniqueIdentifier())"
       }
       
-      #if DEBUG
-        CCLog.info("#Prefetch - Cancel All aside from the following Stories. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
-        CCLog.info("#Prefetch - \(debugStoryIdentifiers)")
-      #else
-        CCLog.debug("Cancel All aside from the following Stories. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
-        CCLog.debug(debugStoryIdentifiers)
-      #endif
-      
-      //var storiesNeedingPrefetch = stories
+      CCLog.info("#Prefetch - Cancel All aside from the following Stories. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
+      CCLog.info("#Prefetch - \(debugStoryIdentifiers)")
       
       for operation in self.fetchQueue.operations {
         if let storyOp = operation as? StoryOperation {
@@ -163,18 +135,15 @@ class FoodieFetch {
           
           // Cancel anything that is not of the current story
           if !objects.contains(where: { $0 === storyOp.object }) {
-            
-            #if DEBUG
-              CCLog.info("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
-            #else
-              CCLog.debug("Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue now at \(self.fetchQueue.operationCount) outstanding before cancel")
-            #endif
+            CCLog.debug("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
             storyOp.cancel()
             
-          } else if type == .next {
-            if let indexToRemove = stories.index(where: { $0 === story } ) {
-              stories.remove(at: indexToRemove)
+          } else if type == .next || type == .recursive {
+            
+            guard let indexToRemove = stories.index(where: { $0 === story }) else {
+              CCLog.fatal("Story deemed Prefetching, but cannot be found from Object (story) argument list")
             }
+            stories.remove(at: indexToRemove)
           }
         }
       }
@@ -183,27 +152,24 @@ class FoodieFetch {
         debugStoryIdentifiers = "StoryIdentifiers:"
         
         for story in stories {
-          let momentOperation = StoryOperation.createRecursive(with: .first, on: story, at: .low)
+          // let momentOperation = StoryOperation.createRecursive(with: .recursive, on: story, at: .low)
+          let momentOperation = StoryOperation(with: .next, on: story, completion: nil)
           self.queue(momentOperation, at: .low)
           debugStoryIdentifiers += " \(story.getUniqueIdentifier())"
         }
-      
-        #if DEBUG
-          CCLog.info("#Prefetch - Expected that there should already be Story Prefech.next for the following Stories, but didn't. Executing them now")
-          CCLog.info("#Prefetch - \(debugStoryIdentifiers)")
-        #else
-          CCLog.debug("Expected that there should already be Story Prefech.next for the following Stories, but didn't. Executing them now")
-          CCLog.debug("debugStoryIdentifiers")
-        #endif
+
+        CCLog.debug("#Prefetch - Expected that there should already be Prefetching for the following Stories, but didn't. Performing Prefetching Next now")
+        CCLog.debug("#Prefetch - \(debugStoryIdentifiers)")
       }
     }
   }
   
   
   func cancelAll() {
-    CCLog.info("Cancelling All Prefetch Operations!")
+    CCLog.info("#Prefetch - Cancelling All Prefetch Operations!")
     fetchQueue.cancelAllOperations()
   }
+  
   
   func printDebug() {
     CCLog.info("Fetch Queue has \(fetchQueue.operationCount) outstanding operations")
