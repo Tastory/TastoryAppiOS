@@ -95,11 +95,8 @@ class CCLog {
   static func assert(_ description: String, function: String = #function, file: String = #file, line: Int = #line) {
     Log.error?.message(description, function: function, filePath: file, fileLine: line)
     #if DEBUG  // TODO: -  Crash in current thread after sleep if Xcode is connected
-    DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 0.8) {
+      sleep(1)  // This just merely prevents this thread from proceeding, but also relinquish processor resources to other threads
       Crashlytics.sharedInstance().crash()  // Wait for logging to flush before Crashing
-      assertionFailure("\(description), \(file), \(function), \(line)")  // This will never get called
-    }
-    sleep(1)  // This just merely prevents this thread from proceeding, but also relinquish processor resources to other threads
     #endif
   }
 
