@@ -130,7 +130,6 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       
       var momentNum = 0
       for moment in moments {
-        momentNum += 1
         if !moment.isMediaReady {
           
           if momentNum == 0 {
@@ -159,6 +158,8 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
           }
           return
         }
+        
+        momentNum += 1
       }
       
       if opType == .recursive {

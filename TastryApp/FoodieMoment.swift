@@ -207,10 +207,20 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Public Static Functions
   
   static func batchRetrieve(_ moments: [FoodieMoment], completion: AnyErrorBlock?) {
-    let query = PFQuery()
-    query.whereKey("objectId", containedIn: moments.map({ $0.objectId! }))
-    query.includeKey("markups")
-    query.findObjectsInBackground(block: completion)
+    
+    var momentIdentifierString = ""
+    for moment in moments {
+      momentIdentifierString += "\(moment.getUniqueIdentifier()) "
+    }
+    CCLog.verbose("Batch Retrieving \(momentIdentifierString)")
+    
+    let query = FoodieMoment.query()
+    query!.whereKey("objectId", containedIn: moments.map({ $0.objectId! }))
+    query!.includeKey("markups")
+    query!.findObjectsInBackground { objects, error in
+      CCLog.verbose("Batch Retrieve of \(momentIdentifierString) Completed")
+      completion?(objects, error)
+    }
   }
   
   
@@ -312,23 +322,14 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
+      // This is Performant path. Better have retrieved the Markups by this point
+      if let markups = self.markups, !markups[0].isDataAvailable {
+        CCLog.fatal("Markups[0] is nil. Should have called batchRetrieve before hand")
+      }
+      
       guard let media = self.media else {
-        CCLog.assert("Unexpected Moment.retrieve() resulted in moment.media = nil")
-        callback?(error)
-        return
+        CCLog.fatal("Unexpected Moment.retrieve() resulted in moment.media = nil")
       }
-      
-      // Calculate how many outstanding children operations there will be before hand
-      // This helps avoiding the need of a lock
-      var outstandingChildOperations = 1   // media to start
-      
-      if let markups = self.markups {
-        outstandingChildOperations += markups.count
-      }
-      
-      // Can we just use a mutex lock then?
-      SwiftMutex.lock(&self.criticalMutex)
-      defer { SwiftMutex.unlock(&self.criticalMutex) }
       
       guard !momentOperation.isCancelled else {
         CCLog.verbose("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()) early return due to cancel")
@@ -336,26 +337,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
-      self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
-      
-      if let markups = self.markups {
-        FoodieMarkup.fetchAllIfNeeded(inBackground: markups) { (objects, error) in
-          
-          if let error = error {
-            self.foodieObject.operationError = error
-          } else {
-            self.foodieObject.outstandingChildReadies -= markups.count
-            if self.foodieObject.outstandingChildReadies == 0 { self.executeReady() }
-          }
-          
-          self.foodieObject.outstandingChildOperations -= markups.count
-          if self.foodieObject.outstandingChildOperations == 0 { callback?(self.foodieObject.operationError) }
-          else if self.foodieObject.outstandingChildOperations < 0 {
-            CCLog.assert("Outstanding Child Operations below 0")
-          }
-        }
-      }
+      media.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
     }
   }
   

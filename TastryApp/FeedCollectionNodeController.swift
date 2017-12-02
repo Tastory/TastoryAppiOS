@@ -453,9 +453,6 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   func collectionNode(_ collectionNode: ASCollectionNode, didSelectItemAt indexPath: IndexPath) {
     let story = storyArray[indexPath.row]
-    // Stop all prefetches but the story being viewed
-    FoodieFetch.global.cancelAllButOne(story)
-    
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in

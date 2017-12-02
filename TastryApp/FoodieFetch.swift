@@ -32,6 +32,7 @@ class FoodieFetch {
     fetchQueue.maxConcurrentOperationCount = Constants.ConcurrentFetchesAtATime
   }
   
+  
   // Idea here is that each object can at most only have 1 operation per priority
   func queue(_ operation: FoodieOperation, at priority: Operation.QueuePriority) {  // We can later make an intermediary sublcass to make it more diverse across any objects. Eg. Prefetch User Objects, etc
     

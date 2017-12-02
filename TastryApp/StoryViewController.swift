@@ -638,6 +638,13 @@ class StoryViewController: OverlayViewController {
 
   
   override func viewWillAppear(_ animated: Bool) {
+    
+    // Stop all prefetches but the story being viewed
+    guard let story = viewingStory else {
+      CCLog.fatal("Entered StoryVC with viewingStory = nil")
+    }
+    FoodieFetch.global.cancelAllButOne(story)
+    
     isAppearanceLayout = true
   }
   
