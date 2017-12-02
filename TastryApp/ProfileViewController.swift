@@ -131,34 +131,6 @@ class ProfileViewController: OverlayViewController {
   }
   
   
-  private func retrieveStoryDigests(_ stories: [FoodieStory]) {
-    var storiesCount = stories.count
-    for story in stories {
-      _ = story.retrieveDigest(from: .both, type: .cache) { error in
-        storiesCount -= 1
-        
-        if let error = error {
-          AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story Digest - \(error.localizedDescription)") { action in
-            CCLog.warning("Failed to retrieve Story Digest via story.retrieveDigest. Error - \(error.localizedDescription)")
-          }
-          return
-        }
-        guard let venue = story.venue, venue.location != nil, venue.isDataAvailable else {
-          CCLog.assert("No Title, Venue or Location to Story. Skipping Story")
-          return
-        }
-        
-        if storiesCount == 0 {
-          DispatchQueue.main.async {
-            self.feedCollectionNodeController?.scrollTo(storyIndex: 0)
-            self.updateProfileMap(with: stories[0])
-          }
-        }
-      }
-    }
-  }
-  
-  
   private func appearanceForAllUI(alphaValue: CGFloat, animated: Bool,
                                   duration: TimeInterval = FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
     if animated {
@@ -247,9 +219,12 @@ class ProfileViewController: OverlayViewController {
         self.noStoriesSelfImageView.isHidden = true
         self.noStoriesOthersImageView.isHidden = true
         self.feedContainerView.isHidden = false
-        
-        self.retrieveStoryDigests(stories)
         self.stories = stories
+        
+        DispatchQueue.main.async {
+          self.feedCollectionNodeController?.scrollTo(storyIndex: 0)
+          self.updateProfileMap(with: stories[0])
+        }
       }
     }
     

@@ -371,11 +371,9 @@ class DiscoverViewController: OverlayViewController {
   
   
   private func refreshDiscoverView(onStories stories: [FoodieStory], zoomToRegion: Bool, scrollAndSelectStory: Bool) {
-    
     var newAnnotations = [StoryMapAnnotation]()
-    var outstandingStoryRetrieval = stories.count
     
-    if outstandingStoryRetrieval <= 0 {
+    if stories.count <= 0 {
       DispatchQueue.main.async {
         self.mapNavController?.remove(annotations: self.storyAnnotations)
         self.storyAnnotations = newAnnotations
@@ -409,47 +407,34 @@ class DiscoverViewController: OverlayViewController {
     }
     
     for story in stories {
-      _ = story.retrieveDigest(from: .both, type: .cache) { error in
-        outstandingStoryRetrieval -= 1
-        
-        if let error = error {
-          AlertDialog.present(from: self, title: "Story Retrieve Error", message: "Failed to retrieve Story Digest - \(error.localizedDescription)") { action in
-            CCLog.warning("Failed to retrieve Story Digest via story.retrieveDigest. Error - \(error.localizedDescription)")
-          }
-          return
-        }
+      guard let venue = story.venue, let location = venue.location, venue.isDataAvailable else {
+        CCLog.assert("No Title, Venue or Location to Story. Skipping Story")
+        return
+      }
       
-        guard let venue = story.venue, let location = venue.location, venue.isDataAvailable else {
-          CCLog.assert("No Title, Venue or Location to Story. Skipping Story")
-          return
-        }
-        
-        let annotation = StoryMapAnnotation(title: venue.name ?? "",
-                                            story: story,
-                                            coordinate: CLLocationCoordinate2D(latitude: location.latitude,
-                                                                               longitude: location.longitude))
-        newAnnotations.append(annotation)
-        
-        if outstandingStoryRetrieval == 0 {
-          DispatchQueue.main.async {
-            self.noStoriesMosaicView.isHidden = true
-            self.noStoriesCarouselView.isHidden = true
-            self.feedContainerView.isHidden = false
-            
-            self.mapNavController?.remove(annotations: self.storyAnnotations)
-            self.mapNavController?.add(annotations: newAnnotations)
-            self.storyAnnotations = newAnnotations
-            
-            if zoomToRegion {
-              self.mapNavController?.showRegionExposed(containing: newAnnotations)
-            }
-            
-            self.feedCollectionNodeController.resetCollectionNode(with: stories) {
-              if scrollAndSelectStory {
-                self.feedCollectionNodeController.scrollTo(storyIndex: 0)
-              }
-            }
-          }
+      let annotation = StoryMapAnnotation(title: venue.name ?? "",
+                                          story: story,
+                                          coordinate: CLLocationCoordinate2D(latitude: location.latitude,
+                                                                             longitude: location.longitude))
+      newAnnotations.append(annotation)
+    }
+    
+    DispatchQueue.main.async {
+      self.noStoriesMosaicView.isHidden = true
+      self.noStoriesCarouselView.isHidden = true
+      self.feedContainerView.isHidden = false
+      
+      self.mapNavController?.remove(annotations: self.storyAnnotations)
+      self.mapNavController?.add(annotations: newAnnotations)
+      self.storyAnnotations = newAnnotations
+      
+      if zoomToRegion {
+        self.mapNavController?.showRegionExposed(containing: newAnnotations)
+      }
+      
+      self.feedCollectionNodeController.resetCollectionNode(with: stories) {
+        if scrollAndSelectStory {
+          self.feedCollectionNodeController.scrollTo(storyIndex: 0)
         }
       }
     }

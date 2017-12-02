@@ -144,35 +144,12 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       return
     }
     
-    viewController.workingStory = story
-    viewController.restoreStoryDelegate = self
-    
-    var shouldRetrieveDigest = false
-    
-    story.executeForDigest(ifNotReady: {
-      CCLog.debug("Digest \(story.getUniqueIdentifier()) not yet loaded for Story Edit")
-      shouldRetrieveDigest = true  // Don't execute the retrieve here. This is actually executed inside of a mutex
-      
-    }, whenReady: {
-      CCLog.debug("Digest \(story.getUniqueIdentifier()) ready to display for Story Edit")
-      DispatchQueue.main.async {
-        viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)
-        mapNavController.delegate = viewController
-        mapNavController.pushViewController(viewController, animated: true)
-      }
-    })
-    
-    if shouldRetrieveDigest {
-      let digestOperation = StoryOperation(with: .digest, on: story, completion: nil)
-      FoodieFetch.global.queue(digestOperation, at: .high)
-    } else {
-      CCLog.debug("Direct Story Edit for \(story.getUniqueIdentifier())")
-      
-      DispatchQueue.main.async {
-        viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)
-        mapNavController.delegate = viewController
-        mapNavController.pushViewController(viewController, animated: true)
-      }
+    DispatchQueue.main.async {
+      viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)
+      mapNavController.delegate = viewController
+      viewController.workingStory = story
+      viewController.restoreStoryDelegate = self
+      mapNavController.pushViewController(viewController, animated: true)
     }
   }
   
@@ -486,7 +463,6 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       }
       return
     }
-    viewController.viewingStory = story
 
     guard let popFromNode = collectionNode.nodeForItem(at: indexPath) else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
@@ -502,30 +478,11 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       return
     }
     
-    var shouldRetrieveDigest = false
-    
-    story.executeForDigest(ifNotReady: {
-      CCLog.debug("Digest \(story.getUniqueIdentifier()) not yet loaded")
-      shouldRetrieveDigest = true  // Don't execute the retrieve here. This is actually executed inside of a mutex
-      
-    }, whenReady: {
-      CCLog.debug("Digest \(story.getUniqueIdentifier()) ready to display")
-      DispatchQueue.main.async {
-        viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
-        mapNavController.delegate = viewController
-        mapNavController.pushViewController(viewController, animated: true)
-      }
-    })
-    
-    if shouldRetrieveDigest {
-      let digestOperation = StoryOperation(with: .digest, on: story, completion: nil)
-      FoodieFetch.global.queue(digestOperation, at: .high)
-    } else {
-      CCLog.debug("Direct display for Story \(story.getUniqueIdentifier())")
-      viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
-      mapNavController.delegate = viewController
-      mapNavController.pushViewController(viewController, animated: true)
-    }
+    // Go ahead, just display the Story~
+    viewController.viewingStory = story
+    viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
+    mapNavController.delegate = viewController
+    mapNavController.pushViewController(viewController, animated: true)
     
     // Scroll the selected story to top to make sure it's not off bounds to reduce animation artifact
     guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: indexPath) else {

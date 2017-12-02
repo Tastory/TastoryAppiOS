@@ -197,9 +197,21 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Private Instance Variables
+  
   private var asyncOperationQueue = OperationQueue()
   private var readyCallback: (() -> Void)?
   private var readyMutex = SwiftMutex.create()
+  
+  
+  
+  // MARK: - Public Static Functions
+  
+  static func batchRetrieve(_ moments: [FoodieMoment], completion: AnyErrorBlock?) {
+    let query = PFQuery()
+    query.whereKey("objectId", containedIn: moments.map({ $0.objectId! }))
+    query.includeKey("markups")
+    query.findObjectsInBackground(block: completion)
+  }
   
   
   
@@ -207,9 +219,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // Retrieves just the moment itself
   private func retrieve(from location: FoodieObject.StorageLocation,
-                            type localType: FoodieObject.LocalType,
-                            forceAnyways: Bool,
-                            withBlock callback: SimpleErrorBlock?) {
+                        type localType: FoodieObject.LocalType,
+                        forceAnyways: Bool,
+                        withBlock callback: SimpleErrorBlock?) {
     
     foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
@@ -326,10 +338,22 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       
       self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
       self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
-        
+      
       if let markups = self.markups {
-        for markup in markups {
-          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
+        FoodieMarkup.fetchAllIfNeeded(inBackground: markups) { (objects, error) in
+          
+          if let error = error {
+            self.foodieObject.operationError = error
+          } else {
+            self.foodieObject.outstandingChildReadies -= markups.count
+            if self.foodieObject.outstandingChildReadies == 0 { self.executeReady() }
+          }
+          
+          self.foodieObject.outstandingChildOperations -= markups.count
+          if self.foodieObject.outstandingChildOperations == 0 { callback?(self.foodieObject.operationError) }
+          else if self.foodieObject.outstandingChildOperations < 0 {
+            CCLog.assert("Outstanding Child Operations below 0")
+          }
         }
       }
     }

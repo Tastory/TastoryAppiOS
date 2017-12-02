@@ -14,22 +14,17 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   // MARK: - Parse PFObject keys
   // If new objects or external types are added here, check if save and delete algorithms needs updating
   @NSManaged var moments: Array<FoodieMoment>? // A FoodieMoment Photo or Video
-  @NSManaged var pendingDeleteMomentList: Array<FoodieMoment>?
   @NSManaged var thumbnailFileName: String? // URL for the thumbnail media. Needs to go with the thumbnail object.
-  @NSManaged var type: Int // Really enum for the thumbnail type. Allow videos in the future?
-  @NSManaged var aspectRatio: Double
-  @NSManaged var width: Int
   
   @NSManaged var title: String? // Title for the Story
-  @NSManaged var venue: FoodieVenue? // Pointer to the Restaurant object
+  @NSManaged var venue: FoodieVenue? // Pointer to the Venue object
+  @NSManaged var venueName: String?  // A copy of the Venue name
+  @NSManaged var venueLocation: PFGeoPoint?  // A copy of the Venue's location
   @NSManaged var author: FoodieUser?  // Pointer? To the Authoring User
   @NSManaged var storyURL: String? // URL to the Story article
   @NSManaged var swipeMessage: String? // Custom message underneath the swipe arrow indicator
-  @NSManaged var tags: Array<String>? // Array of Strings, unstructured
-
-  @NSManaged var storyRating: Double // TODO: Placeholder for later rev
-  @NSManaged var views: Int
-  @NSManaged var clickthroughs: Int
+  
+  
   
   // Date created vs Date updated is given for free
   

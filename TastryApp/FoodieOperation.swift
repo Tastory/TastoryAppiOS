@@ -103,19 +103,24 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       CCLog.fatal("type in StoryOperation is not an OperationType")
     }
     
+    guard let moments = story.moments  else {
+      CCLog.fatal("Story has no moments")
+    }
+    
     switch opType {
     case .digest:
       
-      #if DEBUG
-        CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation started")
-      #else
-        CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation started")
-      #endif
-      
-      prefetchOperation = story.retrieveDigest(from: .both, type: .cache) { error in
-        self.callback?(error)
-        self.finished()
-      }
+      CCLog.fatal("Digest Operation is no longer supported")
+//      #if DEBUG
+//        CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation started")
+//      #else
+//        CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation started")
+//      #endif
+//
+//      prefetchOperation = story.retrieveDigest(from: .both, type: .cache) { error in
+//        self.callback?(error)
+//        self.finished()
+//      }
       
     case .moment:
       
@@ -125,41 +130,28 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
         CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation with \(momentNumber) started")
       #endif
       
-      guard let moments = story.moments  else {
-        CCLog.fatal("Story has no moments")
-      }
       prefetchOperation = moments[momentNumber].retrieveMedia(from: .both, type: .cache) { error in
         self.callback?(error)
         self.finished()
       }
       
     case .first:
-      // See if the digest is even retrieved first
-      if !story.isDigestRetrieved {
-        prefetchOperation = story.retrieveDigest(from: .both, type: .cache) { error in //withReady: nil
-          self.callback?(error)
-          self.finished()
-        }
-        return
-      }
-      
-      // Find the next unfetched moment first
-      guard let moments = story.moments else {
-        CCLog.assert("No Moments in Story for Fetch Operation")
-        return
-      }
       
       if !moments[0].isMediaReady {
+        
+        // Retrieve all the Moments for the Story in 1 go
+        FoodieMoment.batchRetrieve(moments) { objects, error in
           
-        #if DEBUG
-          CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment 0 is \(moments[0].getUniqueIdentifier())")
-        #else
-          CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) at Moment 0 is \(moments[0].getUniqueIdentifier())")
-        #endif
+          #if DEBUG
+            CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment 0 is \(moments[0].getUniqueIdentifier())")
+          #else
+            CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) at Moment 0 is \(moments[0].getUniqueIdentifier())")
+          #endif
           
-        prefetchOperation = moments[0].retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
-          self.callback?(error)
-          self.finished()
+          self.prefetchOperation = moments[0].retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
+            self.callback?(error)
+            self.finished()
+          }
         }
         return
       }
@@ -169,26 +161,39 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       self.finished()
       
     case .next:
-      // Find the next unfetched moment first
-      guard let moments = story.moments else {
-        CCLog.assert("No Moments in Story for Fetch Operation")
-        return
-      }
       
       var momentNum = 0
       for moment in moments {
         momentNum += 1
+        
         if !moment.isMediaReady {
           
-          #if DEBUG
-            CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment \(momentNum)/\(moments.count) is \(moment.getUniqueIdentifier())")
-          #else
-            CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) at Moment \(momentNum)/\(moments.count) is \(moment.getUniqueIdentifier())")
-          #endif
-          
-          prefetchOperation = moment.retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
-            self.callback?(error)
-            self.finished()
+          if momentNum == 0 {
+            // Retrieve all the Moments for the Story in 1 go
+            FoodieMoment.batchRetrieve(moments) { objects, error in
+              
+              #if DEBUG
+                CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment 0 is \(moments[0].getUniqueIdentifier())")
+              #else
+                CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) at Moment 0 is \(moments[0].getUniqueIdentifier())")
+              #endif
+              
+              self.prefetchOperation = moments[0].retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
+                self.callback?(error)
+                self.finished()
+              }
+            }
+          } else {
+            #if DEBUG
+              CCLog.info("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment \(momentNum)/\(moments.count) is \(moment.getUniqueIdentifier())")
+            #else
+              CCLog.debug("Fetch Story \(story.getUniqueIdentifier()) at Moment \(momentNum)/\(moments.count) is \(moment.getUniqueIdentifier())")
+            #endif
+            
+            prefetchOperation = moment.retrieveMedia(from: .both, type: .cache) { error in //withReady: nil
+              self.callback?(error)
+              self.finished()
+            }
           }
           return
         }

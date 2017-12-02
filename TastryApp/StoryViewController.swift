@@ -31,6 +31,7 @@ class StoryViewController: OverlayViewController {
   
   // MARK: - Private Instance Variables
   private var isAppearanceLayout: Bool = true
+  private var isInitialLayout: Bool = true
   
   private let jotViewController = JotViewController()
   private var currentMoment: FoodieMoment?
@@ -409,8 +410,8 @@ class StoryViewController: OverlayViewController {
       if draftPreview {
         moment.retrieveRecursive(from: .local, type: .draft, withCompletion: nil)
       } else {
-        let momentOperation = StoryOperation(with: .moment, on: story, for: story.getIndexOf(moment), completion: nil)
-        FoodieFetch.global.queue(momentOperation, at: .high)
+//        let momentOperation = StoryOperation(with: .moment, on: story, for: story.getIndexOf(moment), completion: nil)
+//        FoodieFetch.global.queue(momentOperation, at: .high)
       }
     } else {
       CCLog.info("Moment \(moment.getUniqueIdentifier()) displaying")
@@ -644,6 +645,26 @@ class StoryViewController: OverlayViewController {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
+    if isInitialLayout {
+      isInitialLayout = false
+      
+      // Setup Background Gradient Views
+      let backgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.BackgroundGradientBlackAlpha)
+      let topGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
+                                         endingAt: CGPoint(x: 0.5, y: 1.0),
+                                         with: [backgroundBlackAlpha, .clear])
+      topGradientNode.isOpaque = false
+      topGradientNode.frame = topStackBackgroundView.bounds
+      topStackBackgroundView.addSubnode(topGradientNode)
+      
+      let bottomGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
+                                            endingAt: CGPoint(x: 0.5, y: 0.0),
+                                            with: [backgroundBlackAlpha, .clear])
+      bottomGradientNode.isOpaque = false
+      bottomGradientNode.frame = bottomStackBackgroundView.bounds
+      bottomStackBackgroundView.addSubnode(bottomGradientNode)
+    }
+    
     if isAppearanceLayout {
       isAppearanceLayout = false
       
@@ -652,22 +673,6 @@ class StoryViewController: OverlayViewController {
       jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                                andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
       jotViewController.view.layoutIfNeeded()
-      
-      // Setup Background Gradient Views
-      let backgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.BackgroundGradientBlackAlpha)
-      let topGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
-                                        endingAt: CGPoint(x: 0.5, y: 1.0),
-                                        with: [backgroundBlackAlpha, .clear])
-      topGradientNode.isOpaque = false
-      topGradientNode.frame = topStackBackgroundView.bounds
-      topStackBackgroundView.addSubnode(topGradientNode)
-      
-      let bottomGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
-                                      endingAt: CGPoint(x: 0.5, y: 0.0),
-                                      with: [backgroundBlackAlpha, .clear])
-      bottomGradientNode.isOpaque = false
-      bottomGradientNode.frame = bottomStackBackgroundView.bounds
-      bottomStackBackgroundView.addSubnode(bottomGradientNode)
       
       guard let story = viewingStory else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
@@ -710,6 +715,9 @@ class StoryViewController: OverlayViewController {
     } else {
       CCLog.assert("Expected a viewingStory even tho dismissing")
     }
+    
+    // Remove the previous gradient layer
+    
   }
   
   

@@ -154,9 +154,9 @@ class FoodieObject {
   
   // MARK: - Private Instance Variables
   
-  fileprivate(set) var operationError: Error? = nil
-  fileprivate var outstandingChildOperations = 0
-  fileprivate var outstandingChildReadies = 0
+  var operationError: Error? = nil
+  var outstandingChildOperations = 0
+  var outstandingChildReadies = 0
   
   
   

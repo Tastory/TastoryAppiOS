@@ -403,6 +403,10 @@ class FoodieQuery {
     // Keep track of the Query objects
     pfQuery = outerQuery
     
+    // Always also just fetch the Venue and Author data associated
+    pfQuery!.includeKey("author")
+    pfQuery!.includeKey("venue")
+    
     // Do the actual search!
     let queryRetry = SwiftRetry()
     queryRetry.start("query and search for Story", withCountOf: Constants.QueryRetryCount) { [unowned self] in
