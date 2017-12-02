@@ -144,12 +144,38 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       return
     }
     
-    DispatchQueue.main.async {
-      viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)
-      mapNavController.delegate = viewController
-      viewController.workingStory = story
-      viewController.restoreStoryDelegate = self
-      mapNavController.pushViewController(viewController, animated: true)
+    guard let moments = story.moments else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("No Moments in Story \(story.getUniqueIdentifier)")
+      }
+      return
+    }
+    
+    FoodieFetch.global.cancelAll()
+    FoodieMoment.batchRetrieve(moments) { objects, error in
+      if let error = error {
+        AlertDialog.present(from: self, title: "Story Retrieve Failed", message: error.localizedDescription) { _ in
+          CCLog.warning("batchRetrieve for Story \(story.getUniqueIdentifier) failed with error - \(error.localizedDescription)")
+        }
+        return
+      }
+      
+      story.saveDigest(to: .local, type: .draft) { error in
+        if let error = error {
+          AlertDialog.present(from: self, title: "Draft Save Failed", message: error.localizedDescription) { _ in
+            CCLog.warning("Save of Story \(story.getUniqueIdentifier) to draft failed with error - \(error.localizedDescription)")
+          }
+          return
+        }
+        
+        DispatchQueue.main.async {
+          viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)  // Disable Interactive Dismiss to force Discard Confirmation on Exit
+          mapNavController.delegate = viewController
+          viewController.workingStory = story
+          viewController.restoreStoryDelegate = self
+          mapNavController.pushViewController(viewController, animated: true)
+        }
+      }
     }
   }
   
@@ -158,10 +184,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     lastIndexPath = IndexPath(row: sender.tag, section: 0)
     let storyIndex = toStoryIndex(from: lastIndexPath!)
     let story = storyArray[storyIndex]
-    
-    // Stop all prefetches but the story being viewed
-    FoodieFetch.global.cancelAllButOne(story)
-    
+
     if(FoodieStory.currentStory != nil) {
       // display the the discard dialog
       StorySelector.showStoryDiscardDialog(to: self) {

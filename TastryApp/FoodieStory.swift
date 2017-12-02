@@ -306,48 +306,19 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
                             type localType: FoodieObject.LocalType,
                             withBlock callback: SimpleErrorBlock?) {
     
-    // We should always make sure we fill in the author for a Story
-    guard let currentUser = FoodieUser.current else {
-      CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
+    if author == nil {
+      guard let currentUser = FoodieUser.current else {
+        CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
+      }
+      author = currentUser
     }
-    author = currentUser
-    
-    // Calculate how many outstanding children operations there will be before hand
-    // This helps avoiding the need of a lock
-    var outstandingChildOperations = 0
-    
-    if venue != nil { outstandingChildOperations += 1 }
-    if localType != .draft { outstandingChildOperations += 1 }
-    
-    // Can we just use a mutex lock then?
-    SwiftMutex.lock(&criticalMutex)
-    defer { SwiftMutex.unlock(&criticalMutex) }
     
     guard !storyOperation.isCancelled else {
       callback?(ErrorCode.operationCancelled)
       return
     }
     
-    // If there's no child op, then just save and return
-    guard outstandingChildOperations != 0 else {
-      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-      return
-    }
-    
-    foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
-    
-    // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
-    // We are not gonna save the User here either
-    
-    // There will be no Markups for Story Covers
-      
-    if let venue = self.venue {
-      foodieObject.saveChild(venue, to: location, type: localType, for: storyOperation, withBlock: callback)
-    }
-    
-    if localType != .draft {
-      foodieObject.saveChild(author!, to: location, type: localType, for: storyOperation, withBlock: callback)
-    }
+    foodieObject.saveObject(to: location, type: localType, withBlock: callback)
   }
   
   
@@ -422,11 +393,12 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
                                type localType: FoodieObject.LocalType,
                                withBlock callback: SimpleErrorBlock?) {
     
-    // We should always make sure we fill in the author for a Story
-    guard let currentUser = FoodieUser.current else {
-      CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
+    if author == nil {
+      guard let currentUser = FoodieUser.current else {
+        CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
+      }
+      author = currentUser
     }
-    author = currentUser
     
     // Calculate how many outstanding children operations there will be before hand
     // This helps avoiding the need of a lock

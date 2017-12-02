@@ -208,10 +208,34 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   static func batchRetrieve(_ moments: [FoodieMoment], completion: AnyErrorBlock?) {
     
+    var queryRequired = false
     var momentIdentifierString = ""
+    
     for moment in moments {
+      guard moment.isDataAvailable else {
+        queryRequired = true
+        break
+      }
+      
+      if !queryRequired, let markups = moment.markups {
+        for markup in markups {
+          guard markup.isDataAvailable else {
+            queryRequired = true
+            break
+          }
+        }
+      }
+      
       momentIdentifierString += "\(moment.getUniqueIdentifier()) "
     }
+    
+    // Early return if no query required
+    guard queryRequired else {
+      CCLog.verbose("Batch Retrieve of \(momentIdentifierString) not required")
+      completion?(moments, nil)
+      return
+    }
+    
     CCLog.verbose("Batch Retrieving \(momentIdentifierString)")
     
     let query = FoodieMoment.query()
