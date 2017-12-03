@@ -408,7 +408,7 @@ class StoryViewController: OverlayViewController {
     if shouldRetrieveMoment {
       self.activitySpinner.apply(below: self.tapBackwardGestureRecognizer)
       if draftPreview {
-        moment.retrieveRecursive(from: .local, type: .draft, withCompletion: nil)
+        _ = moment.retrieveRecursive(from: .local, type: .draft, withCompletion: nil)
       } else {
 //        let momentOperation = StoryOperation(with: .moment, on: story, for: story.getIndexOf(moment), completion: nil)
 //        FoodieFetch.global.queue(momentOperation, at: .high)

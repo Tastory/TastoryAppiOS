@@ -855,7 +855,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
                          forceAnyways: Bool = false,
                          for parentOperation: AsyncOperation? = nil,
                          withReady readyBlock: SimpleBlock? = nil,
-                         withCompletion callback: SimpleErrorBlock?) {
+                         withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     guard readyBlock == nil else {
       CCLog.fatal("FoodieStory does not support Ready Responses")
@@ -866,6 +866,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     let retrieveOperation = StoryAsyncOperation(on: .retrieveStory, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
     parentOperation?.add(retrieveOperation)
     asyncOperationQueue.addOperation(retrieveOperation)
+    return retrieveOperation
   }
   
   

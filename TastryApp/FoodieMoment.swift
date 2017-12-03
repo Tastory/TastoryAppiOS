@@ -302,11 +302,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       
       // Calculate how many outstanding children operations there will be before hand
       // This helps avoiding the need of a lock
+      // Note we are not retrieving Markups in here anymore. Markup should be queried in 1 go with the Moment
       var outstandingChildOperations = 2   // media & thumbnail to start
-      
-      if let markups = self.markups {
-        outstandingChildOperations += markups.count
-      }
       
       // Can we just use a mutex lock then?
       SwiftMutex.lock(&self.criticalMutex)
@@ -321,12 +318,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
       self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
       self.foodieObject.retrieveChild(thumbnail, from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
-        
-      if let markups = self.markups {
-        for markup in markups {
-          self.foodieObject.retrieveChild(markup, from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
-        }
-      }
     }
   }
   
@@ -361,7 +352,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
-      media.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
+      _ = media.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, for: momentOperation, withReady: self.executeReady, withCompletion: callback)
     }
   }
   
@@ -732,13 +723,14 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                          forceAnyways: Bool = false,
                          for parentOperation: AsyncOperation? = nil,
                          withReady readyBlock: SimpleBlock? = nil,
-                         withCompletion callback: SimpleErrorBlock?) {
+                         withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     CCLog.verbose("Retrieve Recursive for Moment \(getUniqueIdentifier())")
     
     let retrieveOperation = MomentAsyncOperation(on: .retrieveMoment, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
     parentOperation?.add(retrieveOperation)  // Add to parent for cancel purposes
     asyncOperationQueue.addOperation(retrieveOperation)
+    return retrieveOperation
   }
   
   
@@ -747,7 +739,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                      forceAnyways: Bool = false,
                      for parentOperation: AsyncOperation? = nil,
                      withReady readyBlock: SimpleBlock? = nil,
-                     withCompletion callback: SimpleErrorBlock?) -> AsyncOperation {
+                     withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     CCLog.verbose("Retrieve Media for Moment \(getUniqueIdentifier())")
     

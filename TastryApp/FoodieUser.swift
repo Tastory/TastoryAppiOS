@@ -1149,7 +1149,7 @@ extension FoodieUser: FoodieObjectDelegate {
                          forceAnyways: Bool = false,
                          for parentOperation: AsyncOperation? = nil,
                          withReady readyBlock: SimpleBlock? = nil,
-                         withCompletion callback: SimpleErrorBlock?) {
+                         withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     let retrieveOperation = UserAsyncOperation(on: .retrieveUser, for: self, to: location, type: localType, forceAnyways: forceAnyways) { error in
       readyBlock?()
@@ -1158,6 +1158,7 @@ extension FoodieUser: FoodieObjectDelegate {
     parentOperation?.add(retrieveOperation)
     asyncOperationQueue.addOperation(retrieveOperation)
     CCLog.debug ("Retrieve User Recursive Operation \(retrieveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
+    return retrieveOperation
   }
   
   

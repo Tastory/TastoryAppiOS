@@ -238,7 +238,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
                          forceAnyways: Bool = false,
                          for parentOperation: AsyncOperation?,
                          withReady readyBlock: SimpleBlock? = nil,
-                         withCompletion callback: SimpleErrorBlock?) {
+                         withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     guard readyBlock == nil else {
       CCLog.fatal("FoodieCategory does not support Ready Responses")
@@ -246,6 +246,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
     
     // Retrieve self. This object have no children
     foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    return nil
   }
   
   

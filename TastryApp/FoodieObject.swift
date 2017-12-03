@@ -41,7 +41,7 @@ protocol FoodieObjectDelegate: class {
                          forceAnyways: Bool,
                          for parentOperation: AsyncOperation?,
                          withReady readyBlock: SimpleBlock?,
-                         withCompletion callback: SimpleErrorBlock?)
+                         withCompletion callback: SimpleErrorBlock?) -> AsyncOperation?
   
   func save(to localType: FoodieObject.LocalType,
             withBlock callback: SimpleErrorBlock?)
@@ -211,7 +211,7 @@ class FoodieObject {
     }
     CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) retrieve child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(self.outstandingChildReadies), Outstanding: \(self.outstandingChildOperations)")
     
-    child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, for: operation, withReady: {
+    _ = child.retrieveRecursive(from: location, type: localType, forceAnyways: forceAnyways, for: operation, withReady: {
       self.outstandingChildReadies -= 1
       if self.outstandingChildReadies == 0 { readyBlock?() }
       CCLog.verbose("\(delegate.foodieObjectType())(\(delegate.getUniqueIdentifier())) readied child of Type: \(child.foodieObjectType())(\(child.getUniqueIdentifier())) from Location: \(location), LocalType: \(localType), Readies: \(self.outstandingChildReadies)")

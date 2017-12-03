@@ -349,7 +349,7 @@ extension FoodieMedia: FoodieObjectDelegate {
                          forceAnyways: Bool = false,
                          for parentOperation: AsyncOperation? = nil,
                          withReady readyBlock: SimpleBlock? = nil,
-                         withCompletion callback: SimpleErrorBlock?) {
+                         withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
     // Retrieve self. This object have no children
     switch location {
@@ -364,6 +364,8 @@ extension FoodieMedia: FoodieObjectDelegate {
     case .both:
       retrieveFromLocalThenServer(forceAnyways: forceAnyways, type: localType, withReady: readyBlock, withCompletion: callback)
     }
+    
+    return nil
   }
   
   

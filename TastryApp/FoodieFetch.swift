@@ -96,15 +96,15 @@ class FoodieFetch {
             }
             storyOp.cancel()
             
-          } else if let operationType = storyOp.type as? StoryOperation.OperationType, operationType == .recursive {
+          } else if let operationType = storyOp.type as? StoryOperation.OperationType, operationType == .allMedia {
             needsToPrefetchNextMoment = false
           }
         }
       }
       
       if needsToPrefetchNextMoment {
-        CCLog.info("#Prefetch - Expected that there should already be a Story Prefech.recursive for \(story.getUniqueIdentifier()), but didn't. Executing one now")
-        let momentOperation = StoryOperation.createRecursive(with: .recursive, on: story, at: .low)
+        CCLog.info("#Prefetch - Expected that there should already be a Story Prefech.allMedia for \(story.getUniqueIdentifier()), but didn't. Executing one now")
+        let momentOperation = StoryOperation.createRecursive(with: .allMedia, on: story, at: .low)
         self.queue(momentOperation, at: .low)
       }
     }
@@ -139,7 +139,7 @@ class FoodieFetch {
             CCLog.debug("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
             storyOp.cancel()
             
-          } else if type == .next || type == .recursive {
+          } else if type == .nextMedia || type == .allMedia {
             
             guard let indexToRemove = stories.index(where: { $0 === story }) else {
               CCLog.fatal("Story deemed Prefetching, but cannot be found from Object (story) argument list")
@@ -153,8 +153,8 @@ class FoodieFetch {
         debugStoryIdentifiers = "StoryIdentifiers:"
         
         for story in stories {
-          // let momentOperation = StoryOperation.createRecursive(with: .recursive, on: story, at: .low)
-          let momentOperation = StoryOperation(with: .next, on: story, completion: nil)
+          // let momentOperation = StoryOperation.createRecursive(with: .allMedia, on: story, at: .low)
+          let momentOperation = StoryOperation(with: .nextMedia, on: story, completion: nil)
           self.queue(momentOperation, at: .low)
           debugStoryIdentifiers += " \(story.getUniqueIdentifier())"
         }

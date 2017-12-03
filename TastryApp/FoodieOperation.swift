@@ -23,12 +23,12 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   
   // MARK: - Types & Enumerations
   enum OperationType: String {
-    case next
-    case recursive
+    case moment
+    case nextMedia
+    case allMedia
     
     // Digest Operation type and Moment Operation type have been deprecated
     case digest
-    case moment
   }
 
   
@@ -61,9 +61,9 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   
   
   // MARK: - Public Static Functions
-  static func createRecursive(with type: OperationType = .next, on story: FoodieStory, at priority: Operation.QueuePriority) -> StoryOperation {
-    if type != .recursive {
-      CCLog.fatal("Only .recursive is supported for recursive Story Prefetching")
+  static func createRecursive(with type: OperationType = .nextMedia, on story: FoodieStory, at priority: Operation.QueuePriority) -> StoryOperation {
+    if type != .allMedia {
+      CCLog.fatal("Only .allMedia is supported for recursive Story Prefetching")
     }
     
     return StoryOperation(with: type, on: story) { error in
@@ -116,18 +116,16 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
 //      }
       
     case .moment:
-      CCLog.fatal("Moment Operation is no longer supported")
-//      debug("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation with \(momentNumber) started")
-//      prefetchOperation = moments[momentNumber].retrieveMedia(from: .both, type: .cache) { error in
-//        self.callback?(error)
-//        self.finished()
-//      }
+      CCLog.debug("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation with \(momentNumber) started")
+      prefetchOperation = moments[momentNumber].retrieveRecursive(from: .both, type: .cache) { error in
+        self.callback?(error)
+        self.finished()
+      }
       
-    case .next:
+    case .nextMedia:
       fallthrough
       
-    case .recursive:
-      
+    case .allMedia:
       var momentNum = 0
       for moment in moments {
         if !moment.isMediaReady {
@@ -162,7 +160,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
         momentNum += 1
       }
       
-      if opType == .recursive {
+      if opType == .allMedia {
         // All Moments have been Retrieved!
         self.callback?(ErrorCode.allMomentsForStoryRetrieved)
         self.finished()
