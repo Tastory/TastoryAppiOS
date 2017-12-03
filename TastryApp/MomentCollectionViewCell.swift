@@ -6,7 +6,7 @@
 //  Copyright © 2017 Tastry. All rights reserved.
 //
 
-import UIKit
+import AsyncDisplayKit
 
 protocol MomentCollectionViewCellDelegate: class {
   func deleteMoment(sourceCell cell: MomentCollectionViewCell)
@@ -33,8 +33,7 @@ class MomentCollectionViewCell: UICollectionViewCell {
   
   // MARK: - IBOutlets
   @IBOutlet weak var deleteButton: UIButton!
-  @IBOutlet weak var momentThumb: UIImageView!
-  @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+  
   
   
   
@@ -47,45 +46,90 @@ class MomentCollectionViewCell: UICollectionViewCell {
   
   // MARK: - Public Instance Variable
   var indexPath: IndexPath?
+  var thumbImageNode: ASNetworkImageNode
+  var activitySpinner: ActivitySpinner!
   var thumbFrameLayer: ThumbnailFrameLayer?
   weak var delegate: MomentCollectionViewCellDelegate?
   
   
   
   // MARK: - Private Instance Functions
-  fileprivate func degreesToRadians(x: CGFloat) -> CGFloat {
+  private func degreesToRadians(x: CGFloat) -> CGFloat {
     return CGFloat(Double.pi) * x / 180.0
   }
 
   
   
   // MARK: - Public Instace Functions
-  func configureLayers() {
+  
+  override init(frame: CGRect) {
+    thumbImageNode = ASNetworkImageNode()
+    super.init(frame: frame)
+    
+    contentView.addSubview(thumbImageNode.view)
+    contentView.sendSubview(toBack: thumbImageNode.view)
+    activitySpinner = ActivitySpinner(addTo: contentView)
+    
+    thumbImageNode.view.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      thumbImageNode.view.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0.0),
+      thumbImageNode.view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0.0),
+      thumbImageNode.view.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 0.0),
+      thumbImageNode.view.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: 0.0),
+    ])
+    
+    configureLayers(frame: frame)
+  }
+  
+  
+  required init?(coder aDecoder: NSCoder) {
+    thumbImageNode = ASNetworkImageNode()
+    super.init(coder: aDecoder)
+    
+    contentView.addSubview(thumbImageNode.view)
+    contentView.sendSubview(toBack: thumbImageNode.view)
+    activitySpinner = ActivitySpinner(addTo: contentView)
+    
+    thumbImageNode.view.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      thumbImageNode.view.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0.0),
+      thumbImageNode.view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0.0),
+      thumbImageNode.view.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 0.0),
+      thumbImageNode.view.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: 0.0),
+    ])
+    
+    configureLayers(frame: frame)
+  }
+  
+  
+  func configureLayers(frame: CGRect) {
     self.layer.masksToBounds = false
     self.layer.cornerRadius = Constants.CellCornerRadius
     self.layer.shadowColor = Constants.CellShadowColor.cgColor
     self.layer.shadowOffset = Constants.CellShadowOffset
     self.layer.shadowRadius = Constants.CellCornerRadius
     self.layer.shadowOpacity = Constants.CellShadowOpacity
-    
     self.layer.shadowPath = UIBezierPath(roundedRect: layer.bounds, cornerRadius: layer.cornerRadius).cgPath
     
-    momentThumb.layer.masksToBounds = true
-    momentThumb.layer.cornerRadius = Constants.CellCornerRadius
+    thumbImageNode.layer.masksToBounds = true
+    thumbImageNode.layer.cornerRadius = Constants.CellCornerRadius
     
-    thumbFrameLayer = ThumbnailFrameLayer(frame: bounds)
+    let cellBounds = CGRect(x: 0.0, y: 0.0, width: frame.width, height: frame.height)
+    thumbFrameLayer = ThumbnailFrameLayer(frame: cellBounds)
     thumbFrameLayer!.lineWidth = Constants.ThumbnailFrameLineWidth
     thumbFrameLayer!.cornerRadius = Constants.CellCornerRadius
     thumbFrameLayer!.strokeColor = FoodieGlobal.Constants.ThemeColor.cgColor
     thumbFrameLayer!.isHidden = true
-    momentThumb.layer.addSublayer(thumbFrameLayer!)
+    thumbImageNode.layer.addSublayer(thumbFrameLayer!)
   }
 
+  
   func stopWobble() {
     self.layer.removeAllAnimations()
     self.transform = CGAffineTransform(rotationAngle: degreesToRadians(x: Constants.AnimationRotateDegrees * 0))
   }
 
+  
   func wobble() {
     let leftOrRight: CGFloat = (Constants.Count % 2 == 0 ? 1 : -1)
     let rightOrLeft: CGFloat = (Constants.Count % 2 == 0 ? -1 : 1)
@@ -99,5 +143,14 @@ class MomentCollectionViewCell: UICollectionViewCell {
     UIView.animate(withDuration: 0.10, delay: 0.10, options: [.allowUserInteraction, .repeat, .autoreverse], animations: { () -> Void in
       self.transform = conCatTransform
     }, completion: nil)
+  }
+  
+  
+  override func prepareForReuse() {
+    activitySpinner.remove()
+    thumbImageNode.url = nil
+    deleteButton.isHidden = true
+    thumbFrameLayer?.removeFromSuperlayer()
+    thumbFrameLayer = nil
   }
 }

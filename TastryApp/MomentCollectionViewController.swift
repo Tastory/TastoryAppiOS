@@ -9,24 +9,38 @@
 import UIKit
 
 class MomentCollectionViewController: UICollectionViewController {
-
-  // MARK: - Private Class Constants
-  fileprivate struct Constants {
+  
+  // MARK: - Types & Enums
+  enum MomentEditReadiness {
+    case retrieving
+    case pendingReady
+  }
+  
+  
+  // MARK: - Constants
+  private struct Constants {
     static let MomentCellReuseId = "MomentCell"
     static let FooterElementReuseId = "MomentFooter"
     static let SectionInsetSpacing: CGFloat = 8
     static let InteritemSpacing: CGFloat = 8
   }
 
+  
   // MARK: - Public Instance Variables
   var workingStory: FoodieStory!
   var cameraReturnDelegate: CameraReturnDelegate!
   var containerVC: MarkupReturnDelegate?
   var previewControlDelegate: PreviewControlDelegate!
 
+  
   // MARK: - Private Instance Variables
-  fileprivate var selectedViewCell: MomentCollectionViewCell?
-
+  private var selectedViewCell: MomentCollectionViewCell?
+  private var momentsPendingEditReady = [Int : MomentEditReadiness?]()
+  private var readyMutex = SwiftMutex.create()
+  private var outstandingStoryRetrievals = 0
+  private var outstandingMutex = SwiftMutex.create()
+  
+  
   // MARK: - Private Instance Functions
   @objc private func openCamera() {
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
@@ -85,6 +99,7 @@ class MomentCollectionViewController: UICollectionViewController {
     cell.thumbFrameLayer?.isHidden = false
   }
 
+  
   @objc private func thumbnailGesture(_ sender: UIGestureRecognizer) {
 
     guard let collectionView = self.collectionView else {
@@ -211,7 +226,7 @@ class MomentCollectionViewController: UICollectionViewController {
     self.present(viewController, animated: true)
   }
 
-  private func loadThumbnailImage(to cell: UICollectionViewCell? = nil, in collectionView: UICollectionView, forItemAt indexPath: IndexPath) {
+  private func updateMomentCell(to cell: UICollectionViewCell? = nil, in collectionView: UICollectionView, forItemAt indexPath: IndexPath) {
 
     guard let momentArray = workingStory.moments else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
@@ -223,30 +238,14 @@ class MomentCollectionViewController: UICollectionViewController {
     if let reusableCell = cell as? MomentCollectionViewCell {
       let moment = momentArray[indexPath.item]
 
-      if(reusableCell.indexPath == indexPath) {
-        reusableCell.configureLayers()
-        
-        if reusableCell.momentThumb.gestureRecognizers == nil {
-          let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.thumbnailGesture(_:)))
-          tapRecognizer.numberOfTapsRequired = 1
-          reusableCell.momentThumb.isUserInteractionEnabled = true
-          reusableCell.momentThumb.addGestureRecognizer(tapRecognizer)
-
-          let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.editMoment(_:)))
-          doubleTapRecognizer.numberOfTapsRequired = 2
-          reusableCell.momentThumb.addGestureRecognizer(doubleTapRecognizer)
-          tapRecognizer.require(toFail: doubleTapRecognizer)
-        }
-
-        reusableCell.momentThumb.image = UIImage(data: moment.thumbnail!.imageMemoryBuffer!)
+      if reusableCell.indexPath == indexPath {
 
         if self.workingStory.thumbnailFileName != nil, self.workingStory.thumbnailFileName == moment.thumbnailFileName {
           reusableCell.thumbFrameLayer?.isHidden = false
         } else {
           reusableCell.thumbFrameLayer?.isHidden = true
         }
-
-        reusableCell.activityIndicator.stopAnimating()
+        reusableCell.activitySpinner.remove()
         if(!workingStory.isEditStory) {
           reusableCell.deleteButton.isHidden = false
         }
@@ -257,6 +256,8 @@ class MomentCollectionViewController: UICollectionViewController {
     }
   }
 
+  
+  
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -264,28 +265,80 @@ class MomentCollectionViewController: UICollectionViewController {
     guard let collectionView = self.collectionView else {
       CCLog.fatal("collection view from momentViewController is nil")
     }
-
-    let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(reorderMoment(_:)))
-    collectionView.addGestureRecognizer(longPressGesture)
-
-    if(workingStory.isEditStory) {
+    
+    if workingStory.isEditStory {
       // retrieve story only when in edit mode
       previewControlDelegate.enablePreviewButton(false)
-      _ = workingStory.retrieveRecursive(from: .both, type: .cache) { (error) in
-        if let error = error {
-          CCLog.warning("Failed to retrieve working story with Error - \(error.localizedDescription)")
+      
+      guard let moments = workingStory.moments else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("Working Story moments = nil")
         }
-        self.previewControlDelegate.enablePreviewButton(true)
-        // save entire story to draft is required since some non visible cell might not trigger
-        // save to draft 
-        _ = self.workingStory.saveRecursive(to: .local, type: .draft) { (error) in
+        return
+      }
+      
+      outstandingStoryRetrievals = moments.count
+      var storyIndex = 0
+      
+      for moment in moments {
+        
+        // Mark Moment not ready to Edit
+        let indexCopy = storyIndex
+        momentsPendingEditReady[storyIndex] = .retrieving
+        
+        let retrieveOperation = StoryOperation(with: .moment, on: workingStory, for: storyIndex) { error in
           if let error = error {
-            AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
-              CCLog.assert("Saving story into draft caused by: \(error.localizedDescription)")
+            AlertDialog.present(from: self, title: "Retreive Error", message: error.localizedDescription) { _ in
+              CCLog.assert("Saving story into draft failed with error: \(error.localizedDescription)")
             }
+            return
+          }
+          
+          moment.saveRecursive(to: .local, type: .draft, for: nil) { error in
+            if let error = error {
+              AlertDialog.present(from: self, title: "Draft Error", message: error.localizedDescription) { _ in
+                CCLog.assert("Saving story into draft failed with error: \(error.localizedDescription)")
+              }
+              return
+            }
+            
+            var shouldUpdateMomentCell = false
+            
+            // If there's outstanding Colleciton View Cell to be enabled, do so now. Otherwise just mark yourself ready for edit
+            SwiftMutex.lock(&self.readyMutex)
+            guard let momentReadiness = self.momentsPendingEditReady[indexCopy] else {
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+                CCLog.fatal("No Moment Pending Edit Ready after Save to Draft")
+              }
+              return
+            }
+            
+            if momentReadiness == .pendingReady { shouldUpdateMomentCell = true }
+            
+            self.momentsPendingEditReady.removeValue(forKey: indexCopy)
+            SwiftMutex.unlock(&self.readyMutex)
+            
+            if shouldUpdateMomentCell {
+              self.updateMomentCell(in: collectionView, forItemAt: IndexPath(item: indexCopy, section: 0))
+            }
+            
+            SwiftMutex.lock(&self.outstandingMutex)
+            self.outstandingStoryRetrievals -= 1
+            if self.outstandingStoryRetrievals == 0 {
+              self.previewControlDelegate.enablePreviewButton(true)
+              let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.reorderMoment(_:)))
+              collectionView.addGestureRecognizer(longPressGesture)
+            }
+            SwiftMutex.unlock(&self.outstandingMutex)
           }
         }
+      
+        FoodieFetch.global.queue(retrieveOperation, at: .high)
+        storyIndex += 1
       }
+    } else {
+      let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(reorderMoment(_:)))
+      collectionView.addGestureRecognizer(longPressGesture)
     }
   }
 
@@ -304,6 +357,7 @@ extension MomentCollectionViewController {
     return 1
   }
 
+  
   override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     if let moments = workingStory.moments {
       return moments.count
@@ -313,6 +367,7 @@ extension MomentCollectionViewController {
     }
   }
 
+  
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     
     guard let momentArray = workingStory.moments else {
@@ -321,12 +376,23 @@ extension MomentCollectionViewController {
     
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.MomentCellReuseId, for: indexPath) as! MomentCollectionViewCell
 
+    // Configure Default Cell State
+    //cell.configureLayers(frame: cell.bounds)
+    
+    if cell.thumbImageNode.view.gestureRecognizers == nil {
+      let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.thumbnailGesture(_:)))
+      tapRecognizer.numberOfTapsRequired = 1
+      cell.thumbImageNode.view.isUserInteractionEnabled = true
+      cell.thumbImageNode.view.addGestureRecognizer(tapRecognizer)
+      
+      let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.editMoment(_:)))
+      doubleTapRecognizer.numberOfTapsRequired = 2
+      cell.thumbImageNode.view.addGestureRecognizer(doubleTapRecognizer)
+      tapRecognizer.require(toFail: doubleTapRecognizer)
+    }
+    
     cell.indexPath = indexPath
     cell.delegate = self
-    
-    cell.activityIndicator.isHidden = false
-    cell.activityIndicator.hidesWhenStopped = true
-    cell.activityIndicator.startAnimating()
     cell.deleteButton.isHidden = true
     cell.thumbFrameLayer?.isHidden = true
 
@@ -336,48 +402,49 @@ extension MomentCollectionViewController {
       }
       return cell
     }
-
+    
     let moment = momentArray[indexPath.item]
-
-    if(moment.thumbnail?.imageMemoryBuffer != nil) {
-      loadThumbnailImage(to: cell, in: collectionView, forItemAt: indexPath)
-    } else {
-      _  = moment.retrieveRecursive(from: .both, type: .cache) { (error) in
-
-        if let error = error {
-          CCLog.warning("Error retrieving story into cache caused by: \(error.localizedDescription)")
-          return
-        }
-
-        guard let thumbnailObj = moment.thumbnail else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
-            CCLog.assert("No Thumbnail Object for Moment \(moment.getUniqueIdentifier())")
-          }
-          return
-        }
-
-        guard let thumbnailFileName = moment.thumbnailFileName else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
-            CCLog.assert("No Thumbnail Filename for Moment \(moment.getUniqueIdentifier())")
-          }
-          return
-        }
-
-        if thumbnailObj.imageMemoryBuffer == nil {
-          do {
-            try thumbnailObj.imageMemoryBuffer = Data(contentsOf: FoodieFileObject.Constants.DraftStoryMediaFolderUrl.appendingPathComponent(thumbnailFileName))
-          } catch {
-            AlertDialog.present(from: self, title: "File Read Error", message: "Cannot read image file from local flash storage") { action in
-              CCLog.assert("Cannot read image file \(thumbnailFileName)")
-            }
-          }
-        }
-
-        DispatchQueue.main.async {
-          // check to see if indexPath is within the visible items
-          self.loadThumbnailImage(to: cell, in: collectionView, forItemAt: indexPath)
-        }
+    
+    guard let thumbnailFileName = moment.thumbnailFileName else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
+        CCLog.assert("No Thumbnail Filename for Moment \(moment.getUniqueIdentifier())")
       }
+      return cell
+    }
+    
+    if isEditing {
+      cell.thumbImageNode.url = FoodieFileObject.getS3URL(for: thumbnailFileName)
+    } else {
+      guard let thumbnailBuffer = moment.thumbnail?.imageMemoryBuffer else {
+        AlertDialog.present(from: self, title: "Cover Error", message: "Cannot display local cover photo from draft") { _ in
+          CCLog.assert("moment.thumbnail?.imageMemoryBuffer = nil for new draft")
+        }
+        return cell
+      }
+      cell.thumbImageNode.image = UIImage(data: thumbnailBuffer)
+    }
+
+    var momentReadyToEdit = true
+    
+    SwiftMutex.lock(&readyMutex)
+    if let momentPending = momentsPendingEditReady[indexPath.item]  {
+      
+      if momentPending == .retrieving {
+        momentsPendingEditReady[indexPath.item] = .pendingReady
+      } else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("Not expecting Edit Readiness for Moment \(moment.getUniqueIdentifier()) to be 'pendingReady'")
+        }
+        return cell
+      }
+      momentReadyToEdit = false
+    }
+    SwiftMutex.unlock(&readyMutex)
+    
+    if momentReadyToEdit {
+      updateMomentCell(to: cell, in: collectionView, forItemAt: indexPath)
+    } else {
+      cell.activitySpinner.apply()
     }
     return cell
   }

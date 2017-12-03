@@ -361,7 +361,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="799" text="50" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rV1-7C-DT8">
-                                                        <rect key="frame" x="346.33333333333331" y="18.333333333333343" width="13.666666666666686" height="14"/>
+                                                        <rect key="frame" x="346.33333333333331" y="19" width="13.666666666666686" height="14"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -526,7 +526,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="800" text="15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QxI-Em-dBD">
-                                                        <rect key="frame" x="346.33333333333331" y="15.333333333333258" width="13.666666666666686" height="14"/>
+                                                        <rect key="frame" x="346.33333333333331" y="16" width="13.666666666666686" height="14"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66000000000000003" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -723,9 +723,6 @@
                                     <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="oF2-s4-G9T">
-                                            <rect key="frame" x="0.0" y="0.0" width="124" height="222"/>
-                                        </imageView>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BCS-cR-mdn">
                                             <rect key="frame" x="98.666666666666671" y="1" width="24.333333333333329" height="24.666666666666668"/>
                                             <rect key="contentStretch" x="1" y="0.0" width="1" height="1"/>
@@ -742,27 +739,17 @@
                                                 <action selector="deleteMomentButton:" destination="5yf-rk-zGg" eventType="touchUpInside" id="nSU-Cb-ikV"/>
                                             </connections>
                                         </button>
-                                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="dW4-fF-q5K">
-                                            <rect key="frame" x="52" y="101" width="20" height="20"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        </activityIndicatorView>
                                     </subviews>
                                 </view>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                                 <constraints>
-                                    <constraint firstItem="oF2-s4-G9T" firstAttribute="top" secondItem="5yf-rk-zGg" secondAttribute="top" id="2W1-aU-anS"/>
                                     <constraint firstAttribute="trailing" secondItem="BCS-cR-mdn" secondAttribute="trailing" constant="1" id="87v-ER-cgM"/>
                                     <constraint firstItem="BCS-cR-mdn" firstAttribute="width" secondItem="5yf-rk-zGg" secondAttribute="width" multiplier="0.2" id="BK4-7V-pVN"/>
                                     <constraint firstItem="BCS-cR-mdn" firstAttribute="top" secondItem="5yf-rk-zGg" secondAttribute="top" constant="1" id="XL6-Xt-Xbb"/>
-                                    <constraint firstItem="oF2-s4-G9T" firstAttribute="leading" secondItem="5yf-rk-zGg" secondAttribute="leading" id="flc-iG-O9Q"/>
-                                    <constraint firstAttribute="bottom" secondItem="oF2-s4-G9T" secondAttribute="bottom" id="hPC-pR-LJj"/>
-                                    <constraint firstAttribute="trailing" secondItem="oF2-s4-G9T" secondAttribute="trailing" id="o8A-UD-chf"/>
                                 </constraints>
                                 <connections>
-                                    <outlet property="activityIndicator" destination="dW4-fF-q5K" id="y4x-cj-xR0"/>
                                     <outlet property="deleteButton" destination="BCS-cR-mdn" id="XTE-te-gvq"/>
-                                    <outlet property="momentThumb" destination="oF2-s4-G9T" id="FtQ-lr-s6d"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
@@ -924,7 +911,7 @@
                                 </subviews>
                             </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose Venue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ogf-bS-Ofz">
-                                <rect key="frame" x="136.33333333333334" y="57.666666666666664" width="104" height="18.666666666666664"/>
+                                <rect key="frame" x="136" y="57.333333333333336" width="104" height="18.666666666666664"/>
                                 <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="16"/>
                                 <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
