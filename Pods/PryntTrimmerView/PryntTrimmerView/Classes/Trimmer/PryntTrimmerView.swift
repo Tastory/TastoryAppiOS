@@ -287,20 +287,20 @@ public protocol TrimmerViewDelegate: class {
 
     private func updateLeftConstraint(with translation: CGPoint) {
         let maxConstraint = max(rightHandleView.frame.origin.x - handleWidth - minimumDistanceBetweenHandle, 0)
-        var newConstraint = min(max(0, currentLeftConstraint + translation.x), maxConstraint)
+        let newConstraint = min(max(0, currentLeftConstraint + translation.x), maxConstraint)
 
         if(rightHandleView.frame.origin.x - handleWidth - newConstraint >= maximumDistanceBetweenHandle) {
-           newConstraint = max(rightHandleView.frame.origin.x - handleWidth - maximumDistanceBetweenHandle , 0)
+           rightConstraint?.constant = (-1 * assetPreview.contentView.frame.width) + newConstraint + maximumDistanceBetweenHandle
         }
         leftConstraint?.constant = newConstraint
     }
 
     private func updateRightConstraint(with translation: CGPoint) {
         let maxConstraint = min(2 * handleWidth - frame.width + leftHandleView.frame.origin.x + minimumDistanceBetweenHandle, 0)
-        var newConstraint = max(min(0, currentRightConstraint + translation.x), maxConstraint)
+        let newConstraint = max(min(0, currentRightConstraint + translation.x), maxConstraint)
 
         if(((assetPreview.contentView.frame.width + newConstraint) - leftHandleView.frame.origin.x) > maximumDistanceBetweenHandle) {
-          newConstraint = min((leftHandleView.frame.origin.x + maximumDistanceBetweenHandle) - assetPreview.contentView.frame.width , 0)
+          leftConstraint?.constant = assetPreview.contentView.frame.width + newConstraint - maximumDistanceBetweenHandle
         }
         rightConstraint?.constant = newConstraint
     }
@@ -315,6 +315,7 @@ public protocol TrimmerViewDelegate: class {
     private func resetHandleViewPosition() {
         leftConstraint?.constant = 0
         rightConstraint?.constant = 0
+        updateLeftConstraint(with: CGPoint(x: 0, y: leftHandleView.frame.origin.y))
         layoutIfNeeded()
     }
 

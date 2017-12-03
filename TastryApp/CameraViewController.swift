@@ -759,9 +759,10 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       // Go into Video Clip trimming if the Video can be edited
       if UIVideoEditorController.canEditVideo(atPath: moviePath) {
 
-        let storyboard = UIStoryboard(name: "Trimmer", bundle: nil)
+        let storyboard = UIStoryboard(name: "Compose", bundle: nil)
         let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VideoTrimmerViewController") as! VideoTrimmerViewController
-        viewController.avAsset = AVAsset(url: movieUrl as URL)
+        viewController.avAsset = AVURLAsset(url: movieUrl as URL)
+        viewController.delegate = self
         present(viewController, animated: true, completion: nil)
         return
 
@@ -842,3 +843,38 @@ extension CameraViewController: UIVideoEditorControllerDelegate {
     }
   }
 }
+
+extension CameraViewController: VideoTrimmerDelegate {
+  func videoTrimmed(from startTime: CMTime, to endTime: CMTime, url assetURL: String) {
+
+      let url = URL(fileURLWithPath: assetURL)
+      let fileName = url.lastPathComponent
+      let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .video)
+      let avExportPlayer = AVExportPlayer()
+      let activitySpinner = ActivitySpinner(addTo: self.view)
+
+      activitySpinner.apply()
+      avExportPlayer.initAVPlayer(from: url)
+      mediaObject.videoExportPlayer = avExportPlayer
+      avExportPlayer.exportAsync(to: FoodieFileObject.getFileURL(for: .draft, with: fileName), thru: FoodieFileObject.getRandomTempFileURL(),duration:
+        CMTimeRangeMake(startTime, endTime)) { error in
+
+        activitySpinner.remove()
+        if let error = error {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
+          }
+          return
+        }
+
+        let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+        viewController.mediaObj = mediaObject
+        viewController.markupReturnDelegate = self
+        viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
+        self.present(viewController, animated: true)
+
+      }
+  }
+}
+

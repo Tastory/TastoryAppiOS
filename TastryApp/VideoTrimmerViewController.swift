@@ -11,6 +11,10 @@ import AVFoundation
 import MobileCoreServices
 import PryntTrimmerView
 
+protocol VideoTrimmerDelegate {
+  func videoTrimmed(from startTime: CMTime, to endTime: CMTime, url assetURL: String)
+}
+
 /// A view controller to demonstrate the trimming of a video. Make sure the scene is selected as the initial
 // view controller in the storyboard
 class VideoTrimmerViewController: UIViewController, UINavigationControllerDelegate  {
@@ -19,8 +23,10 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var playerView: UIView!
     @IBOutlet weak var trimmerView: TrimmerView!
+    @IBOutlet weak var trimmerBackground: UIView!
 
-    public var avAsset: AVAsset?
+    public var avAsset: AVURLAsset?
+    public var delegate: VideoTrimmerDelegate?
 
     var player: AVPlayer?
     var playbackTimeCheckerTimer: Timer?
@@ -30,6 +36,7 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
         super.viewDidLoad()
         trimmerView.handleColor = UIColor.white
         trimmerView.mainColor = UIColor.orange
+        trimmerBackground.backgroundColor = UIColor.clear.withAlphaComponent(0.6)
     }
 
   override func viewDidAppear(_ animated: Bool) {
@@ -44,17 +51,67 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
   }
 
     @IBAction func selectAsset(_ sender: Any) {
-        print(trimmerView.startTime)
-        print(trimmerView.endTime)
+
+      guard let player = player else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("The player is nil.")
+        }
+        return
+      }
+      
+      player.pause()
+
+      self.dismiss(animated: true) {
+        guard let delegate = self.delegate else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("The video trimmer return delegate is nil.")
+          }
+          return
+        }
+
+        guard let startTime = self.trimmerView.startTime else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("The start time is nil")
+          }
+          return
+        }
+
+        guard let endTime = self.trimmerView.endTime else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("The end time is nil")
+          }
+          return
+        }
+
+        guard let asset = self.avAsset else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("avAsset is nil")
+          }
+          return
+        }
+
+        delegate.videoTrimmed(from: startTime, to: endTime, url:  asset.url.absoluteString)
+      }
     }
 
     @IBAction func cancel(_ sender: Any) {
+      guard let player = player else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("The player is nil.")
+        }
+        return
+      }
+      player.pause()
       self.dismiss(animated: true, completion: nil)
     }
 
     @IBAction func play(_ sender: Any) {
-
-        guard let player = player else { return }
+        guard let player = player else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+              CCLog.fatal("The player is nil.")
+            }
+          return
+        }
 
         if !(player.rate != 0 && player.error == nil) {
             player.play()

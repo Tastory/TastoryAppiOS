@@ -1,0 +1,766 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0D332612FE238ED9605BD1F42458BEC5 /* Pods-PryntTrimmerView_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 796C5A3F05F3104FB55FF01C3A63CA35 /* Pods-PryntTrimmerView_Example-dummy.m */; };
+		0EC2F82857CDB944C191AD1FE6C05F02 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		1CE7CA63E09E9523A47E40325888708B /* PryntTrimmerView-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 70489CE4E9A23C180D891573FA2424E3 /* PryntTrimmerView-dummy.m */; };
+		23A0131A535AA13D6C6FB082C03BD0B8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		2C22D827A64018CA6809C524B5EBA110 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		31776C336709B58797467A1F92B5E9DD /* Pods-PryntTrimmerView_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C1A756BD98D0CBF00F8E2AAC57ED6E /* Pods-PryntTrimmerView_Tests-dummy.m */; };
+		38F6523D0042C6FDDDF29EA92C8E6016 /* Pods-PryntTrimmerView_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EAB5AFFDBC3F5B66C1C232D3AE4F461 /* Pods-PryntTrimmerView_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		38FDF7010FDC859267CCD1801F3B75F3 /* AVAssetTimeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE1EAE352F067FF89774F2F2CB4E225 /* AVAssetTimeSelector.swift */; };
+		3A370F9CE0907BD238CE208A89BDA62C /* HandlerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C06C8F8486DF3856CFE417A4A8C747C /* HandlerView.swift */; };
+		4DDA8D3C7434B4D78E073DF6E2B3EC05 /* VideoCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F22644C1E83FD28B32687FE7842895 /* VideoCropView.swift */; };
+		544603A7D2F7A7D81897C4B0C62F6B9B /* ThumbSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AC35505EAC29ADBF81331BB6E034B /* ThumbSelectorView.swift */; };
+		5A6BDE38BA2F355CC5090E11E7444133 /* VideoScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D399D97C02A97333DB57C618FFF3BB5 /* VideoScrollView.swift */; };
+		64732FDE7C3F96A83EFC226620DFB39C /* PryntTrimmerView-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = ED5CC507F486DE0A53ABB20C47E10670 /* PryntTrimmerView-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9EC2DFEFD7EFF19FAFF711AC109630E0 /* CropMaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9215185DBBE492A55D32F6BB881105 /* CropMaskView.swift */; };
+		9FF3EC86837FB58015C0B89A69A7EBB6 /* PryntTrimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75EEF43417C3CE9E9EE98351E873755 /* PryntTrimmerView.swift */; };
+		E3C76BB75F5178412D19FECF94663552 /* Pods-PryntTrimmerView_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 1707D8D253E22A46CEC07CFA43F8074C /* Pods-PryntTrimmerView_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4EA3A6EA65A106E928B14CA699E2FA5 /* AssetVideoScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC44985C4D9B95EE8F6836CF806DFD29 /* AssetVideoScrollView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0D498AC5E0BC9C7C380EC0906094A01B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 979EDC794C86030F7B398F1B7508A28F;
+			remoteInfo = PryntTrimmerView;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0EAB5AFFDBC3F5B66C1C232D3AE4F461 /* Pods-PryntTrimmerView_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-PryntTrimmerView_Tests-umbrella.h"; sourceTree = "<group>"; };
+		1707D8D253E22A46CEC07CFA43F8074C /* Pods-PryntTrimmerView_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-PryntTrimmerView_Example-umbrella.h"; sourceTree = "<group>"; };
+		1710E9C7E5049B1F2F7DAF646EDD4577 /* PryntTrimmerView.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = PryntTrimmerView.modulemap; sourceTree = "<group>"; };
+		1712FABBA3FDE70BA2EFCF4467CBA9C5 /* Pods-PryntTrimmerView_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PryntTrimmerView_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
+		26C316AD665D6A3270847B34D91DB157 /* Pods-PryntTrimmerView_Example-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-PryntTrimmerView_Example-resources.sh"; sourceTree = "<group>"; };
+		29727D228EDE8F7C84174B10B02CFA93 /* Pods-PryntTrimmerView_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "Pods-PryntTrimmerView_Tests.modulemap"; sourceTree = "<group>"; };
+		3A93A7E11E5ED81917BE2A3A9433CFC6 /* Pods_PryntTrimmerView_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_PryntTrimmerView_Tests.framework; path = "Pods-PryntTrimmerView_Tests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3F942E4520E2361E3300C1775C6BCCAB /* PryntTrimmerView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = PryntTrimmerView.framework; path = PryntTrimmerView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3FB5607DAFE99D93D1FF158D5A5CDB25 /* Pods_PryntTrimmerView_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_PryntTrimmerView_Example.framework; path = "Pods-PryntTrimmerView_Example.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C06C8F8486DF3856CFE417A4A8C747C /* HandlerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HandlerView.swift; sourceTree = "<group>"; };
+		5327713A9A7940531CC57C18C97DC674 /* Pods-PryntTrimmerView_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PryntTrimmerView_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		559C486377C3C37096E807F1734394E5 /* Pods-PryntTrimmerView_Tests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-PryntTrimmerView_Tests-frameworks.sh"; sourceTree = "<group>"; };
+		5E9AC35505EAC29ADBF81331BB6E034B /* ThumbSelectorView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ThumbSelectorView.swift; path = PryntTrimmerView/Classes/ThumbSelectorView.swift; sourceTree = "<group>"; };
+		6127CE99273F682B64A92BFC3F88934E /* Pods-PryntTrimmerView_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PryntTrimmerView_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		65E6DA4EAB37B463476C1D8F8BDC27FD /* Pods-PryntTrimmerView_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PryntTrimmerView_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		6B96EE5E8836A664A1A149ECD4FD96BE /* Pods-PryntTrimmerView_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PryntTrimmerView_Example-acknowledgements.plist"; sourceTree = "<group>"; };
+		70489CE4E9A23C180D891573FA2424E3 /* PryntTrimmerView-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "PryntTrimmerView-dummy.m"; sourceTree = "<group>"; };
+		71C1A756BD98D0CBF00F8E2AAC57ED6E /* Pods-PryntTrimmerView_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-PryntTrimmerView_Tests-dummy.m"; sourceTree = "<group>"; };
+		796C5A3F05F3104FB55FF01C3A63CA35 /* Pods-PryntTrimmerView_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-PryntTrimmerView_Example-dummy.m"; sourceTree = "<group>"; };
+		7DE12018A4C31CE89C673FBD5E301293 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7DE1EAE352F067FF89774F2F2CB4E225 /* AVAssetTimeSelector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AVAssetTimeSelector.swift; sourceTree = "<group>"; };
+		843845CAB5A2DF4A55AFD9411B8D8D14 /* Pods-PryntTrimmerView_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "Pods-PryntTrimmerView_Example.modulemap"; sourceTree = "<group>"; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D399D97C02A97333DB57C618FFF3BB5 /* VideoScrollView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VideoScrollView.swift; sourceTree = "<group>"; };
+		A55010A9D3A4CAF4DB46212064157E40 /* Pods-PryntTrimmerView_Tests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-PryntTrimmerView_Tests-resources.sh"; sourceTree = "<group>"; };
+		ADDF0B628E4602963BFDED599C8371E5 /* Pods-PryntTrimmerView_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PryntTrimmerView_Example.release.xcconfig"; sourceTree = "<group>"; };
+		C75EEF43417C3CE9E9EE98351E873755 /* PryntTrimmerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PryntTrimmerView.swift; sourceTree = "<group>"; };
+		CE9215185DBBE492A55D32F6BB881105 /* CropMaskView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CropMaskView.swift; sourceTree = "<group>"; };
+		CECFD13776F9A12B884CA9B06AFD9F02 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D2F22644C1E83FD28B32687FE7842895 /* VideoCropView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VideoCropView.swift; sourceTree = "<group>"; };
+		E3A5CE7077962EE3B70A93896D313A64 /* Pods-PryntTrimmerView_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-PryntTrimmerView_Example-frameworks.sh"; sourceTree = "<group>"; };
+		E9DA3F29D06F43C15959ED701EC896FE /* Pods-PryntTrimmerView_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PryntTrimmerView_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		ED5CC507F486DE0A53ABB20C47E10670 /* PryntTrimmerView-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PryntTrimmerView-umbrella.h"; sourceTree = "<group>"; };
+		EE8DF677CE8F6204CA002FE5FE50CE96 /* Pods-PryntTrimmerView_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PryntTrimmerView_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
+		F186FA84D1E3D6A4135868E5618739B2 /* PryntTrimmerView.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PryntTrimmerView.xcconfig; sourceTree = "<group>"; };
+		F1F71CD1191E87BA6DAA9DACF28215AB /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F55C9DAF36A188EDD857D6AA6884818C /* PryntTrimmerView-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PryntTrimmerView-prefix.pch"; sourceTree = "<group>"; };
+		FC44985C4D9B95EE8F6836CF806DFD29 /* AssetVideoScrollView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetVideoScrollView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		17E08C502F0E710CCEAEC2AB7C5F1036 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				23A0131A535AA13D6C6FB082C03BD0B8 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1CCEAEF443F1D07064A0F27D2BCAF1A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C22D827A64018CA6809C524B5EBA110 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		68B9D6E88A9BEEF053F6F58E61DF9305 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0EC2F82857CDB944C191AD1FE6C05F02 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		07514D20D3DAE1FD7C230B73D19DE949 /* PryntTrimmerView */ = {
+			isa = PBXGroup;
+			children = (
+				5E9AC35505EAC29ADBF81331BB6E034B /* ThumbSelectorView.swift */,
+				F90394A9B7814CC0FA69F4FD9C4B3E0E /* Cropper */,
+				37F1EECAA5BE815A9ABCA77B9515E961 /* Parents */,
+				B56E4F84A4A3422521AEEEB9584BAAFF /* Support Files */,
+				E06DFDB0B4F4CB15AD107CAD57E9D85D /* Trimmer */,
+			);
+			name = PryntTrimmerView;
+			path = ../..;
+			sourceTree = "<group>";
+		};
+		07813AE14D12FCE8EC15AAC5D76C4222 /* Development Pods */ = {
+			isa = PBXGroup;
+			children = (
+				07514D20D3DAE1FD7C230B73D19DE949 /* PryntTrimmerView */,
+			);
+			name = "Development Pods";
+			sourceTree = "<group>";
+		};
+		37F1EECAA5BE815A9ABCA77B9515E961 /* Parents */ = {
+			isa = PBXGroup;
+			children = (
+				FC44985C4D9B95EE8F6836CF806DFD29 /* AssetVideoScrollView.swift */,
+				7DE1EAE352F067FF89774F2F2CB4E225 /* AVAssetTimeSelector.swift */,
+			);
+			name = Parents;
+			path = PryntTrimmerView/Classes/Parents;
+			sourceTree = "<group>";
+		};
+		46250653E7142FB7479E8F54AF44A8DA /* Pods-PryntTrimmerView_Example */ = {
+			isa = PBXGroup;
+			children = (
+				F1F71CD1191E87BA6DAA9DACF28215AB /* Info.plist */,
+				843845CAB5A2DF4A55AFD9411B8D8D14 /* Pods-PryntTrimmerView_Example.modulemap */,
+				EE8DF677CE8F6204CA002FE5FE50CE96 /* Pods-PryntTrimmerView_Example-acknowledgements.markdown */,
+				6B96EE5E8836A664A1A149ECD4FD96BE /* Pods-PryntTrimmerView_Example-acknowledgements.plist */,
+				796C5A3F05F3104FB55FF01C3A63CA35 /* Pods-PryntTrimmerView_Example-dummy.m */,
+				E3A5CE7077962EE3B70A93896D313A64 /* Pods-PryntTrimmerView_Example-frameworks.sh */,
+				26C316AD665D6A3270847B34D91DB157 /* Pods-PryntTrimmerView_Example-resources.sh */,
+				1707D8D253E22A46CEC07CFA43F8074C /* Pods-PryntTrimmerView_Example-umbrella.h */,
+				5327713A9A7940531CC57C18C97DC674 /* Pods-PryntTrimmerView_Example.debug.xcconfig */,
+				ADDF0B628E4602963BFDED599C8371E5 /* Pods-PryntTrimmerView_Example.release.xcconfig */,
+			);
+			name = "Pods-PryntTrimmerView_Example";
+			path = "Target Support Files/Pods-PryntTrimmerView_Example";
+			sourceTree = "<group>";
+		};
+		5E71F994418DC2CEA9373A5FE4F18632 /* Pods-PryntTrimmerView_Tests */ = {
+			isa = PBXGroup;
+			children = (
+				CECFD13776F9A12B884CA9B06AFD9F02 /* Info.plist */,
+				29727D228EDE8F7C84174B10B02CFA93 /* Pods-PryntTrimmerView_Tests.modulemap */,
+				6127CE99273F682B64A92BFC3F88934E /* Pods-PryntTrimmerView_Tests-acknowledgements.markdown */,
+				1712FABBA3FDE70BA2EFCF4467CBA9C5 /* Pods-PryntTrimmerView_Tests-acknowledgements.plist */,
+				71C1A756BD98D0CBF00F8E2AAC57ED6E /* Pods-PryntTrimmerView_Tests-dummy.m */,
+				559C486377C3C37096E807F1734394E5 /* Pods-PryntTrimmerView_Tests-frameworks.sh */,
+				A55010A9D3A4CAF4DB46212064157E40 /* Pods-PryntTrimmerView_Tests-resources.sh */,
+				0EAB5AFFDBC3F5B66C1C232D3AE4F461 /* Pods-PryntTrimmerView_Tests-umbrella.h */,
+				E9DA3F29D06F43C15959ED701EC896FE /* Pods-PryntTrimmerView_Tests.debug.xcconfig */,
+				65E6DA4EAB37B463476C1D8F8BDC27FD /* Pods-PryntTrimmerView_Tests.release.xcconfig */,
+			);
+			name = "Pods-PryntTrimmerView_Tests";
+			path = "Target Support Files/Pods-PryntTrimmerView_Tests";
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
+				07813AE14D12FCE8EC15AAC5D76C4222 /* Development Pods */,
+				BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */,
+				E8518A379B963FEBE004E3C1128498AD /* Products */,
+				81C44829EED99EA32E068EFB78EF090D /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		81C44829EED99EA32E068EFB78EF090D /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				46250653E7142FB7479E8F54AF44A8DA /* Pods-PryntTrimmerView_Example */,
+				5E71F994418DC2CEA9373A5FE4F18632 /* Pods-PryntTrimmerView_Tests */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		B56E4F84A4A3422521AEEEB9584BAAFF /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				7DE12018A4C31CE89C673FBD5E301293 /* Info.plist */,
+				1710E9C7E5049B1F2F7DAF646EDD4577 /* PryntTrimmerView.modulemap */,
+				F186FA84D1E3D6A4135868E5618739B2 /* PryntTrimmerView.xcconfig */,
+				70489CE4E9A23C180D891573FA2424E3 /* PryntTrimmerView-dummy.m */,
+				F55C9DAF36A188EDD857D6AA6884818C /* PryntTrimmerView-prefix.pch */,
+				ED5CC507F486DE0A53ABB20C47E10670 /* PryntTrimmerView-umbrella.h */,
+			);
+			name = "Support Files";
+			path = "Example/Pods/Target Support Files/PryntTrimmerView";
+			sourceTree = "<group>";
+		};
+		BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D35AF013A5F0BAD4F32504907A52519E /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D35AF013A5F0BAD4F32504907A52519E /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		E06DFDB0B4F4CB15AD107CAD57E9D85D /* Trimmer */ = {
+			isa = PBXGroup;
+			children = (
+				4C06C8F8486DF3856CFE417A4A8C747C /* HandlerView.swift */,
+				C75EEF43417C3CE9E9EE98351E873755 /* PryntTrimmerView.swift */,
+			);
+			name = Trimmer;
+			path = PryntTrimmerView/Classes/Trimmer;
+			sourceTree = "<group>";
+		};
+		E8518A379B963FEBE004E3C1128498AD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3FB5607DAFE99D93D1FF158D5A5CDB25 /* Pods_PryntTrimmerView_Example.framework */,
+				3A93A7E11E5ED81917BE2A3A9433CFC6 /* Pods_PryntTrimmerView_Tests.framework */,
+				3F942E4520E2361E3300C1775C6BCCAB /* PryntTrimmerView.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F90394A9B7814CC0FA69F4FD9C4B3E0E /* Cropper */ = {
+			isa = PBXGroup;
+			children = (
+				CE9215185DBBE492A55D32F6BB881105 /* CropMaskView.swift */,
+				D2F22644C1E83FD28B32687FE7842895 /* VideoCropView.swift */,
+				9D399D97C02A97333DB57C618FFF3BB5 /* VideoScrollView.swift */,
+			);
+			name = Cropper;
+			path = PryntTrimmerView/Classes/Cropper;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		402DC8F08280B86034D9AF58D8944559 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				38F6523D0042C6FDDDF29EA92C8E6016 /* Pods-PryntTrimmerView_Tests-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8F7C1C425F72E5C2CC44A91CEAF90EAA /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E3C76BB75F5178412D19FECF94663552 /* Pods-PryntTrimmerView_Example-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CF2DAFC7A28DBC9E6EC9EDA135F14AC2 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				64732FDE7C3F96A83EFC226620DFB39C /* PryntTrimmerView-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		38047CC7ED11295C72DE94C2AD3017FA /* Pods-PryntTrimmerView_Example */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AD7AF024C64581B877539D6CF2BFF5A6 /* Build configuration list for PBXNativeTarget "Pods-PryntTrimmerView_Example" */;
+			buildPhases = (
+				6CE760784D972EFE3A3E4EA73012DFDD /* Sources */,
+				17E08C502F0E710CCEAEC2AB7C5F1036 /* Frameworks */,
+				8F7C1C425F72E5C2CC44A91CEAF90EAA /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B547671A09DEF346BF6D6384D90A8B35 /* PBXTargetDependency */,
+			);
+			name = "Pods-PryntTrimmerView_Example";
+			productName = "Pods-PryntTrimmerView_Example";
+			productReference = 3FB5607DAFE99D93D1FF158D5A5CDB25 /* Pods_PryntTrimmerView_Example.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		77DA431477276DCB31EA1C7C11D54CA7 /* Pods-PryntTrimmerView_Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A8A9652DE2B492ED444EE726BF7823AC /* Build configuration list for PBXNativeTarget "Pods-PryntTrimmerView_Tests" */;
+			buildPhases = (
+				3D54C8459496B3D9CE2094F9898B7427 /* Sources */,
+				1CCEAEF443F1D07064A0F27D2BCAF1A6 /* Frameworks */,
+				402DC8F08280B86034D9AF58D8944559 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pods-PryntTrimmerView_Tests";
+			productName = "Pods-PryntTrimmerView_Tests";
+			productReference = 3A93A7E11E5ED81917BE2A3A9433CFC6 /* Pods_PryntTrimmerView_Tests.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		979EDC794C86030F7B398F1B7508A28F /* PryntTrimmerView */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C4BF729BA98B36EF4DBA74D1D5A75DC1 /* Build configuration list for PBXNativeTarget "PryntTrimmerView" */;
+			buildPhases = (
+				0EA5A8ADF04B198D19CB667738B502AE /* Sources */,
+				68B9D6E88A9BEEF053F6F58E61DF9305 /* Frameworks */,
+				CF2DAFC7A28DBC9E6EC9EDA135F14AC2 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PryntTrimmerView;
+			productName = PryntTrimmerView;
+			productReference = 3F942E4520E2361E3300C1775C6BCCAB /* PryntTrimmerView.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0830;
+				LastUpgradeCheck = 0700;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = E8518A379B963FEBE004E3C1128498AD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				38047CC7ED11295C72DE94C2AD3017FA /* Pods-PryntTrimmerView_Example */,
+				77DA431477276DCB31EA1C7C11D54CA7 /* Pods-PryntTrimmerView_Tests */,
+				979EDC794C86030F7B398F1B7508A28F /* PryntTrimmerView */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0EA5A8ADF04B198D19CB667738B502AE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4EA3A6EA65A106E928B14CA699E2FA5 /* AssetVideoScrollView.swift in Sources */,
+				38FDF7010FDC859267CCD1801F3B75F3 /* AVAssetTimeSelector.swift in Sources */,
+				9EC2DFEFD7EFF19FAFF711AC109630E0 /* CropMaskView.swift in Sources */,
+				3A370F9CE0907BD238CE208A89BDA62C /* HandlerView.swift in Sources */,
+				1CE7CA63E09E9523A47E40325888708B /* PryntTrimmerView-dummy.m in Sources */,
+				9FF3EC86837FB58015C0B89A69A7EBB6 /* PryntTrimmerView.swift in Sources */,
+				544603A7D2F7A7D81897C4B0C62F6B9B /* ThumbSelectorView.swift in Sources */,
+				4DDA8D3C7434B4D78E073DF6E2B3EC05 /* VideoCropView.swift in Sources */,
+				5A6BDE38BA2F355CC5090E11E7444133 /* VideoScrollView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D54C8459496B3D9CE2094F9898B7427 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				31776C336709B58797467A1F92B5E9DD /* Pods-PryntTrimmerView_Tests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6CE760784D972EFE3A3E4EA73012DFDD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0D332612FE238ED9605BD1F42458BEC5 /* Pods-PryntTrimmerView_Example-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B547671A09DEF346BF6D6384D90A8B35 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PryntTrimmerView;
+			target = 979EDC794C86030F7B398F1B7508A28F /* PryntTrimmerView */;
+			targetProxy = 0D498AC5E0BC9C7C380EC0906094A01B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		178338180CF8C3E322E97E87EEC427F1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F186FA84D1E3D6A4135868E5618739B2 /* PryntTrimmerView.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/PryntTrimmerView/PryntTrimmerView-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/PryntTrimmerView/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/PryntTrimmerView/PryntTrimmerView.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = PryntTrimmerView;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		36007D43AA3B48FC3625EA6C5F7571F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ADDF0B628E4602963BFDED599C8371E5 /* Pods-PryntTrimmerView_Example.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-PryntTrimmerView_Example/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-PryntTrimmerView_Example/Pods-PryntTrimmerView_Example.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_PryntTrimmerView_Example;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		88D11CBF70E77EA85D2526083EC378C4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5327713A9A7940531CC57C18C97DC674 /* Pods-PryntTrimmerView_Example.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-PryntTrimmerView_Example/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-PryntTrimmerView_Example/Pods-PryntTrimmerView_Example.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_PryntTrimmerView_Example;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		88F0F268A2BD18362451D0E93E3E0FAD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E9DA3F29D06F43C15959ED701EC896FE /* Pods-PryntTrimmerView_Tests.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-PryntTrimmerView_Tests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-PryntTrimmerView_Tests/Pods-PryntTrimmerView_Tests.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_PryntTrimmerView_Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		97803B46811A9BDB5E70FA1303AFBFFE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		BDD0139D6EB93FA375F887ABD62DAB2E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D5170538035006EF127951B6301BCB06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F186FA84D1E3D6A4135868E5618739B2 /* PryntTrimmerView.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/PryntTrimmerView/PryntTrimmerView-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/PryntTrimmerView/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/PryntTrimmerView/PryntTrimmerView.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = PryntTrimmerView;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		E9AA114FF5165B13F48A2FBECBC075C4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 65E6DA4EAB37B463476C1D8F8BDC27FD /* Pods-PryntTrimmerView_Tests.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-PryntTrimmerView_Tests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-PryntTrimmerView_Tests/Pods-PryntTrimmerView_Tests.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_PryntTrimmerView_Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				97803B46811A9BDB5E70FA1303AFBFFE /* Debug */,
+				BDD0139D6EB93FA375F887ABD62DAB2E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A8A9652DE2B492ED444EE726BF7823AC /* Build configuration list for PBXNativeTarget "Pods-PryntTrimmerView_Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				88F0F268A2BD18362451D0E93E3E0FAD /* Debug */,
+				E9AA114FF5165B13F48A2FBECBC075C4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AD7AF024C64581B877539D6CF2BFF5A6 /* Build configuration list for PBXNativeTarget "Pods-PryntTrimmerView_Example" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				88D11CBF70E77EA85D2526083EC378C4 /* Debug */,
+				36007D43AA3B48FC3625EA6C5F7571F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C4BF729BA98B36EF4DBA74D1D5A75DC1 /* Build configuration list for PBXNativeTarget "PryntTrimmerView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				178338180CF8C3E322E97E87EEC427F1 /* Debug */,
+				D5170538035006EF127951B6301BCB06 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}

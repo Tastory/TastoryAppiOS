@@ -73,7 +73,7 @@ CHECKOUT OPTIONS:
     :commit: 25f8f4b486ed7993285adef5662b3b31dfee0a00
     :git: https://github.com/biscottigelato/Jot.git
   PryntTrimmerView:
-    :commit: b576fe2a931cd89a5a766de7433ea60ce7f6e80d
+    :commit: 23df209789126e3baf24bf257171aecc67754596
     :git: https://github.com/specc/PryntTrimmerView.git
   QuadratTouch:
     :commit: 4f10166069b9482da15a9b118e81102c3fffd507

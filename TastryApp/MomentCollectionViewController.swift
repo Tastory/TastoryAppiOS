@@ -247,7 +247,9 @@ class MomentCollectionViewController: UICollectionViewController {
         }
 
         reusableCell.activityIndicator.stopAnimating()
-        reusableCell.deleteButton.isHidden = false
+        if(!workingStory.isEditStory) {
+          reusableCell.deleteButton.isHidden = false
+        }
       }
     } else {
       //CCLog.verbose("No cell provided or found for story \(self.workingStory.getUniqueIdentifier()))!!!")
@@ -386,15 +388,17 @@ extension MomentCollectionViewController {
     
     switch kind {
     case UICollectionElementKindSectionFooter:
-      guard let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.FooterElementReuseId, for: indexPath) as? MomentAddFooterReusableView else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.assert("UICollectionElementKindSectionFooter dequeued is not MomentAddFooterReusableView")
+        guard let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.FooterElementReuseId, for: indexPath) as? MomentAddFooterReusableView else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.assert("UICollectionElementKindSectionFooter dequeued is not MomentAddFooterReusableView")
+          }
+          return reusableView
         }
-        return reusableView
-      }
-      footerView.addMomentButton.addTarget(self, action: #selector(openCamera), for: .touchUpInside)
-      reusableView = footerView
-      
+        footerView.addMomentButton.addTarget(self, action: #selector(openCamera), for: .touchUpInside)
+        footerView.addMomentButton.isHidden = workingStory.isEditStory
+
+        reusableView = footerView
+
     default:
       CCLog.fatal("Unrecognized Kind '\(kind)' for Supplementary Element")
     }

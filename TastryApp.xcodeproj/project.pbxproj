@@ -127,7 +127,6 @@
 		8CF858661F7ED8A000C46614 /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF858651F7ED8A000C46614 /* IntroViewController.swift */; };
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */; };
 		C24F69651EB85B0300A0DB7B /* StoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69641EB85B0300A0DB7B /* StoryViewController.swift */; };
-		C265A9C61FCE97EA000678E5 /* Trimmer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C265A9C51FCE97EA000678E5 /* Trimmer.storyboard */; };
 		C265A9C81FCE981D000678E5 /* VideoTrimmerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C265A9C71FCE981D000678E5 /* VideoTrimmerViewController.swift */; };
 		C29CD1391F93198800A6D53F /* StorySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD1381F93198800A6D53F /* StorySelector.swift */; };
 		C29CD13D1F988B2000A6D53F /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */; };
@@ -286,7 +285,6 @@
 		9837F6E6016D51C9060037BC /* Pods_TastryApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TastryApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0DCCB78E795CC617A076CB5 /* Pods-TastryAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastryAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TastryAppTests/Pods-TastryAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		C24F69641EB85B0300A0DB7B /* StoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryViewController.swift; sourceTree = "<group>"; };
-		C265A9C51FCE97EA000678E5 /* Trimmer.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Trimmer.storyboard; sourceTree = "<group>"; };
 		C265A9C71FCE981D000678E5 /* VideoTrimmerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoTrimmerViewController.swift; sourceTree = "<group>"; };
 		C29CD1381F93198800A6D53F /* StorySelector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorySelector.swift; sourceTree = "<group>"; };
 		C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
@@ -390,7 +388,6 @@
 				8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */,
 				8CAE5BFD1FBC23040069C582 /* Compose.storyboard */,
 				8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */,
-				C265A9C51FCE97EA000678E5 /* Trimmer.storyboard */,
 			);
 			name = Storyboards;
 			sourceTree = "<group>";
@@ -836,7 +833,6 @@
 				8CD5A4E51F9C078D00CFD670 /* Settings.storyboard in Resources */,
 				8CF40C731FC50CBE00615D43 /* Raleway-Black.ttf in Resources */,
 				8CF40C801FC50CBE00615D43 /* Raleway-Regular.ttf in Resources */,
-				C265A9C61FCE97EA000678E5 /* Trimmer.storyboard in Resources */,
 				8CF40C751FC50CBE00615D43 /* Raleway-Bold.ttf in Resources */,
 				8C2EFCEB1FC3AF4E00937E3C /* MainVectors.xcassets in Resources */,
 				8CF40C841FC50CBE00615D43 /* Raleway-ThinItalic.ttf in Resources */,
