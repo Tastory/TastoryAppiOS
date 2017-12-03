@@ -151,12 +151,16 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       return
     }
     
+    // !!! Um... Banking on that the following operations will be quick. Don't want another spinner here...
+    UIApplication.shared.beginIgnoringInteractionEvents()
+    
     FoodieFetch.global.cancelAll()
     FoodieMoment.batchRetrieve(moments) { objects, error in
       if let error = error {
         AlertDialog.present(from: self, title: "Story Retrieve Failed", message: error.localizedDescription) { _ in
           CCLog.warning("batchRetrieve for Story \(story.getUniqueIdentifier) failed with error - \(error.localizedDescription)")
         }
+        UIApplication.shared.endIgnoringInteractionEvents()
         return
       }
       
@@ -165,6 +169,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
           AlertDialog.present(from: self, title: "Draft Save Failed", message: error.localizedDescription) { _ in
             CCLog.warning("Save of Story \(story.getUniqueIdentifier) to draft failed with error - \(error.localizedDescription)")
           }
+          UIApplication.shared.endIgnoringInteractionEvents()
           return
         }
         
@@ -174,6 +179,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
           viewController.workingStory = story
           viewController.restoreStoryDelegate = self
           mapNavController.pushViewController(viewController, animated: true)
+          UIApplication.shared.endIgnoringInteractionEvents()
         }
       }
     }

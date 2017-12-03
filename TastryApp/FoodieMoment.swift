@@ -369,10 +369,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     if media != nil { outstandingChildOperations += 1 }
     if thumbnail != nil { outstandingChildOperations += 1 }
-    
-    if let markups = self.markups {
-      outstandingChildOperations += markups.count
-    }
+    // Markup is automatically saved when the parent Moment is saved due to Parse
     
     // Can we just use a mutex lock then?
     SwiftMutex.lock(&criticalMutex)
@@ -399,12 +396,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     if let thumbnail = thumbnail {
       foodieObject.saveChild(thumbnail, to: location, type: localType, for: momentOperation, withBlock: callback)
-    }
-    
-    if let markups = markups {
-      for markup in markups {
-        foodieObject.saveChild(markup, to: location, type: localType, for: momentOperation, withBlock: callback)
-      }
     }
   }
   

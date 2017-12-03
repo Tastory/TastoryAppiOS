@@ -77,8 +77,6 @@ class MomentCollectionViewCell: UICollectionViewCell {
       thumbImageNode.view.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 0.0),
       thumbImageNode.view.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: 0.0),
     ])
-    
-    configureLayers(frame: frame)
   }
   
   
@@ -97,8 +95,6 @@ class MomentCollectionViewCell: UICollectionViewCell {
       thumbImageNode.view.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 0.0),
       thumbImageNode.view.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: 0.0),
     ])
-    
-    configureLayers(frame: frame)
   }
   
   

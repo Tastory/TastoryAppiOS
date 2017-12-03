@@ -614,11 +614,12 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       CCLog.fatal("Discard current Story but no current Story")
     }
 
-    if let moments = story.moments {
-      for moment in moments {
-        moment.cancelRetrieveFromServerRecursive()
-      }
-    }
+    FoodieFetch.global.cancel(for: story)
+//    if let moments = story.moments {
+//      for moment in moments {
+//        moment.cancelRetrieveFromServerRecursive()
+//      }
+//    }
 
     removeCurrent()
     // Delete all traces of this unPosted Story

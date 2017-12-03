@@ -24,7 +24,7 @@ class FoodieFetch {
   
   // MARK: - Private Instance Variable
   private let fetchQueue = OperationQueue()
-  
+  private let fetchLock = DispatchQueue(label: "Fetch Lock Queue", qos: .userInitiated)
   
   // MARK: - Public Instance Functions
   init() {
@@ -36,12 +36,7 @@ class FoodieFetch {
   // Idea here is that each object can at most only have 1 operation per priority
   func queue(_ operation: FoodieOperation, at priority: Operation.QueuePriority) {  // We can later make an intermediary sublcass to make it more diverse across any objects. Eg. Prefetch User Objects, etc
     
-    var dispatchPriority = DispatchQoS.QoSClass.utility
-    if priority.rawValue >= Operation.QueuePriority.high.rawValue {
-      dispatchPriority = .userInitiated
-    }
-    
-    DispatchQueue.global(qos: dispatchPriority).async {
+    fetchLock.async {
       guard let storyOp = operation as? StoryOperation, let story = storyOp.object as? FoodieStory, let type = storyOp.type as? StoryOperation.OperationType else {
         CCLog.fatal("Expecting storyOp, story and type")
       }
@@ -58,7 +53,7 @@ class FoodieFetch {
   
   
   func cancel(for object: AnyObject) {
-    DispatchQueue.global(qos: .utility).async {
+    fetchLock.async {
       for operation in self.fetchQueue.operations {
         if let storyOp = operation as? StoryOperation, storyOp.object === object {
           if let story = storyOp.object as? FoodieStory, let type = storyOp.type as? StoryOperation.OperationType {
@@ -75,7 +70,7 @@ class FoodieFetch {
   
   func cancelAllButOne(_ object: AnyObject) {
     
-    DispatchQueue.global(qos: .utility).async {
+    fetchLock.async {
       guard let story = object as? FoodieStory else {
         CCLog.fatal("Expected object to be of FoodieStory type")
       }
@@ -114,7 +109,7 @@ class FoodieFetch {
   // Object list should be sorted in decending order of priority for Pre-fetching
   func cancelAllBut(_ objects: [AnyObject]) {
     
-    DispatchQueue.global(qos: .utility).async {
+    fetchLock.async {
       guard var stories = objects as? [FoodieStory] else {
         CCLog.fatal("Expected objects to be of FoodieStory type")
       }
@@ -168,7 +163,7 @@ class FoodieFetch {
   
   func cancelAll() {
     CCLog.info("#Prefetch - Cancelling All Prefetch Operations!")
-    fetchQueue.cancelAllOperations()
+    fetchLock.async { self.fetchQueue.cancelAllOperations() }
   }
   
   

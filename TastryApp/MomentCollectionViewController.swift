@@ -239,7 +239,6 @@ class MomentCollectionViewController: UICollectionViewController {
       let moment = momentArray[indexPath.item]
 
       if reusableCell.indexPath == indexPath {
-
         if self.workingStory.thumbnailFileName != nil, self.workingStory.thumbnailFileName == moment.thumbnailFileName {
           reusableCell.thumbFrameLayer?.isHidden = false
         } else {
@@ -288,9 +287,7 @@ class MomentCollectionViewController: UICollectionViewController {
         
         let retrieveOperation = StoryOperation(with: .moment, on: workingStory, for: storyIndex) { error in
           if let error = error {
-            AlertDialog.present(from: self, title: "Retreive Error", message: error.localizedDescription) { _ in
-              CCLog.assert("Saving story into draft failed with error: \(error.localizedDescription)")
-            }
+            CCLog.warning("Retrieving story into draft failed with error: \(error.localizedDescription)")
             return
           }
           
@@ -377,7 +374,7 @@ extension MomentCollectionViewController {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.MomentCellReuseId, for: indexPath) as! MomentCollectionViewCell
 
     // Configure Default Cell State
-    //cell.configureLayers(frame: cell.bounds)
+    cell.configureLayers(frame: cell.bounds)
     
     if cell.thumbImageNode.view.gestureRecognizers == nil {
       let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.thumbnailGesture(_:)))
@@ -405,37 +402,27 @@ extension MomentCollectionViewController {
     
     let moment = momentArray[indexPath.item]
     
-    guard let thumbnailFileName = moment.thumbnailFileName else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
-        CCLog.assert("No Thumbnail Filename for Moment \(moment.getUniqueIdentifier())")
-      }
-      return cell
-    }
+    if let thumbnailBuffer = moment.thumbnail?.imageMemoryBuffer {
+      cell.thumbImageNode.url = nil
+      cell.thumbImageNode.image = UIImage(data: thumbnailBuffer)
     
-    if isEditing {
-      cell.thumbImageNode.url = FoodieFileObject.getS3URL(for: thumbnailFileName)
     } else {
-      guard let thumbnailBuffer = moment.thumbnail?.imageMemoryBuffer else {
-        AlertDialog.present(from: self, title: "Cover Error", message: "Cannot display local cover photo from draft") { _ in
-          CCLog.assert("moment.thumbnail?.imageMemoryBuffer = nil for new draft")
+      guard let thumbnailFileName = moment.thumbnailFileName else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { alert in
+          CCLog.assert("No Thumbnail Filename for Moment \(moment.getUniqueIdentifier())")
         }
         return cell
       }
-      cell.thumbImageNode.image = UIImage(data: thumbnailBuffer)
+      cell.thumbImageNode.image = nil
+      cell.thumbImageNode.url = FoodieFileObject.getS3URL(for: thumbnailFileName)
     }
 
     var momentReadyToEdit = true
     
     SwiftMutex.lock(&readyMutex)
     if let momentPending = momentsPendingEditReady[indexPath.item]  {
-      
       if momentPending == .retrieving {
         momentsPendingEditReady[indexPath.item] = .pendingReady
-      } else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-          CCLog.fatal("Not expecting Edit Readiness for Moment \(moment.getUniqueIdentifier()) to be 'pendingReady'")
-        }
-        return cell
       }
       momentReadyToEdit = false
     }
