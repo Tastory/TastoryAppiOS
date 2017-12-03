@@ -381,6 +381,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     switch type {
     case .photo:
       guard let memoryBuffer = self.imageMemoryBuffer else {
+        CCLog.assert("imageMemoryBuffer = nil when Saving Media \(getUniqueIdentifier()) to Local")
         callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
         return
       }
@@ -389,11 +390,13 @@ extension FoodieMedia: FoodieObjectDelegate {
     case .video:
 
       guard let videoExportPlayer = self.videoExportPlayer else {
+        CCLog.assert("videoExportPlayer = nil when Saving Media \(getUniqueIdentifier()) to Local")
         callback?(ErrorCode.saveToLocalWithNilVideoExportPlayer)
         return
       }
 
       guard let sourceURL = (videoExportPlayer.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
+        CCLog.assert("Cannot access AVURLAsset from Video Export Player when Saving Media \(getUniqueIdentifier()) to Local")
         callback?(ErrorCode.saveToLocalVideoExportPlayerHasNoAVURLAsset)
         return
       }
@@ -412,11 +415,6 @@ extension FoodieMedia: FoodieObjectDelegate {
           return
         }
 
-        guard let videoExportPlayer = self.videoExportPlayer else {
-          callback?(ErrorCode.saveToLocalWithNilVideoExportPlayer)
-          return
-        }
-
         videoExportPlayer.exportAsync(to: FoodieFileObject.getFileURL(for: localType, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
           if let error = error {
             CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
@@ -424,6 +422,7 @@ extension FoodieMedia: FoodieObjectDelegate {
           } else if FoodieFileObject.checkIfExists(for: fileName, in: localType) {
             callback?(nil)
           } else {
+            CCLog.assert("Save Media \(self.getUniqueIdentifier()) Completed but no Ouptut File")
             callback?(ErrorCode.saveToLocalCompletedWithNoOutputFile)
           }
         }
