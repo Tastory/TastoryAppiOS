@@ -381,6 +381,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     switch type {
     case .photo:
       guard let memoryBuffer = self.imageMemoryBuffer else {
+        CCLog.assert("imageMemoryBuffer = nil when Saving Media \(getUniqueIdentifier()) to Local")
         callback?(ErrorCode.saveToLocalwithNilImageMemoryBuffer)
         return
       }
@@ -389,11 +390,13 @@ extension FoodieMedia: FoodieObjectDelegate {
     case .video:
 
       guard let videoExportPlayer = self.videoExportPlayer else {
+        CCLog.assert("videoExportPlayer = nil when Saving Media \(getUniqueIdentifier()) to Local")
         callback?(ErrorCode.saveToLocalWithNilVideoExportPlayer)
         return
       }
 
       guard let sourceURL = (videoExportPlayer.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
+        CCLog.assert("Cannot access AVURLAsset from Video Export Player when Saving Media \(getUniqueIdentifier()) to Local")
         callback?(ErrorCode.saveToLocalVideoExportPlayerHasNoAVURLAsset)
         return
       }
