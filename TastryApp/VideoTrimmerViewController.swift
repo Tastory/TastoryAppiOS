@@ -48,6 +48,16 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
       return
     }
     loadAsset(asset)
+
+    guard let player = player else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("The player is nil.")
+      }
+      return
+    }
+
+    player.play()
+    startPlaybackTimeChecker()
   }
 
     @IBAction func selectAsset(_ sender: Any) {

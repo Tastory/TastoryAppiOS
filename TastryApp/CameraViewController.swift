@@ -378,19 +378,21 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
           }
           return
         } else if FoodieFileObject.checkIfExists(for: fileName, in: .draft) {
-          let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-          guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
-            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-              CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
+          DispatchQueue.main.async {
+            let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+            guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+                CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
+              }
+              return
             }
-            return
+            viewController.mediaObj = mediaObject
+            viewController.mediaLocation = self.captureLocation
+            viewController.markupReturnDelegate = self
+            viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
+            activitySpinner.remove()
+            self.present(viewController, animated: true)
           }
-          viewController.mediaObj = mediaObject
-          viewController.mediaLocation = self.captureLocation
-          viewController.markupReturnDelegate = self
-          viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
-          activitySpinner.remove()
-          self.present(viewController, animated: true)
         } else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
             CCLog.fatal("AVExportPlayer exported video but file doesn't exists in \(FoodieFileObject.getFileURL(for: .draft, with: fileName))")
@@ -900,14 +902,14 @@ extension CameraViewController: VideoTrimmerDelegate {
           }
           return
         }
-
-        let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-        viewController.mediaObj = mediaObject
-        viewController.markupReturnDelegate = self
-        viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
-        self.present(viewController, animated: true)
-
+        DispatchQueue.main.async {
+          let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+          let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+          viewController.mediaObj = mediaObject
+          viewController.markupReturnDelegate = self
+          viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
+          self.present(viewController, animated: true)
+        }
       }
   }
 }
