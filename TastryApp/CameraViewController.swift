@@ -53,6 +53,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   fileprivate var outstandingConvertQueue = DispatchQueue(label: "Outstanding Convert Queue", qos: .userInitiated)
   fileprivate var moments: [FoodieMoment?] = []
   fileprivate var enableMultiPicker = false
+  fileprivate var activitySpinner: ActivitySpinner? = nil
 
 
   // MARK: - IBOutlets
@@ -140,7 +141,9 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   override func viewDidLoad() {
     
     super.viewDidLoad()
-    
+
+    activitySpinner = ActivitySpinner(addTo: view)
+
     // Swifty Cam Setup
     cameraDelegate = self
     doubleTapCameraSwitch = true
@@ -352,25 +355,49 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       // TODO: Allow user to configure whether save to Photo Album also
       // TODO: Create error alert dialog box if this save fails.
       UISaveVideoAtPathToSavedPhotosAlbum(url.path, nil, nil, nil)
-      
-      let mediaObject = FoodieMedia(for: FoodieFileObject.newVideoFileName(), localType: .draft, mediaType: .video)
+
+      let fileName = FoodieFileObject.newVideoFileName()
+      let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .video)
       let avExportPlayer = AVExportPlayer()
       avExportPlayer.initAVPlayer(from: url)
       mediaObject.videoExportPlayer = avExportPlayer
-      
-      let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-      guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
+
+      guard let activitySpinner = activitySpinner else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
+          CCLog.fatal("Activity Spinner is not initialized")
         }
         return
       }
-      viewController.mediaObj = mediaObject
-      viewController.mediaLocation = captureLocation
-      viewController.markupReturnDelegate = self
-      viewController.addToExistingStoryOnly = addToExistingStoryOnly
-      self.present(viewController, animated: true)
-      
+
+      activitySpinner.apply()
+
+      avExportPlayer.exportAsync(to: FoodieFileObject.getFileURL(for: .draft, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
+        if let error = error {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
+          }
+          return
+        } else if FoodieFileObject.checkIfExists(for: fileName, in: .draft) {
+          let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+          guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+              CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
+            }
+            return
+          }
+          viewController.mediaObj = mediaObject
+          viewController.mediaLocation = self.captureLocation
+          viewController.markupReturnDelegate = self
+          viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
+          activitySpinner.remove()
+          self.present(viewController, animated: true)
+        } else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("AVExportPlayer exported video but file doesn't exists in \(FoodieFileObject.getFileURL(for: .draft, with: fileName))")
+          }
+          return
+        }
+      }
     } else {
       self.internalErrorDialog()
       CCLog.assert("Received invalid URL for local filesystem")
@@ -847,13 +874,20 @@ extension CameraViewController: UIVideoEditorControllerDelegate {
 extension CameraViewController: VideoTrimmerDelegate {
   func videoTrimmed(from startTime: CMTime, to endTime: CMTime, url assetURL: String) {
 
+      guard let activitySpinner = activitySpinner else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("Activity Spinner is not initialized")
+        }
+        return
+      }
+
+      activitySpinner.apply()
+
       let url = URL(fileURLWithPath: assetURL)
       let fileName = url.lastPathComponent
       let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .video)
       let avExportPlayer = AVExportPlayer()
-      let activitySpinner = ActivitySpinner(addTo: self.view)
 
-      activitySpinner.apply()
       avExportPlayer.initAVPlayer(from: url)
       mediaObject.videoExportPlayer = avExportPlayer
       avExportPlayer.exportAsync(to: FoodieFileObject.getFileURL(for: .draft, with: fileName), thru: FoodieFileObject.getRandomTempFileURL(),duration:

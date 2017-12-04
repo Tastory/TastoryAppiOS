@@ -115,9 +115,12 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
 
         if !(player.rate != 0 && player.error == nil) {
             player.play()
+            playButton.setImage(UIImage(named:"StoryMarkup-PauseButton"), for: .normal)
             startPlaybackTimeChecker()
+
         } else {
             player.pause()
+            playButton.setImage(UIImage(named:"StoryMarkup-PlayButton"), for: .normal)
             stopPlaybackTimeChecker()
         }
     }
