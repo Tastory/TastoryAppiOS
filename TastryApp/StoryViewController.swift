@@ -421,6 +421,7 @@ class StoryViewController: OverlayViewController {
   
   
   private func stopAndClear() {
+    CCLog.verbose("StoryViewController.stopAndClear()")
     hideAllUI()
     isPaused = false
     
@@ -714,7 +715,7 @@ class StoryViewController: OverlayViewController {
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    pause()
+    stopAndClear()  // pause()  Seems moving Stop and Clear here is causing problems? But if go to De-init, there's problem where the Play Time is not 0 on exit
     
     // Cancel All potential Prefetch associated with the Story before disappearing
     if let story = viewingStory {
@@ -730,7 +731,6 @@ class StoryViewController: OverlayViewController {
   
   deinit {
     CCLog.verbose("StoryVC Stop, Clear, Invalidate and Deinit")
-    stopAndClear()
     muteObserver?.invalidate()
   }
   

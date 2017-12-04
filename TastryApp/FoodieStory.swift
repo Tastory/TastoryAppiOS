@@ -496,10 +496,11 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       // This helps avoiding the need of a lock
       var outstandingChildOperations = 0
       
-      if self.venue != nil { outstandingChildOperations += 1 }
-      if let author = self.author, author != FoodieUser.current, localType == .cache {
-        outstandingChildOperations += 1
-      }
+      // Just don't touch Venue or User
+//      if self.venue != nil { outstandingChildOperations += 1 }
+//      if let author = self.author, author != FoodieUser.current, localType == .cache {
+//        outstandingChildOperations += 1
+//      }
       
       if let moments = self.moments {
         outstandingChildOperations += moments.count
@@ -523,20 +524,27 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
       
       // There will be no Markups for Story Covers
+      // Just don't touch Venue or User
       
-      // Never delete a venue from server
-      if let venue = self.venue {
-         self.foodieObject.deleteChild(venue, from: .local, type: localType, for: storyOperation, withBlock: callback)
-      }
-      
-      // Delete user only if from Cache and it's not the current user
-      if let author = self.author, author != FoodieUser.current, localType == .cache {
-        self.foodieObject.deleteChild(author, from: .local, type: localType, for: storyOperation, withBlock: callback)
-      }
+//      // Never delete a venue from server
+//      if let venue = self.venue {
+//        self.foodieObject.deleteChild(venue, from: .local, type: localType, for: storyOperation) { error in
+//          self.foodieObject.deleteCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+//        }
+//      }
+//
+//      // Delete user only if from Cache and it's not the current user
+//      if let author = self.author, author != FoodieUser.current, localType == .cache {
+//        self.foodieObject.deleteChild(author, from: .local, type: localType, for: storyOperation) { error in
+//          self.foodieObject.deleteCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+//        }
+//      }
       
       if let moments = self.moments {
         for moment in moments {
-          self.foodieObject.deleteChild(moment, from: location, type: localType, for: storyOperation, withBlock: callback)
+          self.foodieObject.deleteChild(moment, from: location, type: localType, for: storyOperation) { error in
+            self.foodieObject.deleteCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+          }
         }
       }
     }
@@ -652,7 +660,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
 
     removeCurrent()
     // Delete all traces of this unPosted Story
-    story.deleteRecursive(from: .local, type: .draft) { error in
+    story.deleteWhole(from: .local, type: .draft) { error in
       if let error = error {
         CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
         callback(error)
@@ -660,7 +668,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
 
       if(!story.isEditStory) {
         // this draft is a newly created story and need to remove presaved moments 
-        _ = story.deleteRecursive(from: .both, type: .draft) { error in
+        _ = story.deleteWhole(from: .both, type: .draft) { error in
           if let error = error {
             CCLog.warning("Deleting Story resulted in Error - \(error.localizedDescription)")
             callback(error)
@@ -936,6 +944,19 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
 
     let deleteOperation = StoryAsyncOperation(on: .deleteRecursive, for: self, to: location, type: localType, withBlock: callback)
     CCLog.debug ("Delete Story Recursive Operation \(deleteOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
+    
+    parentOperation?.add(deleteOperation)
+    asyncOperationQueue.addOperation(deleteOperation)
+  }
+  
+  
+  func deleteWhole(from location: FoodieObject.StorageLocation,
+                   type localType: FoodieObject.LocalType,
+                   for parentOperation: AsyncOperation? = nil,
+                   withBlock callback: SimpleErrorBlock?) {
+    
+    let deleteOperation = StoryAsyncOperation(on: .deleteRecursive, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Delete Story Whole Operation \(deleteOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     
     parentOperation?.add(deleteOperation)
     asyncOperationQueue.addOperation(deleteOperation)

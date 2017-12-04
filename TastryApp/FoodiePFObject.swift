@@ -190,10 +190,14 @@ class FoodiePFObject: PFObject {
           if let error = serverError {
             CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())), with error: \(error.localizedDescription)")
             if fetchRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .utility) { return }
-          } else {
-            CCLog.verbose("Pin \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) to Name '\(localType)'")
-            self.pinInBackground(withName: localType.rawValue) { (success, error) in FoodieGlobal.booleanToSimpleErrorCallback(success, error, nil) }
           }
+          
+          // We are not going to pin on Retrieve anymore
+//          else {
+//            CCLog.verbose("Pin \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) to Name '\(localType)'")
+//            self.pinInBackground(withName: localType.rawValue) { (success, error) in FoodieGlobal.booleanToSimpleErrorCallback(success, error, nil) }
+//          }
+          
           // Return if got what's wanted
           callback?(serverError)
         }

@@ -182,7 +182,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           
           if let error = error {
             // Best effort remove the Story from Server & Cache in this case
-            _ = story.deleteRecursive(from: .both, type: .cache, withBlock: nil)
+            _ = story.deleteWhole(from: .both, type: .cache, withBlock: nil)
             
             self.activitySpinner.remove()
             CCLog.warning("Add Story to User List Failed with Error: \(error)")
@@ -809,6 +809,7 @@ extension StoryEntryViewController: PreviewControlDelegate {
   func enablePreviewButton(_ isEnabled: Bool) {
     DispatchQueue.main.async {
       self.previewButton.isEnabled = isEnabled
+      self.savePostButton.isEnabled = isEnabled
     }
   }
 }

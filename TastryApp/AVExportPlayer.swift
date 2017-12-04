@@ -153,8 +153,7 @@ class AVExportPlayer: NSObject {
     
     if let avExportSession = avExportSession {
       if avExportSession.status == .completed {
-        // CCLog.verbose("Switching AVAsset URL to completed Output File")
-        
+
         // Swap AVPlayer's backing file to local Cache. It's assumed that the Cache file will always exist if the AVPlayer is still in Memory.
         // If the app quits and a cache clean up occurs, the AVPlayer will get reinitialized next time against the network instead.
         guard let outputURL = avExportSession.outputURL else {
@@ -164,6 +163,8 @@ class AVExportPlayer: NSObject {
         guard let localURL = localURL else {
           CCLog.fatal("localURL = nil. Cannot copy exported file from Temp to Local")
         }
+        
+        CCLog.verbose("Switching AVAsset URL from \(outputURL.absoluteString) to completed Output File \(localURL.absoluteString)")
         
         do {
           try FileManager.default.copyItem(at: outputURL, to: localURL)
@@ -287,6 +288,8 @@ class AVExportPlayer: NSObject {
           if avPlayer.rate == 0.0, CMTimeCompare(avPlayerItem.currentTime(), kCMTimeZero) == 0 {
             // The video is not currently being played, so we can just do the switch now
             self.switchBackingToLocalIfNeeded()
+          } else {
+            CCLog.verbose("AVPlayer rate = \(avPlayer.rate), time = \(avPlayerItem.currentTime())")
           }
           callback?(nil)
           
@@ -340,6 +343,7 @@ class AVExportPlayer: NSObject {
     
     
   func layerDisconnected() {
+    CCLog.verbose("AVExportPlayer.layerDisconnected()")
     switchBackingToLocalIfNeeded()
     avPlayer?.pause()
     avPlayer?.seek(to: kCMTimeZero)

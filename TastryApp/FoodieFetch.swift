@@ -130,7 +130,7 @@ class FoodieFetch {
           }
           
           // Cancel anything that is not of the current story
-          if !objects.contains(where: { $0 === storyOp.object }) {
+          if !stories.contains(where: { $0 === (storyOp.object as? FoodieStory)}) {
             CCLog.debug("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
             storyOp.cancel()
             

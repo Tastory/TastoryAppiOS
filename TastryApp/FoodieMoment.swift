@@ -48,6 +48,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     case saveRecursive
     case saveWhole
     case deleteRecursive
+    case deleteWhole
   }
   
   
@@ -114,6 +115,13 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         
       case .deleteRecursive:
         moment.deleteOpRecursive(for: self, from: location, type: localType) { error in
+          self.childOperations.removeAll()
+          self.callback?(error)
+          self.finished()
+        }
+        
+      case .deleteWhole:
+        moment.deleteOpWhole(for: self, from: location, type: localType) { error in
           self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
@@ -470,82 +478,151 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
         callback?(error)
         return
       }
-      
-      // Delete self first before deleting children
-      self.foodieObject.deleteObject(from: location, type: localType) { error in
         
-        if let error = error {
-          CCLog.warning("Deleting self resulted in error: \(error.localizedDescription)")
+      // Calculate how many outstanding children operations there will be before hand
+      // This helps avoiding the need of a lock
+      var outstandingChildOperations = 0
+      
+      if self.media != nil { outstandingChildOperations += 1 }
+      if self.thumbnail != nil { outstandingChildOperations += 1 }
+      
+      var pfObjectArrayToDelete = [PFObject]()
+      pfObjectArrayToDelete.append(self)
+      
+      if let markups = self.markups {
+        for markup in markups { pfObjectArrayToDelete.append(markup) }
+      }
+      
+      // Can we just use a mutex lock then?
+      SwiftMutex.lock(&self.criticalMutex)
+      defer { SwiftMutex.unlock(&self.criticalMutex) }
+      
+      guard !momentOperation.isCancelled else {
+        CCLog.verbose("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()) early return due to cancel")
+        callback?(ErrorCode.operationCancelled)
+        return
+      }
+      
+      // If there's no child op, then just delete and return
+      guard outstandingChildOperations != 0 else {
+        CCLog.assert("No child deletes pending. Is this okay?")
+        callback?(error)
+        return
+      }
+      
+      self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+      
+      // check for media and thumbnails to be deleted from this object
+      if let media = self.media {
+        self.foodieObject.deleteChild(media, from: location, type: localType, for: momentOperation) { error in
           
-          // Do best effort delete of all children
-          if let media = self.media {
-            self.foodieObject.deleteChild(media, from: location, type: localType, for: nil, withBlock: nil)
-          }
-          
-          if let thumbnail = self.thumbnail {
-            self.foodieObject.deleteChild(thumbnail, from: location, type: localType, for: nil, withBlock: nil)
-          }
-          
-          if let markups = self.markups {
-            for markup in markups {
-              self.foodieObject.deleteChild(markup, from: location, type: localType, for: nil, withBlock: nil)
+          switch location {
+          case .local:
+            callback?(self.foodieObject.operationError)
+          case .both:
+            PFObject.deleteAll(inBackground: pfObjectArrayToDelete) { success, error in
+              FoodieGlobal.booleanToSimpleErrorCallback(success, self.foodieObject.operationError ?? error, callback)
             }
           }
+        }
+      }
+      
+      if let thumbnail = self.thumbnail {
+        self.foodieObject.deleteChild(thumbnail, from: location, type: localType, for: momentOperation) { error in
           
-          // Just callback with the error
-          callback?(error)
-          return
-        }
-        
-        // Calculate how many outstanding children operations there will be before hand
-        // This helps avoiding the need of a lock
-        var outstandingChildOperations = 0
-        
-        if self.media != nil { outstandingChildOperations += 1 }
-        if self.thumbnail != nil { outstandingChildOperations += 1 }
-        
-        if let markups = self.markups {
-          outstandingChildOperations += markups.count
-        }
-        
-        // Can we just use a mutex lock then?
-        SwiftMutex.lock(&self.criticalMutex)
-        defer { SwiftMutex.unlock(&self.criticalMutex) }
-        
-        guard !momentOperation.isCancelled else {
-          CCLog.verbose("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()) early return due to cancel")
-          callback?(ErrorCode.operationCancelled)
-          return
-        }
-          
-        // If there's no child op, then just delete and return
-        guard outstandingChildOperations != 0 else {
-          CCLog.assert("No child deletes pending. Is this okay?")
-          callback?(error)
-          return
-        }
-        
-        self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
-        
-        // check for media and thumbnails to be deleted from this object
-        if let media = self.media {
-          self.foodieObject.deleteChild(media, from: location, type: localType, for: momentOperation, withBlock: callback)
-        }
-          
-        if let thumbnail = self.thumbnail {
-          self.foodieObject.deleteChild(thumbnail, from: location, type: localType, for: momentOperation, withBlock: callback)
-        }
-          
-        if let markups = self.markups {
-          for markup in markups {
-            self.foodieObject.deleteChild(markup, from: location, type: localType, for: momentOperation, withBlock: callback)
+          switch location {
+          case .local:
+            callback?(self.foodieObject.operationError)
+          case .both:
+            PFObject.deleteAll(inBackground: pfObjectArrayToDelete) { success, error in
+              FoodieGlobal.booleanToSimpleErrorCallback(success, self.foodieObject.operationError ?? error, callback)
+            }
           }
         }
       }
     }
   }
   
+  
+  private func deleteOpWhole(for momentOperation: MomentAsyncOperation,
+                             from location: FoodieObject.StorageLocation,
+                             type localType: FoodieObject.LocalType,
+                             withBlock callback: SimpleErrorBlock?) {
     
+    // Retrieve the Moment (only) to guarentee access to the childrens
+    retrieve(from: location, type: localType, forceAnyways: false) { error in
+      
+      if let error = error {
+        CCLog.assert("Moment.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+
+      // Calculate how many outstanding children operations there will be before hand
+      // This helps avoiding the need of a lock
+      var outstandingChildOperations = 0
+      
+      if self.media != nil { outstandingChildOperations += 1 }
+      if self.thumbnail != nil { outstandingChildOperations += 1 }
+
+      var pfObjectArrayToDelete = [PFObject]()
+      pfObjectArrayToDelete.append(self)
+      
+      if let markups = self.markups {
+        for markup in markups { pfObjectArrayToDelete.append(markup) }
+      }
+      
+      // Can we just use a mutex lock then?
+      SwiftMutex.lock(&self.criticalMutex)
+      defer { SwiftMutex.unlock(&self.criticalMutex) }
+      
+      guard !momentOperation.isCancelled else {
+        CCLog.verbose("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()) early return due to cancel")
+        callback?(ErrorCode.operationCancelled)
+        return
+      }
+      
+      // If there's no child op, then just delete and return
+      guard outstandingChildOperations != 0 else {
+        CCLog.assert("No child deletes pending. Is this okay?")
+        callback?(error)
+        return
+      }
+      
+      self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+      
+      // check for media and thumbnails to be deleted from this object
+      if let media = self.media {
+        self.foodieObject.deleteChild(media, from: location, type: localType, for: momentOperation) { error in
+          
+          switch location {
+          case .local:
+            self.foodieObject.deleteCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+          case .both:
+            PFObject.deleteAll(inBackground: pfObjectArrayToDelete) { success, error in
+              FoodieGlobal.booleanToSimpleErrorCallback(success, self.foodieObject.operationError ?? error, callback)
+            }
+          }
+        }
+      }
+      
+      if let thumbnail = self.thumbnail {
+        self.foodieObject.deleteChild(thumbnail, from: location, type: localType, for: momentOperation) { error in
+          
+          switch location {
+          case .local:
+            self.foodieObject.deleteCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+          case .both:
+            PFObject.deleteAll(inBackground: pfObjectArrayToDelete) { success, error in
+              FoodieGlobal.booleanToSimpleErrorCallback(success, self.foodieObject.operationError ?? error, callback)
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  
   private func cancelRetrieveOpRecursive() {
     CCLog.verbose("Cancel Retrieve Recursive for Moment \(getUniqueIdentifier())")
     
@@ -830,9 +907,22 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                        for parentOperation: AsyncOperation? = nil,
                        withBlock callback: SimpleErrorBlock?) {
     
-    CCLog.verbose("Delete Recursive for Moment \(getUniqueIdentifier())")
-    
     let deleteOperation = MomentAsyncOperation(on: .deleteRecursive, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Delete Moment Recursive Operation \(deleteOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
+    
+    parentOperation?.add(deleteOperation)
+    asyncOperationQueue.addOperation(deleteOperation)
+  }
+  
+
+  func deleteWhole(from location: FoodieObject.StorageLocation,
+                       type localType: FoodieObject.LocalType,
+                       for parentOperation: AsyncOperation? = nil,
+                       withBlock callback: SimpleErrorBlock?) {
+
+    let deleteOperation = MomentAsyncOperation(on: .deleteWhole, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Delete Moment In Whole Operation \(deleteOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
+    
     parentOperation?.add(deleteOperation)
     asyncOperationQueue.addOperation(deleteOperation)
   }

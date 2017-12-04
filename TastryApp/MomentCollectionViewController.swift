@@ -572,7 +572,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
           location = .local
         }
 
-        _ = moment.deleteRecursive(from: location, type: .draft) { error in
+        _ = moment.deleteWhole(from: location, type: .draft) { error in
           if let error = error {
             CCLog.warning("Failed to delete moments from pending delete moment lists: \(error)")
           }

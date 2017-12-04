@@ -137,6 +137,14 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
                 CCLog.warning("FoodieMoment.batchRetrieve Error - \(error.localizedDescription)")
                 self.callback?(error)
                 self.finished()
+                return
+              }
+              
+              guard !self.isCancelled else {
+                CCLog.warning("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) Cancelled")
+                self.callback?(error)
+                self.finished()  // Should we issue a 'finished()' on cancel?
+                return
               }
               
               CCLog.debug("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment 0/\(moments.count) is \(moments[0].getUniqueIdentifier())")
@@ -160,11 +168,13 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
         momentNum += 1
       }
       
+      // All Moments have been Retrieved!
       if opType == .allMedia {
-        // All Moments have been Retrieved!
         self.callback?(ErrorCode.allMomentsForStoryRetrieved)
-        self.finished()
+      } else {
+        self.callback?(nil)
       }
+      self.finished()
     }
   }
   
@@ -172,7 +182,10 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
   override func cancel() {
     super.cancel()
     if let prefetchOperation = prefetchOperation {
+      CCLog.verbose("Cancelling Prefetch Operation \(prefetchOperation.getUniqueIdentifier())")
       prefetchOperation.cancel()
+    } else {
+      CCLog.verbose("Foodie Operation Cancel has no Prefetch Operation")
     }
   }
 }
