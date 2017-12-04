@@ -331,7 +331,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getS3URL(for: fileName))
       videoExportPlayer!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
         if let error = error {
-          CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
+          CCLog.warning("AVExportPlayer export asynchronously for \(fileName) failed with error \(error.localizedDescription)")
           self.videoExportPlayer = nil
           callback?(error)
         } else { // if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {

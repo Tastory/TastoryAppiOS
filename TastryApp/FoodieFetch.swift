@@ -130,13 +130,13 @@ class FoodieFetch {
           }
           
           // Cancel anything that is not of the current story
-          if !stories.contains(where: { $0 === (storyOp.object as? FoodieStory)}) {
+          if !stories.contains(where: { $0 == (storyOp.object as? FoodieStory)}) {
             CCLog.debug("#Prefetch - Cancel Story \(story.getUniqueIdentifier()) on \(type.rawValue) operation. Queue at \(self.fetchQueue.operationCount) outstanding before cancel")
             storyOp.cancel()
             
           } else if type == .nextMedia || type == .allMedia {
             
-            guard let indexToRemove = stories.index(where: { $0 === story }) else {
+            guard let indexToRemove = stories.index(where: { $0 == story }) else {
               CCLog.fatal("Story deemed Prefetching, but cannot be found from Object (story) argument list")
             }
             stories.remove(at: indexToRemove)

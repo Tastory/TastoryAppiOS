@@ -126,6 +126,9 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       fallthrough
       
     case .allMedia:
+      
+      CCLog.debug("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) executing")
+      
       var momentNum = 0
       for moment in moments {
         if !moment.isMediaReady {

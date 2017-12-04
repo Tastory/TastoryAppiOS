@@ -230,21 +230,25 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     var momentIdentifierString = ""
     
     for moment in moments {
-      guard moment.isDataAvailable else {
-        queryRequired = true
-        break
-      }
-      
-      if !queryRequired, let markups = moment.markups {
-        for markup in markups {
-          guard markup.isDataAvailable else {
-            queryRequired = true
-            break
+      if moment.isDataAvailable {
+        
+        if let markups = moment.markups {
+          for markup in markups {
+            if !markup.isDataAvailable {
+              
+              // If the Moment isDataAvailable, but at least 1 Markup is not DataAvailable. Retrieve this Momemnt
+              momentIdentifierString += "\(moment.getUniqueIdentifier()) "
+              queryRequired = true
+              break
+            }
           }
         }
+        
+      } else {
+        // Moment not DataAvailable, just retieve
+        momentIdentifierString += "\(moment.getUniqueIdentifier()) "
+        queryRequired = true
       }
-      
-      momentIdentifierString += "\(moment.getUniqueIdentifier()) "
     }
     
     // Early return if no query required
