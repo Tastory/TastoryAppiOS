@@ -89,20 +89,22 @@ class PasswordViewController: OverlayViewController {
       self.user.password = newText
       
       // Save the user
-      _ = self.user.saveRecursive(to: .both, type: .cache) { error in
+      _ = self.user.saveDigest(to: .both, type: .cache) { error in
         self.activitySpinner.remove()
         
         if let error = error {
           AlertDialog.present(from: self, title: "Save New Password Failed", message: "Error - \(error.localizedDescription). Please try again") { action in
-            CCLog.warning("user.saveRecursive Failed. Error - \(error.localizedDescription)")
+            CCLog.warning("user.saveDigest Failed. Error - \(error.localizedDescription)")
           }
           return
         }
         
         // Clear all text fields
-        self.currentField?.text = ""
-        self.newField?.text = ""
-        self.confirmField?.text = ""
+        DispatchQueue.main.async {
+          self.currentField?.text = ""
+          self.newField?.text = ""
+          self.confirmField?.text = ""
+        }
         
         // Notify the user that password change was successful
         AlertDialog.present(from: self, title: "Password Changed!", message: "Password change was successful!") { action in

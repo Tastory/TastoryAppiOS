@@ -169,10 +169,11 @@ class FoodieUser: PFUser {
   
   // MARK: - Types & Enums
   enum OperationType: String {
-    case retrieveInFull
-    case retrieveUser
-    case saveInFull
-    case saveUser
+    case retrieveWhole
+    case retrieveRecursive
+    case saveWhole
+    case saveRecursive
+    case saveDigest
     case deleteUser
   }
   
@@ -207,34 +208,39 @@ class FoodieUser: PFUser {
       CCLog.debug ("User Async \(operationType) Operation \(getUniqueIdentifier()) for \(user.getUniqueIdentifier()) Started.")
       
       switch operationType {
-      case .retrieveInFull:
-        user.retrieveOpInFull(for: self, from: location, type: localType, forceAnyways: forceAnyways) { error in
+      case .retrieveWhole:
+        user.retrieveOpWhole(for: self, from: location, type: localType, forceAnyways: forceAnyways) { error in
           self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
         }
         
-      case .retrieveUser:
+      case .retrieveRecursive:
         user.retrieveOpRecursive(for: self, from: location, type: localType, forceAnyways: forceAnyways) { error in
           // Careful here. Make sure nothing in here can race against anything before this point. In case of a sync callback
           self.childOperations.removeAll()
           self.callback?(error)
-          //CCLog.debug ("User Async \(self.operationType) Operation \(self.getUniqueIdentifier()) for \(self.user.getUniqueIdentifier()) Finished")
           self.finished()
         }
         
-      case .saveInFull:
-        user.saveOpInFull(for: self, to: location, type: localType) { error in
+      case .saveWhole:
+        user.saveOpWhole(for: self, to: location, type: localType) { error in
           self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
         }
         
-      case .saveUser:
+      case .saveRecursive:
         user.saveOpRecursive(for: self, to: location, type: localType) { error in
           self.childOperations.removeAll()
           self.callback?(error)
-          //CCLog.debug ("User Async \(self.operationType) Operation \(self.getUniqueIdentifier()) for \(self.user.getUniqueIdentifier()) Finished")
+          self.finished()
+        }
+        
+      case .saveDigest:
+        user.saveOpDigest(for: self, to: location, type: localType) { error in
+          self.childOperations.removeAll()
+          self.callback?(error)
           self.finished()
         }
         
@@ -242,7 +248,6 @@ class FoodieUser: PFUser {
         user.deleteOpRecursive(for: self, from: location, type: localType) { error in
           self.childOperations.removeAll()
           self.callback?(error)
-          //CCLog.debug ("User Async \(self.operationType) Operation \(self.getUniqueIdentifier()) for \(self.user.getUniqueIdentifier()) Finished")
           self.finished()
         }
       }
@@ -264,9 +269,9 @@ class FoodieUser: PFUser {
           }
           
           switch self.operationType {
-          case .retrieveUser:
+          case .retrieveWhole:
             self.user.cancelRetrieveOpRecursive()
-          case .saveUser:
+          case .saveWhole, .saveRecursive, .saveDigest:
             self.user.cancelSaveOpRecursive()
           default:
             break
@@ -612,8 +617,10 @@ class FoodieUser: PFUser {
                                    withReady readyBlock: SimpleBlock? = nil,
                                    withCompletion callback: SimpleErrorBlock?) {
     
+    CCLog.warning("Parent PFObject shouldn't need to call saveRecurisve on Users. Parse will auto Recurse on Save")
+    
     retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
-      
+
       if let error = error {
         CCLog.assert("User.retrieve() resulted in error: \(error.localizedDescription)")
         callback?(error)
@@ -625,12 +632,12 @@ class FoodieUser: PFUser {
   }
   
   
-  private func retrieveOpInFull(for userOperation: UserAsyncOperation,
-                                from location: FoodieObject.StorageLocation,
-                                type localType: FoodieObject.LocalType,
-                                forceAnyways: Bool,
-                                withReady readyBlock: SimpleBlock? = nil,
-                                withCompletion callback: SimpleErrorBlock?) {
+  private func retrieveOpWhole(for userOperation: UserAsyncOperation,
+                               from location: FoodieObject.StorageLocation,
+                               type localType: FoodieObject.LocalType,
+                               forceAnyways: Bool,
+                               withReady readyBlock: SimpleBlock? = nil,
+                               withCompletion callback: SimpleErrorBlock?) {
     
     retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
@@ -670,16 +677,42 @@ class FoodieUser: PFUser {
   }
   
   
+  // This is if a parent object calls for Save
   private func saveOpRecursive(for userOperation: UserAsyncOperation,
                             to location: FoodieObject.StorageLocation,
                             type localType: FoodieObject.LocalType,
                             withBlock callback: SimpleErrorBlock?) {
     
-    self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+    // Calculate how many outstanding children operations there will be before hand
+    // This helps avoiding the need of a lock
+    var outstandingChildOperations = 0
+    
+    if self.media != nil { outstandingChildOperations += 1 }
+    
+    // Can we just use a mutex lock then?
+    SwiftMutex.lock(&criticalMutex)
+    defer { SwiftMutex.unlock(&criticalMutex) }
+    
+    guard !userOperation.isCancelled else {
+      callback?(ErrorCode.operationCancelled)
+      return
+    }
+    
+    guard outstandingChildOperations != 0 else {
+      callback?(nil)
+      return
+    }
+    
+    foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+    
+    if let media = self.media {
+      self.foodieObject.saveChild(media, to: location, type: localType, for: userOperation, withBlock: callback)
+    }
   }
   
   
-  private func saveOpInFull(for userOperation: UserAsyncOperation,
+  // This is if an external object calls for Save of User and all sub-objects
+  private func saveOpWhole(for userOperation: UserAsyncOperation,
                             to location: FoodieObject.StorageLocation,
                             type localType: FoodieObject.LocalType,
                             withBlock callback: SimpleErrorBlock?) {
@@ -707,8 +740,24 @@ class FoodieUser: PFUser {
     foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
     
     if let media = self.media {
-      self.foodieObject.saveChild(media, to: location, type: localType, for: userOperation, withBlock: callback)
+      self.foodieObject.saveChild(media, to: location, type: localType, for: userOperation) { error in
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
     }
+  }
+  
+  
+  // This is if an external object just want to Save the Digest, in this case just the User PFObject
+  private func saveOpDigest(for userOperation: UserAsyncOperation,
+                            to location: FoodieObject.StorageLocation,
+                            type localType: FoodieObject.LocalType,
+                            withBlock callback: SimpleErrorBlock?) {
+    
+    guard !userOperation.isCancelled else {
+      callback?(ErrorCode.operationCancelled)
+      return
+    }
+    foodieObject.saveObject(to: location, type: localType, withBlock: callback)
   }
   
   
@@ -1125,19 +1174,18 @@ extension FoodieUser: FoodieObjectDelegate {
   static func cancelAll() { return }  // Nothing to cancel on for PFUser types
   
   
-  func retrieveInFull(from location: FoodieObject.StorageLocation,
+  func retrieveWhole(from location: FoodieObject.StorageLocation,
                       type localType: FoodieObject.LocalType,
                       forceAnyways: Bool = false,
                       for parentOperation: AsyncOperation? = nil,
                       withReady readyBlock: SimpleBlock? = nil,
                       withCompletion callback: SimpleErrorBlock?) {
-    
-    CCLog.verbose("Retrieve In Full for User \(getUniqueIdentifier())")
-    
-    let retrieveOperation = UserAsyncOperation(on: .retrieveInFull, for: self, to: location, type: localType, forceAnyways: forceAnyways) { error in
+
+    let retrieveOperation = UserAsyncOperation(on: .retrieveWhole, for: self, to: location, type: localType, forceAnyways: forceAnyways) { error in
       readyBlock?()
       callback?(error)
     }
+    CCLog.debug ("Retrieve User In Whole Operation \(retrieveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     parentOperation?.add(retrieveOperation)
     asyncOperationQueue.addOperation(retrieveOperation)
   }
@@ -1151,40 +1199,53 @@ extension FoodieUser: FoodieObjectDelegate {
                          withReady readyBlock: SimpleBlock? = nil,
                          withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
-    let retrieveOperation = UserAsyncOperation(on: .retrieveUser, for: self, to: location, type: localType, forceAnyways: forceAnyways) { error in
+    CCLog.warning("Parent PFObject shouldn't need to call saveRecurisve on Users. Parse will auto Recurse on Save")
+    
+    let retrieveOperation = UserAsyncOperation(on: .retrieveRecursive, for: self, to: location, type: localType, forceAnyways: forceAnyways) { error in
       readyBlock?()
       callback?(error)
     }
+    CCLog.debug ("Retrieve User Recursive Operation \(retrieveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     parentOperation?.add(retrieveOperation)
     asyncOperationQueue.addOperation(retrieveOperation)
-    CCLog.debug ("Retrieve User Recursive Operation \(retrieveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     return retrieveOperation
   }
   
   
-  func saveInFull(to location: FoodieObject.StorageLocation,
+  // This is if an external object calls for Save of User and all sub-objects
+  func saveWhole(to location: FoodieObject.StorageLocation,
                   type localType: FoodieObject.LocalType,
                   for parentOperation: AsyncOperation? = nil,
                   withBlock callback: SimpleErrorBlock?) {
     
-    CCLog.verbose("Save Digest for User \(getUniqueIdentifier())")
-    
-    let saveOperation = UserAsyncOperation(on: .saveInFull, for: self, to: location, type: localType, withBlock: callback)
+    let saveOperation = UserAsyncOperation(on: .saveWhole, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Save User In Whole Operation \(saveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     parentOperation?.add(saveOperation)
     asyncOperationQueue.addOperation(saveOperation)
   }
   
   
-  // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
+  // This is if a parent object calls for Save
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
                      for parentOperation: AsyncOperation? = nil,
                      withBlock callback: SimpleErrorBlock?) {
     
-    CCLog.verbose("Save In Full for User \(getUniqueIdentifier())")
-    
-    let saveOperation = UserAsyncOperation(on: .saveUser, for: self, to: location, type: localType, withBlock: callback)
+    let saveOperation = UserAsyncOperation(on: .saveRecursive, for: self, to: location, type: localType, withBlock: callback)
     CCLog.debug ("Save User Recursive Operation \(saveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
+    parentOperation?.add(saveOperation)
+    asyncOperationQueue.addOperation(saveOperation)
+  }
+  
+  
+  // This is if an external object just want to Save the Digest, in this case just the User PFObject
+  func saveDigest(to location: FoodieObject.StorageLocation,
+                  type localType: FoodieObject.LocalType,
+                  for parentOperation: AsyncOperation? = nil,
+                  withBlock callback: SimpleErrorBlock?) {
+    
+    let saveOperation = UserAsyncOperation(on: .saveDigest, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Save User Digest Operation \(saveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     parentOperation?.add(saveOperation)
     asyncOperationQueue.addOperation(saveOperation)
   }

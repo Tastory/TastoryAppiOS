@@ -261,11 +261,11 @@ class ProfileDetailViewController: OverlayViewController {
           self.user.media = mediaObject
         }
         
-        _ = self.user.saveInFull(to: .both, type: .cache) { error in
+        _ = self.user.saveWhole(to: .both, type: .cache) { error in
           self.activitySpinner.remove()
           if let error = error {
             AlertDialog.present(from: self, title: "Save User Details Failed", message: "Error - \(error.localizedDescription). Please try again") { action in
-              CCLog.warning("user.saveInFull Failed. Error - \(error.localizedDescription)")
+              CCLog.warning("user.saveWhole Failed. Error - \(error.localizedDescription)")
             }
             return
           }
@@ -376,7 +376,7 @@ class ProfileDetailViewController: OverlayViewController {
     
     activitySpinner.apply()
     
-    self.user.retrieveInFull(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
+    self.user.retrieveWhole(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
       
       if let error = error {
         AlertDialog.standardPresent(from: self, title: .genericNetworkError, message: .networkTryAgain) { action in

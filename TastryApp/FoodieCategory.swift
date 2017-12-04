@@ -260,6 +260,15 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
+  func saveWhole(to location: FoodieObject.StorageLocation,
+                 type localType: FoodieObject.LocalType,
+                 for parentOperation: AsyncOperation?,
+                 withBlock callback: SimpleErrorBlock?) {
+    
+    CCLog.assert("FoodieCategory.saveWhole called, but not yet implemented!")
+  }
+  
+  
   // Trigger recursive delete against all child objects.
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,

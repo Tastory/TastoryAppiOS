@@ -54,6 +54,10 @@ protocol FoodieObjectDelegate: class {
                      for parentOperation: AsyncOperation?,
                      withBlock callback: SimpleErrorBlock?)
   
+  func saveWhole(to location: FoodieObject.StorageLocation,
+                 type localType: FoodieObject.LocalType,
+                 for parentOperation: AsyncOperation?,
+                 withBlock callback: SimpleErrorBlock?)
   
   func delete(from localType: FoodieObject.LocalType,
               withBlock callback: SimpleErrorBlock?)
@@ -287,7 +291,7 @@ class FoodieObject {
       
       self.outstandingChildOperations -= 1
       if self.outstandingChildOperations == 0 {
-        self.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+        callback?(self.operationError)
       }
       else if self.outstandingChildOperations < 0 {
         CCLog.assert("Outstanding Child Operations below 0")

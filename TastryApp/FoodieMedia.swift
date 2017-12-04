@@ -367,7 +367,7 @@ extension FoodieMedia: FoodieObjectDelegate {
     
     return nil
   }
-  
+
   
   // Function to save this media object to local.
   func save(to localType: FoodieObject.LocalType, withBlock callback: SimpleErrorBlock?) {
@@ -435,7 +435,16 @@ extension FoodieMedia: FoodieObjectDelegate {
                      for parentOperation: AsyncOperation? = nil,
                      withBlock callback: SimpleErrorBlock?) {
     
-    self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+    self.foodieObject.saveObject(to: location, type: localType, withBlock: callback)
+  }
+  
+  
+  func saveWhole(to location: FoodieObject.StorageLocation,
+                 type localType: FoodieObject.LocalType,
+                 for parentOperation: AsyncOperation? = nil,
+                 withBlock callback: SimpleErrorBlock?) {
+    
+    self.foodieObject.saveObject(to: location, type: localType, withBlock: callback)
   }
   
   

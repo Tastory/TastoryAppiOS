@@ -169,7 +169,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     activitySpinner.apply()
 
     // This will cause a save to both Local Cache and Server
-    _ = story.saveRecursive(to: .both, type: .cache) { error in
+    _ = story.saveWhole(to: .both, type: .cache) { error in
       
       if let error = error {
         self.activitySpinner.remove()
@@ -450,7 +450,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           if returnedMoment === markupMoment {
             
             // save to local
-            _ = returnedMoment.saveRecursive(to: .local, type: .draft) { error in
+            _ = returnedMoment.saveWhole(to: .local, type: .draft) { error in
               if let error = error {
                 AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
                   CCLog.assert("Error saving moment into local caused by: \(error.localizedDescription)")

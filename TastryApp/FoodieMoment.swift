@@ -43,10 +43,11 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Types & Enums
   enum OperationType: String {
-    case retrieveMoment
+    case retrieveRecursive
     case retrieveMedia
-    case saveMoment
-    case deleteMoment
+    case saveRecursive
+    case saveWhole
+    case deleteRecursive
   }
   
   
@@ -81,7 +82,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       CCLog.debug ("Moment Async \(operationType) Operation for \(moment.getUniqueIdentifier()) Started")
       
       switch operationType {
-      case .retrieveMoment:
+      case .retrieveRecursive:
         moment.retrieveOpRecursive(for: self, from: location, type: localType, forceAnyways: forceAnyways) { error in
           // Careful here. Make sure nothing in here can race against anything before this point. In case of a sync callback
           self.childOperations.removeAll()
@@ -97,14 +98,21 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           self.finished()
         }
         
-      case .saveMoment:
+      case .saveRecursive:
         moment.saveOpRecursive(for: self, to: location, type: localType) { error in
           self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
         }
         
-      case .deleteMoment:
+      case .saveWhole:
+        moment.saveOpWhole(for: self, to: location, type: localType) { error in
+          self.childOperations.removeAll()
+          self.callback?(error)
+          self.finished()
+        }
+        
+      case .deleteRecursive:
         moment.deleteOpRecursive(for: self, from: location, type: localType) { error in
           self.childOperations.removeAll()
           self.callback?(error)
@@ -129,11 +137,13 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
           }
           
           switch self.operationType {
-          case .retrieveMoment:
+          case .retrieveRecursive:
             self.moment.cancelRetrieveOpRecursive()
           case .retrieveMedia:
             self.moment.cancelRetrieveOpMedia()
-          case .saveMoment:
+          case .saveWhole:
+            self.moment.cancelSaveOpRecursive()
+          case .saveRecursive:
             self.moment.cancelSaveOpRecursive()
           default:
             break
@@ -357,11 +367,53 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  // Trigger recursive saves against all child objects. Save of the object itself will be triggered as part of childSaveCallback
+  // This is if a parent object calls for Save
   private func saveOpRecursive(for momentOperation: MomentAsyncOperation,
                                to location: FoodieObject.StorageLocation,
                                type localType: FoodieObject.LocalType,
                                withBlock callback: SimpleErrorBlock?) {
+    
+    // Calculate how many outstanding children operations there will be before hand
+    // This helps avoiding the need of a lock
+    var outstandingChildOperations = 0
+    
+    if media != nil { outstandingChildOperations += 1 }
+    if thumbnail != nil { outstandingChildOperations += 1 }
+    // Markup is automatically saved when the parent Moment is saved due to Parse
+    
+    // Can we just use a mutex lock then?
+    SwiftMutex.lock(&criticalMutex)
+    defer { SwiftMutex.unlock(&criticalMutex) }
+    
+    guard !momentOperation.isCancelled else {
+      CCLog.verbose("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()) early return due to cancel")
+      callback?(ErrorCode.operationCancelled)
+      return
+    }
+    
+    // If there's no child op, then just save and return
+    guard outstandingChildOperations != 0 else {
+      CCLog.assert("No child saves pending. Then why is this even saved?")
+      callback?(nil)
+      return
+    }
+    
+    foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+    
+    if let media = media {
+      foodieObject.saveChild(media, to: location, type: localType, for: momentOperation, withBlock: callback)
+    }
+    
+    if let thumbnail = thumbnail {
+      foodieObject.saveChild(thumbnail, to: location, type: localType, for: momentOperation, withBlock: callback)
+    }
+  }
+  
+  
+  private func saveOpWhole(for momentOperation: MomentAsyncOperation,
+                           to location: FoodieObject.StorageLocation,
+                           type localType: FoodieObject.LocalType,
+                           withBlock callback: SimpleErrorBlock?) {
     
     // Calculate how many outstanding children operations there will be before hand
     // This helps avoiding the need of a lock
@@ -391,11 +443,15 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
     
     if let media = media {
-      foodieObject.saveChild(media, to: location, type: localType, for: momentOperation, withBlock: callback)
+      foodieObject.saveChild(media, to: location, type: localType, for: momentOperation) { error in
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
     }
     
     if let thumbnail = thumbnail {
-      foodieObject.saveChild(thumbnail, to: location, type: localType, for: momentOperation, withBlock: callback)
+      foodieObject.saveChild(thumbnail, to: location, type: localType, for: momentOperation) { error in
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
     }
   }
   
@@ -716,9 +772,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                          withReady readyBlock: SimpleBlock? = nil,
                          withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
-    CCLog.verbose("Retrieve Recursive for Moment \(getUniqueIdentifier())")
+    let retrieveOperation = MomentAsyncOperation(on: .retrieveRecursive, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    CCLog.debug ("Retrieve Moment Recurisve Operation \(retrieveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     
-    let retrieveOperation = MomentAsyncOperation(on: .retrieveMoment, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
     parentOperation?.add(retrieveOperation)  // Add to parent for cancel purposes
     asyncOperationQueue.addOperation(retrieveOperation)
     return retrieveOperation
@@ -732,9 +788,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
                      withReady readyBlock: SimpleBlock? = nil,
                      withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
-    CCLog.verbose("Retrieve Media for Moment \(getUniqueIdentifier())")
-    
     let retrieveOperation = MomentAsyncOperation(on: .retrieveMedia, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    CCLog.debug ("Retrieve Moment Media Operation \(retrieveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
+    
     parentOperation?.add(retrieveOperation)
     asyncOperationQueue.addOperation(retrieveOperation)
     return retrieveOperation
@@ -745,11 +801,24 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   func saveRecursive(to location: FoodieObject.StorageLocation,
                      type localType: FoodieObject.LocalType,
                      for parentOperation: AsyncOperation? = nil,
-                     withBlock callback: SimpleErrorBlock?)  {
+                     withBlock callback: SimpleErrorBlock?) {
     
-    CCLog.verbose("Save Recursive for Moment \(getUniqueIdentifier())")
+    let saveOperation = MomentAsyncOperation(on: .saveRecursive, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Save Moment Recurisve Operation \(saveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     
-    let saveOperation = MomentAsyncOperation(on: .saveMoment, for: self, to: location, type: localType, withBlock: callback)
+    parentOperation?.add(saveOperation)
+    asyncOperationQueue.addOperation(saveOperation)
+  }
+  
+  
+  func saveWhole(to location: FoodieObject.StorageLocation,
+                 type localType: FoodieObject.LocalType,
+                 for parentOperation: AsyncOperation? = nil,
+                 withBlock callback: SimpleErrorBlock?) {
+    
+    let saveOperation = MomentAsyncOperation(on: .saveWhole, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Save Moment in Whole Operation \(saveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
+    
     parentOperation?.add(saveOperation)
     asyncOperationQueue.addOperation(saveOperation)
   }
@@ -763,7 +832,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     
     CCLog.verbose("Delete Recursive for Moment \(getUniqueIdentifier())")
     
-    let deleteOperation = MomentAsyncOperation(on: .deleteMoment, for: self, to: location, type: localType, withBlock: callback)
+    let deleteOperation = MomentAsyncOperation(on: .deleteRecursive, for: self, to: location, type: localType, withBlock: callback)
     parentOperation?.add(deleteOperation)
     asyncOperationQueue.addOperation(deleteOperation)
   }

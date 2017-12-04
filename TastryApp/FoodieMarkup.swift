@@ -58,7 +58,16 @@ extension FoodieMarkup: FoodieObjectDelegate {
                      for parentOperation: AsyncOperation? = nil,
                      withBlock callback: SimpleErrorBlock?) {
 
-    foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+    CCLog.verbose("Parent PFObject shouldn't need to call saveRecurisve on Markups. Parse will auto Recurse on Save")
+  }
+  
+  
+  func saveWhole(to location: FoodieObject.StorageLocation,
+                 type localType: FoodieObject.LocalType,
+                 for parentOperation: AsyncOperation? = nil,
+                 withBlock callback: SimpleErrorBlock?) {
+    
+    foodieObject.saveObject(to: location, type: localType, withBlock: callback)
   }
   
   

@@ -15,7 +15,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   // If new objects or external types are added here, check if save and delete algorithms needs updating
   @NSManaged var moments: Array<FoodieMoment>? // A FoodieMoment Photo or Video
   @NSManaged var thumbnailFileName: String? // URL for the thumbnail media. Needs to go with the thumbnail object.
-  
   @NSManaged var title: String? // Title for the Story
   @NSManaged var venue: FoodieVenue? // Pointer to the Venue object
   @NSManaged var venueName: String?  // A copy of the Venue name
@@ -32,9 +31,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Types & Enums
   enum OperationType: String {
-    case retrieveStory
-    case saveStory
-    case deleteStory
+    case retrieveRecursive
+    case saveRecursive
+    case deleteRecursive
     case retrieveDigest
     case saveDigest
   }
@@ -71,7 +70,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       CCLog.debug ("Story Async \(operationType) Operation for \(story.getUniqueIdentifier()) Started")
       
       switch operationType {
-      case .retrieveStory:
+      case .retrieveRecursive:
         story.retrieveOpRecursive(for: self, from: location, type: localType, forceAnyways: forceAnyways) { error in
           // Careful here. Make sure nothing in here can race against anything before this point. In case of a sync callback
           self.childOperations.removeAll()
@@ -79,14 +78,14 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
           self.finished()
         }
         
-      case .saveStory:
+      case .saveRecursive:
         story.saveOpRecursive(for: self, to: location, type: localType) { error in
           self.childOperations.removeAll()
           self.callback?(error)
           self.finished()
         }
         
-      case .deleteStory:
+      case .deleteRecursive:
         story.deleteOpRecursive(for: self, from: location, type: localType) { error in
           self.childOperations.removeAll()
           self.callback?(error)
@@ -126,9 +125,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
           }
           
           switch self.operationType {
-          case .retrieveDigest, .retrieveStory:
+          case .retrieveDigest, .retrieveRecursive:
             self.story.cancelRetrieveOpRecursive()
-          case .saveDigest, .saveStory:
+          case .saveDigest, .saveRecursive:
             self.story.cancelSaveOpRecursive()
           default:
             break
@@ -313,12 +312,41 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       author = currentUser
     }
     
+    // Calculate how many outstanding children operations there will be before hand
+    // This helps avoiding the need of a lock
+    var outstandingChildOperations = 0
+    
+    if venue != nil { outstandingChildOperations += 1 }
+    
+    // Can we just use a mutex lock then?
+    SwiftMutex.lock(&criticalMutex)
+    defer { SwiftMutex.unlock(&criticalMutex) }
+    
     guard !storyOperation.isCancelled else {
       callback?(ErrorCode.operationCancelled)
       return
     }
     
-    foodieObject.saveObject(to: location, type: localType, withBlock: callback)
+    // If there's no child op, then just save and return
+    guard outstandingChildOperations != 0 else {
+      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      return
+    }
+    
+    foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+    
+    // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
+    // We are not gonna save the User here either
+    
+    // Note that Author/FoodieUser will be saved through Parse Auto Recurse, so not explicitly called here
+    // We are explicitly saving Venues because we need to adjust it's Permission Level
+    // There will be no Markups for Story Covers
+    
+    if let venue = self.venue {
+      foodieObject.saveChild(venue, to: location, type: localType, for: storyOperation) { error in
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
+    }
   }
   
   
@@ -405,7 +433,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     var outstandingChildOperations = 0
     
     if venue != nil { outstandingChildOperations += 1 }
-    if localType != .draft { outstandingChildOperations += 1 }
     
     if let moments = self.moments {
       outstandingChildOperations += moments.count
@@ -431,19 +458,21 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     // We will assume that the Moment will get saved properly, avoiding a double save on the Thumbnail
     // We are not gonna save the User here either
     
+    // Note that Author/FoodieUser will be saved through Parse Auto Recurse, so not explicitly called here
+    // We are explicitly saving Venues because we need to adjust it's Permission Level
     // There will be no Markups for Story Covers
     
     if let venue = self.venue {
-      foodieObject.saveChild(venue, to: location, type: localType, for: storyOperation, withBlock: callback)
-    }
-    
-    if localType != .draft {
-      foodieObject.saveChild(author!, to: location, type: localType, for: storyOperation, withBlock: callback)
+      foodieObject.saveChild(venue, to: location, type: localType, for: storyOperation) { error in
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
     }
     
     if let moments = self.moments {
       for moment in moments {
-        foodieObject.saveChild(moment, to: location, type: localType, for: storyOperation, withBlock: callback)
+        foodieObject.saveChild(moment, to: location, type: localType, for: storyOperation) { error in
+          self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+        }
       }
     }
   }
@@ -686,7 +715,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
     
     // TODO: - !!!!! If the user quit the app after Markups are pre-saved to draft, but Moment is not yet pinned, then the entire Draft gets trashed
     // Solution is probably to compartmentalize such that a single corrupted Moment won't scrap the entire Draft
-    object.saveRecursive(to: .local, type: .draft, for: nil) { error in
+    object.saveWhole(to: .local, type: .draft, for: nil) { error in
       
       if let error = error {
         CCLog.warning("\(object.foodieObjectType()) pre-save to local resulted in error - \(error.localizedDescription)")
@@ -707,7 +736,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         CCLog.debug("Completed pre-saving Story to Local")
 
         // Finally save the Moment to Server
-        object.saveRecursive(to: .both, type: .draft, for: nil) { error in
+        object.saveWhole(to: .both, type: .draft, for: nil) { error in
 
           if let error = error {
             CCLog.warning("\(object.foodieObjectType()) pre-save to local & server resulted in error - \(error.localizedDescription)")
@@ -805,9 +834,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
                       for parentOperation: AsyncOperation? = nil,
                       withBlock callback: SimpleErrorBlock?) -> AsyncOperation {
     
-    CCLog.verbose("Retrieve Digest of Story \(getUniqueIdentifier())")
-
     let retrieveDigestOperation = StoryAsyncOperation(on: .retrieveDigest, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    CCLog.debug ("Retrieve Story Digest Operation \(retrieveDigestOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
+    
     parentOperation?.add(retrieveDigestOperation)
     asyncOperationQueue.addOperation(retrieveDigestOperation)
     return retrieveDigestOperation
@@ -820,9 +849,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
                   for parentOperation: AsyncOperation? = nil,
                   withBlock callback: SimpleErrorBlock?) {
     
-    CCLog.verbose("Save Digest of Story \(getUniqueIdentifier())")
-    
     let saveDigestOperation = StoryAsyncOperation(on: .saveDigest, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Save Story Digest Operation \(saveDigestOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
+    
     parentOperation?.add(saveDigestOperation)
     asyncOperationQueue.addOperation(saveDigestOperation)
   }
@@ -862,9 +891,9 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       CCLog.fatal("FoodieStory does not support Ready Responses")
     }
     
-    CCLog.verbose("Retrieve Recursive for Story \(getUniqueIdentifier())")
+    let retrieveOperation = StoryAsyncOperation(on: .retrieveRecursive, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
+    CCLog.debug ("Retrieve Story Recursive Operation \(retrieveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     
-    let retrieveOperation = StoryAsyncOperation(on: .retrieveStory, for: self, to: location, type: localType, forceAnyways: forceAnyways, withBlock: callback)
     parentOperation?.add(retrieveOperation)
     asyncOperationQueue.addOperation(retrieveOperation)
     return retrieveOperation
@@ -876,24 +905,38 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
                      type localType: FoodieObject.LocalType,
                      for parentOperation: AsyncOperation? = nil,
                      withBlock callback: SimpleErrorBlock?) {
+
+    let saveOperation = StoryAsyncOperation(on: .saveRecursive, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Save Story Recursive Operation \(saveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     
-    CCLog.verbose("Save Recursive for Story \(getUniqueIdentifier())")
-    
-    let saveOperation = StoryAsyncOperation(on: .saveStory, for: self, to: location, type: localType, withBlock: callback)
     parentOperation?.add(saveOperation)
     asyncOperationQueue.addOperation(saveOperation)
   }
  
+  
+  func saveWhole(to location: FoodieObject.StorageLocation,
+                 type localType: FoodieObject.LocalType,
+                 for parentOperation: AsyncOperation? = nil,
+                 withBlock callback: SimpleErrorBlock?) {
+    
+    // Save Whole and Save Recursive are the same for Stories for now
+    let saveOperation = StoryAsyncOperation(on: .saveRecursive, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Save Story In Whole Operation \(saveOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
+    
+    parentOperation?.add(saveOperation)
+    asyncOperationQueue.addOperation(saveOperation)
+  }
+  
   
   // Trigger recursive delete against all child objects.
   func deleteRecursive(from location: FoodieObject.StorageLocation,
                        type localType: FoodieObject.LocalType,
                        for parentOperation: AsyncOperation? = nil,
                        withBlock callback: SimpleErrorBlock?) {
+
+    let deleteOperation = StoryAsyncOperation(on: .deleteRecursive, for: self, to: location, type: localType, withBlock: callback)
+    CCLog.debug ("Delete Story Recursive Operation \(deleteOperation.getUniqueIdentifier()) for \(getUniqueIdentifier()) Queued")
     
-    CCLog.verbose("Delete Recursive for Story \(getUniqueIdentifier())")
-    
-    let deleteOperation = StoryAsyncOperation(on: .deleteStory, for: self, to: location, type: localType, withBlock: callback)
     parentOperation?.add(deleteOperation)
     asyncOperationQueue.addOperation(deleteOperation)
   }

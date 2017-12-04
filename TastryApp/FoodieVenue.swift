@@ -731,7 +731,17 @@ extension FoodieVenue: FoodieObjectDelegate {
                      withBlock callback: SimpleErrorBlock?) {
     
     setPermission(to: FoodiePermission.getLimitedUserWriteObjectPermission())
-    foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+    foodieObject.saveObject(to: location, type: localType, withBlock: callback)
+  }
+  
+  
+  func saveWhole(to location: FoodieObject.StorageLocation,
+                     type localType: FoodieObject.LocalType,
+                     for parentOperation: AsyncOperation? = nil,
+                     withBlock callback: SimpleErrorBlock?) {
+    
+    setPermission(to: FoodiePermission.getLimitedUserWriteObjectPermission())
+    foodieObject.saveObject(to: location, type: localType, withBlock: callback)
   }
   
   

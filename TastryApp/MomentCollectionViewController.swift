@@ -291,7 +291,7 @@ class MomentCollectionViewController: UICollectionViewController {
             return
           }
           
-          moment.saveRecursive(to: .local, type: .draft, for: nil) { error in
+          moment.saveWhole(to: .local, type: .draft, for: nil) { error in
             if let error = error {
               AlertDialog.present(from: self, title: "Draft Error", message: error.localizedDescription) { _ in
                 CCLog.assert("Saving story into draft failed with error: \(error.localizedDescription)")
