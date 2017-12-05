@@ -19,57 +19,26 @@ protocol VideoTrimmerDelegate {
 // view controller in the storyboard
 class VideoTrimmerViewController: UIViewController, UINavigationControllerDelegate  {
 
+    // MARK: - Private Instance Variable
+    private var player: AVPlayer?
+    private var playbackTimeCheckerTimer: Timer?
+    private var trimmerPositionChangedTimer: Timer?
+
+    // MARK: - Public Instance Variable
+    public var avAsset: AVURLAsset?
+    public var delegate: VideoTrimmerDelegate?
+
+    // MARK: - IBOutlets
     @IBOutlet weak var selectAssetButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var playerView: UIView!
     @IBOutlet weak var trimmerView: TrimmerView!
     @IBOutlet weak var trimmerBackground: UIView!
 
-    public var avAsset: AVURLAsset?
-    public var delegate: VideoTrimmerDelegate?
-
-    var player: AVPlayer?
-    var playbackTimeCheckerTimer: Timer?
-    var trimmerPositionChangedTimer: Timer?
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        trimmerView.handleColor = UIColor.white
-        trimmerView.mainColor = UIColor.orange
-        trimmerBackground.backgroundColor = UIColor.clear.withAlphaComponent(0.6)
-    }
-
-  override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated)
-    guard let asset = avAsset else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("avAsset is nil")
-      }
-      return
-    }
-    loadAsset(asset)
-
-    guard let player = player else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-        CCLog.fatal("The player is nil.")
-      }
-      return
-    }
-
-    player.play()
-    startPlaybackTimeChecker()
-  }
-
+    // MARK: - IBActions
     @IBAction func selectAsset(_ sender: Any) {
 
-      guard let player = player else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.fatal("The player is nil.")
-        }
-        return
-      }
-      
-      player.pause()
+      pause()
 
       self.dismiss(animated: true) {
         guard let delegate = self.delegate else {
@@ -105,62 +74,99 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
     }
 
     @IBAction func cancel(_ sender: Any) {
+      pause()
+      self.dismiss(animated: true, completion: nil)
+    }
+
+    @IBAction func play(_ sender: Any) {
       guard let player = player else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
           CCLog.fatal("The player is nil.")
         }
         return
       }
+
+      if !(player.rate != 0 && player.error == nil) {
+        play()
+      } else {
+        pause()
+      }
+    }
+
+    // MARK: - Class Private Functions
+
+    private func pause() {
+      guard let player = player else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("The player is nil.")
+        }
+        return
+      }
+
       player.pause()
-      self.dismiss(animated: true, completion: nil)
+      playButton.setImage(UIImage(named:"StoryMarkup-PlayButton"), for: .normal)
+      stopPlaybackTimeChecker()
     }
 
-    @IBAction func play(_ sender: Any) {
-        guard let player = player else {
-            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-              CCLog.fatal("The player is nil.")
-            }
-          return
+    private func play() {
+      guard let player = player else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("The player is nil.")
         }
+        return
+      }
 
-        if !(player.rate != 0 && player.error == nil) {
-            player.play()
-            playButton.setImage(UIImage(named:"StoryMarkup-PauseButton"), for: .normal)
-            startPlaybackTimeChecker()
-
-        } else {
-            player.pause()
-            playButton.setImage(UIImage(named:"StoryMarkup-PlayButton"), for: .normal)
-            stopPlaybackTimeChecker()
-        }
+      player.play()
+      playButton.setImage(UIImage(named:"StoryMarkup-PauseButton"), for: .normal)
+      startPlaybackTimeChecker()
     }
 
+    private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
+      let playerItem = AVPlayerItem(asset: asset)
+      player = AVPlayer(playerItem: playerItem)
+
+      /*NotificationCenter.default.addObserver(self, selector: #selector(VideoTrimmerViewController.itemDidFinishPlaying(_:)),
+                                             name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)*/
+
+      let layer: AVPlayerLayer = AVPlayerLayer(player: player)
+      layer.backgroundColor = UIColor.white.cgColor
+      layer.frame = CGRect(x: 0, y: 0, width: playerView.frame.width, height: playerView.frame.height)
+      layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+      playerView.layer.sublayers?.forEach({$0.removeFromSuperlayer()})
+      playerView.layer.addSublayer(layer)
+    }
+
+    // MARK: - View Controller Life Cycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        trimmerView.handleColor = UIColor.white
+        trimmerView.mainColor = UIColor.orange
+        trimmerBackground.backgroundColor = UIColor.clear.withAlphaComponent(0.6)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+      super.viewDidAppear(animated)
+      guard let asset = avAsset else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("avAsset is nil")
+        }
+        return
+      }
+      loadAsset(asset)
+    }
+
+    /*@objc func itemDidFinishPlaying(_ notification: Notification) {
+      if let startTime = trimmerView.startTime {
+        player?.seek(to: startTime)
+        player?.pause()
+      }
+    }*/
+
+    // MARK: - Class Public Functions
     func loadAsset(_ asset: AVAsset) {
         trimmerView.asset = asset
         trimmerView.delegate = self
         addVideoPlayer(with: asset, playerView: playerView)
-    }
-
-    private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
-        let playerItem = AVPlayerItem(asset: asset)
-        player = AVPlayer(playerItem: playerItem)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(VideoTrimmerViewController.itemDidFinishPlaying(_:)),
-                                               name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)
-
-        let layer: AVPlayerLayer = AVPlayerLayer(player: player)
-        layer.backgroundColor = UIColor.white.cgColor
-        layer.frame = CGRect(x: 0, y: 0, width: playerView.frame.width, height: playerView.frame.height)
-        layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        playerView.layer.sublayers?.forEach({$0.removeFromSuperlayer()})
-        playerView.layer.addSublayer(layer)
-    }
-
-    @objc func itemDidFinishPlaying(_ notification: Notification) {
-        if let startTime = trimmerView.startTime {
-            player?.seek(to: startTime)
-            player?.play()
-        }
     }
 
     func startPlaybackTimeChecker() {
@@ -189,20 +195,31 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
         if playBackTime >= endTime {
             player.seek(to: startTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
             trimmerView.seek(to: startTime)
+            pause()
         }
     }
 }
 
 extension VideoTrimmerViewController: TrimmerViewDelegate {
     func positionBarStoppedMoving(_ playerTime: CMTime) {
-        player?.seek(to: playerTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
-        player?.play()
+        guard let player = player else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("The player is nil.")
+          }
+          return
+        }
+        player.seek(to: playerTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
         startPlaybackTimeChecker()
     }
 
     func didChangePositionBar(_ playerTime: CMTime) {
-        stopPlaybackTimeChecker()
-        player?.pause()
-        player?.seek(to: playerTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        guard let player = player else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("The player is nil.")
+          }
+          return
+        }
+        startPlaybackTimeChecker()
+        player.seek(to: playerTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
     }
 }

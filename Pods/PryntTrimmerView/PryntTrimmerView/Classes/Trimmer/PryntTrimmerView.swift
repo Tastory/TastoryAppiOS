@@ -272,11 +272,10 @@ public protocol TrimmerViewDelegate: class {
                 updateRightConstraint(with: translation)
             }
             layoutIfNeeded()
-            if let startTime = startTime, isLeftGesture {
+            if let startTime = startTime {
                 seek(to: startTime)
-            } else if let endTime = endTime {
-                seek(to: endTime)
             }
+            
             updateSelectedTime(stoppedMoving: false)
 
         case .cancelled, .ended, .failed:

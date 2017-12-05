@@ -361,7 +361,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="799" text="50" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rV1-7C-DT8">
-                                                        <rect key="frame" x="346.33333333333331" y="19" width="13.666666666666686" height="14"/>
+                                                        <rect key="frame" x="346.33333333333331" y="18.333333333333343" width="13.666666666666686" height="14"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -526,7 +526,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="800" text="15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QxI-Em-dBD">
-                                                        <rect key="frame" x="346.33333333333331" y="16" width="13.666666666666686" height="14"/>
+                                                        <rect key="frame" x="346.33333333333331" y="15.333333333333258" width="13.666666666666686" height="14"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66000000000000003" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -924,7 +924,7 @@
                                 </subviews>
                             </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose Venue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ogf-bS-Ofz">
-                                <rect key="frame" x="136" y="57.333333333333336" width="104" height="18.666666666666664"/>
+                                <rect key="frame" x="136.33333333333334" y="57.666666666666664" width="104" height="18.666666666666664"/>
                                 <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="16"/>
                                 <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -1006,7 +1006,7 @@
                                     <constraint firstAttribute="height" constant="36" id="Vpe-sd-CXI"/>
                                     <constraint firstAttribute="width" constant="36" id="gGc-Av-99f"/>
                                 </constraints>
-                                <state key="normal" title="Play" image="StoryMarkup-PauseButton"/>
+                                <state key="normal" title="Play" image="StoryMarkup-PlayButton"/>
                                 <connections>
                                     <action selector="play:" destination="8PR-Jc-D76" eventType="touchUpInside" id="uMQ-oe-0Rp"/>
                                 </connections>
@@ -1078,7 +1078,7 @@
         <image name="Markup-Undo" width="40" height="40"/>
         <image name="SelfieIcon" width="40" height="36"/>
         <image name="Settings-LeftArrowDark" width="8" height="14"/>
-        <image name="StoryMarkup-PauseButton" width="40" height="40"/>
+        <image name="StoryMarkup-PlayButton" width="40" height="40"/>
         <image name="StoryMarkup-SoundOffButton" width="40" height="40"/>
         <image name="StoryMarkup-SoundOnButton" width="40" height="40"/>
     </resources>
