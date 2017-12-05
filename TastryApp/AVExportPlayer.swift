@@ -227,9 +227,8 @@ class AVExportPlayer: NSObject {
     self.addObserver(self, forKeyPath: #keyPath(avPlayer.status), options: [.new], context: nil)
     self.addObserver(self, forKeyPath: #keyPath(avPlayer.reasonForWaitingToPlay), options: [.new], context: nil)
   }
-  
 
-  func exportAsync(to exportURL: URL, thru tempURL: URL, using preset: String = AVAssetExportPreset960x540, with outputType: AVFileType = .mov, completion callback: ((Error?) -> Void)? = nil) {
+  func exportAsync(to exportURL: URL, thru tempURL: URL, using preset: String = AVAssetExportPreset960x540, with outputType: AVFileType = .mov, duration timeRange: CMTimeRange? = nil, completion callback: ((Error?) -> Void)? = nil) {
     
     guard let avPlayer = self.avPlayer else {
       CCLog.fatal("avPlayer == nil. Cannot check whether needed to switch AVPlayer backing to Local File")
@@ -254,6 +253,9 @@ class AVExportPlayer: NSObject {
       avAssetExportSession.outputURL = tempURL
       avAssetExportSession.outputFileType = outputType
       avAssetExportSession.timeRange = CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity)
+      if(timeRange != nil) {
+        avAssetExportSession.timeRange = timeRange!
+      }
       self.avExportSession = avAssetExportSession
       
       avAssetExportSession.exportAsynchronously {

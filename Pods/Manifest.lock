@@ -30,6 +30,7 @@ PODS:
   - PINRemoteImage/PINCache (3.0.0-beta.12):
     - PINCache (= 3.0.1-beta.5)
     - PINRemoteImage/Core
+  - PryntTrimmerView (2.0.0)
   - QuadratTouch (1.1.3)
   - RATreeView (2.1.2)
   - SwiftyCam (2.6.0)
@@ -51,6 +52,7 @@ DEPENDENCIES:
   - HTTPStatusCodes (~> 3.1.2)
   - Jot (from `https://github.com/biscottigelato/Jot.git`)
   - Parse
+  - PryntTrimmerView (from `https://github.com/specc/PryntTrimmerView.git`)
   - QuadratTouch (from `https://github.com/Constantine-Fry/das-quadrat.git`, branch `develop`)
   - RATreeView
   - SwiftyCam
@@ -60,6 +62,8 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   Jot:
     :git: https://github.com/biscottigelato/Jot.git
+  PryntTrimmerView:
+    :git: https://github.com/specc/PryntTrimmerView.git
   QuadratTouch:
     :branch: develop
     :git: https://github.com/Constantine-Fry/das-quadrat.git
@@ -68,6 +72,9 @@ CHECKOUT OPTIONS:
   Jot:
     :commit: 25f8f4b486ed7993285adef5662b3b31dfee0a00
     :git: https://github.com/biscottigelato/Jot.git
+  PryntTrimmerView:
+    :commit: 23df209789126e3baf24bf257171aecc67754596
+    :git: https://github.com/specc/PryntTrimmerView.git
   QuadratTouch:
     :commit: 4f10166069b9482da15a9b118e81102c3fffd507
     :git: https://github.com/Constantine-Fry/das-quadrat.git
@@ -87,12 +94,13 @@ SPEC CHECKSUMS:
   PINCache: 98e7b1ef782824ad231ade51987c218b758c30d8
   PINOperation: ac23db44796d4a564ecf9b5ea7163510f579b71d
   PINRemoteImage: 0cefe720c2612960bd360710efbd6c73a1991d5f
+  PryntTrimmerView: 5ad39b9cb5793adcebdad4a1a241260a2c281a38
   QuadratTouch: 9e311cbd4f0573b58cafe6783df1fa7ce2458afa
   RATreeView: 380cde0090cfde21dc6ac29137f49d3b768fdd28
   SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
   Texture: c3f06e344aa091667b7a56002e525cde674d021a
   TLPhotoPicker: d850050494b9dcac0b585cf2d49ad2accf692d25
 
-PODFILE CHECKSUM: 737cf150eae8dd16b03b09b048d2832b65b5584c
+PODFILE CHECKSUM: bc6d8eef122269f4e4d550141c4c150a67151aaf
 
-COCOAPODS: 1.2.0
+COCOAPODS: 1.3.1

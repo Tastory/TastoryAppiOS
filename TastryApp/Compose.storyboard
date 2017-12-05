@@ -431,7 +431,7 @@
                                                     <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J5u-Se-d4s">
                                                         <rect key="frame" x="49" y="7.6666666666666288" width="311" height="29"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
-                                                        <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                         <state key="normal" title="Venue (Required)">
                                                             <color key="titleColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                         </state>
@@ -958,6 +958,101 @@
             </objects>
             <point key="canvasLocation" x="2229.5999999999999" y="-1865.0246305418721"/>
         </scene>
+        <!--Video Trimmer View Controller-->
+        <scene sceneID="Zvo-Rx-2u0">
+            <objects>
+                <viewController storyboardIdentifier="VideoTrimmerViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="8PR-Jc-D76" customClass="VideoTrimmerViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="JCM-wp-7oV">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mT1-MA-qLg">
+                                <rect key="frame" x="0.0" y="72" width="375" height="668"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="mT1-MA-qLg" secondAttribute="height" multiplier="9:16" id="61B-DQ-UCE"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Chr-2S-bas" userLabel="Cancel">
+                                <rect key="frame" x="10" y="684" width="36" height="36"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="36" id="oqL-ux-xC2"/>
+                                    <constraint firstAttribute="height" constant="36" id="yw8-cv-VcS"/>
+                                </constraints>
+                                <state key="normal" image="Markup-Cross"/>
+                                <connections>
+                                    <action selector="cancel:" destination="8PR-Jc-D76" eventType="touchUpInside" id="M2v-2A-ht8"/>
+                                </connections>
+                            </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RMl-Wz-Bnc">
+                                <rect key="frame" x="0.0" y="97" width="375" height="60"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="m3o-c4-rVr" customClass="TrimmerView" customModule="PryntTrimmerView">
+                                        <rect key="frame" x="5" y="5" width="365" height="50"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="m3o-c4-rVr" secondAttribute="bottom" constant="5" id="Cyy-BN-gSY"/>
+                                    <constraint firstAttribute="trailing" secondItem="m3o-c4-rVr" secondAttribute="trailing" constant="5" id="azR-fF-jhg"/>
+                                    <constraint firstItem="m3o-c4-rVr" firstAttribute="leading" secondItem="RMl-Wz-Bnc" secondAttribute="leading" constant="5" id="k1c-o0-pSJ"/>
+                                    <constraint firstItem="m3o-c4-rVr" firstAttribute="top" secondItem="RMl-Wz-Bnc" secondAttribute="top" constant="5" id="qcr-7c-ND4"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6gu-7f-MKa">
+                                <rect key="frame" x="169.66666666666666" y="684" width="36" height="36"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="36" id="Vpe-sd-CXI"/>
+                                    <constraint firstAttribute="width" constant="36" id="gGc-Av-99f"/>
+                                </constraints>
+                                <state key="normal" title="Play" image="StoryMarkup-PlayButton"/>
+                                <connections>
+                                    <action selector="play:" destination="8PR-Jc-D76" eventType="touchUpInside" id="uMQ-oe-0Rp"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sPI-bK-GnF">
+                                <rect key="frame" x="314" y="672" width="56" height="57"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="56" id="XDO-xh-zeP"/>
+                                    <constraint firstAttribute="height" constant="57" id="doK-7E-gYx"/>
+                                </constraints>
+                                <state key="normal" title="Select" image="Markup-Next"/>
+                                <connections>
+                                    <action selector="selectAsset:" destination="8PR-Jc-D76" eventType="touchUpInside" id="V4n-zV-HwD"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="RMl-Wz-Bnc" firstAttribute="leading" secondItem="6P5-Ya-FXK" secondAttribute="leading" id="1OC-Fl-TZH"/>
+                            <constraint firstItem="mT1-MA-qLg" firstAttribute="centerX" secondItem="JCM-wp-7oV" secondAttribute="centerX" id="A4h-i3-F5Y"/>
+                            <constraint firstItem="6P5-Ya-FXK" firstAttribute="trailing" secondItem="RMl-Wz-Bnc" secondAttribute="trailing" id="CBN-e1-FQj"/>
+                            <constraint firstItem="RMl-Wz-Bnc" firstAttribute="top" secondItem="mT1-MA-qLg" secondAttribute="top" constant="25" id="Fk5-Fg-KPP"/>
+                            <constraint firstItem="mT1-MA-qLg" firstAttribute="width" secondItem="JCM-wp-7oV" secondAttribute="width" id="WHC-49-B0D"/>
+                            <constraint firstItem="sPI-bK-GnF" firstAttribute="trailing" secondItem="mT1-MA-qLg" secondAttribute="trailing" constant="-5" id="eGW-hz-BE4"/>
+                            <constraint firstItem="6gu-7f-MKa" firstAttribute="bottom" secondItem="mT1-MA-qLg" secondAttribute="bottom" constant="-20" id="iYZ-5C-Kje"/>
+                            <constraint firstItem="mT1-MA-qLg" firstAttribute="centerY" secondItem="JCM-wp-7oV" secondAttribute="centerY" id="jdB-XZ-b6s"/>
+                            <constraint firstItem="Chr-2S-bas" firstAttribute="bottom" secondItem="mT1-MA-qLg" secondAttribute="bottom" constant="-20" id="k03-p9-tUV"/>
+                            <constraint firstItem="Chr-2S-bas" firstAttribute="leading" secondItem="mT1-MA-qLg" secondAttribute="leading" constant="10" id="l7l-V9-Ibm"/>
+                            <constraint firstItem="sPI-bK-GnF" firstAttribute="bottom" secondItem="mT1-MA-qLg" secondAttribute="bottom" constant="-11" id="lWc-fz-0VI"/>
+                            <constraint firstItem="RMl-Wz-Bnc" firstAttribute="height" secondItem="mT1-MA-qLg" secondAttribute="height" multiplier="0.09" id="u2F-q1-f77"/>
+                            <constraint firstItem="6gu-7f-MKa" firstAttribute="centerX" secondItem="JCM-wp-7oV" secondAttribute="centerX" id="wGg-Ec-otC"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6P5-Ya-FXK"/>
+                    </view>
+                    <connections>
+                        <outlet property="playButton" destination="6gu-7f-MKa" id="lfj-wm-spI"/>
+                        <outlet property="playerView" destination="mT1-MA-qLg" id="bDD-eH-zHe"/>
+                        <outlet property="selectAssetButton" destination="sPI-bK-GnF" id="H8f-6L-otT"/>
+                        <outlet property="trimmerBackground" destination="RMl-Wz-Bnc" id="U4S-ds-bU9"/>
+                        <outlet property="trimmerView" destination="m3o-c4-rVr" id="tRd-Rk-Trh"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nj6-dj-omS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3031" y="-1865"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Entry-DiscardButton" width="170" height="50"/>
@@ -983,6 +1078,7 @@
         <image name="Markup-Undo" width="40" height="40"/>
         <image name="SelfieIcon" width="40" height="36"/>
         <image name="Settings-LeftArrowDark" width="8" height="14"/>
+        <image name="StoryMarkup-PlayButton" width="40" height="40"/>
         <image name="StoryMarkup-SoundOffButton" width="40" height="40"/>
         <image name="StoryMarkup-SoundOnButton" width="40" height="40"/>
     </resources>

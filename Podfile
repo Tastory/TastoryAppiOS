@@ -19,7 +19,7 @@ target 'TastryApp' do
   pod 'TLPhotoPicker', :inhibit_warnings => true
   pod 'Texture', :inhibit_warnings => true
   pod 'ColorSlider', '~> 4.0'
-  
+  pod 'PryntTrimmerView', :git => 'https://github.com/specc/PryntTrimmerView.git'  
   target 'TastryAppTests' do
     inherit! :search_paths
     # Pods for testing
