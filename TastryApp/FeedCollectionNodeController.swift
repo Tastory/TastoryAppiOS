@@ -269,11 +269,13 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       collectionNode.view.alwaysBounceHorizontal = false
       collectionNode.view.alwaysBounceVertical = true
       collectionNode.view.decelerationRate = UIScrollViewDecelerationRateNormal
+      collectionNode.leadingScreensForBatching = 2.0
       
     case .carousel:
       collectionNode.view.alwaysBounceVertical = false
       collectionNode.view.alwaysBounceHorizontal = true
       collectionNode.view.decelerationRate = UIScrollViewDecelerationRateFast
+      collectionNode.leadingScreensForBatching = 1.0
     }
   }
 
@@ -355,11 +357,13 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       collectionNode.view.alwaysBounceHorizontal = false
       collectionNode.view.alwaysBounceVertical = true
       collectionNode.view.decelerationRate = UIScrollViewDecelerationRateNormal
+      collectionNode.leadingScreensForBatching = 2.0
       
     case .carousel:
       collectionNode.view.alwaysBounceVertical = false
       collectionNode.view.alwaysBounceHorizontal = true
       collectionNode.view.decelerationRate = UIScrollViewDecelerationRateFast
+      collectionNode.leadingScreensForBatching = 1.0
     }
     
     delegate?.collectionNodeLayoutChanged?(to: layoutType)

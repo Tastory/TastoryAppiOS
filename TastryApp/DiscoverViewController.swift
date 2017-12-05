@@ -1125,6 +1125,8 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       return
     }
     
+    CCLog.info("CollectionNodeNeedsNextDataPage")
+    
     query.getNextStories(for: FoodieGlobal.Constants.StoryFeedPaginationCount) { stories, error in
       
       if let error = error {
