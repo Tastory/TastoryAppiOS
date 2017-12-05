@@ -353,7 +353,7 @@ class FoodieQuery {
   
   func initStoryQueryAndSearch(withBlock callback: StoriesErrorBlock?) {
     
-    guard let outerQuery = FoodieStory.query() else {
+    guard let coreQuery = FoodieStory.query() else {
       CCLog.assert("Cannot create a PFQuery object from FoodieStory")
       callback?(nil, ErrorCode.cannotCreatePFQuery)
       return
@@ -367,32 +367,42 @@ class FoodieQuery {
     
     // If there's any User filtering criteria, create a relational query
     if let authorsSubQuery = setupAuthorQuery() {
-      outerQuery.whereKey("author", matchesQuery: authorsSubQuery)
+      coreQuery.whereKey("author", matchesQuery: authorsSubQuery)
       pfAuthorsSubQuery = authorsSubQuery
     }
     
     // If there's any Venue filtering criteria, create a relational query
     if let venueSubQuery = setupVenueQuery(for: venueSubQuery) {
-      outerQuery.whereKey("venue", matchesQuery: venueSubQuery)
+      coreQuery.whereKey("venue", matchesQuery: venueSubQuery)
       pfVenueSubQuery = venueSubQuery
     }
     
-    // Filtering criteria for on the Story itself
-    if let maxDiscoverability = maxDiscoverability {
-      outerQuery.whereKey("discoverability", lessThanOrEqualTo: maxDiscoverability.rawValue)
-    }
-    
-    if let minDiscoverability = minDiscoverability {
-      outerQuery.whereKey("discoverability", greaterThanOrEqualTo: minDiscoverability.rawValue)
-    }
-    
-    // See your own story also?
+    // See your own story in addition to Discoverability filtering?
     if ownStoriesAlso, let currentUser = FoodieUser.current {
-      let ownQuery = FoodieStory.query()
-      ownQuery!.whereKey("author", equalTo: currentUser)
-      pfQuery = PFQuery.orQuery(withSubqueries: [outerQuery, ownQuery!])
-    } else {
-      pfQuery = outerQuery
+      let ownQuery = coreQuery.copy() as! PFQuery
+      ownQuery.whereKey("author", equalTo: currentUser)
+      
+      if let maxDiscoverability = maxDiscoverability {
+        coreQuery.whereKey("discoverability", lessThanOrEqualTo: maxDiscoverability.rawValue)
+      }
+      
+      if let minDiscoverability = minDiscoverability {
+        coreQuery.whereKey("discoverability", greaterThanOrEqualTo: minDiscoverability.rawValue)
+      }
+    
+      pfQuery = PFQuery.orQuery(withSubqueries: [coreQuery, ownQuery])
+    }
+    
+    else {
+      if let maxDiscoverability = maxDiscoverability {
+        coreQuery.whereKey("discoverability", lessThanOrEqualTo: maxDiscoverability.rawValue)
+      }
+      
+      if let minDiscoverability = minDiscoverability {
+        coreQuery.whereKey("discoverability", greaterThanOrEqualTo: minDiscoverability.rawValue)
+      }
+      
+      pfQuery = coreQuery
     }
     
     pfQuery = setupCommonQuery(for: pfQuery!)

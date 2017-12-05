@@ -158,6 +158,8 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
           
           interactor.finish()
           
+          CCLog.verbose("Pop Interaction Ended for \(self.restorationIdentifier != nil ? self.restorationIdentifier! : "")")
+          
           UIView.animate(withDuration: Constants.DragReturnTransitionDuration, animations: {
             self.view.layer.transform = popSmallerTransform
             self.view.alpha = 0.0
