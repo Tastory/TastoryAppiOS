@@ -443,6 +443,29 @@ class DiscoverViewController: OverlayViewController {
   }
   
   
+  private func updateDiscoverView(onStories stories: [FoodieStory]) {
+    var newAnnotations = [StoryMapAnnotation]()
+    
+    for story in stories {
+      guard let venue = story.venue, let location = venue.location, venue.isDataAvailable else {
+        CCLog.assert("No Title, Venue or Location to Story. Skipping Story")
+        return
+      }
+      
+      let annotation = StoryMapAnnotation(title: venue.name ?? "",
+                                          story: story,
+                                          coordinate: CLLocationCoordinate2D(latitude: location.latitude,
+                                                                             longitude: location.longitude))
+      newAnnotations.append(annotation)
+    }
+    
+    DispatchQueue.main.async {
+      self.mapNavController?.add(annotations: newAnnotations)
+      self.storyAnnotations.append(contentsOf: newAnnotations)
+    }
+  }
+  
+  
   private func appearanceForAllUI(alphaValue: CGFloat, animated: Bool,
                                   duration: TimeInterval = FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
     appearanceForTopUI(alphaValue: alphaValue, animated: animated, duration: duration)
@@ -1088,6 +1111,44 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
     if storiesIndexes.count > 0 {
       let storiesShouldPrefetch = storiesIndexes.map { self.storyArray[$0] }
       FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
+    }
+  }
+  
+  
+  func collectionNodeNeedsNextDataPage(for context: AnyObject) {
+    
+    guard let query = storyQuery else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.assert("Expected there to be a pre-existing Query")
+        self.searchWithFilter(self.searchButton)
+      }
+      return
+    }
+    
+    query.getNextStories(for: FoodieGlobal.Constants.StoryFeedPaginationCount) { stories, error in
+      
+      if let error = error {
+        AlertDialog.present(from: self, title: "Pagination Error", message: error.localizedDescription) { _ in
+          CCLog.warning("query.getNextStories resulted in error - \(error.localizedDescription)")
+        }
+        return
+      }
+      
+      guard let stories = stories, stories.count > 0 else {
+        CCLog.warning("No addtional Stories returned. Just set isLastPage and return")
+        self.feedCollectionNodeController.updateDataPage(withStory: [], for: context, isLastPage: true)
+        return
+      }
+      
+      let previousCount = self.storyArray.count
+      let newCount = previousCount + min(stories.count, FoodieGlobal.Constants.StoryFeedPaginationCount)
+      let newIndexes = Array(previousCount...newCount-1)
+      let isLastPage = stories.count < FoodieGlobal.Constants.StoryFeedPaginationCount
+      
+      self.storyArray.append(contentsOf: stories)
+      self.feedCollectionNodeController.storyArray = self.storyArray
+      self.feedCollectionNodeController.updateDataPage(withStory: newIndexes, for: context, isLastPage: isLastPage)
+      self.updateDiscoverView(onStories: stories)
     }
   }
 }

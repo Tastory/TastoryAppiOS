@@ -443,7 +443,7 @@ class FoodieQuery {
   
   
   func getNextStories(for count: Int, withBlock callback: StoriesErrorBlock?) {
-    guard let query = pfQuery else {
+    guard pfQuery != nil else {
       CCLog.assert("No initial PFQuery created, so cannot get another batch of query results")
       callback?(nil, ErrorCode.noPFQueryToPerformAnotherSearch)
       return
@@ -451,13 +451,13 @@ class FoodieQuery {
     
     skip = skip + limit
     limit = count
-    query.skip = skip
-    query.limit = limit
+    pfQuery!.skip = skip
+    pfQuery!.limit = limit
     
     // Do the actual search!
     let queryRetry = SwiftRetry()
-    queryRetry.start("query and search for next Stories", withCountOf: Constants.QueryRetryCount) {
-      query.findObjectsInBackground { (objects, error) in
+    queryRetry.start("Query and search for next Stories", withCountOf: Constants.QueryRetryCount) {
+      self.pfQuery!.findObjectsInBackground { (objects, error) in
         if let stories = objects as? [FoodieStory] {
           callback?(stories, error)
         } else {

@@ -258,6 +258,12 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    if storyArray.count < FoodieGlobal.Constants.StoryFeedPaginationCount {
+      allPagesFetched = true
+    } else {
+      allPagesFetched = false
+    }
+    
     switch layoutType {
     case .mosaic:
       collectionNode.view.alwaysBounceHorizontal = false
@@ -293,7 +299,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     
     // Add to Collection Node if there's any more Stories returned
     if indexes.count > 0 {
-      collectionNode.insertItems(at: indexes.map { IndexPath.init(row: $0, section: 1) })
+      collectionNode.insertItems(at: indexes.map { IndexPath(row: $0, section: 0) })
     }
     
     allPagesFetched = isLastPage
@@ -304,7 +310,12 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // If the parent view have fetched a completly different list of Stories, start from scratch
   func resetCollectionNode(with stories: [FoodieStory], completion: (() -> Void)? = nil) {
     storyArray = stories
-    allPagesFetched = false
+    
+    if stories.count < FoodieGlobal.Constants.StoryFeedPaginationCount {
+      allPagesFetched = true
+    } else {
+      allPagesFetched = false
+    }
     collectionNode.reloadData(completion: completion)
   }
 
@@ -538,7 +549,11 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   
   func collectionNode(_ collectionNode: ASCollectionNode, willBeginBatchFetchWith context: ASBatchContext) {
-    delegate?.collectionNodeNeedsNextDataPage?(for: context)
+    if let delegate = delegate {
+      delegate.collectionNodeNeedsNextDataPage?(for: context)
+    } else {
+      context.completeBatchFetching(true)
+    }
   }
   
   
