@@ -684,8 +684,8 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
 
             // clean up video player
             if(moment.media != nil) {
-              moment.media!.videoExportPlayer?.cancelExport()
-              moment.media!.videoExportPlayer = nil
+              moment.media!.videoExportPlayer?.cancelExport()  // On successful export cancel, the retrieve completion failure will nil the videoExportPlayer pointer?
+              //moment.media!.videoExportPlayer = nil
             }
           }
         }

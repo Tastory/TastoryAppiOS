@@ -62,7 +62,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   // MARK: - Private Instance Variables
   
   private var momentViewController = MomentCollectionViewController()
-  private var isAppearanceLayout = true
+  private var isInitialLayout = true
   
 
   
@@ -550,7 +550,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       }
       
       appearanceForAllUI(alphaValue: 0.0, animated: false)
-      isAppearanceLayout = true
+      isInitialLayout = true
     }
   }
   
@@ -558,8 +558,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
-    if isAppearanceLayout {
-      isAppearanceLayout = false
+    if isInitialLayout {
+      isInitialLayout = false
       
       // Setup Background Gradient Views
       let backgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.BackgroundGradientBlackAlpha)

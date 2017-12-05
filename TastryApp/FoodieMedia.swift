@@ -183,7 +183,11 @@ extension FoodieMedia: FoodieObjectDelegate {
         return (imageMemoryBuffer != nil)
         
       case .video:
-        return (videoExportPlayer != nil)  // !!! For this case, it's not possible to tell if it's retrieved, or retrieving
+        if let videoExportPlayer = videoExportPlayer, videoExportPlayer.avPlayer != nil {
+          return true  // !!! For this case, it's not possible to tell if it's retrieved, or retrieving
+        } else {
+          return false
+        }
       }
     }
     return false

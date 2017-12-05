@@ -639,6 +639,7 @@ class StoryViewController: OverlayViewController {
 
   
   override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     
     // Stop all prefetches but the story being viewed
     guard let story = viewingStory else {

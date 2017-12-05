@@ -503,7 +503,6 @@ class DiscoverViewController: OverlayViewController {
     nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     nodeController.didMove(toParentViewController: self)
     feedCollectionNodeController = nodeController
-    nodeController.delegate = self
     carouselLayoutChangeTapRecognizer.isEnabled = false
     
     // Setup all the IBOutlet Delegates
@@ -635,6 +634,7 @@ class DiscoverViewController: OverlayViewController {
     super.viewDidAppear(animated)
  
     FoodieFetch.global.cancelAll()
+    feedCollectionNodeController.delegate = self
     
     guard let mapController = navigationController as? MapNavController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
@@ -774,6 +774,9 @@ class DiscoverViewController: OverlayViewController {
   
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
+    
+    // Let's disconnect the FeedCollectionNode's events before disappearing
+    feedCollectionNodeController.delegate = nil
     
     // Keep track of what the location is before we disappear
     if let mapNavController = mapNavController {
