@@ -334,11 +334,13 @@ class DiscoverViewController: OverlayViewController {
     query.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
     
     if !onAllUsers {
-      // Add Filter so only Post by Users > Limited User && Posts by Yourself can be seen
-      query.addRoleFilter(min: .user, max: nil)
+      // Add Filter so only Post with more than Limit Disoverability can be seen
+      // query.addRoleFilter(min: .user, max: nil)
+      query.addDiscoverabilityFilter(min: .normal, max: nil)
       
+      // Make sure you can alway see your own posts
       if let currentUser = FoodieUser.current, currentUser.isRegistered {
-        query.addAuthorsFilter(users: [currentUser])
+        query.setOwnStoriesAlso()
       }
     }
     

@@ -95,9 +95,11 @@ class FoodieQuery {
   // Parameters for filtering by Author(s). This is ORed with the Role(s) filter
   private var authors: [FoodieUser]?
   
-  // Parameters for filtering by Role(s), inclusive. This is ORed with Author(s) filter
-  private var minRoleLevel: FoodieRole.Level?
-  private var maxRoleLevel: FoodieRole.Level?
+  // Parameters for filtering by Discoverability, inclusive.
+  private var minDiscoverability: FoodieStory.Discoverability?
+  private var maxDiscoverability: FoodieStory.Discoverability?
+  
+  private var ownStoriesAlso: Bool = false
   
   // Constraining Parameters
   private var skip: Int = 0
@@ -162,14 +164,18 @@ class FoodieQuery {
   }
   
   
-  func addRoleFilter(min: FoodieRole.Level?, max: FoodieRole.Level?) {
-    minRoleLevel = min
-    maxRoleLevel = max
+  func addDiscoverabilityFilter(min: FoodieStory.Discoverability?, max: FoodieStory.Discoverability?) {
+    minDiscoverability = min
+    maxDiscoverability = max
   }
   
   
   func addAuthorsFilter(users: [FoodieUser]) {
     authors = users
+  }
+  
+  func setOwnStoriesAlso() {
+    ownStoriesAlso = true
   }
   
   
@@ -324,16 +330,8 @@ class FoodieQuery {
   }
   
   
-  func setupAuthorORedQuery() -> PFQuery<PFObject>? {
-    
-    var userQueryEnabled = false
-    var roleQueryEnabled = false
-    
+  func setupAuthorQuery() -> PFQuery<PFObject>? {
     guard let usersSubQuery = FoodieUser.query() else {
-      CCLog.fatal("Cannot create a PFQuery object from FoodieUser")
-    }
-    
-    guard let roleSubQuery = FoodieUser.query() else {
       CCLog.fatal("Cannot create a PFQuery object from FoodieUser")
     }
     
@@ -346,26 +344,7 @@ class FoodieQuery {
         authorUsernames.append(username)
       }
       usersSubQuery.whereKey("username", containedIn: authorUsernames)
-      userQueryEnabled = true
-    }
-    
-
-    if let maxRoleLevel = maxRoleLevel {
-      roleSubQuery.whereKey("roleLevel", lessThanOrEqualTo: maxRoleLevel.rawValue)
-      roleQueryEnabled = true
-    }
-      
-    if let minRoleLevel = minRoleLevel {
-      roleSubQuery.whereKey("roleLevel", greaterThanOrEqualTo: minRoleLevel.rawValue)
-      roleQueryEnabled = true
-    }
-      
-    if userQueryEnabled && roleQueryEnabled {
-      return PFQuery.orQuery(withSubqueries: [usersSubQuery, roleSubQuery])
-    } else if userQueryEnabled {
       return usersSubQuery
-    } else if roleQueryEnabled {
-      return roleSubQuery
     } else {
       return nil
     }
@@ -374,7 +353,7 @@ class FoodieQuery {
   
   func initStoryQueryAndSearch(withBlock callback: StoriesErrorBlock?) {
     
-    guard var outerQuery = FoodieStory.query() else {
+    guard let outerQuery = FoodieStory.query() else {
       CCLog.assert("Cannot create a PFQuery object from FoodieStory")
       callback?(nil, ErrorCode.cannotCreatePFQuery)
       return
@@ -386,10 +365,8 @@ class FoodieQuery {
       return
     }
     
-    outerQuery = setupCommonQuery(for: outerQuery)
-    
     // If there's any User filtering criteria, create a relational query
-    if let authorsSubQuery = setupAuthorORedQuery() {
+    if let authorsSubQuery = setupAuthorQuery() {
       outerQuery.whereKey("author", matchesQuery: authorsSubQuery)
       pfAuthorsSubQuery = authorsSubQuery
     }
@@ -399,9 +376,26 @@ class FoodieQuery {
       outerQuery.whereKey("venue", matchesQuery: venueSubQuery)
       pfVenueSubQuery = venueSubQuery
     }
-  
-    // Keep track of the Query objects
-    pfQuery = outerQuery
+    
+    // Filtering criteria for on the Story itself
+    if let maxDiscoverability = maxDiscoverability {
+      outerQuery.whereKey("discoverability", lessThanOrEqualTo: maxDiscoverability.rawValue)
+    }
+    
+    if let minDiscoverability = minDiscoverability {
+      outerQuery.whereKey("discoverability", greaterThanOrEqualTo: minDiscoverability.rawValue)
+    }
+    
+    // See your own story also?
+    if ownStoriesAlso, let currentUser = FoodieUser.current {
+      let ownQuery = FoodieStory.query()
+      ownQuery!.whereKey("author", equalTo: currentUser)
+      pfQuery = PFQuery.orQuery(withSubqueries: [outerQuery, ownQuery!])
+    } else {
+      pfQuery = outerQuery
+    }
+    
+    pfQuery = setupCommonQuery(for: pfQuery!)
     
     // Always also just fetch the Venue and Author data associated
     pfQuery!.includeKey("author")

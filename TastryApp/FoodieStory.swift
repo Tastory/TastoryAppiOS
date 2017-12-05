@@ -22,6 +22,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var author: FoodieUser?  // Pointer? To the Authoring User
   @NSManaged var storyURL: String? // URL to the Story article
   @NSManaged var swipeMessage: String? // Custom message underneath the swipe arrow indicator
+  @NSManaged var discoverability: UInt
   
   
   
@@ -30,6 +31,12 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Types & Enums
+  enum Discoverability: UInt {
+    case limited = 10
+    case normal = 20
+  }
+  
+  
   enum OperationType: String {
     case retrieveRecursive
     case saveRecursive
@@ -310,6 +317,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
       }
       author = currentUser
+      discoverability = currentUser.defaultDiscoverability.rawValue
     }
     
     // Calculate how many outstanding children operations there will be before hand
@@ -426,6 +434,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
       }
       author = currentUser
+      discoverability = currentUser.defaultDiscoverability.rawValue
     }
     
     // Calculate how many outstanding children operations there will be before hand

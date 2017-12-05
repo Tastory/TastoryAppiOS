@@ -103,4 +103,8 @@ class FoodieRole {
     }
   }
   
+  
+  static func roleLevelToDiscoverability(_ roleLevel: Int) -> UInt {
+    return UInt(roleLevel)
+  }
 }

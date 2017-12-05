@@ -326,6 +326,13 @@ class FoodieUser: PFUser {
     }
   }
   
+  var defaultDiscoverability: FoodieStory.Discoverability {
+    if roleLevel >= FoodieRole.Level.user.rawValue {
+      return .normal
+    } else {
+      return .limited
+    }
+  }
   
   
   // MARK: - Private Instance Variables
