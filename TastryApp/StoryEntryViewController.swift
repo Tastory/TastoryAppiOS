@@ -128,6 +128,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   
   
   @IBAction func previewStory(_ sender: Any) {
+    view.endEditing(true) // Dismiss Keyboard here, as Keyboard Dismiss Notification can crash JotViewController
+    
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as! StoryViewController
     viewController.viewingStory = workingStory
@@ -153,11 +155,6 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       CCLog.fatal("No Current User Logged In")
     }
     
-    guard let title = story.title, title != "", story.venue != nil else {
-      AlertDialog.present(from: self, title: "Required Fields Empty", message: "The Title and Venue are essential to a Story!")
-      return
-    }
-    
     guard let moments = story.moments, !moments.isEmpty else {
       AlertDialog.present(from: self, title: "Story has No Moments", message: "Add some Moments to make this an interesting Story!")
       return
@@ -165,9 +162,32 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     
     CCLog.info("User pressed 'Post Story'")
     
+    // There might be fields current in edit. Grab those values also
+    if let titleText = titleTextField?.text?.trimmingCharacters(in: .whitespacesAndNewlines), titleText != "" {
+      titleTextField?.text = titleText
+      story.title = titleText
+    }
+    
+    if let linkText = linkTextField?.text?.trimmingCharacters(in: .whitespacesAndNewlines), linkText != "" {
+      let validHttpText = URL.addHttpIfNeeded(to: linkText)
+      linkTextField?.text = validHttpText
+      story.storyURL = validHttpText
+    }
+    
+    if let swipeText = swipeTextField?.text?.trimmingCharacters(in: .whitespacesAndNewlines), swipeText != "" {
+      swipeTextField?.text = swipeText
+      story.swipeMessage = swipeText
+    }
+    
+    guard let title = story.title, title != "", story.venue != nil else {
+      AlertDialog.present(from: self, title: "Required Fields Empty", message: "The Title and Venue are essential to a Story!")
+      return
+    }
+    
     view.endEditing(true)
     activitySpinner.apply()
-
+    
+    
     // This will cause a save to both Local Cache and Server
     _ = story.saveWhole(to: .both, type: .cache) { error in
       
@@ -216,19 +236,21 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   
 
   @IBAction func editedTitle(_ sender: UITextField) {
-    guard let text = sender.text, let story = workingStory, text != story.title else {
+    guard let text = sender.text?.trimmingCharacters(in: .whitespacesAndNewlines), let story = workingStory, text != story.title, text != "" else {
       // Nothing changed, don't do anything
       return
     }
     
     CCLog.info("User edited Title of Story")
+    titleTextField?.text = text
     story.title = text
+    
     FoodieStory.preSave(nil, withBlock: nil)
   }
   
   
   @IBAction func editedLink(_ sender: UITextField) {
-    guard let text = sender.text, let story = workingStory, text != story.storyURL, text != "" else {
+    guard let text = sender.text?.trimmingCharacters(in: .whitespacesAndNewlines), let story = workingStory, text != story.storyURL, text != "" else {
       // Nothing changed, don't do anything
       return
     }
@@ -243,12 +265,13 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   
   
   @IBAction func editedSwipe(_ sender: UITextField) {
-    guard let text = sender.text, let story = workingStory, text != story.swipeMessage, text != "" else {
+    guard let text = sender.text?.trimmingCharacters(in: .whitespacesAndNewlines), let story = workingStory, text != story.swipeMessage, text != "" else {
       // Nothing changed, don't do anything
       return
     }
     
     CCLog.info("User edited Swipe Message of Story")
+    swipeTextField?.text = text
     story.swipeMessage = text
     FoodieStory.preSave(nil, withBlock: nil)
   }
@@ -550,7 +573,6 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       }
       
       appearanceForAllUI(alphaValue: 0.0, animated: false)
-      isInitialLayout = true
     }
   }
   

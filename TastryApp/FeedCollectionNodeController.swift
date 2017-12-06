@@ -551,7 +551,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   
   func shouldBatchFetch(for collectionNode: ASCollectionNode) -> Bool {
-    return !allPagesFetched
+    return false // !allPagesFetched
   }
   
   
@@ -607,7 +607,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       
     else if collectionNode.collectionViewLayout is CarouselCollectionViewLayout {
       let maxContentOffsetX = scrollView.contentSize.width - collectionNode.bounds.width
-      if !allPagesFetched, scrollView.contentOffset.x > maxContentOffsetX + Constants.CarouselPullTrasnlationForBatchFetch {
+      if false { // !allPagesFetched, scrollView.contentOffset.x > maxContentOffsetX + Constants.CarouselPullTrasnlationForBatchFetch {
         carouselBatchPending = true
       }
       

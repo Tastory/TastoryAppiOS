@@ -437,6 +437,7 @@ class MarkupViewController: OverlayViewController {
     undoButton.isHidden = true
     textButton.isHidden = false
     drawButton.isHidden = false
+    nextButton.isHidden = false
     
     fontLargeIcon.isHidden = true
     fontSmallIcon.isHidden = true
@@ -464,6 +465,7 @@ class MarkupViewController: OverlayViewController {
     textButton.isHidden = true
     drawButton.isHidden = true
     deleteButton.isHidden = true
+    nextButton.isHidden = true
     
     strokeLargeIcon.isHidden = true
     strokeSmallIcon.isHidden = true
@@ -484,6 +486,7 @@ class MarkupViewController: OverlayViewController {
     textButton.isHidden = true
     drawButton.isHidden = true
     deleteButton.isHidden = true
+    nextButton.isHidden = true
     
     fontLargeIcon.isHidden = true
     fontSmallIcon.isHidden = true

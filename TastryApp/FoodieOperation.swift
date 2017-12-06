@@ -117,7 +117,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       
     case .moment:
       CCLog.debug("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) operation with \(momentNumber) started")
-      prefetchOperation = moments[momentNumber].retrieveRecursive(from: .both, type: .cache) { error in
+      prefetchOperation = moments[momentNumber].retrieveCoverMedia(from: .both, type: .cache) { error in
         self.callback?(error)
         self.finished()
       }

@@ -203,6 +203,8 @@ class MomentCollectionViewController: UICollectionViewController {
       }
     }
 
+    parent?.view.endEditing(true)
+    
     let moment = momentArray[indexPath.item]
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {

@@ -37,38 +37,37 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
 
     // MARK: - IBActions
     @IBAction func selectAsset(_ sender: Any) {
-
+      guard let delegate = self.delegate else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("The video trimmer return delegate is nil.")
+        }
+        return
+      }
+      
+      guard let startTime = self.trimmerView.startTime else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("The start time is nil")
+        }
+        return
+      }
+      
+      guard let endTime = self.trimmerView.endTime else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("The end time is nil")
+        }
+        return
+      }
+      
+      guard let asset = self.avAsset else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          CCLog.fatal("avAsset is nil")
+        }
+        return
+      }
+      
       pause()
 
       self.dismiss(animated: true) {
-        guard let delegate = self.delegate else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-            CCLog.fatal("The video trimmer return delegate is nil.")
-          }
-          return
-        }
-
-        guard let startTime = self.trimmerView.startTime else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-            CCLog.fatal("The start time is nil")
-          }
-          return
-        }
-
-        guard let endTime = self.trimmerView.endTime else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-            CCLog.fatal("The end time is nil")
-          }
-          return
-        }
-
-        guard let asset = self.avAsset else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-            CCLog.fatal("avAsset is nil")
-          }
-          return
-        }
-
         delegate.videoTrimmed(from: startTime, to: endTime, url:  asset.url.absoluteString)
       }
     }

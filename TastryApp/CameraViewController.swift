@@ -874,43 +874,49 @@ extension CameraViewController: UIVideoEditorControllerDelegate {
 }
 
 extension CameraViewController: VideoTrimmerDelegate {
-  func videoTrimmed(from startTime: CMTime, to endTime: CMTime, url assetURL: String) {
-
-      guard let activitySpinner = activitySpinner else {
+  func videoTrimmed(from startTime: CMTime, to endTime: CMTime, url assetURLString: String) {
+    
+    guard let activitySpinner = activitySpinner else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("Activity Spinner is not initialized")
+      }
+      return
+    }
+    
+    guard let url = URL(string: assetURLString) else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        CCLog.fatal("Invalid Asset URL String")
+      }
+      return
+    }
+    
+    activitySpinner.apply()
+    
+    let fileName = url.lastPathComponent
+    let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .video)
+    let avExportPlayer = AVExportPlayer()
+    
+    avExportPlayer.initAVPlayer(from: url)
+    mediaObject.videoExportPlayer = avExportPlayer
+    avExportPlayer.exportAsync(to: FoodieFileObject.getFileURL(for: .draft, with: fileName), thru: FoodieFileObject.getRandomTempFileURL(),duration:
+    CMTimeRangeMake(startTime, endTime)) { error in
+      
+      activitySpinner.remove()
+      if let error = error {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-          CCLog.fatal("Activity Spinner is not initialized")
+          CCLog.fatal("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
         }
         return
       }
-
-      activitySpinner.apply()
-
-      let url = URL(fileURLWithPath: assetURL)
-      let fileName = url.lastPathComponent
-      let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .video)
-      let avExportPlayer = AVExportPlayer()
-
-      avExportPlayer.initAVPlayer(from: url)
-      mediaObject.videoExportPlayer = avExportPlayer
-      avExportPlayer.exportAsync(to: FoodieFileObject.getFileURL(for: .draft, with: fileName), thru: FoodieFileObject.getRandomTempFileURL(),duration:
-        CMTimeRangeMake(startTime, endTime)) { error in
-
-        activitySpinner.remove()
-        if let error = error {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
-            CCLog.fatal("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
-          }
-          return
-        }
-        DispatchQueue.main.async {
-          let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-          let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-          viewController.mediaObj = mediaObject
-          viewController.markupReturnDelegate = self
-          viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
-          self.present(viewController, animated: true)
-        }
+      DispatchQueue.main.async {
+        let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+        viewController.mediaObj = mediaObject
+        viewController.markupReturnDelegate = self
+        viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
+        self.present(viewController, animated: true)
       }
+    }
   }
 }
 
