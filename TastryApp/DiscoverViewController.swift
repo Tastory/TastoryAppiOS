@@ -1115,7 +1115,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
   }
   
   
-  func collectionNodeNeedsNextDataPage(for context: AnyObject) {
+  func collectionNodeNeedsNextDataPage(for context: AnyObject?) {
     
     guard let query = storyQuery else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in

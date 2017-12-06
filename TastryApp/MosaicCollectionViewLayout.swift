@@ -88,7 +88,7 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
   
   
   func calculateSectionInset(for collectionBounds: CGRect, at section: Int) -> UIEdgeInsets {
-    return UIEdgeInsetsMake(0.0, columnSpacing, 0.0, columnSpacing)
+    return UIEdgeInsetsMake(0.0, columnSpacing, collectionBounds.height - calculateConstrainedSize(for: collectionBounds).max.height, columnSpacing)
   }
   
   

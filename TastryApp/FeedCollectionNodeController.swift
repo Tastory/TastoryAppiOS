@@ -13,7 +13,7 @@ import AsyncDisplayKit
 @objc protocol FeedCollectionNodeDelegate {
   
   // FeedCollectionNodeController needs more data
-  @objc optional func collectionNodeNeedsNextDataPage(for context: AnyObject)
+  @objc optional func collectionNodeNeedsNextDataPage(for context: AnyObject?)
   
   @objc optional func collectionNodeDidEndDecelerating()
   
@@ -41,8 +41,9 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   private struct Constants {
     static let DefaultGuestimatedCellNodeWidth: CGFloat = 150.0
     static let DefaultFeedNodeCornerRadiusFraction:CGFloat = 0.05
-    static let MosaicPullTranslationForChange: CGFloat = -80
+    static let MosaicPullTranslationForChange: CGFloat = -100
     static let MosaicHighlightThresholdOffset: CGFloat = 20
+    static let CarouselPullTrasnlationForBatchFetch: CGFloat = 50
   }
   
   
@@ -53,7 +54,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   private var allowLayoutChange: Bool
   private var allPagesFetched: Bool
   private var lastIndexPath: IndexPath?
-  
+  private var carouselBatchPending = false
   
   
   // MARK: - Public Instance Variable
@@ -269,13 +270,13 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       collectionNode.view.alwaysBounceHorizontal = false
       collectionNode.view.alwaysBounceVertical = true
       collectionNode.view.decelerationRate = UIScrollViewDecelerationRateNormal
-      collectionNode.leadingScreensForBatching = 2.0
+      collectionNode.leadingScreensForBatching = CGFloat(FoodieGlobal.Constants.StoryFeedPaginationCount)/10.0
       
     case .carousel:
       collectionNode.view.alwaysBounceVertical = false
       collectionNode.view.alwaysBounceHorizontal = true
       collectionNode.view.decelerationRate = UIScrollViewDecelerationRateFast
-      collectionNode.leadingScreensForBatching = 1.0
+      collectionNode.leadingScreensForBatching = 0.0
     }
   }
 
@@ -290,14 +291,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // MARK: - Public Instance Function
   
   // More Data Fetched, update ColllectionNode
-  func updateDataPage(withStory indexes: [Int], for context: AnyObject, isLastPage: Bool) {
-    
-    guard let batchContext = context as? ASBatchContext else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
-        CCLog.assert("Expected context of type ASBatchContext")
-      }
-      return
-    }
+  func updateDataPage(withStory indexes: [Int], for context: AnyObject?, isLastPage: Bool) {
     
     // Add to Collection Node if there's any more Stories returned
     if indexes.count > 0 {
@@ -305,7 +299,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     }
     
     allPagesFetched = isLastPage
-    batchContext.completeBatchFetching(true)
+    context?.completeBatchFetching(true)
   }
   
   
@@ -324,11 +318,15 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   func changeLayout(to layoutType: LayoutType, animated: Bool) {
     var layout: UICollectionViewLayout
+    var delegateBackup: FeedCollectionNodeDelegate?
     
     guard allowLayoutChange else {
       CCLog.warning("Layout Change is Disabled!")
       return
     }
+    
+    delegateBackup = delegate
+    delegate = nil
     
     switch layoutType {
     case .mosaic:
@@ -336,6 +334,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       mosaicLayout.delegate = self
       collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
       layout = mosaicLayout
+      collectionNode.leadingScreensForBatching = CGFloat(FoodieGlobal.Constants.StoryFeedPaginationCount)/10.0
       
       if let oldLayout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
         oldLayout.sectionInset = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
@@ -345,28 +344,32 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       let carouselLayout = CarouselCollectionViewLayout()
       collectionNode.layoutInspector = nil
       layout = carouselLayout
+      collectionNode.leadingScreensForBatching = 0.0
     }
     
     //collectionNode.collectionViewLayout.invalidateLayout()  // Don't know why this causes Carousel to Mosaic swap to crash
-    collectionNode.view.setCollectionViewLayout(layout, animated: animated)
-    collectionNode.relayoutItems()
-    collectionNode.delegate = self
-    
-    switch layoutType {
-    case .mosaic:
-      collectionNode.view.alwaysBounceHorizontal = false
-      collectionNode.view.alwaysBounceVertical = true
-      collectionNode.view.decelerationRate = UIScrollViewDecelerationRateNormal
-      collectionNode.leadingScreensForBatching = 2.0
+    collectionNode.view.setCollectionViewLayout(layout, animated: animated) { _ in
+      self.collectionNode.relayoutItems()
+      self.collectionNode.delegate = self
       
-    case .carousel:
-      collectionNode.view.alwaysBounceVertical = false
-      collectionNode.view.alwaysBounceHorizontal = true
-      collectionNode.view.decelerationRate = UIScrollViewDecelerationRateFast
-      collectionNode.leadingScreensForBatching = 1.0
+      switch layoutType {
+      case .mosaic:
+       self.collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
+        self.collectionNode.view.alwaysBounceHorizontal = false
+        self.collectionNode.view.alwaysBounceVertical = true
+        self.collectionNode.view.decelerationRate = UIScrollViewDecelerationRateNormal
+        
+        
+      case .carousel:
+        self.collectionNode.layoutInspector = nil
+        self.collectionNode.view.alwaysBounceVertical = false
+        self.collectionNode.view.alwaysBounceHorizontal = true
+        self.collectionNode.view.decelerationRate = UIScrollViewDecelerationRateFast
+      }
+      
+      self.delegate = delegateBackup
+      self.delegate?.collectionNodeLayoutChanged?(to: layoutType)
     }
-    
-    delegate?.collectionNodeLayoutChanged?(to: layoutType)
   }
   
   
@@ -601,8 +604,21 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
         changeLayout(to: .carousel, animated: true)
       }
     }
+      
     else if collectionNode.collectionViewLayout is CarouselCollectionViewLayout {
-      // TODO: Add something cool in place + Pull to Refresh
+      let maxContentOffsetX = scrollView.contentSize.width - collectionNode.bounds.width
+      if !allPagesFetched, scrollView.contentOffset.x > maxContentOffsetX + Constants.CarouselPullTrasnlationForBatchFetch {
+        carouselBatchPending = true
+      }
+      
+      if carouselBatchPending, scrollView.contentOffset.x <= maxContentOffsetX {
+        carouselBatchPending = false
+        collectionNode.performBatch(animated: true, updates: {
+          delegate?.collectionNodeNeedsNextDataPage?(for: nil)
+        }, completion: nil)
+      }
+      
+      // TODO: Add something cool in place on header pull
     }
     else {
       CCLog.fatal("Did not recognize CollectionNode Layout Type")
