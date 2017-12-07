@@ -527,15 +527,15 @@ class MarkupViewController: OverlayViewController {
     }
     
     if mediaType == .video {
-      guard let videoURL = (mediaObj.videoExportPlayer?.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
+      guard let videoUrl = mediaObj.localVideoUrl else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-          CCLog.assert("Cannot get at AVURLAsset.url")
+          CCLog.assert("mediaObj.videoUrl = nil")
           self.dismiss(animated: true, completion: nil)
         }
         return
       }
       
-      let avPlayerItem = AVPlayerItem(url: videoURL)
+      let avPlayerItem = AVPlayerItem(url: videoUrl)
       avPlayer = AVQueuePlayer()
       avPlayer!.allowsExternalPlayback = false
       avPlayerLooper = AVPlayerLooper(player: avPlayer!, templateItem: avPlayerItem)

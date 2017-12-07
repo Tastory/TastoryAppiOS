@@ -358,9 +358,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
 
       let fileName = FoodieFileObject.newVideoFileName()
       let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .video)
-      let avExportPlayer = AVExportPlayer()
-      avExportPlayer.initAVPlayer(from: url)
-      mediaObject.videoExportPlayer = avExportPlayer
+      mediaObject.setVideo(toLocal: url)
 
       guard let activitySpinner = activitySpinner else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
@@ -371,12 +369,13 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
 
       activitySpinner.apply()
 
-      avExportPlayer.exportAsync(to: FoodieFileObject.getFileURL(for: .draft, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
+      mediaObject.localVideoTranscode(to: FoodieFileObject.getFileURL(for: .draft, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
         if let error = error {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
             CCLog.fatal("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
           }
           return
+          
         } else if FoodieFileObject.checkIfExists(for: fileName, in: .draft) {
           DispatchQueue.main.async {
             let storyboard = UIStoryboard(name: "Compose", bundle: nil)
@@ -393,6 +392,14 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
             activitySpinner.remove()
             self.present(viewController, animated: true)
           }
+          
+          // Get rid of the old temporary File
+          do {
+            try FileManager.default.removeItem(at: url)
+          } catch {
+            CCLog.warning("Delete of Swift Cam temp file \(url.absoluteString) failed - \(error.localizedDescription)")
+          }
+          
         } else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
             CCLog.fatal("AVExportPlayer exported video but file doesn't exists in \(FoodieFileObject.getFileURL(for: .draft, with: fileName))")
@@ -469,31 +476,24 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
         CCLog.assert("Failed to unwrap phAsset from TLPHAsset")
         return
       }
-
-      var mediaObject: FoodieMedia
-      switch(tlphAsset.type)
-      {
+      
+      switch tlphAsset.type {
       case .photo:
-
+        
         guard let uiImage = tlphAsset.fullResolutionImage else {
           CCLog.assert("failed to unwrap ui image from TLPH Asset")
           return
         }
-
-        var mediaObject: FoodieMedia
-        mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
-        mediaObject.imageMemoryBuffer =
-          UIImageJPEGRepresentation(
-            uiImage,
-            CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+        
+        let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
+        mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(uiImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
         callback(mediaObject)
-
+        
       case .video:
-
+        
         let videoName = FoodieFileObject.newVideoFileName()
-        mediaObject = FoodieMedia(for: videoName, localType: .draft, mediaType: .video)
         tlphAsset.phAsset?.copyMediaFile(withName: videoName) { (url, error) in
-
+          
           if let error = error {
             CCLog.fatal("Error occured when trying to copy video from photo albumn to tmp folder - \(error.localizedDescription)")
           }
@@ -502,12 +502,10 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
             CCLog.fatal("No URL returend from copyMediaFile()")
           }
           
-          let avExportPlayer = AVExportPlayer()
-          avExportPlayer.initAVPlayer(from: url)
-          mediaObject.videoExportPlayer = avExportPlayer
-          callback(mediaObject)
+          let mediaObject = FoodieMedia(for: videoName, localType: .draft, mediaType: .video)
+          mediaObject.setVideo(toLocal: url)
         }
-
+        
       default:
         AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { action in
           CCLog.fatal("Media returned from Image Picker is neither a Photo nor a Video")
@@ -775,40 +773,25 @@ extension CameraViewController: UIImagePickerControllerDelegate {
 
     case String(kUTTypeMovie):
 
-      guard let movieUrl = info[UIImagePickerControllerMediaURL] as? NSURL else {
+      guard let movieUrl = info[UIImagePickerControllerMediaURL] as? URL else {
         CCLog.assert("video URL is not returned from image picker")
-        return
-      }
-
-      guard let moviePath = movieUrl.relativePath else {
-        CCLog.assert("video URL \(movieUrl.absoluteString ?? "") is missing relative path")
         return
       }
   
       // Go into Video Clip trimming if the Video can be edited
-      if UIVideoEditorController.canEditVideo(atPath: moviePath) {
+      if UIVideoEditorController.canEditVideo(atPath: movieUrl.relativePath) {
 
         let storyboard = UIStoryboard(name: "Compose", bundle: nil)
         let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VideoTrimmerViewController") as! VideoTrimmerViewController
-        viewController.avAsset = AVURLAsset(url: movieUrl as URL)
+        viewController.avAsset = AVURLAsset(url: movieUrl)
         viewController.delegate = self
         present(viewController, animated: true, completion: nil)
         return
-
-      } else {
-        CCLog.warning("Video at path \(moviePath) cannot be edited")
       }
       
-      guard let movieName = movieUrl.lastPathComponent else {
-        CCLog.assert("video URL is missing movie name")
-        return
-      }
-      
-      mediaObject = FoodieMedia(for: movieName, localType: .draft, mediaType: .video)
-      let avExportPlayer = AVExportPlayer()
-      avExportPlayer.initAVPlayer(from: URL(fileURLWithPath: moviePath))
-      mediaObject.videoExportPlayer = avExportPlayer
-      
+      CCLog.warning("Video at URL \(movieUrl) cannot be edited")
+      mediaObject = FoodieMedia(for: movieUrl.lastPathComponent, localType: .draft, mediaType: .video)
+      mediaObject.setVideo(toLocal: movieUrl)
       
     case String(kUTTypeImage):
       
@@ -840,6 +823,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
 }
 
 
+
 extension CameraViewController: UIVideoEditorControllerDelegate {
   func videoEditorController(_ editor: UIVideoEditorController, didSaveEditedVideoToPath editedVideoPath: String) {
     
@@ -847,9 +831,7 @@ extension CameraViewController: UIVideoEditorControllerDelegate {
     let movieName = movieUrl.lastPathComponent
     
     let mediaObject = FoodieMedia(for: movieName, localType: .draft, mediaType: .video)
-    let avExportPlayer = AVExportPlayer()
-    avExportPlayer.initAVPlayer(from: movieUrl)
-    mediaObject.videoExportPlayer = avExportPlayer
+    mediaObject.setVideo(toLocal: movieUrl)
     
     editor.dismiss(animated: true) {
       let storyboard = UIStoryboard(name: "Compose", bundle: nil)
@@ -894,13 +876,11 @@ extension CameraViewController: VideoTrimmerDelegate {
     
     let fileName = url.lastPathComponent
     let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .video)
-    let avExportPlayer = AVExportPlayer()
+    mediaObject.setVideo(toLocal: url)
     
-    avExportPlayer.initAVPlayer(from: url)
-    mediaObject.videoExportPlayer = avExportPlayer
-    avExportPlayer.exportAsync(to: FoodieFileObject.getFileURL(for: .draft, with: fileName), thru: FoodieFileObject.getRandomTempFileURL(),duration:
-    CMTimeRangeMake(startTime, endTime)) { error in
-      
+    mediaObject.localVideoTranscode(to: FoodieFileObject.getFileURL(for: .draft, with: fileName),
+                                    thru: FoodieFileObject.getRandomTempFileURL(),
+                                    duration: CMTimeRangeMake(startTime, endTime)) { error in
       activitySpinner.remove()
       if let error = error {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in

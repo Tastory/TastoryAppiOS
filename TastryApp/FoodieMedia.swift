@@ -19,8 +19,8 @@ class FoodieMedia: FoodieFileObject {
     
     case retrieveFileDoesNotExist
     case saveToLocalwithNilImageMemoryBuffer
-    case saveToLocalWithNilVideoExportPlayer
-    case saveToLocalVideoExportPlayerHasNoAVURLAsset
+    case saveToLocalWithNilvideoExporter
+    case saveToLocalVideoHasNoFileUrl
     case saveToLocalCompletedWithNoOutputFile
     
     var errorDescription: String? {
@@ -29,10 +29,10 @@ class FoodieMedia: FoodieFileObject {
         return NSLocalizedString("File for filename does not exist", comment: "Error description for an exception error code")
       case .saveToLocalwithNilImageMemoryBuffer:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, imageMemoryBuffer = nil", comment: "Error description for an exception error code")
-      case .saveToLocalWithNilVideoExportPlayer:
+      case .saveToLocalWithNilvideoExporter:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, videoLocalBufferUrl = nil", comment: "Error description for an exception error code")
-      case .saveToLocalVideoExportPlayerHasNoAVURLAsset:
-        return NSLocalizedString("FoodieMedia.saveToLocal failed, videoExportPlayer does not contain AVURLAsset", comment: "Error description for an exception error code")
+      case .saveToLocalVideoHasNoFileUrl:
+        return NSLocalizedString("FoodieMedia.saveToLocal failed, videoExporter does not contain AVURLAsset", comment: "Error description for an exception error code")
       case .saveToLocalCompletedWithNoOutputFile:
         return NSLocalizedString("FoodieMedia.saveToLocal completed, but output file not found", comment: "Error description for an exception error code")
       }
@@ -46,16 +46,38 @@ class FoodieMedia: FoodieFileObject {
 
   
   
+  // MARK: - Public Instance Variables
   
-  // MARK: - Public Instance Variable
-  var imageMemoryBuffer: Data?
-  var videoExportPlayer: AVExportPlayer?
   var mediaType: FoodieMediaType?
-  var aspectRatio: Double?  // In decimal, width / height, like 16:9 = 16/9 = 1.777...
-  var width: Int?  // height = width / aspectRatio
+  var imageMemoryBuffer: Data?
+  var videoExportPlayer: AVExportPlayer {
+    
+    if let localVideoUrl = localVideoUrl {
+      let player = AVExportPlayer()
+      player.initAVPlayer(from: localVideoUrl)
+      return player
+    }
+      
+    else if let player = videoExporter, player.avPlayer != nil {
+      return player
+    }
+      
+    else {
+      CCLog.fatal("No existing videoExporter & avPlayer, nor localVideoUrl")
+    }
+  }
   
   
+  // MARK: - Read Only Instance Variables
+  
+  private(set) var localVideoUrl: URL?
 
+  
+  
+  // MARK: - Private Instance Variable
+
+  private var videoExporter: AVExportPlayer?
+  
   
   
   // MARK: - Public Instance Functions
@@ -73,6 +95,40 @@ class FoodieMedia: FoodieFileObject {
     foodieObject.delegate = self
     self.foodieFileName = fileName
     self.mediaType = mediaType
+  }
+  
+  
+  func setVideo(toLocal fileUrl: URL) {
+    guard let mediaType = mediaType, mediaType == .video else {
+      CCLog.fatal("MediaType not of Video when trying to set localVideoUrl")
+    }
+    guard fileUrl.isFileURL else {
+      CCLog.fatal("External setting of localVideoUrl must be of local File URL")
+    }
+    localVideoUrl = fileUrl
+  }
+  
+  
+  func localVideoTranscode(to exportURL: URL,
+                           thru tempURL: URL,
+                           using preset: String = AVAssetExportPreset960x540,
+                           with outputType: AVFileType = .mov,
+                           duration timeRange: CMTimeRange? = nil,
+                           completion callback: ((Error?) -> Void)? = nil) {
+    
+    guard let localVideoUrl = localVideoUrl else {
+      CCLog.fatal("localVideoUrl = nil")
+    }
+    
+    // To do the exporter, we need an AVExportPlayer, so create one, and we'll let it clean itself up after it finished switching backing
+    videoExporter = AVExportPlayer()
+    videoExporter!.initAVPlayer(from: localVideoUrl)
+    videoExporter!.exportAsync(to: exportURL,
+                               thru: tempURL,
+                               using: preset,
+                               with: outputType,
+                               duration: timeRange,
+                               completion: callback)
   }
   
   
@@ -110,30 +166,29 @@ class FoodieMedia: FoodieFileObject {
         return nil
       }
       
-      guard let imageProperties = (CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [String : AnyObject]) else {
-        CCLog.assert("CGImageSourceCopyPropertiesAtIndex failed to get Dictionary of image properties")
-        return nil
-      }
-      
-      if let pixelWidth = imageProperties[kCGImagePropertyPixelWidth as String] as? Int {
-        width = pixelWidth
-      } else {
-        CCLog.assert("Image property with index kCGImagePropertyPixelWidth did not return valid Integer value")
-        return nil
-      }
-      
-      if let pixelHeight = imageProperties[kCGImagePropertyPixelHeight as String] as? Int {
-        aspectRatio = Double(width!)/Double(pixelHeight)
-      } else {
-        CCLog.assert("Image property with index kCGImagePropertyPixelHeight did not return valid Integer value")
-        return nil
-      }
+//      guard let imageProperties = (CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [String : AnyObject]) else {
+//        CCLog.assert("CGImageSourceCopyPropertiesAtIndex failed to get Dictionary of image properties")
+//        return nil
+//      }
+//      
+//      if let pixelWidth = imageProperties[kCGImagePropertyPixelWidth as String] as? Int {
+//      } else {
+//        CCLog.assert("Image property with index kCGImagePropertyPixelWidth did not return valid Integer value")
+//        return nil
+//      }
+//
+//      if let pixelHeight = imageProperties[kCGImagePropertyPixelHeight as String] as? Int {
+//      } else {
+//        CCLog.assert("Image property with index kCGImagePropertyPixelHeight did not return valid Integer value")
+//        return nil
+//      }
       
     case .video:      // TODO: Allow user to change timeframe in video to base Thumbnail on
-      guard let asset = videoExportPlayer?.avPlayer?.currentItem?.asset as? AVURLAsset else {
-        CCLog.fatal("Cannot get at AVURLAsset")
+      guard let localVideoUrl = localVideoUrl else {
+        CCLog.fatal("Cannot generate thumbnail without local video URL")
       }
       
+      let asset = AVURLAsset(url: localVideoUrl)
       let imgGenerator = AVAssetImageGenerator(asset: asset)
       
       imgGenerator.maximumSize = CGSize(width: FoodieGlobal.Constants.ThumbnailPixels, height: FoodieGlobal.Constants.ThumbnailPixels)  // Assuming either portrait or square
@@ -153,9 +208,7 @@ class FoodieMedia: FoodieFileObject {
         return nil
       }
       
-      let videoSize = avTracks[0].naturalSize
-      width = Int(videoSize.width)
-      aspectRatio = Double(videoSize.width/videoSize.height)
+//      let videoSize = avTracks[0].naturalSize
     }
     
     // Create a Thumbnail Media with file name based on the original file name of the Media
@@ -176,15 +229,34 @@ class FoodieMedia: FoodieFileObject {
 extension FoodieMedia: FoodieObjectDelegate {
   
   var isRetrieved: Bool {
-    
     if let mediaType = mediaType {
       switch mediaType {
       case .photo:
         return (imageMemoryBuffer != nil)
         
       case .video:
-        if let videoExportPlayer = videoExportPlayer, videoExportPlayer.avPlayer != nil {
+        if localVideoUrl != nil {
           return true  // !!! For this case, it's not possible to tell if it's retrieved, or retrieving
+        } else {
+          return false
+        }
+      }
+    }
+    return false
+  }
+  
+  
+  var isReady: Bool {
+    if let mediaType = mediaType {
+      switch mediaType {
+      case .photo:
+        return (imageMemoryBuffer != nil)
+        
+      case .video:
+        if let videoExporter = videoExporter, videoExporter.avPlayer != nil {
+          return true  // Retrieving case
+        } else if localVideoUrl != nil {
+          return true  // Retrieved case
         } else {
           return false
         }
@@ -228,8 +300,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       
     case .video:
       if FoodieFileObject.checkIfExists(for: fileName, in: localType) {
-        self.videoExportPlayer = AVExportPlayer()
-        self.videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getFileURL(for: localType, with: fileName))
+        self.localVideoUrl = FoodieFileObject.getFileURL(for: localType, with: fileName)
         callback?(nil)
       } else {
         callback?(ErrorCode.retrieveFileDoesNotExist)
@@ -276,15 +347,19 @@ extension FoodieMedia: FoodieObjectDelegate {
         }
         
       case .video:
-        videoExportPlayer = AVExportPlayer()
-        videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getS3URL(for: fileName))
-        videoExportPlayer!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
+        videoExporter = AVExportPlayer()
+        videoExporter!.initAVPlayer(from: FoodieFileObject.getS3URL(for: fileName))
+        videoExporter!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
+          self.videoExporter = nil  // FoodieMedia only hole onto the Export Player during transcode/export. Releases all players when done
+          
           if let error = error {
             CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
-            self.videoExportPlayer = nil
             callback?(error)
-          } else { // if FoodieFileObject.checkIfExists(for: fileName, in: .cache
+          } else if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
+            self.localVideoUrl = FoodieFileObject.getFileURL(for: .cache, with: fileName)
             callback?(nil)
+          } else {
+            CCLog.fatal("AVExportPlayer export has no error, but no file output")
           }
         }
         readyBlock?()  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
@@ -323,23 +398,27 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
       
     case .video:
-      videoExportPlayer = AVExportPlayer()
+      videoExporter = AVExportPlayer()
       
       guard !FoodieFileObject.checkIfExists(for: fileName, in: .cache) else {
-        self.videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getFileURL(for: .cache, with: fileName))
+        self.videoExporter!.initAVPlayer(from: FoodieFileObject.getFileURL(for: .cache, with: fileName))
         readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval
         callback?(nil)
         return
       }
 
-      videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getS3URL(for: fileName))
-      videoExportPlayer!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
+      videoExporter!.initAVPlayer(from: FoodieFileObject.getS3URL(for: fileName))
+      videoExporter!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
+        self.videoExporter = nil  // FoodieMedia only hole onto the Export Player during transcode/export. Releases all players when done
+        
         if let error = error {
-          CCLog.warning("AVExportPlayer export asynchronously for \(fileName) failed with error \(error.localizedDescription)")
-          self.videoExportPlayer = nil
+          CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
           callback?(error)
-        } else { // if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
+        } else if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
+          self.localVideoUrl = FoodieFileObject.getFileURL(for: .cache, with: fileName)
           callback?(nil)
+        } else {
+          CCLog.fatal("AVExportPlayer export has no error, but no file output")
         }
       }
       readyBlock?()  // !!! We provide ready state early here, because we deem a video ready to stream as soon as it starts downloading
@@ -394,22 +473,15 @@ extension FoodieMedia: FoodieObjectDelegate {
       self.save(buffer: memoryBuffer, to: localType, withBlock: callback)
 
     case .video:
-
-      guard let videoExportPlayer = self.videoExportPlayer else {
-        CCLog.assert("videoExportPlayer = nil when Saving Media \(getUniqueIdentifier()) to Local")
-        callback?(ErrorCode.saveToLocalWithNilVideoExportPlayer)
-        return
-      }
-
-      guard let sourceURL = (videoExportPlayer.avPlayer?.currentItem?.asset as? AVURLAsset)?.url else {
+      guard let sourceURL = localVideoUrl else {
         CCLog.assert("Cannot access AVURLAsset from Video Export Player when Saving Media \(getUniqueIdentifier()) to Local")
-        callback?(ErrorCode.saveToLocalVideoExportPlayerHasNoAVURLAsset)
+        callback?(ErrorCode.saveToLocalVideoHasNoFileUrl)
         return
       }
 
       self.copy(url: sourceURL, to: localType) { error in
         if error == nil {
-          videoExportPlayer.initAVPlayer(from: FoodieFileObject.getFileURL(for: localType, with: fileName))
+          self.localVideoUrl = FoodieFileObject.getFileURL(for: localType, with: fileName)
         }
         callback?(error)
       }
@@ -467,8 +539,8 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   func cancelRetrieveFromServerRecursive() {
     cancelRetrieveFromServer()
-    if let videoExportPlayer = videoExportPlayer {
-      videoExportPlayer.cancelExport()  // On successful export cancel, the retrieve completion failure will nil the videoExportPlayer pointer
+    if let videoExporter = videoExporter {
+      videoExporter.cancelExport()  // On successful export cancel, the retrieve completion failure will nil the videoExporter pointer
     }
   }
   

@@ -131,7 +131,7 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       
       var momentNum = 0
       for moment in moments {
-        if !moment.isMediaReady {
+        if !moment.isReady {
           
           if momentNum == 0 {
             // Retrieve all the Moments for the Story in 1 go

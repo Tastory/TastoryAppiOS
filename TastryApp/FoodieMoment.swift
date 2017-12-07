@@ -15,8 +15,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   // If new objects or external types are added here, check if save and delete algorithms needs updating
   @NSManaged var mediaFileName: String?  // File name for the media photo or video. Needs to go with the media object
   @NSManaged var mediaType: String?  // Really an enum saying whether it's a Photo or Video
-  @NSManaged var aspectRatio: Double  // In decimal, width / height, like 16:9 = 16/9 = 1.777...
-  @NSManaged var width: Int  // height = width / aspectRatio
   @NSManaged var thumbnailFileName: String?  // Thumbnail for the moment
   
   // Markups
@@ -791,14 +789,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     media = foodieMedia
     mediaFileName = foodieMedia.foodieFileName
     mediaType = foodieMedia.mediaType?.rawValue
-
-    if foodieMedia.width != nil {
-      width = foodieMedia.width!
-    }
-
-    if(foodieMedia.aspectRatio != nil) {
-      aspectRatio = foodieMedia.aspectRatio!
-    }
   }
   
   
@@ -840,14 +830,12 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // Might execute block both synchronously or asynchronously
   func execute(ifNotReady notReadyBlock: SimpleBlock?, whenReady readyBlock: @escaping SimpleBlock) {
-    var isReady = false
     
     // What's going on here is we are preventing a race condition between
     // 1. The checking for retrieval here, which takes time. Can race with a potential completion process for a background retrieval
     // 2. The calling of the notReadyBlock to make sure it's going to be before the readyBlock potentially by a background retrieval completion
     
     SwiftMutex.lock(&readyMutex)
-    isReady = isMediaReady
     
     if !isReady {
       notReadyBlock?()
@@ -856,10 +844,6 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       readyCallback = nil
     }
     SwiftMutex.unlock(&readyMutex)
-    
-//    if isReady {
-//      readyBlock()
-//    }
   }
 
   
@@ -896,7 +880,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
-  var isMediaReady: Bool {
+  var isReady: Bool {
     guard super.isRetrieved else {
       return false  // Don't go further if even the parent isn't retrieved
     }
@@ -911,7 +895,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       markupsAreRetrieved = markupsAreRetrieved && markup.isRetrieved
     }
     
-    return media.isRetrieved && markupsAreRetrieved
+    return media.isReady && markupsAreRetrieved
   }
   
   

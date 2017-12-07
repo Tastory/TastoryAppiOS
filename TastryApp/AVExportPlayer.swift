@@ -74,6 +74,7 @@ class AVExportPlayer: NSObject {
   // MARK: - Public Instance Variable
   var delegate: AVPlayAndExportDelegate? {
     didSet {
+      guard delegate != nil else { return }
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in // This is needed. Because it crashes sometimes when self is removed or something
         self?.determineIfPlaying()
       }
@@ -149,13 +150,12 @@ class AVExportPlayer: NSObject {
   }
   
   
-  private func switchBackingToLocalIfNeeded() {
+  private func switchToLocalAndRetire() {
     
     if let avExportSession = avExportSession {
       if avExportSession.status == .completed {
 
-        // Swap AVPlayer's backing file to local Cache. It's assumed that the Cache file will always exist if the AVPlayer is still in Memory.
-        // If the app quits and a cache clean up occurs, the AVPlayer will get reinitialized next time against the network instead.
+        // What happens is that an Export Session actually exports to a Tmp folder. So we gotta copy it to the Local Destination here.
         guard let outputURL = avExportSession.outputURL else {
           CCLog.fatal("outputURL = nil. Cannot switch AVPlayer backing to Local File")
         }
@@ -164,22 +164,22 @@ class AVExportPlayer: NSObject {
           CCLog.fatal("localURL = nil. Cannot copy exported file from Temp to Local")
         }
         
-        CCLog.verbose("Switching AVAsset URL from \(outputURL.absoluteString) to completed Output File \(localURL.absoluteString)")
+        CCLog.verbose("Copying AVExport Output from \(outputURL.absoluteString) to \(localURL.absoluteString)")
         
         do {
           try FileManager.default.copyItem(at: outputURL, to: localURL)
         } catch CocoaError.fileWriteFileExists {
-          CCLog.warning("Trying to swich backing when file \(localURL.absoluteString) already exist")
-          return  // Just do nothing for now
+          CCLog.warning("Trying to copy AVExport from Tmp to Local for file \(localURL.absoluteString) already exist")
         } catch {
           CCLog.assert("Failed to copy from \(outputURL.absoluteString) to \(localURL.absoluteString)")
-          return
         }
         
-        self.initAVPlayer(from: localURL)
+        // The job is done. Time to retire everything associated with the Export Player
+        self.avExportSession = nil
       }
     }
   }
+
   
   
   // MARK: - Public Instance Functions
@@ -187,6 +187,8 @@ class AVExportPlayer: NSObject {
     avExportSession = nil  // Always clear the export session before re-creating AVURLAsset
     avURLAsset = AVURLAsset(url: playURL)
     avURLAsset!.resourceLoader.setDelegate(self, queue: queue)  // Must be set before the AVURLAsset is first used
+    
+    CCLog.verbose("AVExportPlayer \(uniqueIdentifier) initAVPlayer from \(playURL.absoluteString)")
     
     // Clean-up the previous instance of AVPlayer first if there was a previous instance
     if avPlayer != nil {
@@ -229,7 +231,13 @@ class AVExportPlayer: NSObject {
     self.addObserver(self, forKeyPath: #keyPath(avPlayer.reasonForWaitingToPlay), options: [.new], context: nil)
   }
 
-  func exportAsync(to exportURL: URL, thru tempURL: URL, using preset: String = AVAssetExportPreset960x540, with outputType: AVFileType = .mov, duration timeRange: CMTimeRange? = nil, completion callback: ((Error?) -> Void)? = nil) {
+  
+  func exportAsync(to exportURL: URL,
+                   thru tempURL: URL,
+                   using preset: String = AVAssetExportPreset960x540,
+                   with outputType: AVFileType = .mov,
+                   duration timeRange: CMTimeRange? = nil,
+                   completion callback: ((Error?) -> Void)? = nil) {
     
     guard let avPlayer = self.avPlayer else {
       CCLog.fatal("avPlayer == nil. Cannot check whether needed to switch AVPlayer backing to Local File")
@@ -245,7 +253,7 @@ class AVExportPlayer: NSObject {
     let playURL = avURLAsset.url
     
     let exportRetry = SwiftRetry()
-    exportRetry.start("AVExport Sync to \(playURL.lastPathComponent)", withCountOf: Constants.ExportRetryCount) { [unowned self] in
+    exportRetry.start("AVExport Sync to \(playURL.lastPathComponent)", withCountOf: Constants.ExportRetryCount) { [weak self] in
       guard let avAssetExportSession = AVAssetExportSession(asset: avURLAsset, presetName: preset) else {
         CCLog.fatal("Unable to create AVAssetExportSession with URL: \(playURL) and Preset: \(preset)")
       }
@@ -254,43 +262,48 @@ class AVExportPlayer: NSObject {
       avAssetExportSession.outputURL = tempURL
       avAssetExportSession.outputFileType = outputType
       avAssetExportSession.timeRange = CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity)
+      
       if(timeRange != nil) {
         avAssetExportSession.timeRange = timeRange!
       }
-      self.avExportSession = avAssetExportSession
+      self?.avExportSession = avAssetExportSession
       
-      avAssetExportSession.exportAsynchronously {
+      avAssetExportSession.exportAsynchronously { [weak avAssetExportSession] in
         
         let bufferDuration = avPlayerItem.preferredForwardBufferDuration
         let queue = avURLAsset.resourceLoader.delegateQueue ?? DispatchQueue.global(qos: .userInitiated)
         
+        guard let avAssetExportSession = avAssetExportSession else {
+          CCLog.warning("avAssetExportSession freed when called back from avAssetExportSession.exportAsynchronoly()")
+          self?.avExportSession = nil
+          return
+        }
+        
         switch avAssetExportSession.status {
           
         case .unknown:
-          self.initAVPlayer(from: playURL, with: bufferDuration, thru: queue)
+          self?.initAVPlayer(from: playURL, with: bufferDuration, thru: queue)
           if !exportRetry.attempt(after: Constants.ExportRetryDelay, withQoS: Constants.ExportRetryQoS) {
             callback?(ErrorCode.exportAsyncStatusUnknownUnexpected)
+            self?.avExportSession = nil
           }
           
         case .waiting:
-          self.initAVPlayer(from: playURL, with: bufferDuration, thru: queue)
+          self?.initAVPlayer(from: playURL, with: bufferDuration, thru: queue)
           if !exportRetry.attempt(after: Constants.ExportRetryDelay, withQoS: Constants.ExportRetryQoS) {
             callback?(ErrorCode.exportAsyncStatusWaitingUnexpected)
+            self?.avExportSession = nil
           }
           
         case .exporting:
-          self.initAVPlayer(from: playURL, with: bufferDuration, thru: queue)
+          self?.initAVPlayer(from: playURL, with: bufferDuration, thru: queue)
           if !exportRetry.attempt(after: Constants.ExportRetryDelay, withQoS: Constants.ExportRetryQoS) {
             callback?(ErrorCode.exportAsyncStatusExportingUnexpected)
+            self?.avExportSession = nil
           }
           
         case .completed:
-          if avPlayer.rate == 0.0, CMTimeCompare(avPlayerItem.currentTime(), kCMTimeZero) == 0 {
-            // The video is not currently being played, so we can just do the switch now
-            self.switchBackingToLocalIfNeeded()
-          } else {
-            CCLog.verbose("AVPlayer rate = \(avPlayer.rate), time = \(avPlayerItem.currentTime())")
-          }
+          self?.switchToLocalAndRetire()
           callback?(nil)
           
         case .failed:
@@ -302,26 +315,27 @@ class AVExportPlayer: NSObject {
             if nsError.domain == AVFoundationErrorDomain, nsError.code == AVError.operationInterrupted.rawValue {
               // Operation was interrupted. Lets try to restart
               CCLog.warning("AV Export Asynchronously was Interrupted. Retrying")
-              self.exportAsync(to: exportURL, thru: tempURL, using: preset, with: outputType, completion: callback)
+              self?.exportAsync(to: exportURL, thru: tempURL, using: preset, with: outputType, completion: callback)
               return
             }
             
             CCLog.warning("ExportAsynchronously Failed - \(error.localizedDescription)")
-            if let avAssetURL = (self.avPlayer?.currentItem?.asset as? AVURLAsset)?.url {
+            if let avAssetURL = (self?.avPlayer?.currentItem?.asset as? AVURLAsset)?.url {
               CCLog.warning("AVURLAsset.url = \(avAssetURL.absoluteString)")
             }
             CCLog.warning("OutputURL = \(avAssetExportSession.outputURL?.absoluteString ?? "nil")")
-            self.printStatus()
+            self?.printStatus()
           }
           
-          self.initAVPlayer(from: playURL, with: bufferDuration, thru: queue)
+          self?.initAVPlayer(from: playURL, with: bufferDuration, thru: queue)
           if !exportRetry.attempt(after: Constants.ExportRetryDelay, withQoS: Constants.ExportRetryQoS) {
             callback?(avAssetExportSession.error)
+            self?.avExportSession = nil
           }
           
         case .cancelled:
-          self.avExportSession = nil
           callback?(ErrorCode.exportAsyncCancelled)
+          self?.avExportSession = nil
         }
       }
     }
@@ -340,22 +354,11 @@ class AVExportPlayer: NSObject {
       avPlayer.pause()
     }
   }
-    
-    
-  func layerDisconnected() {
-    CCLog.verbose("AVExportPlayer.layerDisconnected()")
-    switchBackingToLocalIfNeeded()
-    avPlayer?.pause()
-    avPlayer?.seek(to: kCMTimeZero)
-  }
-    
+  
     
   deinit {
-    // This essentially is a Cancel for everything. So let's cancel everything, clean-up, and call it
-//    CCLog.verbose("AVExportPlayer Deinit")
-//    if let periodicObserver = periodicObserver {
-//      avPlayer?.removeTimeObserver(periodicObserver)
-//    }
+    CCLog.verbose("AVExportPlayer \(uniqueIdentifier) Deinit")
+    
     if let avPlayerItem = avPlayer?.currentItem {
       NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: avPlayerItem)
     } else {
@@ -365,8 +368,9 @@ class AVExportPlayer: NSObject {
     self.removeObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackBufferEmpty))
     self.removeObserver(self, forKeyPath: #keyPath(avPlayer.status))
     self.removeObserver(self, forKeyPath: #keyPath(avPlayer.reasonForWaitingToPlay))
+    
     avExportSession?.cancelExport()
-    avPlayer?.replaceCurrentItem(with: nil)
+    avExportSession = nil
   }
     
     

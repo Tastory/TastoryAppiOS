@@ -1150,14 +1150,8 @@ class FoodieUser: PFUser {
 // MARK: - Foodie Object Delegate Protocol Conformance
 
 extension FoodieUser: FoodieObjectDelegate {
-  var isRetrieved: Bool {
-    guard isDataAvailable else {
-      return false  // Don't go further if the parent isn't even retrieved
-    }
-    return true
-  }
+  var isRetrieved: Bool { return isDataAvailable }
 
-  
   var isFullyRetrieved: Bool {
     guard isDataAvailable else {
       return false  // Don't go further if the parent isn't even retrieved

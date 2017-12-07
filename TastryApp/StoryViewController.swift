@@ -299,16 +299,19 @@ class StoryViewController: OverlayViewController {
       }
       
     } else if mediaType == .video {
-      guard let videoExportPlayer = media.videoExportPlayer, let avPlayer = videoExportPlayer.avPlayer else {
-        CCLog.warning("MediaObject.videoExportPlayer == nil")
-        self.popDismiss(animated: true)
+      currentExportPlayer = media.videoExportPlayer
+      
+      guard let avPlayer = currentExportPlayer!.avPlayer else {
+        CCLog.warning("media.videoExportPlayer.avPlayer == nil")
+        popDismiss(animated: true)
         return
       }
-
-      currentExportPlayer = videoExportPlayer
-      videoExportPlayer.delegate = self
+      
+      currentExportPlayer!.delegate = self
       avPlayerLayer.player = avPlayer
       view.insertSubview(videoView, belowSubview: jotViewController.view)
+      
+      avPlayer.seek(to: kCMTimeZero)
       avPlayer.play()
       
       // No image nor video to work on, Fatal
@@ -324,14 +327,14 @@ class StoryViewController: OverlayViewController {
       for markup in markups {
         
         if !markup.isRetrieved {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { [unowned self] action in
             CCLog.fatal("Markup not available even tho Moment \(moment.getUniqueIdentifier()) deemed Loaded")
           }
           return
         }
         
         guard let dataType = markup.dataType else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] action in
             CCLog.assert("Unexpected markup.dataType = nil")
             self.popDismiss(animated: true)
           }
@@ -339,7 +342,7 @@ class StoryViewController: OverlayViewController {
         }
         
         guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] action in
             CCLog.assert("markup.dataType did not actually translate into valid type")
             self.popDismiss(animated: true)
           }
@@ -427,12 +430,12 @@ class StoryViewController: OverlayViewController {
     
     photoTimer?.invalidate()
     photoTimer = nil
+    
     currentExportPlayer?.avPlayer?.pause()
     currentExportPlayer?.delegate = nil
-    // avPlayerLayer.player = nil  // !!! Taking a risk here. So that video transitions will be a touch quicker
-    currentExportPlayer?.layerDisconnected()
     currentExportPlayer = nil
     
+    // avPlayerLayer.player = nil  // !!! Taking a risk here. So that video transitions will be a touch quicker
     jotViewController.clearAll()
   }
   
@@ -725,8 +728,8 @@ class StoryViewController: OverlayViewController {
       CCLog.assert("Expected a viewingStory even tho dismissing")
     }
     
-    // Remove the previous gradient layer
-    
+    // This is a workaround. Root Cause is StoryViewController is not Deiniting itself, hence properties it points to are not deiniting as well
+    avPlayerLayer = nil
   }
   
   

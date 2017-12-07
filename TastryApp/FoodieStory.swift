@@ -691,11 +691,12 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
               story.thumbnail = moment.thumbnail
             }
 
-            // clean up video player
-            if(moment.media != nil) {
-              moment.media!.videoExportPlayer?.cancelExport()  // On successful export cancel, the retrieve completion failure will nil the videoExportPlayer pointer?
-              //moment.media!.videoExportPlayer = nil
-            }
+            // Shouldn't the Cancel up top have already cleaned out the video player?
+//            // clean up video player
+//            if(moment.media != nil) {
+//              moment.media!.videoExportPlayer?.cancelExport()  // On successful export cancel, the retrieve completion failure will nil the videoExportPlayer pointer?
+//              //moment.media!.videoExportPlayer = nil
+//            }
           }
         }
       }
