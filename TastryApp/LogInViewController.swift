@@ -38,14 +38,14 @@ class LogInViewController: OverlayViewController {
   @IBAction func logInAction(_ sender: UIButton) {
     
     guard var logInText = usernameField.text else {
-      AlertDialog.present(from: self, title: "Log In Error", message: "Please enter your Username or E-mail address to log in") { action in
+      AlertDialog.present(from: self, title: "Log In Error", message: "Please enter your Username or E-mail address to log in") { _ in
         CCLog.info("No username when Log In pressed")
       }
       return
     }
     
     guard let password = passwordField.text else {
-      AlertDialog.present(from: self, title: "Log In Error", message: "Please enter you Password to log in") { action in
+      AlertDialog.present(from: self, title: "Log In Error", message: "Please enter you Password to log in") { _ in
         CCLog.info("No password when Log In pressed")
       }
       return
@@ -65,14 +65,14 @@ class LogInViewController: OverlayViewController {
         }
         
         guard let user = object as? FoodieUser else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
             CCLog.assert("Nil returned from getting user for \(logInText). Expected Foodie User object")
           }
           return
         }
         
         guard let username = user.username else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
             CCLog.assert("Refurned FoodieUser for \(logInText) does not contain a username")
           }
           return
@@ -93,7 +93,7 @@ class LogInViewController: OverlayViewController {
     let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
     
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SignUpViewController") as? SignUpViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of SignUpViewController Class!!")
       }
       return
@@ -110,7 +110,7 @@ class LogInViewController: OverlayViewController {
     let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
     
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "EmailResetViewController") as? EmailResetViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of EmailResetViewController Class!!")
       }
       return
@@ -135,10 +135,10 @@ class LogInViewController: OverlayViewController {
       FoodieUser.logOutAndDeleteDraft(withBlock: nil)
     }
     
-    AlertDialog.present(from: self, title: "Guest Login", message: "You will not be able to post as a Guest. We highly encourage you to sign-up and log-in for the best experience!") { action in
+    AlertDialog.present(from: self, title: "Guest Login", message: "You will not be able to post as a Guest. We highly encourage you to sign-up and log-in for the best experience!") { [unowned self] _ in
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
       guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverViewController") as? DiscoverViewController else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("ViewController initiated not of DiscoverViewController Class!!")
         }
         return
@@ -166,14 +166,14 @@ class LogInViewController: OverlayViewController {
       self.activitySpinner.remove()
       
       if let error = error {
-        AlertDialog.present(from: self, title: "Login Failed", message: error.localizedDescription) { action in
+        AlertDialog.present(from: self, title: "Login Failed", message: error.localizedDescription) { _ in
           CCLog.warning("Login with \(username) failed - \(error.localizedDescription)")
         }
         return
       }
       
       guard let user = user else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("Nil returned from getting user for \(username). Expected Foodie User object")
         }
         return
@@ -187,7 +187,7 @@ class LogInViewController: OverlayViewController {
   private func presentLogIn(for user: FoodieUser, withWelcome welcome: Bool) {
     let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "IntroViewController") as? IntroViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of IntroViewController Class!!")
       }
       return
@@ -212,7 +212,7 @@ class LogInViewController: OverlayViewController {
         
         else {
           if let error = error {
-            AlertDialog.present(from: self, title: "Email Status Error", message: error.localizedDescription) { action in
+            AlertDialog.present(from: self, title: "Email Status Error", message: error.localizedDescription) { _ in
               CCLog.warning("Error getting E-mail Status - \(error.localizedDescription)")
             }
           }

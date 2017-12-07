@@ -74,7 +74,7 @@ class CategoryTableViewController: OverlayViewController {
       self.categoryResultArray = self.categoryArray.filter { category in
         
         guard let categoryName = category.name else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
             if let id = category.foursquareCategoryID {
               CCLog.assert("Category with ID \(id) has no name. Filtering out categories with no name")
             } else {
@@ -89,7 +89,7 @@ class CategoryTableViewController: OverlayViewController {
       // Sort by seeing if the First Category should be placed ahead of the Second
       self.categoryResultArray!.sort { (firstCategory, secondCategory) -> Bool in
         guard let firstCategoryName = firstCategory.name, let secondCategoryName = secondCategory.name else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
             if let firstID = firstCategory.foursquareCategoryID, let secondID = secondCategory.foursquareCategoryID {
               CCLog.assert("At least one category has no name! ID \(firstID) & \(secondID) respectively. Cannot do String comparison")
             } else {
@@ -109,7 +109,7 @@ class CategoryTableViewController: OverlayViewController {
           let secondRange = secondCategoryName.range(of: categorySearchTerm, options: .caseInsensitive) else {
           
           // Search term not actually in the Category names? What?
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
             if let firstID = firstCategory.foursquareCategoryID, let secondID = secondCategory.foursquareCategoryID {
               CCLog.assert("At least one category doesn't contain search term! ID \(firstID) & \(secondID) respectively. Cannot do String comparison")
             } else {
@@ -257,7 +257,7 @@ extension CategoryTableViewController: RATreeViewDataSource {
       if let categoryResultArray = categoryResultArray {
         return categoryResultArray.count
       } else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("categoryResultArray is nil")
         }
         return 0
@@ -276,13 +276,13 @@ extension CategoryTableViewController: RATreeViewDataSource {
     // Item coming in is a FoodieCategory. RATreeView will only do this if there are subcategories to return
     if let category = item as? FoodieCategory  {
       guard let subcategories = category.subcategories else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("Item supplied by treeView(_: child: ofItem:) does not contain subcategories")
         }
         return UITableViewCell()
       }
       if index >= subcategories.count {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("Index supplied by treeView(_: child: ofItem:) is out of range in subcategory array")
         }
         return UITableViewCell()
@@ -293,13 +293,13 @@ extension CategoryTableViewController: RATreeViewDataSource {
     // Item coming in is a not a FoodieCategory. So assume RATreeView is asking for items for the root Tree array
     else if categoryName != nil {
       guard let categoryResultArray = categoryResultArray else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("categoryResultArray nil when showFilteredCateogires = true")
         }
         return UITableViewCell()
       }
       if index >= categoryResultArray.count {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("Index supplied by treeView(_: child: ofItem:) is out of range in categoryResultArray")
         }
         return UITableViewCell()
@@ -310,7 +310,7 @@ extension CategoryTableViewController: RATreeViewDataSource {
     // Only thing left is the unfiltered root Tree straight from FoodieCategory class
     else {
       if index >= FoodieCategory.tree.count {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("Index supplied by treeView(_: child: ofItem:) is out of range in FoodieCategory.tree")
         }
         return UITableViewCell()
@@ -323,14 +323,14 @@ extension CategoryTableViewController: RATreeViewDataSource {
   func treeView(_ treeView: RATreeView, cellForItem item: Any?) -> UITableViewCell {
     
     guard let cell = treeView.dequeueReusableCell(withIdentifier: Constants.categoryCellReuseIdentifier) as? CategoryTableViewCell else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("TreeView dequeued nil or non-CategoryTableViewCell")
       }
       return UITableViewCell()  // Return some new cell to prevent crashing
     }
     
     guard let category = item as? FoodieCategory, let categoryName = category.name else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("Item supplied by treeView(_: cellforItem:) is nil, not a FoodieCategory or contains no category name")
       }
       return UITableViewCell()
@@ -358,7 +358,7 @@ extension CategoryTableViewController: RATreeViewDelegate {
     CCLog.verbose("treeView(didSelectRowForItem:")
     
     guard let category = item as? FoodieCategory else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("categoryItem does not contain a FoodieCategory and is nil")
         self.dismiss(animated: true, completion: nil)
       }
@@ -384,7 +384,7 @@ extension CategoryTableViewController: CategoryTableViewCellDelegate {
   func expandCollpase(for cell: CategoryTableViewCell, to state: CategoryTableViewCell.ExpandCollapseState) {
     
     guard let category = cell.categoryItem else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("categoryItem does not contain a FoodieCategory and is nil")
       }
       return

@@ -47,14 +47,14 @@ class IntroViewController: OverlayViewController {
     
     if let currentUser = FoodieUser.current, currentUser.isRegistered {
       guard let username = currentUser.username else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.assert("User doesn't even have a username!")
         }
         return
       }
       
       guard let email = currentUser.email else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.assert("User \(currentUser.username!) doesn't have an E-mail address???")
         }
         return
@@ -66,30 +66,30 @@ class IntroViewController: OverlayViewController {
           switch error {
           case .reverficiationVerified:
             CCLog.info("User \(username) tried to request E-mail verification when \(email) already verified")
-            AlertDialog.present(from: self, title: "Resend Error", message: "The E-mail address \(email) have already been verified.") { action in
+            AlertDialog.present(from: self, title: "Resend Error", message: "The E-mail address \(email) have already been verified.") { [unowned self] _ in
               self.presentDiscoverVC()
             }
             
           default:
             CCLog.warning("Failed resending E-mail verification to \(email) - \(error.localizedDescription)")
-            AlertDialog.present(from: self, title: "Resend Failed", message: error.localizedDescription) { action in
+            AlertDialog.present(from: self, title: "Resend Failed", message: error.localizedDescription) { [unowned self] _ in
               self.presentDiscoverVC()
             }
           }
         } else if let error = error {
           CCLog.warning("Failed resending E-mail verification to \(email) - \(error.localizedDescription)")
-          AlertDialog.present(from: self, title: "Resend Failed", message: error.localizedDescription) { action in
+          AlertDialog.present(from: self, title: "Resend Failed", message: error.localizedDescription) { [unowned self] _ in
             self.presentDiscoverVC()
           }
         } else {
           CCLog.info("E-mail verificaiton resent to \(email)")
-          AlertDialog.present(from: self, title: "Verification Resent!", message: "Please check your E-mail and confirm your address!") { action in
+          AlertDialog.present(from: self, title: "Verification Resent!", message: "Please check your E-mail and confirm your address!") { [unowned self] _ in
             self.presentDiscoverVC()
           }
         }
       }
     } else {
-      AlertDialog.present(from: self, title: "Resend Error", message: "Fatal Internal Inconsistency. Please restart the app and try again") { action in
+      AlertDialog.present(from: self, title: "Resend Error", message: "Fatal Internal Inconsistency. Please restart the app and try again") { _ in
         CCLog.fatal("E-mail verification request when user is not even logged in!")
       }
     }
@@ -107,7 +107,7 @@ class IntroViewController: OverlayViewController {
   private func presentDiscoverVC() {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverViewController") as? DiscoverViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of DiscoverViewController Class!!")
       }
       return

@@ -82,7 +82,7 @@ class StoryViewController: OverlayViewController {
     CCLog.info("User tapped Venue")
     
     guard let story = viewingStory else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("Unexpected, viewingStory = nil")
       }
       return
@@ -102,21 +102,21 @@ class StoryViewController: OverlayViewController {
   @IBAction func authorAction(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of ProfileViewController Class!!")
       }
       return
     }
     
     guard let story = viewingStory else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("viewingStory = nil")
       }
       return
     }
     
     guard let author = story.author, author.isDataAvailable else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("viewingStory.author = nil, or isDataAvailable = false")
       }
       return
@@ -157,7 +157,7 @@ class StoryViewController: OverlayViewController {
     }
     
     guard let avPlayer = currentExportPlayer?.avPlayer else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("Expected AVExportPlayer")
         self.popDismiss(animated: true)
       }
@@ -185,7 +185,7 @@ class StoryViewController: OverlayViewController {
   
   private func displaySwipeStackIfNeeded() {
     guard let story = viewingStory else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("Unexpected, viewingStory = nil")
       }
       return
@@ -206,7 +206,7 @@ class StoryViewController: OverlayViewController {
       
     } else {
       guard let avPlayer = currentExportPlayer?.avPlayer else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
           CCLog.assert("No AVPlayer for StoryVC when trying to pause/reumse")
           self.popDismiss(animated: true)
         }
@@ -255,14 +255,14 @@ class StoryViewController: OverlayViewController {
   private func displayMoment(_ moment: FoodieMoment) {
     
     guard let media = moment.media else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Unexpected, moment.media == nil ")
       }
       return
     }
     
     guard let mediaType = media.mediaType else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Unexpected, mediaObject.mediaType == nil")
       }
       return
@@ -271,7 +271,7 @@ class StoryViewController: OverlayViewController {
     // Try to display the media as by type
     if mediaType == .photo {
       guard let imageBuffer = media.imageMemoryBuffer else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { [unowned self] _ in
           CCLog.assert("Unexpected, mediaObject.imageMemoryBuffer == nil")
           self.popDismiss(animated: true)
         }
@@ -327,14 +327,14 @@ class StoryViewController: OverlayViewController {
       for markup in markups {
         
         if !markup.isRetrieved {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { [unowned self] action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.fatal("Markup not available even tho Moment \(moment.getUniqueIdentifier()) deemed Loaded")
           }
           return
         }
         
         guard let dataType = markup.dataType else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
             CCLog.assert("Unexpected markup.dataType = nil")
             self.popDismiss(animated: true)
           }
@@ -342,7 +342,7 @@ class StoryViewController: OverlayViewController {
         }
         
         guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
             CCLog.assert("markup.dataType did not actually translate into valid type")
             self.popDismiss(animated: true)
           }
@@ -353,7 +353,7 @@ class StoryViewController: OverlayViewController {
           
         case .jotLabel:
           guard let labelData = markup.data else {
-            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
               CCLog.assert("Unexpected markup.data = nil when dataType == .jotLabel")
               self.popDismiss(animated: true)
             }
@@ -368,7 +368,7 @@ class StoryViewController: OverlayViewController {
           
         case .jotDrawView:
           guard let drawViewDictionary = markup.data else {
-            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
               CCLog.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
               self.popDismiss(animated: true)
             }
@@ -485,7 +485,7 @@ class StoryViewController: OverlayViewController {
     CCLog.info("User swiped Up")
     
     guard let story = viewingStory else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("Unexpected, viewingStory = nil")
       }
       return
@@ -507,7 +507,7 @@ class StoryViewController: OverlayViewController {
   @objc private func displayNextMoment() {
     
     guard let story = viewingStory else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("Unexpected, viewingStory = nil")
         self.popDismiss(animated: true)
       }
@@ -515,7 +515,7 @@ class StoryViewController: OverlayViewController {
     }
     
     guard let moments = story.moments else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("Unexpected, viewingStory.moments = nil")
         self.popDismiss(animated: true)
       }
@@ -523,7 +523,7 @@ class StoryViewController: OverlayViewController {
     }
     
     guard let moment = currentMoment else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("Unexpected, currentMoment = nil")
         self.popDismiss(animated: true)
       }
@@ -548,7 +548,7 @@ class StoryViewController: OverlayViewController {
   private func displayPreviousMoment() {
     
     guard let story = viewingStory else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("Unexpected, viewingStory = nil")
         self.popDismiss(animated: true)
       }
@@ -556,7 +556,7 @@ class StoryViewController: OverlayViewController {
     }
     
     guard let moments = story.moments else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("Unexpected, viewingStory.moments = nil")
         self.popDismiss(animated: true)
       }
@@ -564,7 +564,7 @@ class StoryViewController: OverlayViewController {
     }
     
     guard let moment = currentMoment else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("Unexpected, currentMoment = nil")
         self.popDismiss(animated: true)
       }
@@ -687,7 +687,7 @@ class StoryViewController: OverlayViewController {
       jotViewController.view.layoutIfNeeded()
       
       guard let story = viewingStory else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
           CCLog.assert("Unexpected viewingStory = nil")
           self.popDismiss(animated: true)
         }
@@ -695,7 +695,7 @@ class StoryViewController: OverlayViewController {
       }
       
       guard let moments = story.moments, !moments.isEmpty else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
           CCLog.assert("Unexpected viewingStory.moments = nil or empty")
           self.popDismiss(animated: true)
         }

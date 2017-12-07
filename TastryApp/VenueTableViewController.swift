@@ -294,7 +294,7 @@ extension VenueTableViewController: UITableViewDataSource {
     let cell = tableView.dequeueReusableCell(withIdentifier: "venueTableCell", for: indexPath)
     
     guard let venueResultArray = venueResultArray else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("venueResultArray = nil even tho numberOfRowsInSection = \(tableView.numberOfRows(inSection: indexPath.section))")
       }
       cell.textLabel?.text = ""
@@ -343,7 +343,7 @@ extension VenueTableViewController: UITableViewDataSource {
 extension VenueTableViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     guard let venueResultArray = venueResultArray else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("venueResultArray = nil not expected when user didSelectRowAt \(indexPath.row)")
       }
       return

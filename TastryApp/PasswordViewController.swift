@@ -93,7 +93,7 @@ class PasswordViewController: OverlayViewController {
         self.activitySpinner.remove()
         
         if let error = error {
-          AlertDialog.present(from: self, title: "Save New Password Failed", message: "Error - \(error.localizedDescription). Please try again") { action in
+          AlertDialog.present(from: self, title: "Save New Password Failed", message: "Error - \(error.localizedDescription). Please try again") { _ in
             CCLog.warning("user.saveDigest Failed. Error - \(error.localizedDescription)")
           }
           return
@@ -107,7 +107,7 @@ class PasswordViewController: OverlayViewController {
         }
         
         // Notify the user that password change was successful
-        AlertDialog.present(from: self, title: "Password Changed!", message: "Password change was successful!") { action in
+        AlertDialog.present(from: self, title: "Password Changed!", message: "Password change was successful!") { [unowned self] _ in
           self.navigationController?.popViewController(animated: true)
         }
       }
@@ -213,7 +213,7 @@ extension PasswordViewController: UITextFieldDelegate {
       }
       
     default:
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("There is no other text fields in this switch-case")
       }
     }

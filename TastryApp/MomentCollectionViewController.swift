@@ -161,7 +161,7 @@ class MomentCollectionViewController: UICollectionViewController {
         // Pre-save the Story now that it's changed
         _ = story.saveDigest(to: .local, type: .draft) { error in
           if let error = error {
-            AlertDialog.present(from: self, title: "Pre-Save Failed!", message: "Problem saving Story to Local Draft! Quitting or backgrounding the app might cause lost of the current Story under Draft!") { action in
+            AlertDialog.present(from: self, title: "Pre-Save Failed!", message: "Problem saving Story to Local Draft! Quitting or backgrounding the app might cause lost of the current Story under Draft!") { _ in
               CCLog.assert("Pre-Saving Story to Draft Local Store Failed - \(error.localizedDescription)")
             }
           }
@@ -198,7 +198,7 @@ class MomentCollectionViewController: UICollectionViewController {
 
     if(indexPath.item >= momentArray.count)
     {
-      AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { action in
+      AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { _ in
         CCLog.fatal("Moment selection is out of bound")
       }
     }
@@ -208,7 +208,7 @@ class MomentCollectionViewController: UICollectionViewController {
     let moment = momentArray[indexPath.item]
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
       }
       return
@@ -216,7 +216,7 @@ class MomentCollectionViewController: UICollectionViewController {
     viewController.markupReturnDelegate = markupReturnVC
 
     guard let media = moment.media else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("Nil media object in moment")
       }
       return
@@ -231,7 +231,7 @@ class MomentCollectionViewController: UICollectionViewController {
   private func updateMomentCell(to cell: UICollectionViewCell? = nil, in collectionView: UICollectionView, forItemAt indexPath: IndexPath) {
 
     guard let momentArray = workingStory.moments else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("No Moments for workingStory \(self.workingStory.getUniqueIdentifier())")
       }
       return
@@ -445,7 +445,7 @@ extension MomentCollectionViewController {
     switch kind {
     case UICollectionElementKindSectionFooter:
         guard let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.FooterElementReuseId, for: indexPath) as? MomentAddFooterReusableView else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.assert("UICollectionElementKindSectionFooter dequeued is not MomentAddFooterReusableView")
           }
           return reusableView
@@ -516,10 +516,10 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
   func deleteMoment(sourceCell cell: MomentCollectionViewCell) {
 
     // make sure you get confirmation from user before deleting 
-    AlertDialog.presentConfirm(from: self, title: "Deleting a moment", message: "Do you want to delete this moment?"){ action in
+    AlertDialog.presentConfirm(from: self, title: "Deleting a moment", message: "Do you want to delete this moment?"){ [unowned self] _ in
 
       guard let collectionView = self.collectionView else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("collection view is nil")
         }
         return
@@ -528,14 +528,14 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
       if let indexPath = collectionView.indexPath(for: cell) {
         
         guard let moments = self.workingStory.moments else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
             CCLog.assert("No Moments for workingStory")
           }
           return
         }
 
         if indexPath.item >= moments.count {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
             CCLog.assert("Deleting a moment from an out of bound index")
           }
           return
@@ -543,7 +543,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
 
         if(moments.count == 1)
         {
-          AlertDialog.present(from: self, title: "Delete Error", message: "Each story must contain at least one moment") { action in
+          AlertDialog.present(from: self, title: "Delete Error", message: "Each story must contain at least one moment") { _ in
             CCLog.info("User tried to remove the last Moment from Story")
           }
           return
@@ -583,7 +583,7 @@ extension MomentCollectionViewController: MomentCollectionViewCellDelegate {
         // Pre-save the Story now that it's changed
         _ = self.workingStory.saveDigest(to: .local, type: .draft) { error in
           if let error = error {
-            AlertDialog.present(from: self, title: "Pre-Save Failed!", message: "Problem saving Story to Local Draft! Quitting or backgrounding the app might cause lost of the current Story under Draft!") { action in
+            AlertDialog.present(from: self, title: "Pre-Save Failed!", message: "Problem saving Story to Local Draft! Quitting or backgrounding the app might cause lost of the current Story under Draft!") { _ in
               CCLog.assert("Pre-Saving Story to Draft Local Store Failed - \(error.localizedDescription)")
             }
           }

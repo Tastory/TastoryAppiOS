@@ -53,7 +53,7 @@ class RootViewController: UIViewController {
       // Risking it by jumping to the Main View in parallel with updating the user's details from server
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
       guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "DiscoverViewController") as? DiscoverViewController else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("ViewController initiated not of DiscoverViewController Class!!")
         }
         return
@@ -68,7 +68,7 @@ class RootViewController: UIViewController {
       // Jump to the Login/Signup Screen!
       let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
       guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "LogInViewController") as? LogInViewController else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("ViewController initiated not of LogInViewController Class!!")
         }
         return

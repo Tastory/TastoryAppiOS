@@ -76,7 +76,7 @@ class ProfileViewController: OverlayViewController {
   @IBAction func settingsAction(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsNavViewController") as? SettingsNavViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of SettingsNavViewController Class!!")
       }
       return
@@ -156,7 +156,7 @@ class ProfileViewController: OverlayViewController {
     super.viewDidLoad()
 
     guard let user = user, user.isRegistered else {
-      AlertDialog.present(from: self, title: "Profile Error", message: "The specified user profile belongs to an unregistered user") { _ in
+      AlertDialog.present(from: self, title: "Profile Error", message: "The specified user profile belongs to an unregistered user") { [unowned self] _ in
         CCLog.assert("Entered Profile View but no valid registered user specified")
         self.popDismiss(animated: true)
       }
@@ -191,14 +191,14 @@ class ProfileViewController: OverlayViewController {
       self.activitySpinner.remove()
 
       if let err = error {
-        AlertDialog.present(from: self, title: "Query Failed", message: "Please check your network connection and try again") { action in
+        AlertDialog.present(from: self, title: "Query Failed", message: "Please check your network connection and try again") { _ in
           CCLog.assert("Create Story Query & Search failed with error: \(err.localizedDescription)")
         }
         return
       }
 
       guard let stories = stories else {
-        AlertDialog.present(from: self, title: "Query Failed", message: "Please check your network connection and try again") { action in
+        AlertDialog.present(from: self, title: "Query Failed", message: "Please check your network connection and try again") { _ in
           CCLog.assert("Create Story Query & Search returned with nil Story Array")
         }
         return
@@ -236,7 +236,7 @@ class ProfileViewController: OverlayViewController {
     super.viewWillAppear(animated)
     
     guard let user = user, user.isRegistered else {
-      AlertDialog.present(from: self, title: "Profile Error", message: "The specified user profile belongs to an unregistered user") { _ in
+      AlertDialog.present(from: self, title: "Profile Error", message: "The specified user profile belongs to an unregistered user") { [unowned self] _ in
         CCLog.assert("Entered Profile View but no valid registered user specified")
         self.popDismiss(animated: true)
       }
@@ -375,7 +375,7 @@ class ProfileViewController: OverlayViewController {
     super.viewDidAppear(animated)
     
     guard let mapController = navigationController as? MapNavController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("No Map Navigation Controller. Cannot Proceed")
       }
       return
@@ -386,7 +386,7 @@ class ProfileViewController: OverlayViewController {
     mapController.setExposedRect(with: mapExposedView)
     
     guard let feedCollectionNodeController = feedCollectionNodeController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Expected FeedCollectionNodeController")
       }
       return
@@ -425,7 +425,7 @@ extension ProfileViewController: FeedCollectionNodeDelegate {
   func collectionNodeDidStopScrolling() {
     
     guard let feedCollectionNodeController = feedCollectionNodeController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Expected FeedCollectionNodeController")
       }
       return

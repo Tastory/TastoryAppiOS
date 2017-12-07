@@ -63,6 +63,7 @@
 		8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0611E8F615D005F337E /* MarkupViewController.swift */; };
 		8C9B47C71F9576B100D21246 /* FoodieOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9B47C61F9576B100D21246 /* FoodieOperation.swift */; };
 		8CA0EE321FC8122D003C21CD /* Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA0EE311FC8122D003C21CD /* Slider.swift */; };
+		8CA2C5501FD906DC0064991D /* AVDebugPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA2C54F1FD906DC0064991D /* AVDebugPlayer.swift */; };
 		8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */; };
 		8CAA445F1F8C102C0053CD4F /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAA445E1F8C102C0053CD4F /* ProfileViewController.swift */; };
 		8CAA44611F8C12D60053CD4F /* LogOutDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */; };
@@ -213,6 +214,7 @@
 		8C9AD0611E8F615D005F337E /* MarkupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkupViewController.swift; sourceTree = "<group>"; };
 		8C9B47C61F9576B100D21246 /* FoodieOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodieOperation.swift; sourceTree = "<group>"; };
 		8CA0EE311FC8122D003C21CD /* Slider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Slider.swift; sourceTree = "<group>"; };
+		8CA2C54F1FD906DC0064991D /* AVDebugPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVDebugPlayer.swift; sourceTree = "<group>"; };
 		8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+Extension.swift"; sourceTree = "<group>"; };
 		8CAA445E1F8C102C0053CD4F /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutDismiss.swift; sourceTree = "<group>"; };
@@ -534,6 +536,7 @@
 			isa = PBXGroup;
 			children = (
 				8C10FB4D1F91C43100C26BF6 /* AVExportPlayer.swift */,
+				8CA2C54F1FD906DC0064991D /* AVDebugPlayer.swift */,
 				8C6983511F97ECFB0091334D /* AVPlayerStatus+Extension.swift */,
 				8C6983531F97ED810091334D /* AVPlayerTimeControlStatus+Extension.swift */,
 				8C6983551F97EDE50091334D /* AVPlayerItemStatus+Extension.swift */,
@@ -1105,6 +1108,7 @@
 				8C8986741E91985700B62306 /* FoodieVenue.swift in Sources */,
 				8C6983561F97EDE50091334D /* AVPlayerItemStatus+Extension.swift in Sources */,
 				8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */,
+				8CA2C5501FD906DC0064991D /* AVDebugPlayer.swift in Sources */,
 				8C1ED6F01F5D15A300A8CC94 /* CameraButtonRingLayer.swift in Sources */,
 				8CCDDA0C1FB3E81700B066E7 /* CGPoint+Extension.swift in Sources */,
 				8CE49EB31F638162007278C1 /* ArrowLayer.swift in Sources */,

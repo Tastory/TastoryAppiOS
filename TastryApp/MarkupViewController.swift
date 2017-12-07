@@ -215,7 +215,7 @@ class MarkupViewController: OverlayViewController {
   @IBAction func nextButtonAction(_ sender: UIButton) {
     
     guard let mediaObj = mediaObj else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("Unexpected, mediaObj == nil ")
         self.dismiss(animated: true, completion: nil)
       }
@@ -295,7 +295,7 @@ class MarkupViewController: OverlayViewController {
             StorySelector.showStoryDiscardDialog(to: self) {
               FoodieStory.cleanUpDraft() { error in
                 if let error = error  {
-                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
                     CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
                   }
                   return
@@ -350,20 +350,20 @@ class MarkupViewController: OverlayViewController {
       for markup in markups {
 
         if !markup.isDataAvailable {
-          AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { action in
+          AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { _ in
             CCLog.fatal("Markup not available even tho Moment deemed Loaded")
           }
         }
 
         guard let dataType = markup.dataType else {
-          AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { action in
+          AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { _ in
             CCLog.assert("Unexpected markup.dataType = nil")
           }
           return
         }
 
         guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
-          AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { action in
+          AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { _ in
             CCLog.assert("markup.dataType did not actually translate into valid type")
           }
           return
@@ -373,7 +373,7 @@ class MarkupViewController: OverlayViewController {
 
         case .jotLabel:
           guard let labelData = markup.data else {
-            AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { action in
+            AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { _ in
               CCLog.assert("Unexpected markup.data = nil when dataType == .jotLabel")
             }
             return
@@ -387,7 +387,7 @@ class MarkupViewController: OverlayViewController {
 
         case .jotDrawView:
           guard let drawViewDictionary = markup.data else {
-            AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { action in
+            AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { _ in
               CCLog.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
             }
             return
@@ -511,7 +511,7 @@ class MarkupViewController: OverlayViewController {
     
     // Initialize Media
     guard let mediaObj = mediaObj else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("Unexpected, mediaObj == nil ")
         self.dismiss(animated: true, completion: nil)
       }
@@ -528,7 +528,7 @@ class MarkupViewController: OverlayViewController {
     
     if mediaType == .video {
       guard let videoUrl = mediaObj.localVideoUrl else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
           CCLog.assert("mediaObj.videoUrl = nil")
           self.dismiss(animated: true, completion: nil)
         }
@@ -601,7 +601,7 @@ class MarkupViewController: OverlayViewController {
       isInitialLayout = false
       
       guard let mediaObj = mediaObj else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
           CCLog.assert("Unexpected, mediaObj == nil ")
           self.dismiss(animated: true, completion: nil)
         }
@@ -636,7 +636,7 @@ class MarkupViewController: OverlayViewController {
         soundOffButton.isHidden = true
         
         guard let imageBuffer = mediaObj.imageMemoryBuffer else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
             CCLog.assert("Unexpected, mediaObj.imageMemoryBuffer == nil")
             self.dismiss(animated: true, completion: nil)
           }
@@ -668,7 +668,7 @@ class MarkupViewController: OverlayViewController {
       
       // No Image nor Video to work on, Fatal
       } else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
           CCLog.assert("Both photoToMarkup and videoToMarkupURL are nil")
           self.dismiss(animated: true, completion: nil)
         }

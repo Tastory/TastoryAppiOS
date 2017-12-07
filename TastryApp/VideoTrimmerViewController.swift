@@ -38,28 +38,28 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
     // MARK: - IBActions
     @IBAction func selectAsset(_ sender: Any) {
       guard let delegate = self.delegate else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("The video trimmer return delegate is nil.")
         }
         return
       }
       
       guard let startTime = self.trimmerView.startTime else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("The start time is nil")
         }
         return
       }
       
       guard let endTime = self.trimmerView.endTime else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("The end time is nil")
         }
         return
       }
       
       guard let asset = self.avAsset else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("avAsset is nil")
         }
         return
@@ -79,7 +79,7 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
 
     @IBAction func play(_ sender: Any) {
       guard let player = player else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("The player is nil.")
         }
         return
@@ -96,7 +96,7 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
 
     private func pause() {
       guard let player = player else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("The player is nil.")
         }
         return
@@ -109,7 +109,7 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
 
     private func play() {
       guard let player = player else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("The player is nil.")
         }
         return
@@ -146,7 +146,7 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
     override func viewDidAppear(_ animated: Bool) {
       super.viewDidAppear(animated)
       guard let asset = avAsset else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("avAsset is nil")
         }
         return
@@ -202,7 +202,7 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
 extension VideoTrimmerViewController: TrimmerViewDelegate {
     func positionBarStoppedMoving(_ playerTime: CMTime) {
         guard let player = player else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.fatal("The player is nil.")
           }
           return
@@ -213,7 +213,7 @@ extension VideoTrimmerViewController: TrimmerViewDelegate {
 
     func didChangePositionBar(_ playerTime: CMTime) {
         guard let player = player else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.fatal("The player is nil.")
           }
           return

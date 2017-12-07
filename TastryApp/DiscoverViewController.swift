@@ -119,7 +119,7 @@ class DiscoverViewController: OverlayViewController {
     // Hide the button as needed, due to problems with empty draft story and saving an empty story is problematic
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as? StoryEntryViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of StoryEntryViewController Class!!")
       }
       return
@@ -140,7 +140,7 @@ class DiscoverViewController: OverlayViewController {
   @IBAction func launchCamera(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "CameraViewController") as? CameraViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of CameraViewController Class!!")
       }
       return
@@ -167,7 +167,7 @@ class DiscoverViewController: OverlayViewController {
         if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
           AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
         } else {
-          AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+          AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { _ in
             CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
           }
         }
@@ -175,7 +175,7 @@ class DiscoverViewController: OverlayViewController {
       }
       
       guard let stories = stories else {
-        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
+        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { _ in
           CCLog.assert("Story Query resulted in nil")
         }
         return
@@ -197,7 +197,7 @@ class DiscoverViewController: OverlayViewController {
         if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
           AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
         } else {
-          AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+          AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { _ in
             CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
           }
         }
@@ -205,7 +205,7 @@ class DiscoverViewController: OverlayViewController {
       }
       
       guard let stories = stories else {
-        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
+        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { _ in
           CCLog.assert("Story Query resulted in storyArray = nil")
         }
         return
@@ -228,7 +228,7 @@ class DiscoverViewController: OverlayViewController {
   @IBAction func profileAction(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of ProfileViewController Class!!")
       }
       return
@@ -280,7 +280,7 @@ class DiscoverViewController: OverlayViewController {
     if self.presentedViewController == nil {
       // Permission was denied before. Ask for permission again
       guard let url = URL(string: UIApplicationOpenSettingsURLString) else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("UIApplicationOPenSettignsURLString ia an invalid URL String???")
         }
         return
@@ -294,7 +294,7 @@ class DiscoverViewController: OverlayViewController {
       
       alertController.addAlertAction(title: "Settings",
       comment: "Alert diaglogue button to open Settings, hoping user will enable access to Location Services",
-      style: .default) { action in UIApplication.shared.open(url, options: [:]) }
+      style: .default) { _ in UIApplication.shared.open(url, options: [:]) }
       
       self.present(alertController, animated: true, completion: nil)
     }
@@ -307,7 +307,7 @@ class DiscoverViewController: OverlayViewController {
     
     if mapRect == nil {
       guard let mapController = mapNavController else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("mapNavController == nil")
         }
         return
@@ -355,7 +355,7 @@ class DiscoverViewController: OverlayViewController {
       self.activitySpinner.remove()
       
       if let error = error {
-        AlertDialog.present(from: self, title: "Query Failed", message: error.localizedDescription) { action in
+        AlertDialog.present(from: self, title: "Query Failed", message: error.localizedDescription) { _ in
           CCLog.assert("Create Story Query & Search failed with error: \(error.localizedDescription)")
         }
         callback?(nil, nil, error)
@@ -590,7 +590,7 @@ class DiscoverViewController: OverlayViewController {
               if let deleteError = deleteError {
                 CCLog.warning("Delete All resulted in Error - \(deleteError.localizedDescription)")
               }
-              AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { action in
+              AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { _ in
                 CCLog.assert("Getting Draft Story resulted in Error. Clearing Draft Pin and Directory - \(error.localizedDescription)")
               }
             }
@@ -610,7 +610,7 @@ class DiscoverViewController: OverlayViewController {
                   if let deleteError = error {
                     CCLog.warning("Delete All resulted in Error - \(deleteError.localizedDescription)")
                   }
-                  AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { action in
+                  AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { _ in
                     CCLog.warning("Retrieve Recursive on Draft Story \(story.getUniqueIdentifier()) resulted in error. Clearing Draft Pin and Directory - \(retrieveError.localizedDescription)")
                   }
                 }
@@ -662,7 +662,7 @@ class DiscoverViewController: OverlayViewController {
     feedCollectionNodeController.delegate = self
     
     guard let mapController = navigationController as? MapNavController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("No Map Navigation Controller. Cannot Proceed")
       }
       return
@@ -725,7 +725,7 @@ class DiscoverViewController: OverlayViewController {
             if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
               AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
             } else {
-              AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { action in
+              AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { _ in
                 CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
               }
             }
@@ -733,7 +733,7 @@ class DiscoverViewController: OverlayViewController {
           }
           
           guard let stories = stories else {
-            AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { action in
+            AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { _ in
               CCLog.assert("Story Query resulted in nil")
             }
             return
@@ -767,7 +767,7 @@ class DiscoverViewController: OverlayViewController {
           case FoodieUser.ErrorCode.checkVerificationNoProperty:
             break  // This is normal if a user have just Signed-up
           default:
-            AlertDialog.present(from: self, title: "User Update Error", message: "Problem retrieving the most updated user profile. Some user attributes might be outdated") { action in
+            AlertDialog.present(from: self, title: "User Update Error", message: "Problem retrieving the most updated user profile. Some user attributes might be outdated") { _ in
               CCLog.warning("Failed retrieving the user object - \(error.localizedDescription)")
             }
           }
@@ -837,7 +837,7 @@ extension DiscoverViewController: UITextFieldDelegate {
     }
     
     guard let mapNavController = mapNavController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("No Map Nav Controller")
       }
       return true
@@ -1118,7 +1118,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
   func collectionNodeNeedsNextDataPage(for context: AnyObject?) {
     
     guard let query = storyQuery else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("Expected there to be a pre-existing Query")
         self.searchWithFilter(self.searchButton)
       }
@@ -1189,7 +1189,7 @@ extension DiscoverViewController: CameraReturnDelegate {
         
         let storyboard = UIStoryboard(name: "Compose", bundle: nil)
         guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as? StoryEntryViewController else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.fatal("ViewController initiated not of StoryEntryViewController Class!!")
           }
           return

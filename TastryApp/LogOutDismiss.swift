@@ -15,11 +15,11 @@ struct LogOutDismiss {
   
   static func askDiscardIfNeeded(from viewController: UIViewController) {
     if FoodieStory.currentStory != nil {
-      AlertDialog.presentConfirm(from: viewController, title: "Log Out", message: "Are you sure you want to log out? You will lose your unsaved draft if you log out") { action in
+      AlertDialog.presentConfirm(from: viewController, title: "Log Out", message: "Are you sure you want to log out? You will lose your unsaved draft if you log out") { _ in
         self.logOutAndDismiss(from: viewController)
       }
     } else {
-      AlertDialog.presentConfirm(from: viewController, title: "Log Out", message: "Are you sure you want to log out?") { action in
+      AlertDialog.presentConfirm(from: viewController, title: "Log Out", message: "Are you sure you want to log out?") { _ in
         self.logOutAndDismiss(from: viewController)
       }
     }
@@ -37,7 +37,7 @@ struct LogOutDismiss {
     FoodieUser.logOutAndDeleteDraft { error in
       activitySpinner.remove()
       if let error = error {
-        AlertDialog.present(from: viewController, title: "Log Out Error", message: error.localizedDescription) { action in
+        AlertDialog.present(from: viewController, title: "Log Out Error", message: error.localizedDescription) { _ in
           CCLog.assert("Log Out Failed - \(error.localizedDescription)")
         }
       }
@@ -48,7 +48,7 @@ struct LogOutDismiss {
       
       // Proceed to dismiss regardless
       guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let window = appDelegate.window, let rootViewController = window.rootViewController else {
-        AlertDialog.standardPresent(from: viewController, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: viewController, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("Cannot get AppDelegate.window.rootViewController!!!!")
         }
         return

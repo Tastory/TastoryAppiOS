@@ -100,7 +100,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   @IBAction func venueClicked(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as? VenueTableViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of VenueTableViewController Class!!")
       }
       return
@@ -211,7 +211,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
           FoodieStory.cleanUpDraft() { error in
             if let error = error {
-              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
                 CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
               }
             }
@@ -226,7 +226,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
           // Pop-up Alert Dialog and then Dismiss
           CCLog.info("Story Posted!")
-          AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { _ in
+          AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { [unowned self] _ in
             self.popDismiss(animated: true)
           }
         }
@@ -314,7 +314,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       self.activitySpinner.apply()
       FoodieStory.cleanUpDraft() { error in
         if let error = error {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
             self.activitySpinner.remove()
             CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
           }
@@ -475,7 +475,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             // save to local
             _ = returnedMoment.saveWhole(to: .local, type: .draft) { error in
               if let error = error {
-                AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { action in
+                AlertDialog.standardPresent(from: self, title: .genericSaveError, message: .saveTryAgain) { _ in
                   CCLog.assert("Error saving moment into local caused by: \(error.localizedDescription)")
                 }
               }
@@ -599,7 +599,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     guard let mapController = navigationController as? MapNavController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("No Map Navigation Controller. Cannot Proceed")
       }
       return

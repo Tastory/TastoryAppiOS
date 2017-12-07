@@ -47,7 +47,7 @@ class StorySelector {
     let discardButton =
       UIKit.UIAlertAction(title: "Discard",
                           comment: "Button to discard current Story in alert dialog box to warn user",
-                          style: .destructive) { action in
+                          style: .destructive) { _ in
                             callback()
     }
 

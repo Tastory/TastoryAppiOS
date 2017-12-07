@@ -126,7 +126,7 @@ class ProfileDetailViewController: OverlayViewController {
   
   @IBAction func emailAction(_ sender: UIButton) {
     guard let email = user.email else {
-      AlertDialog.present(from: self, title: "No E-mail Address", message: "No E-mail Address, please fill in the E-mail and try again") { action in
+      AlertDialog.present(from: self, title: "No E-mail Address", message: "No E-mail Address, please fill in the E-mail and try again") { _ in
         CCLog.warning("No E-mail address when user tried to reconfirm E-mail address")
       }
       return
@@ -134,7 +134,7 @@ class ProfileDetailViewController: OverlayViewController {
     
     user.resendEmailVerification { error in
       if let error = error {
-        AlertDialog.present(from: self, title: "E-mail Re-confirmation Failed", message: "Error - \(error.localizedDescription). Please try again") { action in
+        AlertDialog.present(from: self, title: "E-mail Re-confirmation Failed", message: "Error - \(error.localizedDescription). Please try again") { _ in
           CCLog.warning("E-mail Re-confirmation Failed. Error - \(error.localizedDescription)")
         }
         return
@@ -264,7 +264,7 @@ class ProfileDetailViewController: OverlayViewController {
         _ = self.user.saveWhole(to: .both, type: .cache) { error in
           self.activitySpinner.remove()
           if let error = error {
-            AlertDialog.present(from: self, title: "Save User Details Failed", message: "Error - \(error.localizedDescription). Please try again") { action in
+            AlertDialog.present(from: self, title: "Save User Details Failed", message: "Error - \(error.localizedDescription). Please try again") { _ in
               CCLog.warning("user.saveWhole Failed. Error - \(error.localizedDescription)")
             }
             return
@@ -379,7 +379,7 @@ class ProfileDetailViewController: OverlayViewController {
     self.user.retrieveWhole(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
       
       if let error = error {
-        AlertDialog.standardPresent(from: self, title: .genericNetworkError, message: .networkTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericNetworkError, message: .networkTryAgain) { _ in
           CCLog.warning("Retreive User Recursive Failed with Error - \(error.localizedDescription)")
         }
         self.activitySpinner.remove()
@@ -594,7 +594,7 @@ extension ProfileDetailViewController: UIImagePickerControllerDelegate {
       self.profileImage = image
       
     default:
-      AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { action in
+      AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { [unowned self] _ in
         CCLog.assert("Media returned from Image Picker is neither a Photo nor a Video")
         self.navigationController?.popViewController(animated: true)
         self.popDismiss(animated: true)

@@ -83,21 +83,21 @@ class SignUpViewController: OverlayViewController {
   // MARK: - Private Static Functions
   fileprivate func signUp() {
     guard var username = usernameField.text else {
-      AlertDialog.present(from: self, title: "Username Empty", message: "Please enter a username to sign up") { action in
+      AlertDialog.present(from: self, title: "Username Empty", message: "Please enter a username to sign up") { _ in
         CCLog.info("No username when Sign Up pressed")
       }
       return
     }
     
     guard var email = emailField.text else {
-      AlertDialog.present(from: self, title: "E-mail Empty", message: "Please enter a valid e-mail address to sign up") { action in
+      AlertDialog.present(from: self, title: "E-mail Empty", message: "Please enter a valid e-mail address to sign up") { _ in
         CCLog.info("No e-mail address when Sign Up pressed")
       }
       return
     }
     
     guard let password = passwordField.text else {
-      AlertDialog.present(from: self, title: "Password Empty", message: "Please enter a password to sign up") { action in
+      AlertDialog.present(from: self, title: "Password Empty", message: "Please enter a password to sign up") { _ in
         CCLog.info("No password when Sign Up pressed")
       }
       return
@@ -123,14 +123,14 @@ class SignUpViewController: OverlayViewController {
       
       // Handle all known error cases
       if let error = error {
-        AlertDialog.present(from: self, title: "Sign Up Failed", message: "\(error.localizedDescription)") { action in
+        AlertDialog.present(from: self, title: "Sign Up Failed", message: "\(error.localizedDescription)") { _ in
           CCLog.info("Sign Up Failed - \(error.localizedDescription)")
         }
       } else {
         let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
         
         guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "IntroViewController") as? IntroViewController else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.fatal("ViewController initiated not of IntroViewController Class!!")
           }
           return
@@ -236,7 +236,7 @@ extension SignUpViewController: UITextFieldDelegate {
       }
     
     default:
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("There is no other text fields in this switch-case")
       }
     }
@@ -253,7 +253,7 @@ extension SignUpViewController: UITextFieldDelegate {
       passwordField.resignFirstResponder()
       signUp()
     default:
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("There is no other text fields in this switch-case")
       }
     }

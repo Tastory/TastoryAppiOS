@@ -91,7 +91,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       
       for visibleIndexPath in collectionNode.indexPathsForVisibleItems {
         guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: visibleIndexPath) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
             CCLog.assert("Cannot find Layout Attribute for item at IndexPath Section: \(visibleIndexPath.section) Row: \(visibleIndexPath.row)")
           }
           break
@@ -132,21 +132,21 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as? StoryEntryViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of StoryEntryViewController Class!!")
       }
       return
     }
     
     guard let mapNavController = navigationController as? MapNavController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("No Navigation Controller or not of MapNavConveroller")
       }
       return
     }
     
     guard let moments = story.moments else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("No Moments in Story \(story.getUniqueIdentifier)")
       }
       return
@@ -197,7 +197,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       StorySelector.showStoryDiscardDialog(to: self) {
         FoodieStory.cleanUpDraft() { error in
           if let error = error  {
-            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
               CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
             }
             return
@@ -395,7 +395,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     for visibleIndexPath in collectionNode.indexPathsForVisibleItems {
       
       guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: visibleIndexPath) else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("Cannot find Layout Attribute for item at IndexPath Section: \(visibleIndexPath.section) Row: \(visibleIndexPath.row)")
         }
         break
@@ -462,7 +462,7 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
   
 
   func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
-    let story = storyArray[indexPath.row]
+    let story = storyArray[toStoryIndex(from: indexPath)]
     let cellNode = FeedCollectionCellNode(story: story, edit: enableEdit)
     cellNode.layer.cornerRadius = Constants.DefaultGuestimatedCellNodeWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
     cellNode.placeholderEnabled = true
@@ -480,7 +480,7 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
 
     if enableEdit {
       guard let coverEditButton = cellNode.coverEditButton else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("Edit enabeld but coverEditButton is nil")
         }
         return { return cellNode }
@@ -499,24 +499,28 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
 extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   func collectionNode(_ collectionNode: ASCollectionNode, didSelectItemAt indexPath: IndexPath) {
-    let story = storyArray[indexPath.row]
+    let storyIndex = toStoryIndex(from: indexPath)
+    let story = storyArray[storyIndex]
+    
+    CCLog.info("User didSelect Story Index \(storyIndex)")
+    
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of StoryViewController Class!!")
       }
       return
     }
 
     guard let popFromNode = collectionNode.nodeForItem(at: indexPath) else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("No Feed Collection Node for Index Path?")
       }
       return
     }
     
     guard let mapNavController = navigationController as? MapNavController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("No Navigation Controller or not of MapNavConveroller")
       }
       return
@@ -530,7 +534,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
     
     // Scroll the selected story to top to make sure it's not off bounds to reduce animation artifact
     guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: indexPath) else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("Cannot find Layout Attribute for item at IndexPath Section: \(indexPath.section) Row: \(indexPath.row)")
       }
       return
@@ -574,7 +578,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       return layout.calculateConstrainedSize(for: collectionNode.bounds)
     }
     else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.fatal("Did not recognize CollectionNode Layout Type")
       }
       return ASSizeRangeZero
@@ -590,7 +594,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       return layout.calculateSectionInset(for: collectionView.bounds, at: section)
     }
     else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.fatal("Did not recognize CollectionNode Layout Type")
       }
       return UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
@@ -657,13 +661,13 @@ extension FeedCollectionNodeController: RestoreStoryDelegate {
   func updateStory(_ story: FoodieStory) {
     
     guard let lastIndexPath = lastIndexPath else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("The lastIndexPath is nil. This value should have been assigned before entering edit")
       }
       return
     }
     
-    storyArray[lastIndexPath.row] = story
+    storyArray[toStoryIndex(from: lastIndexPath)] = story
     collectionNode.reloadItems(at: [lastIndexPath])
   }
 }

@@ -44,7 +44,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   @objc private func panGestureAction(_ panGesture: UIPanGestureRecognizer) {
     
     guard let interactor = interactor else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("No Interactor even tho dragGestureRecognizer is set")
       }
       return
@@ -168,7 +168,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
           }, completion: { _ in
             // Return the popFromView to where it was
             guard let popFromSuperView = animator.popFromSuperview, let popFromOriginalCenter = animator.popFromOriginalCenter else {
-              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
                 CCLog.assert("Still expected PopFrom original information to be preserved by this point")
               }
               return

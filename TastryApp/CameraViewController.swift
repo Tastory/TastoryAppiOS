@@ -196,7 +196,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
         
         alertController.addAlertAction(title: "Settings",
                                        comment: "Alert diaglogue button to open Settings, hoping user will allow access to photo album",
-                                       style: .default) { action in UIApplication.shared.open(url, options: [:]) }
+                                       style: .default) { _ in UIApplication.shared.open(url, options: [:]) }
         
         self.present(alertController, animated: true, completion: nil)
       }
@@ -314,7 +314,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
 
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
       }
       return
@@ -361,7 +361,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       mediaObject.setVideo(toLocal: url)
 
       guard let activitySpinner = activitySpinner else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("Activity Spinner is not initialized")
         }
         return
@@ -371,7 +371,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
 
       mediaObject.localVideoTranscode(to: FoodieFileObject.getFileURL(for: .draft, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
         if let error = error {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.fatal("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
           }
           return
@@ -380,7 +380,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
           DispatchQueue.main.async {
             let storyboard = UIStoryboard(name: "Compose", bundle: nil)
             guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
-              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
                 CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
               }
               return
@@ -401,7 +401,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
           }
           
         } else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.fatal("AVExportPlayer exported video but file doesn't exists in \(FoodieFileObject.getFileURL(for: .draft, with: fileName))")
           }
           return
@@ -459,7 +459,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   private func displayMarkUpController(mediaObj: FoodieMedia) {
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of MarkupViewController Class!!")
       }
       return
@@ -507,7 +507,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
         }
         
       default:
-        AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { action in
+        AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { _ in
           CCLog.fatal("Media returned from Image Picker is neither a Photo nor a Video")
         }
       }
@@ -516,7 +516,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
 
   func dismissPhotoPicker(withTLPHAssets: [TLPHAsset]) {
     if withTLPHAssets.count < 0 {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("No asset returned from TLPHAsset")
       }
     }
@@ -596,7 +596,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
               FoodieStory.cleanUpDraft() { error in
 
                 if let error = error {
-                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { action in
+                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
                     CCLog.assert("Error when cleaning up story from draft- \(error.localizedDescription)")
                   }
                   return
@@ -619,7 +619,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     var bufferImage = bufferImage
 
     guard let fileName = media.foodieFileName else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("the file name is missing from this foodieMedia")
       }
       return
@@ -636,7 +636,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     var imageSize = bufferImage.size
 
     guard var cgImage = bufferImage.cgImage else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("cgImage is nil from bufferImage")
       }
       return
@@ -652,7 +652,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       if bufferImage.imageOrientation == .right {
         // Portrait photo wider than it should be
         guard let cropImage = cgImage.cropping(to: CGRect(x: 0, y:(((imageSize.width/2) - (cropWidth/2))) , width: imageSize.height, height: cropWidth)) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.assert("cropImage is nil after cropping")
           }
           return
@@ -664,7 +664,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
         // defualt imageOrientation is .up
         // Landscape photo wider than it should be
         guard let cropImage = cgImage.cropping(to: CGRect(x: ((imageSize.width/2) - (cropWidth/2)) , y: 0, width: cropWidth, height: imageSize.height)) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.assert("cropImage is nil after cropping")
           }
           return
@@ -680,7 +680,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       if bufferImage.imageOrientation == .right {
         // Portrait photo taller than it should be
         guard let cropImage = cgImage.cropping(to: CGRect(x: (((imageSize.height/2) - cropHeight/2)), y: 0, width: cropHeight, height: imageSize.width)) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.assert("cropImage is nil after cropping")
           }
           return
@@ -692,7 +692,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
         // defualt imageOrientation is .up
         // Landscape photo taller than it should be
         guard let cropImage = cgImage.cropping(to: CGRect(x: 0, y: (((imageSize.height/2) - cropHeight/2)), width: imageSize.width, height: cropHeight)) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.assert("cropImage is nil after cropping")
           }
           return
@@ -721,7 +721,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     bufferImage = UIGraphicsGetImageFromCurrentImageContext()!
 
     guard let context = UIGraphicsGetCurrentContext() else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
          CCLog.assert("Failed to get UIGraphic current context")
       }
       return
@@ -730,7 +730,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     UIGraphicsEndImageContext()
 
     if(bufferImage.cgImage == nil) {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("cgImage is nil from bufferImage")
       }
       return
@@ -739,7 +739,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
 
     CGImageDestinationAddImage(destination, cgImage, properties)
     if(!CGImageDestinationFinalize(destination)) {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("Failed to format the image")
       }
       return
@@ -748,7 +748,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     do {
       try media.imageMemoryBuffer = Data(contentsOf: fileUrl as URL)
     } catch {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("Failed to get image data from the file url")
       }
       return
@@ -806,7 +806,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       imageFormatter(mediaObject, image: image)
 
     default:
-      AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { action in
+      AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { [unowned self] _ in
         CCLog.assert("Media returned from Image Picker is neither a Photo nor a Video")
         self.dismiss(animated: true, completion: nil)
       }
@@ -849,7 +849,7 @@ extension CameraViewController: UIVideoEditorControllerDelegate {
   }
   
   func videoEditorController(_ editor: UIVideoEditorController, didFailWithError error: Error) {
-    AlertDialog.present(from: self, title: "Video Edit Failed", message: error.localizedDescription) { action in
+    AlertDialog.present(from: self, title: "Video Edit Failed", message: error.localizedDescription) { _ in
       CCLog.assert("Video Editing Failed with Error - \(error.localizedDescription)")
     }
   }
@@ -859,14 +859,14 @@ extension CameraViewController: VideoTrimmerDelegate {
   func videoTrimmed(from startTime: CMTime, to endTime: CMTime, url assetURLString: String) {
     
     guard let activitySpinner = activitySpinner else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Activity Spinner is not initialized")
       }
       return
     }
     
     guard let url = URL(string: assetURLString) else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Invalid Asset URL String")
       }
       return
@@ -883,7 +883,7 @@ extension CameraViewController: VideoTrimmerDelegate {
                                     duration: CMTimeRangeMake(startTime, endTime)) { error in
       activitySpinner.remove()
       if let error = error {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
         }
         return

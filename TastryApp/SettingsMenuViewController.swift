@@ -21,7 +21,7 @@ class SettingsMenuViewController: OverlayViewController {
   @IBAction func profileDetailsTap(_ sender: UITapGestureRecognizer) {
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileDetailViewController") as? ProfileDetailViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of ProfileDetailViewController Class!!")
       }
       return
@@ -34,7 +34,7 @@ class SettingsMenuViewController: OverlayViewController {
   @IBAction func changePasswordTap(_ sender: UITapGestureRecognizer) {
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "PasswordViewController") as? PasswordViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("ViewController initiated not of PasswordViewController Class!!")
       }
       return
