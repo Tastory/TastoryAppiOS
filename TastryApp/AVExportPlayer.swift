@@ -54,13 +54,10 @@ class AVExportPlayer: NSObject {
       CCLog.warning(errorDescription ?? "", function: function, file: file, line: line)
     }
   }
-  
-  
-  // MARL: - Private
-  private let uniqueIdentifier = UUID().uuidString
-  
+
   
   // MARK: - Private Instance Variable
+  private let uniqueIdentifier = UUID().uuidString
   private var localURL: URL?
   private var avURLAsset: AVURLAsset?
   private var periodicObserver: Any?
@@ -202,11 +199,6 @@ class AVExportPlayer: NSObject {
       self.removeObserver(self, forKeyPath: #keyPath(AVExportPlayer.avPlayer.currentItem.isPlaybackBufferEmpty))
       self.removeObserver(self, forKeyPath: #keyPath(AVExportPlayer.avPlayer.status))
       self.removeObserver(self, forKeyPath: #keyPath(AVExportPlayer.avPlayer.reasonForWaitingToPlay))
-      
-//      if let periodicObserver = periodicObserver {
-//        avPlayer.removeTimeObserver(periodicObserver)
-//        self.periodicObserver = nil
-//      }
     }
     
     let avPlayerItem = AVPlayerItem(asset: avURLAsset!)
@@ -214,15 +206,12 @@ class AVExportPlayer: NSObject {
     NotificationCenter.default.addObserver(self, selector: #selector(completedPlaying), name: .AVPlayerItemDidPlayToEndTime, object: avPlayerItem)
     
     avPlayer = AVDebugPlayer(playerItem: avPlayerItem)
+    avPlayer!.automaticallyWaitsToMinimizeStalling = true
     avPlayer!.actionAtItemEnd = .none
     avPlayer!.allowsExternalPlayback = false
-    avPlayer!.automaticallyWaitsToMinimizeStalling = true
-    avPlayer!.pause()  // Leave this Paused for good measure, until a Layer is added and explicitly plays
     
-    // Adding Observers for Starts and Stalls. Queue must be a Serial Queue
-//    periodicObserver = avPlayer!.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 2), queue: DispatchQueue.global(qos: .utility)) { [weak self] time in
-//      self?.printStatus()
-//    }
+    // Leave this Paused for good measure, until a Layer is added and explicitly plays
+    avPlayer!.pause()
     
     // Adding Observers for Starts and Stalls
     self.addObserver(self, forKeyPath: #keyPath(avPlayer.currentItem.isPlaybackLikelyToKeepUp), options: [.new], context: nil)

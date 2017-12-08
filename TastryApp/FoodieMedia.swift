@@ -19,7 +19,7 @@ class FoodieMedia: FoodieFileObject {
     
     case retrieveFileDoesNotExist
     case saveToLocalwithNilImageMemoryBuffer
-    case saveToLocalWithNilvideoExporter
+    case saveToLocalWithNilvideoExportPlayer
     case saveToLocalVideoHasNoFileUrl
     case saveToLocalCompletedWithNoOutputFile
     
@@ -29,10 +29,10 @@ class FoodieMedia: FoodieFileObject {
         return NSLocalizedString("File for filename does not exist", comment: "Error description for an exception error code")
       case .saveToLocalwithNilImageMemoryBuffer:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, imageMemoryBuffer = nil", comment: "Error description for an exception error code")
-      case .saveToLocalWithNilvideoExporter:
+      case .saveToLocalWithNilvideoExportPlayer:
         return NSLocalizedString("FoodieMedia.saveToLocal failed, videoLocalBufferUrl = nil", comment: "Error description for an exception error code")
       case .saveToLocalVideoHasNoFileUrl:
-        return NSLocalizedString("FoodieMedia.saveToLocal failed, videoExporter does not contain AVURLAsset", comment: "Error description for an exception error code")
+        return NSLocalizedString("FoodieMedia.saveToLocal failed, videoExportPlayer does not contain AVURLAsset", comment: "Error description for an exception error code")
       case .saveToLocalCompletedWithNoOutputFile:
         return NSLocalizedString("FoodieMedia.saveToLocal completed, but output file not found", comment: "Error description for an exception error code")
       }
@@ -50,34 +50,14 @@ class FoodieMedia: FoodieFileObject {
   
   var mediaType: FoodieMediaType?
   var imageMemoryBuffer: Data?
-  var videoExportPlayer: AVExportPlayer {
-    
-    if let localVideoUrl = localVideoUrl {
-      let player = AVExportPlayer()
-      player.initAVPlayer(from: localVideoUrl)
-      return player
-    }
-      
-    else if let player = videoExporter, player.avPlayer != nil {
-      return player
-    }
-      
-    else {
-      CCLog.fatal("No existing videoExporter & avPlayer, nor localVideoUrl")
-    }
-  }
+  
   
   
   // MARK: - Read Only Instance Variables
   
+  private(set) var videoExportPlayer: AVExportPlayer?
   private(set) var localVideoUrl: URL?
 
-  
-  
-  // MARK: - Private Instance Variable
-
-  private var videoExporter: AVExportPlayer?
-  
   
   
   // MARK: - Public Instance Functions
@@ -121,9 +101,9 @@ class FoodieMedia: FoodieFileObject {
     }
     
     // To do the exporter, we need an AVExportPlayer, so create one, and we'll let it clean itself up after it finished switching backing
-    videoExporter = AVExportPlayer()
-    videoExporter!.initAVPlayer(from: localVideoUrl)
-    videoExporter!.exportAsync(to: exportURL,
+    videoExportPlayer = AVExportPlayer()
+    videoExportPlayer!.initAVPlayer(from: localVideoUrl)
+    videoExportPlayer!.exportAsync(to: exportURL,
                                thru: tempURL,
                                using: preset,
                                with: outputType,
@@ -253,7 +233,7 @@ extension FoodieMedia: FoodieObjectDelegate {
         return (imageMemoryBuffer != nil)
         
       case .video:
-        if let videoExporter = videoExporter, videoExporter.avPlayer != nil {
+        if let videoExportPlayer = videoExportPlayer, videoExportPlayer.avPlayer != nil {
           return true  // Retrieving case
         } else if localVideoUrl != nil {
           return true  // Retrieved case
@@ -347,10 +327,10 @@ extension FoodieMedia: FoodieObjectDelegate {
         }
         
       case .video:
-        videoExporter = AVExportPlayer()
-        videoExporter!.initAVPlayer(from: FoodieFileObject.getS3URL(for: fileName))
-        videoExporter!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
-          self.videoExporter = nil  // FoodieMedia only hole onto the Export Player during transcode/export. Releases all players when done
+        videoExportPlayer = AVExportPlayer()
+        videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getS3URL(for: fileName))
+        videoExportPlayer!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
+          self.videoExportPlayer = nil  // FoodieMedia only hole onto the Export Player during transcode/export. Releases all players when done
           
           if let error = error {
             CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
@@ -410,10 +390,10 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
 
       // This is Server Case
-      videoExporter = AVExportPlayer()
-      videoExporter!.initAVPlayer(from: FoodieFileObject.getS3URL(for: fileName))
-      videoExporter!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
-        self.videoExporter = nil  // FoodieMedia only hole onto the Export Player during transcode/export. Releases all players when done
+      videoExportPlayer = AVExportPlayer()
+      videoExportPlayer!.initAVPlayer(from: FoodieFileObject.getS3URL(for: fileName))
+      videoExportPlayer!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
+        self.videoExportPlayer = nil  // FoodieMedia only hole onto the Export Player during transcode/export. Releases all players when done
         
         if let error = error {
           CCLog.warning("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
@@ -543,8 +523,8 @@ extension FoodieMedia: FoodieObjectDelegate {
   
   func cancelRetrieveFromServerRecursive() {
     cancelRetrieveFromServer()
-    if let videoExporter = videoExporter {
-      videoExporter.cancelExport()  // On successful export cancel, the retrieve completion failure will nil the videoExporter pointer
+    if let videoExportPlayer = videoExportPlayer {
+      videoExportPlayer.cancelExport()  // On successful export cancel, the retrieve completion failure will nil the videoExportPlayer pointer
     }
   }
   

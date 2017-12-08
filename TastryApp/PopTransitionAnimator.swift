@@ -73,6 +73,7 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
   
   
   func putBack(_ view: UIView, to originalSuperview: UIView, at originalCenter: CGPoint) {
+    CCLog.verbose("Executing Put Back for PopTransitionAnimator")
     view.removeFromSuperview()
     originalSuperview.addSubview(view)
     view.layer.transform = CATransform3DIdentity
@@ -147,7 +148,7 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         self.putBack(self.popFromView, to: self.popFromSuperview!, at: self.popFromOriginalCenter!)
         self.popFromView.isHidden = true  // Hide it so it looks like it's popped out
         
-        let transitionWasCancelled = transitionContext.transitionWasCancelled
+        let transitionWasCancelled = transitionContext.transitionWasCancelled  // Get the Bool first, so there wont' be a retain cycle
         transitionContext.completeTransition(!transitionWasCancelled)
       })
     }
@@ -196,7 +197,7 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
           // Return the popFromView to where it was
           self.putBack(self.popFromView, to: self.popFromSuperview!, at: self.popFromOriginalCenter!)
         }
-        let transitionWasCancelled = transitionContext.transitionWasCancelled
+        let transitionWasCancelled = transitionContext.transitionWasCancelled  // Get the Bool first, so there wont' be a retain cycle
         transitionContext.completeTransition(!transitionWasCancelled)
       })
     }

@@ -36,6 +36,7 @@ class StoryViewController: OverlayViewController {
   private let jotViewController = JotViewController()
   private var currentMoment: FoodieMoment?
   private var currentExportPlayer: AVExportPlayer?
+  private var localVideoPlayer = AVPlayer()
   private var photoTimer: Timer?
   private var swipeUpGestureRecognizer: UISwipeGestureRecognizer!  // Set by ViewDidLoad
   private var avPlayerLayer: AVPlayerLayer!  // Set by ViewDidLoad
@@ -156,12 +157,11 @@ class StoryViewController: OverlayViewController {
       return
     }
     
-    guard let avPlayer = currentExportPlayer?.avPlayer else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
-        CCLog.assert("Expected AVExportPlayer")
-        self.popDismiss(animated: true)
-      }
-      return
+    var avPlayer: AVPlayer
+    if let videoPlayer = currentExportPlayer?.avPlayer {
+      avPlayer = videoPlayer
+    } else {
+      avPlayer = localVideoPlayer
     }
 
     if playingMoment.playSound {
@@ -205,12 +205,12 @@ class StoryViewController: OverlayViewController {
       photoTimer.invalidate()
       
     } else {
-      guard let avPlayer = currentExportPlayer?.avPlayer else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
-          CCLog.assert("No AVPlayer for StoryVC when trying to pause/reumse")
-          self.popDismiss(animated: true)
-        }
-        return
+      
+      var avPlayer: AVPlayer
+      if let videoPlayer = currentExportPlayer?.avPlayer {
+        avPlayer = videoPlayer
+      } else {
+        avPlayer = localVideoPlayer
       }
       
       // Video is playing. Pause the video
@@ -236,9 +236,12 @@ class StoryViewController: OverlayViewController {
       }
       
     } else {
-      guard let avPlayer = currentExportPlayer?.avPlayer else {
-        CCLog.warning("Attempting to play() despite avPlayer = nil, is this normal?")
-        return
+      
+      var avPlayer: AVPlayer
+      if let videoPlayer = currentExportPlayer?.avPlayer {
+        avPlayer = videoPlayer
+      } else {
+        avPlayer = localVideoPlayer
       }
       
       // Video is paused. Restart the video
@@ -249,6 +252,19 @@ class StoryViewController: OverlayViewController {
     isPaused = false
     pauseButton.isHidden = false
     playButton.isHidden = true
+  }
+  
+  
+  private func installUIForVideo() {
+    updateAVMute(audioControl: AudioControl.global)
+    pauseButton.isHidden = isPaused  // isLikelyToKeepUp can be called when paused, so UI update needs to be correct for that
+    playButton.isHidden = !isPaused
+    venueButton.isHidden = false
+    authorButton.isHidden = false
+    displaySwipeStackIfNeeded()
+    topStackBackgroundView.isHidden = false
+    bottomStackBackgroundView.isHidden = false
+    activitySpinner.remove()
   }
   
   
@@ -299,24 +315,29 @@ class StoryViewController: OverlayViewController {
       }
       
     } else if mediaType == .video {
-      currentExportPlayer = media.videoExportPlayer
       
-      guard let avPlayer = currentExportPlayer!.avPlayer else {
-        CCLog.warning("media.videoExportPlayer.avPlayer == nil")
-        popDismiss(animated: true)
-        return
+      var avPlayer: AVPlayer
+      if let videoPlayer = media.videoExportPlayer?.avPlayer {
+        currentExportPlayer = media.videoExportPlayer
+        currentExportPlayer!.delegate = self
+        avPlayer = videoPlayer
+      } else if let localVideoUrl = media.localVideoUrl {
+        
+        let avUrlAsset = AVURLAsset(url: localVideoUrl)
+        let avPlayerItem = AVPlayerItem(asset: avUrlAsset)
+        localVideoPlayer.replaceCurrentItem(with: avPlayerItem)
+        avPlayer = localVideoPlayer
+        installUIForVideo()
+      } else {
+        CCLog.fatal("Video media contains no Export Player nor Local URL")
       }
-      
-      currentExportPlayer!.delegate = self
+
       avPlayerLayer.player = avPlayer
       view.insertSubview(videoView, belowSubview: jotViewController.view)
       
       avPlayer.seek(to: kCMTimeZero)
       avPlayer.play()
-      
-      currentExportPlayer!.printStatus()
-      CCLog.debug("avPlayerLayer.isReadyForDisplay = \(avPlayerLayer.isReadyForDisplay)")
-      
+
       // No image nor video to work on, Fatal
     } else {
       CCLog.fatal("MediaType neither .photo nor .video")
@@ -437,6 +458,8 @@ class StoryViewController: OverlayViewController {
     currentExportPlayer?.avPlayer?.pause()
     currentExportPlayer?.delegate = nil
     currentExportPlayer = nil
+    
+    localVideoPlayer.pause()
     
     // avPlayerLayer.player = nil  // !!! Taking a risk here. So that video transitions will be a touch quicker
     jotViewController.clearAll()
@@ -598,6 +621,10 @@ class StoryViewController: OverlayViewController {
       view.backgroundColor = .clear
     }
     
+    localVideoPlayer.automaticallyWaitsToMinimizeStalling = false
+    localVideoPlayer.allowsExternalPlayback = false
+    localVideoPlayer.actionAtItemEnd = .none
+    
     avPlayerLayer = AVPlayerLayer()
     videoView.layer.addSublayer(avPlayerLayer)
     
@@ -739,7 +766,16 @@ class StoryViewController: OverlayViewController {
   
   override func topViewWillEnterForeground() {
     super.topViewWillEnterForeground()
-    currentExportPlayer?.avPlayer?.play()
+    
+    guard let media = currentMoment?.media else { return }
+    
+    if media.mediaType == .video {
+      if let exportPlayer = currentExportPlayer {
+        exportPlayer.avPlayer?.play()
+      } else {
+        localVideoPlayer.play()
+      }
+    }
   }
   
   
@@ -764,15 +800,7 @@ extension StoryViewController: SFSafariViewControllerDelegate {
 extension StoryViewController: AVPlayAndExportDelegate {
  
   func avExportPlayer(isLikelyToKeepUp avExportPlayer: AVExportPlayer) {
-    updateAVMute(audioControl: AudioControl.global)
-    pauseButton.isHidden = isPaused  // isLikelyToKeepUp can be called when paused, so UI update needs to be correct for that
-    playButton.isHidden = !isPaused
-    venueButton.isHidden = false
-    authorButton.isHidden = false
-    displaySwipeStackIfNeeded()
-    topStackBackgroundView.isHidden = false
-    bottomStackBackgroundView.isHidden = false
-    activitySpinner.remove()
+    installUIForVideo()
   }
   
   func avExportPlayer(isWaitingForData avExportPlayer: AVExportPlayer) {
