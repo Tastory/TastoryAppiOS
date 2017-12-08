@@ -371,6 +371,8 @@ extension FoodieMedia: FoodieObjectDelegate {
     switch type {
       
     case .photo:
+      
+      // This is Local Case
       retrieveToBuffer(from: .cache) { buffer, error in
         guard let error = error as? FoodieFileObject.FileErrorCode else {
           // Error is nil. This is actually success case!
@@ -386,6 +388,7 @@ extension FoodieMedia: FoodieObjectDelegate {
           CCLog.warning("retrieveFromLocalToBuffer for photo failed with error \(error.localizedDescription)")
         }
         
+        // This is Server Case
         self.retrieveFromServerToBuffer() { (buffer, error) in
           if let error = error {
             CCLog.warning("retrieveFromServerToBuffer for photo failed with error \(error.localizedDescription)")
@@ -398,15 +401,16 @@ extension FoodieMedia: FoodieObjectDelegate {
       }
       
     case .video:
-      videoExporter = AVExportPlayer()
-      
+      // This is Local Case
       guard !FoodieFileObject.checkIfExists(for: fileName, in: .cache) else {
-        self.videoExporter!.initAVPlayer(from: FoodieFileObject.getFileURL(for: .cache, with: fileName))
+        self.localVideoUrl = FoodieFileObject.getFileURL(for: .cache, with: fileName)
         readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval
         callback?(nil)
         return
       }
 
+      // This is Server Case
+      videoExporter = AVExportPlayer()
       videoExporter!.initAVPlayer(from: FoodieFileObject.getS3URL(for: fileName))
       videoExporter!.exportAsync(to: FoodieFileObject.getFileURL(for: .cache, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
         self.videoExporter = nil  // FoodieMedia only hole onto the Export Player during transcode/export. Releases all players when done

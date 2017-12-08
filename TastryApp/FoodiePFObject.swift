@@ -151,6 +151,7 @@ class FoodiePFObject: PFObject {
           }
           // Return if got what's wanted
           callback?(error)
+          fetchRetry.done()
         }
       }
       return
@@ -200,6 +201,7 @@ class FoodiePFObject: PFObject {
           
           // Return if got what's wanted
           callback?(serverError)
+          fetchRetry.done()
         }
       }
     }
@@ -242,6 +244,7 @@ class FoodiePFObject: PFObject {
             if saveRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .utility) { return }
           }
           FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
+          saveRetry.done()
         }
       }
     }
@@ -284,6 +287,7 @@ class FoodiePFObject: PFObject {
             self.delete(from: .cache, withBlock: callback)
           }
         }
+        deleteRetry.done()
       }
     }
   }

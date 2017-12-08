@@ -247,7 +247,7 @@ class FoodieFileObject {
     let serverFileURL = Constants.CloudFrontUrl.appendingPathComponent(fileName)
     
     let retrieveRetry = SwiftRetry()
-    retrieveRetry.start("retrieve file '\(fileName)' from CloudFront", withCountOf: Constants.AwsRetryCount) { [unowned self] in
+    retrieveRetry.start("retrieve file '\(fileName)' from CloudFront", withCountOf: Constants.AwsRetryCount) {
       CCLog.verbose("Retrieving from \(serverFileURL.absoluteString) for downloading \(fileName)")
       
       // Let's time the download!
@@ -263,9 +263,11 @@ class FoodieFileObject {
                                                           after: Constants.AwsRetryDelay,
                                                           withQoS: .utility) {
               callback?(urlError)
+              retrieveRetry.done()
             }
           } else {
             callback?(error)
+            retrieveRetry.done()
           }
           return
         }
@@ -273,12 +275,14 @@ class FoodieFileObject {
         guard let httpResponse = response as? HTTPURLResponse else {
           CCLog.assert("Did not receive HTTPURLResponse type or response = nil for downloading \(fileName)")
           callback?(FileErrorCode.urlSessionDownloadHttpResponseNil)
+          retrieveRetry.done()
           return
         }
         
         guard let httpStatusCode = HTTPStatusCode(rawValue: httpResponse.statusCode) else {
           CCLog.warning("HTTPURLResponse.statusCode is invalid for downloading \(fileName)")
           callback?(FileErrorCode.urlSessionDownloadHttpResponseFailed)
+          retrieveRetry.done()
           return
         }
         
@@ -288,6 +292,7 @@ class FoodieFileObject {
                                                           after: Constants.AwsRetryDelay,
                                                           withQoS: .utility) {
             callback?(FileErrorCode.urlSessionDownloadHttpResponseFailed)
+            retrieveRetry.done()
           }
           return
         }
@@ -295,6 +300,7 @@ class FoodieFileObject {
         guard let tempURL = url else {
           CCLog.assert("Download of \(fileName) from CloudFront resulted in url = nil")
           callback?(FileErrorCode.urlSessionDownloadTempUrlNil)
+          retrieveRetry.done()
           return
         }
         
@@ -320,10 +326,12 @@ class FoodieFileObject {
           } else {
             CCLog.assert("Failed to move file from URLSessionDownload temp to \(localType) as \(fileName). Error = \(error.localizedDescription)")
             callback?(error)
+            retrieveRetry.done()
             return
           }
         }
         callback?(nil)
+        retrieveRetry.done()
       }
       self.downloadTask!.resume()
     }
@@ -460,11 +468,12 @@ class FoodieFileObject {
         CCLog.debug("File \(fileName) does not exist on S3. Saving from \(localType)")
         
         let saveRetry = SwiftRetry()
-        saveRetry.start("save file '\(fileName)' to S3", withCountOf: Constants.AwsRetryCount) { [unowned self] in
+        saveRetry.start("save file '\(fileName)' to S3", withCountOf: Constants.AwsRetryCount) {
           
           guard let uploadRequest = AWSS3TransferManagerUploadRequest() else {
             CCLog.assert("AWSS3TransferManagerUploadRequest() returned nil")
             callback?(FileErrorCode.awsS3TransferManagerUploadRequestNil)
+            saveRetry.done()
             return
           }
           
@@ -473,7 +482,7 @@ class FoodieFileObject {
           uploadRequest.body = FoodieFileObject.getFileURL(for: localType, with: fileName)
           self.uploadRequest = uploadRequest
         
-          AWSS3TransferManager.default().upload(uploadRequest).continueWith(executor: AWSExecutor.mainThread()) { task in
+          AWSS3TransferManager.default().upload(uploadRequest).continueWith(executor: AWSExecutor.mainThread()) { [unowned self] task in
             
             if let error = task.error as NSError? {
               if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: error.code) {
@@ -501,12 +510,14 @@ class FoodieFileObject {
                   callback?(FileErrorCode.awsS3TransferUploadUnknownError)
                 }
               }
+              saveRetry.done()
               return nil
             }
             // TODO: might be useful to store in parse for tracking the version
             CCLog.debug("AWS S3 Transfer Upload completed for \(fileName)")
             self.uploadRequest = nil
             callback?(nil)
+            saveRetry.done()
             return nil
           }
         }
@@ -583,6 +594,7 @@ class FoodieFileObject {
               // Successfully deleted
               callback?(nil)
             }
+            deleteRetry.done()
             return nil
           }
         }

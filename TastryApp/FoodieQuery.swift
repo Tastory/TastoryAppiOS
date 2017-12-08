@@ -413,7 +413,7 @@ class FoodieQuery {
     
     // Do the actual search!
     let queryRetry = SwiftRetry()
-    queryRetry.start("query and search for Story", withCountOf: Constants.QueryRetryCount) { [unowned self] in
+    queryRetry.start("query and search for Story", withCountOf: Constants.QueryRetryCount) {
       self.pfQuery!.findObjectsInBackground { (objects, error) in
         if let stories = objects as? [FoodieStory] {
           callback?(stories, error)
@@ -421,6 +421,7 @@ class FoodieQuery {
           if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .utility) { return }
           callback?(nil, error)
         }
+        queryRetry.done()
       }
     }
   }
@@ -439,7 +440,7 @@ class FoodieQuery {
     
     // Do the actual search!
     let queryRetry = SwiftRetry()
-    queryRetry.start("query and search for Venue", withCountOf: Constants.QueryRetryCount) { [unowned self] in
+    queryRetry.start("query and search for Venue", withCountOf: Constants.QueryRetryCount) {
       self.pfQuery!.findObjectsInBackground { (objects, error) in
         if let stories = objects as? [FoodieVenue] {
           callback?(stories, error)
@@ -447,6 +448,7 @@ class FoodieQuery {
           if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .utility) { return }
           callback?(nil, error)
         }
+        queryRetry.done()
       }
     }
   }
@@ -474,6 +476,7 @@ class FoodieQuery {
           if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .utility) { return }
           callback?(nil, error)
         }
+        queryRetry.done()
       }
     }
   }
@@ -501,6 +504,7 @@ class FoodieQuery {
           if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .utility) { return }
           callback?(nil, error)
         }
+        queryRetry.done()
       }
     }
   }

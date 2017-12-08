@@ -213,6 +213,7 @@ class FoodieVenue: FoodiePFObject  {
               if errorType == "failed_geocode" {
                 CCLog.info("User Error - User inputted a location to perform Foursquare Venue search 'Near', but the Geocode was not found")
                 callback?(nil, nil, ErrorCode.searchFoursquareFailedGeocode)
+                searchRetry.done()
                 break
               }
             }
@@ -221,12 +222,14 @@ class FoodieVenue: FoodiePFObject  {
           default:
             if foursquareErrorLogging(for: httpStatusCode) {
               callback?(nil, nil, ErrorCode.foursquareHttpStatusFailed)
+              searchRetry.done()
             } else {
               CCLog.warning("Search for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
               if !searchRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                             after: Constants.FoursquareSearchRetryDelay,
                                                             withQoS: .utility) {
                 callback?(nil, nil, ErrorCode.foursquareHttpStatusFailed)
+                searchRetry.done()
               }
             }
             return
@@ -241,10 +244,12 @@ class FoodieVenue: FoodiePFObject  {
                                                         after: Constants.FoursquareSearchRetryDelay,
                                                         withQoS: .utility) {
               callback?(nil, nil, ErrorCode.foursquareResponseError)
+              searchRetry.done()
             }
             return
           } else {
             callback?(nil, nil, ErrorCode.foursquareResponseError)
+            searchRetry.done()
             return
           }
         }
@@ -367,11 +372,13 @@ class FoodieVenue: FoodiePFObject  {
             
             // Return all the collected venues through the callback!
             callback?(responseVenueArray, geocodeStruct, nil)
+            searchRetry.done()
             //}
           }
         } else {
           CCLog.assert("Foursquare Fallthrough - No HTTP Status Code. No Error, No Response")
           callback?(nil, nil, ErrorCode.foursquareFallthrough)
+          searchRetry.done()
         }
       }
       searchTask.start()
@@ -395,12 +402,14 @@ class FoodieVenue: FoodiePFObject  {
           default:
             if foursquareErrorLogging(for: httpStatusCode) {
               callback?(nil, ErrorCode.foursquareHttpStatusFailed)
+              getDetailsRetry.done()
             } else {
               CCLog.warning("Get Details for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
               if !getDetailsRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                                 after: Constants.FoursquareGetDetailsRetryDelay,
                                                                 withQoS: .utility) {
                 callback?(nil, ErrorCode.foursquareHttpStatusFailed)
+                getDetailsRetry.done()
               }
             }
             return
@@ -415,10 +424,12 @@ class FoodieVenue: FoodiePFObject  {
                                                             after: Constants.FoursquareGetDetailsRetryDelay,
                                                             withQoS: .utility) {
               callback?(nil, ErrorCode.foursquareResponseError)
+              getDetailsRetry.done()
             }
             return
           } else {
             callback?(nil, ErrorCode.foursquareResponseError)
+            getDetailsRetry.done()
             return
           }
         }
@@ -524,10 +535,12 @@ class FoodieVenue: FoodiePFObject  {
             
             // Return the Venue~
             callback?(foodieVenue, nil)
+            getDetailsRetry.done()
           }
         } else {
           CCLog.assert("Foursquare Fallthrough - No HTTP Status Code. No Error, No Response")
           callback?(nil, ErrorCode.foursquareFallthrough)
+          getDetailsRetry.done()
         }
       }
       getDetailsTask.start()
@@ -553,12 +566,14 @@ class FoodieVenue: FoodiePFObject  {
           default:
             if foursquareErrorLogging(for: httpStatusCode) {
               callback?(nil, ErrorCode.foursquareHttpStatusFailed)
+              getHoursRetry.done()
             } else {
               CCLog.warning("Get Details for Foursquare Venue responded with HTTP status code \(httpStatusCode) - \(result.description)")
               if !getHoursRetry.attemptRetryBasedOnHttpStatus(httpStatus: httpStatusCode,
                                                               after: Constants.FoursquareGetDetailsRetryDelay,
                                                               withQoS: .utility) {
                 callback?(nil, ErrorCode.foursquareHttpStatusFailed)
+                getHoursRetry.done()
               }
             }
             return
@@ -572,10 +587,12 @@ class FoodieVenue: FoodiePFObject  {
                                                             after: Constants.FoursquareGetDetailsRetryDelay,
                                                             withQoS: .utility) {
                 callback?(nil, ErrorCode.foursquareResponseError)
+                getHoursRetry.done()
               }
               return
             } else {
               callback?(nil, ErrorCode.foursquareResponseError)
+              getHoursRetry.done()
               return
             }
           }
@@ -637,10 +654,12 @@ class FoodieVenue: FoodiePFObject  {
           }
           venue?.hours = hourSegmentsByDay as Array<Array<NSDictionary>>?
           callback?(hourSegmentsByDay, nil)
+          getHoursRetry.done()
           
         } else {
           CCLog.assert("Foursquare Fallthrough - No HTTP Status Code. No Error, No Response")
           callback?(nil, ErrorCode.foursquareFallthrough)
+          getHoursRetry.done()
         }
       }
       getHoursTask.start()

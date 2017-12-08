@@ -20,7 +20,7 @@ protocol VideoTrimmerDelegate {
 class VideoTrimmerViewController: UIViewController, UINavigationControllerDelegate  {
 
     // MARK: - Private Instance Variable
-    private var player: AVPlayer?
+    private var player: AVDebugPlayer?
     private var playbackTimeCheckerTimer: Timer?
     private var trimmerPositionChangedTimer: Timer?
 
@@ -122,7 +122,7 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
 
     private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
       let playerItem = AVPlayerItem(asset: asset)
-      player = AVPlayer(playerItem: playerItem)
+      player = AVDebugPlayer(playerItem: playerItem)
 
       /*NotificationCenter.default.addObserver(self, selector: #selector(VideoTrimmerViewController.itemDidFinishPlaying(_:)),
                                              name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)*/

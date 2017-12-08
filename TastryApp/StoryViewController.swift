@@ -314,6 +314,9 @@ class StoryViewController: OverlayViewController {
       avPlayer.seek(to: kCMTimeZero)
       avPlayer.play()
       
+      currentExportPlayer!.printStatus()
+      CCLog.debug("avPlayerLayer.isReadyForDisplay = \(avPlayerLayer.isReadyForDisplay)")
+      
       // No image nor video to work on, Fatal
     } else {
       CCLog.fatal("MediaType neither .photo nor .video")
@@ -728,14 +731,9 @@ class StoryViewController: OverlayViewController {
       CCLog.assert("Expected a viewingStory even tho dismissing")
     }
     
-    // This is a workaround. Root Cause is StoryViewController is not Deiniting itself, hence properties it points to are not deiniting as well
-    avPlayerLayer = nil
-  }
-  
-  
-  deinit {
-    CCLog.verbose("StoryVC Stop, Clear, Invalidate and Deinit")
+    // Need to Invalidate and nil in-order to break retain cycle
     muteObserver?.invalidate()
+    muteObserver = nil
   }
   
   

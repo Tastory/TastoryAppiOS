@@ -91,6 +91,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
         guard let statusCode = result.HTTPSTatusCode, let httpStatusCode = HTTPStatusCode(rawValue: statusCode) else {
           CCLog.warning("No valid HTTP Status Code on Foursquare Search")
           callback?(nil, ErrorCode.foursquareHttpStatusNil)
+          categoriesRetry.done()
           return
         }
         
@@ -100,6 +101,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
                                                             after: Constants.FoursquareSearchRetryDelay,
                                                             withQoS: .utility) {
             callback?(nil, ErrorCode.foursquareHttpStatusFailed)
+            categoriesRetry.done()
           }
           return
         }
@@ -112,10 +114,12 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
                                                             after: Constants.FoursquareSearchRetryDelay,
                                                             withQoS: .utility) {
               callback?(nil, ErrorCode.foursquareResponseError)
+              categoriesRetry.done()
             }
             return
           } else {
             callback?(nil, ErrorCode.foursquareResponseError)
+            categoriesRetry.done()
             return
           }
         }

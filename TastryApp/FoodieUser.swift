@@ -1367,7 +1367,7 @@ extension FoodieUser: FoodieObjectDelegate {
     else if forceAnyways {
       CCLog.debug("Forced to fetch \(delegate.foodieObjectType())(\(getUniqueIdentifier())) In Background")
       
-      fetchRetry.start("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: FoodiePFObject.Constants.ParseRetryCount) { [unowned self] in
+      fetchRetry.start("Fetch \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: FoodiePFObject.Constants.ParseRetryCount) {
         self.fetchInBackground() { object, error in  // This fetch only comes from Server
           if let error = error {
             CCLog.warning("fetchInBackground failed on \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) with error: \(error.localizedDescription)")
@@ -1375,6 +1375,7 @@ extension FoodieUser: FoodieObjectDelegate {
           }
           // Return if got what's wanted
           callback?(error)
+          fetchRetry.done()
         }
       }
       return
@@ -1421,6 +1422,7 @@ extension FoodieUser: FoodieObjectDelegate {
 //          }
           // Return if got what's wanted
           callback?(serverError)
+          fetchRetry.done()
         }
       }
     }
@@ -1456,13 +1458,14 @@ extension FoodieUser: FoodieObjectDelegate {
       CCLog.debug("Save \(delegate.foodieObjectType())(\(self.getUniqueIdentifier())) in background")
       
       let saveRetry = SwiftRetry()
-      saveRetry.start("Save \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: FoodiePFObject.Constants.ParseRetryCount) { [unowned self] in
+      saveRetry.start("Save \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: FoodiePFObject.Constants.ParseRetryCount) {
         
         self.saveInBackground { success, error in
           if !success || error != nil {
             if saveRetry.attempt(after: FoodiePFObject.Constants.ParseRetryDelaySeconds, withQoS: .utility) { return }
           }
           FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
+          saveRetry.done()
         }
       }
     }
@@ -1489,7 +1492,7 @@ extension FoodieUser: FoodieObjectDelegate {
     CCLog.debug("Delete \(delegate.foodieObjectType())(\(getUniqueIdentifier())) in Background")
     
     let deleteRetry = SwiftRetry()
-    deleteRetry.start("Delete \(delegate.foodieObjectType())(\(getUniqueIdentifier()))", withCountOf: FoodiePFObject.Constants.ParseRetryCount) { [unowned self] in
+    deleteRetry.start("Delete \(delegate.foodieObjectType())(\(getUniqueIdentifier()))", withCountOf: FoodiePFObject.Constants.ParseRetryCount) {
       
       self.deleteInBackground { success, error in
         if !success || error != nil {
@@ -1502,6 +1505,7 @@ extension FoodieUser: FoodieObjectDelegate {
             self.delete(from: .cache, withBlock: callback)
           }
         }
+        deleteRetry.done()
       }
     }
   }

@@ -147,7 +147,8 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         self.putBack(self.popFromView, to: self.popFromSuperview!, at: self.popFromOriginalCenter!)
         self.popFromView.isHidden = true  // Hide it so it looks like it's popped out
         
-        transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+        let transitionWasCancelled = transitionContext.transitionWasCancelled
+        transitionContext.completeTransition(!transitionWasCancelled)
       })
     }
     
@@ -195,7 +196,8 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
           // Return the popFromView to where it was
           self.putBack(self.popFromView, to: self.popFromSuperview!, at: self.popFromOriginalCenter!)
         }
-        transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+        let transitionWasCancelled = transitionContext.transitionWasCancelled
+        transitionContext.completeTransition(!transitionWasCancelled)
       })
     }
   }

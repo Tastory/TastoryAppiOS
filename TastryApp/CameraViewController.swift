@@ -377,6 +377,8 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
           return
           
         } else if FoodieFileObject.checkIfExists(for: fileName, in: .draft) {
+          mediaObject.setVideo(toLocal: FoodieFileObject.getFileURL(for: .draft, with: fileName))
+          
           DispatchQueue.main.async {
             let storyboard = UIStoryboard(name: "Compose", bundle: nil)
             guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
