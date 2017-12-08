@@ -20,7 +20,7 @@ import AVFoundation
 import Jot
 import ColorSlider
 
-protocol MarkupReturnDelegate {
+protocol MarkupReturnDelegate: class {
   func markupComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?)
 }
 
@@ -50,7 +50,7 @@ class MarkupViewController: OverlayViewController {
   
   // MARK: - Public Instance Variables
   
-  var markupReturnDelegate: MarkupReturnDelegate?
+  weak var markupReturnDelegate: MarkupReturnDelegate?
   var editMomentObj: FoodieMoment?
   var mediaObj: FoodieMedia?
   var mediaLocation: CLLocation?

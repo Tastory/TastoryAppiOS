@@ -10,7 +10,7 @@ import Foundation
 import AsyncDisplayKit
 
 
-@objc protocol FeedCollectionNodeDelegate {
+@objc protocol FeedCollectionNodeDelegate: class {
   
   // FeedCollectionNodeController needs more data
   @objc optional func collectionNodeNeedsNextDataPage(for context: AnyObject?)
@@ -59,7 +59,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   // MARK: - Public Instance Variable
   
-  var delegate: FeedCollectionNodeDelegate?
+  weak var delegate: FeedCollectionNodeDelegate?
   var storyArray = [FoodieStory]()
   var enableEdit = false
   

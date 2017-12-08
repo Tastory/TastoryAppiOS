@@ -11,7 +11,7 @@ import AVFoundation
 import MobileCoreServices
 import PryntTrimmerView
 
-protocol VideoTrimmerDelegate {
+protocol VideoTrimmerDelegate: class {
   func videoTrimmed(from startTime: CMTime, to endTime: CMTime, url assetURL: String)
 }
 
@@ -26,7 +26,7 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
 
     // MARK: - Public Instance Variable
     public var avAsset: AVURLAsset?
-    public var delegate: VideoTrimmerDelegate?
+    public weak var delegate: VideoTrimmerDelegate?
 
     // MARK: - IBOutlets
     @IBOutlet weak var selectAssetButton: UIButton!

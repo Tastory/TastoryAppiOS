@@ -9,7 +9,7 @@
 import UIKit
 
 
-protocol CategoryTableViewCellDelegate {
+protocol CategoryTableViewCellDelegate: class {
   func expandCollpase(for cell: CategoryTableViewCell, to state: CategoryTableViewCell.ExpandCollapseState)
 }
 
@@ -45,7 +45,7 @@ class CategoryTableViewCell: UITableViewCell {
   
   
   // MARK: - Public Instance Variable
-  var delegate: CategoryTableViewCellDelegate?
+  weak var delegate: CategoryTableViewCellDelegate?
   var categoryItem: FoodieCategory?
   
   // MARK: - Private Instance Variables

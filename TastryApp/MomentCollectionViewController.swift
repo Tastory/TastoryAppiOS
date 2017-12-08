@@ -28,9 +28,9 @@ class MomentCollectionViewController: UICollectionViewController {
   
   // MARK: - Public Instance Variables
   var workingStory: FoodieStory!
-  var cameraReturnDelegate: CameraReturnDelegate!
-  var containerVC: MarkupReturnDelegate?
-  var previewControlDelegate: PreviewControlDelegate!
+  weak var cameraReturnDelegate: CameraReturnDelegate?
+  weak var previewControlDelegate: PreviewControlDelegate?
+  weak var containerVC: MarkupReturnDelegate?
 
   
   // MARK: - Private Instance Variables
@@ -269,7 +269,7 @@ class MomentCollectionViewController: UICollectionViewController {
     
     if workingStory.isEditStory {
       // retrieve story only when in edit mode
-      previewControlDelegate.enablePreviewButton(false)
+      previewControlDelegate?.enablePreviewButton(false)
       
       guard let moments = workingStory.moments else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -324,7 +324,7 @@ class MomentCollectionViewController: UICollectionViewController {
             SwiftMutex.lock(&self.outstandingMutex)
             self.outstandingStoryRetrievals -= 1
             if self.outstandingStoryRetrievals == 0 {
-              self.previewControlDelegate.enablePreviewButton(true)
+              self.previewControlDelegate?.enablePreviewButton(true)
               let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.reorderMoment(_:)))
               collectionView.addGestureRecognizer(longPressGesture)
             }

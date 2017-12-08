@@ -44,7 +44,7 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
   
   // MARK: - Public Instance Variables
   
-  public var delegate : MosaicCollectionViewLayoutDelegate?
+  weak var delegate : MosaicCollectionViewLayoutDelegate?
   
   var numberOfColumns: Int
   var columnSpacing: CGFloat

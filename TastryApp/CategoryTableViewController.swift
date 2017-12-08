@@ -10,7 +10,7 @@ import UIKit
 import RATreeView
 
 
-protocol CategoryTableReturnDelegate {
+protocol CategoryTableReturnDelegate: class {
   func categorySearchComplete(category: FoodieCategory?)
   
   // 2. Lets make selecting a category actually pass the category back to the StoryEntryVC
@@ -30,7 +30,7 @@ class CategoryTableViewController: OverlayViewController {
   
   
   // MARK: - Public Instance Variables
-  var delegate: CategoryTableReturnDelegate?
+  weak var delegate: CategoryTableReturnDelegate?
   var suggestedCategory: FoodieCategory?
   
   

@@ -52,7 +52,7 @@ class MapNavController: ASNavigationController {
   
   // MARK: - Public Instance Variable
   
-  var mapDelegate: MapNavControllerDelegate?
+  weak var mapDelegate: MapNavControllerDelegate?
   var mapView: MKMapView!
   
   var currentMapState: MapState {

@@ -13,12 +13,12 @@ import CoreLocation
 import SafariServices
 
 
-protocol PreviewControlDelegate {
+protocol PreviewControlDelegate: class {
   func enablePreviewButton(_ isEnabled: Bool)
 }
 
 
-protocol RestoreStoryDelegate {
+protocol RestoreStoryDelegate: class {
   func updateStory(_ story: FoodieStory)
 }
 
@@ -55,7 +55,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   var workingStory: FoodieStory?
   var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
-  var restoreStoryDelegate: RestoreStoryDelegate?
+  weak var restoreStoryDelegate: RestoreStoryDelegate?
   
   
   

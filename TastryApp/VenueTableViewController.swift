@@ -10,7 +10,7 @@ import UIKit
 import CoreLocation
 
 
-protocol VenueTableReturnDelegate {
+protocol VenueTableReturnDelegate: class {
   func venueSearchComplete(venue: FoodieVenue)
   
   // TODO: - Complete the input and output of data to/from VenueTableViewController
@@ -36,7 +36,7 @@ class VenueTableViewController: OverlayViewController {
   
   
   // MARK: - Public Instance Variables
-  var delegate: VenueTableReturnDelegate?
+  weak var delegate: VenueTableReturnDelegate?
   var suggestedVenue: FoodieVenue?
   var suggestedLocation: CLLocation?
   

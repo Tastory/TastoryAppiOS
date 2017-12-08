@@ -17,7 +17,7 @@ import MobileCoreServices
 import TLPhotoPicker
 
 
-protocol CameraReturnDelegate {
+protocol CameraReturnDelegate: class {
   func captureComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?)
 }
 
@@ -40,7 +40,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   
   
   // MARK: Public Instance Variables
-  var cameraReturnDelegate: CameraReturnDelegate?
+  weak var cameraReturnDelegate: CameraReturnDelegate?
   var addToExistingStoryOnly = false
 
   

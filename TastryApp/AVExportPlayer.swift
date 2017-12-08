@@ -9,7 +9,7 @@
 import AVFoundation
 
 
-protocol AVPlayAndExportDelegate {
+protocol AVPlayAndExportDelegate: class {
 
   func avExportPlayer(isLikelyToKeepUp avExportPlayer: AVExportPlayer)
   
@@ -72,7 +72,7 @@ class AVExportPlayer: NSObject {
   
   
   // MARK: - Public Instance Variable
-  var delegate: AVPlayAndExportDelegate? {
+  weak var delegate: AVPlayAndExportDelegate? {
     didSet {
       guard delegate != nil else { return }
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in // This is needed. Because it crashes sometimes when self is removed or something
