@@ -877,7 +877,7 @@
                                         <constraints>
                                             <constraint firstItem="Ogf-bS-Ofz" firstAttribute="centerX" secondItem="NzM-Iv-Gfw" secondAttribute="centerX" id="any-oj-utF"/>
                                             <constraint firstItem="xeE-NM-jtC" firstAttribute="centerY" secondItem="Ogf-bS-Ofz" secondAttribute="centerY" id="mY8-XA-miq"/>
-                                            <constraint firstItem="xeE-NM-jtC" firstAttribute="leading" secondItem="NzM-Iv-Gfw" secondAttribute="leading" constant="8" id="uTF-qR-E7w"/>
+                                            <constraint firstItem="xeE-NM-jtC" firstAttribute="leading" secondItem="NzM-Iv-Gfw" secondAttribute="leading" constant="15" id="uTF-qR-E7w"/>
                                             <constraint firstAttribute="bottom" secondItem="Ogf-bS-Ofz" secondAttribute="centerY" constant="22" id="wRV-zb-MYb"/>
                                         </constraints>
                                     </view>
@@ -1093,7 +1093,7 @@
         <image name="Markup-Trash" width="40" height="40"/>
         <image name="Markup-Undo" width="40" height="40"/>
         <image name="SelfieIcon" width="40" height="36"/>
-        <image name="Settings-LeftArrowDark" width="8" height="14"/>
+        <image name="Settings-LeftArrowDark" width="24" height="24"/>
         <image name="StoryMarkup-PlayButton" width="40" height="40"/>
         <image name="StoryMarkup-SoundOffButton" width="40" height="40"/>
         <image name="StoryMarkup-SoundOnButton" width="40" height="40"/>

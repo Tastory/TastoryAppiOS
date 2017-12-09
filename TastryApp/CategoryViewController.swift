@@ -24,8 +24,7 @@ class CategoryViewController: OverlayViewController {
   
   struct Constants {
     fileprivate static let categoryCellReuseIdentifier = "CategoryCell"
-    fileprivate static let categoryTreeViewRowHeight: CGFloat = 50.0
-    fileprivate static let categoryIconLeadingConstant: CGFloat = 16
+    fileprivate static let categoryTreeViewRowHeight: CGFloat = 44.0
   }
   
   
@@ -42,7 +41,6 @@ class CategoryViewController: OverlayViewController {
   fileprivate var categoryName: String?
   fileprivate var categoryArray: [FoodieCategory]!  // Intentionally implicitly unwrap so will crash if accessed before viewDidLoad
   fileprivate var categoryResultArray: [FoodieCategory]?
-  //fileprivate var categoryTreeView: RATreeView!  // Intentional implicitly unwrap so will crash if accessed before viewDidLoad
   
   
   
@@ -187,39 +185,18 @@ class CategoryViewController: OverlayViewController {
     categorySearchBar.delegate = self
     
     // Create and configure the Tree View
-    //categoryTreeView = RATreeView(frame: view.bounds)
     categoryTreeView.register(UINib.init(nibName: String(describing: CategoryTableViewCell.self), bundle: nil), forCellReuseIdentifier: Constants.categoryCellReuseIdentifier)
     categoryTreeView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    categoryTreeView.backgroundColor = .white
     categoryTreeView.clipsToBounds = true
     categoryTreeView.delegate = self
     categoryTreeView.dataSource = self
     categoryTreeView.scrollView.delegate = self
     categoryTreeView.treeFooterView = UIView()
-    categoryTreeView.backgroundColor = .clear
     categoryTreeView.rowHeight = Constants.categoryTreeViewRowHeight
     
     view.insertSubview(categoryTreeView, aboveSubview: backgroundView)
     view.insertSubview(stackView, aboveSubview: categoryTreeView)
-//    view.addSubview(categoryTreeView)
-//    view.sendSubview(toBack: categoryTreeView)
-//
-//    categoryTreeView.translatesAutoresizingMaskIntoConstraints = false
-//
-//    if #available(iOS 11.0, *) {
-//      NSLayoutConstraint.activate([
-//        categoryTreeView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-//        categoryTreeView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-//        categoryTreeView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-//        categoryTreeView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
-//      ])
-//    } else {
-//      NSLayoutConstraint.activate([
-//        categoryTreeView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
-//        categoryTreeView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-//        categoryTreeView.leftAnchor.constraint(equalTo: view.leftAnchor),
-//        categoryTreeView.rightAnchor.constraint(equalTo: view.rightAnchor)
-//      ])
-//    }
   }
   
 
@@ -263,11 +240,6 @@ extension CategoryViewController: UISearchBarDelegate {
         search()
       }
     }
-  }
-  
-  
-  func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-    if searchBar === categorySearchBar { search() }
   }
 }
 
@@ -372,11 +344,16 @@ extension CategoryViewController: RATreeViewDataSource {
       return UITableViewCell()
     }
     
-    cell.titleLabel?.text = categoryName
-    cell.iconLeadingConstraint?.constant = Constants.categoryIconLeadingConstant * CGFloat(treeView.levelForCell(forItem: category) + 1)
+    cell.titleLabel.text = categoryName
     
     if let subcategories = category.subcategories, subcategories.count != 0 {
       cell.expandButton.isHidden = false
+      
+      if treeView.isCell(forItemExpanded: item!) {
+        cell.setAndAnimate(to: .expand)
+      } else {
+        cell.setAndAnimate(to: .collapse)
+      }
     } else {
       cell.expandButton.isHidden = true
     }
@@ -396,12 +373,12 @@ extension CategoryViewController: RATreeViewDelegate {
     guard let category = item as? FoodieCategory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
         CCLog.assert("categoryItem does not contain a FoodieCategory and is nil")
-        self.dismiss(animated: true, completion: nil)
+        self.popDismiss(animated: true)
       }
       return
     }
     delegate?.categorySearchComplete(category: category)
-    dismiss(animated: true, completion: nil)
+    popDismiss(animated: true)
   }
   
   func treeView(_ treeView: RATreeView, shouldExpandRowForItem item: Any) -> Bool {

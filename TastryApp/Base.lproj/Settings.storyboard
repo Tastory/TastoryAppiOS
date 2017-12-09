@@ -79,13 +79,13 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Settings-RightArrowDark" translatesAutoresizingMaskIntoConstraints="NO" id="zaA-PI-78e">
-                                                        <rect key="frame" x="294" y="15" width="8" height="14"/>
+                                                        <rect key="frame" x="281" y="10" width="24" height="24"/>
                                                     </imageView>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <gestureRecognizers/>
                                                 <constraints>
-                                                    <constraint firstAttribute="trailing" secondItem="zaA-PI-78e" secondAttribute="trailing" constant="18" id="3E2-KD-36I"/>
+                                                    <constraint firstAttribute="trailing" secondItem="zaA-PI-78e" secondAttribute="trailing" constant="15" id="3E2-KD-36I"/>
                                                     <constraint firstItem="zaA-PI-78e" firstAttribute="centerY" secondItem="FlT-Eh-MIE" secondAttribute="centerY" id="7Me-TR-Na4"/>
                                                     <constraint firstItem="vaF-5f-qI4" firstAttribute="leading" secondItem="FlT-Eh-MIE" secondAttribute="leading" constant="15" id="CtW-5B-F0X"/>
                                                     <constraint firstItem="vaF-5f-qI4" firstAttribute="centerY" secondItem="FlT-Eh-MIE" secondAttribute="centerY" id="tRU-rm-HIK"/>
@@ -113,7 +113,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Settings-RightArrowDark" translatesAutoresizingMaskIntoConstraints="NO" id="hzs-6m-m1a">
-                                                        <rect key="frame" x="294" y="15" width="8" height="14"/>
+                                                        <rect key="frame" x="281" y="10" width="24" height="24"/>
                                                     </imageView>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -122,7 +122,7 @@
                                                     <constraint firstItem="hzs-6m-m1a" firstAttribute="centerY" secondItem="jQQ-G2-AK4" secondAttribute="centerY" id="JTE-NT-4LC"/>
                                                     <constraint firstItem="kKo-Ca-cf2" firstAttribute="centerY" secondItem="jQQ-G2-AK4" secondAttribute="centerY" id="JkG-iO-peK"/>
                                                     <constraint firstItem="kKo-Ca-cf2" firstAttribute="leading" secondItem="jQQ-G2-AK4" secondAttribute="leading" constant="15" id="LDP-vb-bgP"/>
-                                                    <constraint firstAttribute="trailing" secondItem="hzs-6m-m1a" secondAttribute="trailing" constant="18" id="g53-z6-eVV"/>
+                                                    <constraint firstAttribute="trailing" secondItem="hzs-6m-m1a" secondAttribute="trailing" constant="15" id="g53-z6-eVV"/>
                                                     <constraint firstItem="hzs-6m-m1a" firstAttribute="leading" relation="lessThanOrEqual" secondItem="kKo-Ca-cf2" secondAttribute="trailing" priority="200" constant="375" id="rw4-ub-Q3t"/>
                                                     <constraint firstAttribute="height" constant="44" id="wcB-cN-37b"/>
                                                 </constraints>
@@ -194,7 +194,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <imageView userInteractionEnabled="NO" alpha="0.5" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Settings-RightArrowDark" translatesAutoresizingMaskIntoConstraints="NO" id="o9l-Cx-oTu">
-                                                        <rect key="frame" x="294" y="15" width="8" height="14"/>
+                                                        <rect key="frame" x="281" y="10" width="24" height="24"/>
                                                     </imageView>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -202,7 +202,7 @@
                                                     <constraint firstItem="iBc-eJ-1pz" firstAttribute="centerY" secondItem="u01-UY-F8v" secondAttribute="centerY" id="0Zn-Vj-CWq"/>
                                                     <constraint firstItem="iBc-eJ-1pz" firstAttribute="leading" secondItem="u01-UY-F8v" secondAttribute="leading" constant="15" id="3fw-1j-mqN"/>
                                                     <constraint firstAttribute="height" constant="44" id="6gS-6m-BA6"/>
-                                                    <constraint firstAttribute="trailing" secondItem="o9l-Cx-oTu" secondAttribute="trailing" constant="18" id="MfW-uX-4T2"/>
+                                                    <constraint firstAttribute="trailing" secondItem="o9l-Cx-oTu" secondAttribute="trailing" constant="15" id="MfW-uX-4T2"/>
                                                     <constraint firstItem="o9l-Cx-oTu" firstAttribute="leading" relation="lessThanOrEqual" secondItem="iBc-eJ-1pz" secondAttribute="trailing" priority="200" constant="375" id="Pkv-e2-CYd"/>
                                                     <constraint firstItem="o9l-Cx-oTu" firstAttribute="centerY" secondItem="u01-UY-F8v" secondAttribute="centerY" id="TwG-7o-QTx"/>
                                                 </constraints>
@@ -224,7 +224,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <imageView userInteractionEnabled="NO" alpha="0.5" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Settings-RightArrowDark" translatesAutoresizingMaskIntoConstraints="NO" id="Cua-wr-myQ">
-                                                        <rect key="frame" x="294" y="15" width="8" height="14"/>
+                                                        <rect key="frame" x="281" y="10" width="24" height="24"/>
                                                     </imageView>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -234,7 +234,7 @@
                                                     <constraint firstItem="Vpw-0b-Jwk" firstAttribute="leading" secondItem="JvM-eH-OvF" secondAttribute="leading" constant="15" id="ffW-f4-1nz"/>
                                                     <constraint firstItem="Cua-wr-myQ" firstAttribute="centerY" secondItem="JvM-eH-OvF" secondAttribute="centerY" id="keH-Qn-gia"/>
                                                     <constraint firstItem="Vpw-0b-Jwk" firstAttribute="centerY" secondItem="JvM-eH-OvF" secondAttribute="centerY" id="lwe-TA-5EZ"/>
-                                                    <constraint firstAttribute="trailing" secondItem="Cua-wr-myQ" secondAttribute="trailing" constant="18" id="mI3-fw-fxR"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Cua-wr-myQ" secondAttribute="trailing" constant="15" id="mI3-fw-fxR"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="apo-oN-yc7">
@@ -254,7 +254,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <imageView userInteractionEnabled="NO" alpha="0.5" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Settings-RightArrowDark" translatesAutoresizingMaskIntoConstraints="NO" id="Vng-UO-VKu">
-                                                        <rect key="frame" x="294" y="15" width="8" height="14"/>
+                                                        <rect key="frame" x="281" y="10" width="24" height="24"/>
                                                     </imageView>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -262,7 +262,7 @@
                                                     <constraint firstItem="mxU-Ko-c9a" firstAttribute="leading" secondItem="ZQ3-BW-ehT" secondAttribute="leading" constant="15" id="D9n-Ko-t3S"/>
                                                     <constraint firstItem="mxU-Ko-c9a" firstAttribute="centerY" secondItem="ZQ3-BW-ehT" secondAttribute="centerY" id="Pui-AT-kwE"/>
                                                     <constraint firstItem="Vng-UO-VKu" firstAttribute="centerY" secondItem="ZQ3-BW-ehT" secondAttribute="centerY" id="Q1U-dw-4M8"/>
-                                                    <constraint firstAttribute="trailing" secondItem="Vng-UO-VKu" secondAttribute="trailing" constant="18" id="RrD-22-Iek"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Vng-UO-VKu" secondAttribute="trailing" constant="15" id="RrD-22-Iek"/>
                                                     <constraint firstAttribute="height" constant="44" id="ivI-Dl-CwT"/>
                                                     <constraint firstItem="Vng-UO-VKu" firstAttribute="leading" relation="lessThanOrEqual" secondItem="mxU-Ko-c9a" secondAttribute="trailing" priority="200" constant="375" id="w2s-Zy-MbX"/>
                                                 </constraints>
@@ -284,7 +284,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <imageView userInteractionEnabled="NO" alpha="0.5" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Settings-RightArrowDark" translatesAutoresizingMaskIntoConstraints="NO" id="x3z-Hy-3B0">
-                                                        <rect key="frame" x="294" y="15" width="8" height="14"/>
+                                                        <rect key="frame" x="281" y="10" width="24" height="24"/>
                                                     </imageView>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -293,7 +293,7 @@
                                                     <constraint firstItem="quX-wZ-R3O" firstAttribute="centerY" secondItem="CLl-Zo-OtN" secondAttribute="centerY" id="NO2-Eq-2w6"/>
                                                     <constraint firstItem="quX-wZ-R3O" firstAttribute="leading" secondItem="CLl-Zo-OtN" secondAttribute="leading" constant="15" id="WGg-st-pub"/>
                                                     <constraint firstItem="x3z-Hy-3B0" firstAttribute="centerY" secondItem="CLl-Zo-OtN" secondAttribute="centerY" id="c8B-RX-hRt"/>
-                                                    <constraint firstAttribute="trailing" secondItem="x3z-Hy-3B0" secondAttribute="trailing" constant="18" id="dg2-g4-6rM"/>
+                                                    <constraint firstAttribute="trailing" secondItem="x3z-Hy-3B0" secondAttribute="trailing" constant="15" id="dg2-g4-6rM"/>
                                                     <constraint firstItem="x3z-Hy-3B0" firstAttribute="leading" relation="lessThanOrEqual" secondItem="quX-wZ-R3O" secondAttribute="trailing" priority="200" constant="375" id="uCi-b6-5Ci"/>
                                                 </constraints>
                                             </view>
@@ -868,6 +868,6 @@
         <image name="Entry-OpenLink" width="16" height="16"/>
         <image name="ProfileDetails-ButtonFrame" width="174" height="40"/>
         <image name="ProfileDetails-FrameShadow" width="144" height="144"/>
-        <image name="Settings-RightArrowDark" width="8" height="14"/>
+        <image name="Settings-RightArrowDark" width="24" height="24"/>
     </resources>
 </document>
