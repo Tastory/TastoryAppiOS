@@ -56,7 +56,7 @@
 		8C8986761E91A72D00B62306 /* FoodieCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986751E91A72D00B62306 /* FoodieCategory.swift */; };
 		8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8986791E933E2E00B62306 /* FoodieUser.swift */; };
 		8C89867E1E958B4300B62306 /* FoodieObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89867D1E958B4300B62306 /* FoodieObject.swift */; };
-		8C900D331F60C0E50058BDFE /* CategoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */; };
+		8C900D331F60C0E50058BDFE /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C900D321F60C0E50058BDFE /* CategoryViewController.swift */; };
 		8C93F6E21FAD772900596452 /* GradientNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C93F6E11FAD772900596452 /* GradientNode.swift */; };
 		8C9AD05C1E8F6109005F337E /* FoodieMoment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */; };
 		8C9AD0651E8F615D005F337E /* ExitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9AD0601E8F615D005F337E /* ExitButton.swift */; };
@@ -100,6 +100,10 @@
 		8CE49EB51F64C8E8007278C1 /* PickerSquareLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB41F64C8E8007278C1 /* PickerSquareLayer.swift */; };
 		8CE49EB71F64CA06007278C1 /* ImagePickerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB61F64CA06007278C1 /* ImagePickerButton.swift */; };
 		8CE49EBA1F64D36B007278C1 /* StoryMapAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */; };
+		8CE571191FDB38C40023F4C7 /* FiltersNavViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE571181FDB38C40023F4C7 /* FiltersNavViewController.swift */; };
+		8CE5711B1FDB393D0023F4C7 /* FiltersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE5711A1FDB393D0023F4C7 /* FiltersViewController.swift */; };
+		8CE5711E1FDB3A110023F4C7 /* Filters.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CE5711C1FDB3A110023F4C7 /* Filters.storyboard */; };
+		8CE571231FDB57DD0023F4C7 /* FiltersVectors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8CE571221FDB57DD0023F4C7 /* FiltersVectors.xcassets */; };
 		8CE6B8871EA9864800D454A9 /* StoryEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */; };
 		8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */; };
 		8CE9718F1F9D54AE003D526F /* ProfileImageButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE9718E1F9D54AE003D526F /* ProfileImageButton.swift */; };
@@ -208,7 +212,7 @@
 		8C8986751E91A72D00B62306 /* FoodieCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieCategory.swift; sourceTree = "<group>"; };
 		8C8986791E933E2E00B62306 /* FoodieUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieUser.swift; sourceTree = "<group>"; };
 		8C89867D1E958B4300B62306 /* FoodieObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieObject.swift; sourceTree = "<group>"; };
-		8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryTableViewController.swift; sourceTree = "<group>"; };
+		8C900D321F60C0E50058BDFE /* CategoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		8C93F6E11FAD772900596452 /* GradientNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientNode.swift; sourceTree = "<group>"; };
 		8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMoment.swift; sourceTree = "<group>"; };
 		8C9AD0601E8F615D005F337E /* ExitButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExitButton.swift; sourceTree = "<group>"; };
@@ -258,6 +262,10 @@
 		8CE49EB41F64C8E8007278C1 /* PickerSquareLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerSquareLayer.swift; sourceTree = "<group>"; };
 		8CE49EB61F64CA06007278C1 /* ImagePickerButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerButton.swift; sourceTree = "<group>"; };
 		8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryMapAnnotation.swift; sourceTree = "<group>"; };
+		8CE571181FDB38C40023F4C7 /* FiltersNavViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FiltersNavViewController.swift; sourceTree = "<group>"; };
+		8CE5711A1FDB393D0023F4C7 /* FiltersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FiltersViewController.swift; sourceTree = "<group>"; };
+		8CE5711D1FDB3A110023F4C7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Filters.storyboard; sourceTree = "<group>"; };
+		8CE571221FDB57DD0023F4C7 /* FiltersVectors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = FiltersVectors.xcassets; sourceTree = "<group>"; };
 		8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryEntryViewController.swift; sourceTree = "<group>"; };
 		8CE6B88A1EAC2DB400D454A9 /* MomentCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentCollectionViewCell.swift; sourceTree = "<group>"; };
 		8CE9718E1F9D54AE003D526F /* ProfileImageButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageButton.swift; sourceTree = "<group>"; };
@@ -357,6 +365,7 @@
 				8CF40C601FC50C2B00615D43 /* Fonts */,
 				8CBF558A1E7F7EDF00F4B1CD /* Assets.xcassets */,
 				8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */,
+				8CE571221FDB57DD0023F4C7 /* FiltersVectors.xcassets */,
 				8CB207451FC693CB00AFFD31 /* ComposeVectors.xcassets */,
 				8C1C3A331FCCBC8400DB19A4 /* SettingsVectors.xcassets */,
 			);
@@ -390,6 +399,7 @@
 				8CBF558C1E7F7EDF00F4B1CD /* LaunchScreen.storyboard */,
 				8C1FF12A1F7CA5380062312C /* LogInSignUp.storyboard */,
 				8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */,
+				8CE5711C1FDB3A110023F4C7 /* Filters.storyboard */,
 				8CAE5BFD1FBC23040069C582 /* Compose.storyboard */,
 				8CD5A4DA1F9BF2EB00CFD670 /* Settings.storyboard */,
 			);
@@ -448,10 +458,10 @@
 				8C9AD05B1E8F6109005F337E /* FoodieMoment.swift */,
 				8C89866F1E91981C00B62306 /* FoodieMarkup.swift */,
 				8C8986731E91985700B62306 /* FoodieVenue.swift */,
-				8C8986751E91A72D00B62306 /* FoodieCategory.swift */,
 				8C0590501EC7E6A400027E91 /* FoodieMedia.swift */,
 				8C1FF1341F7DA1760062312C /* FoodieRole.swift */,
 				8C14E2881F7F188E001CC869 /* FoodiePermission.swift */,
+				8C8986751E91A72D00B62306 /* FoodieCategory.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -561,6 +571,7 @@
 				8CE49EB81F64D334007278C1 /* Supports */,
 				8CD5A4DB1F9BFD4900CFD670 /* LogInSignUp */,
 				8CD5A4DC1F9BFD5C00CFD670 /* Main */,
+				8CE571171FDB37DF0023F4C7 /* Filters */,
 				8CD5A4DD1F9BFD6500CFD670 /* Compose */,
 				8CD5A4DE1F9BFD7800CFD670 /* Settings */,
 			);
@@ -599,7 +610,6 @@
 				8CF40C5C1FC50BC200615D43 /* DiscoverViewController.swift */,
 				8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */,
 				C24F69641EB85B0300A0DB7B /* StoryViewController.swift */,
-				8C900D321F60C0E50058BDFE /* CategoryTableViewController.swift */,
 				8CAA445E1F8C102C0053CD4F /* ProfileViewController.swift */,
 			);
 			name = Main;
@@ -642,6 +652,16 @@
 				8CCDDA071FB3E7F600B066E7 /* OverlayViewController.swift */,
 			);
 			name = Supports;
+			sourceTree = "<group>";
+		};
+		8CE571171FDB37DF0023F4C7 /* Filters */ = {
+			isa = PBXGroup;
+			children = (
+				8CE5711A1FDB393D0023F4C7 /* FiltersViewController.swift */,
+				8CE571181FDB38C40023F4C7 /* FiltersNavViewController.swift */,
+				8C900D321F60C0E50058BDFE /* CategoryViewController.swift */,
+			);
+			name = Filters;
 			sourceTree = "<group>";
 		};
 		8CF40C601FC50C2B00615D43 /* Fonts */ = {
@@ -822,6 +842,7 @@
 				8CB207461FC693CB00AFFD31 /* ComposeVectors.xcassets in Resources */,
 				8CF40C741FC50CBE00615D43 /* Raleway-BlackItalic.ttf in Resources */,
 				8CAE5BFE1FBC23040069C582 /* Compose.storyboard in Resources */,
+				8CE571231FDB57DD0023F4C7 /* FiltersVectors.xcassets in Resources */,
 				8CF40C7F1FC50CBE00615D43 /* Raleway-MediumItalic.ttf in Resources */,
 				8C1C3A341FCCBC8400DB19A4 /* SettingsVectors.xcassets in Resources */,
 				8CF40C7D1FC50CBE00615D43 /* Raleway-LightItalic.ttf in Resources */,
@@ -842,6 +863,7 @@
 				8CF40C751FC50CBE00615D43 /* Raleway-Bold.ttf in Resources */,
 				8C2EFCEB1FC3AF4E00937E3C /* MainVectors.xcassets in Resources */,
 				8CF40C841FC50CBE00615D43 /* Raleway-ThinItalic.ttf in Resources */,
+				8CE5711E1FDB3A110023F4C7 /* Filters.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1120,6 +1142,7 @@
 				8C1ED6F41F5DEC2500A8CC94 /* AsyncOperation.swift in Sources */,
 				8CF40C5D1FC50BC200615D43 /* DiscoverViewController.swift in Sources */,
 				8CD02DB91FB96A4C00768CF8 /* CGRect+Extension.swift in Sources */,
+				8CE5711B1FDB393D0023F4C7 /* FiltersViewController.swift in Sources */,
 				8C56A9161FA19E6200D3204B /* URL+Extension.swift in Sources */,
 				8C6983521F97ECFB0091334D /* AVPlayerStatus+Extension.swift in Sources */,
 				8CF858661F7ED8A000C46614 /* IntroViewController.swift in Sources */,
@@ -1161,6 +1184,7 @@
 				8C1FF1311F7CA6C10062312C /* LogInViewController.swift in Sources */,
 				8C2F79771F4E3E6E00851334 /* ThreadSafeDLL.swift in Sources */,
 				8CE49EB71F64CA06007278C1 /* ImagePickerButton.swift in Sources */,
+				8CE571191FDB38C40023F4C7 /* FiltersNavViewController.swift in Sources */,
 				8C4AF66E1F91B1B900AADA5C /* ActivitySpinner.swift in Sources */,
 				8CE49EBA1F64D36B007278C1 /* StoryMapAnnotation.swift in Sources */,
 				8CE6B8871EA9864800D454A9 /* StoryEntryViewController.swift in Sources */,
@@ -1184,7 +1208,7 @@
 				8C7EC58F1F8E0D2400C8E80B /* MKCoordinateRegion+Extension.swift in Sources */,
 				8C1FF1331F7CA7240062312C /* SignUpViewController.swift in Sources */,
 				8C5C4DDE1EFEEDEC008C83EC /* FoodieFetch.swift in Sources */,
-				8C900D331F60C0E50058BDFE /* CategoryTableViewController.swift in Sources */,
+				8C900D331F60C0E50058BDFE /* CategoryViewController.swift in Sources */,
 				8C14E28B1F7F42FD001CC869 /* EmailResetViewController.swift in Sources */,
 				8CCDDA041FB3E7E500B066E7 /* PopTransitionAnimator.swift in Sources */,
 			);
@@ -1236,6 +1260,14 @@
 				8CBF558D1E7F7EDF00F4B1CD /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		8CE5711C1FDB3A110023F4C7 /* Filters.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8CE5711D1FDB3A110023F4C7 /* Base */,
+			);
+			name = Filters.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

@@ -246,3 +246,21 @@ class LogInViewController: OverlayViewController {
     view.endEditing(true)
   }
 }
+
+
+extension LogInViewController: UITextFieldDelegate {
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    switch textField {
+    case usernameField:
+      passwordField.becomeFirstResponder()
+    case passwordField:
+      passwordField.resignFirstResponder()
+      logInAction(logInButton)
+    default:
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.assert("There is no other text fields in this switch-case")
+      }
+    }
+    return true
+  }
+}

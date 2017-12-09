@@ -1,5 +1,5 @@
 //
-//  CategoryTableViewController.swift
+//  CategoryViewController.swift
 //  TastryApp
 //
 //  Created by Howard Lee on 2017-08-12.
@@ -10,7 +10,7 @@ import UIKit
 import RATreeView
 
 
-protocol CategoryTableReturnDelegate: class {
+protocol CategoryReturnDelegate: class {
   func categorySearchComplete(category: FoodieCategory?)
   
   // 2. Lets make selecting a category actually pass the category back to the StoryEntryVC
@@ -18,7 +18,7 @@ protocol CategoryTableReturnDelegate: class {
 }
 
 
-class CategoryTableViewController: OverlayViewController {
+class CategoryViewController: OverlayViewController {
 
   // MARK: - Constants
   struct Constants {
@@ -30,7 +30,7 @@ class CategoryTableViewController: OverlayViewController {
   
   
   // MARK: - Public Instance Variables
-  weak var delegate: CategoryTableReturnDelegate?
+  weak var delegate: CategoryReturnDelegate?
   var suggestedCategory: FoodieCategory?
   
   
@@ -46,18 +46,6 @@ class CategoryTableViewController: OverlayViewController {
   // MARK: - IBOutlet
   @IBOutlet weak var stackView: UIStackView!  // TODO: Review whether IBOutlets should be Optional or Forced Unwrapped
   @IBOutlet weak var categorySearchBar: UISearchBar!
-  
-  
-  
-  // MARK: - IBActions
-  @IBAction func rightSwipe(_ sender: UISwipeGestureRecognizer) {
-    guard let searchText = categorySearchBar.text, searchText != "" else {
-      delegate?.categorySearchComplete(category: nil)
-      dismiss(animated: true, completion: nil)
-      return
-    }
-    dismiss(animated: true, completion: nil)
-  }
 
   
   
@@ -215,7 +203,7 @@ class CategoryTableViewController: OverlayViewController {
 
 
 // MARK: - Search Bar Delegate Protocol Conformance
-extension CategoryTableViewController: UISearchBarDelegate {
+extension CategoryViewController: UISearchBarDelegate {
   
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     if searchBar === categorySearchBar {
@@ -238,7 +226,7 @@ extension CategoryTableViewController: UISearchBarDelegate {
 
 
 // MARK: - Table View Data Source Protocol Conformance
-extension CategoryTableViewController: RATreeViewDataSource {
+extension CategoryViewController: RATreeViewDataSource {
   
   func treeView(_ treeView: RATreeView, numberOfChildrenOfItem item: Any?) -> Int {
     
@@ -353,7 +341,7 @@ extension CategoryTableViewController: RATreeViewDataSource {
 
 
 // MARK: - Table View Delegate Protocol Conformance
-extension CategoryTableViewController: RATreeViewDelegate {
+extension CategoryViewController: RATreeViewDelegate {
   func treeView(_ treeView: RATreeView, didSelectRowForItem item: Any) {
     CCLog.verbose("treeView(didSelectRowForItem:")
     
@@ -380,7 +368,7 @@ extension CategoryTableViewController: RATreeViewDelegate {
 
 
 // MARK: - Category Table View Cell Delegate Protocl Conformance
-extension CategoryTableViewController: CategoryTableViewCellDelegate {
+extension CategoryViewController: CategoryTableViewCellDelegate {
   func expandCollpase(for cell: CategoryTableViewCell, to state: CategoryTableViewCell.ExpandCollapseState) {
     
     guard let category = cell.categoryItem else {
@@ -402,7 +390,7 @@ extension CategoryTableViewController: CategoryTableViewCellDelegate {
 
 
 // MARK: - Scroll View Delegate Protocol Conformance
-extension CategoryTableViewController: UIScrollViewDelegate {
+extension CategoryViewController: UIScrollViewDelegate {
   // Hide the keyboard if the category table begins dragging
   func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
     categorySearchBar.resignFirstResponder()

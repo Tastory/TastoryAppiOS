@@ -12,25 +12,25 @@ class PasswordViewController: OverlayViewController {
   
   // MARK: - IBOutlet
   
-  @IBOutlet weak var currentField: UITextField? {
+  @IBOutlet var currentField: UITextField! {
     didSet {
       currentField!.delegate = self
     }
   }
   
-  @IBOutlet weak var newField: UITextField? {
+  @IBOutlet var newField: UITextField! {
     didSet {
       newField!.delegate = self
     }
   }
   
-  @IBOutlet weak var confirmField: UITextField? {
+  @IBOutlet var confirmField: UITextField! {
     didSet {
       confirmField!.delegate = self
     }
   }
   
-  @IBOutlet weak var warningLabel: UILabel!
+  @IBOutlet var warningLabel: UILabel!
   
   
   // MARK: - IBOutlet
@@ -221,7 +221,19 @@ extension PasswordViewController: UITextFieldDelegate {
   
   
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-    textField.resignFirstResponder()
+    switch textField {
+    case currentField:
+      newField.becomeFirstResponder()
+    case newField:
+      confirmField.becomeFirstResponder()
+    case confirmField:
+      newField.resignFirstResponder()
+      changePasswordAction(textField)
+    default:
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.assert("There is no other text fields in this switch-case")
+      }
+    }
     return true
   }
 }

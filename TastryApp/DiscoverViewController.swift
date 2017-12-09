@@ -78,19 +78,19 @@ class DiscoverViewController: OverlayViewController {
   
   
   // MARK: - IBOutlets
-  @IBOutlet weak var mosaicLayoutChangePanRecognizer: UIPanGestureRecognizer!
-  @IBOutlet weak var carouselLayoutChangeTapRecognizer: UITapGestureRecognizer!
+  @IBOutlet var mosaicLayoutChangePanRecognizer: UIPanGestureRecognizer!
+  @IBOutlet var carouselLayoutChangeTapRecognizer: UITapGestureRecognizer!
   
-  @IBOutlet weak var locationField: UITextField!
-  @IBOutlet weak var draftButton: UIButton!
-  @IBOutlet weak var currentLocationButton: UIButton!
-  @IBOutlet weak var cameraButton: UIButton!
-  @IBOutlet weak var logoutButton: UIButton!
-  @IBOutlet weak var profileButton: UIButton!
-  @IBOutlet weak var searchButton: UIButton!
-  @IBOutlet weak var allStoriesButton: UIButton!
+  @IBOutlet var locationField: UITextField!
+  @IBOutlet var draftButton: UIButton!
+  @IBOutlet var currentLocationButton: UIButton!
+  @IBOutlet var cameraButton: UIButton!
+  @IBOutlet var logoutButton: UIButton!
+  @IBOutlet var profileButton: UIButton!
+  @IBOutlet var searchButton: UIButton!
+  @IBOutlet var allStoriesButton: UIButton!
   
-  @IBOutlet weak var touchForwardingView: TouchForwardingView? {
+  @IBOutlet var touchForwardingView: TouchForwardingView? {
     didSet {
       if let touchForwardingView = touchForwardingView, let mapNavController = navigationController as? MapNavController {
         touchForwardingView.passthroughViews = [mapNavController.mapView]
@@ -101,17 +101,17 @@ class DiscoverViewController: OverlayViewController {
     }
   }
   
-  @IBOutlet weak var searchBackgroundView: UIView!
-  @IBOutlet weak var feedContainerView: UIView!
-  @IBOutlet weak var mosaicMapView: UIView!
-  @IBOutlet weak var carouselMapView: UIView!
-  @IBOutlet weak var feedBackgroundView: UIView!
+  @IBOutlet var searchBackgroundView: UIView!
+  @IBOutlet var feedContainerView: UIView!
+  @IBOutlet var mosaicMapView: UIView!
+  @IBOutlet var carouselMapView: UIView!
+  @IBOutlet var feedBackgroundView: UIView!
   
-  @IBOutlet weak var searchStack: UIStackView!
-  @IBOutlet weak var middleStack: UIStackView!
+  @IBOutlet var searchStack: UIStackView!
+  @IBOutlet var middleStack: UIStackView!
   
-  @IBOutlet weak var noStoriesMosaicView: UIImageView!
-  @IBOutlet weak var noStoriesCarouselView: UIView!
+  @IBOutlet var noStoriesMosaicView: UIImageView!
+  @IBOutlet var noStoriesCarouselView: UIView!
   
   @IBOutlet var searchBackgroundMosaicConstraint: NSLayoutConstraint!
   @IBOutlet var searchBackgroundCarouselConstraint: NSLayoutConstraint!
@@ -164,8 +164,29 @@ class DiscoverViewController: OverlayViewController {
   
   @IBAction func currentLocationReturn(_ sender: UIButton) {
     // Clear the text field while at it
-    locationField?.text = ""
+    locationField.text = ""
     mapNavController?.showCurrentRegionExposed(animated: true)
+  }
+
+  
+  @IBAction func magnifyingGlassClick(_ sender: UIButton) {
+    locationField.becomeFirstResponder()
+  }
+  
+  
+  @IBAction func filterClick(_ sender: UIButton) {
+    let storyboard = UIStoryboard(name: "Filters", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "FiltersNavViewController") as? FiltersNavViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of FiltersNavViewController Class!!")
+      }
+      return
+    }
+    
+    appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
+    
+    viewController.setSlideTransition(presentTowards: .down, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
+    pushPresent(viewController, animated: true)
   }
   
   

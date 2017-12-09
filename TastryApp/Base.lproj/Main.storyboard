@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -40,13 +40,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="w1V-ap-EBM" userLabel="Empty Placeholder View">
-                                <rect key="frame" x="0.0" y="337.33333333333326" width="375" height="440.66666666666674"/>
+                                <rect key="frame" x="0.0" y="338.33333333333326" width="375" height="439.66666666666674"/>
                                 <subviews>
                                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesSelf" translatesAutoresizingMaskIntoConstraints="NO" id="AMX-lO-lJU">
-                                        <rect key="frame" x="52" y="122.66666666666669" width="270" height="197"/>
+                                        <rect key="frame" x="52" y="121.33333333333337" width="270" height="197"/>
                                     </imageView>
                                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesOthers" translatesAutoresizingMaskIntoConstraints="NO" id="ETg-wA-zyO">
-                                        <rect key="frame" x="52" y="122.66666666666669" width="270" height="197"/>
+                                        <rect key="frame" x="52" y="121.33333333333337" width="270" height="197"/>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -83,7 +83,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zwc-TB-L9A" userLabel="UI View">
-                                <rect key="frame" x="0.0" y="188.66666666666669" width="375" height="148.66666666666669"/>
+                                <rect key="frame" x="0.0" y="188.66666666666669" width="375" height="149.66666666666669"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="eRP-BC-T40">
                                         <rect key="frame" x="121.66666666666667" y="-3" width="238.33333333333331" height="50.333333333333336"/>
@@ -110,25 +110,25 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="sPh-PF-K39">
-                                        <rect key="frame" x="16" y="55.333333333333336" width="344" height="75.333333333333314"/>
+                                        <rect key="frame" x="16" y="55.333333333333336" width="344" height="76.333333333333314"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Ysv-L1-rS0">
-                                                <rect key="frame" x="0.0" y="0.0" width="344" height="21"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="344" height="21.333333333333332"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Full Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="15" translatesAutoresizingMaskIntoConstraints="NO" id="hM8-0o-Mjt">
-                                                        <rect key="frame" x="0.0" y="0.0" width="81.333333333333329" height="21"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="86.333333333333329" height="21.333333333333332"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="18"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="900" verticalHuggingPriority="300" verticalCompressionResistancePriority="800" text="@ Username" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="11R-Oq-bzz">
-                                                        <rect key="frame" x="86.333333333333314" y="0.0" width="91" height="21"/>
+                                                        <rect key="frame" x="91.333333333333343" y="0.0" width="90.333333333333343" height="21.333333333333332"/>
                                                         <fontDescription key="fontDescription" name="Raleway-LightItalic" family="Raleway" pointSize="16"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="neT-9F-S2G">
-                                                        <rect key="frame" x="182.33333333333337" y="0.0" width="161.66666666666663" height="21"/>
+                                                        <rect key="frame" x="186.66666666666663" y="0.0" width="157.33333333333337" height="21.333333333333332"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
                                                 </subviews>
@@ -137,10 +137,10 @@
                                                 </constraints>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NlV-PS-Ebg">
-                                                <rect key="frame" x="0.0" y="26" width="344" height="16.333333333333329"/>
+                                                <rect key="frame" x="0.0" y="26.333333333333314" width="344" height="16.666666666666671"/>
                                                 <subviews>
                                                     <label opaque="NO" contentMode="left" horizontalHuggingPriority="900" verticalHuggingPriority="300" verticalCompressionResistancePriority="800" text="domain.me/username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="PZf-fE-H2X">
-                                                        <rect key="frame" x="0.0" y="0.0" width="137" height="16.333333333333332"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="148" height="16.666666666666668"/>
                                                         <gestureRecognizers/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
@@ -150,13 +150,13 @@
                                                         </connections>
                                                     </label>
                                                     <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="qGM-28-cti">
-                                                        <rect key="frame" x="137" y="0.0" width="207" height="16.333333333333332"/>
+                                                        <rect key="frame" x="148" y="0.0" width="196" height="16.666666666666668"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
                                                 </subviews>
                                             </stackView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="700" text="Always looking for new and interesting experiences. Love telling stories. Eats all the time. Follow me on my Instagram!" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="r9U-GH-GMa">
-                                                <rect key="frame" x="0.0" y="47.333333333333314" width="344" height="28"/>
+                                                <rect key="frame" x="0.0" y="48" width="344" height="28.333333333333329"/>
                                                 <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                 <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
@@ -326,22 +326,28 @@
                                         <rect key="frame" x="0.0" y="0.0" width="343" height="44"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </view>
-                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" baselineRelativeArrangement="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ErC-N9-Y0m" userLabel="Location Stack">
+                                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="20" baselineRelativeArrangement="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ErC-N9-Y0m" userLabel="Location Stack">
                                         <rect key="frame" x="0.0" y="50" width="343" height="27"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PIh-Rz-RIF">
-                                                <rect key="frame" x="0.0" y="0.6666666666666643" width="52.666666666666664" height="26"/>
+                                            <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PIh-Rz-RIF">
+                                                <rect key="frame" x="0.0" y="0.6666666666666643" width="26" height="26"/>
                                                 <state key="normal" image="Discover-SearchMagnifier"/>
+                                                <connections>
+                                                    <action selector="magnifyingGlassClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="wvl-om-r7c"/>
+                                                </connections>
                                             </button>
                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Jump to Location" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
-                                                <rect key="frame" x="52.666666666666686" y="4.6666666666666643" width="246" height="18"/>
+                                                <rect key="frame" x="46" y="4.6666666666666643" width="255" height="18"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="15"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes" textContentType="location"/>
                                             </textField>
-                                            <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" enabled="NO" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9xC-Zn-CZy">
-                                                <rect key="frame" x="298.66666666666669" y="0.6666666666666643" width="44.333333333333314" height="26"/>
+                                            <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9xC-Zn-CZy">
+                                                <rect key="frame" x="321" y="0.6666666666666643" width="22" height="26"/>
                                                 <state key="normal" image="Discover-FilterButton"/>
+                                                <connections>
+                                                    <action selector="filterClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="0He-Qb-cuu"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                     </stackView>
@@ -551,10 +557,10 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="ZiO-0U-WG2" userLabel="Author Venue Time Stack">
-                                <rect key="frame" x="14" y="84" width="109" height="40"/>
+                                <rect key="frame" x="14" y="84" width="115" height="40"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NkP-5B-uyd">
-                                        <rect key="frame" x="0.0" y="0.0" width="109" height="20"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="115" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="UM2-Dx-qJm"/>
                                         </constraints>
@@ -569,7 +575,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uqd-o4-gnC">
-                                        <rect key="frame" x="0.0" y="20" width="71" height="20"/>
+                                        <rect key="frame" x="0.0" y="20" width="76" height="20"/>
                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="13"/>
                                         <size key="titleShadowOffset" width="0.0" height="1"/>
                                         <state key="normal" title="VenueName">
@@ -583,13 +589,13 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="eTa-IA-SsO">
-                                <rect key="frame" x="160" y="699.66666666666663" width="56.666666666666657" height="28.333333333333371"/>
+                                <rect key="frame" x="158.66666666666666" y="699.66666666666663" width="59.333333333333343" height="28.333333333333371"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="StoryMarkup-SwipeUpArrow" translatesAutoresizingMaskIntoConstraints="NO" id="DvN-vq-oUI">
-                                        <rect key="frame" x="17.333333333333343" y="0.0" width="22" height="12"/>
+                                        <rect key="frame" x="18.666666666666686" y="0.0" width="22" height="12"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swipe Up" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f5Y-qe-Xu1">
-                                        <rect key="frame" x="0.0" y="11.999999999999998" width="56.666666666666664" height="16.333333333333329"/>
+                                        <rect key="frame" x="0.0" y="11.999999999999998" width="59.333333333333336" height="16.333333333333329"/>
                                         <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="13"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -697,57 +703,6 @@
                 </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-1162" y="-666"/>
-        </scene>
-        <!--Category Table View Controller-->
-        <scene sceneID="r9j-Iu-ATn">
-            <objects>
-                <viewController storyboardIdentifier="CategoryTableViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="MUc-1H-WcJ" userLabel="Category Table View Controller" customClass="CategoryTableViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="cjn-8n-QMI">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <stackView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="dp8-CM-2Vn">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="76"/>
-                                <subviews>
-                                    <view opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="375" placeholderIntrinsicHeight="20" translatesAutoresizingMaskIntoConstraints="NO" id="8ur-XQ-hy3">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="20"/>
-                                        <color key="backgroundColor" red="0.7885406613" green="0.78752297159999995" blue="0.80913728480000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="20" id="dhW-2P-Kfe"/>
-                                        </constraints>
-                                    </view>
-                                    <searchBar opaque="NO" contentMode="redraw" text="" placeholder="Category to search" translatesAutoresizingMaskIntoConstraints="NO" id="biv-RP-Mpe" userLabel="Category Search Bar">
-                                        <rect key="frame" x="0.0" y="20" width="375" height="56"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </searchBar>
-                                </subviews>
-                            </stackView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <gestureRecognizers/>
-                        <constraints>
-                            <constraint firstItem="dp8-CM-2Vn" firstAttribute="top" secondItem="cjn-8n-QMI" secondAttribute="top" id="NYI-0D-NUc"/>
-                            <constraint firstItem="kzP-SJ-TL4" firstAttribute="trailing" secondItem="dp8-CM-2Vn" secondAttribute="trailing" id="cZT-jr-iPB"/>
-                            <constraint firstItem="dp8-CM-2Vn" firstAttribute="leading" secondItem="kzP-SJ-TL4" secondAttribute="leading" id="rfk-hj-jba"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="kzP-SJ-TL4"/>
-                        <connections>
-                            <outletCollection property="gestureRecognizers" destination="8ss-rC-qvn" appends="YES" id="es5-0H-1D5"/>
-                        </connections>
-                    </view>
-                    <connections>
-                        <outlet property="categorySearchBar" destination="biv-RP-Mpe" id="K5S-OZ-g3A"/>
-                        <outlet property="stackView" destination="dp8-CM-2Vn" id="Wjo-ED-38w"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="iba-lP-l1Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <swipeGestureRecognizer direction="right" id="8ss-rC-qvn">
-                    <connections>
-                        <action selector="rightSwipe:" destination="MUc-1H-WcJ" id="3xS-Ha-qqo"/>
-                    </connections>
-                </swipeGestureRecognizer>
-            </objects>
-            <point key="canvasLocation" x="-1164" y="-2040"/>
         </scene>
     </scenes>
     <resources>
