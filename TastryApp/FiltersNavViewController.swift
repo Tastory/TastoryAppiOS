@@ -50,7 +50,6 @@ class FiltersNavViewController: OverlayViewController {
     view.layer.shadowOpacity = Constants.StackShadowOpacity
   }
   
-  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.

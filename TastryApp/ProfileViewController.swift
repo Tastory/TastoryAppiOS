@@ -33,7 +33,6 @@ class ProfileViewController: OverlayViewController {
   private var avatarImageNode: ASNetworkImageNode?
   private var activitySpinner: ActivitySpinner!
   private var isInitialLayout = true
-  private var isAppearanceLayout = true
   
   
   
@@ -300,8 +299,6 @@ class ProfileViewController: OverlayViewController {
     followButton.isHidden = true
     shareButton.isHidden = true
     filterButton.isHidden = true
-    
-    isAppearanceLayout = true
   }
   
   
@@ -345,10 +342,6 @@ class ProfileViewController: OverlayViewController {
         maskLayer.frame = avatarImageNode.bounds
         avatarImageNode.layer.mask = maskLayer
       }
-    }
-    
-    if isAppearanceLayout {
-      isAppearanceLayout = false
       
       // Setup Background Gradient Views
       let topBackgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.TopGradientBlackAlpha)

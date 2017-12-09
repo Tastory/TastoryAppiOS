@@ -21,6 +21,7 @@ protocol CategoryReturnDelegate: class {
 class CategoryViewController: OverlayViewController {
 
   // MARK: - Constants
+  
   struct Constants {
     fileprivate static let categoryCellReuseIdentifier = "CategoryCell"
     fileprivate static let categoryTreeViewRowHeight: CGFloat = 50.0
@@ -30,26 +31,32 @@ class CategoryViewController: OverlayViewController {
   
   
   // MARK: - Public Instance Variables
+  
   weak var delegate: CategoryReturnDelegate?
   var suggestedCategory: FoodieCategory?
   
   
   
   // MARK: - Private Instance Variables
+  
   fileprivate var categoryName: String?
   fileprivate var categoryArray: [FoodieCategory]!  // Intentionally implicitly unwrap so will crash if accessed before viewDidLoad
   fileprivate var categoryResultArray: [FoodieCategory]?
-  fileprivate var categoryTreeView: RATreeView!  // Intentional implicitly unwrap so will crash if accessed before viewDidLoad
+  //fileprivate var categoryTreeView: RATreeView!  // Intentional implicitly unwrap so will crash if accessed before viewDidLoad
   
   
   
   // MARK: - IBOutlet
+  
   @IBOutlet weak var stackView: UIStackView!  // TODO: Review whether IBOutlets should be Optional or Forced Unwrapped
   @IBOutlet weak var categorySearchBar: UISearchBar!
-
+  @IBOutlet weak var categoryTreeView: RATreeView!
+  @IBOutlet weak var backgroundView: UIView!
+  
   
   
   // MARK: - Private Instance Functions
+  
   fileprivate func search() {
     DispatchQueue.global(qos: .userInitiated).async {  // Do this in the background, it's time consuming
       var categorySearchTerm = ""
@@ -146,7 +153,17 @@ class CategoryViewController: OverlayViewController {
   }
   
   
+  
+  // MARK: - Private Instance Function
+  
+  @objc private func dismissAction(_ sender: UIBarButtonItem) {
+    popDismiss(animated: true)
+  }
+  
+  
+  
   // MARK: - View Controller Lifecycle
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -158,20 +175,51 @@ class CategoryViewController: OverlayViewController {
       }
     }
     
+    // Adjust the Navigation Bar appearance so it'll blend with the Search Bar
+//    navigationController?.navigationBar.clipsToBounds = true
+//    navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+//    navigationController?.navigationBar.shadowImage = UIImage()
+    navigationController?.delegate = self
+    
+    let leftArrowImage = UIImage(named: "Settings-LeftArrowDark")
+    navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
+    
+    categorySearchBar.delegate = self
+    
     // Create and configure the Tree View
-    categoryTreeView = RATreeView(frame: view.bounds)
+    //categoryTreeView = RATreeView(frame: view.bounds)
     categoryTreeView.register(UINib.init(nibName: String(describing: CategoryTableViewCell.self), bundle: nil), forCellReuseIdentifier: Constants.categoryCellReuseIdentifier)
     categoryTreeView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    categoryTreeView.clipsToBounds = true
     categoryTreeView.delegate = self
     categoryTreeView.dataSource = self
     categoryTreeView.scrollView.delegate = self
     categoryTreeView.treeFooterView = UIView()
     categoryTreeView.backgroundColor = .clear
     categoryTreeView.rowHeight = Constants.categoryTreeViewRowHeight
-    categorySearchBar.delegate = self
     
-    view.addSubview(categoryTreeView)
-    view.bringSubview(toFront: stackView)
+    view.insertSubview(categoryTreeView, aboveSubview: backgroundView)
+    view.insertSubview(stackView, aboveSubview: categoryTreeView)
+//    view.addSubview(categoryTreeView)
+//    view.sendSubview(toBack: categoryTreeView)
+//
+//    categoryTreeView.translatesAutoresizingMaskIntoConstraints = false
+//
+//    if #available(iOS 11.0, *) {
+//      NSLayoutConstraint.activate([
+//        categoryTreeView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+//        categoryTreeView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+//        categoryTreeView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+//        categoryTreeView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
+//      ])
+//    } else {
+//      NSLayoutConstraint.activate([
+//        categoryTreeView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+//        categoryTreeView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+//        categoryTreeView.leftAnchor.constraint(equalTo: view.leftAnchor),
+//        categoryTreeView.rightAnchor.constraint(equalTo: view.rightAnchor)
+//      ])
+//    }
   }
   
 

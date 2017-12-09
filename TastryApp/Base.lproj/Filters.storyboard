@@ -48,7 +48,7 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Category" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vaF-5f-qI4">
-                                                        <rect key="frame" x="15" y="14.5" width="60.5" height="16.5"/>
+                                                        <rect key="frame" x="15" y="14.5" width="57.5" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" white="0.35999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -82,7 +82,7 @@
                                                 <rect key="frame" x="0.0" y="45" width="320" height="110"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Price Range" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kKo-Ca-cf2">
-                                                        <rect key="frame" x="15" y="47.5" width="79" height="16.5"/>
+                                                        <rect key="frame" x="15" y="47.5" width="76.5" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" white="0.35999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -131,7 +131,7 @@
                                 </constraints>
                             </scrollView>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="A2M-z9-ugs" firstAttribute="top" secondItem="y6a-x9-gcH" secondAttribute="top" id="9SS-JD-ajJ"/>
                             <constraint firstAttribute="trailing" secondItem="A2M-z9-ugs" secondAttribute="trailing" id="YPT-Ae-s4m"/>
@@ -196,18 +196,36 @@
                                     </view>
                                 </subviews>
                             </stackView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aXp-e7-NLr">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="801-oP-a45" customClass="RATreeView">
+                                <rect key="frame" x="0.0" y="20" width="320" height="548"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="EIP-mu-FwV" firstAttribute="trailing" secondItem="HwF-gc-9xN" secondAttribute="trailing" id="5B7-oY-6og"/>
+                            <constraint firstItem="EIP-mu-FwV" firstAttribute="trailing" secondItem="aXp-e7-NLr" secondAttribute="trailing" id="GLo-xK-C0A"/>
+                            <constraint firstItem="801-oP-a45" firstAttribute="top" secondItem="EIP-mu-FwV" secondAttribute="top" id="J0F-KG-HNH"/>
+                            <constraint firstItem="aXp-e7-NLr" firstAttribute="top" secondItem="XDo-wd-MWb" secondAttribute="top" id="b8L-2C-Aj7"/>
+                            <constraint firstItem="EIP-mu-FwV" firstAttribute="bottom" secondItem="801-oP-a45" secondAttribute="bottom" id="cGz-Ig-A8k"/>
+                            <constraint firstItem="aXp-e7-NLr" firstAttribute="leading" secondItem="EIP-mu-FwV" secondAttribute="leading" id="gP9-UL-cE5"/>
+                            <constraint firstItem="EIP-mu-FwV" firstAttribute="bottom" secondItem="aXp-e7-NLr" secondAttribute="bottom" id="qdq-1W-6yi"/>
                             <constraint firstItem="HwF-gc-9xN" firstAttribute="leading" secondItem="EIP-mu-FwV" secondAttribute="leading" id="x1g-Yi-ew1"/>
+                            <constraint firstItem="EIP-mu-FwV" firstAttribute="trailing" secondItem="801-oP-a45" secondAttribute="trailing" id="xMk-Uq-xdW"/>
                             <constraint firstItem="HwF-gc-9xN" firstAttribute="top" secondItem="EIP-mu-FwV" secondAttribute="top" id="xfz-og-Ljj"/>
+                            <constraint firstItem="801-oP-a45" firstAttribute="leading" secondItem="EIP-mu-FwV" secondAttribute="leading" id="zcH-Ew-2qt"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="EIP-mu-FwV"/>
                     </view>
                     <connections>
+                        <outlet property="backgroundView" destination="aXp-e7-NLr" id="V1u-PS-oRY"/>
                         <outlet property="categorySearchBar" destination="teg-gc-J99" id="elv-Lz-skG"/>
+                        <outlet property="categoryTreeView" destination="801-oP-a45" id="Pb5-sh-m9Z"/>
                         <outlet property="stackView" destination="HwF-gc-9xN" id="G5f-p5-muF"/>
                     </connections>
                 </viewController>

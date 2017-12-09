@@ -215,7 +215,7 @@ extension FoodieMedia: FoodieObjectDelegate {
         return (imageMemoryBuffer != nil)
         
       case .video:
-        if localVideoUrl != nil {
+        if let localVideoUrl = localVideoUrl, FileManager.default.fileExists(atPath: localVideoUrl.path) {
           return true  // !!! For this case, it's not possible to tell if it's retrieved, or retrieving
         } else {
           return false
@@ -235,7 +235,7 @@ extension FoodieMedia: FoodieObjectDelegate {
       case .video:
         if let videoExportPlayer = videoExportPlayer, videoExportPlayer.avPlayer != nil {
           return true  // Retrieving case
-        } else if localVideoUrl != nil {
+        } else if let localVideoUrl = localVideoUrl, FileManager.default.fileExists(atPath: localVideoUrl.path) {
           return true  // Retrieved case
         } else {
           return false
@@ -307,7 +307,12 @@ extension FoodieMedia: FoodieObjectDelegate {
     }
     
     // If photo and in memory, or video and in player, just callback
-    if !forceAnyways && isRetrieved {
+    var isVideoFromServerAndNotInCache = false
+    if localType == .cache, type == .video, !FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
+      isVideoFromServerAndNotInCache = true
+    }
+    
+    if !forceAnyways, isRetrieved, !isVideoFromServerAndNotInCache {
       readyBlock?()  // !!! Only called if successful. Let it spin forever until a successful retrieval?
       callback?(nil)
       return
@@ -517,7 +522,28 @@ extension FoodieMedia: FoodieObjectDelegate {
     CCLog.verbose("FoodieStory.deleteRecursive \(getUniqueIdentifier())")
     
     // Delete itself first
-    foodieObject.deleteObject(from: location, type: localType, withBlock: callback)
+    foodieObject.deleteObject(from: location, type: localType) { error in
+      guard let fileName = self.foodieFileName else {
+        CCLog.fatal("FoodieMedia has no foodieFileName")
+      }
+      
+      // If the file is deleted from 1 local type, see if we should switch to the other?
+      switch localType {
+      case .cache:
+        if FoodieFileObject.checkIfExists(for: fileName, in: .draft) {
+          self.localVideoUrl = FoodieFileObject.getFileURL(for: .draft, with: fileName)
+        } else {
+          self.localVideoUrl = nil
+        }
+      case .draft:
+        if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
+          self.localVideoUrl = FoodieFileObject.getFileURL(for: .cache, with: fileName)
+        } else {
+          self.localVideoUrl = nil
+        }
+      }
+      callback?(error)
+    }
   }
   
   

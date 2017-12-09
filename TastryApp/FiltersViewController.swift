@@ -49,6 +49,12 @@ class FiltersViewController: OverlayViewController {
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
   }
   
+  override func viewWillAppear(_ animated: Bool) {
+//    navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
+//    navigationController?.navigationBar.shadowImage = nil
+//    navigationController?.navigationBar.clipsToBounds = false
+  }
+  
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
