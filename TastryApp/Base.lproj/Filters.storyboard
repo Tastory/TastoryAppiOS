@@ -56,6 +56,12 @@
                                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Settings-RightArrowDark" translatesAutoresizingMaskIntoConstraints="NO" id="zaA-PI-78e">
                                                         <rect key="frame" x="281" y="10" width="24" height="24"/>
                                                     </imageView>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="38Q-e0-qgg">
+                                                        <rect key="frame" x="244" y="14.5" width="37" height="16.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                                                        <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="0.5" colorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <gestureRecognizers/>
@@ -63,6 +69,8 @@
                                                     <constraint firstAttribute="trailing" secondItem="zaA-PI-78e" secondAttribute="trailing" constant="15" id="3E2-KD-36I"/>
                                                     <constraint firstItem="zaA-PI-78e" firstAttribute="centerY" secondItem="FlT-Eh-MIE" secondAttribute="centerY" id="7Me-TR-Na4"/>
                                                     <constraint firstItem="vaF-5f-qI4" firstAttribute="leading" secondItem="FlT-Eh-MIE" secondAttribute="leading" constant="15" id="CtW-5B-F0X"/>
+                                                    <constraint firstItem="zaA-PI-78e" firstAttribute="leading" secondItem="38Q-e0-qgg" secondAttribute="trailing" id="VGc-F0-hUb"/>
+                                                    <constraint firstItem="38Q-e0-qgg" firstAttribute="centerY" secondItem="FlT-Eh-MIE" secondAttribute="centerY" id="ot5-o7-gei"/>
                                                     <constraint firstItem="vaF-5f-qI4" firstAttribute="centerY" secondItem="FlT-Eh-MIE" secondAttribute="centerY" id="tRU-rm-HIK"/>
                                                     <constraint firstAttribute="height" constant="44" id="vaz-EL-uvq"/>
                                                     <constraint firstItem="zaA-PI-78e" firstAttribute="leading" relation="lessThanOrEqual" secondItem="vaF-5f-qI4" secondAttribute="trailing" priority="200" constant="375" id="yOn-D8-SbN"/>
@@ -140,6 +148,9 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="y6a-x9-gcH"/>
                     </view>
+                    <connections>
+                        <outlet property="selectedLabel" destination="38Q-e0-qgg" id="eZz-js-phL"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="da1-7r-XKB" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tapGestureRecognizer id="VbW-ZB-CZe">

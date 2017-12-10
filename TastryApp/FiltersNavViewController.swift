@@ -17,7 +17,6 @@ class FiltersNavViewController: OverlayViewController {
     static let StackShadowOpacity = FoodieGlobal.Constants.DefaultUIShadowOpacity
   }
   
-  
   var filtersNavController: ASNavigationController?
   
   override func viewDidLoad() {

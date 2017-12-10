@@ -16,6 +16,18 @@ class FiltersViewController: OverlayViewController {
   
   
   
+  // MARK: - Private Instance Variable
+  
+  private var selectedCategories = [FoodieCategory]()
+  
+  
+  
+  // MARK: - IBOutlet
+  
+  @IBOutlet weak var selectedLabel: UILabel!
+  
+  
+  
   // MARK: - IBAction
   
   @IBAction func categoryTap(_ sender: UITapGestureRecognizer) {
@@ -26,6 +38,7 @@ class FiltersViewController: OverlayViewController {
       }
       return
     }
+    viewController.delegate = self
     viewController.setSlideTransition(presentTowards: .left, withGapSize: 2.0, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
   }
@@ -39,6 +52,19 @@ class FiltersViewController: OverlayViewController {
   }
   
   
+  private func updateSelectedCategoriesLabel() {
+    if selectedCategories.count > 0 {
+      if selectedCategories.count == 1, let name = selectedCategories[0].name {
+        selectedLabel.text = name
+      } else {
+        selectedLabel.text = "\(selectedCategories.count) Selected"
+      }
+      selectedLabel.isHidden = false
+    } else {
+      selectedLabel.isHidden = true
+    }
+  }
+  
   
   // MARK: - View Controller Lifecycle
   
@@ -47,9 +73,13 @@ class FiltersViewController: OverlayViewController {
     
     let leftArrowImage = UIImage(named: "Settings-CrossDark")
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
+    
+    updateSelectedCategoriesLabel()
   }
   
+  
   override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
 //    navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
 //    navigationController?.navigationBar.shadowImage = nil
 //    navigationController?.navigationBar.clipsToBounds = false
@@ -59,5 +89,14 @@ class FiltersViewController: OverlayViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     CCLog.warning("didReceiveMemoryWarning")
+  }
+}
+
+
+
+extension FiltersViewController: CategoryReturnDelegate {
+  func categorySearchComplete(categories: [FoodieCategory]) {
+    selectedCategories = categories
+    updateSelectedCategoriesLabel()
   }
 }

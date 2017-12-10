@@ -11,10 +11,7 @@ import RATreeView
 
 
 protocol CategoryReturnDelegate: class {
-  func categorySearchComplete(category: FoodieCategory?)
-  
-  // 2. Lets make selecting a category actually pass the category back to the StoryEntryVC
-  // 3. Lets make it so one can pass in a FoodieCategory as a suggested Category and auto initiate a search
+  func categorySearchComplete(categories: [FoodieCategory])
 }
 
 
@@ -126,7 +123,7 @@ class CategoryViewController: OverlayViewController {
         }
         
         // Then by lower level
-        else if firstCategory.catLevel > secondCategory.catLevel {
+        else if firstCategory.catLevel < secondCategory.catLevel {
           return true
         }
           
@@ -196,7 +193,7 @@ class CategoryViewController: OverlayViewController {
     categoryTreeView.scrollView.delegate = self
     categoryTreeView.treeFooterView = UIView()
     categoryTreeView.rowHeight = Constants.categoryTreeViewRowHeight
-    categoryTreeView.allowsSelection = false
+    //categoryTreeView.allowsSelection = false
     
     view.insertSubview(categoryTreeView, aboveSubview: backgroundView)
     view.insertSubview(stackView, aboveSubview: categoryTreeView)
@@ -204,6 +201,8 @@ class CategoryViewController: OverlayViewController {
   
 
   override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    
     // Update the rest of the UI
     if let suggestedCategoryName = suggestedCategory?.name {
       categorySearchBar.text = suggestedCategoryName
@@ -219,11 +218,31 @@ class CategoryViewController: OverlayViewController {
   
   
   override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    
     categorySearchBar.resignFirstResponder()
   }
   
   
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    
+    if let delegate = delegate {
+      // Compute what is the actually selected categories and pass that back to the delegate
+      var selectedCategories = [FoodieCategory]()
+      
+      for category in categoryArray {
+        if category.selected == .selected {
+          selectedCategories.append(category)
+        }
+      }
+      delegate.categorySearchComplete(categories: selectedCategories)
+    }
+  }
+  
+  
   override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
     categoryTreeView.scrollView.contentInset = UIEdgeInsetsMake(stackView.bounds.height, 0.0, 0.0, 0.0)  // This is so the Table View can be translucent underneath the Stack View of Search Bars
   }
   
@@ -371,6 +390,7 @@ extension CategoryViewController: RATreeViewDataSource {
     
     cell.delegate = self
     cell.categoryItem = category
+    cell.selectionStyle = .none
     return cell
   }
   
@@ -382,6 +402,14 @@ extension CategoryViewController: RATreeViewDataSource {
 
 // MARK: - Table View Delegate Protocol Conformance
 extension CategoryViewController: RATreeViewDelegate {
+  func treeView(_ treeView: RATreeView, didSelectRowForItem item: Any) {
+    guard let cell = treeView.cell(forItem: item) as? CategoryTableViewCell else {
+      CCLog.assert("Expected cell for item")
+      return
+    }
+    cell.expandButtonAction(cell.expandButton)
+  }
+  
   func treeView(_ treeView: RATreeView, shouldExpandRowForItem item: Any) -> Bool {
     return false
   }
