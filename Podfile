@@ -20,6 +20,8 @@ target 'TastryApp' do
   pod 'Texture', :inhibit_warnings => true
   pod 'ColorSlider', '~> 4.0'
   pod 'PryntTrimmerView', :git => 'https://github.com/specc/PryntTrimmerView.git'  
+  pod 'NMRangeSlider', :git => 'https://github.com/muZZkat/NMRangeSlider.git', :branch => 'master'
+ 
   target 'TastryAppTests' do
     inherit! :search_paths
     # Pods for testing

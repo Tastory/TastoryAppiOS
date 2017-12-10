@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import NMRangeSlider
+
 
 class FiltersViewController: OverlayViewController {
   
@@ -24,7 +26,8 @@ class FiltersViewController: OverlayViewController {
   
   // MARK: - IBOutlet
   
-  @IBOutlet weak var selectedLabel: UILabel!
+  @IBOutlet var selectedLabel: UILabel!
+  @IBOutlet var rangeSlider: NMRangeSlider!
   
   
   
@@ -66,6 +69,7 @@ class FiltersViewController: OverlayViewController {
   }
   
   
+  
   // MARK: - View Controller Lifecycle
   
   override func viewDidLoad() {
@@ -75,6 +79,9 @@ class FiltersViewController: OverlayViewController {
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
     
     updateSelectedCategoriesLabel()
+    
+    rangeSlider.trackCrossedOverImage = #imageLiteral(resourceName: "Filters-RangeSliderHighlightTrack")
+    rangeSlider.trackImage = #imageLiteral(resourceName: "Filters-RangeSliderBackgroundTrack")
   }
   
   

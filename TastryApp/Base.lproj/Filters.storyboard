@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -90,23 +91,25 @@
                                                 <rect key="frame" x="0.0" y="45" width="320" height="110"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Price Range" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kKo-Ca-cf2">
-                                                        <rect key="frame" x="15" y="47.5" width="79" height="16.5"/>
+                                                        <rect key="frame" x="15" y="14" width="79" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" white="0.35999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Settings-RightArrowDark" translatesAutoresizingMaskIntoConstraints="NO" id="hzs-6m-m1a">
-                                                        <rect key="frame" x="281" y="43" width="24" height="24"/>
-                                                    </imageView>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WJV-IP-UiZ" customClass="NMRangeSlider">
+                                                        <rect key="frame" x="15" y="20" width="290" height="80"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    </view>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <gestureRecognizers/>
                                                 <constraints>
-                                                    <constraint firstItem="hzs-6m-m1a" firstAttribute="centerY" secondItem="jQQ-G2-AK4" secondAttribute="centerY" id="JTE-NT-4LC"/>
-                                                    <constraint firstItem="kKo-Ca-cf2" firstAttribute="centerY" secondItem="jQQ-G2-AK4" secondAttribute="centerY" id="JkG-iO-peK"/>
+                                                    <constraint firstAttribute="bottom" secondItem="WJV-IP-UiZ" secondAttribute="bottom" constant="10" id="D7D-t9-fgO"/>
+                                                    <constraint firstItem="WJV-IP-UiZ" firstAttribute="leading" secondItem="jQQ-G2-AK4" secondAttribute="leading" constant="15" id="L3p-F9-Or4"/>
                                                     <constraint firstItem="kKo-Ca-cf2" firstAttribute="leading" secondItem="jQQ-G2-AK4" secondAttribute="leading" constant="15" id="LDP-vb-bgP"/>
-                                                    <constraint firstAttribute="trailing" secondItem="hzs-6m-m1a" secondAttribute="trailing" constant="15" id="g53-z6-eVV"/>
-                                                    <constraint firstItem="hzs-6m-m1a" firstAttribute="leading" relation="lessThanOrEqual" secondItem="kKo-Ca-cf2" secondAttribute="trailing" priority="200" constant="375" id="rw4-ub-Q3t"/>
+                                                    <constraint firstItem="kKo-Ca-cf2" firstAttribute="centerY" secondItem="jQQ-G2-AK4" secondAttribute="top" constant="22" id="nir-et-F9j"/>
+                                                    <constraint firstItem="WJV-IP-UiZ" firstAttribute="top" secondItem="jQQ-G2-AK4" secondAttribute="top" constant="20" id="og8-fM-HGK"/>
+                                                    <constraint firstAttribute="trailing" secondItem="WJV-IP-UiZ" secondAttribute="trailing" constant="15" id="wbS-Pq-1NF"/>
                                                     <constraint firstAttribute="height" constant="110" id="wcB-cN-37b"/>
                                                 </constraints>
                                             </view>
@@ -149,6 +152,7 @@
                         <viewLayoutGuide key="safeArea" id="y6a-x9-gcH"/>
                     </view>
                     <connections>
+                        <outlet property="rangeSlider" destination="WJV-IP-UiZ" id="lxL-nI-MiO"/>
                         <outlet property="selectedLabel" destination="38Q-e0-qgg" id="eZz-js-phL"/>
                     </connections>
                 </viewController>
