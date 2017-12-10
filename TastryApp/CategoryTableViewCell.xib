@@ -23,6 +23,12 @@
                 <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Example Title Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2DA-Sd-zvl">
+                        <rect key="frame" x="41" y="13" width="286" height="16.5"/>
+                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                     <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="500" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YiG-E5-bko">
                         <rect key="frame" x="4" y="4" width="36" height="36"/>
                         <state key="normal" image="Filters-RightArrowDark"/>
@@ -30,29 +36,34 @@
                             <action selector="expandButtonAction:" destination="m2R-Ly-LC8" eventType="touchUpInside" id="3tc-r0-OFA"/>
                         </connections>
                     </button>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Example Title Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2DA-Sd-zvl">
-                        <rect key="frame" x="41" y="13" width="316" height="16.5"/>
-                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
-                        <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ObZ-xm-Wgy">
+                        <rect key="frame" x="329" y="3" width="36" height="36"/>
+                        <state key="normal" image="Filters-NotSelected"/>
+                        <connections>
+                            <action selector="radioAction:" destination="m2R-Ly-LC8" eventType="touchUpInside" id="WTw-Am-W3U"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="ObZ-xm-Wgy" firstAttribute="centerY" secondItem="bYw-6P-7Gm" secondAttribute="centerY" id="0ti-LT-d4u"/>
                     <constraint firstItem="YiG-E5-bko" firstAttribute="leading" secondItem="bYw-6P-7Gm" secondAttribute="leading" constant="4" id="ITb-Jq-G0Z"/>
                     <constraint firstItem="2DA-Sd-zvl" firstAttribute="leading" secondItem="YiG-E5-bko" secondAttribute="trailing" constant="1" id="Isl-3a-s4F"/>
+                    <constraint firstAttribute="trailing" secondItem="ObZ-xm-Wgy" secondAttribute="trailing" constant="10" id="JEt-NC-GrD"/>
+                    <constraint firstItem="ObZ-xm-Wgy" firstAttribute="leading" secondItem="2DA-Sd-zvl" secondAttribute="trailing" constant="2" id="NEr-Ts-r2g"/>
                     <constraint firstItem="2DA-Sd-zvl" firstAttribute="centerY" secondItem="bYw-6P-7Gm" secondAttribute="centerY" id="R2a-u8-ZNO"/>
                     <constraint firstItem="YiG-E5-bko" firstAttribute="centerY" secondItem="bYw-6P-7Gm" secondAttribute="centerY" id="l4z-Bf-d5Q"/>
-                    <constraint firstAttribute="trailing" secondItem="2DA-Sd-zvl" secondAttribute="trailing" constant="18" id="pFE-cg-l5r"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="expandButton" destination="YiG-E5-bko" id="wpE-bF-mUl"/>
+                <outlet property="selectRadio" destination="ObZ-xm-Wgy" id="yHl-Wm-bRf"/>
                 <outlet property="titleLabel" destination="2DA-Sd-zvl" id="lQz-GN-B0Y"/>
             </connections>
             <point key="canvasLocation" x="90.5" y="25"/>
         </tableViewCell>
     </objects>
     <resources>
+        <image name="Filters-NotSelected" width="36" height="36"/>
         <image name="Filters-RightArrowDark" width="36" height="36"/>
     </resources>
 </document>

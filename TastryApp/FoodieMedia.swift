@@ -523,23 +523,30 @@ extension FoodieMedia: FoodieObjectDelegate {
     
     // Delete itself first
     foodieObject.deleteObject(from: location, type: localType) { error in
-      guard let fileName = self.foodieFileName else {
-        CCLog.fatal("FoodieMedia has no foodieFileName")
+      
+      guard let mediaType = self.mediaType else {
+        CCLog.fatal("FoodieMedia has no mediaType")
       }
       
-      // If the file is deleted from 1 local type, see if we should switch to the other?
-      switch localType {
-      case .cache:
-        if FoodieFileObject.checkIfExists(for: fileName, in: .draft) {
-          self.localVideoUrl = FoodieFileObject.getFileURL(for: .draft, with: fileName)
-        } else {
-          self.localVideoUrl = nil
+      if mediaType == .video {
+        guard let fileName = self.foodieFileName else {
+          CCLog.fatal("FoodieMedia has no foodieFileName")
         }
-      case .draft:
-        if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
-          self.localVideoUrl = FoodieFileObject.getFileURL(for: .cache, with: fileName)
-        } else {
-          self.localVideoUrl = nil
+        
+        // If the file is deleted from 1 local type, see if we should switch to the other?
+        switch localType {
+        case .cache:
+          if FoodieFileObject.checkIfExists(for: fileName, in: .draft) {
+            self.localVideoUrl = FoodieFileObject.getFileURL(for: .draft, with: fileName)
+          } else {
+            self.localVideoUrl = nil
+          }
+        case .draft:
+          if FoodieFileObject.checkIfExists(for: fileName, in: .cache) {
+            self.localVideoUrl = FoodieFileObject.getFileURL(for: .cache, with: fileName)
+          } else {
+            self.localVideoUrl = nil
+          }
         }
       }
       callback?(error)

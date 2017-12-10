@@ -182,6 +182,8 @@ class CategoryViewController: OverlayViewController {
     let leftArrowImage = UIImage(named: "Settings-LeftArrowDark")
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
     
+    // Update the appearance
+    UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor]
     categorySearchBar.delegate = self
     
     // Create and configure the Tree View
@@ -194,6 +196,7 @@ class CategoryViewController: OverlayViewController {
     categoryTreeView.scrollView.delegate = self
     categoryTreeView.treeFooterView = UIView()
     categoryTreeView.rowHeight = Constants.categoryTreeViewRowHeight
+    categoryTreeView.allowsSelection = false
     
     view.insertSubview(categoryTreeView, aboveSubview: backgroundView)
     view.insertSubview(stackView, aboveSubview: categoryTreeView)
@@ -344,43 +347,41 @@ extension CategoryViewController: RATreeViewDataSource {
       return UITableViewCell()
     }
     
-    cell.titleLabel.text = categoryName
-    
+    // Determine how the expanding arrow button should look like
     if let subcategories = category.subcategories, subcategories.count != 0 {
       cell.expandButton.isHidden = false
       
       if treeView.isCell(forItemExpanded: item!) {
-        cell.setAndAnimate(to: .expand)
+        cell.set(to: .expand, animated: false)
       } else {
-        cell.setAndAnimate(to: .collapse)
+        cell.set(to: .collapse, animated: false)
       }
     } else {
       cell.expandButton.isHidden = true
     }
     
+    // Title Text
+    cell.titleLabel.text = categoryName
+    
+    // Check Box
+    cell.setRadio(to: category.selected)
+    
+    // Cell view background color
+    cell.backgroundColor = UIColor(white: 1.0 - 0.025*CGFloat(category.catLevel - 1), alpha: 1.0)  // So Level 1 is 1.0, Level 2 is 0.975, etc
+    
     cell.delegate = self
     cell.categoryItem = category
     return cell
+  }
+  
+  func treeView(_ treeView: RATreeView, canEditRowForItem item: Any) -> Bool {
+    return false
   }
 }
 
 
 // MARK: - Table View Delegate Protocol Conformance
 extension CategoryViewController: RATreeViewDelegate {
-  func treeView(_ treeView: RATreeView, didSelectRowForItem item: Any) {
-    CCLog.verbose("treeView(didSelectRowForItem:")
-    
-    guard let category = item as? FoodieCategory else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
-        CCLog.assert("categoryItem does not contain a FoodieCategory and is nil")
-        self.popDismiss(animated: true)
-      }
-      return
-    }
-    delegate?.categorySearchComplete(category: category)
-    popDismiss(animated: true)
-  }
-  
   func treeView(_ treeView: RATreeView, shouldExpandRowForItem item: Any) -> Bool {
     return false
   }
@@ -408,6 +409,24 @@ extension CategoryViewController: CategoryTableViewCellDelegate {
       categoryTreeView.expandRow(forItem: category)
     case .collapse:
       categoryTreeView.collapseRow(forItem: category)
+    }
+  }
+  
+  func selection(for cell: CategoryTableViewCell, to state: FoodieCategory.SelectionState) {
+    guard let cellCategory = cell.categoryItem else {
+      CCLog.assert("Cell with no Category Associated")
+      return
+    }
+    cellCategory.setSelectionRecursive(to: state)
+    
+    if let visibleCells = categoryTreeView.visibleCells() as? [CategoryTableViewCell] {
+      for visibleCell in visibleCells {
+        guard let visibleCategory = visibleCell.categoryItem else {
+          CCLog.fatal("visibleCategoryItem does not contain a FoodieCategory and is nil")
+        }
+        let selectionState = visibleCategory.selected
+        visibleCell.setRadio(to: selectionState)
+      }
     }
   }
 }

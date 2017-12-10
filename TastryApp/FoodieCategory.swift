@@ -24,14 +24,24 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
 
   
   // MARK: - Public Instance Variables
+  var parentCategory: FoodieCategory?
   var subcategories: [FoodieCategory]?
   var substitudedCategoryIDs: Array<String>?
   var catLevel: Int = 0
+  var selected: SelectionState = .unselected
   
   
   // MARK: - Types & Enumeration
   typealias CategoriesErrorBlock = ([FoodieCategory]?, Error?) -> Void
   
+  
+  enum SelectionState {
+    case selected
+    case partial
+    case unselected
+  }
+  
+
   
   // MARK: - Error Types
   enum ErrorCode: LocalizedError {
@@ -216,6 +226,7 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
         if let childCategory = convertRecursive(from: category, forLevel: level+1) {
           foodieCategory.subcategoryIDs?.append(childCategory.foursquareCategoryID!)  // Force unwrap because you know a freshly converted Category will have ID for sure
           foodieCategory.subcategories?.append(childCategory)
+          childCategory.parentCategory = foodieCategory
         }
       }
     }
@@ -232,7 +243,62 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
     foodieObject.delegate = self
   }
 
-
+  
+  func setSelectionRecursive(to state: SelectionState) {
+    selected = state
+    selectionUpstreamRecursive(to: state)
+    selectionDownstreamRecursive(to: state)
+  }
+  
+  
+  func selectionUpstreamRecursive(to state: SelectionState) {
+    
+    // Check Peer Selection States
+    if let parentCategory = parentCategory {
+      
+      guard let subcategories = parentCategory.subcategories, subcategories.count > 0 else {
+        CCLog.fatal("No subcategories on Upstream Recursive")
+      }
+      
+      var allUnselected = true
+      var allSelected = true
+      
+      for category in subcategories {
+        switch category.selected {
+        case .unselected:
+          allSelected = false
+        case .partial:
+          allSelected = false
+          allUnselected = false
+        case .selected:
+          allUnselected = false
+        }
+      }
+      
+      if allSelected, allUnselected {
+        CCLog.fatal("Cannot be all Selected and all Unselected at the same time")
+      } else if allSelected {
+        parentCategory.selected = .selected
+      } else if allUnselected {
+        parentCategory.selected = .unselected
+      } else {
+        parentCategory.selected = .partial
+      }
+      
+      parentCategory.selectionUpstreamRecursive(to: parentCategory.selected)
+    }
+  }
+  
+  
+  func selectionDownstreamRecursive(to state: SelectionState) {
+    if let subcategories = subcategories {
+      for category in subcategories {
+        category.selected = state
+        category.selectionDownstreamRecursive(to: state)
+      }
+    }
+  }
+  
   
   // MARK: - Foodie Object Delegate Conformance
 
