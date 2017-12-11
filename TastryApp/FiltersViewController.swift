@@ -10,10 +10,25 @@ import UIKit
 import SwiftRangeSlider
 
 
+protocol FiltersViewReturnDelegate: class {
+  func filterComplete(selectedCategories: [FoodieCategory], lowerPriceLimit: Double, upperPriceLimit: Double)
+}
+
+
+
 class FiltersViewController: OverlayViewController {
+  
+  // MARK: - Constants
+  struct Constants {
+    static let PriceLowerLimit = 1.0
+    static let PriceUpperLimit = 4.0
+  }
+  
+  
   
   // MARK: - Public Instance Variable
   
+  weak var delegate: FiltersViewReturnDelegate?
   var parentNavController: UINavigationController?
   
   
@@ -21,6 +36,8 @@ class FiltersViewController: OverlayViewController {
   // MARK: - Private Instance Variable
   
   private var selectedCategories = [FoodieCategory]()
+  private var priceLowerLimit = Constants.PriceLowerLimit
+  private var priceUpperLimit = Constants.PriceUpperLimit
   
   
   
@@ -48,6 +65,12 @@ class FiltersViewController: OverlayViewController {
   }
   
   
+  @IBAction func priceSliderValuesChanged(_ priceSlider: RangeSlider) {
+    priceLowerLimit = priceSlider.lowerValue
+    priceUpperLimit = priceSlider.upperValue
+  }
+  
+
   
   // MARK: - Private Instance Function
   
@@ -96,6 +119,15 @@ class FiltersViewController: OverlayViewController {
     
     priceSlider.layoutIfNeeded()
     priceSlider.updateLayerFramesAndPositions()
+  }
+  
+  
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    
+    delegate?.filterComplete(selectedCategories: selectedCategories,
+                             lowerPriceLimit: priceLowerLimit,
+                             upperPriceLimit: priceUpperLimit)
   }
   
   

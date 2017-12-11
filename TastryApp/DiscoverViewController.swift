@@ -182,6 +182,7 @@ class DiscoverViewController: OverlayViewController {
       }
       return
     }
+    viewController.filtersReturnDelegate = self
     
     appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
     
@@ -334,6 +335,9 @@ class DiscoverViewController: OverlayViewController {
   private func performQuery(onAllUsers: Bool = false, at mapRect: MKMapRect? = nil, withBlock callback: FoodieQuery.StoriesQueryBlock?) {
     
     var searchMapRect = MKMapRect()
+    
+    // TODO: - 
+    CCLog.fatal("Implement Filters into Query Mechanism")
     
     if mapRect == nil {
       guard let mapController = mapNavController else {
@@ -1299,3 +1303,10 @@ extension DiscoverViewController: UpdateStoryFeedDelegate {
   }
 }
 
+
+
+extension DiscoverViewController: FiltersViewReturnDelegate {
+  func filterComplete(selectedCategories: [FoodieCategory], lowerPriceLimit: Double, upperPriceLimit: Double) {
+    // TODO:
+  }
+}

@@ -17,7 +17,10 @@ class FiltersNavViewController: OverlayViewController {
     static let StackShadowOpacity = FoodieGlobal.Constants.DefaultUIShadowOpacity
   }
   
+  
+  weak var filtersReturnDelegate: FiltersViewReturnDelegate?
   var filtersNavController: ASNavigationController?
+  
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -27,6 +30,7 @@ class FiltersNavViewController: OverlayViewController {
       CCLog.fatal("Cannot cast ViewController from Storyboard to FiltersViewController")
     }
     viewController.parentNavController = self.navigationController
+    viewController.delegate = filtersReturnDelegate
     
     let navController = ASNavigationController(rootViewController: viewController)
     navController.navigationBar.barTintColor = UIColor.white

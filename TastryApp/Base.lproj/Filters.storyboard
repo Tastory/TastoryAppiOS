@@ -131,6 +131,9 @@
                                                             <userDefinedRuntimeAttribute type="boolean" keyPath="hideLabels" value="YES"/>
                                                             <userDefinedRuntimeAttribute type="boolean" keyPath="knobHasShadow" value="YES"/>
                                                         </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="priceSliderValuesChanged:" destination="Fgo-n9-ZB2" eventType="valueChanged" id="8BP-o0-NuF"/>
+                                                        </connections>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tv8-5E-xkQ">
                                                         <rect key="frame" x="42" y="75" width="236" height="10"/>
