@@ -272,8 +272,10 @@ public protocol TrimmerViewDelegate: class {
                 updateRightConstraint(with: translation)
             }
             layoutIfNeeded()
-            if let startTime = startTime {
-                seek(to: startTime)
+            if let startTime = startTime, isLeftGesture {
+              seek(to: startTime)
+            } else if let endTime = endTime {
+              seek(to: endTime)
             }
             
             updateSelectedTime(stoppedMoving: false)
@@ -386,5 +388,9 @@ public protocol TrimmerViewDelegate: class {
     }
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         updateSelectedTime(stoppedMoving: false)
+    }
+
+    public func isPositionBar(hidden hide: Bool) {
+      positionBar.isHidden = hide
     }
 }

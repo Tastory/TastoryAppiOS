@@ -207,8 +207,17 @@ extension VideoTrimmerViewController: TrimmerViewDelegate {
           }
           return
         }
-        player.seek(to: playerTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+
+        guard let startTime = self.trimmerView.startTime else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { action in
+            CCLog.fatal("The start time is nil")
+          }
+          return
+        }
+
         startPlaybackTimeChecker()
+        player.seek(to: startTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        trimmerView.isPositionBar(hidden: false)
     }
 
     func didChangePositionBar(_ playerTime: CMTime) {
@@ -218,7 +227,9 @@ extension VideoTrimmerViewController: TrimmerViewDelegate {
           }
           return
         }
-        startPlaybackTimeChecker()
+
+        stopPlaybackTimeChecker()
         player.seek(to: playerTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        trimmerView.isPositionBar(hidden: true)
     }
 }
