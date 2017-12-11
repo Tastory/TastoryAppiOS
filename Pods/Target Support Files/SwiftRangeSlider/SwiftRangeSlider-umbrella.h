@@ -10,8 +10,7 @@
 #endif
 #endif
 
-#import "NMRangeSlider.h"
 
-FOUNDATION_EXPORT double NMRangeSliderVersionNumber;
-FOUNDATION_EXPORT const unsigned char NMRangeSliderVersionString[];
+FOUNDATION_EXPORT double SwiftRangeSliderVersionNumber;
+FOUNDATION_EXPORT const unsigned char SwiftRangeSliderVersionString[];
 

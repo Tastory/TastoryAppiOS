@@ -7,6 +7,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -74,7 +75,7 @@
                                                     <constraint firstItem="38Q-e0-qgg" firstAttribute="centerY" secondItem="FlT-Eh-MIE" secondAttribute="centerY" id="ot5-o7-gei"/>
                                                     <constraint firstItem="vaF-5f-qI4" firstAttribute="centerY" secondItem="FlT-Eh-MIE" secondAttribute="centerY" id="tRU-rm-HIK"/>
                                                     <constraint firstAttribute="height" constant="44" id="vaz-EL-uvq"/>
-                                                    <constraint firstItem="zaA-PI-78e" firstAttribute="leading" relation="lessThanOrEqual" secondItem="vaF-5f-qI4" secondAttribute="trailing" priority="200" constant="375" id="yOn-D8-SbN"/>
+                                                    <constraint firstItem="38Q-e0-qgg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="vaF-5f-qI4" secondAttribute="trailing" priority="200" constant="10" id="yOn-D8-SbN"/>
                                                 </constraints>
                                                 <connections>
                                                     <outletCollection property="gestureRecognizers" destination="VbW-ZB-CZe" appends="YES" id="eFT-Ud-Wte"/>
@@ -96,21 +97,104 @@
                                                         <color key="textColor" white="0.35999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WJV-IP-UiZ" customClass="NMRangeSlider">
-                                                        <rect key="frame" x="15" y="20" width="290" height="80"/>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WJV-IP-UiZ" customClass="RangeSlider" customModule="SwiftRangeSlider">
+                                                        <rect key="frame" x="30" y="39.5" width="260" height="31"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="31" id="Bah-hv-Deg"/>
+                                                        </constraints>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="minimumValue">
+                                                                <real key="value" value="1"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="lowerValue">
+                                                                <real key="value" value="2"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="upperValue">
+                                                                <real key="value" value="3"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="stepValue">
+                                                                <real key="value" value="1"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="maximumValue">
+                                                                <real key="value" value="4"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="trueKnobSize" value="NO"/>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="trackThickness">
+                                                                <real key="value" value="6"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="color" keyPath="trackHighlightTintColor">
+                                                                <color key="value" red="0.98039215690000003" green="0.035294117649999998" blue="0.035294117649999998" alpha="1" colorSpace="calibratedRGB"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="trueTrackThickness" value="YES"/>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="dragTrack" value="NO"/>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="hideLabels" value="YES"/>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="knobHasShadow" value="YES"/>
+                                                        </userDefinedRuntimeAttributes>
                                                     </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tv8-5E-xkQ">
+                                                        <rect key="frame" x="42" y="75" width="236" height="10"/>
+                                                        <subviews>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rpL-pS-jaP">
+                                                                <rect key="frame" x="78.5" y="0.0" width="79" height="10"/>
+                                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            </view>
+                                                        </subviews>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="10" id="2ZY-V5-mIN"/>
+                                                            <constraint firstAttribute="bottom" secondItem="rpL-pS-jaP" secondAttribute="bottom" id="3gP-Jm-5wo"/>
+                                                            <constraint firstItem="rpL-pS-jaP" firstAttribute="top" secondItem="Tv8-5E-xkQ" secondAttribute="top" id="K16-ly-VrG"/>
+                                                            <constraint firstItem="rpL-pS-jaP" firstAttribute="centerX" secondItem="Tv8-5E-xkQ" secondAttribute="centerX" id="Mlx-Je-tdv"/>
+                                                            <constraint firstItem="rpL-pS-jaP" firstAttribute="width" secondItem="Tv8-5E-xkQ" secondAttribute="width" multiplier="0.33333" id="XXx-aO-2u0"/>
+                                                        </constraints>
+                                                    </view>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YIY-R9-WQR">
+                                                        <rect key="frame" x="37.5" y="75" width="9" height="16.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                                                        <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$$" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wKf-lw-ccq">
+                                                        <rect key="frame" x="112" y="75" width="17.5" height="16.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                                                        <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$$$" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0H9-Gt-iia">
+                                                        <rect key="frame" x="186.5" y="75" width="26.5" height="16.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                                                        <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$$$$" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="89l-Gv-L1m">
+                                                        <rect key="frame" x="260.5" y="74.5" width="35" height="16.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                                                        <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <gestureRecognizers/>
                                                 <constraints>
-                                                    <constraint firstAttribute="bottom" secondItem="WJV-IP-UiZ" secondAttribute="bottom" constant="10" id="D7D-t9-fgO"/>
-                                                    <constraint firstItem="WJV-IP-UiZ" firstAttribute="leading" secondItem="jQQ-G2-AK4" secondAttribute="leading" constant="15" id="L3p-F9-Or4"/>
+                                                    <constraint firstItem="0H9-Gt-iia" firstAttribute="centerX" secondItem="rpL-pS-jaP" secondAttribute="trailing" id="4Js-8L-aAb"/>
+                                                    <constraint firstItem="Tv8-5E-xkQ" firstAttribute="leading" secondItem="WJV-IP-UiZ" secondAttribute="leading" constant="12" id="6TJ-on-NDR"/>
+                                                    <constraint firstItem="WJV-IP-UiZ" firstAttribute="centerY" secondItem="jQQ-G2-AK4" secondAttribute="centerY" id="BLI-Bg-2g7"/>
+                                                    <constraint firstAttribute="bottom" secondItem="Tv8-5E-xkQ" secondAttribute="bottom" constant="25" id="HQC-oW-ofm"/>
+                                                    <constraint firstItem="WJV-IP-UiZ" firstAttribute="leading" secondItem="jQQ-G2-AK4" secondAttribute="leading" constant="30" id="L3p-F9-Or4"/>
                                                     <constraint firstItem="kKo-Ca-cf2" firstAttribute="leading" secondItem="jQQ-G2-AK4" secondAttribute="leading" constant="15" id="LDP-vb-bgP"/>
+                                                    <constraint firstItem="89l-Gv-L1m" firstAttribute="top" secondItem="Tv8-5E-xkQ" secondAttribute="top" id="Nvw-0M-VDd"/>
+                                                    <constraint firstItem="wKf-lw-ccq" firstAttribute="top" secondItem="Tv8-5E-xkQ" secondAttribute="top" id="Oyo-7F-11f"/>
+                                                    <constraint firstItem="wKf-lw-ccq" firstAttribute="centerX" secondItem="rpL-pS-jaP" secondAttribute="leading" id="TEc-hq-d4o"/>
+                                                    <constraint firstItem="0H9-Gt-iia" firstAttribute="top" secondItem="Tv8-5E-xkQ" secondAttribute="top" id="VfD-Pm-ifj"/>
+                                                    <constraint firstItem="Tv8-5E-xkQ" firstAttribute="trailing" secondItem="WJV-IP-UiZ" secondAttribute="trailing" constant="-12" id="ZEh-lG-M99"/>
+                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="kKo-Ca-cf2" secondAttribute="trailing" constant="18" id="dew-cl-ano"/>
+                                                    <constraint firstItem="YIY-R9-WQR" firstAttribute="top" secondItem="Tv8-5E-xkQ" secondAttribute="top" id="kIx-D9-DkS"/>
+                                                    <constraint firstItem="89l-Gv-L1m" firstAttribute="centerX" secondItem="Tv8-5E-xkQ" secondAttribute="trailing" id="ncU-gV-HjS"/>
                                                     <constraint firstItem="kKo-Ca-cf2" firstAttribute="centerY" secondItem="jQQ-G2-AK4" secondAttribute="top" constant="22" id="nir-et-F9j"/>
-                                                    <constraint firstItem="WJV-IP-UiZ" firstAttribute="top" secondItem="jQQ-G2-AK4" secondAttribute="top" constant="20" id="og8-fM-HGK"/>
-                                                    <constraint firstAttribute="trailing" secondItem="WJV-IP-UiZ" secondAttribute="trailing" constant="15" id="wbS-Pq-1NF"/>
+                                                    <constraint firstAttribute="trailing" secondItem="WJV-IP-UiZ" secondAttribute="trailing" constant="30" id="wbS-Pq-1NF"/>
                                                     <constraint firstAttribute="height" constant="110" id="wcB-cN-37b"/>
+                                                    <constraint firstItem="YIY-R9-WQR" firstAttribute="centerX" secondItem="Tv8-5E-xkQ" secondAttribute="leading" id="xwA-co-CIy"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G2u-e9-4pO" userLabel="Line">
@@ -152,7 +236,8 @@
                         <viewLayoutGuide key="safeArea" id="y6a-x9-gcH"/>
                     </view>
                     <connections>
-                        <outlet property="rangeSlider" destination="WJV-IP-UiZ" id="lxL-nI-MiO"/>
+                        <outlet property="priceRangeView" destination="jQQ-G2-AK4" id="TyK-wh-ZuI"/>
+                        <outlet property="priceSlider" destination="WJV-IP-UiZ" id="ABz-Gn-Laf"/>
                         <outlet property="selectedLabel" destination="38Q-e0-qgg" id="eZz-js-phL"/>
                     </connections>
                 </viewController>
@@ -163,7 +248,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1607" y="-653"/>
+            <point key="canvasLocation" x="1606.875" y="-653.87323943661977"/>
         </scene>
         <!--Categories-->
         <scene sceneID="DWl-bl-sgE">

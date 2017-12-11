@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import NMRangeSlider
+import SwiftRangeSlider
 
 
 class FiltersViewController: OverlayViewController {
@@ -27,7 +27,8 @@ class FiltersViewController: OverlayViewController {
   // MARK: - IBOutlet
   
   @IBOutlet var selectedLabel: UILabel!
-  @IBOutlet var rangeSlider: NMRangeSlider!
+  @IBOutlet var priceSlider: RangeSlider!
+  @IBOutlet var priceRangeView: UIView!
   
   
   
@@ -79,9 +80,6 @@ class FiltersViewController: OverlayViewController {
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
     
     updateSelectedCategoriesLabel()
-    
-    rangeSlider.trackCrossedOverImage = #imageLiteral(resourceName: "Filters-RangeSliderHighlightTrack")
-    rangeSlider.trackImage = #imageLiteral(resourceName: "Filters-RangeSliderBackgroundTrack")
   }
   
   
@@ -90,6 +88,14 @@ class FiltersViewController: OverlayViewController {
 //    navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
 //    navigationController?.navigationBar.shadowImage = nil
 //    navigationController?.navigationBar.clipsToBounds = false
+  }
+  
+  
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    
+    priceSlider.layoutIfNeeded()
+    priceSlider.updateLayerFramesAndPositions()
   }
   
   

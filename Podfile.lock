@@ -13,7 +13,6 @@ PODS:
   - Jot (0.2.0):
     - Masonry (~> 1.0.2)
   - Masonry (1.0.2)
-  - NMRangeSlider (1.2.2)
   - Parse (1.15.3):
     - Bolts/Tasks (~> 1.8)
   - PINCache (3.0.1-beta.5):
@@ -34,6 +33,7 @@ PODS:
   - PryntTrimmerView (2.0.0)
   - QuadratTouch (1.1.3)
   - RATreeView (2.1.2)
+  - SwiftRangeSlider (2.0.0)
   - SwiftyCam (2.6.0)
   - Texture (2.5.1):
     - Texture/PINRemoteImage (= 2.5.1)
@@ -52,11 +52,11 @@ DEPENDENCIES:
   - Fabric
   - HTTPStatusCodes (~> 3.1.2)
   - Jot (from `https://github.com/biscottigelato/Jot.git`)
-  - NMRangeSlider (from `https://github.com/muZZkat/NMRangeSlider.git`, branch `master`)
   - Parse
   - PryntTrimmerView (from `https://github.com/specc/PryntTrimmerView.git`)
   - QuadratTouch (from `https://github.com/Constantine-Fry/das-quadrat.git`, branch `develop`)
   - RATreeView
+  - SwiftRangeSlider
   - SwiftyCam
   - Texture
   - TLPhotoPicker (from `https://github.com/specc/TLPhotoPicker.git`)
@@ -64,9 +64,6 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   Jot:
     :git: https://github.com/biscottigelato/Jot.git
-  NMRangeSlider:
-    :branch: master
-    :git: https://github.com/muZZkat/NMRangeSlider.git
   PryntTrimmerView:
     :git: https://github.com/specc/PryntTrimmerView.git
   QuadratTouch:
@@ -79,9 +76,6 @@ CHECKOUT OPTIONS:
   Jot:
     :commit: 25f8f4b486ed7993285adef5662b3b31dfee0a00
     :git: https://github.com/biscottigelato/Jot.git
-  NMRangeSlider:
-    :commit: 56e86760bfac4b0747cf1df55ed6669aff263855
-    :git: https://github.com/muZZkat/NMRangeSlider.git
   PryntTrimmerView:
     :commit: 23df209789126e3baf24bf257171aecc67754596
     :git: https://github.com/specc/PryntTrimmerView.git
@@ -103,7 +97,6 @@ SPEC CHECKSUMS:
   HTTPStatusCodes: 88155ba36826366a898a7b4f34d311f49083d546
   Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
-  NMRangeSlider: 02bb205d0c7f9bea09b5cf00fbcbc2bc2e3e10ff
   Parse: cdc0f1f975ee8be0409e66f21b05df4ae067047c
   PINCache: 98e7b1ef782824ad231ade51987c218b758c30d8
   PINOperation: ac23db44796d4a564ecf9b5ea7163510f579b71d
@@ -111,10 +104,11 @@ SPEC CHECKSUMS:
   PryntTrimmerView: 5ad39b9cb5793adcebdad4a1a241260a2c281a38
   QuadratTouch: 9e311cbd4f0573b58cafe6783df1fa7ce2458afa
   RATreeView: 380cde0090cfde21dc6ac29137f49d3b768fdd28
+  SwiftRangeSlider: f86e3b637c961120158fa1a89277c8343845cbe4
   SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
   Texture: c3f06e344aa091667b7a56002e525cde674d021a
   TLPhotoPicker: e5bf9a0f95b4fdf867299d6ae03569f526e3f621
 
-PODFILE CHECKSUM: 08fdca7dd1ff1659664063026a461add0f0eca16
+PODFILE CHECKSUM: 582ecd76348cb7133c649a7c4992e840ed3733ee
 
 COCOAPODS: 1.2.0
