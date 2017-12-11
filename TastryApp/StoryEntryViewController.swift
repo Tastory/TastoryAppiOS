@@ -18,8 +18,9 @@ protocol PreviewControlDelegate: class {
 }
 
 
-protocol RestoreStoryDelegate: class {
+protocol UpdateStoryFeedDelegate: class {
   func updateStory(_ story: FoodieStory)
+  func deleteStory(_ story: FoodieStory)
 }
 
 
@@ -55,7 +56,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   var workingStory: FoodieStory?
   var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
-  weak var restoreStoryDelegate: RestoreStoryDelegate?
+  weak var updateStoryFeedDelegate: UpdateStoryFeedDelegate?
   
   
   
@@ -86,6 +87,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   @IBOutlet weak var previewButton: UIButton!
   @IBOutlet weak var discardButton: UIButton!
   @IBOutlet weak var savePostButton: UIButton!
+  @IBOutlet weak var scrollViewBottomContraint: NSLayoutConstraint!
+  @IBOutlet weak var deletePostButton: UIButton!
   @IBOutlet weak var tagsTextView: UITextViewWithPlaceholder? {
     didSet {
       tagsTextView?.placeholder = "Tags (Placeholder)"
@@ -94,9 +97,49 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     }
   }
 
-  
-
   // MARK: - IBActions
+
+  @IBAction func deleteStory(_ sender: Any) {
+
+    ConfirmationDialog.showConfirmationDialog(to: self,
+                                              message: "Are you sure you want to delete this story?",
+                                              title: "Delete") { [unowned self] _ in
+                                                self.activitySpinner.apply()
+                                                guard let workingStory = self.workingStory else {
+                                                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                                                    CCLog.fatal("workingStory couldn't be nil at this point")
+                                                  }
+                                                  return
+                                                }
+
+                                                FoodieFetch.global.cancel(for: workingStory)
+                                                // not sure if we should delete from cache when deleting the whole story
+                                                workingStory.deleteWhole(from: .both, type: .cache) {[unowned self] error in
+
+                                                  if let error = error {
+                                                    AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                                                      CCLog.fatal("Delete story encountered an error: \(error)")
+                                                    }
+                                                    return
+                                                  }
+
+                                                  self.activitySpinner.remove()
+                                                  guard let updateStoryFeedDelegate = self.updateStoryFeedDelegate else {
+                                                    AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                                                      CCLog.fatal("updateStoryFeedDelegate is nil")
+                                                    }
+                                                    return
+                                                  }
+
+                                                  updateStoryFeedDelegate.deleteStory(workingStory)
+                                                  FoodieStory.removeCurrent()
+                                                  self.popDismiss(animated: true)
+                                                }
+    }
+
+
+  }
+
   @IBAction func venueClicked(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VenueTableViewController") as? VenueTableViewController else {
@@ -218,7 +261,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           }
 
           if(story.isEditStory) {
-            self.restoreStoryDelegate?.updateStory(story)
+            self.updateStoryFeedDelegate?.updateStory(story)
           }
 
           self.workingStory = nil
@@ -310,7 +353,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       discardMessage = "Are you sure? Your associated image, video and edits will be gone."
     }
     
-    StorySelector.showStoryDiscardDialog(to: self, message: discardMessage, title: discardTitle) {
+    ConfirmationDialog.showStoryDiscardDialog(to: self, message: discardMessage, title: discardTitle) {
       self.activitySpinner.apply()
       FoodieStory.cleanUpDraft() { error in
         if let error = error {
@@ -321,7 +364,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         }
         
         if(story.isEditStory) {
-          self.restoreStoryDelegate?.updateStory(story)
+          self.updateStoryFeedDelegate?.updateStory(story)
         }
         
         self.workingStory = nil
@@ -567,9 +610,12 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       if workingStory.isEditStory {
         discardButton?.setTitle("Discard Changes", for: .normal)
         savePostButton?.setTitle("Save", for: .normal)
+        scrollViewBottomContraint.constant = -700
       } else {
         discardButton?.setTitle("Discard", for: .normal)
         savePostButton?.setTitle("Post", for: .normal)
+        deletePostButton.isHidden = true
+        scrollViewBottomContraint.constant = -800
       }
       
       appearanceForAllUI(alphaValue: 0.0, animated: false)
@@ -832,6 +878,7 @@ extension StoryEntryViewController: PreviewControlDelegate {
     DispatchQueue.main.async {
       self.previewButton.isEnabled = isEnabled
       self.savePostButton.isEnabled = isEnabled
+      self.deletePostButton.isEnabled = isEnabled
     }
   }
 }

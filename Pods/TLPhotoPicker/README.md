@@ -26,11 +26,18 @@ TLPhotoPicker enables application to pick images and videos from multiple smart 
 - async phasset request and displayed cell.
   - scrolling performance is better than facebook in displaying video assets collection.
 - custom cell
-- reload of changes that occur in the Photos library. 
+- reload of changes that occur in the Photos library.
+- support iCloud Photo Library
 
 | Smart album collection | LivePhotoCell | VideoPhotoCell  | PhotoCell | CustomCell(instagram) |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 | ![Facebook Picker](Images/smartalbum.png)  | ![LivePhotoCell](Images/livephotocell.png)  | ![VideoPhotoCell](Images/videophotocell.png)  | ![PhotoCell](Images/photocell.png)  | ![PhotoCell](Images/customcell.png)  |
+
+Custom Camera Cell
+
+| Live CameraCell |
+| ------------- |
+| ![Like Line](Images/custom_cameracell.gif)
 
 ## Requirements 
 
@@ -81,9 +88,18 @@ class ViewController: UIViewController,TLPhotosPickerViewControllerDelegate {
 }
 
 //Custom Cell must subclass TLPhotoCollectionViewCell
+
 class CustomCell_Instagram: TLPhotoCollectionViewCell {
 
 }
+
+//If you want custom camera cell?
+//only used camera cell
+[Sample](https://github.com/tilltue/TLPhotoPicker/blob/master/Example/TLPhotoPicker/CustomCameraCell.swift)
+
+@objc open func selectedCell()
+@objc open func willDisplayCell()
+@objc open func endDisplayingCell()
 ```
 - use closure
 ```swift
@@ -122,6 +138,11 @@ public struct TLPHAsset {
     public var type: AssetType
     // get full resolution image 
     public var fullResolutionImage: UIImage?
+    // get video file size (async)
+    public func videoSize(options: PHVideoRequestOptions? = nil, completion: @escaping ((Int)->Void))
+    // get async icloud image (download)
+    @discardableResult
+    public func cloudImageDownload(progressBlock: @escaping (Double) -> Void, completionBlock:@escaping (UIImage?)-> Void ) -> PHImageRequestID?
     // get original asset file name
     public var originalFileName: String?
 }
@@ -141,14 +162,21 @@ public struct TLPhotosPickerConfigure {
     public var usedPrefetch = false
     public var allowedLivePhotos = true
     public var allowedVideo = true
+    public var allowedVideoRecording = true
+    public var maxVideoDuration:TimeInterval? = nil
+    public var autoPlay = true
+    public var muteAudio = true
+    public var mediaType: PHAssetMediaType? = nil
     public var numberOfColumn = 3
     public var maxSelectedAssets: Int? = nil //default: inf
+    public var singleSelectedMode = false
     public var selectedColor = UIColor(red: 88/255, green: 144/255, blue: 255/255, alpha: 1.0)
     public var cameraBgColor = UIColor(red: 221/255, green: 223/255, blue: 226/255, alpha: 1)
     public var cameraIcon = TLBundle.podBundleImage(named: "camera")
     public var videoIcon = TLBundle.podBundleImage(named: "video")
     public var placeholderIcon = TLBundle.podBundleImage(named: "insertPhotoMaterial")
     public var nibSet: (nibName: String, bundle:Bundle)? = nil // custom cell
+    public var cameraCellNibSet: (nibName: String, bundle:Bundle)? = nil // custom camera cell
     public init() {
     }
 }

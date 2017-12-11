@@ -288,11 +288,11 @@ class MarkupViewController: OverlayViewController {
         self.cleanupAndReturn(markedUpMoments: [momentObj], suggestedStory: story)
       }
       else {
-        StorySelector.displayStorySelection(
+        ConfirmationDialog.displayStorySelection(
           to: self,
           newStoryHandler: { UIAlertAction -> Void in
 
-            StorySelector.showStoryDiscardDialog(to: self) {
+            ConfirmationDialog.showStoryDiscardDialog(to: self) {
               FoodieStory.cleanUpDraft() { error in
                 if let error = error  {
                   AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in

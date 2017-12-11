@@ -1,5 +1,5 @@
 //
-//  AddStorySelector.swift
+//  ConfirmationDialog.swift
 //  TastryApp
 //
 //  Created by Victor Tsang on 2017-10-14.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class StorySelector {
+class ConfirmationDialog {
 
   static func displayStorySelection(to viewController: UIViewController, newStoryHandler: @escaping (UIAlertAction) -> Void, addToCurrentHandler: @escaping (UIAlertAction) -> Void) {
     // Display Action Sheet to ask user if they want to add this Moment to current Story, or a new one, or Cancel
@@ -48,7 +48,7 @@ class StorySelector {
       UIKit.UIAlertAction(title: "Discard",
                           comment: "Button to discard current Story in alert dialog box to warn user",
                           style: .destructive) { _ in
-                            callback()
+                          callback()
     }
 
     let alertController =
@@ -64,6 +64,31 @@ class StorySelector {
                                    style: .cancel)
 
     // Present the Discard dialog box to the user
+    viewController.present(alertController, animated: true, completion: nil)
+  }
+
+  static func showConfirmationDialog(to viewController: UIViewController,
+                                     message: String,
+                                     title: String ,
+                                     confirmHandler: @escaping (UIAlertAction) -> Void) {
+
+    let confirmButton =
+      UIKit.UIAlertAction(title: title,
+                          comment: "Button to confirm action",
+                          style: .destructive,
+                          handler: confirmHandler)
+
+    let alertController =
+      UIAlertController(title: title,
+                        titleComment: "Dialog title to warn user",
+                        message: message,
+                        messageComment: "Dialog message to warn user",
+                        preferredStyle: .alert)
+
+    alertController.addAction(confirmButton)
+    alertController.addAlertAction(title: "Cancel",
+                                   comment: "Alert Dialog box button",
+                                   style: .cancel)
     viewController.present(alertController, animated: true, completion: nil)
   }
 }

@@ -178,7 +178,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
           viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)  // Disable Interactive Dismiss to force Discard Confirmation on Exit
           mapNavController.delegate = viewController
           viewController.workingStory = story
-          viewController.restoreStoryDelegate = self
+          viewController.updateStoryFeedDelegate = self
           mapNavController.pushViewController(viewController, animated: true)
           UIApplication.shared.endIgnoringInteractionEvents()
         }
@@ -194,7 +194,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
 
     if(FoodieStory.currentStory != nil) {
       // display the the discard dialog
-      StorySelector.showStoryDiscardDialog(to: self) {
+      ConfirmationDialog.showStoryDiscardDialog(to: self) {
         FoodieStory.cleanUpDraft() { error in
           if let error = error  {
             AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
@@ -657,7 +657,7 @@ extension FeedCollectionNodeController: MosaicCollectionViewLayoutDelegate {
 }
 
 
-extension FeedCollectionNodeController: RestoreStoryDelegate {
+extension FeedCollectionNodeController: UpdateStoryFeedDelegate {
   func updateStory(_ story: FoodieStory) {
     
     guard let lastIndexPath = lastIndexPath else {
@@ -670,4 +670,19 @@ extension FeedCollectionNodeController: RestoreStoryDelegate {
     storyArray[toStoryIndex(from: lastIndexPath)] = story
     collectionNode.reloadItems(at: [lastIndexPath])
   }
+
+  func deleteStory(_ story: FoodieStory) {
+    guard let lastIndexPath = lastIndexPath else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.assert("The lastIndexPath is nil. This value should have been assigned before entering edit")
+      }
+      return
+    }
+
+    storyArray.remove(at: lastIndexPath.item)
+    collectionNode.deleteItems(at: [lastIndexPath])
+  }
 }
+
+
+

@@ -593,8 +593,8 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
             self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
           }
         } else {
-          StorySelector.displayStorySelection(to: self, newStoryHandler: { (uiaction) in
-            StorySelector.showStoryDiscardDialog(to: self, withBlock: {
+          ConfirmationDialog.displayStorySelection(to: self, newStoryHandler: { (uiaction) in
+            ConfirmationDialog.showStoryDiscardDialog(to: self, withBlock: {
               FoodieStory.cleanUpDraft() { error in
 
                 if let error = error {
