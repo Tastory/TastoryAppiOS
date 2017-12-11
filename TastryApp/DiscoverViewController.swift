@@ -16,13 +16,22 @@ class DiscoverViewController: OverlayViewController {
     
     case mapQueryExceededMaxLat
     case queryNilStory
-    
+    case nilAuthor
+    case nilThumbnail
+    case nilMoments
+
     var errorDescription: String? {
       switch self {
       case .mapQueryExceededMaxLat:
         return NSLocalizedString("Exceeded allowed maximum number of degrees latitude for map query", comment: "Error description for a Map View Controller Query")
       case .queryNilStory:
         return NSLocalizedString("Create Story Query & Search returned no errors but nil Story Array", comment: "Error description for a Map View Controller Query")
+      case .nilAuthor:
+        return NSLocalizedString("Author is nil in the story draft", comment: "Error description for a Map View Controller Query")
+      case .nilThumbnail:
+        return NSLocalizedString("The thumbnail of this story is nil", comment: "Error description for a Map View Controller Query")
+      case .nilMoments:
+        return NSLocalizedString("There are no moments in this draft", comment: "Error description for a Map View Controller Query")
       }
     }
     
@@ -519,8 +528,9 @@ class DiscoverViewController: OverlayViewController {
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
     // Setup the Feed Node Controller first
+    cleanUpCache()
     let nodeController = FeedCollectionNodeController(with: .carousel, allowLayoutChange: true, adjustScrollViewInset: false)
     addChildViewController(nodeController)
     feedContainerView.addSubview(nodeController.view)
@@ -578,7 +588,7 @@ class DiscoverViewController: OverlayViewController {
                                         with: [feedBackgroundBlackLevel, .clear])
     feedGradientNode.isOpaque = false
     feedBackgroundView.addSubnode(feedGradientNode)
-    
+
     // If current story is nil, double check and see if there are any in Local Datastore
     if FoodieStory.currentStory == nil {
       
@@ -603,26 +613,36 @@ class DiscoverViewController: OverlayViewController {
           }
 
           if(!story.isEditStory) {
-            _ = story.retrieveRecursive(from: .local, type: .draft, forceAnyways: false, for: nil) { error in
 
-              if let retrieveError = error {
-                FoodieObject.deleteAll(from: .draft) { error in
-                  if let deleteError = error {
-                    CCLog.warning("Delete All resulted in Error - \(deleteError.localizedDescription)")
-                  }
-                  AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { _ in
-                    CCLog.warning("Retrieve Recursive on Draft Story \(story.getUniqueIdentifier()) resulted in error. Clearing Draft Pin and Directory - \(retrieveError.localizedDescription)")
-                  }
-                }
+            let uniqueId = story.getUniqueIdentifier()
+
+            _ = story.retrieveDigest(from: .local, type: .draft) { error in
+              if let retrieveError = error  {
+                self.processDraftError(error: retrieveError, id: uniqueId)
                 return
               }
+            }
 
-              FoodieStory.setCurrentStory(to: story)
+            guard let moments = story.moments else {
+              self.processDraftError(error: ErrorCode.nilMoments, id: uniqueId)
+              return
+            }
 
-              DispatchQueue.main.async {
-                self.draftButton.isHidden = false
+            for moment in moments {
+              _ = moment.retrieveRecursive(from: .local, type: .draft, forceAnyways: false, for: nil) { error in
+                if let retrieveError = error {
+                  CCLog.warning("Moment with id: \(moment.getUniqueIdentifier()) encountered an error when retrieving from draft \(retrieveError.localizedDescription)")
+                  story.moments!.remove(at: (moments.index(of: moment)!))
+                }
               }
             }
+
+            FoodieStory.setCurrentStory(to: story)
+
+            DispatchQueue.main.async {
+              self.draftButton.isHidden = false
+            }
+
           } else {
             // remove all traces of draft if previous story was an edit 
             FoodieObject.deleteAll(from: .draft) { error in
@@ -635,8 +655,40 @@ class DiscoverViewController: OverlayViewController {
       }
     }
   }
-  
-  
+
+  func cleanUpCache()  {
+    let cacheFolderUrl = FoodieFileObject.Constants.CacheFoodieMediaFolderUrl
+    do {
+      let directoryContents = try FileManager.default.contentsOfDirectory(at: cacheFolderUrl, includingPropertiesForKeys: nil, options: [])
+      for var url in directoryContents {
+        if( try url.resourceValues(forKeys: [.contentAccessDateKey]).contentAccessDate! < Date().yesterday) {
+
+          if FileManager.default.isReadableFile(atPath: url.path) {
+            do {
+              try FileManager.default.removeItem(at: url)
+            } catch {
+              CCLog.warning("Failed to delete \(url.lastPathComponent) from Cache")
+            }
+          }
+        }
+      }
+    } catch {
+      CCLog.debug("Encountered an exception while cleaning up the cache \(error.localizedDescription)")
+    }
+
+  }
+
+  func processDraftError(error retrieveError: Error, id storyId: String) {
+    FoodieObject.deleteAll(from: .draft) { error in
+      if let deleteError = error {
+        CCLog.warning("Delete All resulted in Error - \(deleteError.localizedDescription)")
+      }
+      AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { action in
+        CCLog.warning("Retrieve Recursive on Draft Story \(storyId) resulted in error. Clearing Draft Pin and Directory - \(retrieveError.localizedDescription)")
+      }
+    }
+  }
+
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
@@ -657,7 +709,7 @@ class DiscoverViewController: OverlayViewController {
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
- 
+
     FoodieFetch.global.cancelAll()
     feedCollectionNodeController.delegate = self
     
