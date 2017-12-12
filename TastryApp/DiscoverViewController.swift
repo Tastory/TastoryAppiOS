@@ -244,7 +244,7 @@ class DiscoverViewController: OverlayViewController {
     }
     
     appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
-    
+    viewController.storyDelegate = self
     viewController.user = FoodieUser.current
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
@@ -1242,3 +1242,32 @@ extension DiscoverViewController: CameraReturnDelegate {
     }
   }
 }
+
+extension DiscoverViewController: UpdateStoryFeedDelegate {
+  func updateStory(_ story: FoodieStory) {
+
+    let storyIdx = storyArray.index(of: story)
+
+    guard let storyIndex = storyIdx else {
+      CCLog.warning("Story not found in the storyArray. Nothing to update")
+      return
+    }
+
+    storyArray[storyIndex] = story
+    feedCollectionNodeController.updateStory(story)
+  }
+
+  func deleteStory(_ story: FoodieStory) {
+
+    let storyIdx = storyArray.index(of: story)
+
+    guard let storyIndex = storyIdx else {
+      CCLog.warning("Story not found in the storyArray. Nothing to delete")
+      return
+    }
+
+    storyArray.remove(at: storyIndex)
+    feedCollectionNodeController.deleteStory(story)
+  }
+}
+

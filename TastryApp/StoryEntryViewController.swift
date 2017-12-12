@@ -57,6 +57,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
   weak var updateStoryFeedDelegate: UpdateStoryFeedDelegate?
+  weak var updateStoryMapFeedDelegate: UpdateStoryFeedDelegate?
   
   
   
@@ -133,6 +134,14 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             return
           }
 
+          guard let updateStoryMapFeedDelegate = self.updateStoryMapFeedDelegate else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+              CCLog.fatal("updateStoryMapFeedDelegate is nil")
+            }
+            return
+          }
+
+          updateStoryMapFeedDelegate.deleteStory(workingStory)
           updateStoryFeedDelegate.deleteStory(workingStory)
           FoodieStory.removeCurrent()
           self.popDismiss(animated: true)

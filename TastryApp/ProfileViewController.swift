@@ -38,7 +38,7 @@ class ProfileViewController: OverlayViewController {
   
   
   // MARK: - Public Instance Variable
-  
+  weak var storyDelegate: UpdateStoryFeedDelegate?
   var user: FoodieUser?
   var query: FoodieQuery?
   var stories = [FoodieStory]() {
@@ -327,6 +327,7 @@ class ProfileViewController: OverlayViewController {
       nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
       nodeController.didMove(toParentViewController: self)
       nodeController.delegate = self
+      nodeController.storyDelegate = storyDelegate
       feedCollectionNodeController = nodeController
       
       if let avatarImageNode = avatarImageNode {

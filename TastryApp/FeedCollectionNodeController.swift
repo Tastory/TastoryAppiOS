@@ -60,6 +60,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // MARK: - Public Instance Variable
   
   weak var delegate: FeedCollectionNodeDelegate?
+  weak var storyDelegate: UpdateStoryFeedDelegate?
   var storyArray = [FoodieStory]()
   var enableEdit = false
   
@@ -179,6 +180,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
           mapNavController.delegate = viewController
           viewController.workingStory = story
           viewController.updateStoryFeedDelegate = self
+          viewController.updateStoryMapFeedDelegate = self.storyDelegate
           mapNavController.pushViewController(viewController, animated: true)
           UIApplication.shared.endIgnoringInteractionEvents()
         }
@@ -659,28 +661,28 @@ extension FeedCollectionNodeController: MosaicCollectionViewLayoutDelegate {
 
 extension FeedCollectionNodeController: UpdateStoryFeedDelegate {
   func updateStory(_ story: FoodieStory) {
-    
-    guard let lastIndexPath = lastIndexPath else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.assert("The lastIndexPath is nil. This value should have been assigned before entering edit")
-      }
+    let storyIdx = storyArray.index(of: story)
+
+    guard let storyIndex = storyIdx else {
+      CCLog.warning("Story not found in the storyArray. Nothing to update")
       return
     }
-    
-    storyArray[toStoryIndex(from: lastIndexPath)] = story
-    collectionNode.reloadItems(at: [lastIndexPath])
+
+    storyArray[storyIndex] = story
+    collectionNode.reloadItems(at: [IndexPath(item: storyIndex, section: 0)])
   }
 
   func deleteStory(_ story: FoodieStory) {
-    guard let lastIndexPath = lastIndexPath else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.assert("The lastIndexPath is nil. This value should have been assigned before entering edit")
-      }
+
+    let storyIdx = storyArray.index(of: story)
+
+    guard let storyIndex = storyIdx else {
+      CCLog.warning("Story not found in the storyArray. Nothing to delete")
       return
     }
 
-    storyArray.remove(at: lastIndexPath.item)
-    collectionNode.deleteItems(at: [lastIndexPath])
+    storyArray.remove(at: storyIndex)
+    collectionNode.deleteItems(at: [IndexPath(item: storyIndex, section: 0)])
   }
 }
 
