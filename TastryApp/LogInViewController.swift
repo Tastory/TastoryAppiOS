@@ -136,6 +136,8 @@ class LogInViewController: OverlayViewController {
         AlertDialog.present(from: self, title: "FB Login Failed", message: error.localizedDescription) { _ in
           CCLog.warning("Facebook login failed - \(error.localizedDescription)")
         }
+        
+        if FoodieUser.current != nil { FoodieUser.logOut() }
         return
       }
       
@@ -143,10 +145,29 @@ class LogInViewController: OverlayViewController {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("Nil returned from getting user for Facebook Login. Expected Foodie User object")
         }
+        
+        if FoodieUser.current != nil { FoodieUser.logOut() }
         return
       }
       
-      self.presentLogIn(for: user, withWelcome: user.isNew)
+      if user.isNew {
+        let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
+        
+        guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "IntroViewController") as? IntroViewController else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("ViewController initiated not of IntroViewController Class!!")
+          }
+          return
+        }
+        
+        viewController.firstLabelText = "Please make sure you confirm your E-mail so you can start posting"
+        viewController.secondLabelText = "For now, you can start by checking out what Tasty Stories are around you~"
+        viewController.enableResend = false
+        viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: false)
+        self.pushPresent(viewController, animated: true)
+      } else {
+        self.presentLogIn(for: user, withWelcome: true)
+      }
     }
   }
   

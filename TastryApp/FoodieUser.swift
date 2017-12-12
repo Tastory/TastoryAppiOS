@@ -73,7 +73,6 @@ class FoodieUser: PFUser {
     case facebookGraphRequestFailed
     case facebookAccountNoUserId
     case facebookAccountNoEmail
-    case parseFacebookIdInconsistency
     case parseFacebookCheckEmailFailed
     case parseFacebookEmailRegistered
     
@@ -124,8 +123,6 @@ class FoodieUser: PFUser {
         return NSLocalizedString("Facebook Account has no User ID", comment: "Error message upon Login")
       case .facebookAccountNoEmail:
         return NSLocalizedString("Facebook Account has no E-mail", comment: "Error message upon Login")
-      case .parseFacebookIdInconsistency:
-        return NSLocalizedString("Parse and Facebook User ID inconsistent", comment: "Error message upon Login")
       case .parseFacebookCheckEmailFailed:
         return NSLocalizedString("Checking Facebook E-mail against Parse for availability failed", comment: "Error message upon Login")
       case .parseFacebookEmailRegistered:
@@ -427,7 +424,7 @@ class FoodieUser: PFUser {
         }
         
         // This is a new user signup! But we gotta verify whether this FB account have the minimum amount of info before proceeding further
-        let parameters: [String : Any] = ["fields" : "id, name, email, profile_pic"]
+        let parameters: [String : Any] = ["fields" : "name, email, picture"]
         let graphRequest = GraphRequest(graphPath: "/me", parameters: parameters, accessToken: fbToken)
         let graphConnection = GraphRequestConnection()
         
@@ -441,25 +438,11 @@ class FoodieUser: PFUser {
             
           case .success(let response):
             CCLog.debug("Facebook Graph Request Succeeded: \(response)")
-
-            guard let userId = response.dictionaryValue?["id"] as? String else {
-              CCLog.warning("Facebook Account has no user ID")
-              foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
-              callback?(nil, ErrorCode.facebookAccountNoUserId)
-              return
-            }
             
             guard let email = response.dictionaryValue?["email"] as? String else {
               CCLog.warning("Facebook Account has no E-mail address")
               foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
               callback?(nil, ErrorCode.facebookAccountNoEmail)
-              return
-            }
-            
-            guard userId == foodieUser.username else {
-              CCLog.warning("User ID from Facebook and Parse not consistent")
-              foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
-              callback?(nil, ErrorCode.parseFacebookIdInconsistency)
               return
             }
             
@@ -519,6 +502,9 @@ class FoodieUser: PFUser {
             }
           }
         }
+        
+        graphConnection.start()
+        
       } else {
         // This is a login success. Update the Default Permission before calling back
         FoodiePermission.setDefaultObjectPermission(for: foodieUser)

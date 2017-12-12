@@ -518,6 +518,7 @@
                             <constraint firstItem="0ER-Mz-df0" firstAttribute="centerY" secondItem="EqR-R0-hX7" secondAttribute="centerY" id="UdZ-6J-8NA"/>
                             <constraint firstItem="0n1-th-zfM" firstAttribute="centerX" secondItem="Dzp-Vj-yel" secondAttribute="centerX" id="YO6-Bi-Lhp"/>
                             <constraint firstItem="PKn-NJ-WWl" firstAttribute="top" secondItem="8H4-E5-lLt" secondAttribute="top" id="YVB-jo-80M"/>
+                            <constraint firstItem="0ER-Mz-df0" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="EqR-R0-hX7" secondAttribute="leading" id="kxG-Fh-76a"/>
                             <constraint firstItem="PKn-NJ-WWl" firstAttribute="leading" secondItem="8H4-E5-lLt" secondAttribute="leading" id="yZk-Ml-ghl"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Dzp-Vj-yel"/>
