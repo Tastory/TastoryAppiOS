@@ -66,6 +66,9 @@ struct FoodieGlobal {
     
     // Create S3 Manager singleton
     FoodieFileObject.fileConfigure()
+    
+    // Do Periodic Cache Clean-up
+    FoodieFileObject.cleanUpCache()
   }
   
   

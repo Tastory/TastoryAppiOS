@@ -89,6 +89,7 @@ class FoodieFileObject {
     static let TempFolderUrl = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("FoodieTemp", isDirectory: true)
     static let AwsRetryCount = FoodieGlobal.Constants.DefaultServerRequestRetryCount
     static let AwsRetryDelay = FoodieGlobal.Constants.DefaultServerRequestRetryDelay
+    static let defaultCacheCleanUpLRUDays = 7
   }
   
   
@@ -126,6 +127,30 @@ class FoodieFileObject {
       try FileManager.default.createDirectory(at: Constants.TempFolderUrl, withIntermediateDirectories: true, attributes: nil)
     } catch {
       CCLog.fatal("Cannot create required directories - \(error.localizedDescription)")
+    }
+  }
+  
+  
+  static func cleanUpCache(daysOlderThan daysPrior: Int = Constants.defaultCacheCleanUpLRUDays) {
+    let cacheFolderUrl = Constants.CacheFoodieMediaFolderUrl
+    
+    do {
+      let directoryContents = try FileManager.default.contentsOfDirectory(at: cacheFolderUrl, includingPropertiesForKeys: nil, options: [])
+      
+      for url in directoryContents {
+        if(try url.resourceValues(forKeys: [.contentAccessDateKey]).contentAccessDate! < Date().offsetToNoon(byNumberOfDays: -daysPrior)) {
+          if FileManager.default.isReadableFile(atPath: url.path) {
+            
+            do {
+              try FileManager.default.removeItem(at: url)
+            } catch {
+              CCLog.warning("Failed to delete \(url.lastPathComponent) from Cache")
+            }
+          }
+        }
+      }
+    } catch {
+      CCLog.warning("Encountered an exception while cleaning up the cache \(error.localizedDescription)")
     }
   }
   

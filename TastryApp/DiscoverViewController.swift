@@ -599,7 +599,7 @@ class DiscoverViewController: OverlayViewController {
               if let deleteError = deleteError {
                 CCLog.warning("Delete All resulted in Error - \(deleteError.localizedDescription)")
               }
-              AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. Sorry ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { _ in
+              AlertDialog.present(from: self, title: "Draft Resume Error", message: "Failed to resume story under draft. ='(  Problem has been logged. Please restart app for auto error report to be submitted.") { _ in
                 CCLog.assert("Getting Draft Story resulted in Error. Clearing Draft Pin and Directory - \(error.localizedDescription)")
               }
             }
@@ -629,8 +629,12 @@ class DiscoverViewController: OverlayViewController {
 
             for moment in moments {
               _ = moment.retrieveRecursive(from: .local, type: .draft, forceAnyways: false, for: nil) { error in
-                if let retrieveError = error {
-                  CCLog.warning("Moment with id: \(moment.getUniqueIdentifier()) encountered an error when retrieving from draft \(retrieveError.localizedDescription)")
+                
+                if let error = error {
+                  AlertDialog.present(from: self, title: "Draft Resume Error",
+                                      message: "1 or more Moments have failed recovery. The Story should be preserved, but some Moments and associated Media might be lost. ='(") { _ in
+                    CCLog.warning("Moment with id: \(moment.getUniqueIdentifier()) encountered an error when retrieving from draft \(error.localizedDescription)")
+                  }
                   story.moments!.remove(at: (moments.index(of: moment)!))
                 }
               }
@@ -1268,6 +1272,9 @@ extension DiscoverViewController: UpdateStoryFeedDelegate {
 
     storyArray.remove(at: storyIndex)
     feedCollectionNodeController.deleteStory(story)
+    
+    mapNavController?.remove(annotation: storyAnnotations[storyIndex])
+    storyAnnotations.remove(at: storyIndex)
   }
 }
 

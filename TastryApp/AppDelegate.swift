@@ -25,27 +25,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     return nil
   }
-
-  private func cleanUpDraft() {
-    let cacheFolderUrl = FoodieFileObject.Constants.CacheFoodieMediaFolderUrl
-    do {
-      let directoryContents = try FileManager.default.contentsOfDirectory(at: cacheFolderUrl, includingPropertiesForKeys: nil, options: [])
-      for var url in directoryContents {
-        if( try url.resourceValues(forKeys: [.contentAccessDateKey]).contentAccessDate! < Date().yesterday) {
-
-          if FileManager.default.isReadableFile(atPath: url.path) {
-            do {
-              try FileManager.default.removeItem(at: url)
-            } catch {
-              CCLog.warning("Failed to delete \(url.lastPathComponent) from Cache")
-            }
-          }
-        }
-      }
-    } catch {
-      CCLog.debug("Encountered an exception while cleaning up the cache \(error.localizedDescription)")
-    }
-  }
   
   
   // MARK: - Public Instance Functions
@@ -60,8 +39,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // Initialize Foodie Model
     FoodieGlobal.initialize()
-
-    cleanUpDraft()
 
     // TODO: - Any Startup Test we want to do that we should use to block Startup?
     error = nil
