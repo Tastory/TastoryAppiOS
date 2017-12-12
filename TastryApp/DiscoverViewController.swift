@@ -530,7 +530,6 @@ class DiscoverViewController: OverlayViewController {
     super.viewDidLoad()
 
     // Setup the Feed Node Controller first
-    cleanUpCache()
     let nodeController = FeedCollectionNodeController(with: .carousel, allowLayoutChange: true, adjustScrollViewInset: false)
     addChildViewController(nodeController)
     feedContainerView.addSubview(nodeController.view)
@@ -654,28 +653,6 @@ class DiscoverViewController: OverlayViewController {
         }
       }
     }
-  }
-
-  func cleanUpCache()  {
-    let cacheFolderUrl = FoodieFileObject.Constants.CacheFoodieMediaFolderUrl
-    do {
-      let directoryContents = try FileManager.default.contentsOfDirectory(at: cacheFolderUrl, includingPropertiesForKeys: nil, options: [])
-      for var url in directoryContents {
-        if( try url.resourceValues(forKeys: [.contentAccessDateKey]).contentAccessDate! < Date().yesterday) {
-
-          if FileManager.default.isReadableFile(atPath: url.path) {
-            do {
-              try FileManager.default.removeItem(at: url)
-            } catch {
-              CCLog.warning("Failed to delete \(url.lastPathComponent) from Cache")
-            }
-          }
-        }
-      }
-    } catch {
-      CCLog.debug("Encountered an exception while cleaning up the cache \(error.localizedDescription)")
-    }
-
   }
 
   func processDraftError(error retrieveError: Error, id storyId: String) {
