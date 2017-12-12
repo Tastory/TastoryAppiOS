@@ -70,10 +70,11 @@ class ConfirmationDialog {
   static func showConfirmationDialog(to viewController: UIViewController,
                                      message: String,
                                      title: String ,
+                                     confirmCaption: String,
                                      confirmHandler: @escaping (UIAlertAction) -> Void) {
 
     let confirmButton =
-      UIKit.UIAlertAction(title: title,
+      UIKit.UIAlertAction(title: confirmCaption,
                           comment: "Button to confirm action",
                           style: .destructive,
                           handler: confirmHandler)

@@ -101,43 +101,43 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
   @IBAction func deleteStory(_ sender: Any) {
 
-    ConfirmationDialog.showConfirmationDialog(to: self,
-                                              message: "Are you sure you want to delete this story?",
-                                              title: "Delete") { [unowned self] _ in
-                                                self.activitySpinner.apply()
-                                                guard let workingStory = self.workingStory else {
-                                                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                                                    CCLog.fatal("workingStory couldn't be nil at this point")
-                                                  }
-                                                  return
-                                                }
+    ConfirmationDialog.showConfirmationDialog(
+      to: self,
+      message: "Are you sure you want to delete this story permanently?",
+      title: "Delete Story",
+      confirmCaption: "Delete")
+      { [unowned self] _ in
+        self.activitySpinner.apply()
+        guard let workingStory = self.workingStory else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+            CCLog.fatal("workingStory couldn't be nil at this point")
+          }
+          return
+        }
 
-                                                FoodieFetch.global.cancel(for: workingStory)
-                                                // not sure if we should delete from cache when deleting the whole story
-                                                workingStory.deleteWhole(from: .both, type: .cache) {[unowned self] error in
+        FoodieFetch.global.cancel(for: workingStory)
+        workingStory.deleteWhole(from: .both, type: .cache) {[unowned self] error in
 
-                                                  if let error = error {
-                                                    AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                                                      CCLog.fatal("Delete story encountered an error: \(error)")
-                                                    }
-                                                    return
-                                                  }
+          if let error = error {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+              CCLog.fatal("Delete story encountered an error: \(error)")
+            }
+            return
+          }
 
-                                                  self.activitySpinner.remove()
-                                                  guard let updateStoryFeedDelegate = self.updateStoryFeedDelegate else {
-                                                    AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                                                      CCLog.fatal("updateStoryFeedDelegate is nil")
-                                                    }
-                                                    return
-                                                  }
+          self.activitySpinner.remove()
+          guard let updateStoryFeedDelegate = self.updateStoryFeedDelegate else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+              CCLog.fatal("updateStoryFeedDelegate is nil")
+            }
+            return
+          }
 
-                                                  updateStoryFeedDelegate.deleteStory(workingStory)
-                                                  FoodieStory.removeCurrent()
-                                                  self.popDismiss(animated: true)
-                                                }
+          updateStoryFeedDelegate.deleteStory(workingStory)
+          FoodieStory.removeCurrent()
+          self.popDismiss(animated: true)
+        }
     }
-
-
   }
 
   @IBAction func venueClicked(_ sender: UIButton) {

@@ -330,7 +330,7 @@ class FoodieObject {
 
       self.outstandingChildOperations -= 1
       if self.outstandingChildOperations == 0 {
-        self.deleteCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+        callback?(self.operationError)
       }
       else if self.outstandingChildOperations < 0 {
         CCLog.assert("Outstanding Child Operations below 0")
