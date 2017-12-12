@@ -363,6 +363,7 @@
                         <viewLayoutGuide key="safeArea" id="y6a-x9-gcH"/>
                     </view>
                     <connections>
+                        <outlet property="linkFacebookArrow" destination="wGS-2c-d1y" id="ekx-ch-Y8y"/>
                         <outlet property="linkFacebookCell" destination="UVg-AX-2xf" id="HwE-Db-HPt"/>
                         <outlet property="linkFacebookLabel" destination="yik-DI-0Qn" id="7gZ-Eu-L7V"/>
                         <outlet property="linkFacebookLine" destination="0wP-yH-kS9" id="dhV-6v-aFG"/>

@@ -20,6 +20,7 @@ class SettingsMenuViewController: OverlayViewController {
   @IBOutlet var linkFacebookLine: UIView!
   @IBOutlet var linkFacebookCell: UIView!
   @IBOutlet var linkFacebookLabel: UILabel!
+  @IBOutlet var linkFacebookArrow: UIImageView!
   @IBOutlet var linkFacebookTapRecognizer: UITapGestureRecognizer!
   
   
@@ -53,12 +54,21 @@ class SettingsMenuViewController: OverlayViewController {
   
   
   @IBAction func linkFacebookTap(_ sender: UITapGestureRecognizer) {
-    FoodieUser.linkFacebook { (error) in
+    guard let currentUser = FoodieUser.current else {
+      AlertDialog.present(from: self, title: "Not Logged In", message: "This operation cannot be performed in a non-logged in state") { _ in
+        CCLog.warning("Link Facebook attempted with FoodieUser.current = nil")
+      }
+      return
+    }
+    
+    currentUser.linkFacebook { (error) in
       if let error = error {
         AlertDialog.present(from: self, title: "Facebook Error", message: error.localizedDescription) { _ in
           CCLog.warning("Facebook Link Failed - \(error.localizedDescription)")
         }
+        return
       }
+      self.updateFacebookCell()
     }
   }
   
@@ -78,6 +88,37 @@ class SettingsMenuViewController: OverlayViewController {
     LogOutDismiss.askDiscardIfNeeded(from: vc)
   }
   
+
+  private func updateFacebookCell() {
+    // Update the Facebook Link Cell
+    guard let currentUser = FoodieUser.current else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.warning("FoodieUser.current = nil")
+      }
+      return
+    }
+    
+    if currentUser.isFacebookLinked {
+      currentUser.getFacebookName() { (object, error) in
+        if let error = error {
+          CCLog.warning("Get Facebook Name failed - \(error.localizedDescription)")
+        }
+        
+        guard let name = object as? String else {
+          CCLog.warning("Could not obtain name from Facebook Graph request?")
+          return
+        }
+        
+        self.linkFacebookLabel.text = "Facebook Account - \(name)"
+        self.linkFacebookArrow.isHidden = true
+        self.linkFacebookTapRecognizer.isEnabled = false
+      }
+    } else {
+      linkFacebookLabel.text = "Link Account to Facebook"
+      self.linkFacebookArrow.isHidden = false
+      linkFacebookTapRecognizer.isEnabled = true
+    }
+  }
   
   
   // MARK: - View Controller Lifecycle
@@ -94,14 +135,7 @@ class SettingsMenuViewController: OverlayViewController {
     navigationItem.rightBarButtonItem!.setTitleTextAttributes(titleTextAttributes, for: .normal)
     navigationItem.rightBarButtonItem!.tintColor = FoodieGlobal.Constants.ThemeColor
     
-    // Check if Facebook Link cell should be displayed
-    if let currentUser = FoodieUser.current, !currentUser.isFacebookLinked {
-      linkFacebookLabel.text = "Link Account to Facebook"
-      linkFacebookTapRecognizer.isEnabled = true
-    } else {
-      linkFacebookLabel.text = "Facebook Account:"
-      linkFacebookTapRecognizer.isEnabled = false
-    }
+    updateFacebookCell()
   }
   
   

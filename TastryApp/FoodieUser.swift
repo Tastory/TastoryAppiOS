@@ -77,7 +77,8 @@ class FoodieUser: PFUser {
     case parseFacebookCheckEmailFailed
     case parseFacebookEmailRegistered
     
-    case facebookLinkNoCurrentUser
+    case facebookLinkNotCurrentUser
+    case facebookGraphRequestNoName
     
     case usernameIsEmpty
     case usernameTooShort(Int)
@@ -131,8 +132,10 @@ class FoodieUser: PFUser {
       case .parseFacebookEmailRegistered:
         return NSLocalizedString("E-mail associated with the Facebook account is already registered. Please login with your E-mail to link your account to Facebook, so you can login via Facebook in the future.", comment: "Error message upon Login")
         
-      case .facebookLinkNoCurrentUser:
-        return NSLocalizedString("Not logged in, cannot link against Facebook account ", comment: "Error message upon Login")
+      case .facebookLinkNotCurrentUser:
+        return NSLocalizedString("Not logged in, cannot link against Facebook account", comment: "Error message upon Login")
+      case .facebookGraphRequestNoName:
+        return NSLocalizedString("Facebook Graph Request Response returned no 'name' field", comment: "Error message upon Login")
         
       case .usernameIsEmpty:
         return NSLocalizedString("Username is empty", comment: "Error message when Login/ Sign Up fails due to Username problems")
@@ -529,93 +532,6 @@ class FoodieUser: PFUser {
         FoodiePermission.setDefaultObjectPermission(for: foodieUser)
         callback?(foodieUser, nil)
       }
-    }
-  }
-  
-  
-  static func linkFacebook(withBlock callback: SimpleErrorBlock?) {
-    
-    CCLog.info("Linking Facebook against Account")
-    
-    guard let currentUser = current else {
-      callback?(ErrorCode.facebookLinkNoCurrentUser)
-      return
-    }
-    
-    PFFacebookUtils.linkUser(inBackground: currentUser, withReadPermissions: Constants.basicFacebookReadPermission) { (success, error) in
-      
-      if let error = error {
-        callback?(error)
-        return
-      }
-      
-      // Do not allow FB log-in for users with the same E-mail address
-      guard let fbToken = AccessToken.current else {
-        CCLog.warning("User just linked, but no current FB Access Token")
-        callback?(ErrorCode.facebookCurrentAccessTokenNil)
-        return
-      }
-      
-      // This is a new user signup! But we gotta verify whether this FB account have the minimum amount of info before proceeding further
-      var graphPath: String
-      if let userId = fbToken.userId {
-        graphPath = "/\(userId)"
-      } else {
-        graphPath = "/me"
-      }
-      
-      let parameters: [String : Any] = ["fields" : "name, picture.height(\(Constants.facebookProfilePicWidth))"]
-      let graphRequest = GraphRequest(graphPath: graphPath, parameters: parameters, accessToken: fbToken)
-      let graphConnection = GraphRequestConnection()
-      
-      graphConnection.add(graphRequest) { response, result in
-        switch result {
-        case .failed(let error):
-          CCLog.warning("Facebook Graph Request Failed: \(error)")
-          callback?(ErrorCode.facebookGraphRequestFailed)
-          return
-          
-        case .success(let response):
-          CCLog.debug("Facebook Graph Request Succeeded: \(response)")
-          
-          if currentUser.fullName == nil, let name = response.dictionaryValue?["name"] as? String {
-            currentUser.fullName = name
-          }
-          
-          if currentUser.profileMediaFileName == nil,
-            let pictureDictionary = response.dictionaryValue?["picture"] as? NSDictionary,
-            let dataDictionary = pictureDictionary["data"] as? NSDictionary,
-            let urlString = dataDictionary["url"] as? String {
-            
-            guard let profilePicUrl = URL(string: urlString) else {
-              CCLog.warning("Profile Pic URL from Facebook is invalid")
-              currentUser.saveWhole(to: .both, type: .cache, withBlock: callback)
-              return
-            }
-            
-            var profilePicData: Data?
-            do {
-              profilePicData = try Data(contentsOf: profilePicUrl)
-            } catch {
-              CCLog.warning("Unable to obtain valid data from Profile Pic URL given by Facebook")
-              currentUser.saveWhole(to: .both, type: .cache, withBlock: callback)
-              return
-            }
-            
-            // !!!! Taking a leap of faith that image data from Facebook will be readable and not gianormous
-            if let profilePicData = profilePicData {
-              let profilePicMedia = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
-              profilePicMedia.imageMemoryBuffer = profilePicData
-              currentUser.media = profilePicMedia
-            }
-          }
-          
-          // SignUp Success should save the entire User up to Parse, including the profile pic if avail
-          currentUser.saveWhole(to: .both, type: .cache, withBlock: callback)
-        }
-      }
-      
-      graphConnection.start()
     }
   }
   
@@ -1294,6 +1210,143 @@ class FoodieUser: PFUser {
         }
       }
     }
+  }
+  
+  
+  func linkFacebook(withBlock callback: SimpleErrorBlock?) {
+    
+    CCLog.info("Linking Facebook against Account")
+    
+    guard let currentUser = FoodieUser.current, self == currentUser else {
+      callback?(ErrorCode.facebookLinkNotCurrentUser)
+      return
+    }
+    
+    PFFacebookUtils.linkUser(inBackground: self, withReadPermissions: Constants.basicFacebookReadPermission) { (success, error) in
+      
+      if let error = error {
+        callback?(error)
+        return
+      }
+      
+      // Do not allow FB log-in for users with the same E-mail address
+      guard let fbToken = AccessToken.current else {
+        CCLog.warning("User just linked, but no current FB Access Token")
+        callback?(ErrorCode.facebookCurrentAccessTokenNil)
+        return
+      }
+      
+      // This is a new user signup! But we gotta verify whether this FB account have the minimum amount of info before proceeding further
+      var graphPath: String
+      if let userId = fbToken.userId {
+        graphPath = "/\(userId)"
+      } else {
+        graphPath = "/me"
+      }
+      
+      let parameters: [String : Any] = ["fields" : "name, picture.height(\(Constants.facebookProfilePicWidth))"]
+      let graphRequest = GraphRequest(graphPath: graphPath, parameters: parameters, accessToken: fbToken)
+      let graphConnection = GraphRequestConnection()
+      
+      graphConnection.add(graphRequest) { response, result in
+        switch result {
+        case .failed(let error):
+          CCLog.warning("Facebook Graph Request Failed: \(error)")
+          callback?(ErrorCode.facebookGraphRequestFailed)
+          return
+          
+        case .success(let response):
+          CCLog.debug("Facebook Graph Request Succeeded: \(response)")
+          
+          if self.fullName == nil, let name = response.dictionaryValue?["name"] as? String {
+            self.fullName = name
+          }
+          
+          if currentUser.profileMediaFileName == nil,
+            let pictureDictionary = response.dictionaryValue?["picture"] as? NSDictionary,
+            let dataDictionary = pictureDictionary["data"] as? NSDictionary,
+            let urlString = dataDictionary["url"] as? String {
+            
+            guard let profilePicUrl = URL(string: urlString) else {
+              CCLog.warning("Profile Pic URL from Facebook is invalid")
+              self.saveWhole(to: .both, type: .cache, withBlock: callback)
+              return
+            }
+            
+            var profilePicData: Data?
+            do {
+              profilePicData = try Data(contentsOf: profilePicUrl)
+            } catch {
+              CCLog.warning("Unable to obtain valid data from Profile Pic URL given by Facebook")
+              self.saveWhole(to: .both, type: .cache, withBlock: callback)
+              return
+            }
+            
+            // !!!! Taking a leap of faith that image data from Facebook will be readable and not gianormous
+            if let profilePicData = profilePicData {
+              let profilePicMedia = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
+              profilePicMedia.imageMemoryBuffer = profilePicData
+              self.media = profilePicMedia
+            }
+          }
+          
+          // SignUp Success should save the entire User up to Parse, including the profile pic if avail
+          self.saveWhole(to: .both, type: .cache, withBlock: callback)
+        }
+      }
+      
+      graphConnection.start()
+    }
+  }
+  
+  
+  func getFacebookName(withBlock callback: AnyErrorBlock?) {
+    
+    CCLog.debug("Get Facebook Name")
+    
+    guard let currentUser = FoodieUser.current, self == currentUser else {
+      CCLog.warning("No Current User")
+      callback?(nil, ErrorCode.facebookLinkNotCurrentUser)
+      return
+    }
+
+    // Do not allow FB log-in for users with the same E-mail address
+    guard let fbToken = AccessToken.current else {
+      CCLog.warning("No current FB Access Token")
+      callback?(nil, ErrorCode.facebookCurrentAccessTokenNil)
+      return
+    }
+    
+    var graphPath: String
+    if let userId = fbToken.userId {
+      graphPath = "/\(userId)"
+    } else {
+      graphPath = "/me"
+    }
+      
+    let parameters: [String : Any] = ["fields" : "name"]
+    let graphRequest = GraphRequest(graphPath: graphPath, parameters: parameters, accessToken: fbToken)
+    let graphConnection = GraphRequestConnection()
+      
+    graphConnection.add(graphRequest) { response, result in
+      switch result {
+      case .failed(let error):
+        CCLog.warning("Facebook Graph Request Failed: \(error)")
+        callback?(nil, ErrorCode.facebookGraphRequestFailed)
+        return
+        
+      case .success(let response):
+        CCLog.debug("Facebook Graph Request Succeeded: \(response)")
+        
+        guard let name = response.dictionaryValue?["name"] as? String else {
+          CCLog.warning("Facebook Graph Request did not return field 'Name'")
+          callback?(nil, ErrorCode.facebookGraphRequestNoName)
+          return
+        }
+        callback?(name, nil)
+      }
+    }
+    graphConnection.start()
   }
   
   
