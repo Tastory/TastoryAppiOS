@@ -60,6 +60,7 @@ class FoodieUser: PFUser {
     static let MaxPasswordLength = 32
     static let MinEmailLength = 6
     static let basicFacebookReadPermission = ["public_profile", "user_friends", "email"]
+    static let facebookProfilePicWidth = 720
   }
 
   
@@ -122,11 +123,11 @@ class FoodieUser: PFUser {
       case .facebookAccountNoUserId:
         return NSLocalizedString("Facebook Account has no User ID", comment: "Error message upon Login")
       case .facebookAccountNoEmail:
-        return NSLocalizedString("Facebook Account has no E-mail", comment: "Error message upon Login")
+        return NSLocalizedString("Facebook Account has no E-mail Address", comment: "Error message upon Login")
       case .parseFacebookCheckEmailFailed:
         return NSLocalizedString("Checking Facebook E-mail against Parse for availability failed", comment: "Error message upon Login")
       case .parseFacebookEmailRegistered:
-        return NSLocalizedString("E-mail from Facebook already registered", comment: "Error message upon Login")
+        return NSLocalizedString("E-mail associated with the Facebook account is already registered. Please login with your E-mail to link your account to Facebook, so you can login via Facebook in the future.", comment: "Error message upon Login")
         
       case .usernameIsEmpty:
         return NSLocalizedString("Username is empty", comment: "Error message when Login/ Sign Up fails due to Username problems")
@@ -424,8 +425,15 @@ class FoodieUser: PFUser {
         }
         
         // This is a new user signup! But we gotta verify whether this FB account have the minimum amount of info before proceeding further
-        let parameters: [String : Any] = ["fields" : "name, email, picture"]
-        let graphRequest = GraphRequest(graphPath: "/me", parameters: parameters, accessToken: fbToken)
+        var graphPath: String
+        if let userId = fbToken.userId {
+          graphPath = "/\(userId)"
+        } else {
+          graphPath = "/me"
+        }
+        
+        let parameters: [String : Any] = ["fields" : "name, email, picture.height(\(Constants.facebookProfilePicWidth))"]
+        let graphRequest = GraphRequest(graphPath: graphPath, parameters: parameters, accessToken: fbToken)
         let graphConnection = GraphRequestConnection()
         
         graphConnection.add(graphRequest) { response, result in
@@ -472,9 +480,11 @@ class FoodieUser: PFUser {
               }
              
               // This is bonus round. Take it or leave it
-              if let profilePicUrlString = response.dictionaryValue?["profile_pic"] as? String {
+              if let pictureDictionary = response.dictionaryValue?["picture"] as? NSDictionary,
+                let dataDictionary = pictureDictionary["data"] as? NSDictionary,
+                let urlString = dataDictionary["url"] as? String {
                 
-                guard let profilePicUrl = URL(string: profilePicUrlString) else {
+                guard let profilePicUrl = URL(string: urlString) else {
                   CCLog.warning("Profile Pic URL from Facebook is invalid")
                   foodieUser.signUpSuccess() { error in callback?(foodieUser, error) }
                   return
@@ -763,7 +773,7 @@ class FoodieUser: PFUser {
       self.acl = FoodiePermission.getDefaultUserPermission(for: self) as PFACL
       
       // Save the change in User ACL
-      self.saveToLocalNServer(type: .cache) { error in
+      self.saveWhole(to: .both, type: .cache) { error in
         if error != nil {
           // Total Sign Up Success Finally! Let's change the default ACL to the user class before calling back.
           FoodiePermission.setDefaultObjectPermission(for: self)
