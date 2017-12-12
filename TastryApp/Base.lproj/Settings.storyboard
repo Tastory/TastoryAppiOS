@@ -49,9 +49,9 @@
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="12p-Q8-9BM">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="488"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="533"/>
                                         <subviews>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Q8c-Z8-2qr">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Q8c-Z8-2qr" userLabel="Account Header Cell">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Account" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OUO-F7-8yh">
@@ -69,7 +69,7 @@
                                                     <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="OUO-F7-8yh" secondAttribute="trailing" priority="200" constant="375" id="vjm-Ls-FTU"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FlT-Eh-MIE">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FlT-Eh-MIE" userLabel="Profile Details Cell">
                                                 <rect key="frame" x="0.0" y="44" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Profile Details" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vaF-5f-qI4">
@@ -96,14 +96,14 @@
                                                     <outletCollection property="gestureRecognizers" destination="XIp-NF-qnf" appends="YES" id="4fq-hW-WDf"/>
                                                 </connections>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sie-OL-dox">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sie-OL-dox" userLabel="Line">
                                                 <rect key="frame" x="0.0" y="88" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.8666666666666667" green="0.8666666666666667" blue="0.8666666666666667" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="nGU-g9-lHb"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jQQ-G2-AK4">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jQQ-G2-AK4" userLabel="Change Password Cell">
                                                 <rect key="frame" x="0.0" y="89" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Change Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kKo-Ca-cf2">
@@ -130,8 +130,42 @@
                                                     <outletCollection property="gestureRecognizers" destination="fv9-cV-gnP" appends="YES" id="RsA-yo-CrS"/>
                                                 </connections>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zWg-gt-ut6">
-                                                <rect key="frame" x="0.0" y="133" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0wP-yH-kS9" userLabel="Line">
+                                                <rect key="frame" x="0.0" y="133" width="375" height="1"/>
+                                                <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="1" id="J9e-QP-0eU"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UVg-AX-2xf" userLabel="Link to Facebook Cell">
+                                                <rect key="frame" x="0.0" y="134" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Link Account to Facebook" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yik-DI-0Qn">
+                                                        <rect key="frame" x="15" y="14.5" width="169.5" height="16.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Settings-RightArrowDark" translatesAutoresizingMaskIntoConstraints="NO" id="wGS-2c-d1y">
+                                                        <rect key="frame" x="336" y="10" width="24" height="24"/>
+                                                    </imageView>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstItem="wGS-2c-d1y" firstAttribute="leading" relation="lessThanOrEqual" secondItem="yik-DI-0Qn" secondAttribute="trailing" priority="200" constant="375" id="6EQ-YI-aiq"/>
+                                                    <constraint firstItem="yik-DI-0Qn" firstAttribute="centerY" secondItem="UVg-AX-2xf" secondAttribute="centerY" id="PTM-wb-cWC"/>
+                                                    <constraint firstItem="wGS-2c-d1y" firstAttribute="centerY" secondItem="UVg-AX-2xf" secondAttribute="centerY" id="bMc-Fg-HXa"/>
+                                                    <constraint firstAttribute="trailing" secondItem="wGS-2c-d1y" secondAttribute="trailing" constant="15" id="cfZ-7e-CSi"/>
+                                                    <constraint firstItem="yik-DI-0Qn" firstAttribute="leading" secondItem="UVg-AX-2xf" secondAttribute="leading" constant="15" id="coP-dp-J72"/>
+                                                    <constraint firstAttribute="height" constant="44" id="tG9-lO-NVD"/>
+                                                </constraints>
+                                                <connections>
+                                                    <outletCollection property="gestureRecognizers" destination="6PV-d4-3l7" appends="YES" id="zkz-oE-fAZ"/>
+                                                </connections>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zWg-gt-ut6" userLabel="Settings Header Cell">
+                                                <rect key="frame" x="0.0" y="178" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TLb-lE-eMa">
                                                         <rect key="frame" x="15" y="17.5" width="48" height="14.5"/>
@@ -148,8 +182,8 @@
                                                     <constraint firstAttribute="height" constant="44" id="yQf-xk-YAg"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8ff-ty-L7d">
-                                                <rect key="frame" x="0.0" y="177" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8ff-ty-L7d" userLabel="Save Media to Library Cell">
+                                                <rect key="frame" x="0.0" y="222" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Save Media to Library" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vjs-4k-JhH">
                                                         <rect key="frame" x="15" y="14" width="141.5" height="16.5"/>
@@ -166,8 +200,8 @@
                                                     <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Vjs-4k-JhH" secondAttribute="trailing" priority="200" constant="375" id="pS6-OX-yW5"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KdI-ny-hTy">
-                                                <rect key="frame" x="0.0" y="221" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KdI-ny-hTy" userLabel="About Header Cell">
+                                                <rect key="frame" x="0.0" y="266" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="About" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G6y-PJ-A5Z">
                                                         <rect key="frame" x="15" y="18" width="35" height="14.5"/>
@@ -184,8 +218,8 @@
                                                     <constraint firstAttribute="height" constant="44" id="WRD-8d-Kw0"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="u01-UY-F8v">
-                                                <rect key="frame" x="0.0" y="265" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="u01-UY-F8v" userLabel="3rd Party Libraries Cell">
+                                                <rect key="frame" x="0.0" y="310" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="3rd Party Libraries &amp; APIs" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iBc-eJ-1pz">
                                                         <rect key="frame" x="15" y="14.5" width="163.5" height="16.5"/>
@@ -207,15 +241,15 @@
                                                     <constraint firstItem="o9l-Cx-oTu" firstAttribute="centerY" secondItem="u01-UY-F8v" secondAttribute="centerY" id="TwG-7o-QTx"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G2u-e9-4pO">
-                                                <rect key="frame" x="0.0" y="309" width="375" height="1"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G2u-e9-4pO" userLabel="Line">
+                                                <rect key="frame" x="0.0" y="354" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="V7b-Zl-zqe"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JvM-eH-OvF">
-                                                <rect key="frame" x="0.0" y="310" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JvM-eH-OvF" userLabel="Privacy Policy Cell">
+                                                <rect key="frame" x="0.0" y="355" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Privacy Policy" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vpw-0b-Jwk">
                                                         <rect key="frame" x="15" y="14.5" width="90.5" height="16.5"/>
@@ -237,15 +271,15 @@
                                                     <constraint firstAttribute="trailing" secondItem="Cua-wr-myQ" secondAttribute="trailing" constant="15" id="mI3-fw-fxR"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="apo-oN-yc7">
-                                                <rect key="frame" x="0.0" y="354" width="375" height="1"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="apo-oN-yc7" userLabel="Line">
+                                                <rect key="frame" x="0.0" y="399" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="Utn-X6-SDH"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZQ3-BW-ehT">
-                                                <rect key="frame" x="0.0" y="355" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZQ3-BW-ehT" userLabel="Terms of Service Cell">
+                                                <rect key="frame" x="0.0" y="400" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Terms of Service" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mxU-Ko-c9a">
                                                         <rect key="frame" x="15" y="14.5" width="109" height="16.5"/>
@@ -267,15 +301,15 @@
                                                     <constraint firstItem="Vng-UO-VKu" firstAttribute="leading" relation="lessThanOrEqual" secondItem="mxU-Ko-c9a" secondAttribute="trailing" priority="200" constant="375" id="w2s-Zy-MbX"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QtI-Kf-2XB">
-                                                <rect key="frame" x="0.0" y="399" width="375" height="1"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QtI-Kf-2XB" userLabel="Line">
+                                                <rect key="frame" x="0.0" y="444" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="bmd-Or-6pd"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CLl-Zo-OtN">
-                                                <rect key="frame" x="0.0" y="400" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CLl-Zo-OtN" userLabel="About Us Cell">
+                                                <rect key="frame" x="0.0" y="445" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="About Us" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="quX-wZ-R3O">
                                                         <rect key="frame" x="15" y="14.5" width="61" height="16.5"/>
@@ -297,8 +331,8 @@
                                                     <constraint firstItem="x3z-Hy-3B0" firstAttribute="leading" relation="lessThanOrEqual" secondItem="quX-wZ-R3O" secondAttribute="trailing" priority="200" constant="375" id="uCi-b6-5Ci"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bwi-kV-rqk">
-                                                <rect key="frame" x="0.0" y="444" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bwi-kV-rqk" userLabel="Bottom Space Cell">
+                                                <rect key="frame" x="0.0" y="489" width="375" height="44"/>
                                                 <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="44" id="uZE-Qr-Jco"/>
@@ -328,6 +362,12 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="y6a-x9-gcH"/>
                     </view>
+                    <connections>
+                        <outlet property="linkFacebookCell" destination="UVg-AX-2xf" id="HwE-Db-HPt"/>
+                        <outlet property="linkFacebookLabel" destination="yik-DI-0Qn" id="7gZ-Eu-L7V"/>
+                        <outlet property="linkFacebookLine" destination="0wP-yH-kS9" id="dhV-6v-aFG"/>
+                        <outlet property="linkFacebookTapRecognizer" destination="6PV-d4-3l7" id="QkT-sN-9HC"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="da1-7r-XKB" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tapGestureRecognizer id="XIp-NF-qnf">
@@ -338,6 +378,11 @@
                 <tapGestureRecognizer id="fv9-cV-gnP">
                     <connections>
                         <action selector="changePasswordTap:" destination="Fgo-n9-ZB2" id="5vg-Dy-AJP"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="6PV-d4-3l7">
+                    <connections>
+                        <action selector="linkFacebookTap:" destination="Fgo-n9-ZB2" id="488-uY-i1g"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

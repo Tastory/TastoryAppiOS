@@ -15,6 +15,13 @@ class SettingsMenuViewController: OverlayViewController {
   var parentNavController: UINavigationController?
   
   
+  // MARK: - IBOutlet
+  
+  @IBOutlet var linkFacebookLine: UIView!
+  @IBOutlet var linkFacebookCell: UIView!
+  @IBOutlet var linkFacebookLabel: UILabel!
+  @IBOutlet var linkFacebookTapRecognizer: UITapGestureRecognizer!
+  
   
   // MARK: - IBAction
   
@@ -43,7 +50,19 @@ class SettingsMenuViewController: OverlayViewController {
     pushPresent(viewController, animated: true)
   }
   
-
+  
+  
+  @IBAction func linkFacebookTap(_ sender: UITapGestureRecognizer) {
+    FoodieUser.linkFacebook { (error) in
+      if let error = error {
+        AlertDialog.present(from: self, title: "Facebook Error", message: error.localizedDescription) { _ in
+          CCLog.warning("Facebook Link Failed - \(error.localizedDescription)")
+        }
+      }
+    }
+  }
+  
+  
   
   // MARK: - Private Instance Function
   
@@ -74,6 +93,15 @@ class SettingsMenuViewController: OverlayViewController {
                                NSAttributedStringKey.strokeColor : FoodieGlobal.Constants.TextColor]
     navigationItem.rightBarButtonItem!.setTitleTextAttributes(titleTextAttributes, for: .normal)
     navigationItem.rightBarButtonItem!.tintColor = FoodieGlobal.Constants.ThemeColor
+    
+    // Check if Facebook Link cell should be displayed
+    if let currentUser = FoodieUser.current, !currentUser.isFacebookLinked {
+      linkFacebookLabel.text = "Link Account to Facebook"
+      linkFacebookTapRecognizer.isEnabled = true
+    } else {
+      linkFacebookLabel.text = "Facebook Account:"
+      linkFacebookTapRecognizer.isEnabled = false
+    }
   }
   
   
