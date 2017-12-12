@@ -68,12 +68,14 @@ class DiscoverViewController: OverlayViewController {
   private var highlightedStoryIndex: Int?
   private var mosaicMapWidth: CLLocationDistance?
   
+  private var searchGradientNode: GradientNode!
+  private var feedGradientNode: GradientNode!
+  
   private var storyQuery: FoodieQuery?
   private var storyArray = [FoodieStory]()
   private var storyAnnotations = [StoryMapAnnotation]()
   
-  private var searchGradientNode: GradientNode!
-  private var feedGradientNode: GradientNode!
+  private var discoverFilter: FoodieFilter?
   
   
   
@@ -82,6 +84,7 @@ class DiscoverViewController: OverlayViewController {
   @IBOutlet var carouselLayoutChangeTapRecognizer: UITapGestureRecognizer!
   
   @IBOutlet var locationField: UITextField!
+  @IBOutlet var filterButton: UIButton!
   @IBOutlet var draftButton: UIButton!
   @IBOutlet var currentLocationButton: UIButton!
   @IBOutlet var cameraButton: UIButton!
@@ -182,6 +185,8 @@ class DiscoverViewController: OverlayViewController {
       }
       return
     }
+    
+    viewController.workingFilter = discoverFilter
     viewController.filtersReturnDelegate = self
     
     appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
@@ -336,9 +341,6 @@ class DiscoverViewController: OverlayViewController {
     
     var searchMapRect = MKMapRect()
     
-    // TODO: - 
-    CCLog.fatal("Implement Filters into Query Mechanism")
-    
     if mapRect == nil {
       guard let mapController = mapNavController else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
@@ -366,6 +368,11 @@ class DiscoverViewController: OverlayViewController {
     
     let query = FoodieQuery()
     query.addLocationFilter(southWest: southWestCoordinate, northEast: northEastCoordinate)
+    
+    if let filter = discoverFilter {
+      query.addCategoryFilter(for: filter.selectedCategories)
+      query.addPriceFilter(lowerLimit: filter.priceLowerLimit, upperLimit: filter.priceUpperLimit)
+    }
     
     if !onAllUsers {
       // Add Filter so only Post with more than Limit Disoverability can be seen
@@ -1306,7 +1313,13 @@ extension DiscoverViewController: UpdateStoryFeedDelegate {
 
 
 extension DiscoverViewController: FiltersViewReturnDelegate {
-  func filterComplete(selectedCategories: [FoodieCategory], lowerPriceLimit: Double, upperPriceLimit: Double) {
-    // TODO:
+  func filterCompleteReturn(_ filter: FoodieFilter) {
+    discoverFilter = filter
+    
+    if discoverFilter!.isDefault {
+      filterButton.setImage(UIImage(named: "Discover-FilterButton-Off"), for: .normal)
+    } else {
+      filterButton.setImage(UIImage(named: "Discover-FilterButton-On"), for: .normal)
+    }
   }
 }

@@ -155,6 +155,13 @@ class CategoryViewController: OverlayViewController {
     popDismiss(animated: true)
   }
   
+  @objc private func clearAction(_ sender: UIBarButtonItem) {
+    FoodieCategory.setAllSelection(to: .unselected)
+    categorySearchBar.text = ""
+    categoryName = nil
+    categoryResultArray = nil
+    categoryTreeView.reloadData()
+  }
   
   
   // MARK: - View Controller Lifecycle
@@ -178,6 +185,12 @@ class CategoryViewController: OverlayViewController {
     
     let leftArrowImage = UIImage(named: "Settings-LeftArrowDark")
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
+    navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Clear", style: .plain, target: self, action: #selector(clearAction(_:)))
+    
+    let titleTextAttributes = [NSAttributedStringKey.font : UIFont(name: "Raleway-Semibold", size: 14)!,
+                               NSAttributedStringKey.strokeColor : FoodieGlobal.Constants.TextColor]
+    navigationItem.rightBarButtonItem!.setTitleTextAttributes(titleTextAttributes, for: .normal)
+    navigationItem.rightBarButtonItem!.tintColor = FoodieGlobal.Constants.ThemeColor
     
     // Update the appearance
     UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor]

@@ -84,13 +84,14 @@ class FoodieQuery {
   private var radius: Double!  // In km
   
   // Parameters for filteringy by Category
-  private var category: String?
+  private var categories = [String]()
   
   // Parameters for filtering by Hour of Operation
   private var hourOpen: String?
   
   // Parameters for filtering by Price
-  private var priceTiers: [Int]?
+  private var priceLowerLimit: Double?
+  private var priceUpperLimit: Double?
   
   // Parameters for filtering by Author(s). This is ORed with the Role(s) filter
   private var authors: [FoodieUser]?
@@ -144,18 +145,27 @@ class FoodieQuery {
   }
   
   
-  func addCategoryFilter() {
-  
+  func addCategoryFilter(for categories: [FoodieCategory]) {
+    self.categories.removeAll()
+    
+    for category in categories {
+      guard let categoryID = category.foursquareCategoryID else {
+        CCLog.fatal("Category for filtering doesn't contain a Foursquare Category ID")
+      }
+      self.categories.append(categoryID)
+    }
   }
+  
+  
+  func addPriceFilter(lowerLimit: Double, upperLimit: Double) {
+    priceUpperLimit = upperLimit
+    priceLowerLimit = lowerLimit
+  }
+  
   
   
   func addHourFilter() {
-    
-  }
-  
-  
-  func addPriceFilter() {
-    
+    CCLog.fatal("FoodieQuery Hour Filters is not yet implemented")
   }
   
   
@@ -297,18 +307,19 @@ class FoodieQuery {
       }
     }
     
-    if let category = category {
+    if categories.count > 0 {
       addedQueryMetric = true
-      query.whereKey("category", equalTo: category)
+      query.whereKey("foursquareCategoryIDs", containedIn: categories)
     }
     
-    if let priceTiers = priceTiers {
+    if let priceLowerLimit = priceLowerLimit {
       addedQueryMetric = true
-      if priceTiers.isEmpty {
-        CCLog.assert("Non-nil but empty priceTiers array supplied")
-      } else {
-        query.whereKey("priceTier", containedIn: priceTiers)
-      }
+      query.whereKey("priceTier", greaterThanOrEqualTo: priceLowerLimit)
+    }
+    
+    if let priceUpperLimit = priceUpperLimit {
+      addedQueryMetric = true
+      query.whereKey("priceTier", lessThanOrEqualTo: priceUpperLimit)
     }
     
 //    if let hourOpen = hourOpen {

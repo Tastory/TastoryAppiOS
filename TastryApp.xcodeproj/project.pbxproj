@@ -37,6 +37,7 @@
 		8C3254A51F40240900895572 /* VenueTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3254A41F40240900895572 /* VenueTableViewController.swift */; };
 		8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */; };
 		8C4AF66E1F91B1B900AADA5C /* ActivitySpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */; };
+		8C53FE8E1FDF3D2D003AEF77 /* FoodieFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C53FE8D1FDF3D2D003AEF77 /* FoodieFilter.swift */; };
 		8C56A9161FA19E6200D3204B /* URL+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C56A9151FA19E6200D3204B /* URL+Extension.swift */; };
 		8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5B48501F579D3800C18089 /* SwiftMutex.swift */; };
 		8C5C4DDE1EFEEDEC008C83EC /* FoodieFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5C4DDD1EFEEDEC008C83EC /* FoodieFetch.swift */; };
@@ -192,6 +193,7 @@
 		8C40B20B1F1466D40030B5B5 /* Jot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jot-Bridging-Header.h"; sourceTree = "<group>"; };
 		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
 		8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySpinner.swift; sourceTree = "<group>"; };
+		8C53FE8D1FDF3D2D003AEF77 /* FoodieFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodieFilter.swift; sourceTree = "<group>"; };
 		8C56A9151FA19E6200D3204B /* URL+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Extension.swift"; sourceTree = "<group>"; };
 		8C5B48501F579D3800C18089 /* SwiftMutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftMutex.swift; sourceTree = "<group>"; };
 		8C5C4DDD1EFEEDEC008C83EC /* FoodieFetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFetch.swift; sourceTree = "<group>"; };
@@ -462,6 +464,7 @@
 				8C1FF1341F7DA1760062312C /* FoodieRole.swift */,
 				8C14E2881F7F188E001CC869 /* FoodiePermission.swift */,
 				8C8986751E91A72D00B62306 /* FoodieCategory.swift */,
+				8C53FE8D1FDF3D2D003AEF77 /* FoodieFilter.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -1138,6 +1141,7 @@
 				8CCDDA0C1FB3E81700B066E7 /* CGPoint+Extension.swift in Sources */,
 				8CE49EB31F638162007278C1 /* ArrowLayer.swift in Sources */,
 				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */,
+				8C53FE8E1FDF3D2D003AEF77 /* FoodieFilter.swift in Sources */,
 				8C9B47C71F9576B100D21246 /* FoodieOperation.swift in Sources */,
 				8C1ED6F41F5DEC2500A8CC94 /* AsyncOperation.swift in Sources */,
 				8CF40C5D1FC50BC200615D43 /* DiscoverViewController.swift in Sources */,

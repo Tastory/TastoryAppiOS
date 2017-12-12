@@ -235,6 +235,13 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
   }
   
   
+  static func setAllSelection(to selectionState: SelectionState) {
+    for category in list {
+      category.value.selected = selectionState
+    }
+  }
+  
+  
   
   // MARK: - Public Instance Functions
   

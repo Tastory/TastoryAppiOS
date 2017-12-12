@@ -20,6 +20,7 @@ class FiltersNavViewController: OverlayViewController {
   
   weak var filtersReturnDelegate: FiltersViewReturnDelegate?
   var filtersNavController: ASNavigationController?
+  var workingFilter: FoodieFilter?
   
   
   override func viewDidLoad() {
@@ -30,6 +31,7 @@ class FiltersNavViewController: OverlayViewController {
       CCLog.fatal("Cannot cast ViewController from Storyboard to FiltersViewController")
     }
     viewController.parentNavController = self.navigationController
+    viewController.workingFilter = workingFilter
     viewController.delegate = filtersReturnDelegate
     
     let navController = ASNavigationController(rootViewController: viewController)

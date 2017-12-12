@@ -11,33 +11,18 @@ import SwiftRangeSlider
 
 
 protocol FiltersViewReturnDelegate: class {
-  func filterComplete(selectedCategories: [FoodieCategory], lowerPriceLimit: Double, upperPriceLimit: Double)
+  func filterCompleteReturn(_ filter: FoodieFilter)
 }
 
 
 
 class FiltersViewController: OverlayViewController {
   
-  // MARK: - Constants
-  struct Constants {
-    static let PriceLowerLimit = 1.0
-    static let PriceUpperLimit = 4.0
-  }
-  
-  
-  
   // MARK: - Public Instance Variable
   
   weak var delegate: FiltersViewReturnDelegate?
   var parentNavController: UINavigationController?
-  
-  
-  
-  // MARK: - Private Instance Variable
-  
-  private var selectedCategories = [FoodieCategory]()
-  private var priceLowerLimit = Constants.PriceLowerLimit
-  private var priceUpperLimit = Constants.PriceUpperLimit
+  var workingFilter: FoodieFilter!
   
   
   
@@ -66,8 +51,8 @@ class FiltersViewController: OverlayViewController {
   
   
   @IBAction func priceSliderValuesChanged(_ priceSlider: RangeSlider) {
-    priceLowerLimit = priceSlider.lowerValue
-    priceUpperLimit = priceSlider.upperValue
+    FoodieFilter.main.priceLowerLimit = priceSlider.lowerValue
+    FoodieFilter.main.priceUpperLimit = priceSlider.upperValue
   }
   
 
@@ -79,12 +64,22 @@ class FiltersViewController: OverlayViewController {
   }
   
   
+  @objc private func clearAction(_ sender: UIBarButtonItem) {
+    FoodieCategory.setAllSelection(to: .unselected)
+    workingFilter.resetAll()
+    
+    priceSlider.lowerValue = workingFilter.priceLowerLimit
+    priceSlider.upperValue = workingFilter.priceUpperLimit
+    updateSelectedCategoriesLabel()
+  }
+  
+  
   private func updateSelectedCategoriesLabel() {
-    if selectedCategories.count > 0 {
-      if selectedCategories.count == 1, let name = selectedCategories[0].name {
+    if workingFilter.selectedCategories.count > 0 {
+      if workingFilter.selectedCategories.count == 1, let name = workingFilter.selectedCategories[0].name {
         selectedLabel.text = name
       } else {
-        selectedLabel.text = "\(selectedCategories.count) Selected"
+        selectedLabel.text = "\(workingFilter.selectedCategories.count) selected"
       }
       selectedLabel.isHidden = false
     } else {
@@ -101,7 +96,20 @@ class FiltersViewController: OverlayViewController {
     
     let leftArrowImage = UIImage(named: "Settings-CrossDark")
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
+    navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Clear", style: .plain, target: self, action: #selector(clearAction(_:)))
     
+    let titleTextAttributes = [NSAttributedStringKey.font : UIFont(name: "Raleway-Semibold", size: 14)!,
+                               NSAttributedStringKey.strokeColor : FoodieGlobal.Constants.TextColor]
+    navigationItem.rightBarButtonItem!.setTitleTextAttributes(titleTextAttributes, for: .normal)
+    navigationItem.rightBarButtonItem!.tintColor = FoodieGlobal.Constants.ThemeColor
+    
+    
+    if workingFilter == nil {
+      workingFilter = FoodieFilter.main
+    }
+    
+    priceSlider.lowerValue = workingFilter.priceLowerLimit
+    priceSlider.upperValue = workingFilter.priceUpperLimit
     updateSelectedCategoriesLabel()
   }
   
@@ -125,9 +133,7 @@ class FiltersViewController: OverlayViewController {
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
     
-    delegate?.filterComplete(selectedCategories: selectedCategories,
-                             lowerPriceLimit: priceLowerLimit,
-                             upperPriceLimit: priceUpperLimit)
+    delegate?.filterCompleteReturn(workingFilter)
   }
   
   
@@ -141,7 +147,7 @@ class FiltersViewController: OverlayViewController {
 
 extension FiltersViewController: CategoryReturnDelegate {
   func categorySearchComplete(categories: [FoodieCategory]) {
-    selectedCategories = categories
+    workingFilter.selectedCategories = categories
     updateSelectedCategoriesLabel()
   }
 }
