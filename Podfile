@@ -21,6 +21,10 @@ target 'TastryApp' do
   pod 'ColorSlider', '~> 4.0'
   pod 'PryntTrimmerView', :git => 'https://github.com/specc/PryntTrimmerView.git'  
   pod 'SwiftRangeSlider'
+  pod 'FacebookCore'
+  pod 'FacebookLogin'
+  pod 'FacebookShare'
+  pod 'ParseFacebookUtilsV4', :inhibit_warnings => true
  
   target 'TastryAppTests' do
     inherit! :search_paths

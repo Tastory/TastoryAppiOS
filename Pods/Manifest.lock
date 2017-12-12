@@ -4,17 +4,47 @@ PODS:
   - AWSCore (2.6.4)
   - AWSS3 (2.6.4):
     - AWSCore (= 2.6.4)
+  - Bolts (1.8.4):
+    - Bolts/AppLinks (= 1.8.4)
+    - Bolts/Tasks (= 1.8.4)
+  - Bolts/AppLinks (1.8.4):
+    - Bolts/Tasks
   - Bolts/Tasks (1.8.4)
   - ColorSlider (4.1)
   - Crashlytics (3.9.0):
     - Fabric (~> 1.7.0)
   - Fabric (1.7.0)
+  - FacebookCore (0.3.0):
+    - Bolts (~> 1.8)
+    - FBSDKCoreKit (~> 4.27)
+  - FacebookLogin (0.3.0):
+    - Bolts (~> 1.8)
+    - FacebookCore (~> 0.3)
+    - FBSDKCoreKit (~> 4.27)
+    - FBSDKLoginKit (~> 4.27)
+  - FacebookShare (0.3.0):
+    - Bolts (~> 1.8)
+    - FacebookCore (~> 0.3)
+    - FBSDKCoreKit (~> 4.27)
+    - FBSDKShareKit (~> 4.27)
+  - FBSDKCoreKit (4.27.1):
+    - Bolts (~> 1.7)
+  - FBSDKLoginKit (4.27.1):
+    - FBSDKCoreKit
+  - FBSDKShareKit (4.27.1):
+    - FBSDKCoreKit
   - HTTPStatusCodes (3.1.2)
   - Jot (0.2.0):
     - Masonry (~> 1.0.2)
   - Masonry (1.0.2)
   - Parse (1.15.3):
     - Bolts/Tasks (~> 1.8)
+  - ParseFacebookUtilsV4 (1.11.1):
+    - Bolts/Tasks (>= 1.6)
+    - FBSDKCoreKit (~> 4.10)
+    - FBSDKLoginKit (~> 4.10)
+    - FBSDKTVOSKit (~> 4.10)
+    - Parse (~> 1.12)
   - PINCache (3.0.1-beta.5):
     - PINCache/Arc-exception-safe (= 3.0.1-beta.5)
     - PINCache/Core (= 3.0.1-beta.5)
@@ -50,9 +80,13 @@ DEPENDENCIES:
   - ColorSlider (~> 4.0)
   - Crashlytics
   - Fabric
+  - FacebookCore
+  - FacebookLogin
+  - FacebookShare
   - HTTPStatusCodes (~> 3.1.2)
   - Jot (from `https://github.com/biscottigelato/Jot.git`)
   - Parse
+  - ParseFacebookUtilsV4
   - PryntTrimmerView (from `https://github.com/specc/PryntTrimmerView.git`)
   - QuadratTouch (from `https://github.com/Constantine-Fry/das-quadrat.git`, branch `develop`)
   - RATreeView
@@ -94,10 +128,17 @@ SPEC CHECKSUMS:
   ColorSlider: 3dc3b5c31b5a74aa1232c44eae06453ce59ecf36
   Crashlytics: 64aad5dd97249dd3ff94b979fea140144590cdd3
   Fabric: e6be012366472553807dada21243c5ab8d904151
+  FacebookCore: 3ffa190a3f1f96cec0e44d3fc221bc322c595ffa
+  FacebookLogin: 0af839ea858faef99550d16596b87b4a8e8906e6
+  FacebookShare: 0469964297ebd75f052be2c5083389a4208e82b7
+  FBSDKCoreKit: 03365dad5d790249196ffad8be4f6d8a2d98f932
+  FBSDKLoginKit: 66ff53b73cffd967ab773e32fac39e90a60e6d46
+  FBSDKShareKit: 6a6a0ef9e850c741e4e1d7a7d21335205e997ec1
   HTTPStatusCodes: 88155ba36826366a898a7b4f34d311f49083d546
   Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   Parse: cdc0f1f975ee8be0409e66f21b05df4ae067047c
+  ParseFacebookUtilsV4: 2f30c2b7021c8005d3042781da7ef87d06589421
   PINCache: 98e7b1ef782824ad231ade51987c218b758c30d8
   PINOperation: ac23db44796d4a564ecf9b5ea7163510f579b71d
   PINRemoteImage: 0cefe720c2612960bd360710efbd6c73a1991d5f
@@ -109,6 +150,6 @@ SPEC CHECKSUMS:
   Texture: c3f06e344aa091667b7a56002e525cde674d021a
   TLPhotoPicker: e5bf9a0f95b4fdf867299d6ae03569f526e3f621
 
-PODFILE CHECKSUM: 582ecd76348cb7133c649a7c4992e840ed3733ee
+PODFILE CHECKSUM: 8c87633efb48677377b3cd2c84c10364cedec791
 
 COCOAPODS: 1.2.0

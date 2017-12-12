@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import FBSDKCoreKit
+import ParseFacebookUtilsV4
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -39,7 +41,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // Initialize Foodie Model
     FoodieGlobal.initialize()
-
+    PFFacebookUtils.initializeFacebook(applicationLaunchOptions: launchOptions)
+    
     // TODO: - Any Startup Test we want to do that we should use to block Startup?
     error = nil
     
@@ -53,6 +56,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window?.rootViewController = viewController
     window?.makeKeyAndVisible()
     return true
+  }
+  
+  func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+    return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
   }
   
   func application(_ application: UIApplication, shouldSaveApplicationState coder: NSCoder) -> Bool {

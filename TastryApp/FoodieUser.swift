@@ -8,6 +8,10 @@
 
 
 import Parse
+import ParseFacebookUtilsV4
+import FacebookCore
+import FacebookLogin
+import FacebookShare
 
 
 class FoodieUser: PFUser {
@@ -55,6 +59,7 @@ class FoodieUser: PFUser {
     static let MinPasswordLength = 8
     static let MaxPasswordLength = 32
     static let MinEmailLength = 6
+    static let basicFacebookReadPermission = ["public_profile", "user_friends", "email"]
   }
 
   
@@ -63,6 +68,14 @@ class FoodieUser: PFUser {
   enum ErrorCode: LocalizedError {
     
     case loginFoodieUserNil
+    case facebookLoginFoodieUserNil
+    case facebookCurrentAccessTokenNil
+    case facebookGraphRequestFailed
+    case facebookAccountNoUserId
+    case facebookAccountNoEmail
+    case parseFacebookIdInconsistency
+    case parseFacebookCheckEmailFailed
+    case parseFacebookEmailRegistered
     
     case usernameIsEmpty
     case usernameTooShort(Int)
@@ -101,6 +114,23 @@ class FoodieUser: PFUser {
       switch self {
       case .loginFoodieUserNil:
         return NSLocalizedString("User returned by login is nil", comment: "Error message upon Login")
+      case .facebookLoginFoodieUserNil:
+        return NSLocalizedString("User returned by Facebook login is nil", comment: "Error message upon Login")
+      case .facebookCurrentAccessTokenNil:
+        return NSLocalizedString("Current Facebook Access Token is nil", comment: "Error message upon Login")
+      case .facebookGraphRequestFailed:
+        return NSLocalizedString("Facebook Graph Request failed", comment: "Error message upon Login")
+      case .facebookAccountNoUserId:
+        return NSLocalizedString("Facebook Account has no User ID", comment: "Error message upon Login")
+      case .facebookAccountNoEmail:
+        return NSLocalizedString("Facebook Account has no E-mail", comment: "Error message upon Login")
+      case .parseFacebookIdInconsistency:
+        return NSLocalizedString("Parse and Facebook User ID inconsistent", comment: "Error message upon Login")
+      case .parseFacebookCheckEmailFailed:
+        return NSLocalizedString("Checking Facebook E-mail against Parse for availability failed", comment: "Error message upon Login")
+      case .parseFacebookEmailRegistered:
+        return NSLocalizedString("E-mail from Facebook already registered", comment: "Error message upon Login")
+        
       case .usernameIsEmpty:
         return NSLocalizedString("Username is empty", comment: "Error message when Login/ Sign Up fails due to Username problems")
       case .usernameTooShort(let minLength):
@@ -371,6 +401,133 @@ class FoodieUser: PFUser {
   }
   
   
+  static func facebookLogIn(withReadPermissions permissions: [String] = Constants.basicFacebookReadPermission,
+                            withBlock callback: UserErrorBlock?) {
+    
+    PFFacebookUtils.logInInBackground(withReadPermissions: permissions) { (user, error) in
+      if let error = error {
+        callback?(nil, error)
+        return
+      }
+      
+      guard let foodieUser = user as? FoodieUser else {
+        CCLog.warning("User returned from Facebook login is not of FoodieUser type or nil")
+        callback?(nil, ErrorCode.facebookLoginFoodieUserNil)
+        return
+      }
+      
+      if foodieUser.isNew {
+        
+        // Do not allow FB log-in for users with the same E-mail address
+        guard let fbToken = AccessToken.current else {
+          CCLog.warning("User just signed-in, but no current FB Access Token")
+          foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+          callback?(nil, ErrorCode.facebookCurrentAccessTokenNil)
+          return
+        }
+        
+        // This is a new user signup! But we gotta verify whether this FB account have the minimum amount of info before proceeding further
+        let parameters: [String : Any] = ["fields" : "id, name, email, profile_pic"]
+        let graphRequest = GraphRequest(graphPath: "/me", parameters: parameters, accessToken: fbToken)
+        let graphConnection = GraphRequestConnection()
+        
+        graphConnection.add(graphRequest) { response, result in
+          switch result {
+          case .failed(let error):
+            CCLog.warning("Facebook Graph Request Failed: \(error)")
+            foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+            callback?(nil, ErrorCode.facebookGraphRequestFailed)
+            return
+            
+          case .success(let response):
+            CCLog.debug("Facebook Graph Request Succeeded: \(response)")
+
+            guard let userId = response.dictionaryValue?["id"] as? String else {
+              CCLog.warning("Facebook Account has no user ID")
+              foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+              callback?(nil, ErrorCode.facebookAccountNoUserId)
+              return
+            }
+            
+            guard let email = response.dictionaryValue?["email"] as? String else {
+              CCLog.warning("Facebook Account has no E-mail address")
+              foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+              callback?(nil, ErrorCode.facebookAccountNoEmail)
+              return
+            }
+            
+            guard userId == foodieUser.username else {
+              CCLog.warning("User ID from Facebook and Parse not consistent")
+              foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+              callback?(nil, ErrorCode.parseFacebookIdInconsistency)
+              return
+            }
+            
+            // We gotta check if this E-mail is already in-use
+            FoodieUser.checkUserAvailFor(email: email) { avail, error in
+              
+              if let error = error {
+                CCLog.warning("Check E-mail Address available failed - \(error.localizedDescription)")
+                foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+                callback?(nil, ErrorCode.parseFacebookCheckEmailFailed)
+                return
+              }
+              
+              if !avail {
+                CCLog.warning("E-mail from Facebook already registered")
+                foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+                callback?(nil, ErrorCode.parseFacebookEmailRegistered)
+                return
+              }
+              
+              // Home Free! Populate basic information
+              foodieUser.email = email
+              foodieUser.setValue(true, forKey: "emailVerified")
+              
+              if let name = response.dictionaryValue?["name"] as? String {
+                foodieUser.fullName = name
+              }
+             
+              // This is bonus round. Take it or leave it
+              if let profilePicUrlString = response.dictionaryValue?["profile_pic"] as? String {
+                
+                guard let profilePicUrl = URL(string: profilePicUrlString) else {
+                  CCLog.warning("Profile Pic URL from Facebook is invalid")
+                  foodieUser.signUpSuccess() { error in callback?(foodieUser, error) }
+                  return
+                }
+                
+                var profilePicData: Data?
+                do {
+                  profilePicData = try Data(contentsOf: profilePicUrl)
+                } catch {
+                  CCLog.warning("Unable to obtain valid data from Profile Pic URL given by Facebook")
+                  foodieUser.signUpSuccess() { error in callback?(foodieUser, error) }
+                  return
+                }
+                
+                // !!!! Taking a leap of faith that image data from Facebook will be readable and not gianormous
+                if let profilePicData = profilePicData {
+                  let profilePicMedia = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
+                  profilePicMedia.imageMemoryBuffer = profilePicData
+                  foodieUser.media = profilePicMedia
+                }
+              }
+              
+              // SignUp Success should save the entire User up to Parse, including the profile pic if avail
+              foodieUser.signUpSuccess() { error in callback?(foodieUser, error) }
+            }
+          }
+        }
+      } else {
+        // This is a login success. Update the Default Permission before calling back
+        FoodiePermission.setDefaultObjectPermission(for: foodieUser)
+        callback?(foodieUser, nil)
+      }
+    }
+  }
+  
+  
   static func logOutAndDeleteDraft(withBlock callback: SimpleErrorBlock?) {
     
     if let story = FoodieStory.currentStory {
@@ -598,6 +755,38 @@ class FoodieUser: PFUser {
   
   
   // MARK: - Private Instance Functions
+  
+  private func signUpSuccess(withBlock callback: SimpleErrorBlock? = nil) {
+    
+    // Sign Up was successful. Try to add the user to the agreed upon role
+    let defaultLevel = FoodieRole.Level.limitedUser
+    self.roleLevel = defaultLevel.rawValue
+    
+    FoodieRole.addUser(self, to: defaultLevel) { error in
+      
+      if let error = error {
+        CCLog.warning("Failed to add User to Role database. Please contact an Administrator - \(error.localizedDescription)")
+        
+        // Best effort delete of the user
+        self.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+        callback?(error)
+        return
+      }
+      
+      // Set default Foodie User ACL attribute
+      self.acl = FoodiePermission.getDefaultUserPermission(for: self) as PFACL
+      
+      // Save the change in User ACL
+      self.saveToLocalNServer(type: .cache) { error in
+        if error != nil {
+          // Total Sign Up Success Finally! Let's change the default ACL to the user class before calling back.
+          FoodiePermission.setDefaultObjectPermission(for: self)
+        }
+        callback?(error)
+      }
+    }
+  }
+  
   
   // Retrieves just the user itself
   private func retrieve(from location: FoodieObject.StorageLocation,
@@ -938,7 +1127,7 @@ class FoodieUser: PFUser {
     email = email.lowercased()
     
     // Set role of the user first before trying to figure out ACL
-    self.roleLevel = FoodieRole.Level.limitedUser.rawValue
+    // self.roleLevel = FoodieRole.Level.limitedUser.rawValue
     
     // Now try to Sign Up!
     self.signUpInBackground { (success, error) in
@@ -950,34 +1139,7 @@ class FoodieUser: PFUser {
           return
         }
         
-        // Sign Up was successful. Try to add the user to the agreed upon role
-        guard let level = FoodieRole.Level(rawValue: self.roleLevel) else {
-          CCLog.fatal("Unrecognized roleLevel value")
-        }
-        
-        FoodieRole.addUser(self, to: level) { error in
-          
-          if let error = error {
-            CCLog.warning("Failed to add User to Role database. Please contact an Administrator - \(error.localizedDescription)")
-            
-            // Best effort delete of the user
-            self.deleteFromLocalNServer(withBlock: nil)
-            callback?(error)
-            return
-          }
-          
-          // Set default Foodie User ACL attribute
-          self.acl = FoodiePermission.getDefaultUserPermission(for: self) as PFACL
-          
-          // Save the change in User ACL
-          self.saveToLocalNServer(type: .cache) { error in
-            if error != nil {
-              // Total Sign Up Success Finally! Let's change the default ACL to the user class before calling back.
-              FoodiePermission.setDefaultObjectPermission(for: self)
-            }
-            callback?(error)
-          }
-        }
+        self.signUpSuccess(withBlock: callback)
       }
     }
   }

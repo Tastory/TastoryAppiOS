@@ -73,7 +73,7 @@ class LogInViewController: OverlayViewController {
         
         guard let username = user.username else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-            CCLog.assert("Refurned FoodieUser for \(logInText) does not contain a username")
+            CCLog.assert("Returned FoodieUser for \(logInText) does not contain a username")
           }
           return
         }
@@ -83,7 +83,7 @@ class LogInViewController: OverlayViewController {
       }
       
     } else {
-      // Tread the Log In text as Username and try to Log In
+      // Treat the Log In text as Username and try to Log In
       logIn(for: logInText, using: password)
     }
   }
@@ -125,7 +125,29 @@ class LogInViewController: OverlayViewController {
   
   
   @IBAction func facebookAction(_ sender: UIButton) {
-    CCLog.warning("Facebook Login To Be Implemented")
+    view.endEditing(true)
+    activitySpinner.apply()
+    
+    FoodieUser.facebookLogIn() { (user, error) in
+      
+      self.activitySpinner.remove()
+      
+      if let error = error {
+        AlertDialog.present(from: self, title: "FB Login Failed", message: error.localizedDescription) { _ in
+          CCLog.warning("Facebook login failed - \(error.localizedDescription)")
+        }
+        return
+      }
+      
+      guard let user = user else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+          CCLog.assert("Nil returned from getting user for Facebook Login. Expected Foodie User object")
+        }
+        return
+      }
+      
+      self.presentLogIn(for: user, withWelcome: user.isNew)
+    }
   }
   
   
