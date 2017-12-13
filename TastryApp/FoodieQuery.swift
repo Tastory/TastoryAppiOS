@@ -158,8 +158,15 @@ class FoodieQuery {
   
   
   func addPriceFilter(lowerLimit: Double, upperLimit: Double) {
-    priceUpperLimit = upperLimit
-    priceLowerLimit = lowerLimit
+    
+    // Therea are Venues that have no price Tier. So if the filter is as wide as possible, we gotta include nil'ed out Price Tier Venues too.
+    if lowerLimit == FoodieFilter.Constants.PriceLowerLimit, upperLimit == FoodieFilter.Constants.PriceUpperLimit {
+      priceUpperLimit = nil
+      priceLowerLimit = nil
+    } else {
+      priceUpperLimit = upperLimit
+      priceLowerLimit = lowerLimit
+    }
   }
   
   

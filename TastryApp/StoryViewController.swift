@@ -325,6 +325,8 @@ class StoryViewController: OverlayViewController {
         
         let avUrlAsset = AVURLAsset(url: localVideoUrl)
         let avPlayerItem = AVPlayerItem(asset: avUrlAsset)
+        NotificationCenter.default.addObserver(self, selector: #selector(displayNextMoment), name: .AVPlayerItemDidPlayToEndTime, object: avPlayerItem)
+        
         localVideoPlayer.replaceCurrentItem(with: avPlayerItem)
         avPlayer = localVideoPlayer
         installUIForVideo()
@@ -459,7 +461,11 @@ class StoryViewController: OverlayViewController {
     currentExportPlayer?.delegate = nil
     currentExportPlayer = nil
     
-    localVideoPlayer.pause()
+    if let avPlayerItem = localVideoPlayer.currentItem {
+      localVideoPlayer.pause()
+      NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: avPlayerItem)
+      localVideoPlayer.replaceCurrentItem(with: nil)
+    }
     
     // avPlayerLayer.player = nil  // !!! Taking a risk here. So that video transitions will be a touch quicker
     jotViewController.clearAll()
@@ -628,8 +634,6 @@ class StoryViewController: OverlayViewController {
     avPlayerLayer = AVPlayerLayer()
     videoView.layer.addSublayer(avPlayerLayer)
     
-    muteObserver = AudioControl.observeMuteState(withBlock: updateAVMute)
-    
     jotViewController.state = JotViewState.disabled
     addChildViewController(jotViewController)
     
@@ -746,10 +750,15 @@ class StoryViewController: OverlayViewController {
   }
   
   
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    muteObserver = AudioControl.observeMuteState(withBlock: updateAVMute)
+  }
+  
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    stopAndClear()  // pause()  Seems moving Stop and Clear here is causing problems? But if go to De-init, there's problem where the Play Time is not 0 on exit
+     pause()
     
     // Cancel All potential Prefetch associated with the Story before disappearing
     if let story = viewingStory {
@@ -776,6 +785,12 @@ class StoryViewController: OverlayViewController {
         localVideoPlayer.play()
       }
     }
+  }
+  
+  
+  deinit {
+    CCLog.debug("Deinit")
+    stopAndClear()
   }
   
   
