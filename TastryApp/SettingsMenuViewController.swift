@@ -52,7 +52,6 @@ class SettingsMenuViewController: OverlayViewController {
   }
   
   
-  
   @IBAction func linkFacebookTap(_ sender: UITapGestureRecognizer) {
     guard let currentUser = FoodieUser.current else {
       AlertDialog.present(from: self, title: "Not Logged In", message: "This operation cannot be performed in a non-logged in state") { _ in
@@ -70,6 +69,50 @@ class SettingsMenuViewController: OverlayViewController {
       }
       self.updateFacebookCell()
     }
+  }
+  
+  
+  @IBAction func librariesTap(_ sender: UITapGestureRecognizer) {
+    let storyboard = UIStoryboard(name: "Settings", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "LibrariesViewController") as? LibrariesViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of LibrariesViewController Class!!")
+      }
+      return
+    }
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: 2.0, dismissIsInteractive: true)
+    pushPresent(viewController, animated: true)
+  }
+  
+  
+  @IBAction func privacyPolicyTap(_ sender: UITapGestureRecognizer) {
+    let storyboard = UIStoryboard(name: "Settings", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "PrivacyPolicyViewController") as? PrivacyPolicyViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of PrivacyPolicyViewController Class!!")
+      }
+      return
+    }
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: 2.0, dismissIsInteractive: true)
+    pushPresent(viewController, animated: true)
+  }
+  
+  
+  @IBAction func serviceTermsTap(_ sender: UITapGestureRecognizer) {
+    let storyboard = UIStoryboard(name: "Settings", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ServiceTermsViewController") as? ServiceTermsViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of ServiceTermsViewController Class!!")
+      }
+      return
+    }
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: 2.0, dismissIsInteractive: true)
+    pushPresent(viewController, animated: true)
+  }
+  
+  
+  @IBAction func aboutUsTap(_ sender: UITapGestureRecognizer) {
+    CCLog.warning("About Us Not Yet Implemented")
   }
   
   

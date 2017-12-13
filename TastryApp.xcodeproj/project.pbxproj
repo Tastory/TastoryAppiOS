@@ -38,6 +38,9 @@
 		8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */; };
 		8C4AF66E1F91B1B900AADA5C /* ActivitySpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */; };
 		8C53FE8E1FDF3D2D003AEF77 /* FoodieFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C53FE8D1FDF3D2D003AEF77 /* FoodieFilter.swift */; };
+		8C53FE901FE0AE44003AEF77 /* LibrariesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C53FE8F1FE0AE44003AEF77 /* LibrariesViewController.swift */; };
+		8C53FE921FE0AE5F003AEF77 /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C53FE911FE0AE5F003AEF77 /* PrivacyPolicyViewController.swift */; };
+		8C53FE961FE0AFD8003AEF77 /* ServiceTermsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C53FE951FE0AFD8003AEF77 /* ServiceTermsViewController.swift */; };
 		8C56A9161FA19E6200D3204B /* URL+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C56A9151FA19E6200D3204B /* URL+Extension.swift */; };
 		8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5B48501F579D3800C18089 /* SwiftMutex.swift */; };
 		8C5C4DDE1EFEEDEC008C83EC /* FoodieFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5C4DDD1EFEEDEC008C83EC /* FoodieFetch.swift */; };
@@ -194,6 +197,9 @@
 		8C45B60F1ECACF1E0067CDC0 /* FoodiePFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePFObject.swift; sourceTree = "<group>"; };
 		8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySpinner.swift; sourceTree = "<group>"; };
 		8C53FE8D1FDF3D2D003AEF77 /* FoodieFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodieFilter.swift; sourceTree = "<group>"; };
+		8C53FE8F1FE0AE44003AEF77 /* LibrariesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LibrariesViewController.swift; sourceTree = "<group>"; };
+		8C53FE911FE0AE5F003AEF77 /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
+		8C53FE951FE0AFD8003AEF77 /* ServiceTermsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceTermsViewController.swift; sourceTree = "<group>"; };
 		8C56A9151FA19E6200D3204B /* URL+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Extension.swift"; sourceTree = "<group>"; };
 		8C5B48501F579D3800C18089 /* SwiftMutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftMutex.swift; sourceTree = "<group>"; };
 		8C5C4DDD1EFEEDEC008C83EC /* FoodieFetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFetch.swift; sourceTree = "<group>"; };
@@ -637,6 +643,9 @@
 				8C1C3A351FCCCFDC00DB19A4 /* SettingsMenuViewController.swift */,
 				8C7EBAC11F9D3884004E43D8 /* ProfileDetailViewController.swift */,
 				8C7EBAC51F9D477C004E43D8 /* PasswordViewController.swift */,
+				8C53FE8F1FE0AE44003AEF77 /* LibrariesViewController.swift */,
+				8C53FE911FE0AE5F003AEF77 /* PrivacyPolicyViewController.swift */,
+				8C53FE951FE0AFD8003AEF77 /* ServiceTermsViewController.swift */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -1121,6 +1130,7 @@
 			files = (
 				8C2F79731F4E23F700851334 /* LocationWatch.swift in Sources */,
 				8C2F796F1F4C0D9A00851334 /* SwiftRetry.swift in Sources */,
+				8C53FE901FE0AE44003AEF77 /* LibrariesViewController.swift in Sources */,
 				8CF44DA61F86F422007E905A /* CameraCrossLayer.swift in Sources */,
 				8C1C3A361FCCCFDC00DB19A4 /* SettingsMenuViewController.swift in Sources */,
 				8C7EBAC61F9D477C004E43D8 /* PasswordViewController.swift in Sources */,
@@ -1144,9 +1154,11 @@
 				8C53FE8E1FDF3D2D003AEF77 /* FoodieFilter.swift in Sources */,
 				8C9B47C71F9576B100D21246 /* FoodieOperation.swift in Sources */,
 				8C1ED6F41F5DEC2500A8CC94 /* AsyncOperation.swift in Sources */,
+				8C53FE961FE0AFD8003AEF77 /* ServiceTermsViewController.swift in Sources */,
 				8CF40C5D1FC50BC200615D43 /* DiscoverViewController.swift in Sources */,
 				8CD02DB91FB96A4C00768CF8 /* CGRect+Extension.swift in Sources */,
 				8CE5711B1FDB393D0023F4C7 /* FiltersViewController.swift in Sources */,
+				8C53FE921FE0AE5F003AEF77 /* PrivacyPolicyViewController.swift in Sources */,
 				8C56A9161FA19E6200D3204B /* URL+Extension.swift in Sources */,
 				8C6983521F97ECFB0091334D /* AVPlayerStatus+Extension.swift in Sources */,
 				8CF858661F7ED8A000C46614 /* IntroViewController.swift in Sources */,

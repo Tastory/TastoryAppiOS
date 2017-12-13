@@ -855,14 +855,8 @@
                                     <view opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="375" placeholderIntrinsicHeight="20" translatesAutoresizingMaskIntoConstraints="NO" id="NzM-Iv-Gfw">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose Venue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ogf-bS-Ofz">
-                                                <rect key="frame" x="133" y="56.666666666666657" width="108.33333333333331" height="19"/>
-                                                <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="16"/>
-                                                <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xeE-NM-jtC">
-                                                <rect key="frame" x="8" y="31" width="22" height="22"/>
+                                                <rect key="frame" x="15" y="31" width="22" height="22"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="22" id="lsy-yG-PwD"/>
                                                     <constraint firstAttribute="width" constant="22" id="z7y-oY-FAQ"/>
@@ -875,10 +869,7 @@
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="Ogf-bS-Ofz" firstAttribute="centerX" secondItem="NzM-Iv-Gfw" secondAttribute="centerX" id="any-oj-utF"/>
-                                            <constraint firstItem="xeE-NM-jtC" firstAttribute="centerY" secondItem="Ogf-bS-Ofz" secondAttribute="centerY" id="mY8-XA-miq"/>
                                             <constraint firstItem="xeE-NM-jtC" firstAttribute="leading" secondItem="NzM-Iv-Gfw" secondAttribute="leading" constant="15" id="uTF-qR-E7w"/>
-                                            <constraint firstAttribute="bottom" secondItem="Ogf-bS-Ofz" secondAttribute="centerY" constant="22" id="wRV-zb-MYb"/>
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Em3-GP-JO4">
@@ -953,7 +944,10 @@
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="y57-UU-pr5" firstAttribute="top" secondItem="1Rh-GL-b2t" secondAttribute="top" id="1pb-fO-xjd"/>
+                            <constraint firstItem="Ogf-bS-Ofz" firstAttribute="centerY" secondItem="NzM-Iv-Gfw" secondAttribute="bottom" constant="-22" id="DAQ-ew-YlU"/>
+                            <constraint firstItem="xeE-NM-jtC" firstAttribute="centerY" secondItem="Ogf-bS-Ofz" secondAttribute="centerY" id="Dic-a4-Kbe"/>
                             <constraint firstItem="y57-UU-pr5" firstAttribute="leading" secondItem="RMB-z7-BQB" secondAttribute="leading" id="HEf-SC-WY3"/>
+                            <constraint firstItem="Ogf-bS-Ofz" firstAttribute="centerX" secondItem="NzM-Iv-Gfw" secondAttribute="centerX" id="NCX-md-Qv9"/>
                             <constraint firstItem="cR5-xA-VN9" firstAttribute="leading" secondItem="RMB-z7-BQB" secondAttribute="leading" id="XeT-we-cxC"/>
                             <constraint firstItem="RMB-z7-BQB" firstAttribute="trailing" secondItem="y57-UU-pr5" secondAttribute="trailing" id="ZI3-ie-VkY"/>
                             <constraint firstItem="RMB-z7-BQB" firstAttribute="trailing" secondItem="cR5-xA-VN9" secondAttribute="trailing" id="pmj-UT-NNF"/>

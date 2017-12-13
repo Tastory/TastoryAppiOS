@@ -162,6 +162,7 @@ class PasswordViewController: OverlayViewController {
   
   
   override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
     view.endEditing(true)
   }
   
