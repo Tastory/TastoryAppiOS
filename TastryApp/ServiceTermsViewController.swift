@@ -37,6 +37,11 @@ class ServiceTermsViewController: OverlayViewController {
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
     
     serviceTermsTextView.textContainerInset = UIEdgeInsetsMake(15, 15, 15, 15)
+  }
+  
+  
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
     serviceTermsTextView.contentOffset = CGPoint(x: 0.0, y: 0.0)
   }
 }
