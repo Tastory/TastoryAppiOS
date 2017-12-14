@@ -30,6 +30,7 @@ class FoodieUser: PFUser {
   @NSManaged var profileMediaType: String?  // Really an enum saying whether it's a Photo or Video
   
   // User Properties
+  @NSManaged var isFacebookOnly: Bool
   @NSManaged var roleLevel: Int
   //@NSManaged var authoredStories: PFRelation<PFObject>
   
@@ -78,6 +79,7 @@ class FoodieUser: PFUser {
     case parseFacebookEmailRegistered
     
     case facebookLinkNotCurrentUser
+    case facebookLinkAlreadyUsed
     case facebookGraphRequestNoName
     
     case usernameIsEmpty
@@ -126,16 +128,18 @@ class FoodieUser: PFUser {
       case .facebookAccountNoUserId:
         return NSLocalizedString("Facebook Account has no User ID", comment: "Error message upon Login")
       case .facebookAccountNoEmail:
-        return NSLocalizedString("Facebook Account has no E-mail Address", comment: "Error message upon Login")
+        return NSLocalizedString("Facebook Account has no E-mail Address. An E-mail address is required for a Tastry Account", comment: "Error message upon Login")
       case .parseFacebookCheckEmailFailed:
         return NSLocalizedString("Checking Facebook E-mail against Parse for availability failed", comment: "Error message upon Login")
       case .parseFacebookEmailRegistered:
         return NSLocalizedString("E-mail associated with the Facebook account is already registered. Please login with your E-mail to link your account to Facebook, so you can login via Facebook in the future.", comment: "Error message upon Login")
         
+      case .facebookLinkAlreadyUsed:
+        return NSLocalizedString("Facebook account already associated with another Tastry account. Unlink from, or delete the other Tastry account if you want to link the Facebook account to this one.", comment: "Error message upon FB Link")
       case .facebookLinkNotCurrentUser:
-        return NSLocalizedString("Not logged in, cannot link against Facebook account", comment: "Error message upon Login")
+        return NSLocalizedString("Not logged in, cannot link against Facebook account", comment: "Error message upon FB Link")
       case .facebookGraphRequestNoName:
-        return NSLocalizedString("Facebook Graph Request Response returned no 'name' field", comment: "Error message upon Login")
+        return NSLocalizedString("Facebook Graph Request Response returned no 'name' field", comment: "Error message upon FB Link")
         
       case .usernameIsEmpty:
         return NSLocalizedString("Username is empty", comment: "Error message when Login/ Sign Up fails due to Username problems")
@@ -484,8 +488,8 @@ class FoodieUser: PFUser {
               }
               
               // Home Free! Populate basic information
+              foodieUser.isFacebookOnly = true
               foodieUser.email = email
-              foodieUser.setValue(true, forKey: "emailVerified")
               
               if let name = response.dictionaryValue?["name"] as? String {
                 foodieUser.fullName = name
@@ -1147,6 +1151,7 @@ class FoodieUser: PFUser {
           return
         }
         
+        self.isFacebookOnly = false
         self.signUpSuccess(withBlock: callback)
       }
     }
@@ -1214,7 +1219,6 @@ class FoodieUser: PFUser {
   
   
   func linkFacebook(withBlock callback: SimpleErrorBlock?) {
-    
     CCLog.info("Linking Facebook against Account")
     
     guard let currentUser = FoodieUser.current, self == currentUser else {
@@ -1223,13 +1227,23 @@ class FoodieUser: PFUser {
     }
     
     PFFacebookUtils.linkUser(inBackground: self, withReadPermissions: Constants.basicFacebookReadPermission) { (success, error) in
-      
       if let error = error {
+        let nsError = error as NSError
+        if nsError.domain == PFParseErrorDomain, let pfErrorCode = PFErrorCode(rawValue: nsError.code) {
+          
+          switch pfErrorCode {
+          case PFErrorCode.errorFacebookAccountAlreadyLinked:
+            callback?(ErrorCode.facebookLinkAlreadyUsed)
+            return
+          
+          default:
+            break
+          }
+        }
         callback?(error)
         return
       }
       
-      // Do not allow FB log-in for users with the same E-mail address
       guard let fbToken = AccessToken.current else {
         CCLog.warning("User just linked, but no current FB Access Token")
         callback?(ErrorCode.facebookCurrentAccessTokenNil)

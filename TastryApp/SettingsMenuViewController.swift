@@ -23,6 +23,9 @@ class SettingsMenuViewController: OverlayViewController {
   @IBOutlet var linkFacebookArrow: UIImageView!
   @IBOutlet var linkFacebookTapRecognizer: UITapGestureRecognizer!
   
+  @IBOutlet var changePasswordLine: UIView!
+  @IBOutlet var changePasswordCell: UIView!
+  
   
   // MARK: - IBAction
   
@@ -179,6 +182,18 @@ class SettingsMenuViewController: OverlayViewController {
     navigationItem.rightBarButtonItem!.tintColor = FoodieGlobal.Constants.ThemeColor
     
     updateFacebookCell()
+    
+    guard let currentUser = FoodieUser.current else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.warning("FoodieUser.current = nil")
+      }
+      return
+    }
+    
+    if currentUser.isFacebookOnly {
+      self.changePasswordCell.isHidden = true
+      self.changePasswordLine.isHidden = true
+    }
   }
   
   

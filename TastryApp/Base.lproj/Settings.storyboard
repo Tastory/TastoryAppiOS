@@ -49,7 +49,7 @@
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="12p-Q8-9BM">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="533"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="488"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Q8c-Z8-2qr" userLabel="Account Header Cell">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -153,7 +153,7 @@
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <gestureRecognizers/>
                                                 <constraints>
-                                                    <constraint firstItem="wGS-2c-d1y" firstAttribute="leading" relation="lessThanOrEqual" secondItem="yik-DI-0Qn" secondAttribute="trailing" priority="200" constant="375" id="6EQ-YI-aiq"/>
+                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="yik-DI-0Qn" secondAttribute="trailing" constant="15" id="6EQ-YI-aiq"/>
                                                     <constraint firstItem="yik-DI-0Qn" firstAttribute="centerY" secondItem="UVg-AX-2xf" secondAttribute="centerY" id="PTM-wb-cWC"/>
                                                     <constraint firstItem="wGS-2c-d1y" firstAttribute="centerY" secondItem="UVg-AX-2xf" secondAttribute="centerY" id="bMc-Fg-HXa"/>
                                                     <constraint firstAttribute="trailing" secondItem="wGS-2c-d1y" secondAttribute="trailing" constant="15" id="cfZ-7e-CSi"/>
@@ -279,15 +279,15 @@
                                                     <outletCollection property="gestureRecognizers" destination="O03-bj-gke" appends="YES" id="cwQ-Fs-kdo"/>
                                                 </connections>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="apo-oN-yc7" userLabel="Line">
+                                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="apo-oN-yc7" userLabel="Line">
                                                 <rect key="frame" x="0.0" y="399" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="Utn-X6-SDH"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZQ3-BW-ehT" userLabel="Terms of Service Cell">
-                                                <rect key="frame" x="0.0" y="400" width="375" height="44"/>
+                                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZQ3-BW-ehT" userLabel="Terms of Service Cell">
+                                                <rect key="frame" x="0.0" y="399" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Terms of Service" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mxU-Ko-c9a">
                                                         <rect key="frame" x="15" y="14.5" width="109" height="16.5"/>
@@ -314,14 +314,14 @@
                                                 </connections>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QtI-Kf-2XB" userLabel="Line">
-                                                <rect key="frame" x="0.0" y="444" width="375" height="1"/>
+                                                <rect key="frame" x="0.0" y="399" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="bmd-Or-6pd"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CLl-Zo-OtN" userLabel="About Us Cell">
-                                                <rect key="frame" x="0.0" y="445" width="375" height="44"/>
+                                                <rect key="frame" x="0.0" y="400" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="About Us" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="quX-wZ-R3O">
                                                         <rect key="frame" x="15" y="14.5" width="61" height="16.5"/>
@@ -348,7 +348,7 @@
                                                 </connections>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bwi-kV-rqk" userLabel="Bottom Space Cell">
-                                                <rect key="frame" x="0.0" y="489" width="375" height="44"/>
+                                                <rect key="frame" x="0.0" y="444" width="375" height="44"/>
                                                 <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="44" id="uZE-Qr-Jco"/>
@@ -379,6 +379,8 @@
                         <viewLayoutGuide key="safeArea" id="y6a-x9-gcH"/>
                     </view>
                     <connections>
+                        <outlet property="changePasswordCell" destination="jQQ-G2-AK4" id="v0b-2g-I0Y"/>
+                        <outlet property="changePasswordLine" destination="sie-OL-dox" id="mDt-Uf-j9X"/>
                         <outlet property="linkFacebookArrow" destination="wGS-2c-d1y" id="ekx-ch-Y8y"/>
                         <outlet property="linkFacebookCell" destination="UVg-AX-2xf" id="HwE-Db-HPt"/>
                         <outlet property="linkFacebookLabel" destination="yik-DI-0Qn" id="7gZ-Eu-L7V"/>
@@ -423,7 +425,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1646" y="-654"/>
+            <point key="canvasLocation" x="1657" y="-654"/>
         </scene>
         <!--Profile Details-->
         <scene sceneID="zAJ-bJ-DDv">
@@ -760,7 +762,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2422" y="-1023"/>
+            <point key="canvasLocation" x="2422" y="-978"/>
         </scene>
         <!--Change Password-->
         <scene sceneID="ewB-Mv-pO5">
@@ -946,7 +948,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="3172" y="-1023"/>
+            <point key="canvasLocation" x="3172" y="-978"/>
         </scene>
         <!--3rd Party Libraries @ APIs-->
         <scene sceneID="uQh-Wx-tur">
@@ -1053,7 +1055,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2422" y="-252"/>
+            <point key="canvasLocation" x="2422" y="-322"/>
         </scene>
         <!--Privacy Policy-->
         <scene sceneID="P0j-lc-92W">
@@ -1079,7 +1081,7 @@ The terms used in this Privacy Policy have the same meanings as in our Terms and
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops/>
@@ -1091,7 +1093,7 @@ The terms used in this Privacy Policy have the same meanings as in our Terms and
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <font key="NSOriginalFont" size="14" name="Raleway-SemiBold"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
@@ -1110,7 +1112,7 @@ The app does use third party services that may collect information used to ident
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops/>
@@ -1122,7 +1124,7 @@ The app does use third party services that may collect information used to ident
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <font key="NSOriginalFont" size="14" name="Raleway-SemiBold"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
@@ -1140,7 +1142,7 @@ We want to inform you that whenever you use our Service, in a case of an error i
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops/>
@@ -1152,7 +1154,7 @@ We want to inform you that whenever you use our Service, in a case of an error i
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <font key="NSOriginalFont" size="14" name="Raleway-SemiBold"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
@@ -1171,7 +1173,7 @@ This Service does not use these “cookies” explicitly. However, the app may u
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops/>
@@ -1183,7 +1185,7 @@ This Service does not use these “cookies” explicitly. However, the app may u
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <font key="NSOriginalFont" size="14" name="Raleway-SemiBold"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
@@ -1201,7 +1203,7 @@ We may employ third-party companies and individuals due to the following reasons
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops/>
@@ -1213,7 +1215,7 @@ We may employ third-party companies and individuals due to the following reasons
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" headIndent="36" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops>
                                                     <textTab alignment="left" location="11">
@@ -1233,7 +1235,7 @@ We may employ third-party companies and individuals due to the following reasons
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" headIndent="36" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops>
@@ -1252,7 +1254,7 @@ We may employ third-party companies and individuals due to the following reasons
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" headIndent="36" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops>
                                                     <textTab alignment="left" location="11">
@@ -1272,7 +1274,7 @@ We may employ third-party companies and individuals due to the following reasons
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" headIndent="36" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops>
@@ -1291,7 +1293,7 @@ We may employ third-party companies and individuals due to the following reasons
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" headIndent="36" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops>
                                                     <textTab alignment="left" location="11">
@@ -1311,7 +1313,7 @@ We may employ third-party companies and individuals due to the following reasons
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" headIndent="36" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops>
@@ -1330,7 +1332,7 @@ We may employ third-party companies and individuals due to the following reasons
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" headIndent="36" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops>
                                                     <textTab alignment="left" location="11">
@@ -1351,7 +1353,7 @@ We may employ third-party companies and individuals due to the following reasons
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" headIndent="36" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops>
@@ -1373,7 +1375,7 @@ We may employ third-party companies and individuals due to the following reasons
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops/>
@@ -1385,7 +1387,7 @@ We may employ third-party companies and individuals due to the following reasons
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <font key="NSOriginalFont" size="14" name="Raleway-SemiBold"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
@@ -1403,7 +1405,7 @@ We value your trust in providing us your Personal Information, thus we are striv
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops/>
@@ -1415,7 +1417,7 @@ We value your trust in providing us your Personal Information, thus we are striv
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <font key="NSOriginalFont" size="14" name="Raleway-SemiBold"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
@@ -1433,7 +1435,7 @@ This Service may contain links to other sites. If you click on a third-party lin
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops/>
@@ -1445,7 +1447,7 @@ This Service may contain links to other sites. If you click on a third-party lin
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <font key="NSOriginalFont" size="14" name="Raleway-SemiBold"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
@@ -1463,7 +1465,7 @@ These Services do not address anyone under the age of 13. We do not knowingly co
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops/>
@@ -1475,7 +1477,7 @@ These Services do not address anyone under the age of 13. We do not knowingly co
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <font key="NSOriginalFont" size="14" name="Raleway-SemiBold"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
@@ -1493,7 +1495,7 @@ We may update our Privacy Policy from time to time. Thus, you are advised to rev
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops/>
@@ -1505,7 +1507,7 @@ We may update our Privacy Policy from time to time. Thus, you are advised to rev
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <font key="NSOriginalFont" size="14" name="Raleway-SemiBold"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
@@ -1522,7 +1524,7 @@ This privacy policy page was created at https://privacypolicytemplate.net and 
                                         <attributes>
                                             <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="NSColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="14" name="Raleway-Regular"/>
+                                            <font key="NSFont" size="14" name="Raleway-Medium"/>
                                             <real key="NSKern" value="0.0"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                 <tabStops/>
@@ -1555,7 +1557,7 @@ This privacy policy page was created at https://privacypolicytemplate.net and 
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="3172" y="-252.32383808095955"/>
+            <point key="canvasLocation" x="3172" y="-322"/>
         </scene>
         <!--Terms of Services-->
         <scene sceneID="Wds-a4-jU0">
@@ -4479,7 +4481,7 @@ hello@tastry.co</string>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="3934" y="-252"/>
+            <point key="canvasLocation" x="3924" y="-322"/>
         </scene>
     </scenes>
     <resources>
