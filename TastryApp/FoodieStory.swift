@@ -276,7 +276,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
       
       // Calculate how many outstanding children operations there will be before hand
       // This helps avoiding the need of a lock
-      var outstandingChildOperations = 1   // The venue for sure, so start with 1
+      var outstandingChildOperations = 0
 
       if self.venue != nil { outstandingChildOperations += 1 }
       if localType != .draft { outstandingChildOperations += 1 }
