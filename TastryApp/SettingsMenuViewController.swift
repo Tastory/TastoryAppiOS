@@ -63,10 +63,12 @@ class SettingsMenuViewController: OverlayViewController {
       return
     }
     
-    currentUser.linkFacebook { (error) in
+    currentUser.linkFacebook { error in
       if let error = error {
-        AlertDialog.present(from: self, title: "Facebook Error", message: error.localizedDescription) { _ in
-          CCLog.warning("Facebook Link Failed - \(error.localizedDescription)")
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
+          AlertDialog.present(from: self, title: "Facebook Error", message: error.localizedDescription) { _ in
+            CCLog.warning("Facebook Link Failed - \(error.localizedDescription)")
+          }
         }
         return
       }

@@ -52,7 +52,6 @@ class FoodieUser: PFUser {
   @NSManaged var momentsViewed: Int
   
   
-  
   // MARK: - Constants
   struct Constants {
     static let MinUsernameLength = 3
@@ -64,7 +63,6 @@ class FoodieUser: PFUser {
     static let facebookProfilePicWidth = 720
   }
 
-  
   
   // MARK: - Error Types
   enum ErrorCode: LocalizedError {
@@ -206,7 +204,6 @@ class FoodieUser: PFUser {
   }
   
   
-  
   // MARK: - Types & Enums
   enum OperationType: String {
     case retrieveWhole
@@ -330,20 +327,7 @@ class FoodieUser: PFUser {
   // MARK: - Public Static Variables
   static var current: FoodieUser? { return PFUser.current() as? FoodieUser }
   
-  static var isCurrentRegistered: Bool {
-    guard let current = current else {
-      return false
-    }
-  
-    if current.isRegistered {
-      return true
-    } else {
-      return false
-    }
-  }
-  
-  
-  
+
   // MARK: - Public Instance Variables
   var foodieObject: FoodieObject!
   
@@ -355,28 +339,6 @@ class FoodieUser: PFUser {
   }
 
   var criticalMutex = SwiftMutex.create()
-  
-  var isRegistered: Bool { return objectId != nil }
-  
-  var isEmailVerified: Bool {
-    if let emailVerified = self.object(forKey: "emailVerified") as? Bool, emailVerified {
-      return true
-    } else {
-      return false
-    }
-  }
-  
-  var isFacebookLinked: Bool {
-    return PFFacebookUtils.isLinked(with: self)
-  }
-  
-  var defaultDiscoverability: FoodieStory.Discoverability {
-    if roleLevel >= FoodieRole.Level.user.rawValue {
-      return .normal
-    } else {
-      return .limited
-    }
-  }
   
   
   // MARK: - Private Instance Variables
@@ -393,6 +355,69 @@ class FoodieUser: PFUser {
     }
   }
   
+  
+  // MARK: - Public Instance Functions
+  
+  // This is the Initilizer Parse will call upon Query or Retrieves
+  override init() {
+    super.init()
+
+    foodieObject = FoodieObject()
+    foodieObject.delegate = self
+    asyncOperationQueue.qualityOfService = .userInitiated
+    asyncOperationQueue.maxConcurrentOperationCount = 1
+    // media = FoodieMedia()  // retrieve() will take care of this. Don't set this here.
+  }
+  
+  
+  // This is the Initializer we will call internally
+  convenience init(foodieMedia: FoodieMedia?) {
+    self.init()
+    
+    // didSet does not get called in initialization context...
+    if let foodieMedia = foodieMedia {
+      self.media = foodieMedia
+      profileMediaFileName = foodieMedia.foodieFileName
+      profileMediaType = foodieMedia.mediaType!.rawValue
+    }
+  }
+}
+
+
+  
+// MARK: - SignUp, Login, & General Account Management
+
+extension FoodieUser {
+  
+  // MARK: - Public Static Computed Variables
+  
+  static var isCurrentRegistered: Bool {
+    guard let current = current else {
+      return false
+    }
+    
+    if current.isRegistered {
+      return true
+    } else {
+      return false
+    }
+  }
+  
+  
+  // MARK: - Public Instance Computed Variables
+  
+  var isRegistered: Bool { return objectId != nil }
+  
+  var isEmailVerified: Bool {
+    if let emailVerified = self.object(forKey: "emailVerified") as? Bool, emailVerified {
+      return true
+    } else {
+      return false
+    }
+  }
+  
+
+  // MARK: - Public Static Functions
   
   static func logIn(for username: String, using password: String, withBlock callback: UserErrorBlock?) {
     PFUser.logInWithUsername(inBackground: username.lowercased(), password: password) { (user, error) in
@@ -415,131 +440,6 @@ class FoodieUser: PFUser {
   }
   
   
-  static func facebookLogIn(withReadPermissions permissions: [String] = Constants.basicFacebookReadPermission,
-                            withBlock callback: UserErrorBlock?) {
-    
-    PFFacebookUtils.logInInBackground(withReadPermissions: permissions) { (user, error) in
-      if let error = error {
-        callback?(nil, error)
-        return
-      }
-      
-      guard let foodieUser = user as? FoodieUser else {
-        CCLog.warning("User returned from Facebook login is not of FoodieUser type or nil")
-        callback?(nil, ErrorCode.facebookLoginFoodieUserNil)
-        return
-      }
-      
-      if foodieUser.isNew {
-        
-        // Do not allow FB log-in for users with the same E-mail address
-        guard let fbToken = AccessToken.current else {
-          CCLog.warning("User just signed-in, but no current FB Access Token")
-          foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
-          callback?(nil, ErrorCode.facebookCurrentAccessTokenNil)
-          return
-        }
-        
-        // This is a new user signup! But we gotta verify whether this FB account have the minimum amount of info before proceeding further
-        var graphPath: String
-        if let userId = fbToken.userId {
-          graphPath = "/\(userId)"
-        } else {
-          graphPath = "/me"
-        }
-        
-        let parameters: [String : Any] = ["fields" : "name, email, picture.height(\(Constants.facebookProfilePicWidth))"]
-        let graphRequest = GraphRequest(graphPath: graphPath, parameters: parameters, accessToken: fbToken)
-        let graphConnection = GraphRequestConnection()
-        
-        graphConnection.add(graphRequest) { response, result in
-          switch result {
-          case .failed(let error):
-            CCLog.warning("Facebook Graph Request Failed: \(error)")
-            foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
-            callback?(nil, ErrorCode.facebookGraphRequestFailed)
-            return
-            
-          case .success(let response):
-            CCLog.debug("Facebook Graph Request Succeeded: \(response)")
-            
-            guard let email = response.dictionaryValue?["email"] as? String else {
-              CCLog.warning("Facebook Account has no E-mail address")
-              foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
-              callback?(nil, ErrorCode.facebookAccountNoEmail)
-              return
-            }
-            
-            // We gotta check if this E-mail is already in-use
-            FoodieUser.checkUserAvailFor(email: email) { avail, error in
-              
-              if let error = error {
-                CCLog.warning("Check E-mail Address available failed - \(error.localizedDescription)")
-                foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
-                callback?(nil, ErrorCode.parseFacebookCheckEmailFailed)
-                return
-              }
-              
-              if !avail {
-                CCLog.warning("E-mail from Facebook already registered")
-                foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
-                callback?(nil, ErrorCode.parseFacebookEmailRegistered)
-                return
-              }
-              
-              // Home Free! Populate basic information
-              foodieUser.isFacebookOnly = true
-              foodieUser.email = email
-              
-              if let name = response.dictionaryValue?["name"] as? String {
-                foodieUser.fullName = name
-              }
-             
-              // This is bonus round. Take it or leave it
-              if let pictureDictionary = response.dictionaryValue?["picture"] as? NSDictionary,
-                let dataDictionary = pictureDictionary["data"] as? NSDictionary,
-                let urlString = dataDictionary["url"] as? String {
-                
-                guard let profilePicUrl = URL(string: urlString) else {
-                  CCLog.warning("Profile Pic URL from Facebook is invalid")
-                  foodieUser.signUpSuccess() { error in callback?(foodieUser, error) }
-                  return
-                }
-                
-                var profilePicData: Data?
-                do {
-                  profilePicData = try Data(contentsOf: profilePicUrl)
-                } catch {
-                  CCLog.warning("Unable to obtain valid data from Profile Pic URL given by Facebook")
-                  foodieUser.signUpSuccess() { error in callback?(foodieUser, error) }
-                  return
-                }
-                
-                // !!!! Taking a leap of faith that image data from Facebook will be readable and not gianormous
-                if let profilePicData = profilePicData {
-                  let profilePicMedia = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
-                  profilePicMedia.imageMemoryBuffer = profilePicData
-                  foodieUser.media = profilePicMedia
-                }
-              }
-              
-              // SignUp Success should save the entire User up to Parse, including the profile pic if avail
-              foodieUser.signUpSuccess() { error in callback?(foodieUser, error) }
-            }
-          }
-        }
-        
-        graphConnection.start()
-        
-      } else {
-        // This is a login success. Update the Default Permission before calling back
-        FoodiePermission.setDefaultObjectPermission(for: foodieUser)
-        callback?(foodieUser, nil)
-      }
-    }
-  }
-  
-  
   static func logOutAndDeleteDraft(withBlock callback: SimpleErrorBlock?) {
     
     if let story = FoodieStory.currentStory {
@@ -549,16 +449,16 @@ class FoodieUser: PFUser {
 //          CCLog.warning("Deleting All Drafts resulted in Error - \(error.localizedDescription)")
 //        }
       
-        story.cancelSaveToServerRecursive()
-        _ = story.deleteRecursive(from: .both, type: .draft) { error in
-          if let error = error {
-            CCLog.warning("Problem deleting Draft from Both - \(error.localizedDescription)")
-          }
-          FoodieStory.removeCurrent()
-          FoodiePermission.setDefaultGlobalObjectPermission()
-          PFUser.logOutInBackground(block: callback)
+      story.cancelSaveToServerRecursive()
+      _ = story.deleteRecursive(from: .both, type: .draft) { error in
+        if let error = error {
+          CCLog.warning("Problem deleting Draft from Both - \(error.localizedDescription)")
         }
-//      }
+        FoodieStory.removeCurrent()
+        FoodiePermission.setDefaultGlobalObjectPermission()
+        PFUser.logOutInBackground(block: callback)
+      }
+      //      }
     } else {
       FoodiePermission.setDefaultGlobalObjectPermission()
       PFUser.logOutInBackground(block: callback)
@@ -727,7 +627,7 @@ class FoodieUser: PFUser {
     
     userQuery.whereKey("email", equalTo: email)
     userQuery.findObjectsInBackground { (objects, error) in
-
+      
       if let error = error {
         let nsError = error as NSError
         if nsError.domain == PFParseErrorDomain, nsError.code == PFErrorCode.errorObjectNotFound.rawValue {
@@ -765,7 +665,6 @@ class FoodieUser: PFUser {
   }
   
   
-  
   // MARK: - Private Instance Functions
   
   private func signUpSuccess(withBlock callback: SimpleErrorBlock? = nil) {
@@ -800,290 +699,7 @@ class FoodieUser: PFUser {
   }
   
   
-  // Retrieves just the user itself
-  private func retrieve(from location: FoodieObject.StorageLocation,
-                            type localType: FoodieObject.LocalType,
-                            forceAnyways: Bool,
-                            withBlock callback: SimpleErrorBlock?) {
-    
-    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
-      
-      if self.media == nil, let fileName = self.profileMediaFileName,
-        let typeString = self.profileMediaType, let type = FoodieMediaType(rawValue: typeString) {
-        self.media = FoodieMedia(for: fileName, localType: localType, mediaType: type)
-      }
-      
-      callback?(error)  // Callback regardless
-    }
-  }
-  
-  
-  private func retrieveOpRecursive(for userOperation: UserAsyncOperation,
-                                   from location: FoodieObject.StorageLocation,
-                                   type localType: FoodieObject.LocalType,
-                                   forceAnyways: Bool,
-                                   withReady readyBlock: SimpleBlock? = nil,
-                                   withCompletion callback: SimpleErrorBlock?) {
-    
-    CCLog.warning("Parent PFObject shouldn't need to call saveRecurisve on Users. Parse will auto Recurse on Save")
-    
-    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
-
-      if let error = error {
-        CCLog.assert("User.retrieve() resulted in error: \(error.localizedDescription)")
-        callback?(error)
-        return
-      }
-      readyBlock?()
-      callback?(nil)
-    }
-  }
-  
-  
-  private func retrieveOpWhole(for userOperation: UserAsyncOperation,
-                               from location: FoodieObject.StorageLocation,
-                               type localType: FoodieObject.LocalType,
-                               forceAnyways: Bool,
-                               withReady readyBlock: SimpleBlock? = nil,
-                               withCompletion callback: SimpleErrorBlock?) {
-    
-    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
-      
-      if let error = error {
-        CCLog.assert("User.retrieve() resulted in error: \(error.localizedDescription)")
-        callback?(error)
-        return
-      }
-      
-      // Calculate how many outstanding children operations there will be before hand
-      // This helps avoiding the need of a lock
-      var outstandingChildOperations = 0
-      
-      if self.media != nil { outstandingChildOperations += 1 }
-      
-      // Can we just use a mutex lock then?
-      SwiftMutex.lock(&self.criticalMutex)
-      defer { SwiftMutex.unlock(&self.criticalMutex) }
-      
-      guard !userOperation.isCancelled else {
-        callback?(ErrorCode.operationCancelled)
-        return
-      }
-        
-      guard outstandingChildOperations != 0 else {
-        readyBlock?()
-        callback?(nil)
-        return
-      }
-      
-      self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
-      
-      if let media = self.media {
-        self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, for: userOperation, withReady: readyBlock, withCompletion: callback)
-      }
-    }
-  }
-  
-  
-  // This is if a parent object calls for Save
-  private func saveOpRecursive(for userOperation: UserAsyncOperation,
-                            to location: FoodieObject.StorageLocation,
-                            type localType: FoodieObject.LocalType,
-                            withBlock callback: SimpleErrorBlock?) {
-    
-    // Calculate how many outstanding children operations there will be before hand
-    // This helps avoiding the need of a lock
-    var outstandingChildOperations = 0
-    
-    if self.media != nil { outstandingChildOperations += 1 }
-    
-    // Can we just use a mutex lock then?
-    SwiftMutex.lock(&criticalMutex)
-    defer { SwiftMutex.unlock(&criticalMutex) }
-    
-    guard !userOperation.isCancelled else {
-      callback?(ErrorCode.operationCancelled)
-      return
-    }
-    
-    guard outstandingChildOperations != 0 else {
-      callback?(nil)
-      return
-    }
-    
-    foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
-    
-    if let media = self.media {
-      self.foodieObject.saveChild(media, to: location, type: localType, for: userOperation, withBlock: callback)
-    }
-  }
-  
-  
-  // This is if an external object calls for Save of User and all sub-objects
-  private func saveOpWhole(for userOperation: UserAsyncOperation,
-                            to location: FoodieObject.StorageLocation,
-                            type localType: FoodieObject.LocalType,
-                            withBlock callback: SimpleErrorBlock?) {
-    
-    // Calculate how many outstanding children operations there will be before hand
-    // This helps avoiding the need of a lock
-    var outstandingChildOperations = 0
-    
-    if self.media != nil { outstandingChildOperations += 1 }
-    
-    // Can we just use a mutex lock then?
-    SwiftMutex.lock(&criticalMutex)
-    defer { SwiftMutex.unlock(&criticalMutex) }
-    
-    guard !userOperation.isCancelled else {
-      callback?(ErrorCode.operationCancelled)
-      return
-    }
-    
-    guard outstandingChildOperations != 0 else {
-      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-      return
-    }
-    
-    foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
-    
-    if let media = self.media {
-      self.foodieObject.saveChild(media, to: location, type: localType, for: userOperation) { error in
-        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-      }
-    }
-  }
-  
-  
-  // This is if an external object just want to Save the Digest, in this case just the User PFObject
-  private func saveOpDigest(for userOperation: UserAsyncOperation,
-                            to location: FoodieObject.StorageLocation,
-                            type localType: FoodieObject.LocalType,
-                            withBlock callback: SimpleErrorBlock?) {
-    
-    guard !userOperation.isCancelled else {
-      callback?(ErrorCode.operationCancelled)
-      return
-    }
-    foodieObject.saveObject(to: location, type: localType, withBlock: callback)
-  }
-  
-  
-  private func deleteOpRecursive(for userOperation: UserAsyncOperation,
-                                 from location: FoodieObject.StorageLocation,
-                                 type localType: FoodieObject.LocalType,
-                                 withBlock callback: SimpleErrorBlock?) {
-    
-    // Retrieve the User (only) to guarentee access to the childrens
-    retrieve(from: location, type: localType, forceAnyways: false) { error in
-      
-      if let error = error {
-        CCLog.assert("User.retrieve() resulted in error: \(error.localizedDescription)")
-        callback?(error)
-        return
-      }
-      
-      // Delete self first before deleting children
-      self.foodieObject.deleteObject(from: location, type: localType) { error in
-        
-        if let error = error {
-          CCLog.warning("Deleting self resulted in error: \(error.localizedDescription)")
-          
-          // Do best effort delete of all children
-          if let media = self.media {
-            self.foodieObject.deleteChild(media, from: location, type: localType, for: nil, withBlock: nil)
-          }
-          
-          // Just callback with the error
-          callback?(error)
-          return
-        }
-        
-        // Calculate how many outstanding children operations there will be before hand
-        // This helps avoiding the need of a lock
-        var outstandingChildOperations = 0
-        
-        if self.media != nil { outstandingChildOperations += 1 }
-        
-        // Can we just use a mutex lock then?
-        SwiftMutex.lock(&self.criticalMutex)
-        defer { SwiftMutex.unlock(&self.criticalMutex) }
-        
-        guard !userOperation.isCancelled else {
-          callback?(ErrorCode.operationCancelled)
-          return
-        }
-
-        // If there's no child op, then just delete and return
-        guard outstandingChildOperations != 0 else {
-          callback?(error)
-          return
-        }
-        
-        self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
-        
-        // check for media and thumbnails to be deleted from this object
-        if let media = self.media {
-          self.foodieObject.deleteChild(media, from: location, type: localType, for: userOperation, withBlock: callback)
-        }
-      }
-    }
-  }
-    
-    
-  private func cancelRetrieveOpRecursive() {
-    CCLog.verbose("Cancel Retrieve Recursive for User \(getUniqueIdentifier())")
-    
-    // ??? Should we really retrieve first? Bandwidth? Collision risk?
-    retrieveFromLocalThenServer(forceAnyways: false, type: .cache) { error in
-      if let error = error {
-        CCLog.assert("User() resulted in error: \(error.localizedDescription)")
-        return
-      }
-      
-      if let media = self.media {
-        media.cancelRetrieveFromServerRecursive()
-      }
-    }
-  }
-  
-  
-  private func cancelSaveOpRecursive() {
-    CCLog.verbose("Cancel Save Recursive for User \(getUniqueIdentifier())")
-    
-    if let media = media {
-      media.cancelSaveToServerRecursive()
-    }
-  }
-  
-  
-  
   // MARK: - Public Instance Functions
-  
-  // This is the Initilizer Parse will call upon Query or Retrieves
-  override init() {
-    super.init()
-
-    foodieObject = FoodieObject()
-    foodieObject.delegate = self
-    asyncOperationQueue.qualityOfService = .userInitiated
-    asyncOperationQueue.maxConcurrentOperationCount = 1
-    // media = FoodieMedia()  // retrieve() will take care of this. Don't set this here.
-  }
-  
-  
-  // This is the Initializer we will call internally
-  convenience init(foodieMedia: FoodieMedia?) {
-    self.init()
-    
-    // didSet does not get called in initialization context...
-    if let foodieMedia = foodieMedia {
-      self.media = foodieMedia
-      profileMediaFileName = foodieMedia.foodieFileName
-      profileMediaType = foodieMedia.mediaType!.rawValue
-    }
-  }
-  
   
   func forceEmailUnverified() {
     self.setObject(false, forKey: "emailVerified")
@@ -1216,7 +832,146 @@ class FoodieUser: PFUser {
       }
     }
   }
+}
+
+
+
+// MARK: - Facebook SignUp Login Specifics
+
+extension FoodieUser {
   
+  // MARK: - Public Instance Computed Variables
+  
+  var isFacebookLinked: Bool {
+    return PFFacebookUtils.isLinked(with: self)
+  }
+  
+  
+  // MARK: - Public Static Functions
+  
+  static func facebookLogIn(withReadPermissions permissions: [String] = Constants.basicFacebookReadPermission,
+                            withBlock callback: UserErrorBlock?) {
+    
+    PFFacebookUtils.logInInBackground(withReadPermissions: permissions) { (user, error) in
+      if let error = error {
+        callback?(nil, error)
+        return
+      }
+      
+      guard let foodieUser = user as? FoodieUser else {
+        CCLog.warning("User returned from Facebook login is not of FoodieUser type or nil")
+        callback?(nil, ErrorCode.facebookLoginFoodieUserNil)
+        return
+      }
+      
+      if foodieUser.isNew {
+        
+        // Do not allow FB log-in for users with the same E-mail address
+        guard let fbToken = AccessToken.current else {
+          CCLog.warning("User just signed-in, but no current FB Access Token")
+          foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+          callback?(nil, ErrorCode.facebookCurrentAccessTokenNil)
+          return
+        }
+        
+        // This is a new user signup! But we gotta verify whether this FB account have the minimum amount of info before proceeding further
+        var graphPath: String
+        if let userId = fbToken.userId {
+          graphPath = "/\(userId)"
+        } else {
+          graphPath = "/me"
+        }
+        
+        let parameters: [String : Any] = ["fields" : "name, email, picture.height(\(Constants.facebookProfilePicWidth))"]
+        let graphRequest = GraphRequest(graphPath: graphPath, parameters: parameters, accessToken: fbToken)
+        let graphConnection = GraphRequestConnection()
+        
+        graphConnection.add(graphRequest) { response, result in
+          switch result {
+          case .failed(let error):
+            CCLog.warning("Facebook Graph Request Failed: \(error)")
+            foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+            callback?(nil, ErrorCode.facebookGraphRequestFailed)
+            return
+            
+          case .success(let response):
+            CCLog.debug("Facebook Graph Request Succeeded: \(response)")
+            
+            guard let email = response.dictionaryValue?["email"] as? String else {
+              CCLog.warning("Facebook Account has no E-mail address")
+              foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+              callback?(nil, ErrorCode.facebookAccountNoEmail)
+              return
+            }
+            
+            // We gotta check if this E-mail is already in-use
+            FoodieUser.checkUserAvailFor(email: email) { avail, error in
+              
+              if let error = error {
+                CCLog.warning("Check E-mail Address available failed - \(error.localizedDescription)")
+                foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+                callback?(nil, ErrorCode.parseFacebookCheckEmailFailed)
+                return
+              }
+              
+              if !avail {
+                CCLog.warning("E-mail from Facebook already registered")
+                foodieUser.deleteFromLocalNServer() { error in if let error = error { CCLog.assert("Even User Clean-up Failed - \(error.localizedDescription)") } }
+                callback?(nil, ErrorCode.parseFacebookEmailRegistered)
+                return
+              }
+              
+              // Home Free! Populate basic information
+              foodieUser.isFacebookOnly = true
+              foodieUser.email = email
+              
+              if let name = response.dictionaryValue?["name"] as? String {
+                foodieUser.fullName = name
+              }
+              
+              // This is bonus round. Take it or leave it
+              if let pictureDictionary = response.dictionaryValue?["picture"] as? NSDictionary,
+                let dataDictionary = pictureDictionary["data"] as? NSDictionary,
+                let urlString = dataDictionary["url"] as? String {
+                
+                guard let profilePicUrl = URL(string: urlString) else {
+                  CCLog.warning("Profile Pic URL from Facebook is invalid")
+                  foodieUser.signUpSuccess() { error in callback?(foodieUser, error) }
+                  return
+                }
+                
+                var profilePicData: Data?
+                do {
+                  profilePicData = try Data(contentsOf: profilePicUrl)
+                } catch {
+                  CCLog.warning("Unable to obtain valid data from Profile Pic URL given by Facebook")
+                  foodieUser.signUpSuccess() { error in callback?(foodieUser, error) }
+                  return
+                }
+                
+                // !!!! Taking a leap of faith that image data from Facebook will be readable and not gianormous
+                if let profilePicData = profilePicData {
+                  let profilePicMedia = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
+                  profilePicMedia.imageMemoryBuffer = profilePicData
+                  foodieUser.media = profilePicMedia
+                }
+              }
+              
+              // SignUp Success should save the entire User up to Parse, including the profile pic if avail
+              foodieUser.signUpSuccess() { error in callback?(foodieUser, error) }
+            }
+          }
+        }
+        
+        graphConnection.start()
+        
+      } else {
+        // This is a login success. Update the Default Permission before calling back
+        FoodiePermission.setDefaultObjectPermission(for: foodieUser)
+        callback?(foodieUser, nil)
+      }
+    }
+  }
   
   func linkFacebook(withBlock callback: SimpleErrorBlock?) {
     CCLog.info("Linking Facebook against Account")
@@ -1228,6 +983,8 @@ class FoodieUser: PFUser {
     
     PFFacebookUtils.linkUser(inBackground: self, withReadPermissions: Constants.basicFacebookReadPermission) { (success, error) in
       if let error = error {
+        CCLog.warning("Facebook Link Failed - \(error.localizedDescription)")
+        
         let nsError = error as NSError
         if nsError.domain == PFParseErrorDomain, let pfErrorCode = PFErrorCode(rawValue: nsError.code) {
           
@@ -1362,12 +1119,29 @@ class FoodieUser: PFUser {
     }
     graphConnection.start()
   }
+}
+
+
+
+// MARK: - Properties Manipulation Functions
   
-  
-  
-  // MARK: - Properties Manipulation Functions
+extension FoodieUser {
   
   // Force Queries to be done out of the FoodieQuery class?
+  
+  
+  // MARK: - Public Instance Computed Variables
+  
+  var defaultDiscoverability: FoodieStory.Discoverability {
+    if roleLevel >= FoodieRole.Level.user.rawValue {
+      return .normal
+    } else {
+      return .limited
+    }
+  }
+  
+  
+  // MARK: - Public Instance Functions
   
   func addAuthoredStory(_ story: FoodieStory, withBlock callback: SimpleErrorBlock?) {
     // Do a retrieve before adding
@@ -1468,9 +1242,13 @@ class FoodieUser: PFUser {
 }
 
 
+
 // MARK: - Foodie Object Delegate Protocol Conformance
 
 extension FoodieUser: FoodieObjectDelegate {
+  
+  // MARK: - Public Instance Computed Variables
+  
   var isRetrieved: Bool { return isDataAvailable }
 
   var isFullyRetrieved: Bool {
@@ -1485,6 +1263,8 @@ extension FoodieUser: FoodieObjectDelegate {
   }
 
   
+  // MARK: - Public Static Functions
+  
   static func deleteAll(from localType: FoodieObject.LocalType,
                         withBlock callback: SimpleErrorBlock?) {
     unpinAllObjectsInBackground(withName: localType.rawValue) { success, error in
@@ -1492,9 +1272,269 @@ extension FoodieUser: FoodieObjectDelegate {
     }
   }
   
-  
   static func cancelAll() { return }  // Nothing to cancel on for PFUser types
   
+  
+  // MARK: - Private Instance Functions
+  
+  // Retrieves just the user itself
+  private func retrieve(from location: FoodieObject.StorageLocation,
+                        type localType: FoodieObject.LocalType,
+                        forceAnyways: Bool,
+                        withBlock callback: SimpleErrorBlock?) {
+    
+    foodieObject.retrieveObject(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      
+      if self.media == nil, let fileName = self.profileMediaFileName,
+        let typeString = self.profileMediaType, let type = FoodieMediaType(rawValue: typeString) {
+        self.media = FoodieMedia(for: fileName, localType: localType, mediaType: type)
+      }
+      
+      callback?(error)  // Callback regardless
+    }
+  }
+  
+  
+  private func retrieveOpRecursive(for userOperation: UserAsyncOperation,
+                                   from location: FoodieObject.StorageLocation,
+                                   type localType: FoodieObject.LocalType,
+                                   forceAnyways: Bool,
+                                   withReady readyBlock: SimpleBlock? = nil,
+                                   withCompletion callback: SimpleErrorBlock?) {
+    
+    CCLog.warning("Parent PFObject shouldn't need to call saveRecurisve on Users. Parse will auto Recurse on Save")
+    
+    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      
+      if let error = error {
+        CCLog.assert("User.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      readyBlock?()
+      callback?(nil)
+    }
+  }
+  
+  
+  private func retrieveOpWhole(for userOperation: UserAsyncOperation,
+                               from location: FoodieObject.StorageLocation,
+                               type localType: FoodieObject.LocalType,
+                               forceAnyways: Bool,
+                               withReady readyBlock: SimpleBlock? = nil,
+                               withCompletion callback: SimpleErrorBlock?) {
+    
+    retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
+      
+      if let error = error {
+        CCLog.assert("User.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      // Calculate how many outstanding children operations there will be before hand
+      // This helps avoiding the need of a lock
+      var outstandingChildOperations = 0
+      
+      if self.media != nil { outstandingChildOperations += 1 }
+      
+      // Can we just use a mutex lock then?
+      SwiftMutex.lock(&self.criticalMutex)
+      defer { SwiftMutex.unlock(&self.criticalMutex) }
+      
+      guard !userOperation.isCancelled else {
+        callback?(ErrorCode.operationCancelled)
+        return
+      }
+      
+      guard outstandingChildOperations != 0 else {
+        readyBlock?()
+        callback?(nil)
+        return
+      }
+      
+      self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+      
+      if let media = self.media {
+        self.foodieObject.retrieveChild(media, from: location, type: localType, forceAnyways: forceAnyways, for: userOperation, withReady: readyBlock, withCompletion: callback)
+      }
+    }
+  }
+  
+  
+  // This is if a parent object calls for Save
+  private func saveOpRecursive(for userOperation: UserAsyncOperation,
+                               to location: FoodieObject.StorageLocation,
+                               type localType: FoodieObject.LocalType,
+                               withBlock callback: SimpleErrorBlock?) {
+    
+    // Calculate how many outstanding children operations there will be before hand
+    // This helps avoiding the need of a lock
+    var outstandingChildOperations = 0
+    
+    if self.media != nil { outstandingChildOperations += 1 }
+    
+    // Can we just use a mutex lock then?
+    SwiftMutex.lock(&criticalMutex)
+    defer { SwiftMutex.unlock(&criticalMutex) }
+    
+    guard !userOperation.isCancelled else {
+      callback?(ErrorCode.operationCancelled)
+      return
+    }
+    
+    guard outstandingChildOperations != 0 else {
+      callback?(nil)
+      return
+    }
+    
+    foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+    
+    if let media = self.media {
+      self.foodieObject.saveChild(media, to: location, type: localType, for: userOperation, withBlock: callback)
+    }
+  }
+  
+  
+  // This is if an external object calls for Save of User and all sub-objects
+  private func saveOpWhole(for userOperation: UserAsyncOperation,
+                           to location: FoodieObject.StorageLocation,
+                           type localType: FoodieObject.LocalType,
+                           withBlock callback: SimpleErrorBlock?) {
+    
+    // Calculate how many outstanding children operations there will be before hand
+    // This helps avoiding the need of a lock
+    var outstandingChildOperations = 0
+    
+    if let media = self.media, media.isRetrieved { outstandingChildOperations += 1 }
+    
+    // Can we just use a mutex lock then?
+    SwiftMutex.lock(&criticalMutex)
+    defer { SwiftMutex.unlock(&criticalMutex) }
+    
+    guard !userOperation.isCancelled else {
+      callback?(ErrorCode.operationCancelled)
+      return
+    }
+    
+    guard outstandingChildOperations != 0 else {
+      self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      return
+    }
+    
+    foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+    
+    if let media = self.media, media.isRetrieved {
+      self.foodieObject.saveChild(media, to: location, type: localType, for: userOperation) { error in
+        self.foodieObject.savesCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+      }
+    }
+  }
+  
+  
+  // This is if an external object just want to Save the Digest, in this case just the User PFObject
+  private func saveOpDigest(for userOperation: UserAsyncOperation,
+                            to location: FoodieObject.StorageLocation,
+                            type localType: FoodieObject.LocalType,
+                            withBlock callback: SimpleErrorBlock?) {
+    
+    guard !userOperation.isCancelled else {
+      callback?(ErrorCode.operationCancelled)
+      return
+    }
+    foodieObject.saveObject(to: location, type: localType, withBlock: callback)
+  }
+  
+  
+  private func deleteOpRecursive(for userOperation: UserAsyncOperation,
+                                 from location: FoodieObject.StorageLocation,
+                                 type localType: FoodieObject.LocalType,
+                                 withBlock callback: SimpleErrorBlock?) {
+    
+    // Retrieve the User (only) to guarentee access to the childrens
+    retrieve(from: location, type: localType, forceAnyways: false) { error in
+      
+      if let error = error {
+        CCLog.assert("User.retrieve() resulted in error: \(error.localizedDescription)")
+        callback?(error)
+        return
+      }
+      
+      // Delete self first before deleting children
+      self.foodieObject.deleteObject(from: location, type: localType) { error in
+        
+        if let error = error {
+          CCLog.warning("Deleting self resulted in error: \(error.localizedDescription)")
+          
+          // Do best effort delete of all children
+          if let media = self.media {
+            self.foodieObject.deleteChild(media, from: location, type: localType, for: nil, withBlock: nil)
+          }
+          
+          // Just callback with the error
+          callback?(error)
+          return
+        }
+        
+        // Calculate how many outstanding children operations there will be before hand
+        // This helps avoiding the need of a lock
+        var outstandingChildOperations = 0
+        
+        if self.media != nil { outstandingChildOperations += 1 }
+        
+        // Can we just use a mutex lock then?
+        SwiftMutex.lock(&self.criticalMutex)
+        defer { SwiftMutex.unlock(&self.criticalMutex) }
+        
+        guard !userOperation.isCancelled else {
+          callback?(ErrorCode.operationCancelled)
+          return
+        }
+        
+        // If there's no child op, then just delete and return
+        guard outstandingChildOperations != 0 else {
+          callback?(error)
+          return
+        }
+        
+        self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
+        
+        // check for media and thumbnails to be deleted from this object
+        if let media = self.media {
+          self.foodieObject.deleteChild(media, from: location, type: localType, for: userOperation, withBlock: callback)
+        }
+      }
+    }
+  }
+  
+  
+  private func cancelRetrieveOpRecursive() {
+    CCLog.verbose("Cancel Retrieve Recursive for User \(getUniqueIdentifier())")
+    
+    // ??? Should we really retrieve first? Bandwidth? Collision risk?
+    retrieveFromLocalThenServer(forceAnyways: false, type: .cache) { error in
+      if let error = error {
+        CCLog.assert("User() resulted in error: \(error.localizedDescription)")
+        return
+      }
+      
+      if let media = self.media {
+        media.cancelRetrieveFromServerRecursive()
+      }
+    }
+  }
+  
+  
+  private func cancelSaveOpRecursive() {
+    CCLog.verbose("Cancel Save Recursive for User \(getUniqueIdentifier())")
+    
+    if let media = media {
+      media.cancelSaveToServerRecursive()
+    }
+  }
+  
+  
+  // MARK: - Public Instance Functions
   
   func retrieveWhole(from location: FoodieObject.StorageLocation,
                       type localType: FoodieObject.LocalType,
@@ -1607,7 +1647,6 @@ extension FoodieUser: FoodieObjectDelegate {
   }
 
   
-
   // MARK: - Basic CRUD ~ Retrieve/Save/Delete   // TODO: Should really try to merge with FoodiePFObject. Make everything into another Protocol?
   
   func retrieve(from localType: FoodieObject.LocalType,
