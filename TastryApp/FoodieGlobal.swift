@@ -73,9 +73,9 @@ struct FoodieGlobal {
   
   
   static func booleanToSimpleErrorCallback(_ success: Bool, _ error: Error?, function: String = #function, file: String = #file, line: Int = #line, _ callback: SimpleErrorBlock?) {
-    #if DEBUG  // Do this sanity check low and never need to worry about it again
+    #if DEBUG  // Do this sanity check now and never need to worry about it again
       if (success && error != nil) || (!success && error == nil) {
-        CCLog.fatal("Parse layer come back with Success and Error mismatch")
+        CCLog.assert("Parse layer come back with Success and Error mismatch")
       }
     #endif
     

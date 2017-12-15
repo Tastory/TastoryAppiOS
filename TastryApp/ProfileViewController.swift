@@ -30,7 +30,7 @@ class ProfileViewController: OverlayViewController {
   
   private var feedCollectionNodeController: FeedCollectionNodeController?
   private var mapNavController: MapNavController?
-  private var avatarImageNode: ASNetworkImageNode?
+  private var avatarImageNode: ASNetworkImageNode!
   private var activitySpinner: ActivitySpinner!
   private var isInitialLayout = true
   
@@ -167,6 +167,14 @@ class ProfileViewController: OverlayViewController {
     shareButton.imageView?.contentMode = .scaleAspectFit
     filterButton.imageView?.contentMode = .scaleAspectFit
     
+    // Add the Avatar Image Node first
+    avatarImageNode = ASNetworkImageNode()
+    avatarImageNode.contentMode = .scaleAspectFill
+    avatarImageNode.placeholderColor = UIColor.white
+    avatarImageNode.placeholderEnabled = true
+    view.addSubnode(avatarImageNode)
+    view.insertSubview(avatarImageNode.view, belowSubview: emptyAvatarImageView)
+    
     // Drop Shadow at the back of the UI View
     profileUIView.layer.masksToBounds = false
     profileUIView.layer.shadowColor = UIColor.black.cgColor
@@ -245,13 +253,7 @@ class ProfileViewController: OverlayViewController {
     if let avatarFileName = user.profileMediaFileName {
       if let mediaTypeString = user.profileMediaType, let mediaType = FoodieMediaType(rawValue: mediaTypeString), mediaType == .photo {
         // Only Photo Avatars are supported at the moment
-        avatarImageNode = ASNetworkImageNode()
         avatarImageNode!.url = FoodieFileObject.getS3URL(for: avatarFileName)
-        avatarImageNode!.contentMode = .scaleAspectFill
-        avatarImageNode!.placeholderColor = UIColor.white
-        avatarImageNode!.placeholderEnabled = true
-        //avatarImageNode!.isLayerBacked = true
-        
         emptyAvatarImageView.isHidden = true
       } else {
         CCLog.warning("Unsupported Avatar Media Type - \(user.profileMediaType ?? "Media Type == nil")")
@@ -327,21 +329,20 @@ class ProfileViewController: OverlayViewController {
       nodeController.storyDelegate = storyDelegate
       feedCollectionNodeController = nodeController
       
-      if let avatarImageNode = avatarImageNode {
-        avatarImageNode.frame = avatarFrameView.frame.insetBy(dx: 2.0, dy: 2.0)
-        view.addSubnode(avatarImageNode)
-        view.insertSubview(avatarImageNode.view, belowSubview: avatarFrameView)
-        
-        // Mask the avatar
-        guard let maskImage = UIImage(named: "Profile-BloatedSquareMask") else {
-          CCLog.fatal("Cannot get at Profile-BloatedSquareMask in Resource Bundle")
-        }
-        
-        let maskLayer = CALayer()
-        maskLayer.contents = maskImage.cgImage
-        maskLayer.frame = avatarImageNode.bounds
-        avatarImageNode.layer.mask = maskLayer
+      
+      // Layout the Avatar Image Node
+      avatarImageNode.frame = avatarFrameView.frame.insetBy(dx: 2.0, dy: 2.0)
+      
+      // Mask the avatar
+      guard let maskImage = UIImage(named: "Profile-BloatedSquareMask") else {
+        CCLog.fatal("Cannot get at Profile-BloatedSquareMask in Resource Bundle")
       }
+      
+      let maskLayer = CALayer()
+      maskLayer.contents = maskImage.cgImage
+      maskLayer.frame = avatarImageNode.bounds
+      avatarImageNode.layer.mask = maskLayer
+      
       
       // Setup Background Gradient Views
       let topBackgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.TopGradientBlackAlpha)

@@ -239,6 +239,7 @@ class ProfileDetailViewController: OverlayViewController {
             CCLog.warning("checkUserAvailFor E-mail: (\(email)) Failed - \(emailError.localizedDescription)")
             self.activitySpinner.remove()
             return
+            
           } else if !emailSuccess {
             AlertDialog.present(from: self, title: "E-mail Unavailable", message: "E-mail Address \(email) already taken")
             CCLog.info("checkUserAvailFor E-mail: (\(email)) already exists")
@@ -246,7 +247,6 @@ class ProfileDetailViewController: OverlayViewController {
             return
           }
           self.user.email = email
-          self.user.forceEmailUnverified()
         }
         
         self.user.fullName = self.fullName
@@ -307,7 +307,7 @@ class ProfileDetailViewController: OverlayViewController {
   private func updateAllUIDisplayed() {
     DispatchQueue.main.async {
       // Update the UI according to the current User object
-      if !self.user.isEmailVerified {
+      if !self.user.isVerified {
         self.emailButton.isHidden = false
         self.emailLabel.isHidden = false
         self.view.layoutIfNeeded()

@@ -25,11 +25,7 @@ struct LogOutDismiss {
     }
   }
   
-  
-
-  // MARK: - Private Instance Functions
-  
-  private static func logOutAndDismiss(from viewController: UIViewController) {
+  static func logOutAndDismiss(from viewController: UIViewController) {
     
     let activitySpinner = ActivitySpinner(addTo: viewController.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
     activitySpinner.apply()

@@ -7,8 +7,16 @@
 //
 
 import UIKit
+import SafariServices
 
 class SettingsMenuViewController: OverlayViewController {
+  
+  
+  // MARK: - Constants
+  
+  struct Constants {
+    static let defaultLinkToFacebookCellText = "Link Account to Facebook"
+  }
   
   // MARK: - Public Instance Variable
   
@@ -63,16 +71,47 @@ class SettingsMenuViewController: OverlayViewController {
       return
     }
     
-    currentUser.linkFacebook { error in
+    facebookCell(isEnabled: false, with: "Linking to Facebook...")
+    
+    currentUser.linkFacebook { [weak self] error in
       if let error = error {
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
-          AlertDialog.present(from: self, title: "Facebook Error", message: error.localizedDescription) { _ in
-            CCLog.warning("Facebook Link Failed - \(error.localizedDescription)")
+        self?.facebookCell(isEnabled: true, with: Constants.defaultLinkToFacebookCellText)
+        
+        // Do not show Alert Dialog for Error related to Cancel. This is the iOS 11 case
+        if #available(iOS 11.0, *),
+          let sfError = error as? SFAuthenticationError,
+          sfError.errorCode == SFAuthenticationError.Code.canceledLogin.rawValue {
+          
+          CCLog.info("Facebook link cancelled")
+          return
+        }
+        
+        // Do not show Alert Dialog for Error related to Cancel. This is the iOS 10 case
+        if let foodieError = error as? FoodieUser.ErrorCode {
+          switch foodieError {
+          case .facebookCurrentAccessTokenNil:
+            CCLog.info("Facebook link cancelled")
+            return
+            
+          default:
+            break
+          }
+        }
+        
+        // So Facebook link failed for some odd reason. Best effort unlink if necassary
+        currentUser.unlinkFacebook(withBlock: nil)
+        
+        if let unwrappedSelf = self {
+          DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.6) {
+            AlertDialog.present(from: unwrappedSelf, title: "Facebook Error", message: error.localizedDescription) { _ in
+              CCLog.warning("Facebook Link Failed - \(error.localizedDescription)")
+            }
           }
         }
         return
       }
-      self.updateFacebookCell()
+      
+      self?.updateFacebookCell()
     }
   }
   
@@ -136,6 +175,13 @@ class SettingsMenuViewController: OverlayViewController {
     LogOutDismiss.askDiscardIfNeeded(from: vc)
   }
   
+  
+  private func facebookCell(isEnabled enabled: Bool, with text: String) {
+    linkFacebookLabel.text = text
+    linkFacebookArrow.isHidden = !enabled
+    linkFacebookTapRecognizer.isEnabled = enabled
+  }
+  
 
   private func updateFacebookCell() {
     // Update the Facebook Link Cell
@@ -147,9 +193,12 @@ class SettingsMenuViewController: OverlayViewController {
     }
     
     if currentUser.isFacebookLinked {
-      currentUser.getFacebookName() { (object, error) in
+      facebookCell(isEnabled: false, with: "Linked to Facebook Account")
+      
+      currentUser.getFacebookName() { [weak self] (object, error) in
         if let error = error {
           CCLog.warning("Get Facebook Name failed - \(error.localizedDescription)")
+          return
         }
         
         guard let name = object as? String else {
@@ -157,14 +206,10 @@ class SettingsMenuViewController: OverlayViewController {
           return
         }
         
-        self.linkFacebookLabel.text = "Facebook Account - \(name)"
-        self.linkFacebookArrow.isHidden = true
-        self.linkFacebookTapRecognizer.isEnabled = false
+        self?.facebookCell(isEnabled: false, with: "Facebook Account - \(name)")
       }
     } else {
-      linkFacebookLabel.text = "Link Account to Facebook"
-      self.linkFacebookArrow.isHidden = false
-      linkFacebookTapRecognizer.isEnabled = true
+      facebookCell(isEnabled: true, with: "Link Account to Facebook")
     }
   }
   

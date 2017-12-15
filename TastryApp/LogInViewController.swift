@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SafariServices
 
 class LogInViewController: OverlayViewController {
   
@@ -129,12 +130,36 @@ class LogInViewController: OverlayViewController {
     activitySpinner.apply()
     
     FoodieUser.facebookLogIn() { (user, error) in
-      
       self.activitySpinner.remove()
       
       if let error = error {
-        AlertDialog.present(from: self, title: "FB Login Failed", message: error.localizedDescription) { _ in
-          CCLog.warning("Facebook login failed - \(error.localizedDescription)")
+        // Do not show Alert Dialog for Error related to Cancel. This is the iOS 11 case
+        if #available(iOS 11.0, *),
+          let sfError = error as? SFAuthenticationError,
+          sfError.errorCode == SFAuthenticationError.Code.canceledLogin.rawValue {
+            
+          CCLog.info("Facebook login cancelled")
+          if FoodieUser.current != nil { FoodieUser.logOut() }
+          return
+        }
+        
+        // Do not show Alert Dialog for Error related to Cancel. This is the iOS 10 case
+        if let foodieError = error as? FoodieUser.ErrorCode {
+          switch foodieError {
+          case .facebookLoginFoodieUserNil:
+            CCLog.info("Facebook login cancelled")
+            if FoodieUser.current != nil { FoodieUser.logOut() }
+            return
+            
+          default:
+            break
+          }
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.6) {
+          AlertDialog.present(from: self, title: "FB Login Failed", message: error.localizedDescription) { _ in
+            CCLog.warning("Facebook login failed - \(error.localizedDescription)")
+          }
         }
         
         if FoodieUser.current != nil { FoodieUser.logOut() }
@@ -142,8 +167,10 @@ class LogInViewController: OverlayViewController {
       }
       
       guard let user = user else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-          CCLog.assert("Nil returned from getting user for Facebook Login. Expected Foodie User object")
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.6) {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+            CCLog.assert("Nil returned from getting user for Facebook Login. Expected Foodie User object")
+          }
         }
         
         if FoodieUser.current != nil { FoodieUser.logOut() }
@@ -160,8 +187,8 @@ class LogInViewController: OverlayViewController {
           return
         }
         
-        viewController.firstLabelText = "Please make sure you confirm your E-mail so you can start posting"
-        viewController.secondLabelText = "For now, you can start by checking out what Tasty Stories are around you~"
+        viewController.firstLabelText = "Thanks for Signing Up!"
+        viewController.secondLabelText = "Go ahead, drool over the Tasty Stories around you~"
         viewController.enableResend = false
         viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: false)
         self.pushPresent(viewController, animated: true)

@@ -68,6 +68,7 @@ class FoodieUser: PFUser {
   enum ErrorCode: LocalizedError {
     
     case loginFoodieUserNil
+    
     case facebookLoginFoodieUserNil
     case facebookCurrentAccessTokenNil
     case facebookGraphRequestFailed
@@ -79,6 +80,8 @@ class FoodieUser: PFUser {
     case facebookLinkNotCurrentUser
     case facebookLinkAlreadyUsed
     case facebookGraphRequestNoName
+    
+    case invalidSessionToken
     
     case usernameIsEmpty
     case usernameTooShort(Int)
@@ -117,6 +120,7 @@ class FoodieUser: PFUser {
       switch self {
       case .loginFoodieUserNil:
         return NSLocalizedString("User returned by login is nil", comment: "Error message upon Login")
+        
       case .facebookLoginFoodieUserNil:
         return NSLocalizedString("User returned by Facebook login is nil", comment: "Error message upon Login")
       case .facebookCurrentAccessTokenNil:
@@ -138,6 +142,9 @@ class FoodieUser: PFUser {
         return NSLocalizedString("Not logged in, cannot link against Facebook account", comment: "Error message upon FB Link")
       case .facebookGraphRequestNoName:
         return NSLocalizedString("Facebook Graph Request Response returned no 'name' field", comment: "Error message upon FB Link")
+        
+      case .invalidSessionToken:
+        return NSLocalizedString("User Session Token is invalid", comment: "Error message on PF action that requires User Session Token")
         
       case .usernameIsEmpty:
         return NSLocalizedString("Username is empty", comment: "Error message when Login/ Sign Up fails due to Username problems")
@@ -408,10 +415,14 @@ extension FoodieUser {
   
   var isRegistered: Bool { return objectId != nil }
   
-  var isEmailVerified: Bool {
-    if let emailVerified = self.object(forKey: "emailVerified") as? Bool, emailVerified {
+  var isVerified: Bool {
+    if isFacebookLinked {
       return true
-    } else {
+    }
+    else if let emailVerified = self.object(forKey: "emailVerified") as? Bool, emailVerified {
+      return true
+    }
+    else {
       return false
     }
   }
@@ -701,9 +712,9 @@ extension FoodieUser {
   
   // MARK: - Public Instance Functions
   
-  func forceEmailUnverified() {
-    self.setObject(false, forKey: "emailVerified")
-  }
+//  func forceEmailUnverified() {
+//    self.setObject(false, forKey: "emailVerified")
+//  }
   
 
   func signUp(withBlock callback: SimpleErrorBlock?) {
@@ -781,7 +792,7 @@ extension FoodieUser {
   
   func checkIfEmailVerified(withBlock callback: BooleanErrorBlock?) {
     
-    if let emailVerified = self.object(forKey: "emailVerified") as? Bool, emailVerified {
+    if isVerified {
       DispatchQueue.global(qos: .userInitiated).async { callback?(true, nil) }
       return  // Early return if it's true
     
@@ -789,6 +800,22 @@ extension FoodieUser {
     } else {
       retrieveFromLocalThenServer(forceAnyways: true, type: .cache) { error in
         if let error = error {
+          
+          let nsError = error as NSError
+          if nsError.domain == PFParseErrorDomain, let pfErrorCode = PFErrorCode(rawValue: nsError.code) {
+            switch pfErrorCode {
+            case .errorFacebookInvalidSession:
+              CCLog.warning("Invalid Facebook Session Token when retrieving PFUser details")
+              fallthrough
+            case .errorInvalidSessionToken:
+              CCLog.warning("Invalid Session Token when retrieving PFUser details")
+              callback?(false, ErrorCode.invalidSessionToken)
+              return
+            default:
+              break
+            }
+          }
+          
           CCLog.warning("Error retrieving PFUser details - \(error.localizedDescription)")
           callback?(false, error)
           return
@@ -852,8 +879,15 @@ extension FoodieUser {
   static func facebookLogIn(withReadPermissions permissions: [String] = Constants.basicFacebookReadPermission,
                             withBlock callback: UserErrorBlock?) {
     
+    LoginManager().logOut()  // This is to resolve cases of Facebook User Mismatch Error (304)
     PFFacebookUtils.logInInBackground(withReadPermissions: permissions) { (user, error) in
       if let error = error {
+        
+//        let nsError = error as? NSError
+//        if nsError.domain == FBSDKLoginErrorDomain, nsError.code == FBSDKLoginErrorCode.userMismatchErrorCode {
+//
+//        }
+        
         callback?(nil, error)
         return
       }
@@ -973,6 +1007,23 @@ extension FoodieUser {
     }
   }
   
+  
+  // MARK: - Public Instance Functions
+  func unlinkFacebook(withBlock callback: SimpleErrorBlock?) {
+    CCLog.info("Unlinking Facebook from Account")
+    
+    guard let currentUser = FoodieUser.current, self == currentUser else {
+      callback?(ErrorCode.facebookLinkNotCurrentUser)
+      return
+    }
+    
+    PFFacebookUtils.unlinkUser(inBackground: currentUser) { (success, error) in
+      LoginManager().logOut()
+      FoodieGlobal.booleanToSimpleErrorCallback(success, error, callback)
+    }
+  }
+  
+  
   func linkFacebook(withBlock callback: SimpleErrorBlock?) {
     CCLog.info("Linking Facebook against Account")
     
@@ -981,6 +1032,7 @@ extension FoodieUser {
       return
     }
     
+    LoginManager().logOut()  // This is to resolve cases of Facebook User Mismatch Error (304)
     PFFacebookUtils.linkUser(inBackground: self, withReadPermissions: Constants.basicFacebookReadPermission) { (success, error) in
       if let error = error {
         CCLog.warning("Facebook Link Failed - \(error.localizedDescription)")
@@ -1001,13 +1053,17 @@ extension FoodieUser {
         return
       }
       
+      if !success {
+        CCLog.assert("Success status and Error object mismatch")
+      }
+      
       guard let fbToken = AccessToken.current else {
         CCLog.warning("User just linked, but no current FB Access Token")
         callback?(ErrorCode.facebookCurrentAccessTokenNil)
         return
       }
       
-      // This is a new user signup! But we gotta verify whether this FB account have the minimum amount of info before proceeding further
+      // Issuing a Graph Request just to get the Name or Profile Photo if needed
       var graphPath: String
       if let userId = fbToken.userId {
         graphPath = "/\(userId)"
@@ -1023,7 +1079,7 @@ extension FoodieUser {
         switch result {
         case .failed(let error):
           CCLog.warning("Facebook Graph Request Failed: \(error)")
-          callback?(ErrorCode.facebookGraphRequestFailed)
+          callback?(nil)  // We are not gonna unlink the account just becasue the Graph Request failed
           return
           
         case .success(let response):
@@ -1302,12 +1358,12 @@ extension FoodieUser: FoodieObjectDelegate {
                                    withReady readyBlock: SimpleBlock? = nil,
                                    withCompletion callback: SimpleErrorBlock?) {
     
-    CCLog.warning("Parent PFObject shouldn't need to call saveRecurisve on Users. Parse will auto Recurse on Save")
+    CCLog.warning("Parent PFObject shouldn't need to call retrieveRecursive on Users if the parent object is obtained through a query+include")
     
     retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
       if let error = error {
-        CCLog.assert("User.retrieve() resulted in error: \(error.localizedDescription)")
+        CCLog.warning("User.retrieve() resulted in error: \(error.localizedDescription)")
         callback?(error)
         return
       }
@@ -1561,7 +1617,7 @@ extension FoodieUser: FoodieObjectDelegate {
                          withReady readyBlock: SimpleBlock? = nil,
                          withCompletion callback: SimpleErrorBlock?) -> AsyncOperation? {
     
-    CCLog.warning("Parent PFObject shouldn't need to call saveRecurisve on Users. Parse will auto Recurse on Save")
+    CCLog.warning("Parent PFObject shouldn't need to call retrieveRecursive on Users if the parent object is obtained through a query+include")
     
     let retrieveOperation = UserAsyncOperation(on: .retrieveRecursive, for: self, to: location, type: localType, forceAnyways: forceAnyways) { error in
       readyBlock?()

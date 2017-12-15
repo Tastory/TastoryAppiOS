@@ -831,6 +831,14 @@ class DiscoverViewController: OverlayViewController {
           switch error {
           case FoodieUser.ErrorCode.checkVerificationNoProperty:
             break  // This is normal if a user have just Signed-up
+            
+          case FoodieUser.ErrorCode.invalidSessionToken:
+            AlertDialog.present(from: self, title: "Session Error", message: "Session Token is deemed invalid. Please re-login and try again") { _ in
+              CCLog.warning("Session Token Invalid. Loggin User Out")
+              LogOutDismiss.logOutAndDismiss(from: self)
+            }
+            return
+            
           default:
             AlertDialog.present(from: self, title: "User Update Error", message: "Problem retrieving the most updated user profile. Some user attributes might be outdated") { _ in
               CCLog.warning("Failed retrieving the user object - \(error.localizedDescription)")
