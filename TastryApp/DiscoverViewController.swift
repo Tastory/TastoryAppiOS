@@ -169,6 +169,7 @@ class DiscoverViewController: OverlayViewController {
     // Clear the text field while at it
     locationField.text = ""
     mapNavController?.showCurrentRegionExposed(animated: true)
+    searchButtonsHidden(is: false)
   }
 
   
@@ -219,9 +220,9 @@ class DiscoverViewController: OverlayViewController {
       
       self.storyQuery = query
       self.storyArray = stories
-      self.searchButton.isHidden = true
-      self.allStoriesButton.isHidden = true
+      self.searchButtonsHidden(is: true)
       self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
+      
     }
   }
   
@@ -249,8 +250,7 @@ class DiscoverViewController: OverlayViewController {
       
       self.storyQuery = query
       self.storyArray = stories
-      self.searchButton.isHidden = true
-      self.allStoriesButton.isHidden = true
+      self.searchButtonsHidden(is: true)
       self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
     }
   }
@@ -503,6 +503,19 @@ class DiscoverViewController: OverlayViewController {
     DispatchQueue.main.async {
       self.mapNavController?.add(annotations: newAnnotations)
       self.storyAnnotations.append(contentsOf: newAnnotations)
+    }
+  }
+  
+  
+  private func searchButtonsHidden(is hide: Bool) {
+    searchButton.isHidden = hide
+    
+    if hide {
+      allStoriesButton.isHidden = hide
+    } else {
+      if let user = FoodieUser.current, user.isRegistered, user.roleLevel >= FoodieRole.Level.moderator.rawValue {
+        allStoriesButton.isHidden = hide
+      }
     }
   }
   
@@ -1017,6 +1030,7 @@ extension DiscoverViewController: UITextFieldDelegate {
       }
 
       mapNavController.showRegionExposed(region, animated: true)
+      self.searchButtonsHidden(is: false)
     }
 
     // Get rid of the keybaord
@@ -1171,8 +1185,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
                 mapController.showRegionExposed(containing: self.storyAnnotations)
               }
             }
-            allStoriesButton.isHidden = true
-            searchButton.isHidden = true
+            searchButtonsHidden(is: true)
           }
           mapNavController?.select(annotation: annotation, animated: true)
         }
@@ -1245,12 +1258,8 @@ extension DiscoverViewController: MapNavControllerDelegate {
   
   
   func mapNavControllerWasMovedByUser(_ mapNavController: MapNavController) {
-    self.mapNavController?.stopTracking()
-    self.searchButton?.isHidden = false
-    
-    if let user = FoodieUser.current, user.isRegistered, user.roleLevel >= FoodieRole.Level.moderator.rawValue {
-      self.allStoriesButton.isHidden = false
-    }
+    mapNavController.stopTracking()
+    searchButtonsHidden(is: false)
   }
 }
 
