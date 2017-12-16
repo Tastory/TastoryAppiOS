@@ -35,11 +35,14 @@ class Analytics {
 
   // MARK: - Search & Jump Events
   
-  static func loginDiscoverFilter(categoryIDs: [String], priceUpperLimit: Int, priceLowerLimit: Int) {  // Which filters are on?
+  static func loginDiscoverFilterSearch(categoryIDs: [String], priceUpperLimit: Double, priceLowerLimit: Double, success: Bool, note: String, stories: Int) {  // Which filters are on?
     Answers.logCustomEvent(withName: "Filter", customAttributes: ["Category IDs" : categoryIDs,
                                                                   "Number of Categories" : categoryIDs.count,
                                                                   "Price Upper Limit" : priceUpperLimit,
-                                                                  "Price Lower Limit" : priceLowerLimit])
+                                                                  "Price Lower Limit" : priceLowerLimit,
+                                                                  "Success" : success,
+                                                                  "Note" : note,
+                                                                  "Stories" : stories])
   }
   
   static func loginDiscoverSearchBar(typedTerm: String, success: Bool, searchedTerm: String, note: String) {

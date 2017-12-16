@@ -162,6 +162,7 @@ class LogInViewController: OverlayViewController {
           }
         }
         
+        Analytics.logLoginEvent(method: .facebook, success: false, note: error.localizedDescription)
         if FoodieUser.current != nil { FoodieUser.logOut() }
         return
       }
@@ -173,11 +174,14 @@ class LogInViewController: OverlayViewController {
           }
         }
         
+        Analytics.logLoginEvent(method: .facebook, success: false, note: "No User Returned")
         if FoodieUser.current != nil { FoodieUser.logOut() }
         return
       }
       
       if user.isNew {
+        Analytics.logSignupEvent(method: .facebook, success: true, note: "")
+        
         let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
         
         guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "IntroViewController") as? IntroViewController else {
@@ -192,7 +196,10 @@ class LogInViewController: OverlayViewController {
         viewController.enableResend = false
         viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: false)
         self.pushPresent(viewController, animated: true)
+        
       } else {
+        
+        Analytics.logLoginEvent(method: .facebook, success: true, note: "")
         self.presentLogIn(for: user, withWelcome: true)
       }
     }
@@ -234,6 +241,10 @@ class LogInViewController: OverlayViewController {
     
     FoodieUser.logIn(for: username, using: password) { (user, error) in
       self.activitySpinner.remove()
+      
+      let loginSuccess = (error != nil && user != nil)
+      let loginErrorNote = error?.localizedDescription ?? ""
+      Analytics.logLoginEvent(method: .email, success: loginSuccess, note: loginErrorNote)
       
       if let error = error {
         AlertDialog.present(from: self, title: "Login Failed", message: error.localizedDescription) { _ in

@@ -47,10 +47,6 @@ class FoodieUser: PFUser {
   
   // Notification Settings - TBD
   
-  // Analytics
-  @NSManaged var storiesViewed: Int
-  @NSManaged var momentsViewed: Int
-  
   
   // MARK: - Constants
   struct Constants {

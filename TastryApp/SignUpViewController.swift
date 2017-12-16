@@ -123,10 +123,14 @@ class SignUpViewController: OverlayViewController {
       
       // Handle all known error cases
       if let error = error {
+        Analytics.logSignupEvent(method: .email, success: false, note: error.localizedDescription)
+        
         AlertDialog.present(from: self, title: "Sign Up Failed", message: "\(error.localizedDescription)") { _ in
           CCLog.info("Sign Up Failed - \(error.localizedDescription)")
         }
       } else {
+        Analytics.logSignupEvent(method: .email, success: true, note: "")
+        
         let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
         
         guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "IntroViewController") as? IntroViewController else {

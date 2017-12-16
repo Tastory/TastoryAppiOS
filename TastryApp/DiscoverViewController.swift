@@ -205,6 +205,18 @@ class DiscoverViewController: OverlayViewController {
   @IBAction func searchWithFilter(_ sender: UIButton) {
     
     performQuery { stories, query, error in
+      
+      // This is pure analytics
+      let searchSuccess = (error != nil && stoires != nil)
+      let searchNote = error?.localizedDescription ?? ""
+      Analytics.loginDiscoverFilterSearch(categoryIDs: self.discoverFilter?.selectedCategories.map( { $0.foursquareCategoryID ?? "" } ) ?? [],
+                                          priceUpperLimit: self.discoverFilter?.priceUpperLimit ?? FoodieFilter.Constants.PriceUpperLimit,
+                                          priceLowerLimit: self.discoverFilter?.priceLowerLimit ?? FoodieFilter.Constants.PriceLowerLimit,
+                                          success: searchSuccess,
+                                          note: searchNote,
+                                          stories: stories ?? 0)
+      
+      // Now we are actually unwrapping the search results
       if let error = error {
         if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
           AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
@@ -923,6 +935,9 @@ extension DiscoverViewController: UITextFieldDelegate {
     geocoder.geocodeAddressString(location, in: clRegion) { (placemarks, error) in
 
       if let error = error as? CLError {
+        
+        Analytics.loginDiscoverSearchBar(typedTerm: location, success: false, searchedTerm: "", note: error.localizedDescription)
+        
         switch error.code {
         case .geocodeFoundNoResult:
           textField.text = "No Results Found"
@@ -936,6 +951,8 @@ extension DiscoverViewController: UITextFieldDelegate {
 
       guard let placemarks = placemarks else {
 
+        Analytics.loginDiscoverSearchBar(typedTerm: location, success: false, searchedTerm: "",
+                                         note: "User Error - No Placemark found from location entered into text field by User")
         CCLog.info("User Error - No Placemark found from location entered into text field by User")
 
         // No valid placemarks returned
@@ -1002,6 +1019,8 @@ extension DiscoverViewController: UITextFieldDelegate {
         region = MKCoordinateRegionMakeWithDistance(clRegion.center, 2*clRegion.radius, 2*clRegion.radius)
 
       } else {
+        Analytics.loginDiscoverSearchBar(typedTerm: location, success: false, searchedTerm: textArray[0],
+                                         note: "Returned placemark contained no location")
         CCLog.assert("Placemark contained no location")
 
         // There actually isn't a valid location in the placemark...
@@ -1010,6 +1029,9 @@ extension DiscoverViewController: UITextFieldDelegate {
         return
       }
 
+      Analytics.loginDiscoverSearchBar(typedTerm: location, success: true, searchedTerm: textArray[0],
+                                       note: "User Error - No Placemark found from location entered into text field by User")
+      
       mapNavController.showRegionExposed(region, animated: true)
       self.searchButtonsHidden(is: false)
     }
