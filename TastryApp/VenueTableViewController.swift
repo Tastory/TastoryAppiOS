@@ -145,7 +145,7 @@ class VenueTableViewController: OverlayViewController {
         FoodieVenue.searchFoursquare(for: venueNameToSearch, at: currentLocation, withBlock: self.venueSearchCallback)
       } else {
         CCLog.warning("No useful location to base the search on")
-        //AlertDialog.present(from: self, title: "Cannot Determine Location", message: "Please enter a location to perform Venue Search")
+        AlertDialog.present(from: self, title: "Cannot Determine Location", message: "Please enter a location to perform Venue Search")
         self.locationSearchBar.placeholder = Constants.DefaultLocationPlaceholderText
         self.locationSearchBar.setNeedsDisplay()
       }

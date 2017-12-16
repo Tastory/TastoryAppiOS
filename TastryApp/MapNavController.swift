@@ -201,6 +201,7 @@ class MapNavController: ASNavigationController {
                          turnOffTracking: Bool = true) {
     
     if turnOffTracking { stopTracking() }
+    if annotations.count <= 0 { return }
     
     let initialMapPoint = MKMapPointForCoordinate(annotations[0].coordinate)
     var mapMinX: Double = initialMapPoint.x
@@ -320,6 +321,10 @@ class MapNavController: ASNavigationController {
     super.viewDidLoad()
     
     LocationWatch.initializeGlobal()
+    
+    if let settingsDialog = LocationWatch.checkAndRequestAuthorizations() {
+      present(settingsDialog, animated: true, completion: nil)
+    }
     
     setNavigationBarHidden(true, animated: false)
     setToolbarHidden(true, animated: false)

@@ -168,8 +168,13 @@ class DiscoverViewController: OverlayViewController {
   @IBAction func currentLocationReturn(_ sender: UIButton) {
     // Clear the text field while at it
     locationField.text = ""
-    mapNavController?.showCurrentRegionExposed(animated: true)
-    searchButtonsHidden(is: false)
+    
+    if let dialog = LocationWatch.checkAndRequestAuthorizations() {
+      present(dialog, animated: true, completion: nil)
+    } else {
+      mapNavController?.showCurrentRegionExposed(animated: true)
+      searchButtonsHidden(is: false)
+    }
   }
 
   
@@ -310,32 +315,7 @@ class DiscoverViewController: OverlayViewController {
   
   
   
-  // MARK: - Class Private Functions
-  
-  private func locationPermissionDeniedDialog() {
-    if self.presentedViewController == nil {
-      // Permission was denied before. Ask for permission again
-      guard let url = URL(string: UIApplicationOpenSettingsURLString) else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-          CCLog.fatal("UIApplicationOPenSettignsURLString ia an invalid URL String???")
-        }
-        return
-      }
-      
-      let alertController = UIAlertController(title: "Location Services Disabled",
-                                              titleComment: "Alert diaglogue title when user has denied access to location services",
-                                              message: "Please go to Settings > Privacy > Location Services and set this App's Location Access permission to 'While Using'",
-                                              messageComment: "Alert dialog message when the user has denied access to location services",
-                                              preferredStyle: .alert)
-      
-      alertController.addAlertAction(title: "Settings",
-      comment: "Alert diaglogue button to open Settings, hoping user will enable access to Location Services",
-      style: .default) { _ in UIApplication.shared.open(url, options: [:]) }
-      
-      self.present(alertController, animated: true, completion: nil)
-    }
-  }
-  
+  // MARK: - Private Instance Functions
   
   private func performQuery(onAllUsers: Bool = false, at mapRect: MKMapRect? = nil, withBlock callback: FoodieQuery.StoriesQueryBlock?) {
     
@@ -583,6 +563,7 @@ class DiscoverViewController: OverlayViewController {
     nodeController.didMove(toParentViewController: self)
     feedCollectionNodeController = nodeController
     carouselLayoutChangeTapRecognizer.isEnabled = false
+    feedContainerView.isHidden = true
     
     // Setup all the IBOutlet Delegates
     locationField?.delegate = self
@@ -1132,8 +1113,12 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       }
       mapNavController?.setExposedRect(with: carouselMapView)
       mosaicLayoutChangePanRecognizer.isEnabled = true
-      mapNavController?.showRegionExposed(containing: storyAnnotations)
+      
       view.insertSubview(touchForwardingView!, aboveSubview: mosaicMapView)
+      
+      if storyAnnotations.count > 0 {
+        mapNavController?.showRegionExposed(containing: storyAnnotations)
+      }
       
       // Should we show top buttons?
       appearanceForTopUI(alphaValue: 1.0, animated: true)
@@ -1178,11 +1163,15 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
               if mapController.isAnnotationExposed(annotation) {
                 
                 // Is annotation already currently in exposed map? If so only change the map if the current map view is bigger than needed
-                mapController.showRegionExposed(containing: self.storyAnnotations, onlyIfCurrentTooBig: true)
+                if self.storyAnnotations.count > 0 {
+                  mapController.showRegionExposed(containing: self.storyAnnotations, onlyIfCurrentTooBig: true)
+                }
               } else {
                 
                 // If annotation is not shown, just go and show all the annotations
-                mapController.showRegionExposed(containing: self.storyAnnotations)
+                if self.storyAnnotations.count > 0 {
+                  mapController.showRegionExposed(containing: self.storyAnnotations)
+                }
               }
             }
             searchButtonsHidden(is: true)

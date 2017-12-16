@@ -13,6 +13,7 @@ import CoreLocation
 class LocationWatch: NSObject {
   
   // MARK: - Types & Enumerations
+  
   typealias LocationErrorBlock = (CLLocation?, Error?) -> Void
   
   enum WatchState {
@@ -22,7 +23,9 @@ class LocationWatch: NSObject {
   }
   
   
+  
   // MARK: Error Types
+  
   enum ErrorCode: LocalizedError {
     
     case managerFailWithNoCLError
@@ -33,13 +36,13 @@ class LocationWatch: NSObject {
     var errorDescription: String? {
       switch self {
       case .managerFailWithNoCLError:
-        return NSLocalizedString("Location Manager Failed no CLError", comment: "Error description for an exception error code")
+        return NSLocalizedString("Location Manager failed no CLError", comment: "Error description for an exception error code")
       case .managerFailUndeterminedLocation:
-        return NSLocalizedString("Location Manager Failed Undetermined Location", comment: "Error description for an exception error code")
+        return NSLocalizedString("Location Manager failed. Unable to determine location Location", comment: "Error description for an exception error code")
       case .managerFailDenied:
-        return NSLocalizedString("Location Manager Failed Permission Denied", comment: "Error description for an exception error code")
+        return NSLocalizedString("Location Services permission denied. Please use the map to determine search parameters", comment: "Error description for an exception error code")
       case .managerFailUnknownError:
-        return NSLocalizedString("Location Manager Failed Unknown Error", comment: "Error description for an exception error code")
+        return NSLocalizedString("Location Manager failed with undetermined error", comment: "Error description for an exception error code")
       }
     }
     
@@ -50,7 +53,9 @@ class LocationWatch: NSObject {
   }
   
   
+  
   // MARK: - Classes & Structs
+  
   class Context: ThreadSafeDLL.Node {
     
     // MARK: - Private Instance Variables
@@ -72,25 +77,33 @@ class LocationWatch: NSObject {
   }
   
   
+  
   // MARK: - Private Constants
+  
   struct Constants {
     static let defaultDistanceFilter = CLLocationDistance(30.0)  // meters, for LocationManager
   }
   
   
+  
   // MARK: - Read Only Static Variables
-  fileprivate(set) static var global: LocationWatch!
+  
+  private(set) static var global: LocationWatch!
+  
   
   
   // MARK: - Private Instance Variables
-  fileprivate var manager = CLLocationManager()
-  fileprivate var watcherDLL = ThreadSafeDLL()
-  fileprivate var locationUpdating = false
-  fileprivate var errorMode = false
-  fileprivate var currentLocation: CLLocation?
   
+  private var manager = CLLocationManager()
+  private var watcherDLL = ThreadSafeDLL()
+  private var locationUpdating = false
+  private var errorMode = false
+  private var currentLocation: CLLocation?
+  
+
   
   // MARK: - Public Static Functions
+  
   static func initializeGlobal() {
     if global == nil {
       global = LocationWatch()
@@ -100,8 +113,45 @@ class LocationWatch: NSObject {
   }
   
   
+  static func checkAndRequestAuthorizations() -> UIAlertController? {
+    
+    if !CLLocationManager.locationServicesEnabled() {
+      return AlertDialog.createUrlDialog(title: "Location Services Disabled",
+                                         message: "For best experience, please go to Settings > Privacy > Location Services and enable 'Location Services'",
+                                         url: "App-Prefs:root=Privacy&path=LOCATION")
+    }
+    
+    let locationAuthorizationStatus = CLLocationManager.authorizationStatus()
+    
+    switch locationAuthorizationStatus {
+      
+    case .notDetermined:
+      LocationWatch.global.manager.requestWhenInUseAuthorization()
+      break
+      
+    case .denied:
+      fallthrough
+    case .restricted:
+      let appName = Bundle.main.displayName ?? "Tastry"
+      return AlertDialog.createUrlDialog(title: "Location Services Denied",
+                                         message: "For best experience, please go to Settings > Privacy > Location Services and toggle to 'While Using' for \(appName)",
+                                         url: UIApplicationOpenSettingsURLString)
+      
+    case .authorizedAlways:
+      fallthrough
+    case .authorizedWhenInUse:
+      break
+      
+    }
+    
+    return nil
+  }
+  
+  
+  
   // MARK: - Private Instance Functions
-  fileprivate func notifyWatchers (withLocation location: CLLocation? = nil, withError error: Error? = nil) {
+  
+  private func notifyWatchers (withLocation location: CLLocation? = nil, withError error: Error? = nil) {
     if let watcherArray = watcherDLL.convertToArray() as? [Context] {
       for watcher in watcherArray {
         if watcher.isStarted {
@@ -113,7 +163,9 @@ class LocationWatch: NSObject {
   }
   
   
+  
   // MARK: - Public Instance Functions
+  
   override init() {
     super.init()
     
@@ -127,9 +179,8 @@ class LocationWatch: NSObject {
     manager.activityType = CLActivityType.fitness  // Fitness Type includes Walking
     manager.disallowDeferredLocationUpdates()
   }
+
   
-  
-  // MARK: - Public Static Functions
   func get(withBlock callback: @escaping LocationErrorBlock) {
     
     if let location = currentLocation {
@@ -144,6 +195,7 @@ class LocationWatch: NSObject {
       manager.startUpdatingLocation()
     }
   }
+  
   
   func start(butPaused: Bool = false, withBlock callback: @escaping LocationErrorBlock) -> Context {
 
@@ -166,9 +218,11 @@ class LocationWatch: NSObject {
     return watcher
   }
 
+  
   func pause(_ watcher: Context) {
     watcher.state = .paused
   }
+  
   
   func resume(_ watcher: Context) {
 
@@ -190,6 +244,7 @@ class LocationWatch: NSObject {
     }
   }
 }
+
 
 
 extension LocationWatch: CLLocationManagerDelegate {
@@ -230,7 +285,7 @@ extension LocationWatch: CLLocationManagerDelegate {
       manager.stopUpdatingLocation()
       currentLocation = nil
       notifyWatchers(withError: ErrorCode.managerFailDenied)
-      CCLog.debug("Unable to determine Location")
+      CCLog.debug("Location Services Denied")
       
     default:
       notifyWatchers(withError: ErrorCode.managerFailUnknownError)

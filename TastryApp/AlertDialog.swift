@@ -47,13 +47,15 @@ struct AlertDialog {
     }
   }
 
+  
   static func standardPresent(from vc: UIViewController, title: StdTitle, message: StdMsg, completion handler: ((UIAlertAction) -> Void)? = nil) {
     AlertDialog.present(from: vc, title: title.rawValue, message: message.rawValue, completion: handler)
   }
 
+  
   static func presentConfirm(from vc: UIViewController, title: String, message: String, completion handler: ((UIAlertAction) -> Void)? = nil) {
     if vc.presentedViewController == nil {
-      let vcTitle = vc.title ?? "untitled ViewController"
+      let vcTitle = vc.title ?? "Untitled ViewController"
       let confirmButton =
         UIKit.UIAlertAction(title: "Confirm",
                             comment: "Confirm action as presented from \(vcTitle)",
@@ -72,5 +74,33 @@ struct AlertDialog {
                                      style: .cancel)
       DispatchQueue.main.async { vc.present(alertController, animated: true, completion: nil) }
     }
+  }
+  
+  
+  static func createUrlDialog(title titleString: String,
+                              message messageString: String,
+                              url urlString: String) -> UIAlertController {
+      
+      // Permission was denied before. Ask for permission again
+      guard let url = URL(string: urlString) else {
+        CCLog.fatal("UIApplicationOPenSettignsURLString ia an invalid URL String???")
+      }
+      
+      let alertController = UIAlertController(title: titleString,
+                                              titleComment: "Alert diaglogue title when user has disabled access to location services",
+                                              message: messageString,
+                                              messageComment: "Alert dialog message when the user has disabled access to location services",
+                                              preferredStyle: .alert)
+    
+      alertController.addAlertAction(title: "OK",
+                                     comment: "Button in Dialogue Box to give option for User to go to Url, or click OK to cancel",
+                                     style: .default,
+                                     handler: nil)
+    
+      alertController.addAlertAction(title: "Settings",
+                                     comment: "Alert diaglogue button to open Settings, hoping user will enable access to Location Services",
+                                     style: .default) { _ in UIApplication.shared.open(url, options: [:]) }
+      
+      return alertController
   }
 }

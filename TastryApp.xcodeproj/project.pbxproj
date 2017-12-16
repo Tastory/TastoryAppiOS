@@ -30,6 +30,7 @@
 		8C1FF1311F7CA6C10062312C /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FF1301F7CA6C10062312C /* LogInViewController.swift */; };
 		8C1FF1331F7CA7240062312C /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FF1321F7CA7240062312C /* SignUpViewController.swift */; };
 		8C1FF1351F7DA1760062312C /* FoodieRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FF1341F7DA1760062312C /* FoodieRole.swift */; };
+		8C208FFD1FE4BB9400AA3D64 /* Bundle+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C208FFC1FE4BB9400AA3D64 /* Bundle+Extension.swift */; };
 		8C2EFCEB1FC3AF4E00937E3C /* MainVectors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */; };
 		8C2F796F1F4C0D9A00851334 /* SwiftRetry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */; };
 		8C2F79731F4E23F700851334 /* LocationWatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F79721F4E23F700851334 /* LocationWatch.swift */; };
@@ -188,6 +189,7 @@
 		8C1FF1301F7CA6C10062312C /* LogInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		8C1FF1321F7CA7240062312C /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		8C1FF1341F7DA1760062312C /* FoodieRole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieRole.swift; sourceTree = "<group>"; };
+		8C208FFC1FE4BB9400AA3D64 /* Bundle+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Extension.swift"; sourceTree = "<group>"; };
 		8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MainVectors.xcassets; sourceTree = "<group>"; };
 		8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftRetry.swift; sourceTree = "<group>"; };
 		8C2F79721F4E23F700851334 /* LocationWatch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationWatch.swift; sourceTree = "<group>"; };
@@ -556,6 +558,8 @@
 		8CD328D81E8B2B7900E5254F /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				8C208FFC1FE4BB9400AA3D64 /* Bundle+Extension.swift */,
+				C229DCAF1FDE781300955243 /* Date+Extension.swift */,
 				8C10FB4D1F91C43100C26BF6 /* AVExportPlayer.swift */,
 				8CA2C54F1FD906DC0064991D /* AVDebugPlayer.swift */,
 				8C6983511F97ECFB0091334D /* AVPlayerStatus+Extension.swift */,
@@ -569,7 +573,6 @@
 				8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */,
 				8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */,
 				8C7EC58E1F8E0D2400C8E80B /* MKCoordinateRegion+Extension.swift */,
-				C229DCAF1FDE781300955243 /* Date+Extension.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -1179,6 +1182,7 @@
 				8C8986761E91A72D00B62306 /* FoodieCategory.swift in Sources */,
 				C229DCB01FDE781300955243 /* Date+Extension.swift in Sources */,
 				8CCDDA0E1FB3E82400B066E7 /* BasicDirection.swift in Sources */,
+				8C208FFD1FE4BB9400AA3D64 /* Bundle+Extension.swift in Sources */,
 				8C1FF1351F7DA1760062312C /* FoodieRole.swift in Sources */,
 				8CC1101A1F92D07000ACBF9A /* FoodieFileObject.swift in Sources */,
 				8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */,
