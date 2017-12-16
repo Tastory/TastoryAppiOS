@@ -57,20 +57,23 @@ class Analytics {
     case profile
   }
   
-  static func logStoryViewEvent(storyId: String, name: String, authorId: String, own: Bool, launchType: StoryLaunchType) {  // From Carousel? Mosaic? Profile? Story ID, Author ID
+  static func logStoryViewEvent(storyId: String, name: String, authorId: String, own: Bool, launchType: StoryLaunchType, totalMoments: Int, photoVideoPercentage: Double) {  // From Carousel? Mosaic? Profile? Story ID, Author ID
     Answers.logContentView(withName: name, contentType: "Story", contentId: storyId, customAttributes: ["Author ID" : authorId,
                                                                                                         "Own" : own,
-                                                                                                        "Launch Type" : launchType])
+                                                                                                        "Launch Type" : launchType,
+                                                                                                        "Total Moments" : totalMoments,
+                                                                                                        "Photo/Video Mix" : photoVideoPercentage])
   }
   
-  static func logStoryExitEvent(storyPercentage: Double, momentId: String, momentNumber: Int, totalMoments: Int) {  // Want to know Percentage on Story Exit, Moment ID & Moment Numbers too
-    Answers.logCustomEvent(withName: "Story Exit", customAttributes: ["Percentage" : storyPercentage,
+  static func logStoryExitEvent(storyPercentage: Double, momentId: String, momentNumber: Int, totalMoments: Int, photoVideoPercentage: Double) {  // Want to know Percentage on Story Exit, Moment ID & Moment Numbers too
+    Answers.logCustomEvent(withName: "Story Exit", customAttributes: ["Story Percentage" : storyPercentage,
                                                                       "Moment ID" : momentId,
                                                                       "Moment Number" : momentNumber,
-                                                                      "Total Moments" : totalMoments])
+                                                                      "Total Moments" : totalMoments,
+                                                                      "Photo/Video Mix" : photoVideoPercentage])
   }
   
-  static func logMomentViewEvent(momentId: String, name: String, storyId: String, authorId: String, authorName: String, own: Bool, momentNumber: Int, totalMoments: Int) {  // Want to know Moment ID
+  static func logMomentViewEvent(momentId: String, name: String, storyId: String, authorId: String, authorName: String, own: Bool, momentNumber: Int, mediaType: FoodieMediaType, totalMoments: Int) {  // Want to know Moment ID
     Answers.logContentView(withName: name, contentType: "Moment", contentId: momentId, customAttributes: ["Moment ID" : momentId,
                                                                                                           "Name" : name,
                                                                                                           "Story ID" : storyId,
@@ -78,6 +81,7 @@ class Analytics {
                                                                                                           "Author Name" : authorName,
                                                                                                           "Own" : own,
                                                                                                           "Moment Number" : momentNumber,
+                                                                                                          "Media Type" : mediaType.rawValue,
                                                                                                           "Total Moments" : totalMoments])
   }
   
@@ -90,17 +94,19 @@ class Analytics {
                                   authorName: String,
                                   own: Bool,
                                   momentNumber: Int,
+                                  mediaType: FoodieMediaType,
                                   totalMoments: Int) {
     
     Answers.logCustomEvent(withName: "Moment Swiped", customAttributes: ["URL" : url,
                                                                         "Message" : message,
-                                                                        "Percentage" : storyPercentage,
+                                                                        "Story Precentage" : storyPercentage,
                                                                         "Moment ID" : momentId,
                                                                         "Story ID" : storyId,
                                                                         "Author ID" : authorId,
                                                                         "Own" : own,
                                                                         "Author Name" : authorName,
                                                                         "Moment Number" : momentNumber,
+                                                                        "Media Type" : mediaType.rawValue,
                                                                         "Total Moments" : totalMoments])
   }
   
@@ -113,17 +119,19 @@ class Analytics {
                                   authorName: String,
                                   own: Bool,
                                   momentNumber: Int,
+                                  mediaType: FoodieMediaType,
                                   totalMoments: Int) {
     
     Answers.logCustomEvent(withName: "Venue Clicked", customAttributes: ["Venue ID" : venueId,
                                                                          "Venue Name" : venueName,
-                                                                         "Percentage" : storyPercentage,
+                                                                         "Story Precentage" : storyPercentage,
                                                                          "Moment ID" : momentId,
                                                                          "Story ID" : storyId,
                                                                          "Author ID" : authorId,
                                                                          "Author Name" : authorName,
                                                                          "Own" : own,
                                                                          "Moment Number" : momentNumber,
+                                                                         "Media Type" : mediaType.rawValue,
                                                                          "Total Moments" : totalMoments])
     
   }
@@ -135,12 +143,13 @@ class Analytics {
                                     momentId: String,
                                     storyId: String,
                                     momentNumber: Int,
+                                    mediaType: FoodieMediaType,
                                     totalMoments: Int) {
     
     Answers.logCustomEvent(withName: "Profile Clicked", customAttributes: ["Author ID" : authorId,
                                                                            "Author Name" : authorName,
                                                                            "Own" : own,
-                                                                           "Percentage" : storyPercentage,
+                                                                           "Story Precentage" : storyPercentage,
                                                                            "Moment ID" : momentId,
                                                                            "Story ID" : storyId,
                                                                            "Moment Number" : momentNumber,
