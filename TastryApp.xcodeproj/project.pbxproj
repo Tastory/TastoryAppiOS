@@ -31,6 +31,7 @@
 		8C1FF1331F7CA7240062312C /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FF1321F7CA7240062312C /* SignUpViewController.swift */; };
 		8C1FF1351F7DA1760062312C /* FoodieRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FF1341F7DA1760062312C /* FoodieRole.swift */; };
 		8C208FFD1FE4BB9400AA3D64 /* Bundle+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C208FFC1FE4BB9400AA3D64 /* Bundle+Extension.swift */; };
+		8C208FFF1FE4DD1F00AA3D64 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C208FFE1FE4DD1F00AA3D64 /* Analytics.swift */; };
 		8C2EFCEB1FC3AF4E00937E3C /* MainVectors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */; };
 		8C2F796F1F4C0D9A00851334 /* SwiftRetry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */; };
 		8C2F79731F4E23F700851334 /* LocationWatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F79721F4E23F700851334 /* LocationWatch.swift */; };
@@ -190,6 +191,7 @@
 		8C1FF1321F7CA7240062312C /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		8C1FF1341F7DA1760062312C /* FoodieRole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieRole.swift; sourceTree = "<group>"; };
 		8C208FFC1FE4BB9400AA3D64 /* Bundle+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Extension.swift"; sourceTree = "<group>"; };
+		8C208FFE1FE4DD1F00AA3D64 /* Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics.swift; sourceTree = "<group>"; };
 		8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MainVectors.xcassets; sourceTree = "<group>"; };
 		8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftRetry.swift; sourceTree = "<group>"; };
 		8C2F79721F4E23F700851334 /* LocationWatch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationWatch.swift; sourceTree = "<group>"; };
@@ -359,6 +361,7 @@
 			isa = PBXGroup;
 			children = (
 				8C61BCDB1E985D1300DDF248 /* CleanCrashLog.swift */,
+				8C208FFE1FE4DD1F00AA3D64 /* Analytics.swift */,
 				8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */,
 				8C5B48501F579D3800C18089 /* SwiftMutex.swift */,
 				8C2F79761F4E3E6E00851334 /* ThreadSafeDLL.swift */,
@@ -1189,6 +1192,7 @@
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,
 				8CAA44611F8C12D60053CD4F /* LogOutDismiss.swift in Sources */,
 				8C7EBAC21F9D3884004E43D8 /* ProfileDetailViewController.swift in Sources */,
+				8C208FFF1FE4DD1F00AA3D64 /* Analytics.swift in Sources */,
 				C265A9C81FCE981D000678E5 /* VideoTrimmerViewController.swift in Sources */,
 				8CF40C5F1FC50BDD00615D43 /* FoodieFont.swift in Sources */,
 				8CD5A4E01F9BFDD700CFD670 /* SettingsNavViewController.swift in Sources */,
