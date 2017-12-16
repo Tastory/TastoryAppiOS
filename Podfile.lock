@@ -1,9 +1,9 @@
 PODS:
-  - AWSCognito (2.6.4):
-    - AWSCore (= 2.6.4)
-  - AWSCore (2.6.4)
-  - AWSS3 (2.6.4):
-    - AWSCore (= 2.6.4)
+  - AWSCognito (2.6.8):
+    - AWSCore (= 2.6.8)
+  - AWSCore (2.6.8)
+  - AWSS3 (2.6.8):
+    - AWSCore (= 2.6.8)
   - Bolts (1.8.4):
     - Bolts/AppLinks (= 1.8.4)
     - Bolts/Tasks (= 1.8.4)
@@ -11,9 +11,9 @@ PODS:
     - Bolts/Tasks
   - Bolts/Tasks (1.8.4)
   - ColorSlider (4.1)
-  - Crashlytics (3.9.0):
-    - Fabric (~> 1.7.0)
-  - Fabric (1.7.0)
+  - Crashlytics (3.9.3):
+    - Fabric (~> 1.7.2)
+  - Fabric (1.7.2)
   - FacebookCore (0.3.0):
     - Bolts (~> 1.8)
     - FBSDKCoreKit (~> 4.27)
@@ -27,11 +27,11 @@ PODS:
     - FacebookCore (~> 0.3)
     - FBSDKCoreKit (~> 4.27)
     - FBSDKShareKit (~> 4.27)
-  - FBSDKCoreKit (4.27.1):
+  - FBSDKCoreKit (4.29.0):
     - Bolts (~> 1.7)
-  - FBSDKLoginKit (4.27.1):
+  - FBSDKLoginKit (4.29.0):
     - FBSDKCoreKit
-  - FBSDKShareKit (4.27.1):
+  - FBSDKShareKit (4.29.0):
     - FBSDKCoreKit
   - HTTPStatusCodes (3.1.2)
   - Jot (0.2.0):
@@ -111,29 +111,29 @@ CHECKOUT OPTIONS:
     :commit: 25f8f4b486ed7993285adef5662b3b31dfee0a00
     :git: https://github.com/biscottigelato/Jot.git
   PryntTrimmerView:
-    :commit: 23df209789126e3baf24bf257171aecc67754596
+    :commit: ae2c2f531c545e260aa93415f46a1a5c4b812994
     :git: https://github.com/specc/PryntTrimmerView.git
   QuadratTouch:
     :commit: 4f10166069b9482da15a9b118e81102c3fffd507
     :git: https://github.com/Constantine-Fry/das-quadrat.git
   TLPhotoPicker:
-    :commit: 57515131dc0e58f05f884a4acdbe97326f18bf36
+    :commit: 4c389dae517f2d7fc7e9b5a9aaa6e3a9eab1dbb8
     :git: https://github.com/specc/TLPhotoPicker.git
 
 SPEC CHECKSUMS:
-  AWSCognito: 730f6795c78817ff86701844fb22ca40d129494b
-  AWSCore: f5611be1c3edc38dbf9d6da0a5d2b6c4841d1c05
-  AWSS3: f7a10f4c6bae46efc9a4588a1480a6761edcbc45
+  AWSCognito: a57d1a9295f9e05ffa55a485165e3c24b81699ba
+  AWSCore: 35fca7c45f37f5ffc4ddf75f7aa943f3588d9227
+  AWSS3: 380f57d169fd4ebd0a5fca366b36563a3f6d87b2
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   ColorSlider: 3dc3b5c31b5a74aa1232c44eae06453ce59ecf36
-  Crashlytics: 64aad5dd97249dd3ff94b979fea140144590cdd3
-  Fabric: e6be012366472553807dada21243c5ab8d904151
+  Crashlytics: dbb07d01876c171c5ccbdf7826410380189e452c
+  Fabric: 9cd6a848efcf1b8b07497e0b6a2e7d336353ba15
   FacebookCore: 3ffa190a3f1f96cec0e44d3fc221bc322c595ffa
   FacebookLogin: 0af839ea858faef99550d16596b87b4a8e8906e6
   FacebookShare: 0469964297ebd75f052be2c5083389a4208e82b7
-  FBSDKCoreKit: 03365dad5d790249196ffad8be4f6d8a2d98f932
-  FBSDKLoginKit: 66ff53b73cffd967ab773e32fac39e90a60e6d46
-  FBSDKShareKit: 6a6a0ef9e850c741e4e1d7a7d21335205e997ec1
+  FBSDKCoreKit: 6f139173dc63a1deaff4430a55f2fe5bb222d2af
+  FBSDKLoginKit: 56a057ca6822535ea0faa25f57a7c41edb697fd4
+  FBSDKShareKit: 18a2cd118aef11dd657fe7e8b64bae5c719088b2
   HTTPStatusCodes: 88155ba36826366a898a7b4f34d311f49083d546
   Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
@@ -150,6 +150,6 @@ SPEC CHECKSUMS:
   Texture: c3f06e344aa091667b7a56002e525cde674d021a
   TLPhotoPicker: e5bf9a0f95b4fdf867299d6ae03569f526e3f621
 
-PODFILE CHECKSUM: 8c87633efb48677377b3cd2c84c10364cedec791
+PODFILE CHECKSUM: 3a55869cbcf7c0e522afc4a5db3d9725965856d5
 
 COCOAPODS: 1.2.0
