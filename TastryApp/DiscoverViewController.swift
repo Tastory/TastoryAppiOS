@@ -215,31 +215,10 @@ class DiscoverViewController: OverlayViewController {
                                           success: searchSuccess,
                                           note: searchNote,
                                           stories: stories?.count ?? 0)
-      
+
       // Now we are actually unwrapping the search results
-      if let error = error {
-        if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
-          AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
-        } else {
-          AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { _ in
-            CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
-          }
-        }
-        return
-      }
-      
-      guard let stories = stories else {
-        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { _ in
-          CCLog.assert("Story Query resulted in nil")
-        }
-        return
-      }
-      
-      self.storyQuery = query
-      self.storyArray = stories
+      self.unwrapQueryResponse(stories: stories, query: query, error: error)
       self.searchButtonsHidden(is: true)
-      self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
-      
     }
   }
   
@@ -247,28 +226,8 @@ class DiscoverViewController: OverlayViewController {
   @IBAction func allStories(_ sender: UIButton) {
     
     performQuery(onAllUsers: true) { stories, query, error in
-      if let error = error {
-        if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
-          AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
-        } else {
-          AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { _ in
-            CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
-          }
-        }
-        return
-      }
-      
-      guard let stories = stories else {
-        AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { _ in
-          CCLog.assert("Story Query resulted in storyArray = nil")
-        }
-        return
-      }
-      
-      self.storyQuery = query
-      self.storyArray = stories
+      self.unwrapQueryResponse(stories: stories, query: query, error: error)
       self.searchButtonsHidden(is: true)
-      self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
     }
   }
   
@@ -403,8 +362,31 @@ class DiscoverViewController: OverlayViewController {
       callback?(storyArray, query, nil)
     }
   }
-  
-  
+
+  private func unwrapQueryResponse(stories: [FoodieStory]?,query: FoodieQuery?, error :Error?) {
+    if let error = error {
+      if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
+        AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
+      } else {
+        AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { _ in
+          CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
+        }
+      }
+      return
+    }
+
+    guard let stories = stories else {
+      AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { _ in
+        CCLog.assert("Story Query resulted in storyArray = nil")
+      }
+      return
+    }
+
+    self.storyQuery = query
+    self.storyArray = stories
+    self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
+  }
+
   private func refreshDiscoverView(onStories stories: [FoodieStory], zoomToRegion: Bool, scrollAndSelectStory: Bool) {
     var newAnnotations = [StoryMapAnnotation]()
     
@@ -762,6 +744,14 @@ class DiscoverViewController: OverlayViewController {
         let annotationToSelect = storyAnnotations[annotationIndex]
         mapController.select(annotation: annotationToSelect, animated: true)
       }
+
+      // requery in case there is a story deleted cant be done by delegate because perform query
+      // needs map controller initialized 
+      performQuery { stories, query, error in
+        self.unwrapQueryResponse(stories: stories, query: query, error: error)
+        self.searchButtonsHidden(is: true)
+      }
+
     }
     
     // First time on the map. Try to get the location, and get an initial query if successful
@@ -792,27 +782,7 @@ class DiscoverViewController: OverlayViewController {
         
         // Do an Initial Search near the Current Location
         self.performQuery(at: region.toMapRect()) { stories, query, error in
-          if let error = error {
-            if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
-              AlertDialog.present(from: self, title: "Search Area Too Large", message: "The maximum search distance for a side is 100km. Please reduce the range and try again")
-            } else {
-              AlertDialog.present(from: self, title: "Story Query Error", message: error.localizedDescription) { _ in
-                CCLog.assert("Story Query resulted in Error - \(error.localizedDescription)")
-              }
-            }
-            return
-          }
-          
-          guard let stories = stories else {
-            AlertDialog.present(from: self, title: "Story Query Error", message: "Story Query did not produce Stories") { _ in
-              CCLog.assert("Story Query resulted in nil")
-            }
-            return
-          }
-          
-          self.storyQuery = query
-          self.storyArray = stories
-          self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
+          self.unwrapQueryResponse(stories: stories, query: query, error: error)
         }
       }
     }
@@ -1323,18 +1293,6 @@ extension DiscoverViewController: UpdateStoryFeedDelegate {
 
   func deleteStory(_ story: FoodieStory) {
 
-    let storyIdx = storyArray.index(of: story)
-
-    guard let storyIndex = storyIdx else {
-      CCLog.warning("Story not found in the storyArray. Nothing to delete")
-      return
-    }
-
-    storyArray.remove(at: storyIndex)
-    feedCollectionNodeController.deleteStory(story)
-    
-    mapNavController?.remove(annotation: storyAnnotations[storyIndex])
-    storyAnnotations.remove(at: storyIndex)
   }
 }
 
