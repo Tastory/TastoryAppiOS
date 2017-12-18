@@ -506,6 +506,37 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
     
     CCLog.info("User didSelect Story Index \(storyIndex)")
     
+    // Analytics
+    let isOwnStory = story.author == FoodieUser.current
+    var launchType: Analytics.StoryLaunchType
+    
+    // Determine the Launch Type
+    switch layoutType {
+    case .carousel:
+      launchType = .carousel
+    case .mosaic:
+      if allowLayoutChange {
+        launchType = .mosaic
+      } else {
+        launchType = .profile
+      }
+    }
+    
+    if isOwnStory {
+      Analytics.logStoryOwnViewEvent(launchType: launchType)
+    } else if let moments = story.moments, moments.count > 0 {
+      
+      if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
+      if story.title == nil { CCLog.assert("Story Title should never be nil")}
+      if story.author?.username == nil { CCLog.assert("Story Author & Username should never be nil")}
+      
+      Analytics.logStoryViewEvent(storyId: story.objectId ?? "",
+                                  name: story.title ?? "",
+                                  authorId: story.author?.username ?? "",
+                                  launchType: launchType,
+                                  totalMoments: moments.count)
+    }
+
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in

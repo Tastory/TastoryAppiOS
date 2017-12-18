@@ -197,6 +197,31 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   var thumbnail: FoodieMedia?
   var criticalMutex = SwiftMutex.create()
   
+  var videoPercentage: Double? {
+    
+    var numOfPhotos = 0.0
+    var numOfVideos = 0.0
+    
+    // Count the Photo/Video Mix Percentage
+    if let moments = moments {
+      for moment in moments {
+        if let mediaTypeString = moment.mediaType, let mediaType = FoodieMediaType(rawValue: mediaTypeString) {
+          switch mediaType {
+          case .photo:
+            numOfPhotos += 1.0
+          case .video:
+            numOfVideos += 1.0
+          }
+        } else {
+          return nil  // Don't return invalid results
+        }
+      }
+      
+      return numOfVideos / (numOfVideos + numOfPhotos)
+    } else {
+      return nil
+    }
+  }
   
   
   // MARK: - Private Instance Variables

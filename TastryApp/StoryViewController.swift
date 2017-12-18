@@ -89,6 +89,32 @@ class StoryViewController: OverlayViewController {
       return
     }
 
+    if story.author != FoodieUser.current,
+      !draftPreview,
+      let moment = currentMoment,
+      let moments = story.moments,
+      moments.count > 0,
+      let mediaTypeString = moment.mediaType,
+      let mediaType = FoodieMediaType(rawValue: mediaTypeString) {  // Let's not log Previews for Analytics purposes
+      
+      if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
+      if story.title == nil { CCLog.assert("Story Title should never be nil") }
+      if story.author?.username == nil { CCLog.assert("Story Author & Username should never be nil") }
+      
+      let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
+      
+      Analytics.logMomentVenueEvent(venueId: story.venue?.objectId ?? "",
+                                    venueName: story.venue?.name ?? "",
+                                    storyPercentage: storyPercentage,
+                                    momentId: moment.objectId ?? "",
+                                    momentNumber: story.getIndexOf(moment),
+                                    totalMoments: moments.count,
+                                    mediaType: mediaType,
+                                    storyId: story.objectId ?? "",
+                                    storyName: story.title ?? "",
+                                    authorId: story.author?.username ?? "")
+    }
+    
     if let venue = story.venue, let foursquareURLString = venue.foursquareURL, let foursquareURL = URL(string: foursquareURLString) {
       pause()
       CCLog.info("Opening Safari View for \(foursquareURLString)")
@@ -101,13 +127,6 @@ class StoryViewController: OverlayViewController {
   
   
   @IBAction func authorAction(_ sender: UIButton) {
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("ViewController initiated not of ProfileViewController Class!!")
-      }
-      return
-    }
     
     guard let story = viewingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
@@ -119,6 +138,38 @@ class StoryViewController: OverlayViewController {
     guard let author = story.author, author.isDataAvailable else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("viewingStory.author = nil, or isDataAvailable = false")
+      }
+      return
+    }
+    
+    if author != FoodieUser.current,
+      !draftPreview,
+      let moment = currentMoment,
+      let moments = story.moments,
+      moments.count > 0,
+      let mediaTypeString = moment.mediaType,
+      let mediaType = FoodieMediaType(rawValue: mediaTypeString) {  // Let's not log Previews for Analytics purposes
+      
+      if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
+      if story.title == nil { CCLog.assert("Story Title should never be nil") }
+      if author.username == nil { CCLog.assert("Author Username should never be nil") }
+      
+      let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
+      
+      Analytics.logMomentProfileEvent(authorId: author.username ?? "",
+                                      storyPercentage: storyPercentage,
+                                      momentId: moment.objectId ?? "",
+                                      momentNumber: story.getIndexOf(moment),
+                                      totalMoments: moments.count,
+                                      mediaType: mediaType,
+                                      storyId: story.objectId ?? "",
+                                      storyName: story.title ?? "")
+    }
+    
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of ProfileViewController Class!!")
       }
       return
     }
@@ -523,6 +574,32 @@ class StoryViewController: OverlayViewController {
       return
     }
     
+    if story.author != FoodieUser.current,
+      !draftPreview,
+      let moment = currentMoment,
+      let moments = story.moments,
+      moments.count > 0,
+      let mediaTypeString = moment.mediaType,
+      let mediaType = FoodieMediaType(rawValue: mediaTypeString) {  // Let's not log Previews for Analytics purposes
+      
+      if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
+      if story.title == nil { CCLog.assert("Story Title should never be nil") }
+      if story.author?.username == nil { CCLog.assert("Story Author & Username should never be nil") }
+
+      let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
+      
+      Analytics.logMomentSwipeEvent(url: story.storyURL ?? "",
+                                    message: story.swipeMessage ?? "",
+                                    storyPercentage: storyPercentage,
+                                    momentId: moment.objectId ?? "",
+                                    momentNumber: story.getIndexOf(moment),
+                                    totalMoments: moments.count,
+                                    mediaType: mediaType,
+                                    storyId: story.objectId ?? "",
+                                    storyName: story.title ?? "",
+                                    authorId: story.author?.username ?? "")
+    }
+    
     if let storyLinkString = story.storyURL, let storyLinkUrl = URL(string: URL.addHttpIfNeeded(to: storyLinkString)) {
       pause()
       
@@ -634,8 +711,11 @@ class StoryViewController: OverlayViewController {
     avPlayerLayer = AVPlayerLayer()
     videoView.layer.addSublayer(avPlayerLayer)
     
+//  This is commented out for backwards compatibility
+//  And we don't need this anyways. Normalized insets should be stored within all Markups going forward
+//  jotViewController.initialTextInsets = UIEdgeInsetsMake(65, 45, 65, 45)
+    
     jotViewController.state = JotViewState.disabled
-//    jotViewController.initialTextInsets = UIEdgeInsetsMake(65, 45, 65, 45)
     jotViewController.fitOriginalFontSizeToViewWidth = true
     addChildViewController(jotViewController)
     
@@ -673,7 +753,7 @@ class StoryViewController: OverlayViewController {
     swipeUpGestureRecognizer.direction = .up
     swipeUpGestureRecognizer.numberOfTouchesRequired = 1
     view.addGestureRecognizer(swipeUpGestureRecognizer)
-    dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)  // This is needed so that the Swipe down to dismiss from OverlayViewController will only have an effect if this is not a Swipe Up to Safari
+    dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)  // This is needed so that the Swipe down to dismiss from OverlayViewController will only have an effect if this is not a Swipe Up to SafariAccou
   }
 
   
@@ -792,6 +872,32 @@ class StoryViewController: OverlayViewController {
   
   deinit {
     CCLog.debug("Deinit")
+    
+    // Analytics
+    if let story = viewingStory,
+      story.author != FoodieUser.current,
+      !draftPreview,
+      let moment = currentMoment,
+      let moments = story.moments,
+      moments.count > 0,
+      let videoPercentage = story.videoPercentage {  // Let's not log Previews for Analytics purposes
+      
+      if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
+      if story.title == nil { CCLog.assert("Story Title should never be nil")}
+      if story.author?.username == nil { CCLog.assert("Story Author & Username should never be nil")}
+
+      let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
+      
+      Analytics.logStoryExitEvent(storyId: story.objectId ?? "",
+                                  name: story.title ?? "",
+                                  storyPercentage: storyPercentage,
+                                  authorId: story.author?.username ?? "",
+                                  momentId: moment.objectId ?? "",
+                                  momentNumber: story.getIndexOf(moment),
+                                  totalMoments: moments.count,
+                                  videoPercentage: videoPercentage)
+    }
+    
     stopAndClear()
   }
   
