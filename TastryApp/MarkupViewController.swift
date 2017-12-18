@@ -40,10 +40,9 @@ class MarkupViewController: OverlayViewController {
   // MARK: - Public Static Variables
   
   static let FontChoiceArray: [String] = [
-    "BoldSystemFont",
-    "BodoniSvtyTwoOSITCTT-Book",
-    "Futura-Medium",
-    "Noteworthy-Bold"
+    "Noteworthy-Bold",
+    "Futura-Medium",  // The 2nd in the list is actually is the first font
+    "BodoniSvtyTwoOSITCTT-Bold"  //"BodoniSvtyTwoOSITCTT-Book"
   ]
   
   
@@ -419,9 +418,11 @@ class MarkupViewController: OverlayViewController {
   private func getNextFont(size: CGFloat) -> UIFont {
     fontArrayIndex += 1
     if fontArrayIndex >= MarkupViewController.FontChoiceArray.count { fontArrayIndex = 0 }
-    if fontArrayIndex != 0, let newFont = UIFont(name: MarkupViewController.FontChoiceArray[fontArrayIndex], size: size) {
+    
+    if let newFont = UIFont(name: MarkupViewController.FontChoiceArray[fontArrayIndex], size: size) {
       return newFont
     } else {
+      CCLog.assert("Getting font for font array index \(fontArrayIndex) failed")
       return UIFont.boldSystemFont(ofSize: size)
     }
   }
@@ -549,7 +550,7 @@ class MarkupViewController: OverlayViewController {
     
     // JotViewController Markup Setup
     jotViewController.delegate = self
-    jotViewController.textAlignment = .left
+    jotViewController.textAlignment = .center
     jotViewController.textColor = UIColor.white
     jotViewController.font = getNextFont(size: CGFloat(Constants.SizeSliderDefaultFont))
     jotViewController.fontSize = CGFloat(Constants.SizeSliderDefaultFont)
