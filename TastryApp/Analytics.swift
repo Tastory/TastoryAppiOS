@@ -177,14 +177,14 @@ class Analytics {
     Answers.logCustomEvent(withName: "Video Captured", customAttributes: ["Duration" : duration])
   }
 
-  static func logPickerPhotoEvent(width: Int, aspectRatio: Double) {
+  static func logPickerPhotoEvent(width: Double, aspectRatio: Double) {
     Answers.logCustomEvent(withName: "Photo Picked", customAttributes: ["Width" : width,
-                                                                        "Aspect Ratio" : aspectRatio])
+                                                                        "Aspect Ratio" : "\(aspectRatio.truncate(places: 1))"])
   }
   
-  static func logPickerVideoEvent(width: Int, aspectRatio: Double, duration: Double) {
+  static func logPickerVideoEvent(width: Double, aspectRatio: Double, duration: Double) {
     Answers.logCustomEvent(withName: "Video Picked", customAttributes: ["Width" : width,
-                                                                        "Aspect Ratio" : aspectRatio,
+                                                                        "Aspect Ratio" : "\(aspectRatio.truncate(places: 1))",
                                                                         "Duration" : duration])
   }
   

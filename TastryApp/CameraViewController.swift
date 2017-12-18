@@ -203,6 +203,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     }
   }
   
+  
   override func viewWillAppear(_ animated: Bool) {
     captureLocation = nil
     captureLocationError = nil
@@ -218,9 +219,11 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     }
   }
   
+  
   override func viewDidDisappear(_ animated: Bool) {
     locationWatcher?.stop()
   }
+  
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
@@ -236,12 +239,15 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
 } // CameraViewController class definision
 
 
+
 extension CameraViewController: SwiftyCamViewControllerDelegate {
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake image: UIImage) {
     // Called when takePhoto() is called or if a SwiftyCamButton initiates a tap gesture
     // Returns a UIImage captured from the current session
     CCLog.info("User Action - didTakePhoto") // TODO: Make photos brighter too
+    
+    Analytics.logCameraPhotoEvent()
     
 //  Metadata/EXIF data Extraction Example
 //   1. By the time SwiftyCam have made it from a CGDataProvider -> CGImage -> UIImage and we convert it back to a CGDataProvider, it seems that everything is stripped
@@ -369,6 +375,11 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
 
       activitySpinner.apply()
 
+      // Analytics
+      let avUrlAsset = AVURLAsset(url: url)
+      let duration = CMTimeGetSeconds(avUrlAsset.duration)
+      Analytics.logCameraVideoEvent(duration: Double(duration))
+      
       mediaObject.localVideoTranscode(to: FoodieFileObject.getFileURL(for: .draft, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
         if let error = error {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -424,12 +435,14 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     CCLog.info("User Action - didFocusAtPoint")
   }
   
+  
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didChangeZoomLevel zoom: CGFloat) {
     // Called when a user initiates a pinch gesture on the preview layer
     // Will only be called if pinchToZoomn = true
     // Returns a CGFloat of the current zoom level
     CCLog.info("User Action - didChangeZoomLevel")
   }
+  
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didSwitchCameras camera: SwiftyCamViewController.CameraSelection) {
     // Called when user switches between cameras
@@ -445,6 +458,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
 }
 
 
+
 extension CameraViewController: MarkupReturnDelegate {
   func markupComplete(markedupMoments: [FoodieMoment], suggestedStory: FoodieStory?) {
     guard let delegate = cameraReturnDelegate else {
@@ -455,6 +469,8 @@ extension CameraViewController: MarkupReturnDelegate {
     delegate.captureComplete(markedupMoments: markedupMoments, suggestedStory: suggestedStory)
   }
 }
+
+
 
 extension CameraViewController: TLPhotosPickerViewControllerDelegate {
 
@@ -472,6 +488,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     self.present(viewController, animated: true)
   }
 
+  
   func convertToMedia(from tlphAsset: TLPHAsset, withBlock callback: @escaping (FoodieMedia?) -> Void) {
     DispatchQueue.global(qos: .userInitiated).async {
       guard tlphAsset.phAsset != nil else {
@@ -516,6 +533,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     }
   }
 
+  
   func dismissPhotoPicker(withTLPHAssets: [TLPHAsset]) {
     if withTLPHAssets.count < 0 {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
@@ -547,6 +565,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     }
   }
 
+  
   func dismissComplete() {
     // to display all the buttons properly in markup this code must be in this function otherwise
     // the buttons will be hidden
@@ -564,6 +583,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     }
   }
 
+  
   private func processMoments() {
     if(moments.count > 1)
     {
@@ -615,9 +635,9 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   }
 
   
+  
   // TODO: - CameraVC shouldn't need to know the innards of Image Manipulation? This should be a FoodieMedia instance function that CameraVC can call on?
   private func imageFormatter(_ media:FoodieMedia, image bufferImage: UIImage) {
-
     var bufferImage = bufferImage
 
     guard let fileName = media.foodieFileName else {
@@ -758,6 +778,8 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   }
 }
 
+
+
 extension CameraViewController: UIImagePickerControllerDelegate {
   public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
 
@@ -780,6 +802,15 @@ extension CameraViewController: UIImagePickerControllerDelegate {
         return
       }
   
+      // Analytics
+      let avUrlAsset = AVURLAsset(url: movieUrl)
+      if let avUrlTrack = avUrlAsset.tracks(withMediaType: .video).first {
+        let mediaSize = avUrlTrack.naturalSize.applying(avUrlTrack.preferredTransform)
+        let aspectRatio = mediaSize.width / mediaSize.height
+        let duration = CMTimeGetSeconds(avUrlAsset.duration)
+        Analytics.logPickerVideoEvent(width: abs(Double(mediaSize.width)), aspectRatio: abs(Double(aspectRatio)), duration: duration)
+      }
+
       // Go into Video Clip trimming if the Video can be edited
       if UIVideoEditorController.canEditVideo(atPath: movieUrl.relativePath) {
 
@@ -804,6 +835,9 @@ extension CameraViewController: UIImagePickerControllerDelegate {
         return
       }
 
+      // Analytics
+      Analytics.logPickerPhotoEvent(width: Double(image.size.width), aspectRatio: Double(image.size.width/image.size.height))
+      
       mediaObject = FoodieMedia(for: mediaName, localType: .draft, mediaType: .photo)
       imageFormatter(mediaObject, image: image)
 
@@ -856,6 +890,8 @@ extension CameraViewController: UIVideoEditorControllerDelegate {
     }
   }
 }
+
+
 
 extension CameraViewController: VideoTrimmerDelegate {
   func videoTrimmed(from startTime: CMTime, to endTime: CMTime, url assetURLString: String) {

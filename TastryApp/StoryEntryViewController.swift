@@ -271,15 +271,39 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
           if(story.isEditStory) {
             self.updateStoryFeedDelegate?.updateStory(story)
-          }
+            
+            // Analytics
+            if moments.count > 0 {
+              Analytics.logStoryEditSaved(authorId: currentUser.username ?? "",
+                                          storyId: story.objectId ?? "")
+            }
+            
+            self.workingStory = nil
+            self.activitySpinner.remove()
 
-          self.workingStory = nil
-          self.activitySpinner.remove()
-
-          // Pop-up Alert Dialog and then Dismiss
-          CCLog.info("Story Posted!")
-          AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { [unowned self] _ in
-            self.popDismiss(animated: true)
+            // Pop-up Alert Dialog and then Dismiss
+            CCLog.info("Story Saved!")
+            AlertDialog.present(from: self, title: "Story Saved", message: "Your Edits have been posted to the Server") { [unowned self] _ in
+              self.popDismiss(animated: true)
+            }
+            
+          } else {
+            
+            // Analytics
+            if moments.count > 0 {
+              Analytics.logStoryPosted(authorId: currentUser.username ?? "",
+                                       storyId: story.objectId ?? "",
+                                       totalMoments: moments.count)
+            }
+            
+            self.workingStory = nil
+            self.activitySpinner.remove()
+            
+            // Pop-up Alert Dialog and then Dismiss
+            CCLog.info("Story Posted!")
+            AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { [unowned self] _ in
+              self.popDismiss(animated: true)
+            }
           }
         }
       }
@@ -506,6 +530,11 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     scrollView.layer.shadowOffset = Constants.StackShadowOffset
     scrollView.layer.shadowRadius = Constants.StackShadowRadius
     scrollView.layer.shadowOpacity = Constants.StackShadowOpacity
+    
+    if let story = workingStory, story.isEditStory, let author = story.author {
+      Analytics.logStoryEditAttempted(authorId: author.username ?? "",
+                                      storyId: story.objectId ?? "")
+    }
   }
   
   
