@@ -52,7 +52,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   fileprivate var outstandingConvertOperations = 0
   fileprivate var outstandingConvertQueue = DispatchQueue(label: "Outstanding Convert Queue", qos: .userInitiated)
   fileprivate var moments: [FoodieMoment?] = []
-  fileprivate var enableMultiPicker = false
+  fileprivate var enableMultiPicker = true
   fileprivate var activitySpinner: ActivitySpinner? = nil
 
 
@@ -76,6 +76,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
       configure.usedCameraButton = false
       configure.allowedLivePhotos = false
       configure.maxSelectedAssets = 10
+      configure.muteAudio = true
       photoPickerController.delegate = self
       photoPickerController.configure = configure
       self.present(photoPickerController, animated: false, completion: nil)
@@ -518,36 +519,58 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
         CCLog.assert("Failed to unwrap phAsset from TLPHAsset")
         return
       }
-      
+
       switch tlphAsset.type {
-      case .photo:
-        
-        guard let uiImage = tlphAsset.fullResolutionImage else {
-          CCLog.assert("failed to unwrap ui image from TLPH Asset")
-          return
-        }
-        
+      case .photo, .livePhoto:
+
         let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
-        mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(uiImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
-        callback(mediaObject)
-        
-      case .video:
-        
-        let videoName = FoodieFileObject.newVideoFileName()
-        tlphAsset.phAsset?.copyMediaFile(withName: videoName) { (url, error) in
-          
-          if let error = error {
-            CCLog.fatal("Error occured when trying to copy video from photo albumn to tmp folder - \(error.localizedDescription)")
-          }
-          
-          guard let url = url else {
-            CCLog.fatal("No URL returend from copyMediaFile()")
-          }
-          
-          let mediaObject = FoodieMedia(for: videoName, localType: .draft, mediaType: .video)
-          mediaObject.setVideo(toLocal: url)
+        if(tlphAsset.fullResolutionImage == nil) {
+          // icloud image
+          tlphAsset.cloudImageDownload(progressBlock: { (completion) in
+          }, completionBlock: { (uiImage) in
+
+            guard let uiImage = uiImage else {
+              CCLog.assert("Failed to unwrap uiImage downloaded from iCloud")
+              return
+            }
+            mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(uiImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+            callback(mediaObject)
+          })
+
+        } else {
+
+          mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(tlphAsset.fullResolutionImage!, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+          callback(mediaObject)
         }
-        
+
+      case .video:
+
+        tlphAsset.cloudVideoDownload(progressBlock: { (completion) in
+        }) { (avExportSession) in
+          let videoName = FoodieFileObject.newVideoFileName()
+          let outputUrl = FileManager.default.temporaryDirectory.appendingPathComponent(videoName)
+
+          guard let exportSession = avExportSession else {
+            // Add error dialog
+            CCLog.fatal("Failed to request for avExportSession")
+            return
+          }
+
+          // TODO are we sure that we wnat .mov format ?
+          exportSession.outputFileType = AVFileType.mov
+          exportSession.outputURL = outputUrl
+          exportSession.exportAsynchronously {
+
+            if (exportSession.error != nil) {
+              CCLog.debug("An error occured while exporting video from photo picker \(exportSession.error!.localizedDescription)")
+            }
+
+            let mediaObject = FoodieMedia(for: videoName, localType: .draft, mediaType: .video)
+            mediaObject.setVideo(toLocal: outputUrl)
+            callback(mediaObject)
+          }
+        }
+
       default:
         AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { _ in
           CCLog.fatal("Media returned from Image Picker is neither a Photo nor a Video")
@@ -592,18 +615,6 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   func dismissComplete() {
     // to display all the buttons properly in markup this code must be in this function otherwise
     // the buttons will be hidden
-    if(moments.count == 1) {
-      guard let moment = moments[0] else {
-        CCLog.assert("Unwrapped nil moment")
-        return
-      }
-
-      guard let mediaObj = moment.media else {
-        CCLog.assert("Unwrapped nil moment")
-        return
-      }
-      self.displayMarkUpController(mediaObj: mediaObj)
-    }
   }
 
   
@@ -653,6 +664,19 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
             self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
           })
         }
+      }
+    } else {
+      if(moments.count == 1) {
+        guard let moment = moments[0] else {
+          CCLog.assert("Unwrapped nil moment")
+          return
+        }
+
+        guard let mediaObj = moment.media else {
+          CCLog.assert("Unwrapped nil moment")
+          return
+        }
+        self.displayMarkUpController(mediaObj: mediaObj)
       }
     }
   }
