@@ -1,4 +1,4 @@
-//
+ //
 //  JotLabel.m
 //  DrawModules
 //
@@ -25,6 +25,11 @@ NSString *const kLabelPointX = @"LabelPointX";
 NSString *const kLabelPointY = @"LabelPointY";
 NSString *const kBgWhiteValue = @"BgWhiteValue";
 NSString *const kBgAlphaValue = @"BgAlphaValue";
+NSString *const kTextInsets = @"TextInsets";
+NSString *const kTextInsetTop = @"TextInsetTop";
+NSString *const kTextInsetBottom = @"TextInsetBottom";
+NSString *const kTextInsetLeft = @"TextInsetLeft";
+NSString *const kTextInsetRight = @"TextInsetRight";
 
 
 @interface JotLabel ()
@@ -70,8 +75,8 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
 		CGPoint labelCenter = self.center;
 		CGRect scaledFrame = CGRectMake(0.f,
 										0.f,
-										_unscaledFrame.size.width * self.scale * 1.03f,  // 1.0X is for extra space around left and right of labels
-										_unscaledFrame.size.height * self.scale * 1.03f);
+										_unscaledFrame.size.width * self.scale,// * 1.03f,  // 1.0X is for extra space around the label
+                    _unscaledFrame.size.height * self.scale);// * 1.03f);
 		CGAffineTransform labelTransform = self.transform;
 		self.transform = CGAffineTransformIdentity;
 		self.frame = scaledFrame;
@@ -91,8 +96,8 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
 		CGPoint labelCenter = self.center;
 		CGRect scaledFrame = CGRectMake(0.f,
 										0.f,
-										_unscaledFrame.size.width * _scale * 1.03f,
-                    _unscaledFrame.size.height * _scale * 1.03f);
+										_unscaledFrame.size.width * _scale,// * 1.03f,
+                    _unscaledFrame.size.height * _scale);// * 1.03f);
 		CGFloat currentFontSize = self.unscaledFontSize * _scale;
 		self.font = [self.font fontWithSize:currentFontSize];
 		
@@ -117,14 +122,15 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
 	temporarySizingLabel.text = self.text;
 	temporarySizingLabel.font = [self.font fontWithSize:self.unscaledFontSize];
 	temporarySizingLabel.textAlignment = self.textAlignment;
-	
+  temporarySizingLabel.lineBreakMode = NSLineBreakByWordWrapping;
+  
 	CGRect insetViewRect;
 	
 	if (_fitOriginalFontSizeToViewWidth) {
 		temporarySizingLabel.numberOfLines = 0;
 		insetViewRect = CGRectInset(self.superview.bounds,
-									(_initialTextInsets.left + _initialTextInsets.right)/2,
-									(_initialTextInsets.top + _initialTextInsets.bottom)/2);
+									(self.initialTextInsets.left + self.initialTextInsets.right)/2,
+									(self.initialTextInsets.top + self.initialTextInsets.bottom)/2);
 	} else {
 		temporarySizingLabel.numberOfLines = 1;
 		insetViewRect = CGRectMake(0.f, 0.f, CGFLOAT_MAX, CGFLOAT_MAX);
@@ -143,9 +149,10 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
 
 #pragma mark - Serialization
 
-+ (instancetype)fromSerialized:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6{
++ (instancetype)fromSerialized:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6 with:(UIEdgeInsets)textInsets bounds:(CGRect)superBounds{
 	JotLabel *label = [JotLabel new];
-  [label unserialize:dictionary on:ratioForAspectFitAgainstiPhone6];
+  label.initialTextInsets = textInsets;
+  [label unserialize:dictionary on:ratioForAspectFitAgainstiPhone6 bounds:superBounds];
 	return label;
 }
 
@@ -174,10 +181,18 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
   [[UIColor colorWithCGColor: self.layer.backgroundColor] getWhite: &bgWhiteValue alpha: &bgAlphaValue];
   dic[kBgWhiteValue] = @(bgWhiteValue);
   dic[kBgAlphaValue] = @(bgAlphaValue);
+  
+  CGFloat widthInsetAdjustment = (self.superview.bounds.size.width - (self.superview.bounds.size.width / ratioForAspectFitAgainstiPhone6))/2;
+  CGFloat heightInsetAdjustment = (self.superview.bounds.size.height - (self.superview.bounds.size.height / ratioForAspectFitAgainstiPhone6))/2;
+  
+  dic[kTextInsets] = @{ kTextInsetTop: @(self.initialTextInsets.top - heightInsetAdjustment),
+                        kTextInsetLeft: @(self.initialTextInsets.left - widthInsetAdjustment),
+                        kTextInsetBottom: @(self.initialTextInsets.bottom - heightInsetAdjustment),
+                        kTextInsetRight: @(self.initialTextInsets.right - widthInsetAdjustment) };
 	return dic;
 }
 
-- (void)unserialize:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6 {
+- (void)unserialize:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6 bounds:(CGRect)superBounds {
 	if (dictionary[kText]) {
 		self.text = dictionary[kText];
 	}
@@ -220,13 +235,25 @@ NSString *const kBgAlphaValue = @"BgAlphaValue";
     self.scale = [dictionary[kScale] floatValue] * ratioForAspectFitAgainstiPhone6;  // Only need to move the points and change the size (scale). Don't need to touch Font sizing
 	}
 	if ([dictionary[kFitWidth] boolValue]) {
+    self.lineBreakMode = NSLineBreakByWordWrapping;
 		self.fitOriginalFontSizeToViewWidth = YES;
 		self.numberOfLines = 0;
 	}
   if (dictionary[kBgWhiteValue] && dictionary[kBgAlphaValue]) {
     self.layer.backgroundColor = [[UIColor colorWithWhite: [dictionary[kBgWhiteValue] floatValue] alpha: [dictionary[kBgAlphaValue] floatValue]] CGColor];
   }
-	
+  if (dictionary[kTextInsets]) {
+    CGFloat widthInsetAdjustment = (superBounds.size.width - (superBounds.size.width / ratioForAspectFitAgainstiPhone6))/2;
+    CGFloat heightInsetAdjustment = (superBounds.size.height - (superBounds.size.height / ratioForAspectFitAgainstiPhone6))/2;
+    
+    NSDictionary *textInset = dictionary[kTextInsets];
+    CGFloat textInsetTop = [textInset[kTextInsetTop] floatValue] + heightInsetAdjustment;
+    CGFloat textInsetLeft = [textInset[kTextInsetLeft] floatValue] + widthInsetAdjustment;
+    CGFloat textInsetBottom = [textInset[kTextInsetBottom] floatValue] + heightInsetAdjustment;
+    CGFloat textInsetRight = [textInset[kTextInsetRight] floatValue] + widthInsetAdjustment;
+    self.initialTextInsets = UIEdgeInsetsMake(textInsetTop, textInsetLeft, textInsetBottom, textInsetRight);
+  }
+
 	[self refreshFont];
 }
 

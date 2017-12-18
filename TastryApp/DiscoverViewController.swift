@@ -207,14 +207,14 @@ class DiscoverViewController: OverlayViewController {
     performQuery { stories, query, error in
       
       // This is pure analytics
-      let searchSuccess = (error != nil && stoires != nil)
+      let searchSuccess = (error != nil && stories != nil)
       let searchNote = error?.localizedDescription ?? ""
       Analytics.loginDiscoverFilterSearch(categoryIDs: self.discoverFilter?.selectedCategories.map( { $0.foursquareCategoryID ?? "" } ) ?? [],
                                           priceUpperLimit: self.discoverFilter?.priceUpperLimit ?? FoodieFilter.Constants.PriceUpperLimit,
                                           priceLowerLimit: self.discoverFilter?.priceLowerLimit ?? FoodieFilter.Constants.PriceLowerLimit,
                                           success: searchSuccess,
                                           note: searchNote,
-                                          stories: stories ?? 0)
+                                          stories: stories?.count ?? 0)
       
       // Now we are actually unwrapping the search results
       if let error = error {

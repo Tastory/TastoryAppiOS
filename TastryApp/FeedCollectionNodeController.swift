@@ -682,7 +682,8 @@ extension FeedCollectionNodeController: UpdateStoryFeedDelegate {
     }
 
     storyArray.remove(at: storyIndex)
-    collectionNode.deleteItems(at: [IndexPath(item: storyIndex, section: 0)])
+    collectionNode.reloadData()  // A lot of other stuff gets out of sync if we just deleteItems. For example the coverEditButton.tag
+    //collectionNode.deleteItems(at: [IndexPath(item: storyIndex, section: 0)])
   }
 }
 

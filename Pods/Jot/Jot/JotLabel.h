@@ -51,7 +51,7 @@ extern NSString *const kFitWidth;
  *
  *  @return the new JotTouchObject.
  */
-+ (instancetype)fromSerialized:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6;
++ (instancetype)fromSerialized:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6 with:(UIEdgeInsets)textInsets bounds:(CGRect)superBounds;
 
 /**
  *  Convert the object to a dictionary
@@ -65,7 +65,7 @@ extern NSString *const kFitWidth;
  *
  *  @param the NSDictionary representing the object
  */
-- (void)unserialize:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6;
+- (void)unserialize:(NSDictionary*)dictionary on:(CGFloat)ratioForAspectFitAgainstiPhone6 bounds:(CGRect)superBounds;
 
 
 @end

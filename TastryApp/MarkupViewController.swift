@@ -542,19 +542,21 @@ class MarkupViewController: OverlayViewController {
       avPlayerLayer = AVPlayerLayer(player: avPlayer)
     }
     
-    // Setup JotViewController with default initial values
-    jotViewController.delegate = self
+    // JotViewController Display Parameters Setup
     jotViewController.state = JotViewState.text
-    jotViewController.textColor = UIColor.black
-    jotViewController.font = getNextFont(size: CGFloat(Constants.SizeSliderDefaultFont))
+    jotViewController.fitOriginalFontSizeToViewWidth = true
+    jotViewController.view.backgroundColor = .clear
+    
+    // JotViewController Markup Setup
+    jotViewController.delegate = self
     jotViewController.textAlignment = .left
+    jotViewController.textColor = UIColor.white
+    jotViewController.font = getNextFont(size: CGFloat(Constants.SizeSliderDefaultFont))
     jotViewController.fontSize = CGFloat(Constants.SizeSliderDefaultFont)
     jotViewController.drawingStrokeWidth = CGFloat(Constants.SizeSliderDefaultFont)/2
     jotViewController.drawingColor = UIColor.white
     jotViewController.whiteValue = 0.0
     jotViewController.alphaValue = 0.0
-    jotViewController.fitOriginalFontSizeToViewWidth = true
-    jotViewController.view.backgroundColor = .clear
     
     addChildViewController(jotViewController)
     mediaView.addSubview(jotViewController.view)
@@ -610,8 +612,8 @@ class MarkupViewController: OverlayViewController {
       
       // Update Frame for JotVC based on Autolayout results
       jotViewController.view.frame = mediaView.bounds
-      jotViewController.textEditingInsets = UIEdgeInsetsMake(60, 40, 60, 40)
-      jotViewController.initialTextInsets = UIEdgeInsetsMake(60, 40, 60, 40)
+      jotViewController.textEditingInsets = UIEdgeInsetsMake(65, 45, 65, 45)
+      jotViewController.initialTextInsets = UIEdgeInsetsMake(65, 45, 65, 45)
       jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                                andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
       jotViewController.view.layoutIfNeeded()

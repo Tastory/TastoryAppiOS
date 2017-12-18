@@ -290,6 +290,12 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         return
       }
       
+      // If there's no child op, then just return
+      guard outstandingChildOperations != 0 else {
+        callback?(nil)
+        return
+      }
+      
       self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
       
       // There will be no Markups for Story Covers

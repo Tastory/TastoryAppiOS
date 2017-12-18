@@ -6,7 +6,7 @@
 //  Copyright © 2017 Tastry. All rights reserved.
 //
 
-import UIKit
+import AsyncDisplayKit
 import FBSDKCoreKit
 import ParseFacebookUtilsV4
 
@@ -38,6 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Initialize Crash, Error & Log Reporting
     CCLog.initializeLogging()
     CCLog.initializeReporting()
+    
+    ASDisableLogging()
     
     // Initialize Foodie Model
     FoodieGlobal.initialize()

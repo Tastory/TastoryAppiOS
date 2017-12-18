@@ -635,6 +635,8 @@ class StoryViewController: OverlayViewController {
     videoView.layer.addSublayer(avPlayerLayer)
     
     jotViewController.state = JotViewState.disabled
+    jotViewController.initialTextInsets = UIEdgeInsetsMake(60, 40, 60, 40)
+    jotViewController.fitOriginalFontSizeToViewWidth = true
     addChildViewController(jotViewController)
     
     view.addSubview(jotViewController.view)
