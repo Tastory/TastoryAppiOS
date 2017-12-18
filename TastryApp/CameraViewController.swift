@@ -512,8 +512,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     self.present(viewController, animated: true)
   }
 
-  
-  func convertToMedia(from tlphAsset: TLPHAsset, withBlock callback: @escaping (FoodieMedia?) -> Void) {
+  func convertToMedia(from tlphAsset: TLPHAsset, isLimitDuration isLimitDuration: Bool, withBlock callback: @escaping (FoodieMedia?) -> Void) {
     DispatchQueue.global(qos: .userInitiated).async {
       guard tlphAsset.phAsset != nil else {
         CCLog.assert("Failed to unwrap phAsset from TLPHAsset")
@@ -527,6 +526,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
         if(tlphAsset.fullResolutionImage == nil) {
           // icloud image
           tlphAsset.cloudImageDownload(progressBlock: { (completion) in
+            CCLog.verbose("download image completed at \(completion)")
           }, completionBlock: { (uiImage) in
 
             guard let uiImage = uiImage else {
@@ -546,6 +546,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       case .video:
 
         tlphAsset.cloudVideoDownload(progressBlock: { (completion) in
+          CCLog.verbose("download video completed at \(completion)")
         }) { (avExportSession) in
           let videoName = FoodieFileObject.newVideoFileName()
           let outputUrl = FileManager.default.temporaryDirectory.appendingPathComponent(videoName)
@@ -559,6 +560,9 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
           // TODO are we sure that we wnat .mov format ?
           exportSession.outputFileType = AVFileType.mov
           exportSession.outputURL = outputUrl
+          if(isLimitDuration) {
+            exportSession.timeRange = CMTimeRangeMake(kCMTimeZero, CMTime(seconds: 15, preferredTimescale: 1))
+          }
           exportSession.exportAsynchronously {
 
             if (exportSession.error != nil) {
@@ -592,7 +596,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       
       for tlphAsset in withTLPHAssets {
         self.outstandingConvertOperations += 1
-        self.convertToMedia(from: tlphAsset) { (foodieMedia) in
+        self.convertToMedia(from: tlphAsset, isLimitDuration: withTLPHAssets.count > 1) { (foodieMedia) in
 
           guard let foodieMedia = foodieMedia else {
             CCLog.assert("Failed to convert tlphAsset to FoodieMedia as foodieMedia is nil")
@@ -676,7 +680,12 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
           CCLog.assert("Unwrapped nil moment")
           return
         }
-        self.displayMarkUpController(mediaObj: mediaObj)
+
+        let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VideoTrimmerViewController") as! VideoTrimmerViewController
+        viewController.avAsset = AVURLAsset(url: (moment.media?.localVideoUrl)!)
+        viewController.delegate = self
+        present(viewController, animated: true, completion: nil)
       }
     }
   }
