@@ -312,19 +312,19 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
       if let error = error {
-        CCLog.assert("Moment.retrieve() resulted in error: \(error.localizedDescription)")
+        CCLog.assert("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()), Moment.retrieve() resulted in error: \(error.localizedDescription)")
         callback?(error)
         return
       }
       
       guard let media = self.media else {
-        CCLog.assert("Unexpected Moment.retrieve() resulted in moment.media = nil")
+        CCLog.assert("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()), Unexpected Moment.retrieve() resulted in moment.media = nil")
         callback?(error)
         return
       }
       
       guard let thumbnail = self.thumbnail else {
-        CCLog.assert("Unexpected Moment.retrieve() resulted in moment.thumbnail = nil")
+        CCLog.assert("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()), Unexpected Moment.retrieve() resulted in moment.thumbnail = nil")
         callback?(error)
         return
       }
@@ -377,11 +377,11 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       
       // This is Performant path. Better have retrieved the Markups by this point
       if let markups = self.markups, !markups[0].isDataAvailable {
-        CCLog.fatal("Markups[0] is nil. Should have called batchRetrieve before hand")
+        CCLog.fatal("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()), Markups[0] is nil. Should have called batchRetrieve before hand")
       }
       
       guard let media = self.media else {
-        CCLog.fatal("Unexpected Moment.retrieve() resulted in moment.media = nil")
+        CCLog.fatal("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()), Unexpected Moment.retrieve() resulted in moment.media = nil")
       }
       
       guard !momentOperation.isCancelled else {
@@ -406,19 +406,19 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     retrieve(from: location, type: localType, forceAnyways: forceAnyways) { error in
       
       if let error = error {
-        CCLog.assert("Moment.retrieve() resulted in error: \(error.localizedDescription)")
+        CCLog.assert("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()), Moment.retrieve() resulted in error: \(error.localizedDescription)")
         callback?(error)
         return
       }
       
       guard let media = self.media else {
-        CCLog.assert("Unexpected Moment.retrieve() resulted in moment.media = nil")
+        CCLog.assert("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()), Unexpected Moment.retrieve() resulted in moment.media = nil")
         callback?(error)
         return
       }
       
       guard let thumbnail = self.thumbnail else {
-        CCLog.assert("Unexpected Moment.retrieve() resulted in moment.thumbnail = nil")
+        CCLog.assert("Moment \(self.getUniqueIdentifier()) operation \(momentOperation.getUniqueIdentifier()), Unexpected Moment.retrieve() resulted in moment.thumbnail = nil")
         callback?(error)
         return
       }

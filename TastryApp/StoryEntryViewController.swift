@@ -379,7 +379,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     var discardMessage: String
     
     if story.isEditStory {
-      discardTitle = "Discard Edit"
+      discardTitle = "Discard Changes"
       discardMessage = "Are you sure you want to discard the changes to your story?"
     } else {
       discardTitle = "Discard Story"
