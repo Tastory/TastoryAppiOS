@@ -453,32 +453,11 @@ extension ProfileViewController: UpdateStoryFeedDelegate {
 
     feedCollectionNodeController.updateStory(story)
 
-    guard let updateStoryDelegate = updateStoryDelegate else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Expected updateStoryDelegate")
-      }
-      return
-    }
-
     // propagate updateStory to discoveryView (parent)
-    updateStoryDelegate.updateStory(story)
+    updateStoryDelegate?.updateStory(story)
   }
 
   func deleteStory(_ story: FoodieStory) {
-
-    if(stories.count > 1) {
-
-      let storyIdx = stories.index(of: story)
-
-      guard let storyIndex = storyIdx else {
-        CCLog.warning("Story not found in the storyArray. Nothing to delete")
-        return
-      }
-
-      stories.remove(at: storyIndex)
-      // there should always be one or more stories after we remove one
-      updateProfileMap(with: stories[0])
-    } 
 
     guard let feedCollectionNodeController = feedCollectionNodeController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -487,17 +466,24 @@ extension ProfileViewController: UpdateStoryFeedDelegate {
       return
     }
 
-    feedCollectionNodeController.deleteStory(story)
+    feedCollectionNodeController.deleteStory(story) {
+      if(self.stories.count > 1) {
 
-    guard let updateStoryDelegate = updateStoryDelegate else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Expected updateStoryDelegate")
+        let storyIdx = self.stories.index(of: story)
+
+        guard let storyIndex = storyIdx else {
+          CCLog.warning("Story not found in the storyArray. Nothing to delete")
+          return
+        }
+
+        self.stories.remove(at: storyIndex)
+        // there should always be one or more stories after we remove one
+        self.updateProfileMap(with: self.stories[0])
       }
-      return
     }
 
     // propagate deleteStory to discoveryView (parent)
-    updateStoryDelegate.deleteStory(story)
+    updateStoryDelegate?.deleteStory(story)
   }
 }
 

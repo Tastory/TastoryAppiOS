@@ -179,7 +179,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
           viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)  // Disable Interactive Dismiss to force Discard Confirmation on Exit
           mapNavController.delegate = viewController
           viewController.workingStory = story
-          viewController.updateProfileFeedDelegate = self.updateStoryDelegate
+          viewController.updateFeedDelegate = self.updateStoryDelegate
           mapNavController.pushViewController(viewController, animated: true)
           UIApplication.shared.endIgnoringInteractionEvents()
         }
@@ -457,7 +457,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     collectionNode.reloadItems(at: [IndexPath(item: storyIndex, section: 0)])
   }
 
-  func deleteStory(_ story: FoodieStory) {
+  func deleteStory(_ story: FoodieStory, completion: (() -> Void)? = nil) {
 
     let storyIdx = storyArray.index(of: story)
 
@@ -467,7 +467,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     }
 
     storyArray.remove(at: storyIndex)
-    collectionNode.reloadData()  // A lot of other stuff gets out of sync if we just deleteItems. For example the coverEditButton.tag
+    collectionNode.reloadData(completion: completion)  // A lot of other stuff gets out of sync if we just deleteItems. For example the coverEditButton.tag
   }
 }
 
