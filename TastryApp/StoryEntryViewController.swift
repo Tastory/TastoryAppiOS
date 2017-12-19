@@ -56,11 +56,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   var workingStory: FoodieStory?
   var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
-  weak var updateStoryFeedDelegate: UpdateStoryFeedDelegate?
-  weak var updateStoryMapFeedDelegate: UpdateStoryFeedDelegate?
-  
-  
-  
+  weak var updateProfileFeedDelegate: UpdateStoryFeedDelegate?
+
   // MARK: - Private Instance Variables
   
   private var momentViewController = MomentCollectionViewController()
@@ -127,22 +124,15 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           }
 
           self.activitySpinner.remove()
-          guard let updateStoryFeedDelegate = self.updateStoryFeedDelegate else {
+
+          guard let updateProfileFeedDelegate = self.updateProfileFeedDelegate else {
             AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-              CCLog.fatal("updateStoryFeedDelegate is nil")
+              CCLog.fatal("updateProfileFeedDelegate is nil")
             }
             return
           }
 
-          guard let updateStoryMapFeedDelegate = self.updateStoryMapFeedDelegate else {
-            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-              CCLog.fatal("updateStoryMapFeedDelegate is nil")
-            }
-            return
-          }
-
-          updateStoryMapFeedDelegate.deleteStory(workingStory)
-          updateStoryFeedDelegate.deleteStory(workingStory)
+          updateProfileFeedDelegate.deleteStory(workingStory)
           FoodieStory.removeCurrent()
           self.popDismiss(animated: true)
         }
@@ -270,7 +260,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           }
 
           if(story.isEditStory) {
-            self.updateStoryFeedDelegate?.updateStory(story)
+            self.updateProfileFeedDelegate?.updateStory(story)
             
             // Analytics
             if moments.count > 0 {
@@ -397,7 +387,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         }
         
         if(story.isEditStory) {
-          self.updateStoryFeedDelegate?.updateStory(story)
+          self.updateProfileFeedDelegate?.updateStory(story)
         }
         
         self.workingStory = nil

@@ -37,7 +37,7 @@ class ProfileViewController: OverlayViewController {
   
   
   // MARK: - Public Instance Variable
-  weak var storyDelegate: UpdateStoryFeedDelegate?
+  weak var updateStoryDelegate: UpdateStoryFeedDelegate?
   var user: FoodieUser?
   var query: FoodieQuery?
   var stories = [FoodieStory]() {
@@ -326,7 +326,7 @@ class ProfileViewController: OverlayViewController {
       nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
       nodeController.didMove(toParentViewController: self)
       nodeController.delegate = self
-      nodeController.storyDelegate = storyDelegate
+      nodeController.updateStoryDelegate = self
       feedCollectionNodeController = nodeController
       
       
@@ -418,7 +418,6 @@ class ProfileViewController: OverlayViewController {
 }
 
 
-
 extension ProfileViewController: FeedCollectionNodeDelegate {
   
   func collectionNodeDidStopScrolling() {
@@ -440,3 +439,65 @@ extension ProfileViewController: FeedCollectionNodeDelegate {
     FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
   }
 }
+
+
+extension ProfileViewController: UpdateStoryFeedDelegate {
+  func updateStory(_ story: FoodieStory) {
+
+    guard let feedCollectionNodeController = feedCollectionNodeController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Expected FeedCollectionNodeController")
+      }
+      return
+    }
+
+    feedCollectionNodeController.updateStory(story)
+
+    guard let updateStoryDelegate = updateStoryDelegate else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Expected updateStoryDelegate")
+      }
+      return
+    }
+
+    // propagate updateStory to discoveryView (parent)
+    updateStoryDelegate.updateStory(story)
+  }
+
+  func deleteStory(_ story: FoodieStory) {
+
+    if(stories.count > 1) {
+
+      let storyIdx = stories.index(of: story)
+
+      guard let storyIndex = storyIdx else {
+        CCLog.warning("Story not found in the storyArray. Nothing to delete")
+        return
+      }
+
+      stories.remove(at: storyIndex)
+      // there should always be one or more stories after we remove one
+      updateProfileMap(with: stories[0])
+    } 
+
+    guard let feedCollectionNodeController = feedCollectionNodeController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Expected FeedCollectionNodeController")
+      }
+      return
+    }
+
+    feedCollectionNodeController.deleteStory(story)
+
+    guard let updateStoryDelegate = updateStoryDelegate else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Expected updateStoryDelegate")
+      }
+      return
+    }
+
+    // propagate deleteStory to discoveryView (parent)
+    updateStoryDelegate.deleteStory(story)
+  }
+}
+

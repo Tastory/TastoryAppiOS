@@ -248,7 +248,7 @@ class DiscoverViewController: OverlayViewController {
     }
     
     appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
-    viewController.storyDelegate = self
+    viewController.updateStoryDelegate = self
     viewController.user = FoodieUser.current
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
@@ -742,8 +742,10 @@ class DiscoverViewController: OverlayViewController {
       }
       
       if let annotationIndex = lastSelectedAnnotationIndex {
-        let annotationToSelect = storyAnnotations[annotationIndex]
-        mapController.select(annotation: annotationToSelect, animated: true)
+        if(annotationIndex < storyAnnotations.count) {
+           let annotationToSelect = storyAnnotations[annotationIndex]
+            mapController.select(annotation: annotationToSelect, animated: true)
+        }
       }
     }
     
@@ -1292,6 +1294,7 @@ extension DiscoverViewController: UpdateStoryFeedDelegate {
       return
     }
 
+    // the lastSelectedAnnotationIndex happens to be deleted so make it nil
     if(storyIndex == lastSelectedAnnotationIndex) {
       lastSelectedAnnotationIndex = nil
     }
