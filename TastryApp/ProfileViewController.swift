@@ -390,6 +390,10 @@ class ProfileViewController: OverlayViewController {
     if let storyIndex = feedCollectionNodeController.highlightedStoryIndex, storyIndex < stories.count {
       updateProfileMap(with: stories[storyIndex])
     }
+
+    if(stories.count == 0) {
+      mapController.removeAllAnnotations()
+    }
     
     appearanceForAllUI(alphaValue: 1.0, animated: true)
   }
