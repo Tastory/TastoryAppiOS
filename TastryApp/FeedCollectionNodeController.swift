@@ -60,7 +60,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // MARK: - Public Instance Variable
   
   weak var delegate: FeedCollectionNodeDelegate?
-  weak var storyDelegate: UpdateStoryFeedDelegate?
+  weak var updateStoryDelegate: UpdateStoryFeedDelegate?
   var storyArray = [FoodieStory]()
   var enableEdit = false
   
@@ -179,8 +179,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
           viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)  // Disable Interactive Dismiss to force Discard Confirmation on Exit
           mapNavController.delegate = viewController
           viewController.workingStory = story
-          viewController.updateStoryFeedDelegate = self
-          viewController.updateStoryMapFeedDelegate = self.storyDelegate
+          viewController.updateProfileFeedDelegate = self.updateStoryDelegate
           mapNavController.pushViewController(viewController, animated: true)
           UIApplication.shared.endIgnoringInteractionEvents()
         }
@@ -445,6 +444,31 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     
     return visibleStoryIndexes
   }
+
+  func updateStory(_ story: FoodieStory) {
+    let storyIdx = storyArray.index(of: story)
+
+    guard let storyIndex = storyIdx else {
+      CCLog.warning("Story not found in the storyArray. Nothing to update")
+      return
+    }
+
+    storyArray[storyIndex] = story
+    collectionNode.reloadItems(at: [IndexPath(item: storyIndex, section: 0)])
+  }
+
+  func deleteStory(_ story: FoodieStory) {
+
+    let storyIdx = storyArray.index(of: story)
+
+    guard let storyIndex = storyIdx else {
+      CCLog.warning("Story not found in the storyArray. Nothing to delete")
+      return
+    }
+
+    storyArray.remove(at: storyIndex)
+    collectionNode.reloadData()  // A lot of other stuff gets out of sync if we just deleteItems. For example the coverEditButton.tag
+  }
 }
 
 
@@ -689,42 +713,10 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
 }
 
 
-
 extension FeedCollectionNodeController: MosaicCollectionViewLayoutDelegate {
   internal func collectionView(_ collectionView: UICollectionView, layout: MosaicCollectionViewLayout, originalItemSizeAtIndexPath: IndexPath) -> CGSize {
     //CCLog.verbose("collectionView(:MosaicLayout:originalItemSizeAt:\(originalItemSizeAtIndexPath.item))")
     return layout.calculateConstrainedSize(for: collectionNode.bounds).max
   }
 }
-
-
-extension FeedCollectionNodeController: UpdateStoryFeedDelegate {
-  func updateStory(_ story: FoodieStory) {
-    let storyIdx = storyArray.index(of: story)
-
-    guard let storyIndex = storyIdx else {
-      CCLog.warning("Story not found in the storyArray. Nothing to update")
-      return
-    }
-
-    storyArray[storyIndex] = story
-    collectionNode.reloadItems(at: [IndexPath(item: storyIndex, section: 0)])
-  }
-
-  func deleteStory(_ story: FoodieStory) {
-
-    let storyIdx = storyArray.index(of: story)
-
-    guard let storyIndex = storyIdx else {
-      CCLog.warning("Story not found in the storyArray. Nothing to delete")
-      return
-    }
-
-    storyArray.remove(at: storyIndex)
-    collectionNode.reloadData()  // A lot of other stuff gets out of sync if we just deleteItems. For example the coverEditButton.tag
-    //collectionNode.deleteItems(at: [IndexPath(item: storyIndex, section: 0)])
-  }
-}
-
-
 
