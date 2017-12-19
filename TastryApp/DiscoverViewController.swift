@@ -218,7 +218,7 @@ class DiscoverViewController: OverlayViewController {
                                           stories: stories?.count ?? 0)
 
       // Now we are actually unwrapping the search results
-      self.unwrapQueryResponse(stories: stories, query: query, error: error)
+      self.unwrapQueryRefreshDiscoveryView(stories: stories, query: query, error: error)
       self.searchButtonsHidden(is: true)
     }
   }
@@ -227,7 +227,7 @@ class DiscoverViewController: OverlayViewController {
   @IBAction func allStories(_ sender: UIButton) {
     
     performQuery(onAllUsers: true) { stories, query, error in
-      self.unwrapQueryResponse(stories: stories, query: query, error: error)
+      self.unwrapQueryRefreshDiscoveryView(stories: stories, query: query, error: error)
       self.searchButtonsHidden(is: true)
     }
   }
@@ -364,7 +364,7 @@ class DiscoverViewController: OverlayViewController {
     }
   }
 
-  private func unwrapQueryResponse(stories: [FoodieStory]?,query: FoodieQuery?, error :Error?) {
+  private func unwrapQueryRefreshDiscoveryView(stories: [FoodieStory]?,query: FoodieQuery?, error :Error?) {
     if let error = error {
       if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
         AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
@@ -776,7 +776,7 @@ class DiscoverViewController: OverlayViewController {
         let region = MKCoordinateRegionMakeWithDistance(location.coordinate, mapController.defaultMapWidth, mapController.defaultMapWidth)
         // Do an Initial Search near the Current Location
         self.performQuery(at: region.toMapRect()) { stories, query, error in
-          self.unwrapQueryResponse(stories: stories, query: query, error: error)
+          self.unwrapQueryRefreshDiscoveryView(stories: stories, query: query, error: error)
         }
       }
     }
@@ -1299,26 +1299,9 @@ extension DiscoverViewController: UpdateStoryFeedDelegate {
       lastSelectedAnnotationIndex = nil
     }
 
-    guard let storyQuery = storyQuery else {
-      CCLog.debug("storyQuery is nil")
-      return
-    }
-
     // requery
-    storyQuery.initStoryQueryAndSearch { (stories, error) in
-      if let error = error {
-        AlertDialog.present(from: self, title: "Query Failed", message: error.localizedDescription) { _ in
-          CCLog.assert("Create Story Query & Search failed with error: \(error.localizedDescription)")
-        }
-        self.unwrapQueryResponse(stories: nil, query: nil, error: error)
-        return
-      }
-
-      guard let storyArray = stories else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
-        CCLog.fatal("Create Story Query & Search returned with nil Story Array")
-      }
-      self.unwrapQueryResponse(stories: storyArray, query: storyQuery, error: nil)
+    storyQuery?.initStoryQueryAndSearch { (stories, error) in
+      self.unwrapQueryRefreshDiscoveryView(stories: stories, query: self.storyQuery, error: error)
     }
   }
 }

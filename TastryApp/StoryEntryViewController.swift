@@ -56,7 +56,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   var workingStory: FoodieStory?
   var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
-  weak var updateProfileFeedDelegate: UpdateStoryFeedDelegate?
+  weak var updateFeedDelegate: UpdateStoryFeedDelegate?
 
   // MARK: - Private Instance Variables
   
@@ -125,14 +125,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
           self.activitySpinner.remove()
 
-          guard let updateProfileFeedDelegate = self.updateProfileFeedDelegate else {
-            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-              CCLog.fatal("updateProfileFeedDelegate is nil")
-            }
-            return
-          }
-
-          updateProfileFeedDelegate.deleteStory(workingStory)
+          self.updateFeedDelegate?.deleteStory(workingStory)
           FoodieStory.removeCurrent()
           self.popDismiss(animated: true)
         }
@@ -260,7 +253,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           }
 
           if(story.isEditStory) {
-            self.updateProfileFeedDelegate?.updateStory(story)
+            self.updateFeedDelegate?.updateStory(story)
             
             // Analytics
             if moments.count > 0 {
@@ -387,7 +380,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         }
         
         if(story.isEditStory) {
-          self.updateProfileFeedDelegate?.updateStory(story)
+          self.updateFeedDelegate?.updateStory(story)
         }
         
         self.workingStory = nil
