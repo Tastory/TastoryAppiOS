@@ -65,7 +65,6 @@ class DiscoverViewController: OverlayViewController {
   private var activitySpinner: ActivitySpinner!
   private var lastMapState: MapNavController.MapState?
   private var lastSelectedAnnotationIndex: Int?
-  private var lastMapRect: MKMapRect?
 
   private var highlightedStoryIndex: Int?
   private var mosaicMapWidth: CLLocationDistance?
@@ -773,9 +772,8 @@ class DiscoverViewController: OverlayViewController {
         DispatchQueue.main.async { mapController.showCurrentRegionExposed(animated: true) }
 
         let region = MKCoordinateRegionMakeWithDistance(location.coordinate, mapController.defaultMapWidth, mapController.defaultMapWidth)
-        self.lastMapRect = region.toMapRect()
         // Do an Initial Search near the Current Location
-        self.performQuery(at: self.lastMapRect) { stories, query, error in
+        self.performQuery(at: region.toMapRect()) { stories, query, error in
           self.unwrapQueryResponse(stories: stories, query: query, error: error)
         }
       }
@@ -1286,16 +1284,39 @@ extension DiscoverViewController: UpdateStoryFeedDelegate {
   }
 
   func deleteStory(_ story: FoodieStory) {
-    guard let mapReact = lastMapRect else {
-      CCLog.debug("lastMapRect is nil")
+
+    let storyIdx = storyArray.index(of: story)
+
+    guard let storyIndex = storyIdx else {
+      CCLog.warning("Story not found in the storyArray. Nothing to delete")
       return
     }
-    // requery
-    self.performQuery(at: mapReact) { stories, query, error in
-      self.unwrapQueryResponse(stories: stories, query: query, error: error)
-      self.searchButtonsHidden(is: true)
+
+    if(storyIndex == lastSelectedAnnotationIndex) {
+      lastSelectedAnnotationIndex = nil
     }
 
+    guard let storyQuery = storyQuery else {
+      CCLog.debug("storyQuery is nil")
+      return
+    }
+
+    // requery
+    storyQuery.initStoryQueryAndSearch { (stories, error) in
+      if let error = error {
+        AlertDialog.present(from: self, title: "Query Failed", message: error.localizedDescription) { _ in
+          CCLog.assert("Create Story Query & Search failed with error: \(error.localizedDescription)")
+        }
+        self.unwrapQueryResponse(stories: nil, query: nil, error: error)
+        return
+      }
+
+      guard let storyArray = stories else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
+        CCLog.fatal("Create Story Query & Search returned with nil Story Array")
+      }
+      self.unwrapQueryResponse(stories: storyArray, query: storyQuery, error: nil)
+    }
   }
 }
 
