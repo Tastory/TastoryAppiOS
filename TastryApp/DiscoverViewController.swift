@@ -65,6 +65,8 @@ class DiscoverViewController: OverlayViewController {
   private var activitySpinner: ActivitySpinner!
   private var lastMapState: MapNavController.MapState?
   private var lastSelectedAnnotationIndex: Int?
+  private var lastMapRect: MKMapRect?
+
   private var highlightedStoryIndex: Int?
   private var mosaicMapWidth: CLLocationDistance?
   
@@ -744,14 +746,6 @@ class DiscoverViewController: OverlayViewController {
         let annotationToSelect = storyAnnotations[annotationIndex]
         mapController.select(annotation: annotationToSelect, animated: true)
       }
-
-      // requery in case there is a story deleted cant be done by delegate because perform query
-      // needs map controller initialized 
-      performQuery { stories, query, error in
-        self.unwrapQueryResponse(stories: stories, query: query, error: error)
-        self.searchButtonsHidden(is: true)
-      }
-
     }
     
     // First time on the map. Try to get the location, and get an initial query if successful
@@ -779,9 +773,9 @@ class DiscoverViewController: OverlayViewController {
         DispatchQueue.main.async { mapController.showCurrentRegionExposed(animated: true) }
 
         let region = MKCoordinateRegionMakeWithDistance(location.coordinate, mapController.defaultMapWidth, mapController.defaultMapWidth)
-        
+        self.lastMapRect = region.toMapRect()
         // Do an Initial Search near the Current Location
-        self.performQuery(at: region.toMapRect()) { stories, query, error in
+        self.performQuery(at: self.lastMapRect) { stories, query, error in
           self.unwrapQueryResponse(stories: stories, query: query, error: error)
         }
       }
@@ -1292,6 +1286,15 @@ extension DiscoverViewController: UpdateStoryFeedDelegate {
   }
 
   func deleteStory(_ story: FoodieStory) {
+    guard let mapReact = lastMapRect else {
+      CCLog.debug("lastMapRect is nil")
+      return
+    }
+    // requery
+    self.performQuery(at: mapReact) { stories, query, error in
+      self.unwrapQueryResponse(stories: stories, query: query, error: error)
+      self.searchButtonsHidden(is: true)
+    }
 
   }
 }
