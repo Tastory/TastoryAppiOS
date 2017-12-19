@@ -58,7 +58,7 @@
                                 </constraints>
                             </view>
                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ayV-BF-5uO">
-                                <rect key="frame" x="0.0" y="188.66666666666669" width="375" height="623.33333333333326"/>
+                                <rect key="frame" x="0.0" y="338.33333333333326" width="375" height="473.66666666666674"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zzE-Jd-3Do" userLabel="Map Exposed View">
@@ -191,7 +191,7 @@
                             <constraint firstItem="1js-VP-5AG" firstAttribute="top" secondItem="IWZ-hZ-UC9" secondAttribute="top" id="Baa-Dy-4SK"/>
                             <constraint firstItem="eRP-BC-T40" firstAttribute="trailing" secondItem="Zwc-TB-L9A" secondAttribute="trailing" constant="-15" id="CFW-u6-pwF"/>
                             <constraint firstItem="0Ae-af-Oo9" firstAttribute="centerX" secondItem="Pgw-9P-CO9" secondAttribute="centerX" id="CTI-OY-9xf"/>
-                            <constraint firstItem="ayV-BF-5uO" firstAttribute="top" secondItem="Zwc-TB-L9A" secondAttribute="top" id="DOr-Q5-Fzy"/>
+                            <constraint firstItem="ayV-BF-5uO" firstAttribute="top" secondItem="Zwc-TB-L9A" secondAttribute="bottom" id="DOr-Q5-Fzy"/>
                             <constraint firstItem="Zwc-TB-L9A" firstAttribute="height" relation="lessThanOrEqual" secondItem="voX-A0-jf6" secondAttribute="height" multiplier="0.25" id="GWi-rx-KVH"/>
                             <constraint firstAttribute="trailing" secondItem="1js-VP-5AG" secondAttribute="trailing" id="IKG-kE-gTP"/>
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="width" secondItem="Zwc-TB-L9A" secondAttribute="width" multiplier="0.25" id="KtR-Fh-Ble"/>

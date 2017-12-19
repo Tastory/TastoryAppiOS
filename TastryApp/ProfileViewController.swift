@@ -310,7 +310,7 @@ class ProfileViewController: OverlayViewController {
     if isInitialLayout {
       isInitialLayout = false
       let nodeController = FeedCollectionNodeController(with: .mosaic,
-                                                        offsetBy: profileUIView.bounds.height,
+                                                        offsetBy: MosaicCollectionViewLayout.Constants.DefaultFeedNodeMargin, //profileUIView.bounds.height,
                                                         allowLayoutChange: false,
                                                         adjustScrollViewInset: true)
       nodeController.storyArray = stories

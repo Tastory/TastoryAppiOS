@@ -382,7 +382,8 @@ class StoryViewController: OverlayViewController {
         avPlayer = localVideoPlayer
         installUIForVideo()
       } else {
-        CCLog.fatal("Video media contains no Export Player nor Local URL")
+        CCLog.warning("Video media contains no Export Player nor Local URL. Probably cancelled and deallocated")
+        return
       }
 
       avPlayerLayer.player = avPlayer

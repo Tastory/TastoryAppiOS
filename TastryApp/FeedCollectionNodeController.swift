@@ -573,15 +573,23 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       return
     }
     
-    if layoutAttributes.frame.minY < collectionNode.bounds.minY {
+    // Vertical direction adjustment
+    let topAdjustment = max(collectionNode.contentInset.top, 0)
+    let bottomAdjustment = max(collectionNode.contentInset.bottom, 0)
+    
+    if layoutAttributes.frame.minY < (collectionNode.bounds.minY + topAdjustment) {
       collectionNode.scrollToItem(at: indexPath, at: .top, animated: true)
-    } else if layoutAttributes.frame.maxY > collectionNode.bounds.maxY {
+    } else if layoutAttributes.frame.maxY > (collectionNode.bounds.maxY - bottomAdjustment) {
       collectionNode.scrollToItem(at: indexPath, at: .bottom, animated: true)
     }
     
-    if layoutAttributes.frame.minX < collectionNode.bounds.minX {
+    // Horizontal direction adjustment
+    let leftAdjustment = max(collectionNode.contentInset.left, 0)
+    let rightAdjustment = max(collectionNode.contentInset.right, 0)
+    
+    if layoutAttributes.frame.minX < (collectionNode.bounds.minX + leftAdjustment) {
       collectionNode.scrollToItem(at: indexPath, at: .left, animated: true)
-    } else if layoutAttributes.frame.maxX > collectionNode.bounds.maxX {
+    } else if layoutAttributes.frame.maxX > (collectionNode.bounds.maxX - rightAdjustment) {
       collectionNode.scrollToItem(at: indexPath, at: .right, animated: true)
     }
   }
