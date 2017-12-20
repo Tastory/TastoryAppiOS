@@ -47,6 +47,7 @@
 		8C56A9161FA19E6200D3204B /* URL+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C56A9151FA19E6200D3204B /* URL+Extension.swift */; };
 		8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5B48501F579D3800C18089 /* SwiftMutex.swift */; };
 		8C5C4DDE1EFEEDEC008C83EC /* FoodieFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5C4DDD1EFEEDEC008C83EC /* FoodieFetch.swift */; };
+		8C5CBBF31FEA673500417C95 /* ImageButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5CBBF21FEA673500417C95 /* ImageButtonNode.swift */; };
 		8C61BCDC1E985D1300DDF248 /* CleanCrashLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C61BCDB1E985D1300DDF248 /* CleanCrashLog.swift */; };
 		8C6983521F97ECFB0091334D /* AVPlayerStatus+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C6983511F97ECFB0091334D /* AVPlayerStatus+Extension.swift */; };
 		8C6983541F97ED810091334D /* AVPlayerTimeControlStatus+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C6983531F97ED810091334D /* AVPlayerTimeControlStatus+Extension.swift */; };
@@ -209,6 +210,7 @@
 		8C56A9151FA19E6200D3204B /* URL+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Extension.swift"; sourceTree = "<group>"; };
 		8C5B48501F579D3800C18089 /* SwiftMutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftMutex.swift; sourceTree = "<group>"; };
 		8C5C4DDD1EFEEDEC008C83EC /* FoodieFetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieFetch.swift; sourceTree = "<group>"; };
+		8C5CBBF21FEA673500417C95 /* ImageButtonNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageButtonNode.swift; sourceTree = "<group>"; };
 		8C61BCDB1E985D1300DDF248 /* CleanCrashLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CleanCrashLog.swift; sourceTree = "<group>"; };
 		8C6983511F97ECFB0091334D /* AVPlayerStatus+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVPlayerStatus+Extension.swift"; sourceTree = "<group>"; };
 		8C6983531F97ED810091334D /* AVPlayerTimeControlStatus+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVPlayerTimeControlStatus+Extension.swift"; sourceTree = "<group>"; };
@@ -442,6 +444,7 @@
 				8CE49EB01F637918007278C1 /* ExpandButton.swift */,
 				8CE9718E1F9D54AE003D526F /* ProfileImageButton.swift */,
 				8CAE5BFF1FBC403E0069C582 /* TextButtonNode.swift */,
+				8C5CBBF21FEA673500417C95 /* ImageButtonNode.swift */,
 				8CA0EE311FC8122D003C21CD /* Slider.swift */,
 			);
 			name = Controls;
@@ -1209,6 +1212,7 @@
 				8CEA8DB81F9EBE0400557CE5 /* UITextViewWithPlaceholder.swift in Sources */,
 				8CE259AD1F53808C00310749 /* AlertDialog.swift in Sources */,
 				8CA0EE321FC8122D003C21CD /* Slider.swift in Sources */,
+				8C5CBBF31FEA673500417C95 /* ImageButtonNode.swift in Sources */,
 				8C1FF1311F7CA6C10062312C /* LogInViewController.swift in Sources */,
 				8C2F79771F4E3E6E00851334 /* ThreadSafeDLL.swift in Sources */,
 				8CE49EB71F64CA06007278C1 /* ImagePickerButton.swift in Sources */,

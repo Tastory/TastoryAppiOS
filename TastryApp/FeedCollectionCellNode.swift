@@ -22,14 +22,13 @@ class FeedCollectionCellNode: ASCellNode {
     fileprivate static let CoverTitleBackgroundBlackStops: [CGFloat] = [0.0, 1.0]
     fileprivate static let CoverTitleInsetWidthFraction: CGFloat = 0.050  // Hand tuned value for all phones
     fileprivate static let CoverTitleInsetHeightFraction: CGFloat = 0.045  // Hand tuned value for all phones
-    fileprivate static let CoverEditButtonFontFraction: CGFloat = 0.08  // Hand tuned value for all phones
-    fileprivate static let CoverEditButtonInsetFraction: CGFloat = 0.02 // Hand tune value for all phones
+    fileprivate static let CoverEditButtonInsetFraction: CGFloat = 0.01 // Hand tune value for all phones
   }
   
   
   
   // MARK: - Public Instance Variable
-  var coverEditButton: TextButtonNode?
+  var coverEditButton: ImageButtonNode?
   
   
   
@@ -56,10 +55,9 @@ class FeedCollectionCellNode: ASCellNode {
     coverImageNode.isLayerBacked = true
     
     if editEnabled {
-      coverEditButton = TextButtonNode()
-      coverEditButton!.maximumNumberOfLines = 1
+      coverEditButton = ImageButtonNode()
+      coverEditButton!.image = UIImage(named: "Profile-EditButton")
       coverEditButton!.isLayerBacked = false
-      
     } else {
       enableSubtreeRasterization()
     }
@@ -98,15 +96,8 @@ class FeedCollectionCellNode: ASCellNode {
     var editStackSpec: ASStackLayoutSpec?
     
     if let coverEditButton = coverEditButton {
-      // Creating Edit Button with just a Pencil Emoji for now
-      guard let editButtonFont = UIFont(name: Constants.CoverTitleFontName,
-                                        size: Constants.CoverEditButtonFontFraction * constrainedSize.max.height) else {
-        CCLog.fatal("Cannot create UIFont with name \(Constants.CoverTitleFontName)")
-      }
-      coverEditButton.attributedText = NSAttributedString(string: "✏️", attributes: [.font : editButtonFont])
-      
       let editInsetOffset: CGFloat = Constants.CoverEditButtonInsetFraction * constrainedSize.min.height
-      let editInsets = UIEdgeInsetsMake(editInsetOffset, editInsetOffset, editInsetOffset, editInsetOffset)
+      let editInsets = UIEdgeInsetsMake(editInsetOffset, 0.0, editInsetOffset, 0.0)
       let editInsetSpec = ASInsetLayoutSpec(insets: editInsets, child: coverEditButton)
       editStackSpec = ASStackLayoutSpec(direction: .horizontal, spacing: 1.0, justifyContent: .start, alignItems: .center, children: [editInsetSpec])
     }
