@@ -459,28 +459,17 @@ extension ProfileViewController: UpdateStoryFeedDelegate {
 
   func deleteStory(_ story: FoodieStory) {
 
-    guard let feedCollectionNodeController = feedCollectionNodeController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Expected FeedCollectionNodeController")
-      }
+    let storyIdx = stories.index(of: story)
+
+    guard let storyIndex = storyIdx else {
+      CCLog.warning("Story not found in the storyArray. Nothing to delete")
       return
     }
 
-    feedCollectionNodeController.deleteStory(story) {
-      if(self.stories.count > 1) {
+    stories.remove(at: storyIndex)
 
-        let storyIdx = self.stories.index(of: story)
-
-        guard let storyIndex = storyIdx else {
-          CCLog.warning("Story not found in the storyArray. Nothing to delete")
-          return
-        }
-
-        self.stories.remove(at: storyIndex)
-        // there should always be one or more stories after we remove one
-        self.updateProfileMap(with: self.stories[0])
-      }
-    }
+    feedCollectionNodeController?.resetCollectionNode(with: stories)
+    feedCollectionNodeController?.scrollTo(storyIndex: 0)
 
     // propagate deleteStory to discoveryView (parent)
     updateStoryDelegate?.deleteStory(story)

@@ -456,19 +456,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     storyArray[storyIndex] = story
     collectionNode.reloadItems(at: [IndexPath(item: storyIndex, section: 0)])
   }
-
-  func deleteStory(_ story: FoodieStory, completion: (() -> Void)? = nil) {
-
-    let storyIdx = storyArray.index(of: story)
-
-    guard let storyIndex = storyIdx else {
-      CCLog.warning("Story not found in the storyArray. Nothing to delete")
-      return
-    }
-
-    storyArray.remove(at: storyIndex)
-    collectionNode.reloadData(completion: completion)  // A lot of other stuff gets out of sync if we just deleteItems. For example the coverEditButton.tag
-  }
 }
 
 
