@@ -394,7 +394,7 @@ class DiscoverViewController: OverlayViewController {
     
     if stories.count <= 0 {
       DispatchQueue.main.async {
-        self.mapNavController?.remove(annotations: self.storyAnnotations)
+        self.mapNavController?.removeAllAnnotations()
         self.storyAnnotations = newAnnotations
         
         if #available(iOS 11.0, *) {
@@ -733,7 +733,7 @@ class DiscoverViewController: OverlayViewController {
       }
     }
     
-    // Resume from last map region
+
 
     if(forceRequery) {
 
@@ -749,7 +749,10 @@ class DiscoverViewController: OverlayViewController {
         self.unwrapQueryRefreshDiscoveryView(stories: stories, query: storyQuery, error: error)
 
       }
-    } else if let mapState = lastMapState {
+
+    }
+    // Resume from last map region
+    else if let mapState = lastMapState {
 
       mapController.resumeMapState(mapState, animated: true)
       mapController.removeAllAnnotations()
