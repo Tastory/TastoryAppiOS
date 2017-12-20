@@ -69,7 +69,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="79"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XVt-7W-XFA">
-                                        <rect key="frame" x="15" y="44" width="32" height="32"/>
+                                        <rect key="frame" x="15" y="40" width="32" height="40"/>
+                                        <inset key="contentEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="0.0"/>
                                         <state key="normal" image="EntryMarkup-Back"/>
                                         <connections>
                                             <action selector="backAction:" destination="Mls-rg-2Ue" eventType="touchUpInside" id="r7Y-Qo-qFH"/>
@@ -89,22 +90,26 @@
                                         <rect key="frame" x="121.66666666666667" y="-3" width="238.33333333333331" height="50.333333333333336"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t0a-m1-CUw" userLabel="Follow Button">
-                                                <rect key="frame" x="0.0" y="14.333333333333343" width="59.666666666666664" height="22"/>
+                                                <rect key="frame" x="0.0" y="9.3333333333333428" width="59.666666666666664" height="32"/>
+                                                <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
                                                 <state key="normal" image="Profile-FollowButton"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="McO-aB-Dhs" userLabel="Settings Button">
-                                                <rect key="frame" x="62.666666666666664" y="14.333333333333343" width="65.666666666666686" height="22"/>
+                                                <rect key="frame" x="62.666666666666664" y="9.3333333333333428" width="65.666666666666686" height="32"/>
+                                                <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
                                                 <state key="normal" image="Profile-SettingsButton"/>
                                                 <connections>
                                                     <action selector="settingsAction:" destination="Mls-rg-2Ue" eventType="touchUpInside" id="32a-iq-0Ca"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A6M-OE-cb5" userLabel="Share Button">
-                                                <rect key="frame" x="131.33333333333331" y="14.333333333333343" width="54.333333333333343" height="22"/>
+                                                <rect key="frame" x="131.33333333333331" y="9.3333333333333428" width="54.333333333333343" height="32"/>
+                                                <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
                                                 <state key="normal" image="Profile-ShareButton"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rZt-p7-VAc" userLabel="Filter Button">
-                                                <rect key="frame" x="188.66666666666663" y="14.333333333333343" width="49.666666666666657" height="22"/>
+                                                <rect key="frame" x="188.66666666666663" y="9.3333333333333428" width="49.666666666666657" height="32"/>
+                                                <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
                                                 <state key="normal" image="Profile-FilterButton"/>
                                             </button>
                                         </subviews>
@@ -550,22 +555,20 @@
                                 </connections>
                             </view>
                             <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Osh-UL-Qz9">
-                                <rect key="frame" x="0.0" y="72" width="375" height="60"/>
+                                <rect key="frame" x="0.0" y="72" width="375" height="57"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dzk-89-di2">
                                 <rect key="frame" x="0.0" y="687" width="375" height="53"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="ZiO-0U-WG2" userLabel="Author Venue Time Stack">
-                                <rect key="frame" x="14" y="84" width="115" height="40"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="ZiO-0U-WG2" userLabel="Author Venue Time Stack">
+                                <rect key="frame" x="0.0" y="72" width="139" height="57"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NkP-5B-uyd">
-                                        <rect key="frame" x="0.0" y="0.0" width="115" height="20"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="20" id="UM2-Dx-qJm"/>
-                                        </constraints>
+                                        <rect key="frame" x="0.0" y="0.0" width="139" height="31"/>
                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                                        <inset key="contentEdgeInsets" minX="12" minY="14" maxX="12" maxY="0.0"/>
                                         <size key="titleShadowOffset" width="0.0" height="1"/>
                                         <state key="normal" title="AuthorUserName">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -575,9 +578,10 @@
                                             <action selector="authorAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="ohI-O8-bBc"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uqd-o4-gnC">
-                                        <rect key="frame" x="0.0" y="20" width="76" height="20"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uqd-o4-gnC">
+                                        <rect key="frame" x="0.0" y="31" width="100" height="26"/>
                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="13"/>
+                                        <inset key="contentEdgeInsets" minX="12" minY="2" maxX="12" maxY="8"/>
                                         <size key="titleShadowOffset" width="0.0" height="1"/>
                                         <state key="normal" title="VenueName">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -638,7 +642,7 @@
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="bottom" secondItem="Nrk-FM-KHI" secondAttribute="bottom" id="1in-oP-9ty"/>
-                            <constraint firstItem="ZiO-0U-WG2" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" constant="12" id="9zk-j6-dQ2"/>
+                            <constraint firstItem="ZiO-0U-WG2" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="9zk-j6-dQ2"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" id="BJq-rc-6Af"/>
                             <constraint firstItem="Nrk-FM-KHI" firstAttribute="leading" secondItem="cgZ-7E-g3q" secondAttribute="leading" id="D6W-0v-YPx"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" id="E7O-Gs-SMy"/>
@@ -650,10 +654,10 @@
                             <constraint firstItem="dOo-DQ-GbZ" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" constant="8" id="Keg-tZ-0i1"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="L9O-xu-4M6"/>
                             <constraint firstItem="cOp-iU-bG1" firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" constant="-8" id="M0w-rq-eIe"/>
-                            <constraint firstItem="ZiO-0U-WG2" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" constant="14" id="MCx-CB-BJe"/>
+                            <constraint firstItem="ZiO-0U-WG2" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="MCx-CB-BJe"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="centerY" secondItem="cgZ-7E-g3q" secondAttribute="centerY" id="NYN-aq-dcH"/>
                             <constraint firstItem="dzk-89-di2" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" id="NvP-co-bdy"/>
-                            <constraint firstItem="Osh-UL-Qz9" firstAttribute="bottom" secondItem="Uqd-o4-gnC" secondAttribute="bottom" constant="8" id="O1c-k7-dig"/>
+                            <constraint firstItem="Osh-UL-Qz9" firstAttribute="bottom" secondItem="ZiO-0U-WG2" secondAttribute="bottom" id="O1c-k7-dig"/>
                             <constraint firstItem="t4S-lT-gBv" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" constant="8" id="Vgi-zL-Muh"/>
                             <constraint firstItem="dzk-89-di2" firstAttribute="top" secondItem="7rC-KB-BnZ" secondAttribute="top" constant="-8" id="Vv1-KC-SQw"/>
                             <constraint firstAttribute="trailing" secondItem="nxS-Eu-LGj" secondAttribute="trailing" id="WD0-hq-DLo"/>

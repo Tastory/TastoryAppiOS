@@ -663,7 +663,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="79"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A7j-Ak-CS7">
-                                        <rect key="frame" x="15" y="44" width="32" height="32"/>
+                                        <rect key="frame" x="15" y="40" width="32" height="40"/>
+                                        <inset key="contentEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="0.0"/>
                                         <state key="normal" image="EntryMarkup-Back"/>
                                         <connections>
                                             <action selector="backAction:" destination="qja-VH-rV7" eventType="touchUpInside" id="ra7-Lt-9Ns"/>
@@ -823,7 +824,7 @@
                                 <rect key="frame" x="0.0" y="44" width="375" height="768"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="venueTableCell" textLabel="yzK-Rf-cN6" detailTextLabel="guT-IY-1FO" style="IBUITableViewCellStyleSubtitle" id="6kE-Ri-Lgh">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="venueTableCell" textLabel="yzK-Rf-cN6" detailTextLabel="guT-IY-1FO" style="IBUITableViewCellStyleSubtitle" id="6kE-Ri-Lgh">
                                         <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="6kE-Ri-Lgh" id="r8T-rW-H3Z">
