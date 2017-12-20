@@ -349,20 +349,20 @@ class MarkupViewController: OverlayViewController {
       for markup in markups {
 
         if !markup.isDataAvailable {
-          AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { _ in
+          AlertDialog.present(from: self, title: "Tastory", message: "Error displaying media. Please try again") { _ in
             CCLog.fatal("Markup not available even tho Moment deemed Loaded")
           }
         }
 
         guard let dataType = markup.dataType else {
-          AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { _ in
+          AlertDialog.present(from: self, title: "Tastory", message: "Error displaying media. Please try again") { _ in
             CCLog.assert("Unexpected markup.dataType = nil")
           }
           return
         }
 
         guard let markupType = FoodieMarkup.dataTypes(rawValue: dataType) else {
-          AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { _ in
+          AlertDialog.present(from: self, title: "Tastory", message: "Error displaying media. Please try again") { _ in
             CCLog.assert("markup.dataType did not actually translate into valid type")
           }
           return
@@ -372,7 +372,7 @@ class MarkupViewController: OverlayViewController {
 
         case .jotLabel:
           guard let labelData = markup.data else {
-            AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { _ in
+            AlertDialog.present(from: self, title: "Tastory", message: "Error displaying media. Please try again") { _ in
               CCLog.assert("Unexpected markup.data = nil when dataType == .jotLabel")
             }
             return
@@ -386,7 +386,7 @@ class MarkupViewController: OverlayViewController {
 
         case .jotDrawView:
           guard let drawViewDictionary = markup.data else {
-            AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { _ in
+            AlertDialog.present(from: self, title: "Tastory", message: "Error displaying media. Please try again") { _ in
               CCLog.assert("Unexpected markup.data = nil when dataType == .jotDrawView")
             }
             return

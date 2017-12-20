@@ -112,7 +112,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   // Generic error dialog box to the user on internal errors
   fileprivate func internalErrorDialog() {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
+      let alertController = UIAlertController(title: "Tastory",
                                               titleComment: "Alert diaglogue title when a Camera view internal error occured",
                                               message: "An internal error has occured. Please try again",
                                               messageComment: "Alert dialog message when a Camera view internal error occured",
@@ -124,7 +124,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   
   fileprivate func locationErrorDialog(message: String, comment: String) {
     if self.presentedViewController == nil {
-      let alertController = UIAlertController(title: "TastryApp",
+      let alertController = UIAlertController(title: "Tastory",
                                               titleComment: "Alert diaglogue title when a Camera View location error occured",
                                               message: message,
                                               messageComment: comment,

@@ -126,14 +126,14 @@ class FoodieUser: PFUser {
       case .facebookAccountNoUserId:
         return NSLocalizedString("Facebook Account has no User ID", comment: "Error message upon Login")
       case .facebookAccountNoEmail:
-        return NSLocalizedString("Facebook Account has no E-mail Address. An E-mail address is required for a Tastry Account", comment: "Error message upon Login")
+        return NSLocalizedString("Facebook Account has no E-mail Address. An E-mail address is required for a Tastory Account", comment: "Error message upon Login")
       case .parseFacebookCheckEmailFailed:
         return NSLocalizedString("Checking Facebook E-mail against Parse for availability failed", comment: "Error message upon Login")
       case .parseFacebookEmailRegistered:
         return NSLocalizedString("E-mail associated with the Facebook account is already registered. Please login with your E-mail to link your account to Facebook, so you can login via Facebook in the future.", comment: "Error message upon Login")
         
       case .facebookLinkAlreadyUsed:
-        return NSLocalizedString("Facebook account already associated with another Tastry account. Unlink from, or delete the other Tastry account if you want to link the Facebook account to this one.", comment: "Error message upon FB Link")
+        return NSLocalizedString("Facebook account already associated with another Tastory account. Unlink from, or delete the other Tastory account if you want to link the Facebook account to this one.", comment: "Error message upon FB Link")
       case .facebookLinkNotCurrentUser:
         return NSLocalizedString("Not logged in, cannot link against Facebook account", comment: "Error message upon FB Link")
       case .facebookGraphRequestNoName:
@@ -1938,6 +1938,6 @@ extension FoodieUser {
     static let RsvdUsernameCharRegex = "[^0-9a-zA-ZÀ-ÿ\\-_=|:.]"
     static let AllowedUsernameSymbols = "-_=|:."
     
-    static let RsvdPasswordSeqs = ["abc", "123", "tastry", "password"]
+    static let RsvdPasswordSeqs = ["abc", "123", "tastory", "password"]
   }
 }

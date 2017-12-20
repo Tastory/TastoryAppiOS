@@ -198,7 +198,7 @@ class MomentCollectionViewController: UICollectionViewController {
 
     if(indexPath.item >= momentArray.count)
     {
-      AlertDialog.present(from: self, title: "TastryApp", message: "Error displaying media. Please try again") { _ in
+      AlertDialog.present(from: self, title: "Tastory", message: "Error displaying media. Please try again") { _ in
         CCLog.fatal("Moment selection is out of bound")
       }
     }

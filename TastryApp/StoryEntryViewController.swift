@@ -277,7 +277,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           }
           
           else  {
-            self.updateStoryFeedDelegate?.updateStory(story)
+            self.updateFeedDelegate?.updateStory(story)
             
             // Analytics
             if moments.count > 0 {
@@ -826,7 +826,7 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
     venueQuery.initVenueQueryAndSearch { (queriedVenues, error) in
       
       if let error = error {
-        AlertDialog.present(from: self, title: "Venue Error", message: "Unable to verify Venue against Tastry database")
+        AlertDialog.present(from: self, title: "Venue Error", message: "Unable to verify Venue against Tastory database")
         CCLog.assert("Querying Parse for the Foursquare Venue ID resulted in Error - \(error.localizedDescription)")
         return
       }
