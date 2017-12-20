@@ -1299,9 +1299,14 @@ extension DiscoverViewController: UpdateStoryFeedDelegate {
       lastSelectedAnnotationIndex = nil
     }
 
+    guard let storyQuery = storyQuery else {
+      CCLog.debug("storyQuery is nil")
+      return
+    }
+
     // requery
-    storyQuery?.initStoryQueryAndSearch { (stories, error) in
-      self.unwrapQueryRefreshDiscoveryView(stories: stories, query: self.storyQuery, error: error)
+    storyQuery.initStoryQueryAndSearch { (stories, error) in
+      self.unwrapQueryRefreshDiscoveryView(stories: stories, query: storyQuery, error: error)
     }
   }
 }
