@@ -12,8 +12,8 @@
 
 import UIKit
 import Photos
-import SwiftyCam
 import MobileCoreServices
+import SwiftyCam
 import TLPhotoPicker
 
 
@@ -174,31 +174,53 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
       NotificationCenter.default.removeObserver(self, name: .AVCaptureSessionDidStartRunning, object: nil)
     }
     
-    // Request permission from user to access the Photo Album up front
-    PHPhotoLibrary.requestAuthorization { status in
-      switch status {
+    // If user opt'ed for Save Originals To Library. Double check for corresponding Permissions
+    if let currentUser = FoodieUser.current, currentUser.saveOriginalsToLibrary {
+      
+      // Double check for Photo Library Request Authorization
+      switch PHPhotoLibrary.authorizationStatus() {
       case .authorized:
         break
-      case .denied:
-        fallthrough
-      default:
-        // Permission was denied before. Ask for permission again
-        guard let url = URL(string: UIApplicationOpenSettingsURLString) else {
-          CCLog.assert("UIApplicationOPenSettignsURLString ia an invalid URL String???")
-          break
+        
+      case .restricted:
+        currentUser.saveOriginalsToLibrary = false
+        AlertDialog.present(from: self, title: "Photos Restricted", message: "Photo access have been restricted by the operating system. Save media to library is not possible") { _ in
+          CCLog.warning("Photo Library Authorization Restricted")
         }
         
-        let alertController = UIAlertController(title: "Photo Library Inaccessible",
-                                                titleComment: "Alert diaglogue title when user has denied access to the photo album",
-                                                message: "Please go to Settings > Privacy > Photos to allow TastryApp to save to your photos",
-                                                messageComment: "Alert dialog message when the user has denied access to the photo album",
-                                                preferredStyle: .alert)
+      case .denied:
+        currentUser.saveOriginalsToLibrary = false
+        let appName = Bundle.main.displayName ?? "Tastory"
+        let urlDialog = AlertDialog.createUrlDialog(title: "Photo Library Inaccessible",
+                                                    message: "Please go to Settings > Privacy > Photos to allow \(appName) to access your Photo Library, then try again",
+          url: UIApplicationOpenSettingsURLString)
         
-        alertController.addAlertAction(title: "Settings",
-                                       comment: "Alert diaglogue button to open Settings, hoping user will allow access to photo album",
-                                       style: .default) { _ in UIApplication.shared.open(url, options: [:]) }
+        self.present(urlDialog, animated: true, completion: nil)
         
-        self.present(alertController, animated: true, completion: nil)
+      case .notDetermined:
+        PHPhotoLibrary.requestAuthorization { status in
+          switch status {
+          case .authorized:
+            break
+            
+          case .restricted:
+            AlertDialog.present(from: self, title: "Photos Restricted", message: "Photo access have been restricted by the operating system. Save media to library is not possible") { _ in
+              CCLog.warning("Photo Library Authorization Restricted")
+            }
+            fallthrough
+            
+          default:
+            currentUser.saveOriginalsToLibrary = false
+          }
+        }
+      }
+      
+      if !currentUser.saveOriginalsToLibrary {
+        currentUser.saveDigest(to: .both, type: .cache) { error in
+          if let error = error {
+            CCLog.warning("User save for denied Library Authorization failed - \(error.localizedDescription)")
+          }
+        }
       }
     }
   }
@@ -311,9 +333,9 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
 //    }
     
     // Also save photo to Photo Album.
-    // TODO: Allow user to configure whether save to Photo Album also
-    // TODO: Create error alert dialog box if this save fails.
-    UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+    if let currentUser = FoodieUser.current, currentUser.saveOriginalsToLibrary {
+      UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+    }
 
     let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
     imageFormatter(mediaObject, image: image)
@@ -357,10 +379,11 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     CCLog.debug("didFinishProcessVideoAt")
     
     if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(url.path) {
+      
       // Also save video to Photo Album.
-      // TODO: Allow user to configure whether save to Photo Album also
-      // TODO: Create error alert dialog box if this save fails.
-      UISaveVideoAtPathToSavedPhotosAlbum(url.path, nil, nil, nil)
+      if let currentUser = FoodieUser.current, currentUser.saveOriginalsToLibrary {
+        UISaveVideoAtPathToSavedPhotosAlbum(url.path, nil, nil, nil)
+      }
 
       let fileName = FoodieFileObject.newVideoFileName()
       let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .video)

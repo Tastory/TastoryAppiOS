@@ -49,7 +49,7 @@
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="12p-Q8-9BM">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="355"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="443"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Q8c-Z8-2qr" userLabel="Account Header Cell">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -164,7 +164,7 @@
                                                     <outletCollection property="gestureRecognizers" destination="6PV-d4-3l7" appends="YES" id="zkz-oE-fAZ"/>
                                                 </connections>
                                             </view>
-                                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zWg-gt-ut6" userLabel="Settings Header Cell">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zWg-gt-ut6" userLabel="Settings Header Cell">
                                                 <rect key="frame" x="0.0" y="178" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TLb-lE-eMa">
@@ -182,26 +182,35 @@
                                                     <constraint firstAttribute="height" constant="44" id="yQf-xk-YAg"/>
                                                 </constraints>
                                             </view>
-                                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8ff-ty-L7d" userLabel="Save Media to Library Cell">
-                                                <rect key="frame" x="0.0" y="178" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8ff-ty-L7d" userLabel="Save Media to Library Cell">
+                                                <rect key="frame" x="0.0" y="222" width="375" height="44"/>
                                                 <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Save Media to Library" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vjs-4k-JhH">
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Save Media to Library" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vjs-4k-JhH">
                                                         <rect key="frame" x="15" y="14" width="141.5" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" white="0.35999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
+                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MHP-Tz-TZf">
+                                                        <rect key="frame" x="311" y="6.5" width="51" height="31"/>
+                                                        <color key="onTintColor" red="0.98039215686274506" green="0.12549019607843137" blue="0.12549019607843137" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <connections>
+                                                            <action selector="saveMediaToggled:" destination="Fgo-n9-ZB2" eventType="valueChanged" id="Vrq-XX-yjc"/>
+                                                        </connections>
+                                                    </switch>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstItem="Vjs-4k-JhH" firstAttribute="centerY" secondItem="8ff-ty-L7d" secondAttribute="centerY" id="1xR-lG-RjE"/>
+                                                    <constraint firstItem="MHP-Tz-TZf" firstAttribute="centerY" secondItem="8ff-ty-L7d" secondAttribute="centerY" id="D97-2t-IaX"/>
+                                                    <constraint firstAttribute="trailing" secondItem="MHP-Tz-TZf" secondAttribute="trailing" constant="15" id="G7X-vg-Kgh"/>
                                                     <constraint firstAttribute="height" constant="44" id="Pzn-TH-nTh"/>
                                                     <constraint firstItem="Vjs-4k-JhH" firstAttribute="leading" secondItem="8ff-ty-L7d" secondAttribute="leading" constant="15" id="SAP-Wl-akF"/>
-                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Vjs-4k-JhH" secondAttribute="trailing" priority="200" constant="375" id="pS6-OX-yW5"/>
+                                                    <constraint firstItem="MHP-Tz-TZf" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Vjs-4k-JhH" secondAttribute="trailing" constant="10" id="pS6-OX-yW5"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KdI-ny-hTy" userLabel="About Header Cell">
-                                                <rect key="frame" x="0.0" y="178" width="375" height="44"/>
+                                                <rect key="frame" x="0.0" y="266" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="About" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G6y-PJ-A5Z">
                                                         <rect key="frame" x="15" y="18" width="35" height="14.5"/>
@@ -219,7 +228,7 @@
                                                 </constraints>
                                             </view>
                                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="u01-UY-F8v" userLabel="3rd Party Libraries Cell">
-                                                <rect key="frame" x="0.0" y="222" width="375" height="44"/>
+                                                <rect key="frame" x="0.0" y="310" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="3rd Party Libraries &amp; APIs" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iBc-eJ-1pz">
                                                         <rect key="frame" x="15" y="14.5" width="163.5" height="16.5"/>
@@ -246,14 +255,14 @@
                                                 </connections>
                                             </view>
                                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G2u-e9-4pO" userLabel="Line">
-                                                <rect key="frame" x="0.0" y="222" width="375" height="1"/>
+                                                <rect key="frame" x="0.0" y="310" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="V7b-Zl-zqe"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JvM-eH-OvF" userLabel="Privacy Policy Cell">
-                                                <rect key="frame" x="0.0" y="222" width="375" height="44"/>
+                                                <rect key="frame" x="0.0" y="310" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Privacy Policy" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vpw-0b-Jwk">
                                                         <rect key="frame" x="15" y="14.5" width="90.5" height="16.5"/>
@@ -280,14 +289,14 @@
                                                 </connections>
                                             </view>
                                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="apo-oN-yc7" userLabel="Line">
-                                                <rect key="frame" x="0.0" y="266" width="375" height="1"/>
+                                                <rect key="frame" x="0.0" y="354" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="Utn-X6-SDH"/>
                                                 </constraints>
                                             </view>
                                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZQ3-BW-ehT" userLabel="Terms of Service Cell">
-                                                <rect key="frame" x="0.0" y="266" width="375" height="44"/>
+                                                <rect key="frame" x="0.0" y="354" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Terms of Service" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mxU-Ko-c9a">
                                                         <rect key="frame" x="15" y="14.5" width="109" height="16.5"/>
@@ -314,14 +323,14 @@
                                                 </connections>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QtI-Kf-2XB" userLabel="Line">
-                                                <rect key="frame" x="0.0" y="266" width="375" height="1"/>
+                                                <rect key="frame" x="0.0" y="354" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="bmd-Or-6pd"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CLl-Zo-OtN" userLabel="About Us Cell">
-                                                <rect key="frame" x="0.0" y="267" width="375" height="44"/>
+                                                <rect key="frame" x="0.0" y="355" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="About Us" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="quX-wZ-R3O">
                                                         <rect key="frame" x="15" y="14.5" width="61" height="16.5"/>
@@ -348,7 +357,7 @@
                                                 </connections>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bwi-kV-rqk" userLabel="Bottom Space Cell">
-                                                <rect key="frame" x="0.0" y="311" width="375" height="44"/>
+                                                <rect key="frame" x="0.0" y="399" width="375" height="44"/>
                                                 <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="44" id="uZE-Qr-Jco"/>
@@ -386,6 +395,7 @@
                         <outlet property="linkFacebookLabel" destination="yik-DI-0Qn" id="7gZ-Eu-L7V"/>
                         <outlet property="linkFacebookLine" destination="0wP-yH-kS9" id="dhV-6v-aFG"/>
                         <outlet property="linkFacebookTapRecognizer" destination="6PV-d4-3l7" id="QkT-sN-9HC"/>
+                        <outlet property="saveMediaSwitch" destination="MHP-Tz-TZf" id="q2x-Jt-fyl"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="da1-7r-XKB" userLabel="First Responder" sceneMemberID="firstResponder"/>

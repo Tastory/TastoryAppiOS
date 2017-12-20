@@ -279,7 +279,7 @@ class LogInViewController: OverlayViewController {
         
         if verified {
           if welcome {
-            viewController.firstLabelText = "Welcome Back~"
+            viewController.firstLabelText = "Welcome back~"
             if let fullName = user.fullName {
               viewController.secondLabelText = fullName + "!"
             } else if let username = user.username {

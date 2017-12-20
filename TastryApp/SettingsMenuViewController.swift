@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Photos
 import SafariServices
 
 class SettingsMenuViewController: OverlayViewController {
@@ -33,6 +34,9 @@ class SettingsMenuViewController: OverlayViewController {
   
   @IBOutlet var changePasswordLine: UIView!
   @IBOutlet var changePasswordCell: UIView!
+  
+  @IBOutlet var saveMediaSwitch: UISwitch!
+  
   
   
   // MARK: - IBAction
@@ -114,6 +118,74 @@ class SettingsMenuViewController: OverlayViewController {
       self?.updateFacebookCell()
     }
   }
+
+  
+  @IBAction func saveMediaToggled(_ sender: UISwitch) {
+    guard let currentUser = FoodieUser.current else {
+      AlertDialog.present(from: self, title: "Not Logged In", message: "This operation cannot be performed in a non-logged in state") { _ in
+        CCLog.warning("Link Facebook attempted with FoodieUser.current = nil")
+      }
+      return
+    }
+    
+    // Only need to make sure we have permission if we are being turned on
+    if sender.isOn {
+      switch PHPhotoLibrary.authorizationStatus() {
+      case .authorized:
+        break
+        
+      case .restricted:
+        self.saveMediaSwitch.setOn(false, animated: true)
+        AlertDialog.present(from: self, title: "Photos Restricted", message: "Photo access have been restricted by the operating system. Save media to library is not possible") { _ in
+          CCLog.warning("Photo Library Authorization Restricted")
+        }
+        
+      case .denied:
+        self.saveMediaSwitch.setOn(false, animated: true)
+        let appName = Bundle.main.displayName ?? "Tastory"
+        let urlDialog = AlertDialog.createUrlDialog(title: "Photo Library Inaccessible",
+                                                    message: "Please go to Settings > Privacy > Photos to allow \(appName) to access your Photo Library, then try again",
+                                                    url: UIApplicationOpenSettingsURLString)
+        
+        self.present(urlDialog, animated: true, completion: nil)
+        
+      case .notDetermined:
+        PHPhotoLibrary.requestAuthorization { status in
+          switch status {
+          case .authorized:
+            break
+
+          case .restricted:
+            AlertDialog.present(from: self, title: "Photos Restricted", message: "Photo access have been restricted by the operating system. Save media to library is not possible") { _ in
+              CCLog.warning("Photo Library Authorization Restricted")
+            }
+            fallthrough
+            
+          default:
+            DispatchQueue.main.async {
+              self.saveMediaSwitch.setOn(false, animated: true)
+              currentUser.saveOriginalsToLibrary = false
+              currentUser.saveDigest(to: .both, type: .cache) { error in
+                if let error = error {
+                  CCLog.warning("User save for Media Toggle failed - \(error.localizedDescription)")
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    if currentUser.saveOriginalsToLibrary != self.saveMediaSwitch.isOn {  // Not using sender, because it might get outdated?
+      currentUser.saveOriginalsToLibrary = self.saveMediaSwitch.isOn
+      currentUser.saveDigest(to: .both, type: .cache) { error in
+        if let error = error {
+          CCLog.warning("User save for Media Toggle failed - \(error.localizedDescription)")
+        }
+      }
+    }
+  }
+  
   
   
   @IBAction func librariesTap(_ sender: UITapGestureRecognizer) {
@@ -241,6 +313,9 @@ class SettingsMenuViewController: OverlayViewController {
       self.changePasswordCell.isHidden = true
       self.changePasswordLine.isHidden = true
     }
+    
+    saveMediaSwitch.setOn(currentUser.saveOriginalsToLibrary, animated: false)
+    saveMediaToggled(saveMediaSwitch)
   }
   
   
