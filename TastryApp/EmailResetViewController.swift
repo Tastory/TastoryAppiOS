@@ -17,8 +17,6 @@ class EmailResetViewController: OverlayViewController {
   
   
   // MARK: - IBOutlet
-  @IBOutlet weak var exitButton: ExitButton!
-  
   @IBOutlet weak var emailField: UITextField! {
     didSet {
       emailField.text = emailAddress
@@ -48,17 +46,8 @@ class EmailResetViewController: OverlayViewController {
   }
   
   
-  @IBAction func exitAction(_ sender: ExitButton) {
+  @IBAction func exitAction(_ sender: UIButton) {
     popDismiss(animated: true)
-  }
-
-  
-  // MARK: - View Controller Lifecycle
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    
-    exitButton.crossLayer.strokeColor = UIColor.black.withAlphaComponent(0.8).cgColor
-    exitButton.pressedCrossLayer.strokeColor = UIColor.black.withAlphaComponent(0.8).cgColor
   }
   
   

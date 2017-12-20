@@ -104,11 +104,11 @@ class FoodieMedia: FoodieFileObject {
     videoExportPlayer = AVExportPlayer()
     videoExportPlayer!.initAVPlayer(from: localVideoUrl)
     videoExportPlayer!.exportAsync(to: exportURL,
-                               thru: tempURL,
-                               using: preset,
-                               with: outputType,
-                               duration: timeRange,
-                               completion: callback)
+                                   thru: tempURL,
+                                   using: preset,
+                                   with: outputType,
+                                   duration: timeRange,
+                                   completion: callback)
   }
   
   

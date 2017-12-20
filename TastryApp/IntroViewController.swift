@@ -36,9 +36,6 @@ class IntroViewController: OverlayViewController {
   
   
   @IBOutlet weak var resendButton: UIButton!
-  @IBOutlet weak var resendButtonHeight: NSLayoutConstraint!
-  @IBOutlet weak var resendSpacingHeight: NSLayoutConstraint!
-  @IBOutlet weak var goSpacingHeight: NSLayoutConstraint!
   
   
   
@@ -125,14 +122,8 @@ class IntroViewController: OverlayViewController {
     
     if enableResend {
       resendButton.isHidden = false
-      resendSpacingHeight.constant = 15
-      resendButtonHeight.constant = 20
-      goSpacingHeight.constant = 0
     } else {
       resendButton.isHidden = true
-      resendSpacingHeight.constant = 0
-      resendButtonHeight.constant = 0
-      goSpacingHeight.constant = 0
     }
   }
 }
