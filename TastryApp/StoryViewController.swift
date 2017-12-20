@@ -710,6 +710,7 @@ class StoryViewController: OverlayViewController {
     localVideoPlayer.actionAtItemEnd = .none
     
     avPlayerLayer = AVPlayerLayer()
+    avPlayerLayer.videoGravity = .resizeAspectFill
     videoView.layer.addSublayer(avPlayerLayer)
     
 //  This is commented out for backwards compatibility

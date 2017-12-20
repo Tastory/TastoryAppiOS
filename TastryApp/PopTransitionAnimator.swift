@@ -73,7 +73,7 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
   
   
   func putBack(_ view: UIView, to originalSuperview: UIView, at originalCenter: CGPoint) {
-    CCLog.verbose("Executing Put Back for PopTransitionAnimator")
+    CCLog.verbose("PopTransitionAnimator Put Back at originalCenter x \(originalCenter.x), y \(originalCenter) for view.frame x \(view.frame.origin.x), y \(view.frame.origin.y)")
     view.removeFromSuperview()
     originalSuperview.addSubview(view)
     view.layer.transform = CATransform3DIdentity
