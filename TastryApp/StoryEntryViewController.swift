@@ -222,6 +222,9 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     view.endEditing(true)
     activitySpinner.apply()
     
+    // Once we hit save to server, an objectID will be assigned and this will cause isEditStory to become true if it otherwise wasn't.
+    // Lets see whether this is a Draft or an Edit ahead of time
+    let storyIsNewDraft = !story.isEditStory
     
     // This will cause a save to both Local Cache and Server
     _ = story.saveWhole(to: .both, type: .cache) { error in
@@ -230,9 +233,12 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         self.activitySpinner.remove()
         CCLog.warning("Save Story to Server Failed with Error: \(error)")
         AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
-      } else {
         
+        // ?? So in this case, isStoryEdit will be true or false?
+        
+      } else {
         // Add this Story to the User's authored list
+        // TODO: - Is this really even needed anymore? Just always query 'Story with author == user'
         currentUser.addAuthoredStory(story) { error in
           
           if let error = error {
@@ -251,27 +257,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
               }
             }
           }
-
-          if(story.isEditStory) {
-            self.updateFeedDelegate?.updateStory(story)
-            
-            // Analytics
-            if moments.count > 0 {
-              Analytics.logStoryEditSaved(authorId: currentUser.username ?? "",
-                                          storyId: story.objectId ?? "")
-            }
-            
-            self.workingStory = nil
-            self.activitySpinner.remove()
-
-            // Pop-up Alert Dialog and then Dismiss
-            CCLog.info("Story Saved!")
-            AlertDialog.present(from: self, title: "Story Saved", message: "Your Edits have been posted to the Server") { [unowned self] _ in
-              self.popDismiss(animated: true)
-            }
-            
-          } else {
-            
+          
+          if storyIsNewDraft {
             // Analytics
             if moments.count > 0 {
               Analytics.logStoryPosted(authorId: currentUser.username ?? "",
@@ -285,6 +272,25 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             // Pop-up Alert Dialog and then Dismiss
             CCLog.info("Story Posted!")
             AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { [unowned self] _ in
+              self.popDismiss(animated: true)
+            }
+          }
+          
+          else  {
+            self.updateStoryFeedDelegate?.updateStory(story)
+            
+            // Analytics
+            if moments.count > 0 {
+              Analytics.logStoryEditSaved(authorId: currentUser.username ?? "",
+                                          storyId: story.objectId ?? "")
+            }
+            
+            self.workingStory = nil
+            self.activitySpinner.remove()
+
+            // Pop-up Alert Dialog and then Dismiss
+            CCLog.info("Story Saved!")
+            AlertDialog.present(from: self, title: "Story Saved", message: "Your Edits have been posted to the Server") { [unowned self] _ in
               self.popDismiss(animated: true)
             }
           }
