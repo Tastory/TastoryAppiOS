@@ -16,7 +16,8 @@ class SettingsMenuViewController: OverlayViewController {
   // MARK: - Constants
   
   struct Constants {
-    static let defaultLinkToFacebookCellText = "Link Account to Facebook"
+    static let DefaultLinkToFacebookCellText = "Link Account to Facebook"
+    static let AboutUsUrl = "https://www.tastory.co/connect/"
   }
   
   // MARK: - Public Instance Variable
@@ -79,7 +80,7 @@ class SettingsMenuViewController: OverlayViewController {
     
     currentUser.linkFacebook { [weak self] error in
       if let error = error {
-        self?.facebookCell(isEnabled: true, with: Constants.defaultLinkToFacebookCellText)
+        self?.facebookCell(isEnabled: true, with: Constants.DefaultLinkToFacebookCellText)
         
         // Do not show Alert Dialog for Error related to Cancel. This is the iOS 11 case
         if #available(iOS 11.0, *),
@@ -228,7 +229,12 @@ class SettingsMenuViewController: OverlayViewController {
   
   
   @IBAction func aboutUsTap(_ sender: UITapGestureRecognizer) {
-    CCLog.warning("About Us Not Yet Implemented")
+    if let websiteUrl = URL(string: Constants.AboutUsUrl) {
+      CCLog.info("Opening Safari View for \(websiteUrl)")
+      let safariViewController = SFSafariViewController(url: websiteUrl)
+      safariViewController.modalPresentationStyle = .overFullScreen
+      self.present(safariViewController, animated: true, completion: nil)
+    }
   }
   
   
