@@ -77,6 +77,7 @@ class DiscoverViewController: OverlayViewController {
   private var storyAnnotations = [StoryMapAnnotation]()
   
   private var discoverFilter: FoodieFilter?
+  private var forceRequery: Bool = false
   
   
   
@@ -733,7 +734,23 @@ class DiscoverViewController: OverlayViewController {
     }
     
     // Resume from last map region
-    if let mapState = lastMapState {
+
+    if(forceRequery) {
+
+      forceRequery = false
+
+      guard let storyQuery = storyQuery else {
+        CCLog.debug("storyQuery is nil")
+        return
+      }
+
+      // requery
+      storyQuery.initStoryQueryAndSearch { (stories, error) in
+        self.unwrapQueryRefreshDiscoveryView(stories: stories, query: storyQuery, error: error)
+
+      }
+    } else if let mapState = lastMapState {
+
       mapController.resumeMapState(mapState, animated: true)
       mapController.removeAllAnnotations()
       
@@ -742,10 +759,8 @@ class DiscoverViewController: OverlayViewController {
       }
       
       if let annotationIndex = lastSelectedAnnotationIndex {
-        if(annotationIndex < storyAnnotations.count) {
            let annotationToSelect = storyAnnotations[annotationIndex]
             mapController.select(annotation: annotationToSelect, animated: true)
-        }
       }
     }
     
@@ -1286,28 +1301,7 @@ extension DiscoverViewController: UpdateStoryFeedDelegate {
   }
 
   func deleteStory(_ story: FoodieStory) {
-
-    let storyIdx = storyArray.index(of: story)
-
-    guard let storyIndex = storyIdx else {
-      CCLog.warning("Story not found in the storyArray. Nothing to delete")
-      return
-    }
-
-    // the lastSelectedAnnotationIndex happens to be deleted so make it nil
-    if(storyIndex == lastSelectedAnnotationIndex) {
-      lastSelectedAnnotationIndex = nil
-    }
-
-    guard let storyQuery = storyQuery else {
-      CCLog.debug("storyQuery is nil")
-      return
-    }
-
-    // requery
-    storyQuery.initStoryQueryAndSearch { (stories, error) in
-      self.unwrapQueryRefreshDiscoveryView(stories: stories, query: storyQuery, error: error)
-    }
+    forceRequery = true
   }
 }
 
