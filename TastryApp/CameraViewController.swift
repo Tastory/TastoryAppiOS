@@ -23,7 +23,7 @@ protocol CameraReturnDelegate: class {
 
 
 class CameraViewController: SwiftyCamViewController, UINavigationControllerDelegate {  // View needs to comply to certain protocols going forward?
-
+  
   // MARK: - Global Constants
   struct GlobalConstants {
     static let animateInDuration: CFTimeInterval = 0.7  // Duration for things to animate in when the camera view initially loads
@@ -42,7 +42,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   // MARK: Public Instance Variables
   weak var cameraReturnDelegate: CameraReturnDelegate?
   var addToExistingStoryOnly = false
-
+  
   
   // MARK: - Private Instance Variables
   fileprivate var crossLayer = CameraCrossLayer()
@@ -52,24 +52,24 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   fileprivate var outstandingConvertOperations = 0
   fileprivate var outstandingConvertQueue = DispatchQueue(label: "Outstanding Convert Queue", qos: .userInitiated)
   fileprivate var moments: [FoodieMoment?] = []
-  fileprivate var enableMultiPicker = true
+  fileprivate var enableMultiPicker = false
   fileprivate var activitySpinner: ActivitySpinner? = nil
-
-
+  
+  
   // MARK: - IBOutlets
   @IBOutlet weak var captureButton: CameraButton?
   @IBOutlet weak var exitButton: ExitButton?
   @IBOutlet weak var tapRecognizer: UITapGestureRecognizer?  // This is workaround to detect capture button's been released after a photo
   @IBOutlet weak var pickerButton: ImagePickerButton!
-
+  
   // MARK: - IBActions
-
+  
   @IBAction func switchSelfieMode(_ sender: Any) {
     switchCamera()
   }
   
   @IBAction func launchImagePicker(_ sender: Any) {
-
+    
     if(enableMultiPicker) {
       let photoPickerController = TLPhotosPickerViewController()
       var configure = TLPhotosPickerConfigure()
@@ -92,7 +92,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
       self.present(imagePickerController, animated: true, completion: nil)
     }
   }
-
+  
   @IBAction func capturePressed(_ sender: CameraButton) {
     CCLog.info("User Action - CameraViewController.capturePressed()")
     captureButton?.buttonPressed()
@@ -142,9 +142,9 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   override func viewDidLoad() {
     
     super.viewDidLoad()
-
+    
     activitySpinner = ActivitySpinner(addTo: view)
-
+    
     // Swifty Cam Setup
     cameraDelegate = self
     doubleTapCameraSwitch = true
@@ -154,7 +154,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     if let pickerButton = pickerButton {
       view.bringSubview(toFront: pickerButton)
     }
-
+    
     if let captureButton = captureButton {
       view.bringSubview(toFront: captureButton)
       captureButton.delegate = self
@@ -272,75 +272,75 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     
     Analytics.logCameraPhotoEvent()
     
-//  Metadata/EXIF data Extraction Example
-//   1. By the time SwiftyCam have made it from a CGDataProvider -> CGImage -> UIImage and we convert it back to a CGDataProvider, it seems that everything is stripped
-//   2. Even putting the code to extract metadata into SwiftyCam, GPS data does not seem to be part of the data set.
-//
-//    if let cgImage = image.cgImage {
-//      if let cgProvider = cgImage.dataProvider {
-//        if let source = CGImageSourceCreateWithDataProvider(cgProvider, nil) {
-//          if let type = CGImageSourceGetType(source) {
-//            print("type: \(type)")
-//          }
-//          
-//          if let properties = CGImageSourceCopyProperties(source, nil) {
-//            print("properties - \(properties)")
-//          }
-//          
-//          let count = CGImageSourceGetCount(source)
-//          print("count: \(count)")
-//          
-//          for index in 0..<count {
-//            if let metaData = CGImageSourceCopyMetadataAtIndex(source, index, nil) {
-//              print("all metaData[\(index)]: \(metaData)")
-//              
-//              let typeId = CGImageMetadataGetTypeID()
-//              print("metadata typeId[\(index)]: \(typeId)")
-//              
-//              
-//              if let tags = CGImageMetadataCopyTags(metaData) as? [CGImageMetadataTag] {
-//                
-//                print("number of tags - \(tags.count)")
-//                
-//                for tag in tags {
-//                  
-//                  let tagType = CGImageMetadataTagGetTypeID()
-//                  if let name = CGImageMetadataTagCopyName(tag) {
-//                    print("name: \(name)")
-//                  }
-//                  if let value = CGImageMetadataTagCopyValue(tag) {
-//                    print("value: \(value)")
-//                  }
-//                  if let prefix = CGImageMetadataTagCopyPrefix(tag) {
-//                    print("prefix: \(prefix)")
-//                  }
-//                  if let namespace = CGImageMetadataTagCopyNamespace(tag) {
-//                    print("namespace: \(namespace)")
-//                  }
-//                  if let qualifiers = CGImageMetadataTagCopyQualifiers(tag) {
-//                    print("qualifiers: \(qualifiers)")
-//                  }
-//                  print("-------")
-//                }
-//              }
-//            }
-//            
-//            if let properties = CGImageSourceCopyPropertiesAtIndex(source, index, nil) {
-//              print("properties[\(index)]: \(properties)")
-//            }
-//          }
-//        }
-//      }
-//    }
+    //  Metadata/EXIF data Extraction Example
+    //   1. By the time SwiftyCam have made it from a CGDataProvider -> CGImage -> UIImage and we convert it back to a CGDataProvider, it seems that everything is stripped
+    //   2. Even putting the code to extract metadata into SwiftyCam, GPS data does not seem to be part of the data set.
+    //
+    //    if let cgImage = image.cgImage {
+    //      if let cgProvider = cgImage.dataProvider {
+    //        if let source = CGImageSourceCreateWithDataProvider(cgProvider, nil) {
+    //          if let type = CGImageSourceGetType(source) {
+    //            print("type: \(type)")
+    //          }
+    //
+    //          if let properties = CGImageSourceCopyProperties(source, nil) {
+    //            print("properties - \(properties)")
+    //          }
+    //
+    //          let count = CGImageSourceGetCount(source)
+    //          print("count: \(count)")
+    //
+    //          for index in 0..<count {
+    //            if let metaData = CGImageSourceCopyMetadataAtIndex(source, index, nil) {
+    //              print("all metaData[\(index)]: \(metaData)")
+    //
+    //              let typeId = CGImageMetadataGetTypeID()
+    //              print("metadata typeId[\(index)]: \(typeId)")
+    //
+    //
+    //              if let tags = CGImageMetadataCopyTags(metaData) as? [CGImageMetadataTag] {
+    //
+    //                print("number of tags - \(tags.count)")
+    //
+    //                for tag in tags {
+    //
+    //                  let tagType = CGImageMetadataTagGetTypeID()
+    //                  if let name = CGImageMetadataTagCopyName(tag) {
+    //                    print("name: \(name)")
+    //                  }
+    //                  if let value = CGImageMetadataTagCopyValue(tag) {
+    //                    print("value: \(value)")
+    //                  }
+    //                  if let prefix = CGImageMetadataTagCopyPrefix(tag) {
+    //                    print("prefix: \(prefix)")
+    //                  }
+    //                  if let namespace = CGImageMetadataTagCopyNamespace(tag) {
+    //                    print("namespace: \(namespace)")
+    //                  }
+    //                  if let qualifiers = CGImageMetadataTagCopyQualifiers(tag) {
+    //                    print("qualifiers: \(qualifiers)")
+    //                  }
+    //                  print("-------")
+    //                }
+    //              }
+    //            }
+    //
+    //            if let properties = CGImageSourceCopyPropertiesAtIndex(source, index, nil) {
+    //              print("properties[\(index)]: \(properties)")
+    //            }
+    //          }
+    //        }
+    //      }
+    //    }
     
     // Also save photo to Photo Album.
     if let currentUser = FoodieUser.current, currentUser.saveOriginalsToLibrary {
       UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
     }
-
+    
     let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
     imageFormatter(mediaObject, image: image)
-
+    
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -385,20 +385,20 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       if let currentUser = FoodieUser.current, currentUser.saveOriginalsToLibrary {
         UISaveVideoAtPathToSavedPhotosAlbum(url.path, nil, nil, nil)
       }
-
+      
       let fileName = FoodieFileObject.newVideoFileName()
       let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .video)
       mediaObject.setVideo(toLocal: url)
-
+      
       guard let activitySpinner = activitySpinner else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
           CCLog.fatal("Activity Spinner is not initialized")
         }
         return
       }
-
+      
       activitySpinner.apply()
-
+      
       // Analytics
       let avUrlAsset = AVURLAsset(url: url)
       let duration = CMTimeGetSeconds(avUrlAsset.duration)
@@ -497,7 +497,7 @@ extension CameraViewController: MarkupReturnDelegate {
 
 
 extension CameraViewController: TLPhotosPickerViewControllerDelegate {
-
+  
   private func displayMarkUpController(mediaObj: FoodieMedia) {
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
@@ -511,24 +511,24 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     viewController.addToExistingStoryOnly = addToExistingStoryOnly
     self.present(viewController, animated: true)
   }
-
-  func convertToMedia(from tlphAsset: TLPHAsset, isLimitDuration isLimitDuration: Bool, withBlock callback: @escaping (FoodieMedia?) -> Void) {
+  
+  func convertToMedia(from tlphAsset: TLPHAsset, isLimitDuration: Bool, withBlock callback: @escaping (FoodieMedia?) -> Void) {
     DispatchQueue.global(qos: .userInitiated).async {
       guard tlphAsset.phAsset != nil else {
         CCLog.assert("Failed to unwrap phAsset from TLPHAsset")
         return
       }
-
+      
       switch tlphAsset.type {
       case .photo, .livePhoto:
-
+        
         let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
         if(tlphAsset.fullResolutionImage == nil) {
           // icloud image
           tlphAsset.cloudImageDownload(progressBlock: { (completion) in
             CCLog.verbose("download image completed at \(completion)")
           }, completionBlock: { (uiImage) in
-
+            
             guard let uiImage = uiImage else {
               CCLog.assert("Failed to unwrap uiImage downloaded from iCloud")
               return
@@ -536,27 +536,28 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
             mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(uiImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
             callback(mediaObject)
           })
-
+          
         } else {
-
+          
           mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(tlphAsset.fullResolutionImage!, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
           callback(mediaObject)
         }
-
+        
       case .video:
-
+        self.activitySpinner?.apply()
+        
         tlphAsset.cloudVideoDownload(progressBlock: { (completion) in
           CCLog.verbose("download video completed at \(completion)")
         }) { (avExportSession) in
           let videoName = FoodieFileObject.newVideoFileName()
           let outputUrl = FileManager.default.temporaryDirectory.appendingPathComponent(videoName)
-
+          
           guard let exportSession = avExportSession else {
             // Add error dialog
             CCLog.fatal("Failed to request for avExportSession")
             return
           }
-
+          
           // TODO are we sure that we wnat .mov format ?
           exportSession.outputFileType = AVFileType.mov
           exportSession.outputURL = outputUrl
@@ -564,17 +565,18 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
             exportSession.timeRange = CMTimeRangeMake(kCMTimeZero, CMTime(seconds: 15, preferredTimescale: 1))
           }
           exportSession.exportAsynchronously {
-
+            self.activitySpinner?.remove()
+            
             if (exportSession.error != nil) {
               CCLog.debug("An error occured while exporting video from photo picker \(exportSession.error!.localizedDescription)")
             }
-
+            
             let mediaObject = FoodieMedia(for: videoName, localType: .draft, mediaType: .video)
             mediaObject.setVideo(toLocal: outputUrl)
             callback(mediaObject)
           }
         }
-
+        
       default:
         AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { _ in
           CCLog.fatal("Media returned from Image Picker is neither a Photo nor a Video")
@@ -582,7 +584,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       }
     }
   }
-
+  
   
   func dismissPhotoPicker(withTLPHAssets: [TLPHAsset]) {
     if withTLPHAssets.count < 0 {
@@ -590,14 +592,14 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
         CCLog.assert("No asset returned from TLPHAsset")
       }
     }
-
+    
     outstandingConvertQueue.async {
       self.moments = Array.init(repeatElement(nil, count: withTLPHAssets.count))
       
       for tlphAsset in withTLPHAssets {
         self.outstandingConvertOperations += 1
         self.convertToMedia(from: tlphAsset, isLimitDuration: withTLPHAssets.count > 1) { (foodieMedia) in
-
+          
           guard let foodieMedia = foodieMedia else {
             CCLog.assert("Failed to convert tlphAsset to FoodieMedia as foodieMedia is nil")
             return
@@ -605,7 +607,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
           
           let moment = FoodieMoment(foodieMedia: foodieMedia)
           self.moments[(tlphAsset.selectedOrder - 1)] = moment
-
+          
           self.outstandingConvertQueue.async {
             self.outstandingConvertOperations -= 1
             if self.outstandingConvertOperations == 0 { self.processMoments() }
@@ -614,28 +616,29 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       }
     }
   }
-
+  
   
   func dismissComplete() {
     // to display all the buttons properly in markup this code must be in this function otherwise
     // the buttons will be hidden
   }
-
+  
   
   private func processMoments() {
     if(moments.count > 1)
     {
       var selectedMoments: [FoodieMoment] = []
       for moment in moments {
-
+        
+        
         guard let unwrappedMoment = moment else {
           CCLog.assert("moment is nil")
           return
         }
-
+        
         selectedMoments.append(unwrappedMoment)
       }
-
+      
       var workingStory: FoodieStory
       if(FoodieStory.currentStory == nil)
       {
@@ -645,7 +648,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       else
       {
         workingStory = FoodieStory.currentStory!
-
+        
         if(addToExistingStoryOnly) {
           DispatchQueue.main.async {
             self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
@@ -654,7 +657,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
           ConfirmationDialog.displayStorySelection(to: self, newStoryHandler: { (uiaction) in
             ConfirmationDialog.showStoryDiscardDialog(to: self, withBlock: {
               FoodieStory.cleanUpDraft() { error in
-
+                
                 if let error = error {
                   AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
                     CCLog.assert("Error when cleaning up story from draft- \(error.localizedDescription)")
@@ -675,34 +678,36 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
           CCLog.assert("Unwrapped nil moment")
           return
         }
-
+        
         guard let mediaObj = moment.media else {
           CCLog.assert("Unwrapped nil moment")
           return
         }
-
+        
         let storyboard = UIStoryboard(name: "Compose", bundle: nil)
         let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VideoTrimmerViewController") as! VideoTrimmerViewController
-        viewController.avAsset = AVURLAsset(url: (moment.media?.localVideoUrl)!)
+        viewController.avAsset = AVURLAsset(url: (mediaObj.localVideoUrl)!)
         viewController.delegate = self
-        present(viewController, animated: true, completion: nil)
+        DispatchQueue.main.async {
+          self.present(viewController, animated: true, completion: nil)
+        }
       }
     }
   }
-
+  
   
   
   // TODO: - CameraVC shouldn't need to know the innards of Image Manipulation? This should be a FoodieMedia instance function that CameraVC can call on?
   private func imageFormatter(_ media:FoodieMedia, image bufferImage: UIImage) {
     var bufferImage = bufferImage
-
+    
     guard let fileName = media.foodieFileName else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("the file name is missing from this foodieMedia")
       }
       return
     }
-
+    
     let fileUrl = FoodieFileObject.getFileURL(for: .draft, with: fileName) as CFURL
     let destination = CGImageDestinationCreateWithURL(fileUrl, kUTTypeJPEG, 1, nil)!
     let jfifProperties = [kCGImagePropertyJFIFIsProgressive: kCFBooleanTrue] as NSDictionary
@@ -710,16 +715,16 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       kCGImageDestinationLossyCompressionQuality: 0.5,
       kCGImagePropertyJFIFDictionary: jfifProperties
       ] as NSDictionary
-
+    
     var imageSize = bufferImage.size
-
+    
     guard var cgImage = bufferImage.cgImage else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("cgImage is nil from bufferImage")
       }
       return
     }
-
+    
     // TODO: - Crop Aspect Ratio should be an input argument parameter. We shouldn't put in crop assumptions in here
     let cropAspectRatio = Constants.CropAspectRatio
     let currentAspectRatio = imageSize.width/imageSize.height
@@ -752,7 +757,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       }
       imageSize = bufferImage.size
       
-    // Photo taller than it should be
+      // Photo taller than it should be
     } else if currentAspectRatio < cropAspectRatio {
       let cropHeight = imageSize.width / cropAspectRatio
       if bufferImage.imageOrientation == .right {
@@ -780,7 +785,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       }
       imageSize = bufferImage.size
     }
-
+    
     // TODO: - Downsize max should be an input argument parameter. We shouldn't put in resolution presumptions in here
     let shortEdgeMax = Constants.ImageShortEdgeMax
     var newSize = imageSize
@@ -797,16 +802,16 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
     UIGraphicsBeginImageContextWithOptions(newSize, false, bufferImage.scale);
     bufferImage.draw(in: CGRect(origin: CGPoint.zero, size: newSize))
     bufferImage = UIGraphicsGetImageFromCurrentImageContext()!
-
+    
     guard let context = UIGraphicsGetCurrentContext() else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-         CCLog.assert("Failed to get UIGraphic current context")
+        CCLog.assert("Failed to get UIGraphic current context")
       }
       return
     }
     context.translateBy(x: 0, y: 0)
     UIGraphicsEndImageContext()
-
+    
     if(bufferImage.cgImage == nil) {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("cgImage is nil from bufferImage")
@@ -814,7 +819,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       return
     }
     cgImage = bufferImage.cgImage!
-
+    
     CGImageDestinationAddImage(destination, cgImage, properties)
     if(!CGImageDestinationFinalize(destination)) {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -822,7 +827,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       }
       return
     }
-
+    
     do {
       try media.imageMemoryBuffer = Data(contentsOf: fileUrl as URL)
     } catch {
@@ -838,26 +843,26 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
 
 extension CameraViewController: UIImagePickerControllerDelegate {
   public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
-
+    
     guard let mediaType = info[UIImagePickerControllerMediaType] as? String else {
       CCLog.assert("Media type is expected after selection from image picker")
       return
     }
-
+    
     picker.dismiss(animated:true, completion: nil)
-
+    
     var mediaObject: FoodieMedia
     var mediaName: String
-
+    
     switch mediaType {
-
+      
     case String(kUTTypeMovie):
-
+      
       guard let movieUrl = info[UIImagePickerControllerMediaURL] as? URL else {
         CCLog.assert("video URL is not returned from image picker")
         return
       }
-  
+      
       // Analytics
       let avUrlAsset = AVURLAsset(url: movieUrl)
       if let avUrlTrack = avUrlAsset.tracks(withMediaType: .video).first {
@@ -866,10 +871,10 @@ extension CameraViewController: UIImagePickerControllerDelegate {
         let duration = CMTimeGetSeconds(avUrlAsset.duration)
         Analytics.logPickerVideoEvent(width: abs(Double(mediaSize.width)), aspectRatio: abs(Double(aspectRatio)), duration: duration)
       }
-
+      
       // Go into Video Clip trimming if the Video can be edited
       if UIVideoEditorController.canEditVideo(atPath: movieUrl.relativePath) {
-
+        
         let storyboard = UIStoryboard(name: "Compose", bundle: nil)
         let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VideoTrimmerViewController") as! VideoTrimmerViewController
         viewController.avAsset = AVURLAsset(url: movieUrl)
@@ -890,13 +895,13 @@ extension CameraViewController: UIImagePickerControllerDelegate {
         CCLog.assert("UIImage is not returned from image picker")
         return
       }
-
+      
       // Analytics
       Analytics.logPickerPhotoEvent(width: Double(image.size.width), aspectRatio: Double(image.size.width/image.size.height))
       
       mediaObject = FoodieMedia(for: mediaName, localType: .draft, mediaType: .photo)
       imageFormatter(mediaObject, image: image)
-
+      
     default:
       AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { [unowned self] _ in
         CCLog.assert("Media returned from Image Picker is neither a Photo nor a Video")
@@ -904,7 +909,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       }
       return
     }
-
+    
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
     viewController.mediaObj = mediaObject
@@ -975,21 +980,21 @@ extension CameraViewController: VideoTrimmerDelegate {
     mediaObject.localVideoTranscode(to: FoodieFileObject.getFileURL(for: .draft, with: fileName),
                                     thru: FoodieFileObject.getRandomTempFileURL(),
                                     duration: CMTimeRangeMake(startTime, endTime)) { error in
-      activitySpinner.remove()
-      if let error = error {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-          CCLog.fatal("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
-        }
-        return
-      }
-      DispatchQueue.main.async {
-        let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-        viewController.mediaObj = mediaObject
-        viewController.markupReturnDelegate = self
-        viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
-        self.present(viewController, animated: true)
-      }
+                                      activitySpinner.remove()
+                                      if let error = error {
+                                        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+                                          CCLog.fatal("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
+                                        }
+                                        return
+                                      }
+                                      DispatchQueue.main.async {
+                                        let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+                                        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+                                        viewController.mediaObj = mediaObject
+                                        viewController.markupReturnDelegate = self
+                                        viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
+                                        self.present(viewController, animated: true)
+                                      }
     }
   }
 }
