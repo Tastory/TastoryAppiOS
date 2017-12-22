@@ -99,17 +99,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-TastryApp.xcscheme</key>
+		<key>Pods-TastoryApp.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-TastryAppTests.xcscheme</key>
+		<key>Pods-TastoryAppTests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-TastryAppUITests.xcscheme</key>
+		<key>Pods-TastoryAppUITests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

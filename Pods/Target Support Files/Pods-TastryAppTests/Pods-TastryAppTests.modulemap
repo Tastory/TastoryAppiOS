@@ -1,6 +1,0 @@
-framework module Pods_TastryAppTests {
-  umbrella header "Pods-TastryAppTests-umbrella.h"
-
-  export *
-  module * { export * }
-}

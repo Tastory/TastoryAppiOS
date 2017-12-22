@@ -97,7 +97,7 @@ public class DefaultPreviewView: UIView {
 	/// - parameter side: The side of the `ColorSlider` to show on. Defaults to `.left`.
 	required public init(side: Side = .left) {
 		self.side = side
-		colorView.backgroundColor = .white
+		colorView.backgroundColor = .red
 		offset = CGPoint(x: -offsetAmount, y: 0)
 		
 		super.init(frame: .zero)

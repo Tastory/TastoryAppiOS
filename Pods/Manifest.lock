@@ -1,9 +1,9 @@
 PODS:
-  - AWSCognito (2.6.8):
-    - AWSCore (= 2.6.8)
-  - AWSCore (2.6.8)
-  - AWSS3 (2.6.8):
-    - AWSCore (= 2.6.8)
+  - AWSCognito (2.6.9):
+    - AWSCore (= 2.6.9)
+  - AWSCore (2.6.9)
+  - AWSS3 (2.6.9):
+    - AWSCore (= 2.6.9)
   - Bolts (1.8.4):
     - Bolts/AppLinks (= 1.8.4)
     - Bolts/Tasks (= 1.8.4)
@@ -108,7 +108,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Jot:
-    :commit: 25f8f4b486ed7993285adef5662b3b31dfee0a00
+    :commit: 1a023aa4fd04b62397953b88c23331825e3f8b42
     :git: https://github.com/biscottigelato/Jot.git
   PryntTrimmerView:
     :commit: ae2c2f531c545e260aa93415f46a1a5c4b812994
@@ -117,13 +117,13 @@ CHECKOUT OPTIONS:
     :commit: 4f10166069b9482da15a9b118e81102c3fffd507
     :git: https://github.com/Constantine-Fry/das-quadrat.git
   TLPhotoPicker:
-    :commit: 4c389dae517f2d7fc7e9b5a9aaa6e3a9eab1dbb8
+    :commit: 5cf640705690bc180efff385ac3716b62c4d0601
     :git: https://github.com/specc/TLPhotoPicker.git
 
 SPEC CHECKSUMS:
-  AWSCognito: a57d1a9295f9e05ffa55a485165e3c24b81699ba
-  AWSCore: 35fca7c45f37f5ffc4ddf75f7aa943f3588d9227
-  AWSS3: 380f57d169fd4ebd0a5fca366b36563a3f6d87b2
+  AWSCognito: 73da556821bb8eb03bd3b2d4fc10ebe4ecf87ef9
+  AWSCore: 1aa9b5a4c9ee70be5b18914e1e75fa0dc0da75de
+  AWSS3: 8441f244fc2632cd5bca346841a92be136735194
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   ColorSlider: 3dc3b5c31b5a74aa1232c44eae06453ce59ecf36
   Crashlytics: dbb07d01876c171c5ccbdf7826410380189e452c
@@ -150,6 +150,6 @@ SPEC CHECKSUMS:
   Texture: c3f06e344aa091667b7a56002e525cde674d021a
   TLPhotoPicker: e5bf9a0f95b4fdf867299d6ae03569f526e3f621
 
-PODFILE CHECKSUM: 3a55869cbcf7c0e522afc4a5db3d9725965856d5
+PODFILE CHECKSUM: f903e3c6ec61b05b107a3c335ed068e5a7e31ca0
 
 COCOAPODS: 1.2.0
