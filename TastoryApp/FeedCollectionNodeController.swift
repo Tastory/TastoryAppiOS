@@ -131,6 +131,40 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   private func displayStoryEntry(_ story: FoodieStory) {
     FoodieStory.setCurrentStory(to: story)
     
+    guard let moments = story.moments else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("No Moments in Story \(story.getUniqueIdentifier)")
+      }
+      return
+    }
+    
+    // !!! Um... Banking on that the following operations will be quick. Don't want another spinner here...
+    UIApplication.shared.beginIgnoringInteractionEvents()
+    
+    FoodieFetch.global.cancelAll()
+    
+    let batchRetrieving = FoodieMoment.batchRetrieve(moments) { objects, error in
+      if let error = error {
+        AlertDialog.present(from: self, title: "Story Retrieve Failed", message: error.localizedDescription) { _ in
+          CCLog.warning("batchRetrieve for Story \(story.getUniqueIdentifier) failed with error - \(error.localizedDescription)")
+        }
+        UIApplication.shared.endIgnoringInteractionEvents()
+        return
+      }
+      
+      self.saveDraftAndPresentEntry(for: story)
+    }
+    
+    if batchRetrieving { return }
+      
+    else {
+      saveDraftAndPresentEntry(for: story)
+    }
+  }
+  
+  
+  private func saveDraftAndPresentEntry(for story: FoodieStory) {
+    
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryEntryViewController") as? StoryEntryViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -146,43 +180,22 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       return
     }
     
-    guard let moments = story.moments else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("No Moments in Story \(story.getUniqueIdentifier)")
-      }
-      return
-    }
-    
-    // !!! Um... Banking on that the following operations will be quick. Don't want another spinner here...
-    UIApplication.shared.beginIgnoringInteractionEvents()
-    
-    FoodieFetch.global.cancelAll()
-    FoodieMoment.batchRetrieve(moments) { objects, error in
+    story.saveDigest(to: .local, type: .draft) { error in
       if let error = error {
-        AlertDialog.present(from: self, title: "Story Retrieve Failed", message: error.localizedDescription) { _ in
-          CCLog.warning("batchRetrieve for Story \(story.getUniqueIdentifier) failed with error - \(error.localizedDescription)")
+        AlertDialog.present(from: self, title: "Draft Save Failed", message: error.localizedDescription) { _ in
+          CCLog.warning("Save of Story \(story.getUniqueIdentifier) to draft failed with error - \(error.localizedDescription)")
         }
         UIApplication.shared.endIgnoringInteractionEvents()
         return
       }
       
-      story.saveDigest(to: .local, type: .draft) { error in
-        if let error = error {
-          AlertDialog.present(from: self, title: "Draft Save Failed", message: error.localizedDescription) { _ in
-            CCLog.warning("Save of Story \(story.getUniqueIdentifier) to draft failed with error - \(error.localizedDescription)")
-          }
-          UIApplication.shared.endIgnoringInteractionEvents()
-          return
-        }
-        
-        DispatchQueue.main.async {
-          viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)  // Disable Interactive Dismiss to force Discard Confirmation on Exit
-          mapNavController.delegate = viewController
-          viewController.workingStory = story
-          viewController.updateFeedDelegate = self.updateStoryDelegate
-          mapNavController.pushViewController(viewController, animated: true)
-          UIApplication.shared.endIgnoringInteractionEvents()
-        }
+      DispatchQueue.main.async {
+        viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)  // Disable Interactive Dismiss to force Discard Confirmation on Exit
+        mapNavController.delegate = viewController
+        viewController.workingStory = story
+        viewController.updateFeedDelegate = self.updateStoryDelegate
+        mapNavController.pushViewController(viewController, animated: true)
+        UIApplication.shared.endIgnoringInteractionEvents()
       }
     }
   }
