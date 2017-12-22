@@ -663,9 +663,11 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       
     else if collectionNode.collectionViewLayout is CarouselCollectionViewLayout {
       let maxContentOffsetX = scrollView.contentSize.width - collectionNode.bounds.width
-      if false { // !allPagesFetched, scrollView.contentOffset.x > maxContentOffsetX + Constants.CarouselPullTrasnlationForBatchFetch {
-        carouselBatchPending = true
-      }
+      
+//      Disabling Paging Here
+//      if !allPagesFetched, scrollView.contentOffset.x > maxContentOffsetX + Constants.CarouselPullTrasnlationForBatchFetch {
+//        carouselBatchPending = true
+//      }
       
       if carouselBatchPending, scrollView.contentOffset.x <= maxContentOffsetX {
         carouselBatchPending = false

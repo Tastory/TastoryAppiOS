@@ -465,12 +465,14 @@ class StoryViewController: OverlayViewController {
   
   private func displayMomentIfLoaded(for moment: FoodieMoment) {
 
-    guard let story = viewingStory else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("viewingStory = nil")
-      }
-      return
-    }
+//    Remove Story Retrieval. Relying entirely on the Prefetch mechanism to fetch Moments and Stories
+//    guard let story = viewingStory else {
+//      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+//        CCLog.fatal("viewingStory = nil")
+//      }
+//      return
+//    }
+    
     var shouldRetrieveMoment = false
     
     moment.execute(ifNotReady: {

@@ -555,7 +555,6 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
           guard let exportSession = avExportSession else {
             // Add error dialog
             CCLog.fatal("Failed to request for avExportSession")
-            return
           }
           
           // TODO are we sure that we wnat .mov format ?
@@ -575,11 +574,6 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
             mediaObject.setVideo(toLocal: outputUrl)
             callback(mediaObject)
           }
-        }
-        
-      default:
-        AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { _ in
-          CCLog.fatal("Media returned from Image Picker is neither a Photo nor a Video")
         }
       }
     }
