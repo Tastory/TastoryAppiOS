@@ -231,7 +231,8 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Public Static Functions
   
-  static func batchRetrieve(_ moments: [FoodieMoment], completion: AnyErrorBlock?) {
+  // Returns True if a Query op is executed. False otherwise
+  static func batchRetrieve(_ moments: [FoodieMoment], completion: AnyErrorBlock?) -> Bool {
     
     var queryRequired = false
     var momentIdentifierString = ""
@@ -259,10 +260,9 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
     
     // Early return if no query required
-    guard queryRequired else {
+    if !queryRequired {
       CCLog.verbose("Batch Retrieve of \(momentIdentifierString) not required")
-      completion?(moments, nil)
-      return
+      return false
     }
     
     CCLog.verbose("Batch Retrieving \(momentIdentifierString)")
@@ -274,6 +274,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       CCLog.verbose("Batch Retrieve of \(momentIdentifierString) Completed")
       completion?(objects, error)
     }
+    return true
   }
   
   

@@ -126,48 +126,28 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       fallthrough
       
     case .allMedia:
-      
       CCLog.debug("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) for \(opType.rawValue) executing")
+      
+      // Retrieve all the Moments & Markups from Parse for the Story in 1 go
+      let batchRetrieving = FoodieMoment.batchRetrieve(moments) { objects, error in
+        self.callback?(error)
+        self.finished()
+      }
+      
+      // Just return if Batch Retrieving & swing back around next time
+      if batchRetrieving { return }
       
       var momentNum = 0
       for moment in moments {
         if !moment.isReady {
           
-          if momentNum == 0 {
-            // Retrieve all the Moments for the Story in 1 go
-            FoodieMoment.batchRetrieve(moments) { objects, error in
-              if let error = error {
-                CCLog.warning("FoodieMoment.batchRetrieve Error - \(error.localizedDescription)")
-                self.callback?(error)
-                self.finished()
-                return
-              }
-              
-              guard !self.isCancelled else {
-                CCLog.warning("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) Cancelled")
-                self.callback?(error)
-                self.finished()  // Should we issue a 'finished()' on cancel?
-                return
-              }
-              
-              CCLog.debug("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment 0/\(moments.count) is \(moments[0].getUniqueIdentifier())")
-              self.prefetchOperation = moments[0].retrieveMedia(from: .both, type: .cache) { [unowned self] error in //withReady: nil
-                self.callback?(error)
-                self.finished()
-              }
-            }
-          }
-          
-          else {
-            CCLog.debug("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment \(momentNum)/\(moments.count) is \(moment.getUniqueIdentifier())")
-            prefetchOperation = moment.retrieveMedia(from: .both, type: .cache) { [unowned self] error in //withReady: nil
-              self.callback?(error)
-              self.finished()
-            }
+          CCLog.debug("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment \(momentNum)/\(moments.count) is \(moment.getUniqueIdentifier())")
+          prefetchOperation = moment.retrieveMedia(from: .both, type: .cache) { [unowned self] error in //withReady: nil
+            self.callback?(error)
+            self.finished()
           }
           return
         }
-        
         momentNum += 1
       }
       
