@@ -13,9 +13,9 @@ struct BranchVariables {
   // Facebook App ID is located in Info.plist, and also in URL types[0] -> URL schemes[0]
   // Please also verify the BundleID in the Xcode Project File pertains to your branch
   
-  static let ParseAppId = "L9lKtiKM6p7tltl32yfKs2ILLEJrnGpo1hwevYck"
-  static let ParseClientKey = "JH02PgH9wThU0Lq6PJmP91i9PbnzfR2pJwfzGPMg"
+  static let ParseAppId = "GJjSZxaEgtjTv0fhpEIjO4OL6giDoCoIS70cpVgM"
+  static let ParseClientKey = "eJG3LnDRawWG3WKi4SQvvWFt1hiGd2GId2iItzUT"
   
-  static let AwsS3BucketName = "tastry-dev-howard"
-  static let AwsS3CloudfrontDomain = "https://d105mgh14bnrvo.cloudfront.net/"
+  static let AwsS3BucketName = "tastry-master"
+  static let AwsS3CloudfrontDomain = "https://d2zy9a8xd3cswc.cloudfront.net/"
 }
