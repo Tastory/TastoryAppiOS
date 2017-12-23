@@ -566,6 +566,7 @@ class MarkupViewController: OverlayViewController {
     // Initialize Sliders
     colorSlider = ColorSlider(orientation: .vertical, previewSide: .left)
     colorSlider.addTarget(self, action: #selector(colorSliderChanged(_:)), for: .valueChanged)
+    colorSlider.color = .white
     
     view.addSubview(colorSlider)
     view.bringSubview(toFront: colorSlider)

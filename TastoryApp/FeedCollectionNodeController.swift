@@ -201,7 +201,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   }
   
   
-  @objc private func editStory(_ sender: TextButtonNode) {
+  @objc private func editStory(_ sender: ImageButtonNode) {
     lastIndexPath = IndexPath(row: sender.tag, section: 0)
     let storyIndex = toStoryIndex(from: lastIndexPath!)
     let story = storyArray[storyIndex]
