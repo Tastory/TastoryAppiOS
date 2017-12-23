@@ -1,9 +1,9 @@
 PODS:
-  - AWSCognito (2.6.9):
-    - AWSCore (= 2.6.9)
-  - AWSCore (2.6.9)
-  - AWSS3 (2.6.9):
-    - AWSCore (= 2.6.9)
+  - AWSCognito (2.6.10):
+    - AWSCore (= 2.6.10)
+  - AWSCore (2.6.10)
+  - AWSS3 (2.6.10):
+    - AWSCore (= 2.6.10)
   - Bolts (1.8.4):
     - Bolts/AppLinks (= 1.8.4)
     - Bolts/Tasks (= 1.8.4)
@@ -72,7 +72,7 @@ PODS:
     - PINRemoteImage/iOS (= 3.0.0-beta.12)
     - PINRemoteImage/PINCache
     - Texture/Core
-  - TLPhotoPicker (1.3.7)
+  - TLPhotoPicker (1.4.1)
 
 DEPENDENCIES:
   - AWSCognito
@@ -93,7 +93,7 @@ DEPENDENCIES:
   - SwiftRangeSlider
   - SwiftyCam
   - Texture
-  - TLPhotoPicker (from `https://github.com/specc/TLPhotoPicker.git`)
+  - TLPhotoPicker
 
 EXTERNAL SOURCES:
   Jot:
@@ -103,8 +103,6 @@ EXTERNAL SOURCES:
   QuadratTouch:
     :branch: develop
     :git: https://github.com/Constantine-Fry/das-quadrat.git
-  TLPhotoPicker:
-    :git: https://github.com/specc/TLPhotoPicker.git
 
 CHECKOUT OPTIONS:
   Jot:
@@ -116,14 +114,11 @@ CHECKOUT OPTIONS:
   QuadratTouch:
     :commit: 4f10166069b9482da15a9b118e81102c3fffd507
     :git: https://github.com/Constantine-Fry/das-quadrat.git
-  TLPhotoPicker:
-    :commit: 5cf640705690bc180efff385ac3716b62c4d0601
-    :git: https://github.com/specc/TLPhotoPicker.git
 
 SPEC CHECKSUMS:
-  AWSCognito: 73da556821bb8eb03bd3b2d4fc10ebe4ecf87ef9
-  AWSCore: 1aa9b5a4c9ee70be5b18914e1e75fa0dc0da75de
-  AWSS3: 8441f244fc2632cd5bca346841a92be136735194
+  AWSCognito: 94d97a52c51310dfd20f2db5dc4fce7ebce0e8dc
+  AWSCore: 5bb072a6b5b185f43ddbd239d6554d2f8a285ad2
+  AWSS3: 1124570c2c2dba6be7e6e67d123cc5181073c53d
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   ColorSlider: 3dc3b5c31b5a74aa1232c44eae06453ce59ecf36
   Crashlytics: dbb07d01876c171c5ccbdf7826410380189e452c
@@ -148,8 +143,8 @@ SPEC CHECKSUMS:
   SwiftRangeSlider: f86e3b637c961120158fa1a89277c8343845cbe4
   SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
   Texture: c3f06e344aa091667b7a56002e525cde674d021a
-  TLPhotoPicker: e5bf9a0f95b4fdf867299d6ae03569f526e3f621
+  TLPhotoPicker: 24909bb8a5a9055eb2ebbd8aa5fd9f4e6912d9cb
 
-PODFILE CHECKSUM: f903e3c6ec61b05b107a3c335ed068e5a7e31ca0
+PODFILE CHECKSUM: f9c26ba2e6ef1259881496f30db8d542f907dedc
 
-COCOAPODS: 1.2.0
+COCOAPODS: 1.3.1

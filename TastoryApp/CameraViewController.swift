@@ -52,7 +52,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   fileprivate var outstandingConvertOperations = 0
   fileprivate var outstandingConvertQueue = DispatchQueue(label: "Outstanding Convert Queue", qos: .userInitiated)
   fileprivate var moments: [FoodieMoment?] = []
-  fileprivate var enableMultiPicker = false
+  fileprivate var enableMultiPicker = true
   fileprivate var activitySpinner: ActivitySpinner? = nil
   
   
@@ -520,67 +520,48 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       }
       
       switch tlphAsset.type {
-      case .photo, .livePhoto:
-        
-        let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
-        if(tlphAsset.fullResolutionImage == nil) {
-          // icloud image
-          tlphAsset.cloudImageDownload(progressBlock: { (completion) in
-            CCLog.verbose("download image completed at \(completion)")
-          }, completionBlock: { (uiImage) in
-            
-            guard let uiImage = uiImage else {
-              CCLog.assert("Failed to unwrap uiImage downloaded from iCloud")
-              return
-            }
-            mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(uiImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+        case .photo, .livePhoto:
+          let photoName = FoodieFileObject.newPhotoFileName()
+          let mediaObject = FoodieMedia(for: photoName, localType: .draft, mediaType: .photo)
+          if(tlphAsset.fullResolutionImage == nil) {
+            // icloud image
+            tlphAsset.cloudImageDownload(progressBlock: { (completion) in
+              CCLog.verbose("downloading \(photoName) completed at \(completion * 100)%")
+            }, completionBlock: { (uiImage) in
+
+              guard let uiImage = uiImage else {
+                CCLog.assert("Failed to unwrap uiImage downloaded from iCloud")
+                return
+              }
+              mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(uiImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+              callback(mediaObject)
+            })
+
+          } else {
+
+            mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(tlphAsset.fullResolutionImage!, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
             callback(mediaObject)
-          })
-          
-        } else {
-          
-          mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(tlphAsset.fullResolutionImage!, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
-          callback(mediaObject)
-        }
-        
-      case .video:
-        self.activitySpinner?.apply()
-        
-        tlphAsset.cloudVideoDownload(progressBlock: { (completion) in
-          CCLog.verbose("download video completed at \(completion)")
-        }) { (avExportSession) in
+          }
+
+        case .video:
+
           let videoName = FoodieFileObject.newVideoFileName()
-          let outputUrl = FileManager.default.temporaryDirectory.appendingPathComponent(videoName)
-          
-          guard let exportSession = avExportSession else {
-            // Add error dialog
-            CCLog.fatal("Failed to request for avExportSession")
-          }
-          
-          // TODO are we sure that we wnat .mov format ?
-          exportSession.outputFileType = AVFileType.mov
-          exportSession.outputURL = outputUrl
-          if(isLimitDuration) {
-            exportSession.timeRange = CMTimeRangeMake(kCMTimeZero, CMTime(seconds: 15, preferredTimescale: 1))
-          }
-          exportSession.exportAsynchronously {
-            self.activitySpinner?.remove()
-            
-            if (exportSession.error != nil) {
-              CCLog.debug("An error occured while exporting video from photo picker \(exportSession.error!.localizedDescription)")
+          tlphAsset.tempCopyMediaFile(progressBlock: { (completion) in
+            CCLog.verbose("downloading \(videoName) at \(completion * 100)%")
+          }) { (url, mimeType) in
+              let mediaObject = FoodieMedia(for: videoName, localType: .draft, mediaType: .video)
+              mediaObject.setVideo(toLocal: url)
+              callback(mediaObject)
             }
-            
-            let mediaObject = FoodieMedia(for: videoName, localType: .draft, mediaType: .video)
-            mediaObject.setVideo(toLocal: outputUrl)
-            callback(mediaObject)
-          }
-        }
       }
     }
   }
   
   
   func dismissPhotoPicker(withTLPHAssets: [TLPHAsset]) {
+
+    self.activitySpinner?.apply()
+
     if withTLPHAssets.count < 0 {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("No asset returned from TLPHAsset")
@@ -619,6 +600,9 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   
   
   private func processMoments() {
+
+    self.activitySpinner?.remove()
+
     if(moments.count > 1)
     {
       var selectedMoments: [FoodieMoment] = []

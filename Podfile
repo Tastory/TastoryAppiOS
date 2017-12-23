@@ -16,7 +16,7 @@ target 'TastoryApp' do
   pod 'Fabric', :inhibit_warnings => true
   pod 'Crashlytics', :inhibit_warnings => true
   pod 'RATreeView'
-  pod 'TLPhotoPicker', :git => 'https://github.com/specc/TLPhotoPicker.git'
+  pod 'TLPhotoPicker'
   pod 'Texture', :inhibit_warnings => true
   pod 'ColorSlider', '~> 4.0'
   pod 'PryntTrimmerView', :git => 'https://github.com/specc/PryntTrimmerView.git'  

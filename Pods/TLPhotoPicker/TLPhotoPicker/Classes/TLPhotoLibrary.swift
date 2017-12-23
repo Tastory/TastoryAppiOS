@@ -33,7 +33,9 @@ class TLPhotoLibrary {
         options.deliveryMode = .highQualityFormat
         options.isNetworkAccessAllowed = true
         options.progressHandler = progressBlock
-        let requestId = self.imageManager.requestLivePhoto(for: asset, targetSize: size, contentMode: .aspectFill, options: options) { (livePhoto, info) in
+        let scale = UIScreen.main.scale
+        let targetSize = CGSize(width: size.width*scale, height: size.height*scale)
+        let requestId = self.imageManager.requestLivePhoto(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { (livePhoto, info) in
             if let livePhoto = livePhoto {
                 completionBlock(livePhoto)
             }
@@ -62,7 +64,9 @@ class TLPhotoLibrary {
             options?.deliveryMode = .highQualityFormat
             options?.isNetworkAccessAllowed = true
         }
-        let requestId = self.imageManager.requestImage(for: asset, targetSize: size, contentMode: .aspectFill, options: options) { image, info in
+        let scale = UIScreen.main.scale
+        let targetSize = CGSize(width: size.width*scale, height: size.height*scale)
+        let requestId = self.imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { image, info in
             if let image = image {
                 completionBlock(image)
             }
@@ -92,24 +96,7 @@ class TLPhotoLibrary {
         }
         return requestId
     }
-
-    @discardableResult
-    class func cloudVideoDownload(asset: PHAsset, progressBlock: @escaping (Double) -> Void, completionBlock:@escaping (AVAssetExportSession?)-> Void ) -> PHImageRequestID {
-        let options = PHVideoRequestOptions()
-
-        options.version = .current
-        options.deliveryMode = .highQualityFormat
-        options.isNetworkAccessAllowed = true
-        options.progressHandler = { (progress,error,stop,info) in
-          progressBlock(progress)
-        }
-
-      let requestId = PHCachingImageManager().requestExportSession(forVideo: asset, options: options, exportPreset: AVAssetExportPresetHighestQuality) { (avExportSession, info) in
-          completionBlock(avExportSession)
-      }
-        return requestId
-    }
-
+    
     @discardableResult
     class func fullResolutionImageData(asset: PHAsset) -> UIImage? {
         let options = PHImageRequestOptions()
@@ -136,17 +123,18 @@ extension TLPhotoLibrary {
         return options
     }
     
-    func fetchResult(collection: TLAssetsCollection?, maxVideoDuration:TimeInterval?=nil) -> PHFetchResult<PHAsset>? {
+    func fetchResult(collection: TLAssetsCollection?, maxVideoDuration:TimeInterval?=nil, options: PHFetchOptions? = nil) -> PHFetchResult<PHAsset>? {
         guard let phAssetCollection = collection?.phAssetCollection else { return nil }
-        let options = getOption()
+        let options = options ?? getOption()
         if let duration = maxVideoDuration, phAssetCollection.assetCollectionSubtype == .smartAlbumVideos {
             options.predicate = NSPredicate(format: "mediaType = %i AND duration <= %f", PHAssetMediaType.video.rawValue, duration)
         }
         return PHAsset.fetchAssets(in: phAssetCollection, options: options)
     }
     
-    func fetchCollection(allowedVideo: Bool = true, useCameraButton: Bool = true, mediaType: PHAssetMediaType? = nil, maxVideoDuration:TimeInterval? = nil) {
-        let options = getOption()
+    func fetchCollection(allowedVideo: Bool = true, useCameraButton: Bool = true, mediaType: PHAssetMediaType? = nil, maxVideoDuration:TimeInterval? = nil,options: PHFetchOptions? = nil) {
+
+        let options = options ?? getOption()
         
         @discardableResult
         func getSmartAlbum(subType: PHAssetCollectionSubtype, result: inout [TLAssetsCollection]) -> TLAssetsCollection? {

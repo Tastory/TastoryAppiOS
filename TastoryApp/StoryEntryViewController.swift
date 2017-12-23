@@ -557,9 +557,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         } else {
           
           if workingStory.moments != nil {
-            itemIndex += (workingStory.moments!.count - 1)
+            itemIndex = (workingStory.moments!.count)
             indexPaths.append(IndexPath( item: (itemIndex) , section: 0))
-            itemIndex += 1
           }
           
           CCLog.verbose("ViewWillAppear Add Moment \(returnedMoment.getUniqueIdentifier)")
