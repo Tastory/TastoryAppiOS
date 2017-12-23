@@ -867,14 +867,17 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       return false  // Don't go further if even the parent isn't retrieved
     }
     
-    guard let thumbnail = thumbnail, let media = media, let markups = markups else {
+    guard let thumbnail = thumbnail, let media = media else {
       // If anything is nil, just re-retrieve? CCLog.assert("Thumbnail, Markups and Venue should all be not nil")
       return false
     }
     
     var markupsAreRetrieved = true
-    for markup in markups {
-      markupsAreRetrieved = markupsAreRetrieved && markup.isRetrieved
+
+    if let markups = markups {
+      for markup in markups {
+        markupsAreRetrieved = markupsAreRetrieved && markup.isRetrieved
+      }
     }
     
     return thumbnail.isRetrieved && media.isRetrieved && markupsAreRetrieved
@@ -886,16 +889,19 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       return false  // Don't go further if even the parent isn't retrieved
     }
     
-    guard let media = media, let markups = markups else {
+    guard let media = media else {
       // If anything is nil, just re-retrieve? CCLog.assert("Thumbnail, Markups and Venue should all be not nil")
       return false
     }
-    
+
     var markupsAreRetrieved = true
-    for markup in markups {
-      markupsAreRetrieved = markupsAreRetrieved && markup.isRetrieved
+
+    if let markups = markups {
+      for markup in markups {
+        markupsAreRetrieved = markupsAreRetrieved && markup.isRetrieved
+      }
     }
-    
+
     return media.isReady && markupsAreRetrieved
   }
   
