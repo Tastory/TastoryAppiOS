@@ -430,13 +430,18 @@ class FoodieQuery {
     pfQuery!.includeKey("venue")
     
     // Do the actual search!
+    CCLog.info("Performing Query!")
+    
     let queryRetry = SwiftRetry()
     queryRetry.start("query and search for Story", withCountOf: Constants.QueryRetryCount) {
       self.pfQuery!.findObjectsInBackground { (objects, error) in
+        
         if let stories = objects as? [FoodieStory] {
+          CCLog.debug("Perform Query complete finding objects in background")
           callback?(stories, error)
         } else {
           if queryRetry.attempt(after: Constants.QueryRetryDelaySeconds, withQoS: .utility) { return }
+          CCLog.warning("Perform Query exhausted retry with error - \(error?.localizedDescription ?? "error = nil")")
           callback?(nil, error)
         }
         queryRetry.done()
