@@ -534,7 +534,35 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     }
   }
   
-  
+  private func deleteChild(
+    _ child: FoodieObjectDelegate,
+    location: FoodieObject.StorageLocation,
+    localType: FoodieObject.LocalType,
+    operation: AsyncOperation?,
+    arrayToDelete:[PFObject],
+    isDeferDeleteToParent: Bool,
+    callback: SimpleErrorBlock?) {
+    self.foodieObject.deleteChild(child, from: location, type: localType, for: operation) { error in
+
+      if(self.isDirty) {
+        self.revert()
+      }
+
+      switch location {
+      case .local:
+        if(isDeferDeleteToParent) {
+          callback?(self.foodieObject.operationError)
+        } else {
+          self.foodieObject.deleteCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
+        }
+      case .both:
+        PFObject.deleteAll(inBackground: arrayToDelete) { success, error in
+          FoodieGlobal.booleanToSimpleErrorCallback(success, self.foodieObject.operationError ?? error, callback)
+        }
+      }
+    }
+  }
+
   // Trigger recursive saves against all child objects.
   private func deleteOpRecursive(for momentOperation: MomentAsyncOperation,
                                  from location: FoodieObject.StorageLocation,
@@ -582,34 +610,36 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       }
       
       self.foodieObject.resetChildOperationVariables(to: outstandingChildOperations)
-      
-      // check for media and thumbnails to be deleted from this object
-      if let media = self.media {
-        self.foodieObject.deleteChild(media, from: location, type: localType, for: momentOperation) { error in
-          
-          switch location {
-          case .local:
-            callback?(self.foodieObject.operationError)
-          case .both:
-            PFObject.deleteAll(inBackground: pfObjectArrayToDelete) { success, error in
-              FoodieGlobal.booleanToSimpleErrorCallback(success, self.foodieObject.operationError ?? error, callback)
-            }
+
+      if let markups = self.markups {
+        for markup in markups {
+          if(markup.isDirty) {
+            markup.revert()
           }
         }
       }
+
+      // check for media and thumbnails to be deleted from this object
+      if let media = self.media {
+        self.deleteChild(
+          media,
+          location: location,
+          localType: localType,
+          operation: momentOperation,
+          arrayToDelete: pfObjectArrayToDelete,
+          isDeferDeleteToParent: true,
+          callback: callback)
+      }
       
       if let thumbnail = self.thumbnail {
-        self.foodieObject.deleteChild(thumbnail, from: location, type: localType, for: momentOperation) { error in
-          
-          switch location {
-          case .local:
-            callback?(self.foodieObject.operationError)
-          case .both:
-            PFObject.deleteAll(inBackground: pfObjectArrayToDelete) { success, error in
-              FoodieGlobal.booleanToSimpleErrorCallback(success, self.foodieObject.operationError ?? error, callback)
-            }
-          }
-        }
+        self.deleteChild(
+          thumbnail,
+          location: location,
+          localType: localType,
+          operation: momentOperation,
+          arrayToDelete: pfObjectArrayToDelete,
+          isDeferDeleteToParent: true,
+          callback: callback)
       }
     }
   }
@@ -664,31 +694,25 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
       
       // check for media and thumbnails to be deleted from this object
       if let media = self.media {
-        self.foodieObject.deleteChild(media, from: location, type: localType, for: momentOperation) { error in
-          
-          switch location {
-          case .local:
-            self.foodieObject.deleteCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-          case .both:
-            PFObject.deleteAll(inBackground: pfObjectArrayToDelete) { success, error in
-              FoodieGlobal.booleanToSimpleErrorCallback(success, self.foodieObject.operationError ?? error, callback)
-            }
-          }
-        }
+        self.deleteChild(
+          media,
+          location: location,
+          localType: localType,
+          operation: momentOperation,
+          arrayToDelete: pfObjectArrayToDelete,
+          isDeferDeleteToParent: false,
+          callback: callback)
       }
-      
+
       if let thumbnail = self.thumbnail {
-        self.foodieObject.deleteChild(thumbnail, from: location, type: localType, for: momentOperation) { error in
-          
-          switch location {
-          case .local:
-            self.foodieObject.deleteCompletedFromAllChildren(to: location, type: localType, withBlock: callback)
-          case .both:
-            PFObject.deleteAll(inBackground: pfObjectArrayToDelete) { success, error in
-              FoodieGlobal.booleanToSimpleErrorCallback(success, self.foodieObject.operationError ?? error, callback)
-            }
-          }
-        }
+        self.deleteChild(
+          thumbnail,
+          location: location,
+          localType: localType,
+          operation: momentOperation,
+          arrayToDelete: pfObjectArrayToDelete,
+          isDeferDeleteToParent: false,
+          callback: callback)
       }
     }
   }
