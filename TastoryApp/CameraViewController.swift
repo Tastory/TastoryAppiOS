@@ -52,7 +52,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   fileprivate var outstandingConvertOperations = 0
   fileprivate var outstandingConvertQueue = DispatchQueue(label: "Outstanding Convert Queue", qos: .userInitiated)
   fileprivate var moments: [FoodieMoment?] = []
-  fileprivate var enableMultiPicker = true
+  fileprivate var enableMultiPicker = false
   fileprivate var activitySpinner: ActivitySpinner? = nil
   
   
