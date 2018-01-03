@@ -101,7 +101,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
     ConfirmationDialog.showConfirmationDialog(
       to: self,
-      message: "Are you sure you want to delete this story permanently?",
+      message: "Are you absolutely sure you want to delete this story? You will not be able to recover it.",
       title: "Delete Story",
       confirmCaption: "Delete")
       { [unowned self] _ in
@@ -218,7 +218,13 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       AlertDialog.present(from: self, title: "Required Fields Empty", message: "The Title and Venue are essential to a Story!")
       return
     }
-    
+
+
+    if(moments.count < 3) {
+      AlertDialog.present(from: self, title: "Oops", message: "Your story looks incomplete. Try adding at least 3 moments.")
+      return
+    }
+
     view.endEditing(true)
     activitySpinner.apply()
     
@@ -271,7 +277,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             
             // Pop-up Alert Dialog and then Dismiss
             CCLog.info("Story Posted!")
-            AlertDialog.present(from: self, title: "Story Posted", message: "Thanks for telling your Story!") { [unowned self] _ in
+            AlertDialog.present(from: self, title: "Story Posted", message: "Mmm that was mouthwatering. Thank you for sharing!") { [unowned self] _ in
               self.popDismiss(animated: true)
             }
           }
@@ -290,7 +296,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
             // Pop-up Alert Dialog and then Dismiss
             CCLog.info("Story Saved!")
-            AlertDialog.present(from: self, title: "Story Saved", message: "Your Edits have been posted to the Server") { [unowned self] _ in
+            AlertDialog.present(from: self, title: "Changes Saved", message: "Looks good! Your changes have been saved.") { [unowned self] _ in
               self.popDismiss(animated: true)
             }
           }
