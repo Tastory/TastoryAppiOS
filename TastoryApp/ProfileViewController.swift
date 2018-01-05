@@ -73,6 +73,34 @@ class ProfileViewController: OverlayViewController {
   
   // MARK: - IBAction
   
+  @IBAction func testLikeAction(_ sender: UIButton) {
+    ReputableClaim.storyReaction(for: stories[0], shouldSet: true, reactionType: .like, withBlock: nil)
+  }
+  
+  @IBAction func testUnlikeAction(_ sender: UIButton) {
+  }
+  
+  @IBAction func testSwipeAction(_ sender: UIButton) {
+  }
+  
+  @IBAction func testVenueAction(_ sender: UIButton) {
+  }
+  
+  @IBAction func testProfileAction(_ sender: UIButton) {
+  }
+  
+  @IBAction func testViewedAction(_ sender: UIButton) {
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   @IBAction func settingsAction(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsNavViewController") as? SettingsNavViewController else {
