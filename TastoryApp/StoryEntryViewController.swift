@@ -18,14 +18,9 @@ protocol PreviewControlDelegate: class {
 }
 
 
-protocol UpdateStoryFeedDelegate: class {
-  func updateStory(_ story: FoodieStory)
-  func deleteStory(_ story: FoodieStory)
-}
-
-
 class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelegate {
-  
+
+
   // MARK: - Private Static Constants
   
   private struct Constants {
@@ -56,7 +51,6 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   var workingStory: FoodieStory?
   var returnedMoments: [FoodieMoment] = []
   var markupMoment: FoodieMoment? = nil
-  weak var updateFeedDelegate: UpdateStoryFeedDelegate?
 
   // MARK: - Private Instance Variables
   
@@ -125,7 +119,10 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
           self.activitySpinner.remove()
 
-          self.updateFeedDelegate?.deleteStory(workingStory)
+          let notifyData:[String: Any] = ["workingStory": workingStory, "action":"delete"]
+          NotificationCenter.default.post(name: NSNotification.Name(rawValue: "feedUpdateNotify"), object: nil, userInfo: notifyData)
+
+
           FoodieStory.removeCurrent()
           self.popDismiss(animated: true)
         }
@@ -219,8 +216,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       return
     }
 
-
-    if(moments.count < 3) {
+    if(moments.count < 3 && !story.isEditStory) {
       AlertDialog.present(from: self, title: "Oops", message: "Your story looks incomplete. Try adding at least 3 moments.")
       return
     }
@@ -283,7 +279,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           }
           
           else  {
-            self.updateFeedDelegate?.updateStory(story)
+            let notifyData:[String: Any] = ["workingStory": story, "action":"update"]
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "feedUpdateNotify"), object: nil, userInfo: notifyData)
             
             // Analytics
             if moments.count > 0 {
@@ -392,7 +389,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         }
         
         if(story.isEditStory) {
-          self.updateFeedDelegate?.updateStory(story)
+          let notifyData:[String: Any] = ["workingStory": story, "action":"update"]
+          NotificationCenter.default.post(name: NSNotification.Name(rawValue: "feedUpdateNotify"), object: nil, userInfo: notifyData)
         }
         
         self.workingStory = nil

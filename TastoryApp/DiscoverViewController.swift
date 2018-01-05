@@ -249,7 +249,6 @@ class DiscoverViewController: OverlayViewController {
     }
     
     appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
-    viewController.updateStoryDelegate = self
     viewController.user = FoodieUser.current
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
@@ -289,7 +288,29 @@ class DiscoverViewController: OverlayViewController {
   
   
   // MARK: - Private Instance Functions
-  
+  @objc func updateFeed(_ notification: NSNotification) {
+
+    guard let userInfo = notification.userInfo else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("userInfo is missing from notification")
+      }
+      return
+    }
+
+    guard let action = userInfo["action"] else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("action is not in userInfo")
+      }
+      return
+    }
+
+    let actionStr = action as! String
+
+    if(actionStr == "delete" || actionStr == "update") {
+      forceRequery = true
+    }
+  }
+
   private func performQuery(onAllUsers: Bool = false, at mapRect: MKMapRect? = nil, withBlock callback: FoodieQuery.StoriesQueryBlock?) {
     
     var searchMapRect = MKMapRect()
@@ -549,6 +570,8 @@ class DiscoverViewController: OverlayViewController {
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: "feedUpdateNotify"), object: nil)
 
     // Setup the Feed Node Controller first
     let nodeController = FeedCollectionNodeController(with: .carousel, allowLayoutChange: true, adjustScrollViewInset: false)
@@ -1288,27 +1311,6 @@ extension DiscoverViewController: CameraReturnDelegate {
     }
   }
 }
-
-extension DiscoverViewController: UpdateStoryFeedDelegate {
-  func updateStory(_ story: FoodieStory) {
-
-    let storyIdx = storyArray.index(of: story)
-
-    guard let storyIndex = storyIdx else {
-      CCLog.warning("Story not found in the storyArray. Nothing to update")
-      return
-    }
-
-    storyArray[storyIndex] = story
-    feedCollectionNodeController.updateStory(story)
-  }
-
-  func deleteStory(_ story: FoodieStory) {
-    forceRequery = true
-  }
-}
-
-
 
 extension DiscoverViewController: FiltersViewReturnDelegate {
   func filterCompleteReturn(_ filter: FoodieFilter) {

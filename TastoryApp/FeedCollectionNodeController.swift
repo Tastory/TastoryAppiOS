@@ -60,7 +60,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // MARK: - Public Instance Variable
   
   weak var delegate: FeedCollectionNodeDelegate?
-  weak var updateStoryDelegate: UpdateStoryFeedDelegate?
   var storyArray = [FoodieStory]()
   var enableEdit = false
   
@@ -193,7 +192,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
         viewController.setSlideTransition(presentTowards: .left, dismissIsInteractive: false)  // Disable Interactive Dismiss to force Discard Confirmation on Exit
         mapNavController.delegate = viewController
         viewController.workingStory = story
-        viewController.updateFeedDelegate = self.updateStoryDelegate
         mapNavController.pushViewController(viewController, animated: true)
         UIApplication.shared.endIgnoringInteractionEvents()
       }

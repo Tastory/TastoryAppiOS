@@ -33,11 +33,12 @@ class ProfileViewController: OverlayViewController {
   private var avatarImageNode: ASNetworkImageNode!
   private var activitySpinner: ActivitySpinner!
   private var isInitialLayout = true
-  
+
+  private var removeStoryList: [FoodieStory] = []
+  private var updateStoryList: [FoodieStory] = []
   
   
   // MARK: - Public Instance Variable
-  weak var updateStoryDelegate: UpdateStoryFeedDelegate?
   var user: FoodieUser?
   var query: FoodieQuery?
   var stories = [FoodieStory]() {
@@ -102,7 +103,47 @@ class ProfileViewController: OverlayViewController {
   
   
   // MARK: - Private Instance Functions
-  
+
+   @objc func updateFeed(_ notification: NSNotification) {
+
+    guard let userInfo = notification.userInfo else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("userInfo is missing from notification")
+      }
+      return
+    }
+
+    guard let action = userInfo["action"] else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("action is not in userInfo")
+      }
+      return
+    }
+
+    guard let story = userInfo["workingStory"] else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("workingStory is not in userInfo")
+      }
+      return
+    }
+
+    let actionStr = action as! String
+    let workingStory = story as! FoodieStory
+
+    if(actionStr == "update") {
+       updateStoryList.append(workingStory)
+    }
+
+    if(actionStr == "delete") {
+
+      // remove from update list if a story is marked for update and delete at the same time
+      if(updateStoryList.contains(workingStory)) {
+        updateStoryList.remove(at: updateStoryList.index(of: workingStory)!)
+      }
+      removeStoryList.append(workingStory)
+    }
+  }
+
   private func updateProfileMap(with story: FoodieStory) {
     let minMapWidth = mapNavController?.minMapWidth ?? MapNavController.Constants.DefaultMinMapWidth
     
@@ -153,6 +194,9 @@ class ProfileViewController: OverlayViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: "feedUpdateNotify"), object: nil)
+
 
     guard let user = user, user.isRegistered else {
       AlertDialog.present(from: self, title: "Profile Error", message: "The specified user profile belongs to an unregistered user") { [unowned self] _ in
@@ -326,7 +370,6 @@ class ProfileViewController: OverlayViewController {
       nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
       nodeController.didMove(toParentViewController: self)
       nodeController.delegate = self
-      nodeController.updateStoryDelegate = self
       feedCollectionNodeController = nodeController
       
       
@@ -396,9 +439,46 @@ class ProfileViewController: OverlayViewController {
     }
     
     appearanceForAllUI(alphaValue: 1.0, animated: true)
+
+    if(removeStoryList.count > 0) {
+
+      for delStory in removeStoryList {
+
+        let storyIdx = stories.index(of: delStory)
+
+        guard let storyIndex = storyIdx else {
+          CCLog.warning("Story not found in the storyArray. Nothing to delete")
+          return
+        }
+
+        stories.remove(at: storyIndex)
+      }
+
+      for updateStory in updateStoryList {
+        let storyIdx = stories.index(of: updateStory)
+
+        guard let storyIndex = storyIdx else {
+          CCLog.warning("Story not found in the storyArray. Nothing to update")
+          return
+        }
+
+        stories[storyIndex] = updateStory
+      }
+
+      feedCollectionNodeController.resetCollectionNode(with: stories)
+      feedCollectionNodeController.scrollTo(storyIndex: 0)
+      removeStoryList.removeAll()
+      updateStoryList.removeAll()
+    } else {
+      if(updateStoryList.count > 0) {
+        for story in updateStoryList {
+          feedCollectionNodeController.updateStory(story)
+        }
+        updateStoryList.removeAll()
+      }
+    }
   }
-  
-  
+
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
     appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
@@ -437,42 +517,6 @@ extension ProfileViewController: FeedCollectionNodeDelegate {
     let storiesIndexes = feedCollectionNodeController.getStoryIndexesVisible(forOver: Constants.PercentageOfStoryVisibleToStartPrefetch)
     let storiesShouldPrefetch = storiesIndexes.map { stories[$0] }
     FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
-  }
-}
-
-
-extension ProfileViewController: UpdateStoryFeedDelegate {
-  func updateStory(_ story: FoodieStory) {
-
-    guard let feedCollectionNodeController = feedCollectionNodeController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Expected FeedCollectionNodeController")
-      }
-      return
-    }
-
-    feedCollectionNodeController.updateStory(story)
-
-    // propagate updateStory to discoveryView (parent)
-    updateStoryDelegate?.updateStory(story)
-  }
-
-  func deleteStory(_ story: FoodieStory) {
-
-    let storyIdx = stories.index(of: story)
-
-    guard let storyIndex = storyIdx else {
-      CCLog.warning("Story not found in the storyArray. Nothing to delete")
-      return
-    }
-
-    stories.remove(at: storyIndex)
-
-    feedCollectionNodeController?.resetCollectionNode(with: stories)
-    feedCollectionNodeController?.scrollTo(storyIndex: 0)
-
-    // propagate deleteStory to discoveryView (parent)
-    updateStoryDelegate?.deleteStory(story)
   }
 }
 
