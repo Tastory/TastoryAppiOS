@@ -32,13 +32,6 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   }
   
   
-  // MARK: - Constants
-  struct Constants {
-    fileprivate static let ImageShortEdgeMax: CGFloat = 1080
-    fileprivate static let CropAspectRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
-  }
-  
-  
   // MARK: Public Instance Variables
   weak var cameraReturnDelegate: CameraReturnDelegate?
   var addToExistingStoryOnly = false
@@ -339,7 +332,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     }
     
     let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
-    imageFormatter(mediaObject, image: image)
+    mediaObject.imageFormatter(image: image)
     
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
@@ -672,149 +665,6 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       }
     }
   }
-  
-  
-  
-  // TODO: - CameraVC shouldn't need to know the innards of Image Manipulation? This should be a FoodieMedia instance function that CameraVC can call on?
-  private func imageFormatter(_ media:FoodieMedia, image bufferImage: UIImage) {
-    var bufferImage = bufferImage
-    
-    guard let fileName = media.foodieFileName else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.assert("the file name is missing from this foodieMedia")
-      }
-      return
-    }
-    
-    let fileUrl = FoodieFileObject.getFileURL(for: .draft, with: fileName) as CFURL
-    let destination = CGImageDestinationCreateWithURL(fileUrl, kUTTypeJPEG, 1, nil)!
-    let jfifProperties = [kCGImagePropertyJFIFIsProgressive: kCFBooleanTrue] as NSDictionary
-    let properties = [
-      kCGImageDestinationLossyCompressionQuality: 0.5,
-      kCGImagePropertyJFIFDictionary: jfifProperties
-      ] as NSDictionary
-    
-    var imageSize = bufferImage.size
-    
-    guard var cgImage = bufferImage.cgImage else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.assert("cgImage is nil from bufferImage")
-      }
-      return
-    }
-    
-    // TODO: - Crop Aspect Ratio should be an input argument parameter. We shouldn't put in crop assumptions in here
-    let cropAspectRatio = Constants.CropAspectRatio
-    let currentAspectRatio = imageSize.width/imageSize.height
-    
-    // Photo wider than it should be
-    if currentAspectRatio > cropAspectRatio {
-      let cropWidth = imageSize.height * cropAspectRatio
-      if bufferImage.imageOrientation == .right {
-        // Portrait photo wider than it should be
-        guard let cropImage = cgImage.cropping(to: CGRect(x: 0, y:(((imageSize.width/2) - (cropWidth/2))) , width: imageSize.height, height: cropWidth)) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.assert("cropImage is nil after cropping")
-          }
-          return
-        }
-        bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
-        cgImage = cropImage
-        
-      } else {
-        // defualt imageOrientation is .up
-        // Landscape photo wider than it should be
-        guard let cropImage = cgImage.cropping(to: CGRect(x: ((imageSize.width/2) - (cropWidth/2)) , y: 0, width: cropWidth, height: imageSize.height)) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.assert("cropImage is nil after cropping")
-          }
-          return
-        }
-        bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
-        cgImage = cropImage
-      }
-      imageSize = bufferImage.size
-      
-      // Photo taller than it should be
-    } else if currentAspectRatio < cropAspectRatio {
-      let cropHeight = imageSize.width / cropAspectRatio
-      if bufferImage.imageOrientation == .right {
-        // Portrait photo taller than it should be
-        guard let cropImage = cgImage.cropping(to: CGRect(x: (((imageSize.height/2) - cropHeight/2)), y: 0, width: cropHeight, height: imageSize.width)) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.assert("cropImage is nil after cropping")
-          }
-          return
-        }
-        bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
-        cgImage = cropImage
-        
-      } else {
-        // defualt imageOrientation is .up
-        // Landscape photo taller than it should be
-        guard let cropImage = cgImage.cropping(to: CGRect(x: 0, y: (((imageSize.height/2) - cropHeight/2)), width: imageSize.width, height: cropHeight)) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.assert("cropImage is nil after cropping")
-          }
-          return
-        }
-        bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
-        cgImage = cropImage
-      }
-      imageSize = bufferImage.size
-    }
-    
-    // TODO: - Downsize max should be an input argument parameter. We shouldn't put in resolution presumptions in here
-    let shortEdgeMax = Constants.ImageShortEdgeMax
-    var newSize = imageSize
-    
-    if imageSize.height < imageSize.width, imageSize.height > shortEdgeMax {
-      let scaleRatio = shortEdgeMax/imageSize.height
-      newSize = CGSize(width: imageSize.width*scaleRatio, height: shortEdgeMax)
-    }
-    else if imageSize.width < imageSize.height, imageSize.width > shortEdgeMax  {
-      let scaleRatio = shortEdgeMax/imageSize.width
-      newSize = CGSize(width: shortEdgeMax, height: imageSize.height*scaleRatio)
-    }
-    
-    UIGraphicsBeginImageContextWithOptions(newSize, false, bufferImage.scale);
-    bufferImage.draw(in: CGRect(origin: CGPoint.zero, size: newSize))
-    bufferImage = UIGraphicsGetImageFromCurrentImageContext()!
-    
-    guard let context = UIGraphicsGetCurrentContext() else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.assert("Failed to get UIGraphic current context")
-      }
-      return
-    }
-    context.translateBy(x: 0, y: 0)
-    UIGraphicsEndImageContext()
-    
-    if(bufferImage.cgImage == nil) {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.assert("cgImage is nil from bufferImage")
-      }
-      return
-    }
-    cgImage = bufferImage.cgImage!
-    
-    CGImageDestinationAddImage(destination, cgImage, properties)
-    if(!CGImageDestinationFinalize(destination)) {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.assert("Failed to format the image")
-      }
-      return
-    }
-    
-    do {
-      try media.imageMemoryBuffer = Data(contentsOf: fileUrl as URL)
-    } catch {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.assert("Failed to get image data from the file url")
-      }
-      return
-    }
-  }
 }
 
 
@@ -878,7 +728,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       Analytics.logPickerPhotoEvent(width: Double(image.size.width), aspectRatio: Double(image.size.width/image.size.height))
       
       mediaObject = FoodieMedia(for: mediaName, localType: .draft, mediaType: .photo)
-      imageFormatter(mediaObject, image: image)
+      mediaObject.imageFormatter(image: image)
       
     default:
       AlertDialog.present(from: self, title: "Media Select Error", message: "Media picked is not a Video nor a Photo") { [unowned self] _ in

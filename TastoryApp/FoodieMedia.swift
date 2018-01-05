@@ -14,6 +14,12 @@ import MobileCoreServices
 
 class FoodieMedia: FoodieFileObject {
 
+  // MARK: - Constants
+  struct Constants {
+    fileprivate static let ImageShortEdgeMax: CGFloat = 1080
+    fileprivate static let CropAspectRatio = FoodieGlobal.Constants.DefaultMomentAspectRatio
+  }
+
   // MARK: - Error Types
   enum ErrorCode: LocalizedError {
     
@@ -58,9 +64,143 @@ class FoodieMedia: FoodieFileObject {
   private(set) var videoExportPlayer: AVExportPlayer?
   private(set) var localVideoUrl: URL?
 
-  
-  
+  // MARK: - Private Instance Functions
+
+  private func setProgressiveJpgAsImageBuffer(bufferImage: inout UIImage) {
+    
+    // progressive jpeg
+    guard let cgImage = bufferImage.cgImage else {
+      CCLog.assert("cgImage is nil from bufferImage")
+      return
+    }
+    
+    guard let fileName = foodieFileName else {
+      CCLog.assert("the file name is missing from this foodieMedia")
+      return
+    }
+    
+    let fileUrl = FoodieFileObject.getFileURL(for: .draft, with: fileName) as CFURL
+    let destination = CGImageDestinationCreateWithURL(fileUrl, kUTTypeJPEG, 1, nil)!
+    let jfifProperties = [kCGImagePropertyJFIFIsProgressive: kCFBooleanTrue] as NSDictionary
+    let properties = [
+      kCGImageDestinationLossyCompressionQuality: 0.5,
+      kCGImagePropertyJFIFDictionary: jfifProperties
+      ] as NSDictionary
+
+    CGImageDestinationAddImage(destination, cgImage, properties)
+    if(!CGImageDestinationFinalize(destination)) {
+      CCLog.assert("Failed to format the image")
+      return
+    }
+
+    do {
+      try imageMemoryBuffer = Data(contentsOf: fileUrl as URL)
+    } catch {
+        CCLog.assert("Failed to get image data from the file url")
+      return
+    }
+    
+  }
+
+  private func cropImage(bufferImage: inout UIImage) {
+    var imageSize = bufferImage.size
+
+    guard var cgImage = bufferImage.cgImage else {
+      CCLog.assert("cgImage is nil from bufferImage")
+      return
+    }
+
+    // cropping
+    // TODO: - Crop Aspect Ratio should be an input argument parameter. We shouldn't put in crop assumptions in here
+    let cropAspectRatio = Constants.CropAspectRatio
+    let currentAspectRatio = imageSize.width/imageSize.height
+
+    // Photo wider than it should be
+    if currentAspectRatio > cropAspectRatio {
+      let cropWidth = imageSize.height * cropAspectRatio
+      if bufferImage.imageOrientation == .right {
+        // Portrait photo wider than it should be
+        guard let cropImage = cgImage.cropping(to: CGRect(x: 0, y:(((imageSize.width/2) - (cropWidth/2))) , width: imageSize.height, height: cropWidth)) else {
+          CCLog.assert("cropImage is nil after cropping")
+          return
+        }
+        bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
+        cgImage = cropImage
+
+      } else {
+        // defualt imageOrientation is .up
+        // Landscape photo wider than it should be
+        guard let cropImage = cgImage.cropping(to: CGRect(x: ((imageSize.width/2) - (cropWidth/2)) , y: 0, width: cropWidth, height: imageSize.height)) else {
+          CCLog.assert("cropImage is nil after cropping")
+          return
+        }
+        bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
+        cgImage = cropImage
+      }
+      imageSize = bufferImage.size
+
+      // Photo taller than it should be
+    } else if currentAspectRatio < cropAspectRatio {
+      let cropHeight = imageSize.width / cropAspectRatio
+      if bufferImage.imageOrientation == .right {
+        // Portrait photo taller than it should be
+        guard let cropImage = cgImage.cropping(to: CGRect(x: (((imageSize.height/2) - cropHeight/2)), y: 0, width: cropHeight, height: imageSize.width)) else {
+          CCLog.assert("cropImage is nil after cropping")
+          return
+        }
+        bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
+        cgImage = cropImage
+
+      } else {
+        // defualt imageOrientation is .up
+        // Landscape photo taller than it should be
+        guard let cropImage = cgImage.cropping(to: CGRect(x: 0, y: (((imageSize.height/2) - cropHeight/2)), width: imageSize.width, height: cropHeight)) else {
+          CCLog.assert("cropImage is nil after cropping")
+          return
+        }
+        bufferImage = UIImage(cgImage: cropImage, scale: 1.0, orientation: bufferImage.imageOrientation)
+      }
+    }
+
+  }
+
+  private func downSizeImage(bufferImage: inout UIImage) {
+
+    let imageSize = bufferImage.size
+
+    // TODO: - Downsize max should be an input argument parameter. We shouldn't put in resolution presumptions in here
+    let shortEdgeMax = Constants.ImageShortEdgeMax
+    var newSize = imageSize
+
+    if imageSize.height < imageSize.width, imageSize.height > shortEdgeMax {
+      let scaleRatio = shortEdgeMax/imageSize.height
+      newSize = CGSize(width: imageSize.width*scaleRatio, height: shortEdgeMax)
+    }
+    else if imageSize.width < imageSize.height, imageSize.width > shortEdgeMax  {
+      let scaleRatio = shortEdgeMax/imageSize.width
+      newSize = CGSize(width: shortEdgeMax, height: imageSize.height*scaleRatio)
+    }
+
+    UIGraphicsBeginImageContextWithOptions(newSize, false, bufferImage.scale);
+    bufferImage.draw(in: CGRect(origin: CGPoint.zero, size: newSize))
+    bufferImage = UIGraphicsGetImageFromCurrentImageContext()!
+
+    guard let context = UIGraphicsGetCurrentContext() else {
+      CCLog.assert("Failed to get UIGraphic current context")
+      return
+    }
+    context.translateBy(x: 0, y: 0)
+    UIGraphicsEndImageContext()
+  }
+
   // MARK: - Public Instance Functions
+  public func imageFormatter(image:  UIImage) {
+    var bufferImage = image
+    cropImage(bufferImage: &bufferImage)
+    downSizeImage(bufferImage: &bufferImage)
+    setProgressiveJpgAsImageBuffer(bufferImage: &bufferImage)
+  }
+
 
   // This is the Initilizer Parse will call upon Query or Retrieves
   override init() {
