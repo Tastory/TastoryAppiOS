@@ -74,7 +74,7 @@ class ProfileViewController: OverlayViewController {
   // MARK: - IBAction
   
   @IBAction func testLikeAction(_ sender: UIButton) {
-    ReputableClaim.storyReaction(for: stories[0], shouldSet: true, reactionType: .like, withBlock: nil)
+    ReputableClaim.storyReaction(for: stories[0], setNotClear: true, reactionType: .like, withBlock: nil)
   }
   
   @IBAction func testUnlikeAction(_ sender: UIButton) {
