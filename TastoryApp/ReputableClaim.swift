@@ -19,15 +19,15 @@ class ReputableClaim: PFObject {
 
   // For Story Claims
   @NSManaged var storyClaimType: Int
-  @NSManaged var reactionType: Int
-  @NSManaged var actionType: Int
-  @NSManaged var momentNumber: Int
+  @NSManaged var storyReactionType: Int
+  @NSManaged var storyActionType: Int
+  @NSManaged var storyMomentNumber: Int
   
   
   
   // MARK: - Types & Enumeration
   
-  enum Type: String {
+  enum ReputableClaimType: String {
     case storyClaim
   }
   
@@ -37,7 +37,7 @@ class ReputableClaim: PFObject {
     case storyViewed = 3
   }
   
-  enum ReactionType: Int {
+  enum StoryReactionType: Int {
     case like = 1
   }
   
@@ -72,7 +72,7 @@ class ReputableClaim: PFObject {
   
   // MARK: - Static Public Functions
   
-  static func storyReaction(for story: FoodieStory, setNotClear: Bool, reactionType: ReactionType, withBlock callback: AnyErrorBlock?) {
+  static func storyReaction(for story: FoodieStory, setNotClear: Bool, reactionType: StoryReactionType, withBlock callback: AnyErrorBlock?) {
     
     guard let storyId = story.objectId else {
       CCLog.assert("story.objectId = nil")
@@ -80,11 +80,11 @@ class ReputableClaim: PFObject {
       return
     }
     
-    let cloudFunctionName = Type.storyClaim.rawValue
+    let cloudFunctionName = ReputableClaimType.storyClaim.rawValue
     
     // Setup parameters and submit Cloud function
     var parameters = [AnyHashable: Any]()
-    parameters["storyClaimType"] = StoryClaimType.reaction.rawValued
+    parameters["storyClaimType"] = StoryClaimType.reaction.rawValue
     parameters["storyId"] = storyId
     parameters["setNotClear"] = setNotClear
     parameters["reactionType"] = reactionType.rawValue

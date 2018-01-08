@@ -197,6 +197,16 @@ class StoryViewController: OverlayViewController {
     AudioControl.mute()
   }
   
+  @IBAction func likeAction(_ sender: UIButton) {
+    guard let story = viewingStory else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.assert("viewingStory = nil")
+      }
+      return
+    }
+    
+    ReputableClaim.storyReaction(for: story, setNotClear: true, reactionType: .like, withBlock: nil)
+  }
   
   
   // MARK: - Private Instance Functions
