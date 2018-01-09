@@ -226,12 +226,14 @@ class StoryViewController: OverlayViewController {
     } else {
       heartClicked = true
       heartButton.setImage(#imageLiteral(resourceName: "Story-LikeFilled"), for: .normal)
+      heartLabel.isHidden = false
       
       if let reputableStory = story.reputation {
         heartLabel.text = "\(reputableStory.usersLiked+1)"
-        heartLabel.isHidden = false
       }
     }
+    
+    CCLog.info("Heart Clicked changed to \(heartClicked) by \(FoodieUser.current?.objectId ?? "") on Story \(viewingStory?.objectId ?? "")")
     
     ReputableClaim.storyReaction(for: story, setNotClear: heartClicked, reactionType: .like) { (reputation, error) in
       if let error = error {
@@ -241,6 +243,10 @@ class StoryViewController: OverlayViewController {
       
       if let reputation = reputation {
         self.heartLabel.text = "\(reputation.usersLiked)"
+        
+        if story.reputation == nil {
+          story.reputation = reputation
+        }
       }
     }
   }
@@ -811,6 +817,7 @@ class StoryViewController: OverlayViewController {
       heartLabel.text = "\(reputableStory.usersLiked)"
     } else {
       heartLabel.isHidden = true
+      heartLabel.text = ""  // This is so in the Storyboard, we can type whatever we want, but we clear it here
     }
     
     // Get Reaction Claims to personalize UI
@@ -829,10 +836,10 @@ class StoryViewController: OverlayViewController {
           if !likeClaims.isEmpty {
             self.heartClicked = true
             self.heartButton.setImage(#imageLiteral(resourceName: "Story-LikeFilled"), for: .normal)
+            self.heartLabel.isHidden = false
             
             if let reputableStory = story.reputation {
               self.heartLabel.text = "\(reputableStory.usersLiked)"
-              self.heartLabel.isHidden = false
             }
           }
         }
