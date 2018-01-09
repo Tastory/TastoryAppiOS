@@ -637,9 +637,9 @@
                                     <action selector="soundOffAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="Bpx-5U-g7F"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cta-7E-0oI">
-                                <rect key="frame" x="329" y="85.666666666666671" width="30" height="30"/>
-                                <state key="normal" title="Like"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cta-7E-0oI">
+                                <rect key="frame" x="331" y="84.666666666666671" width="32" height="32"/>
+                                <state key="normal" image="Story-LikeButton"/>
                                 <connections>
                                     <action selector="likeAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="Lxr-qA-Ycg"/>
                                 </connections>
@@ -673,7 +673,7 @@
                             <constraint firstItem="nxS-Eu-LGj" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" multiplier="0.65" id="cmr-Xm-15e"/>
                             <constraint firstItem="dOo-DQ-GbZ" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-5" id="d4J-nn-CJF"/>
                             <constraint firstItem="nxS-Eu-LGj" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="eXL-2f-A15"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="cta-7E-0oI" secondAttribute="trailing" id="i7p-XJ-StQ"/>
+                            <constraint firstAttribute="trailing" secondItem="cta-7E-0oI" secondAttribute="trailing" constant="12" id="i7p-XJ-StQ"/>
                             <constraint firstItem="t4S-lT-gBv" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-5" id="iHb-gO-R40"/>
                             <constraint firstItem="cOp-iU-bG1" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-5" id="jcW-cG-d8g"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="bottom" secondItem="nxS-Eu-LGj" secondAttribute="bottom" id="jhR-31-wUi"/>
@@ -741,6 +741,7 @@
         <image name="Profile-NoStoriesSelf" width="270" height="197"/>
         <image name="Profile-SettingsButton" width="75" height="22"/>
         <image name="Profile-ShareButton" width="62" height="22"/>
+        <image name="Story-LikeButton" width="32" height="32"/>
         <image name="StoryMarkup-PauseButton" width="40" height="40"/>
         <image name="StoryMarkup-PlayButton" width="40" height="40"/>
         <image name="StoryMarkup-SoundOffButton" width="40" height="40"/>

@@ -9,19 +9,42 @@
 import Parse
 import Foundation
 
+
+// !!! This class is purely Read-Only. Any attempt to write and Save will cause serious havoc !!!
+
 class ReputableClaim: PFObject {
   
-  // MARK: - Parse PFObject keys
+  // MARK: - Parse PFObject keys. All Read-only.
   
-  @NSManaged var sourceId: String?
-  @NSManaged var targetId: String?
-  @NSManaged var claimType: String?
+  var sourceId: String {
+    return object(forKey: "sourceId") as? String ?? "undefined"
+  }
+  
+  var targetId: String {
+    return object(forKey: "targetId") as? String ?? "undefined"
+  }
+  
+  var claimType: String {
+    return object(forKey: "claimType") as? String ?? "undefined"
+  }
 
   // For Story Claims
-  @NSManaged var storyClaimType: Int
-  @NSManaged var storyReactionType: Int
-  @NSManaged var storyActionType: Int
-  @NSManaged var storyMomentNumber: Int
+  
+  var storyClaimType: Int {
+    return object(forKey: "storyClaimType") as? Int ?? 0
+  }
+  
+  var storyReactionType: Int {
+    return object(forKey: "storyReactionType") as? Int ?? 0
+  }
+  
+  var storyActionType: Int {
+    return object(forKey: "storyActionType") as? Int ?? 0
+  }
+  
+  var storyMomentNumber: Int {
+    return object(forKey: "storyMomentNumber") as? Int ?? 0
+  }
   
   
   
@@ -113,4 +136,11 @@ class ReputableClaim: PFObject {
     
   }
   
+}
+
+
+extension ReputableClaim: PFSubclassing {
+  static func parseClassName() -> String {
+    return "ReputableClaim"
+  }
 }

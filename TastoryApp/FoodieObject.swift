@@ -113,6 +113,8 @@ class FoodieObject {
     case saveStateTransitionSaveAlreadyInProgress
     case saveStateTransitionIllegalStateTransition
     
+    case saveErrorOperationForbidden
+    
     case deleteStateTransitionNoState
     case deleteStateTransitionSaveAlreadyInProgress
     case deleteStateTransitionIllegalStateTransition
@@ -129,6 +131,9 @@ class FoodieObject {
       case .saveStateTransitionIllegalStateTransition:
         return NSLocalizedString("Save error due to illegal state transition", comment: "Error description for an exception error code")
      
+      case .saveErrorOperationForbidden:
+        return NSLocalizedString("Save error due to operation permission denied", comment: "Error description for an error in Parse Save")
+        
       case .deleteStateTransitionNoState:
         return NSLocalizedString("Delete error as Foodie Object has no state", comment: "Error description for an exception error code")
       case .deleteStateTransitionSaveAlreadyInProgress:

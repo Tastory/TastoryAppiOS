@@ -428,6 +428,7 @@ class FoodieQuery {
     // Always also just fetch the Venue and Author data associated
     pfQuery!.includeKey("author")
     pfQuery!.includeKey("venue")
+    pfQuery!.includeKey("reputation")
     
     // Do the actual search!
     CCLog.info("Performing Query!")

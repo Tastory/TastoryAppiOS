@@ -233,8 +233,17 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       
       if let error = error {
         self.activitySpinner.remove()
-        CCLog.warning("Save Story to Server Failed with Error: \(error)")
-        AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
+        
+        switch error {
+        case FoodieObject.ErrorCode.saveErrorOperationForbidden:
+          AlertDialog.present(from: self, title: "Save Story Fatal Error", message: "\(error.localizedDescription) Please restart the app and try again." ) { _ in
+            CCLog.fatal("Save Story to Server encountered Parse Permission Error: \(error)")
+          }
+          
+        default:
+          CCLog.warning("Save Story to Server Failed with Error: \(error)")
+          AlertDialog.present(from: self, title: "Save Story to Server Failed", message: error.localizedDescription)
+        }
         
         // ?? So in this case, isStoryEdit will be true or false?
         

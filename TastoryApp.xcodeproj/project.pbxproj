@@ -448,14 +448,14 @@
 			name = FoodieModel;
 			sourceTree = "<group>";
 		};
-		8C7343611FF9928D000B9C25 /* ReputableActionModel */ = {
+		8C7343611FF9928D000B9C25 /* ReputationModel */ = {
 			isa = PBXGroup;
 			children = (
 				8C7343621FF992CE000B9C25 /* ReputableStory.swift */,
 				8C7343641FF992DA000B9C25 /* ReputableUser.swift */,
 				8C7343661FF992EA000B9C25 /* ReputableClaim.swift */,
 			);
-			name = ReputableActionModel;
+			name = ReputationModel;
 			sourceTree = "<group>";
 		};
 		8C7EC5901F8EA7E400C8E80B /* Transitions */ = {
@@ -524,7 +524,7 @@
 				8C1C71F51ED1602F00D2E4F8 /* FoodieGlobal.swift */,
 				8CF40C5E1FC50BDD00615D43 /* FoodieFont.swift */,
 				8C7343601FF99266000B9C25 /* FoodieModel */,
-				8C7343611FF9928D000B9C25 /* ReputableActionModel */,
+				8C7343611FF9928D000B9C25 /* ReputationModel */,
 			);
 			name = Models;
 			sourceTree = "<group>";

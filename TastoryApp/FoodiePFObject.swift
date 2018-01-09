@@ -44,6 +44,10 @@ class FoodiePFObject: PFObject {
     FoodieCategory.registerSubclass()
     FoodieMoment.registerSubclass()
     FoodieMarkup.registerSubclass()
+    
+    ReputableStory.registerSubclass()
+    ReputableUser.registerSubclass()
+    ReputableClaim.registerSubclass()
   }
   
   
@@ -240,6 +244,18 @@ class FoodiePFObject: PFObject {
       saveRetry.start("Save \(delegate.foodieObjectType())(\(self.getUniqueIdentifier()))", withCountOf: Constants.ParseRetryCount) { [unowned self] in
         
         self.saveInBackground { success, error in
+          
+          if let error = error {
+            let nsError = error as NSError
+            if nsError.domain == PFParseErrorDomain && nsError.code == PFErrorCode.errorOperationForbidden.rawValue {
+              CCLog.warning("FoodieObject Save Failed - \(error.localizedDescription)")
+              
+              FoodieGlobal.booleanToSimpleErrorCallback(false, FoodieObject.ErrorCode.saveErrorOperationForbidden, callback)
+              saveRetry.done()
+              return
+            }
+          }
+
           if !success || error != nil {
             if saveRetry.attempt(after: Constants.ParseRetryDelaySeconds, withQoS: .utility) { return }
           }

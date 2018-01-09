@@ -12,3 +12,10 @@ import Foundation
 class ReputableUser: PFObject {
   
 }
+
+
+extension ReputableUser: PFSubclassing {
+  static func parseClassName() -> String {
+    return "ReputableUser"
+  }
+}
