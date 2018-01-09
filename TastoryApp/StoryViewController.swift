@@ -45,25 +45,30 @@ class StoryViewController: OverlayViewController {
   private var isPaused: Bool = false
   private var muteObserver: NSKeyValueObservation?
   
+  // Track Reactions...?
+  private var heartClicked = false
   
   
   
   // MARK: - IBOutlets
   
-  @IBOutlet weak var photoView: UIImageView!
-  @IBOutlet weak var videoView: UIView!
-  @IBOutlet weak var topStackBackgroundView: UIView!
-  @IBOutlet weak var bottomStackBackgroundView: UIView!
-  @IBOutlet weak var tapForwardGestureRecognizer: UIView!
-  @IBOutlet weak var tapBackwardGestureRecognizer: UIView!
-  @IBOutlet weak var venueButton: UIButton!
-  @IBOutlet weak var authorButton: UIButton!
-  @IBOutlet weak var swipeStack: UIStackView!
-  @IBOutlet weak var swipeLabel: UILabel!
-  @IBOutlet weak var playButton: UIButton!
-  @IBOutlet weak var pauseButton: UIButton!
-  @IBOutlet weak var soundOnButton: UIButton!
-  @IBOutlet weak var soundOffButton: UIButton!
+  @IBOutlet var photoView: UIImageView!
+  @IBOutlet var videoView: UIView!
+  @IBOutlet var topStackBackgroundView: UIView!
+  @IBOutlet var bottomStackBackgroundView: UIView!
+  @IBOutlet var tapForwardGestureRecognizer: UIView!
+  @IBOutlet var tapBackwardGestureRecognizer: UIView!
+  @IBOutlet var venueButton: UIButton!
+  @IBOutlet var authorButton: UIButton!
+  @IBOutlet var reactionStack: UIStackView!
+  @IBOutlet var heartButton: UIButton!
+  @IBOutlet var heartLabel: UILabel!
+  @IBOutlet var swipeStack: UIStackView!
+  @IBOutlet var swipeLabel: UILabel!
+  @IBOutlet var playButton: UIButton!
+  @IBOutlet var pauseButton: UIButton!
+  @IBOutlet var soundOnButton: UIButton!
+  @IBOutlet var soundOffButton: UIButton!
   
   
   
@@ -197,7 +202,7 @@ class StoryViewController: OverlayViewController {
     AudioControl.mute()
   }
   
-  @IBAction func likeAction(_ sender: UIButton) {
+  @IBAction func heartAction(_ sender: UIButton) {
     guard let story = viewingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.assert("viewingStory = nil")
@@ -205,7 +210,39 @@ class StoryViewController: OverlayViewController {
       return
     }
     
-    ReputableClaim.storyReaction(for: story, setNotClear: true, reactionType: .like, withBlock: nil)
+    guard FoodieUser.isCurrentRegistered else {
+      CCLog.warning("Unregistered User attempted to click the heart. Should not be possible")
+      return
+    }
+    
+    if heartClicked {
+      heartClicked = false
+      heartButton.setImage(#imageLiteral(resourceName: "Story-LikeButton"), for: .normal)
+      
+      if story.author != FoodieUser.current {
+        heartLabel.isHidden = true
+      }
+      
+    } else {
+      heartClicked = true
+      heartButton.setImage(#imageLiteral(resourceName: "Story-LikeFilled"), for: .normal)
+      
+      if let reputableStory = story.reputation {
+        heartLabel.text = "\(reputableStory.usersLiked+1)"
+        heartLabel.isHidden = false
+      }
+    }
+    
+    ReputableClaim.storyReaction(for: story, setNotClear: heartClicked, reactionType: .like) { (reputation, error) in
+      if let error = error {
+        CCLog.warning("Story Reaction callback with failure - \(error.localizedDescription)")
+        return
+      }
+      
+      if let reputation = reputation {
+        self.heartLabel.text = "\(reputation.usersLiked)"
+      }
+    }
   }
   
   
@@ -322,6 +359,7 @@ class StoryViewController: OverlayViewController {
     playButton.isHidden = !isPaused
     venueButton.isHidden = false
     authorButton.isHidden = false
+    reactionStack.isHidden = false
     displaySwipeStackIfNeeded()
     topStackBackgroundView.isHidden = false
     bottomStackBackgroundView.isHidden = false
@@ -364,6 +402,7 @@ class StoryViewController: OverlayViewController {
       pauseButton.isHidden = false
       venueButton.isHidden = false
       authorButton.isHidden = false
+      reactionStack.isHidden = false
       displaySwipeStackIfNeeded()
       topStackBackgroundView.isHidden = false
       bottomStackBackgroundView.isHidden = false
@@ -545,6 +584,7 @@ class StoryViewController: OverlayViewController {
         self.soundOffButton.alpha = alphaValue
         self.venueButton.alpha = alphaValue
         self.authorButton.alpha = alphaValue
+        self.reactionStack.alpha = alphaValue
         self.swipeStack.alpha = alphaValue
         self.topStackBackgroundView.alpha = alphaValue
         self.bottomStackBackgroundView.alpha = alphaValue
@@ -556,6 +596,7 @@ class StoryViewController: OverlayViewController {
       soundOffButton.alpha = alphaValue
       venueButton.alpha = alphaValue
       authorButton.alpha = alphaValue
+      reactionStack.alpha = alphaValue
       swipeStack.alpha = alphaValue
       topStackBackgroundView.alpha = alphaValue
       bottomStackBackgroundView.alpha = alphaValue
@@ -569,7 +610,8 @@ class StoryViewController: OverlayViewController {
     soundOnButton.isHidden = true
     soundOffButton.isHidden = true
     venueButton.isHidden = true
-    authorButton.isHidden = true
+    reactionStack.isHidden = true
+    
     swipeStack.isHidden = true
     topStackBackgroundView.isHidden = true
     bottomStackBackgroundView.isHidden = true
@@ -760,6 +802,43 @@ class StoryViewController: OverlayViewController {
     } else {
       swipeLabel.isHidden = true
     }
+    
+    if !FoodieUser.isCurrentRegistered {
+      heartButton.isEnabled = false
+    }
+    
+    if let reputableStory = story.reputation, story.author == FoodieUser.current {
+      heartLabel.text = "\(reputableStory.usersLiked)"
+    } else {
+      heartLabel.isHidden = true
+    }
+    
+    // Get Reaction Claims to personalize UI
+    if let currentUser = FoodieUser.current, let userId = currentUser.objectId, let storyId = story.objectId {
+      ReputableClaim.queryStoryClaims(from: userId,
+                                      to: storyId,
+                                      of: ReputableClaim.StoryClaimType.reaction) { objects, error in
+        if let error = error {
+          CCLog.warning("Cannot get Reaction info from Database - \(error.localizedDescription)")
+          return
+        }
+        
+        if let claims = objects as? [ReputableClaim] {
+          let likeClaims = claims.filter({ $0.storyReactionType == ReputableClaim.StoryReactionType.like.rawValue })
+          
+          if !likeClaims.isEmpty {
+            self.heartClicked = true
+            self.heartButton.setImage(#imageLiteral(resourceName: "Story-LikeFilled"), for: .normal)
+            
+            if let reputableStory = story.reputation {
+              self.heartLabel.text = "\(reputableStory.usersLiked)"
+              self.heartLabel.isHidden = false
+            }
+          }
+        }
+      }
+    }
+
     
     activitySpinner = ActivitySpinner(addTo: view)
     

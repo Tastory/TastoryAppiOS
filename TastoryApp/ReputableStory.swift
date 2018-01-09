@@ -9,6 +9,8 @@
 import Parse
 import Foundation
 
+typealias RepStoryErrorBlock = (ReputableStory?, Error?) -> Void
+
 
 // !!! This class is purely Read-Only. Any attempt to write and Save will cause serious havoc !!!
 

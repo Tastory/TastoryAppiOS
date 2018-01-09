@@ -77,11 +77,17 @@ class ReputableClaim: PFObject {
   enum ErrorCode: LocalizedError {
     
     case storyReactionNoStoryId
+    case storyReactionNoRepReturned
+    case cannotCreatePFQuery
     
     var errorDescription: String? {
       switch self {
       case .storyReactionNoStoryId:
-        return NSLocalizedString("Story Reaction attempted without objectId to Story", comment: "Error message generated from Reputation Claim processing")
+        return NSLocalizedString("Story Reaction attempted without objectId to Story", comment: "Error message generated from Reputable Claim processing")
+      case .storyReactionNoRepReturned:
+        return NSLocalizedString("Story Reaction did not return Story Reputation", comment: "Error message generated from Reputable Claim processing")
+      case .cannotCreatePFQuery:
+        return NSLocalizedString("Cannot create PFQuery, unable to perform the Query", comment: "Error description for a Reputable Claim error code")
       }
     }
     
@@ -92,10 +98,9 @@ class ReputableClaim: PFObject {
   }
   
   
-  
   // MARK: - Static Public Functions
   
-  static func storyReaction(for story: FoodieStory, setNotClear: Bool, reactionType: StoryReactionType, withBlock callback: AnyErrorBlock?) {
+  static func storyReaction(for story: FoodieStory, setNotClear: Bool, reactionType: StoryReactionType, withBlock callback: RepStoryErrorBlock?) {
     
     guard let storyId = story.objectId else {
       CCLog.assert("story.objectId = nil")
@@ -120,22 +125,45 @@ class ReputableClaim: PFObject {
         return
       }
       
-      CCLog.verbose("PFCloud Function \(cloudFunctionName) repsonse success")
+      guard let reputableStory = object as? ReputableStory else {
+        CCLog.warning("PFCloud Function \(cloudFunctionName) expected to return Story Reputation")
+        callback?(nil, ErrorCode.storyReactionNoRepReturned)
+        return
+      }
       
-//      guard let reputableStory = object as? ReputableStory else {
-//
-//      }
+      CCLog.debug("PFCloud Function \(cloudFunctionName) repsonse success")
+      callback?(reputableStory, nil)
     }
   }
+  
   
   static func storyViewAction(actionType: StoryActionType) {
     
   }
   
+  
   static func storyViewed(on momentNumber: Int) {
     
   }
   
+  
+  static func queryStoryClaims(from sourceId: String, to targetId: String, of storyClaimType: StoryClaimType? = nil, withBlock callback: AnyErrorBlock?) {
+
+    guard let claimsQuery = ReputableClaim.query() else {
+      CCLog.assert("Cannot create a PFQuery object from ReputableClaim")
+      callback?(nil, ErrorCode.cannotCreatePFQuery)
+      return
+    }
+    
+    claimsQuery.whereKey("sourceId", equalTo: sourceId)
+    claimsQuery.whereKey("targetId", equalTo: targetId)
+    
+    if let storyClaimType = storyClaimType {
+      claimsQuery.whereKey("storyClaimType", equalTo: storyClaimType.rawValue)
+    }
+    
+    claimsQuery.findObjectsInBackground { (objects, error) in callback?(objects, error) }
+  }
 }
 
 

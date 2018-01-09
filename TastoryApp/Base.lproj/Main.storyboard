@@ -593,6 +593,26 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Hpj-0E-WpG" userLabel="Reaction Stack">
+                                <rect key="frame" x="331" y="82" width="32" height="48.333333333333343"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cta-7E-0oI">
+                                        <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
+                                        <state key="normal" image="Story-LikeButton"/>
+                                        <connections>
+                                            <action selector="heartAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="cpD-Ds-fyQ"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Like" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cGg-ta-BCi">
+                                        <rect key="frame" x="3.6666666666666856" y="32" width="25" height="16.333333333333329"/>
+                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="13"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                        <color key="shadowColor" white="0.0" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <size key="shadowOffset" width="0.0" height="1"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="eTa-IA-SsO">
                                 <rect key="frame" x="158.66666666666666" y="699.66666666666663" width="59.333333333333343" height="28.333333333333371"/>
                                 <subviews>
@@ -637,13 +657,6 @@
                                     <action selector="soundOffAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="Bpx-5U-g7F"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cta-7E-0oI">
-                                <rect key="frame" x="331" y="84.666666666666671" width="32" height="32"/>
-                                <state key="normal" image="Story-LikeButton"/>
-                                <connections>
-                                    <action selector="likeAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="Lxr-qA-Ycg"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
@@ -655,7 +668,6 @@
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" id="E7O-Gs-SMy"/>
                             <constraint firstItem="Nrk-FM-KHI" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="GSI-W5-GBB"/>
                             <constraint firstItem="dzk-89-di2" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="Gxz-XK-kxM"/>
-                            <constraint firstItem="cta-7E-0oI" firstAttribute="centerY" secondItem="ZiO-0U-WG2" secondAttribute="centerY" id="ITH-3d-0hg"/>
                             <constraint firstItem="7rC-KB-BnZ" firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" constant="-8" id="IY8-kD-Im7"/>
                             <constraint firstItem="Nrk-FM-KHI" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" multiplier="0.35" id="K0U-ZI-iHh"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="KXu-Vh-dh4"/>
@@ -671,15 +683,16 @@
                             <constraint firstAttribute="trailing" secondItem="nxS-Eu-LGj" secondAttribute="trailing" id="WD0-hq-DLo"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" id="YkJ-cK-ygV"/>
                             <constraint firstItem="nxS-Eu-LGj" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" multiplier="0.65" id="cmr-Xm-15e"/>
+                            <constraint firstItem="Hpj-0E-WpG" firstAttribute="top" secondItem="ZiO-0U-WG2" secondAttribute="top" constant="10" id="ctT-HE-dB2"/>
                             <constraint firstItem="dOo-DQ-GbZ" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-5" id="d4J-nn-CJF"/>
                             <constraint firstItem="nxS-Eu-LGj" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="eXL-2f-A15"/>
-                            <constraint firstAttribute="trailing" secondItem="cta-7E-0oI" secondAttribute="trailing" constant="12" id="i7p-XJ-StQ"/>
                             <constraint firstItem="t4S-lT-gBv" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-5" id="iHb-gO-R40"/>
                             <constraint firstItem="cOp-iU-bG1" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-5" id="jcW-cG-d8g"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="bottom" secondItem="nxS-Eu-LGj" secondAttribute="bottom" id="jhR-31-wUi"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="m09-bu-nxu"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="mjE-GH-24V"/>
                             <constraint firstItem="7rC-KB-BnZ" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-5" id="tnX-4c-ljF"/>
+                            <constraint firstItem="nnO-KA-kth" firstAttribute="trailing" secondItem="Hpj-0E-WpG" secondAttribute="trailing" constant="12" id="txf-Aa-FSx"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="centerY" secondItem="cgZ-7E-g3q" secondAttribute="centerY" id="u8s-ak-ahJ"/>
                             <constraint firstItem="dzk-89-di2" firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" id="uZH-Sk-qKZ"/>
                             <constraint firstItem="eTa-IA-SsO" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-12" id="x82-UJ-03A"/>
@@ -690,9 +703,12 @@
                     <connections>
                         <outlet property="authorButton" destination="NkP-5B-uyd" id="ZmK-I1-PM7"/>
                         <outlet property="bottomStackBackgroundView" destination="dzk-89-di2" id="Skp-Gi-r9b"/>
+                        <outlet property="heartButton" destination="cta-7E-0oI" id="RFp-XK-RIk"/>
+                        <outlet property="heartLabel" destination="cGg-ta-BCi" id="kTT-GJ-IXL"/>
                         <outlet property="pauseButton" destination="7rC-KB-BnZ" id="F9k-fF-x4m"/>
                         <outlet property="photoView" destination="3Gc-Ev-vmE" id="tiQ-hZ-B0K"/>
                         <outlet property="playButton" destination="cOp-iU-bG1" id="KgF-FW-TMk"/>
+                        <outlet property="reactionStack" destination="Hpj-0E-WpG" id="W0W-m3-s85"/>
                         <outlet property="soundOffButton" destination="dOo-DQ-GbZ" id="P6z-4E-Yke"/>
                         <outlet property="soundOnButton" destination="t4S-lT-gBv" id="hPd-pZ-Vzh"/>
                         <outlet property="swipeLabel" destination="f5Y-qe-Xu1" id="SzU-Uu-zBn"/>
