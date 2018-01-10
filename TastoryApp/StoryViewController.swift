@@ -94,6 +94,7 @@ class StoryViewController: OverlayViewController {
       return
     }
 
+    // Fabric Analytics
     if story.author != FoodieUser.current,
       !draftPreview,
       let moment = currentMoment,
@@ -119,6 +120,9 @@ class StoryViewController: OverlayViewController {
                                     storyName: story.title ?? "",
                                     authorId: story.author?.username ?? "")
     }
+    
+    // Reputation Story Venue Clicked Action
+    ReputableClaim.storyViewAction(for: story, actionType: .venue, withBlock: nil)
     
     if let venue = story.venue, let foursquareURLString = venue.foursquareURL, let foursquareURL = URL(string: foursquareURLString) {
       pause()
@@ -147,6 +151,7 @@ class StoryViewController: OverlayViewController {
       return
     }
     
+    // Fabric Analytics
     if author != FoodieUser.current,
       !draftPreview,
       let moment = currentMoment,
@@ -170,6 +175,9 @@ class StoryViewController: OverlayViewController {
                                       storyId: story.objectId ?? "",
                                       storyName: story.title ?? "")
     }
+    
+    // Reputation Story Profile Clicked Action
+    ReputableClaim.storyViewAction(for: story, actionType: .profile, withBlock: nil)
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
@@ -226,11 +234,6 @@ class StoryViewController: OverlayViewController {
     } else {
       heartClicked = true
       heartButton.setImage(#imageLiteral(resourceName: "Story-LikeFilled"), for: .normal)
-      heartLabel.isHidden = false
-      
-      if let reputableStory = story.reputation {
-        heartLabel.text = "\(reputableStory.usersLiked+1)"
-      }
     }
     
     CCLog.info("Heart Clicked changed to \(heartClicked) by \(FoodieUser.current?.objectId ?? "") on Story \(viewingStory?.objectId ?? "")")
@@ -243,6 +246,7 @@ class StoryViewController: OverlayViewController {
       
       if let reputation = reputation {
         self.heartLabel.text = "\(reputation.usersLiked)"
+        self.heartLabel.isHidden = false
         
         if story.reputation == nil {
           story.reputation = reputation
@@ -515,6 +519,12 @@ class StoryViewController: OverlayViewController {
       jotDictionary[kLabels] = labelDictionary
       jotViewController.unserialize(jotDictionary)
     }
+    
+    // Last but not least, do Reputation on the Story View
+    if let story = viewingStory {
+      let momentNumber = story.getIndexOf(moment)
+      ReputableClaim.storyViewed(for: story, on: momentNumber, withBlock: nil)
+    }
   }
   
   
@@ -615,6 +625,7 @@ class StoryViewController: OverlayViewController {
     playButton.isHidden = true
     soundOnButton.isHidden = true
     soundOffButton.isHidden = true
+    authorButton.isHidden = true
     venueButton.isHidden = true
     reactionStack.isHidden = true
     
@@ -635,6 +646,7 @@ class StoryViewController: OverlayViewController {
       return
     }
     
+    // Fabric Analytics
     if story.author != FoodieUser.current,
       !draftPreview,
       let moment = currentMoment,
@@ -660,6 +672,9 @@ class StoryViewController: OverlayViewController {
                                     storyName: story.title ?? "",
                                     authorId: story.author?.username ?? "")
     }
+    
+    // Reputation Story Swipe Up Action
+    ReputableClaim.storyViewAction(for: story, actionType: .swiped, withBlock: nil)
     
     if let storyLinkString = story.storyURL, let storyLinkUrl = URL(string: URL.addHttpIfNeeded(to: storyLinkString)) {
       pause()
@@ -813,8 +828,12 @@ class StoryViewController: OverlayViewController {
       heartButton.isEnabled = false
     }
     
-    if let reputableStory = story.reputation, story.author == FoodieUser.current {
-      heartLabel.text = "\(reputableStory.usersLiked)"
+    if story.author == FoodieUser.current {
+      if let reputableStory = story.reputation {
+        heartLabel.text = "\(reputableStory.usersLiked)"
+      } else {
+        heartLabel.text = "0"
+      }
     } else {
       heartLabel.isHidden = true
       heartLabel.text = ""  // This is so in the Storyboard, we can type whatever we want, but we clear it here

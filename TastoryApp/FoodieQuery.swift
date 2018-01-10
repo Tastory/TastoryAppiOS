@@ -26,6 +26,7 @@ class FoodieQuery {
     case modificationTime = "modificationTime"
     // case proximity = "proximity"  // Always sorted from nearest to further by default. Other explicit arrangements takes precedence however.
     case price = "price"  // TODO: This doesn't work for now
+    case discoverability = "discoverability"
   }
   
   enum SortDirection: String {
@@ -277,6 +278,8 @@ class FoodieQuery {
         typeString = "updatedAt"
       case .price:
         typeString = "price"  // TODO: This doesn't work for now
+      case .discoverability:
+        typeString = "discoverability"
       }
 
       switch arrangement.direction {

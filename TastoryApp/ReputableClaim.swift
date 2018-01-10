@@ -14,37 +14,53 @@ import Foundation
 
 class ReputableClaim: PFObject {
   
-  // MARK: - Parse PFObject keys. All Read-only.
+  // MARK: - Parse PFObject properties. All Read-only.
   
   var sourceId: String {
-    return object(forKey: "sourceId") as? String ?? "undefined"
+    return object(forKey: ReputableClaim.sourceIdKey) as? String ?? "undefined"
   }
   
   var targetId: String {
-    return object(forKey: "targetId") as? String ?? "undefined"
+    return object(forKey: ReputableClaim.targetIdKey) as? String ?? "undefined"
   }
   
   var claimType: String {
-    return object(forKey: "claimType") as? String ?? "undefined"
+    return object(forKey: ReputableClaim.claimTypeKey) as? String ?? "undefined"
   }
 
   // For Story Claims
   
   var storyClaimType: Int {
-    return object(forKey: "storyClaimType") as? Int ?? 0
+    return object(forKey: ReputableClaim.storyClaimTypeKey) as? Int ?? 0
   }
   
   var storyReactionType: Int {
-    return object(forKey: "storyReactionType") as? Int ?? 0
+    return object(forKey: ReputableClaim.storyReactionTypeKey) as? Int ?? 0
   }
   
   var storyActionType: Int {
-    return object(forKey: "storyActionType") as? Int ?? 0
+    return object(forKey: ReputableClaim.storyActionTypeKey) as? Int ?? 0
   }
   
   var storyMomentNumber: Int {
-    return object(forKey: "storyMomentNumber") as? Int ?? 0
+    return object(forKey: ReputableClaim.storyMomentNumberKey) as? Int ?? 0
   }
+  
+  
+  // Parse PFObject property keys
+  
+  private static let sourceIdKey = "sourceId"
+  private static let targetIdKey = "targetId"
+  private static let claimTypeKey = "claimType"
+  private static let storyClaimTypeKey = "storyClaimType"
+  private static let storyReactionTypeKey = "storyReactionType"
+  private static let storyActionTypeKey = "storyActionType"
+  private static let storyMomentNumberKey = "storyMomentNumber"
+  
+  
+  // Extended key set for Cloud Function parameters
+  
+  private static let setNotClearKey = "setNotClear"
   
   
   
@@ -76,16 +92,16 @@ class ReputableClaim: PFObject {
   
   enum ErrorCode: LocalizedError {
     
-    case storyReactionNoStoryId
-    case storyReactionNoRepReturned
+    case storyCloudFunctionNoStoryId
+    case storyCloudFunctionNoRepReturned
     case cannotCreatePFQuery
     
     var errorDescription: String? {
       switch self {
-      case .storyReactionNoStoryId:
-        return NSLocalizedString("Story Reaction attempted without objectId to Story", comment: "Error message generated from Reputable Claim processing")
-      case .storyReactionNoRepReturned:
-        return NSLocalizedString("Story Reaction did not return Story Reputation", comment: "Error message generated from Reputable Claim processing")
+      case .storyCloudFunctionNoStoryId:
+        return NSLocalizedString("Story Cloud Function attempted without objectId to Story", comment: "Error message generated from Reputable Claim processing")
+      case .storyCloudFunctionNoRepReturned:
+        return NSLocalizedString("Story Cloud Function did not return Story Reputation", comment: "Error message generated from Reputable Claim processing")
       case .cannotCreatePFQuery:
         return NSLocalizedString("Cannot create PFQuery, unable to perform the Query", comment: "Error description for a Reputable Claim error code")
       }
@@ -104,7 +120,7 @@ class ReputableClaim: PFObject {
     
     guard let storyId = story.objectId else {
       CCLog.assert("story.objectId = nil")
-      callback?(nil, ErrorCode.storyReactionNoStoryId)
+      callback?(nil, ErrorCode.storyCloudFunctionNoStoryId)
       return
     }
     
@@ -112,10 +128,10 @@ class ReputableClaim: PFObject {
     
     // Setup parameters and submit Cloud function
     var parameters = [AnyHashable: Any]()
-    parameters["storyClaimType"] = StoryClaimType.reaction.rawValue
-    parameters["storyId"] = storyId
-    parameters["setNotClear"] = setNotClear
-    parameters["reactionType"] = reactionType.rawValue
+    parameters[targetIdKey] = storyId
+    parameters[storyClaimTypeKey] = StoryClaimType.reaction.rawValue
+    parameters[storyReactionTypeKey] = reactionType.rawValue
+    parameters[setNotClearKey] = setNotClear
     
     PFCloud.callFunction(inBackground: cloudFunctionName, withParameters: parameters) { (object, error) in
       
@@ -127,7 +143,7 @@ class ReputableClaim: PFObject {
       
       guard let reputableStory = object as? ReputableStory else {
         CCLog.warning("PFCloud Function \(cloudFunctionName) expected to return Story Reputation")
-        callback?(nil, ErrorCode.storyReactionNoRepReturned)
+        callback?(nil, ErrorCode.storyCloudFunctionNoRepReturned)
         return
       }
       
@@ -137,13 +153,75 @@ class ReputableClaim: PFObject {
   }
   
   
-  static func storyViewAction(actionType: StoryActionType) {
+  static func storyViewAction(for story: FoodieStory, actionType: StoryActionType, withBlock callback: RepStoryErrorBlock?) {
     
+    guard let storyId = story.objectId else {
+      CCLog.assert("story.objectId = nil")
+      callback?(nil, ErrorCode.storyCloudFunctionNoStoryId)
+      return
+    }
+    
+    let cloudFunctionName = ReputableClaimType.storyClaim.rawValue
+    
+    // Setup parameters and submit Cloud function
+    var parameters = [AnyHashable: Any]()
+    parameters[targetIdKey] = storyId
+    parameters[storyClaimTypeKey] = StoryClaimType.storyAction.rawValue
+    parameters[storyActionTypeKey] = actionType.rawValue
+    
+    PFCloud.callFunction(inBackground: cloudFunctionName, withParameters: parameters) { (object, error) in
+      
+      if let error = error {
+        CCLog.warning("PFCloud Function \(cloudFunctionName) failed - \(error.localizedDescription)")
+        callback?(nil, error)
+        return
+      }
+      
+      guard let reputableStory = object as? ReputableStory else {
+        CCLog.warning("PFCloud Function \(cloudFunctionName) expected to return Story Reputation")
+        callback?(nil, ErrorCode.storyCloudFunctionNoRepReturned)
+        return
+      }
+      
+      CCLog.debug("PFCloud Function \(cloudFunctionName) repsonse success")
+      callback?(reputableStory, nil)
+    }
   }
   
   
-  static func storyViewed(on momentNumber: Int) {
+  static func storyViewed(for story: FoodieStory, on momentNumber: Int, withBlock callback: RepStoryErrorBlock?) {
     
+    guard let storyId = story.objectId else {
+      CCLog.assert("story.objectId = nil")
+      callback?(nil, ErrorCode.storyCloudFunctionNoStoryId)
+      return
+    }
+    
+    let cloudFunctionName = ReputableClaimType.storyClaim.rawValue
+    
+    // Setup parameters and submit Cloud function
+    var parameters = [AnyHashable: Any]()
+    parameters[targetIdKey] = storyId
+    parameters[storyClaimTypeKey] = StoryClaimType.storyViewed.rawValue
+    parameters[storyMomentNumberKey] = momentNumber
+    
+    PFCloud.callFunction(inBackground: cloudFunctionName, withParameters: parameters) { (object, error) in
+      
+      if let error = error {
+        CCLog.warning("PFCloud Function \(cloudFunctionName) failed - \(error.localizedDescription)")
+        callback?(nil, error)
+        return
+      }
+      
+      guard let reputableStory = object as? ReputableStory else {
+        CCLog.warning("PFCloud Function \(cloudFunctionName) expected to return Story Reputation")
+        callback?(nil, ErrorCode.storyCloudFunctionNoRepReturned)
+        return
+      }
+      
+      CCLog.debug("PFCloud Function \(cloudFunctionName) repsonse success")
+      callback?(reputableStory, nil)
+    }
   }
   
   
@@ -155,11 +233,11 @@ class ReputableClaim: PFObject {
       return
     }
     
-    claimsQuery.whereKey("sourceId", equalTo: sourceId)
-    claimsQuery.whereKey("targetId", equalTo: targetId)
+    claimsQuery.whereKey(sourceIdKey, equalTo: sourceId)
+    claimsQuery.whereKey(targetIdKey, equalTo: targetId)
     
     if let storyClaimType = storyClaimType {
-      claimsQuery.whereKey("storyClaimType", equalTo: storyClaimType.rawValue)
+      claimsQuery.whereKey(storyClaimTypeKey, equalTo: storyClaimType.rawValue)
     }
     
     claimsQuery.findObjectsInBackground { (objects, error) in callback?(objects, error) }

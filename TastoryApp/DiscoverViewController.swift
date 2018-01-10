@@ -361,8 +361,9 @@ class DiscoverViewController: OverlayViewController {
     
     query.setSkip(to: 0)
     query.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)
-    _ = query.addArrangement(type: .creationTime, direction: .descending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determins feed order
-
+    _ = query.addArrangement(type: .discoverability, direction: .descending)
+    _ = query.addArrangement(type: .creationTime, direction: .descending)
+    
     activitySpinner.apply()
     
     // Actually do the Query
