@@ -346,7 +346,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
       }
       author = currentUser
-      discoverability = currentUser.defaultDiscoverability.rawValue
+      discoverability = 100  // Placeholder discoverability. Should be override by server  // currentUser.defaultDiscoverability.rawValue
     }
     
     // Calculate how many outstanding children operations there will be before hand
@@ -463,7 +463,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
       }
       author = currentUser
-      discoverability = currentUser.defaultDiscoverability.rawValue
+      discoverability = 100  // Placeholder discoverability. Should be override by server  // currentUser.defaultDiscoverability.rawValue
     }
     
     // Calculate how many outstanding children operations there will be before hand

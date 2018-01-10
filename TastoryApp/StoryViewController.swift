@@ -122,7 +122,17 @@ class StoryViewController: OverlayViewController {
     }
     
     // Reputation Story Venue Clicked Action
-    ReputableClaim.storyViewAction(for: story, actionType: .venue, withBlock: nil)
+    ReputableClaim.storyViewAction(for: story, actionType: .venue) { (reputation, error) in
+      if let error = error {
+        CCLog.warning("Story Viewing Action Reputation Claim failed - \(error.localizedDescription)")
+        return
+      }
+      
+      if let reputation = reputation {
+        if story.reputation == nil { story.reputation = reputation }
+        self.heartLabel.text = "\(reputation.usersLiked)"
+      }
+    }
     
     if let venue = story.venue, let foursquareURLString = venue.foursquareURL, let foursquareURL = URL(string: foursquareURLString) {
       pause()
@@ -177,7 +187,17 @@ class StoryViewController: OverlayViewController {
     }
     
     // Reputation Story Profile Clicked Action
-    ReputableClaim.storyViewAction(for: story, actionType: .profile, withBlock: nil)
+    ReputableClaim.storyViewAction(for: story, actionType: .profile) { (reputation, error) in
+      if let error = error {
+        CCLog.warning("Story Viewing Action Reputation Claim failed - \(error.localizedDescription)")
+        return
+      }
+      
+      if let reputation = reputation {
+        if story.reputation == nil { story.reputation = reputation }
+        self.heartLabel.text = "\(reputation.usersLiked)"
+      }
+    }
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
@@ -526,7 +546,19 @@ class StoryViewController: OverlayViewController {
     // Last but not least, do Reputation on the Story View
     if let story = viewingStory {
       let momentNumber = story.getIndexOf(moment)
-      ReputableClaim.storyViewed(for: story, on: momentNumber, withBlock: nil)
+      ReputableClaim.storyViewed(for: story, on: momentNumber) { (reputation, error) in
+        
+        if let error = error {
+          CCLog.warning("Story Viewing Action Reputation Claim failed - \(error.localizedDescription)")
+          return
+        }
+        
+        if let reputation = reputation {
+          if story.reputation == nil { story.reputation = reputation }
+          self.heartLabel.text = "\(reputation.usersLiked)"
+        }
+        
+      }
     }
   }
   
@@ -677,7 +709,17 @@ class StoryViewController: OverlayViewController {
     }
     
     // Reputation Story Swipe Up Action
-    ReputableClaim.storyViewAction(for: story, actionType: .swiped, withBlock: nil)
+    ReputableClaim.storyViewAction(for: story, actionType: .swiped) { (reputation, error) in
+      if let error = error {
+        CCLog.warning("Story Viewing Action Reputation Claim failed - \(error.localizedDescription)")
+        return
+      }
+      
+      if let reputation = reputation {
+        if story.reputation == nil { story.reputation = reputation }
+        self.heartLabel.text = "\(reputation.usersLiked)"
+      }
+    }
     
     if let storyLinkString = story.storyURL, let storyLinkUrl = URL(string: URL.addHttpIfNeeded(to: storyLinkString)) {
       pause()

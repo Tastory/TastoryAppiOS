@@ -46,8 +46,8 @@ class ReputableStory: PFObject {
     return object(forKey: "usersClickedProfile") as? Int ?? 0
   }
   
-  var avgMomentNumber: Int {
-    return object(forKey: "avgMomentNumber") as? Int ?? 0
+  var totalMomentNumber: Int {
+    return object(forKey: "totalMomentNumber") as? Int ?? 0
   }
   
   var totalViews: Int {
