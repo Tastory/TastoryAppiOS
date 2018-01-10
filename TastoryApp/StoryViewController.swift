@@ -246,7 +246,10 @@ class StoryViewController: OverlayViewController {
       
       if let reputation = reputation {
         self.heartLabel.text = "\(reputation.usersLiked)"
-        self.heartLabel.isHidden = false
+        
+        if self.heartClicked {
+          self.heartLabel.isHidden = false
+        }
         
         if story.reputation == nil {
           story.reputation = reputation
