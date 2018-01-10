@@ -119,8 +119,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
           self.activitySpinner.remove()
 
-          let notifyData:[String: Any] = ["workingStory": workingStory, "action":"delete"]
-          NotificationCenter.default.post(name: NSNotification.Name(rawValue: "feedUpdateNotify"), object: nil, userInfo: notifyData)
+          let notifyData:[String: Any] = [RefreshFeedNotification.Constants.WorkingStoryKey: workingStory, RefreshFeedNotification.Constants.ActionKey: RefreshFeedNotification.Constants.DeleteAction]
+          NotificationCenter.default.post(name: NSNotification.Name(rawValue: RefreshFeedNotification.Constants.NotificationId), object: nil, userInfo: notifyData)
 
 
           FoodieStory.removeCurrent()
@@ -288,8 +288,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           }
           
           else  {
-            let notifyData:[String: Any] = ["workingStory": story, "action":"update"]
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "feedUpdateNotify"), object: nil, userInfo: notifyData)
+            let notifyData:[String: Any] = [RefreshFeedNotification.Constants.WorkingStoryKey: story, RefreshFeedNotification.Constants.ActionKey:RefreshFeedNotification.Constants.UpdateAction]
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: RefreshFeedNotification.Constants.NotificationId), object: nil, userInfo: notifyData)
             
             // Analytics
             if moments.count > 0 {
@@ -398,8 +398,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         }
         
         if(story.isEditStory) {
-          let notifyData:[String: Any] = ["workingStory": story, "action":"update"]
-          NotificationCenter.default.post(name: NSNotification.Name(rawValue: "feedUpdateNotify"), object: nil, userInfo: notifyData)
+          let notifyData:[String: Any] = [RefreshFeedNotification.Constants.WorkingStoryKey: story, RefreshFeedNotification.Constants.ActionKey: RefreshFeedNotification.Constants.UpdateAction]
+          NotificationCenter.default.post(name: NSNotification.Name(rawValue: RefreshFeedNotification.Constants.NotificationId), object: nil, userInfo: notifyData)
         }
         
         self.workingStory = nil

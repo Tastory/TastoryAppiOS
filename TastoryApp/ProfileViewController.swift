@@ -113,14 +113,14 @@ class ProfileViewController: OverlayViewController {
       return
     }
 
-    guard let action = userInfo["action"] else {
+    guard let action = userInfo[RefreshFeedNotification.Constants.ActionKey] else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("action is not in userInfo")
       }
       return
     }
 
-    guard let story = userInfo["workingStory"] else {
+    guard let story = userInfo[RefreshFeedNotification.Constants.WorkingStoryKey] else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("workingStory is not in userInfo")
       }
@@ -130,11 +130,11 @@ class ProfileViewController: OverlayViewController {
     let actionStr = action as! String
     let workingStory = story as! FoodieStory
 
-    if(actionStr == "update") {
+    if(actionStr == RefreshFeedNotification.Constants.UpdateAction) {
        updateStoryList.append(workingStory)
     }
 
-    if(actionStr == "delete") {
+    if(actionStr == RefreshFeedNotification.Constants.DeleteAction) {
 
       // remove from update list if a story is marked for update and delete at the same time
       if(updateStoryList.contains(workingStory)) {
@@ -195,7 +195,7 @@ class ProfileViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: "feedUpdateNotify"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: RefreshFeedNotification.Constants.NotificationId), object: nil)
 
 
     guard let user = user, user.isRegistered else {

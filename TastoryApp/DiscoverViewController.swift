@@ -297,7 +297,7 @@ class DiscoverViewController: OverlayViewController {
       return
     }
 
-    guard let action = userInfo["action"] else {
+    guard let action = userInfo[RefreshFeedNotification.Constants.ActionKey] else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("action is not in userInfo")
       }
@@ -306,7 +306,7 @@ class DiscoverViewController: OverlayViewController {
 
     let actionStr = action as! String
 
-    if(actionStr == "delete" || actionStr == "update") {
+    if(actionStr == RefreshFeedNotification.Constants.DeleteAction || actionStr == RefreshFeedNotification.Constants.UpdateAction) {
       forceRequery = true
     }
   }
@@ -571,7 +571,7 @@ class DiscoverViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: "feedUpdateNotify"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: RefreshFeedNotification.Constants.NotificationId), object: nil)
 
     // Setup the Feed Node Controller first
     let nodeController = FeedCollectionNodeController(with: .carousel, allowLayoutChange: true, adjustScrollViewInset: false)
