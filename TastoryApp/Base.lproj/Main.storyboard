@@ -563,12 +563,12 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="ZiO-0U-WG2" userLabel="Author Venue Time Stack">
-                                <rect key="frame" x="0.0" y="72" width="139" height="57"/>
+                                <rect key="frame" x="0.0" y="72" width="141" height="57"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NkP-5B-uyd">
-                                        <rect key="frame" x="0.0" y="0.0" width="139" height="31"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="141" height="31"/>
                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
-                                        <inset key="contentEdgeInsets" minX="12" minY="14" maxX="12" maxY="0.0"/>
+                                        <inset key="contentEdgeInsets" minX="13" minY="14" maxX="13" maxY="0.0"/>
                                         <size key="titleShadowOffset" width="0.0" height="1"/>
                                         <state key="normal" title="AuthorUserName">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -579,9 +579,9 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uqd-o4-gnC">
-                                        <rect key="frame" x="0.0" y="31" width="100" height="26"/>
+                                        <rect key="frame" x="0.0" y="31" width="102" height="26"/>
                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="13"/>
-                                        <inset key="contentEdgeInsets" minX="12" minY="2" maxX="12" maxY="8"/>
+                                        <inset key="contentEdgeInsets" minX="13" minY="2" maxX="13" maxY="8"/>
                                         <size key="titleShadowOffset" width="0.0" height="1"/>
                                         <state key="normal" title="VenueName">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -594,18 +594,18 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Hpj-0E-WpG" userLabel="Reaction Stack">
-                                <rect key="frame" x="331" y="82" width="32" height="48.333333333333343"/>
+                                <rect key="frame" x="323" y="75" width="40" height="57.666666666666657"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cta-7E-0oI">
-                                        <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                                         <state key="normal" image="Story-LikeButton"/>
                                         <connections>
                                             <action selector="heartAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="cpD-Ds-fyQ"/>
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Like" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cGg-ta-BCi">
-                                        <rect key="frame" x="3.6666666666666856" y="32" width="25" height="16.333333333333329"/>
-                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="13"/>
+                                        <rect key="frame" x="6.6666666666666856" y="40" width="27" height="17.666666666666671"/>
+                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                         <color key="shadowColor" white="0.0" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -683,7 +683,7 @@
                             <constraint firstAttribute="trailing" secondItem="nxS-Eu-LGj" secondAttribute="trailing" id="WD0-hq-DLo"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" id="YkJ-cK-ygV"/>
                             <constraint firstItem="nxS-Eu-LGj" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" multiplier="0.65" id="cmr-Xm-15e"/>
-                            <constraint firstItem="Hpj-0E-WpG" firstAttribute="top" secondItem="ZiO-0U-WG2" secondAttribute="top" constant="10" id="ctT-HE-dB2"/>
+                            <constraint firstItem="Hpj-0E-WpG" firstAttribute="top" secondItem="ZiO-0U-WG2" secondAttribute="top" constant="3" id="ctT-HE-dB2"/>
                             <constraint firstItem="dOo-DQ-GbZ" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-5" id="d4J-nn-CJF"/>
                             <constraint firstItem="nxS-Eu-LGj" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="eXL-2f-A15"/>
                             <constraint firstItem="t4S-lT-gBv" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-5" id="iHb-gO-R40"/>
@@ -757,7 +757,7 @@
         <image name="Profile-NoStoriesSelf" width="270" height="197"/>
         <image name="Profile-SettingsButton" width="75" height="22"/>
         <image name="Profile-ShareButton" width="62" height="22"/>
-        <image name="Story-LikeButton" width="32" height="32"/>
+        <image name="Story-LikeButton" width="40" height="40"/>
         <image name="StoryMarkup-PauseButton" width="40" height="40"/>
         <image name="StoryMarkup-PlayButton" width="40" height="40"/>
         <image name="StoryMarkup-SoundOffButton" width="40" height="40"/>
