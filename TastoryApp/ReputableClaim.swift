@@ -242,6 +242,36 @@ class ReputableClaim: PFObject {
     
     claimsQuery.findObjectsInBackground { (objects, error) in callback?(objects, error) }
   }
+  
+  
+  static func storyReactionClaimExists(of type: ReputableClaim.StoryReactionType, in claims: [ReputableClaim]) -> Bool {
+    let matchingClaims = claims.filter({ $0.storyClaimType == StoryClaimType.reaction.rawValue &&
+                                         $0.storyReactionType == type.rawValue })
+    if matchingClaims.count > 1 { CCLog.warning("More than 1 matching claims found") }
+    
+    return !matchingClaims.isEmpty
+  }
+  
+  
+  static func storyActionClaimExists(of type: ReputableClaim.StoryActionType, in claims: [ReputableClaim]) -> Bool {
+    let matchingClaims = claims.filter({ $0.storyClaimType == StoryClaimType.storyAction.rawValue &&
+                                         $0.storyActionType == type.rawValue })
+    if matchingClaims.count > 1 { CCLog.warning("More than 1 matching claims found") }
+    
+    return !matchingClaims.isEmpty
+  }
+  
+  
+  static func storyViewedMomentNumber(in claims: [ReputableClaim]) -> Int? {
+    let matchingClaims = claims.filter({ $0.storyClaimType == StoryClaimType.storyViewed.rawValue })
+    if matchingClaims.count > 1 { CCLog.warning("More than 1 matching claims found") }
+    
+    if matchingClaims.isEmpty {
+      return nil
+    } else {
+      return matchingClaims[0].storyMomentNumber
+    }
+  }
 }
 
 
