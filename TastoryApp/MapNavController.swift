@@ -33,10 +33,10 @@ class MapNavController: ASNavigationController {
     static let DefaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
                                                               longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
     static let DefaultMinMapWidth: CLLocationDistance = 800 // 800m
-    static let DefaultMapWidth: CLLocationDistance = 2500 // 2.5km
-    static let DefaultMaxMapWidth: CLLocationDistance = 8000  // 8km
+    static let DefaultMapWidth: CLLocationDistance = 5000 // 5.0km
+    static let DefaultMaxMapWidth: CLLocationDistance = 10000  // 10.0km
     
-    static let MapAnnotationMarginFraction: Double = 0.1
+    static let MapAnnotationMarginFraction: Double = 0.10
   }
   
   
