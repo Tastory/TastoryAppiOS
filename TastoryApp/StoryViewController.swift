@@ -130,7 +130,7 @@ class StoryViewController: OverlayViewController {
       venueClaimed = true
       
       CCLog.verbose("Making Reputation Claim for Venue Action against Story ID: \(story.objectId ?? "")")
-      ReputableClaim.storyViewAction(for: story, actionType: .venue) { (reputation, error) in
+      ReputableClaim.storyViewAction(for: story, actionType: .venue) { [weak self] (reputation, error) in
         if let error = error {
           CCLog.warning("Story Viewing Action Reputation Claim failed - \(error.localizedDescription)")
           return
@@ -138,7 +138,7 @@ class StoryViewController: OverlayViewController {
         
         if let reputation = reputation {
           if story.reputation == nil { story.reputation = reputation }
-          self.heartLabel.text = "\(reputation.usersLiked)"
+          self?.heartLabel.text = "\(reputation.usersLiked)"
         }
       }
     }
@@ -200,7 +200,7 @@ class StoryViewController: OverlayViewController {
       profileClaimed = true
       
       CCLog.verbose("Making Reputation Claim for Profile Action against Story ID: \(story.objectId ?? "")")
-      ReputableClaim.storyViewAction(for: story, actionType: .profile) { (reputation, error) in
+      ReputableClaim.storyViewAction(for: story, actionType: .profile) { [weak self] (reputation, error) in
         if let error = error {
           CCLog.warning("Story Viewing Action Reputation Claim failed - \(error.localizedDescription)")
           return
@@ -208,7 +208,7 @@ class StoryViewController: OverlayViewController {
         
         if let reputation = reputation {
           if story.reputation == nil { story.reputation = reputation }
-          self.heartLabel.text = "\(reputation.usersLiked)"
+          self?.heartLabel.text = "\(reputation.usersLiked)"
         }
       }
     }
@@ -275,17 +275,17 @@ class StoryViewController: OverlayViewController {
     
     CCLog.info("Heart Clicked changed to \(heartClicked) by \(FoodieUser.current?.objectId ?? "") on Story \(viewingStory?.objectId ?? "")")
     
-    ReputableClaim.storyReaction(for: story, setNotClear: heartClicked, reactionType: .like) { (reputation, error) in
+    ReputableClaim.storyReaction(for: story, setNotClear: heartClicked, reactionType: .like) { [weak self] (reputation, error) in
       if let error = error {
         CCLog.warning("Story Reaction callback with failure - \(error.localizedDescription)")
         return
       }
       
       if let reputation = reputation {
-        self.heartLabel.text = "\(reputation.usersLiked)"
+        self?.heartLabel.text = "\(reputation.usersLiked)"
         
-        if self.heartClicked {
-          self.heartLabel.isHidden = false
+        if let weakSelf = self, weakSelf.heartClicked {
+          weakSelf.heartLabel.isHidden = false
         }
         
         if story.reputation == nil {
@@ -293,7 +293,7 @@ class StoryViewController: OverlayViewController {
         }
       }
       
-      self.reactionDebounce = false
+      self?.reactionDebounce = false
     }
   }
   
@@ -570,7 +570,7 @@ class StoryViewController: OverlayViewController {
         maxMomentNumber = momentNumber
         
         CCLog.verbose("Making Reputation Claim for View with Moment Number \(momentNumber) against Story ID: \(story.objectId ?? "")")
-        ReputableClaim.storyViewed(for: story, on: momentNumber) { (reputation, error) in
+        ReputableClaim.storyViewed(for: story, on: momentNumber) { [weak self] (reputation, error) in
           if let error = error {
             CCLog.warning("Story Viewing Action Reputation Claim failed - \(error.localizedDescription)")
             return
@@ -578,7 +578,7 @@ class StoryViewController: OverlayViewController {
           
           if let reputation = reputation {
             if story.reputation == nil { story.reputation = reputation }
-            self.heartLabel.text = "\(reputation.usersLiked)"
+            self?.heartLabel.text = "\(reputation.usersLiked)"
           }
         }
       }
@@ -736,7 +736,7 @@ class StoryViewController: OverlayViewController {
       swipeClaimed = true
       
       CCLog.verbose("Making Reputation Claim for Swipe Action against Story ID: \(story.objectId ?? "")")
-      ReputableClaim.storyViewAction(for: story, actionType: .swiped) { (reputation, error) in
+      ReputableClaim.storyViewAction(for: story, actionType: .swiped) { [weak self] (reputation, error) in
         if let error = error {
           CCLog.warning("Story Viewing Action Reputation Claim failed - \(error.localizedDescription)")
           return
@@ -744,7 +744,7 @@ class StoryViewController: OverlayViewController {
         
         if let reputation = reputation {
           if story.reputation == nil { story.reputation = reputation }
-          self.heartLabel.text = "\(reputation.usersLiked)"
+          self?.heartLabel.text = "\(reputation.usersLiked)"
         }
       }
     }
@@ -912,32 +912,32 @@ class StoryViewController: OverlayViewController {
 
     if let currentUser = FoodieUser.current, let userId = currentUser.objectId, let storyId = story.objectId {
       heartButton.isEnabled = false
-      ReputableClaim.queryStoryClaims(from: userId, to: storyId) { objects, error in
+      ReputableClaim.queryStoryClaims(from: userId, to: storyId) { [weak self] objects, error in
         
         if let error = error {
           CCLog.warning("Cannot get Reaction info from Database - \(error.localizedDescription)")
-          self.heartButton.isEnabled = true
+          self?.heartButton.isEnabled = true
           return
         }
         
         if let claims = objects as? [ReputableClaim] {
-          self.profileClaimed = ReputableClaim.storyActionClaimExists(of: .profile, in: claims)
-          self.venueClaimed = ReputableClaim.storyActionClaimExists(of: .venue, in: claims)
-          self.swipeClaimed = ReputableClaim.storyActionClaimExists(of: .swiped, in: claims)
-          self.maxMomentNumber = ReputableClaim.storyViewedMomentNumber(in: claims) ?? 0
+          self?.profileClaimed = ReputableClaim.storyActionClaimExists(of: .profile, in: claims)
+          self?.venueClaimed = ReputableClaim.storyActionClaimExists(of: .venue, in: claims)
+          self?.swipeClaimed = ReputableClaim.storyActionClaimExists(of: .swiped, in: claims)
+          self?.maxMomentNumber = ReputableClaim.storyViewedMomentNumber(in: claims) ?? 0
           
           if ReputableClaim.storyReactionClaimExists(of: .like, in: claims) {
-            self.heartClicked = true
-            self.heartButton.setImage(#imageLiteral(resourceName: "Story-LikeFilled"), for: .normal)
-            self.heartLabel.isHidden = false
+            self?.heartClicked = true
+            self?.heartButton.setImage(#imageLiteral(resourceName: "Story-LikeFilled"), for: .normal)
+            self?.heartLabel.isHidden = false
             
             if let reputableStory = story.reputation {
-              self.heartLabel.text = "\(reputableStory.usersLiked)"
+              self?.heartLabel.text = "\(reputableStory.usersLiked)"
             }
           }
         }
         
-        self.heartButton.isEnabled = true
+        self?.heartButton.isEnabled = true
       }
     } else if !FoodieUser.isCurrentRegistered {
       heartButton.isEnabled = false
