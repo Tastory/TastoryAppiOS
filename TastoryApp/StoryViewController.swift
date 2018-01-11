@@ -137,7 +137,9 @@ class StoryViewController: OverlayViewController {
         }
         
         if let reputation = reputation {
-          if story.reputation == nil { story.reputation = reputation }
+          if let viewingStory = self?.viewingStory, viewingStory.reputation == nil {
+            viewingStory.reputation = reputation
+          }
           self?.heartLabel.text = "\(reputation.usersLiked)"
         }
       }
@@ -207,7 +209,9 @@ class StoryViewController: OverlayViewController {
         }
         
         if let reputation = reputation {
-          if story.reputation == nil { story.reputation = reputation }
+          if let viewingStory = self?.viewingStory, viewingStory.reputation == nil {
+            viewingStory.reputation = reputation
+          }
           self?.heartLabel.text = "\(reputation.usersLiked)"
         }
       }
@@ -288,8 +292,8 @@ class StoryViewController: OverlayViewController {
           weakSelf.heartLabel.isHidden = false
         }
         
-        if story.reputation == nil {
-          story.reputation = reputation
+        if let viewingStory = self?.viewingStory, viewingStory.reputation == nil {
+          viewingStory.reputation = reputation
         }
       }
       
@@ -577,7 +581,9 @@ class StoryViewController: OverlayViewController {
           }
           
           if let reputation = reputation {
-            if story.reputation == nil { story.reputation = reputation }
+            if let viewingStory = self?.viewingStory, viewingStory.reputation == nil {
+              viewingStory.reputation = reputation
+            }
             self?.heartLabel.text = "\(reputation.usersLiked)"
           }
         }
@@ -743,7 +749,9 @@ class StoryViewController: OverlayViewController {
         }
         
         if let reputation = reputation {
-          if story.reputation == nil { story.reputation = reputation }
+          if let viewingStory = self?.viewingStory, viewingStory.reputation == nil {
+            viewingStory.reputation = reputation
+          }
           self?.heartLabel.text = "\(reputation.usersLiked)"
         }
       }
@@ -931,7 +939,7 @@ class StoryViewController: OverlayViewController {
             self?.heartButton.setImage(#imageLiteral(resourceName: "Story-LikeFilled"), for: .normal)
             self?.heartLabel.isHidden = false
             
-            if let reputableStory = story.reputation {
+            if let viewingStory = self?.viewingStory, let reputableStory = viewingStory.reputation {
               self?.heartLabel.text = "\(reputableStory.usersLiked)"
             }
           }
