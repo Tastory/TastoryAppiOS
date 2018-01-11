@@ -3,55 +3,55 @@
     {
       "size" : "20x20",
       "idiom" : "iphone",
-      "filename" : "tastoryAppIcon40.png",
+      "filename" : "App Icon White 40.png",
       "scale" : "2x"
     },
     {
       "size" : "20x20",
       "idiom" : "iphone",
-      "filename" : "tastoryAppIcon60.png",
+      "filename" : "App Icon White 60.png",
       "scale" : "3x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "tastoryAppIcon58.png",
+      "filename" : "App Icon White 58.png",
       "scale" : "2x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "tastoryAppIcon87.png",
+      "filename" : "App Icon White 87.png",
       "scale" : "3x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "tastoryAppIcon80.png",
+      "filename" : "App Icon White 80.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "tastoryAppIcon120-1.png",
+      "filename" : "App Icon White 120.png",
       "scale" : "3x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "tastoryAppIcon120.png",
+      "filename" : "App Icon White 120-1.png",
       "scale" : "2x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "tastoryAppIcon180.png",
+      "filename" : "App Icon White 180.png",
       "scale" : "3x"
     },
     {
       "size" : "1024x1024",
       "idiom" : "ios-marketing",
-      "filename" : "tastoryAppIcon1024.png",
+      "filename" : "App Icon White 1024.png",
       "scale" : "1x"
     }
   ],
