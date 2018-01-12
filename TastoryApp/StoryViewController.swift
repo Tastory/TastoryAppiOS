@@ -126,7 +126,7 @@ class StoryViewController: OverlayViewController {
     }
     
     // Reputation Story Venue Clicked Action
-    if !venueClaimed {
+    if !venueClaimed, !draftPreview {
       venueClaimed = true
       
       CCLog.verbose("Making Reputation Claim for Venue Action against Story ID: \(story.objectId ?? "")")
@@ -198,7 +198,7 @@ class StoryViewController: OverlayViewController {
     }
     
     // Reputation Story Profile Clicked Action
-    if !profileClaimed {
+    if !profileClaimed, !draftPreview {
       profileClaimed = true
       
       CCLog.verbose("Making Reputation Claim for Profile Action against Story ID: \(story.objectId ?? "")")
@@ -567,7 +567,7 @@ class StoryViewController: OverlayViewController {
     }
     
     // Last but not least, do Reputation on the Story View
-    if let story = viewingStory {
+    if let story = viewingStory, !draftPreview {
       let momentNumber = story.getIndexOf(moment) + 1
       
       if momentNumber > maxMomentNumber {
@@ -738,7 +738,7 @@ class StoryViewController: OverlayViewController {
     }
     
     // Reputation Story Swipe Up Action
-    if !swipeClaimed {
+    if !swipeClaimed, !draftPreview {
       swipeClaimed = true
       
       CCLog.verbose("Making Reputation Claim for Swipe Action against Story ID: \(story.objectId ?? "")")
@@ -905,7 +905,11 @@ class StoryViewController: OverlayViewController {
       swipeLabel.isHidden = true
     }
     
-    if story.author == FoodieUser.current {
+    if draftPreview {
+      heartButton.isHidden = true
+    }
+    
+    if story.author == FoodieUser.current, !draftPreview {
       if let reputableStory = story.reputation {
         heartLabel.text = "\(reputableStory.usersLiked)"
       } else {
@@ -918,7 +922,7 @@ class StoryViewController: OverlayViewController {
     
     // Get Reaction Claims to personalize UI
 
-    if let currentUser = FoodieUser.current, let userId = currentUser.objectId, let storyId = story.objectId {
+    if let currentUser = FoodieUser.current, let userId = currentUser.objectId, let storyId = story.objectId, !draftPreview {
       heartButton.isEnabled = false
       ReputableClaim.queryStoryClaims(from: userId, to: storyId) { [weak self] objects, error in
         

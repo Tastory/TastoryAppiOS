@@ -25,7 +25,7 @@
         <!--Settings Nav View Controller-->
         <scene sceneID="TFB-U4-in2">
             <objects>
-                <viewController storyboardIdentifier="SettingsNavViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="IsR-WR-9AU" customClass="SettingsNavViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SettingsNavViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="IsR-WR-9AU" customClass="SettingsNavViewController" customModule="TastoryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Srb-yt-7ED">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -40,7 +40,7 @@
         <!--Settings-->
         <scene sceneID="8BW-0U-Dco">
             <objects>
-                <viewController storyboardIdentifier="SettingsMenuViewController" title="Settings" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Fgo-n9-ZB2" customClass="SettingsMenuViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SettingsMenuViewController" title="Settings" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Fgo-n9-ZB2" customClass="SettingsMenuViewController" customModule="TastoryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="esU-lO-48u">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -440,7 +440,7 @@
         <!--Profile Details-->
         <scene sceneID="zAJ-bJ-DDv">
             <objects>
-                <viewController storyboardIdentifier="ProfileDetailViewController" title="Profile Details" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="nK0-t0-R4S" customClass="ProfileDetailViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ProfileDetailViewController" title="Profile Details" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="nK0-t0-R4S" customClass="ProfileDetailViewController" customModule="TastoryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="YDM-rE-rQp">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -699,7 +699,7 @@
                                                         <color key="textColor" white="0.35999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" text="Some text" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="kFy-Tn-nni" customClass="UITextViewWithPlaceholder" customModule="TastryApp" customModuleProvider="target">
+                                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" text="Some text" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="kFy-Tn-nni" customClass="UITextViewWithPlaceholder" customModule="TastoryApp" customModuleProvider="target">
                                                         <rect key="frame" x="94" y="14" width="263" height="95"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -777,7 +777,7 @@
         <!--Change Password-->
         <scene sceneID="ewB-Mv-pO5">
             <objects>
-                <viewController storyboardIdentifier="PasswordViewController" title="Change Password" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="rWx-Gf-1bg" customClass="PasswordViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PasswordViewController" title="Change Password" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="rWx-Gf-1bg" customClass="PasswordViewController" customModule="TastoryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ts9-s1-C8O">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -963,7 +963,7 @@
         <!--3rd Party Libraries @ APIs-->
         <scene sceneID="uQh-Wx-tur">
             <objects>
-                <viewController storyboardIdentifier="LibrariesViewController" title="3rd Party Libraries @ APIs" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="tKH-44-OUI" customClass="LibrariesViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LibrariesViewController" title="3rd Party Libraries @ APIs" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="tKH-44-OUI" customClass="LibrariesViewController" customModule="TastoryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dhQ-ey-PlF">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1070,7 +1070,7 @@
         <!--Privacy Policy-->
         <scene sceneID="P0j-lc-92W">
             <objects>
-                <viewController storyboardIdentifier="PrivacyPolicyViewController" title="Privacy Policy" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Tv9-E0-WqI" customClass="PrivacyPolicyViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PrivacyPolicyViewController" title="Privacy Policy" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Tv9-E0-WqI" customClass="PrivacyPolicyViewController" customModule="TastoryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="WCm-rO-qmB">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1572,7 +1572,7 @@ This privacy policy page was created at https://privacypolicytemplate.net and 
         <!--Terms of Services-->
         <scene sceneID="Wds-a4-jU0">
             <objects>
-                <viewController storyboardIdentifier="ServiceTermsViewController" title="Terms of Services" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="iAA-5o-w1a" customClass="ServiceTermsViewController" customModule="TastryApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ServiceTermsViewController" title="Terms of Services" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="iAA-5o-w1a" customClass="ServiceTermsViewController" customModule="TastoryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="bRN-J8-zOG">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
