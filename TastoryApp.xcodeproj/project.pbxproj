@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5ADB30F6352E0BB4B09B1B54 /* Pods_EarlGreyUnitTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 553C5DFF57C1D32EC9EA4D28 /* Pods_EarlGreyUnitTest.framework */; };
 		5BA87ED1B74105FAFE13742F /* Pods_TastoryApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D4B21468156FE69B228D24 /* Pods_TastoryApp.framework */; };
+		7810B0EED29B713FDABFF380 /* EarlGrey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FBD227B8597C59FC2BD9A83 /* EarlGrey.swift */; };
+		798B188CF7E92DC2E799C57D /* EarlGrey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB67F7DCE9A416DA5EC3C0F1 /* EarlGrey.framework */; };
 		8C02CC7E1FCC1A2000D38F47 /* MomentAddFooterReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C02CC7D1FCC1A2000D38F47 /* MomentAddFooterReusableView.swift */; };
 		8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590481EC65B0000027E91 /* RootViewController.swift */; };
 		8C05904B1EC6671400027E91 /* UIStoryboard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */; };
@@ -144,11 +147,13 @@
 		8CF44DA61F86F422007E905A /* CameraCrossLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF44DA51F86F422007E905A /* CameraCrossLayer.swift */; };
 		8CF858661F7ED8A000C46614 /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF858651F7ED8A000C46614 /* IntroViewController.swift */; };
 		8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */; };
+		AAC2EB27F47832B1F91B7920 /* EarlGrey.framework in EarlGrey Copy Files */ = {isa = PBXBuildFile; fileRef = CB67F7DCE9A416DA5EC3C0F1 /* EarlGrey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		B0FF18F4BACC331B318AB032 /* Pods_TastoryAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 519C816C3C28868A0918469A /* Pods_TastoryAppUITests.framework */; };
 		B2FE476EB1FA0084987DC0AA /* Pods_TastoryAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F167D49474BA676974C7DE38 /* Pods_TastoryAppTests.framework */; };
 		C229DCB01FDE781300955243 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C229DCAF1FDE781300955243 /* Date+Extension.swift */; };
 		C24F69651EB85B0300A0DB7B /* StoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69641EB85B0300A0DB7B /* StoryViewController.swift */; };
 		C265A9C81FCE981D000678E5 /* VideoTrimmerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C265A9C71FCE981D000678E5 /* VideoTrimmerViewController.swift */; };
+		C29034F3200B472400A860F9 /* EarlGreyUnitTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29034F2200B472400A860F9 /* EarlGreyUnitTest.swift */; };
 		C29CD1391F93198800A6D53F /* ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD1381F93198800A6D53F /* ConfirmationDialog.swift */; };
 		C29CD13D1F988B2000A6D53F /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */; };
 		D3272D7D673F648DD9415F7E /* Pods_TastryAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3DBF493BCE72101729EF1C /* Pods_TastryAppTests.framework */; };
@@ -170,18 +175,43 @@
 			remoteGlobalIDString = 8CBF557F1E7F7EDF00F4B1CD;
 			remoteInfo = SomeFoodieApp;
 		};
+		C29034F5200B472400A860F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CBF55781E7F7EDF00F4B1CD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8CBF557F1E7F7EDF00F4B1CD;
+			remoteInfo = TastoryApp;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CBF683BC6CD3ADF579CB948E /* EarlGrey Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(TEST_HOST)/../";
+			dstSubfolderSpec = 0;
+			files = (
+				AAC2EB27F47832B1F91B7920 /* EarlGrey.framework in EarlGrey Copy Files */,
+			);
+			name = "EarlGrey Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		01C50CABFBBAE3B407A92205 /* Pods-TastryAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastryAppUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TastryAppUITests/Pods-TastryAppUITests.release.xcconfig"; sourceTree = "<group>"; };
 		0B88724D551A16DEFECF8D13 /* Pods-TastryApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastryApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-TastryApp/Pods-TastryApp.release.xcconfig"; sourceTree = "<group>"; };
 		17F360FAB38094392D222249 /* Pods-TastryAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastryAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TastryAppTests/Pods-TastryAppTests.debug.xcconfig"; sourceTree = "<group>"; };
+		27E50AE84A2E3AB949AB688C /* Pods-EarlGreyUnitTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarlGreyUnitTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EarlGreyUnitTest/Pods-EarlGreyUnitTest.debug.xcconfig"; sourceTree = "<group>"; };
 		2CE3B3B388C5B06BC1D35F74 /* Pods-TastoryAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastoryAppUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TastoryAppUITests/Pods-TastoryAppUITests.release.xcconfig"; sourceTree = "<group>"; };
+		2FBD227B8597C59FC2BD9A83 /* EarlGrey.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EarlGrey.swift; sourceTree = "<group>"; };
 		4B3DBF493BCE72101729EF1C /* Pods_TastryAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TastryAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C149BEEF2CC66DF1ABF6A76 /* Pods-TastoryApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastoryApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TastoryApp/Pods-TastoryApp.debug.xcconfig"; sourceTree = "<group>"; };
 		519C816C3C28868A0918469A /* Pods_TastoryAppUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TastoryAppUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		553C5DFF57C1D32EC9EA4D28 /* Pods_EarlGreyUnitTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EarlGreyUnitTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C70D313914787046073F672 /* Pods-TastoryAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastoryAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TastoryAppUITests/Pods-TastoryAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		63D4B21468156FE69B228D24 /* Pods_TastoryApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TastoryApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		860DB75BAC024342CCB4E231 /* Pods-EarlGreyUnitTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EarlGreyUnitTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-EarlGreyUnitTest/Pods-EarlGreyUnitTest.release.xcconfig"; sourceTree = "<group>"; };
 		8C02CC7D1FCC1A2000D38F47 /* MomentAddFooterReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentAddFooterReusableView.swift; sourceTree = "<group>"; };
 		8C0590481EC65B0000027E91 /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+Extension.swift"; sourceTree = "<group>"; };
@@ -332,8 +362,12 @@
 		C229DCAF1FDE781300955243 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
 		C24F69641EB85B0300A0DB7B /* StoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryViewController.swift; sourceTree = "<group>"; };
 		C265A9C71FCE981D000678E5 /* VideoTrimmerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoTrimmerViewController.swift; sourceTree = "<group>"; };
+		C29034F0200B472400A860F9 /* EarlGreyUnitTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EarlGreyUnitTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C29034F2200B472400A860F9 /* EarlGreyUnitTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarlGreyUnitTest.swift; sourceTree = "<group>"; };
+		C29034F4200B472400A860F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C29CD1381F93198800A6D53F /* ConfirmationDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmationDialog.swift; sourceTree = "<group>"; };
 		C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
+		CB67F7DCE9A416DA5EC3C0F1 /* EarlGrey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EarlGrey.framework; path = Pods/EarlGrey/EarlGrey/EarlGrey.framework; sourceTree = SOURCE_ROOT; };
 		CE96672FBDE59A26FF838F5A /* Pods-TastoryApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastoryApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-TastoryApp/Pods-TastoryApp.release.xcconfig"; sourceTree = "<group>"; };
 		D0990A4DB26CAD0EFD0F0177 /* Pods-TastoryAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastoryAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TastoryAppTests/Pods-TastoryAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		EB2A90DE815F97B592389FDD /* Pods-TastryAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastryAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TastryAppUITests/Pods-TastryAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -370,6 +404,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C29034ED200B472400A860F9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				798B188CF7E92DC2E799C57D /* EarlGrey.framework in Frameworks */,
+				5ADB30F6352E0BB4B09B1B54 /* Pods_EarlGreyUnitTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -383,6 +426,8 @@
 				63D4B21468156FE69B228D24 /* Pods_TastoryApp.framework */,
 				F167D49474BA676974C7DE38 /* Pods_TastoryAppTests.framework */,
 				519C816C3C28868A0918469A /* Pods_TastoryAppUITests.framework */,
+				CB67F7DCE9A416DA5EC3C0F1 /* EarlGrey.framework */,
+				553C5DFF57C1D32EC9EA4D28 /* Pods_EarlGreyUnitTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -538,6 +583,7 @@
 				8CBF55821E7F7EDF00F4B1CD /* TastoryApp */,
 				8CBF55971E7F7EDF00F4B1CD /* TastryAppTests */,
 				8CBF55A21E7F7EDF00F4B1CD /* TastryAppUITests */,
+				C29034F1200B472400A860F9 /* EarlGreyUnitTest */,
 				8CBF55811E7F7EDF00F4B1CD /* Products */,
 				C134799359005D8F88374E25 /* Pods */,
 				7F099451BAA097407AA93744 /* Frameworks */,
@@ -550,6 +596,7 @@
 				8CBF55801E7F7EDF00F4B1CD /* TastoryApp.app */,
 				8CBF55941E7F7EDF00F4B1CD /* TastoryAppTests.xctest */,
 				8CBF559F1E7F7EDF00F4B1CD /* TastoryAppUITests.xctest */,
+				C29034F0200B472400A860F9 /* EarlGreyUnitTest.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -778,6 +825,8 @@
 				D0990A4DB26CAD0EFD0F0177 /* Pods-TastoryAppTests.release.xcconfig */,
 				5C70D313914787046073F672 /* Pods-TastoryAppUITests.debug.xcconfig */,
 				2CE3B3B388C5B06BC1D35F74 /* Pods-TastoryAppUITests.release.xcconfig */,
+				27E50AE84A2E3AB949AB688C /* Pods-EarlGreyUnitTest.debug.xcconfig */,
+				860DB75BAC024342CCB4E231 /* Pods-EarlGreyUnitTest.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -787,6 +836,16 @@
 			children = (
 			);
 			name = Common;
+			sourceTree = "<group>";
+		};
+		C29034F1200B472400A860F9 /* EarlGreyUnitTest */ = {
+			isa = PBXGroup;
+			children = (
+				C29034F2200B472400A860F9 /* EarlGreyUnitTest.swift */,
+				C29034F4200B472400A860F9 /* Info.plist */,
+				2FBD227B8597C59FC2BD9A83 /* EarlGrey.swift */,
+			);
+			path = EarlGreyUnitTest;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -857,13 +916,35 @@
 			productReference = 8CBF559F1E7F7EDF00F4B1CD /* TastoryAppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		C29034EF200B472400A860F9 /* EarlGreyUnitTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C29034F9200B472400A860F9 /* Build configuration list for PBXNativeTarget "EarlGreyUnitTest" */;
+			buildPhases = (
+				2E4D8BD8F66E43550B38DDEB /* [CP] Check Pods Manifest.lock */,
+				C29034EC200B472400A860F9 /* Sources */,
+				C29034ED200B472400A860F9 /* Frameworks */,
+				C29034EE200B472400A860F9 /* Resources */,
+				CBF683BC6CD3ADF579CB948E /* EarlGrey Copy Files */,
+				F16FD354572D2C9807EDBD3B /* [CP] Embed Pods Frameworks */,
+				680E61CB4678F324CB5313D8 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C29034F6200B472400A860F9 /* PBXTargetDependency */,
+			);
+			name = EarlGreyUnitTest;
+			productName = EarlGreyUnitTest;
+			productReference = C29034F0200B472400A860F9 /* EarlGreyUnitTest.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		8CBF55781E7F7EDF00F4B1CD /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0820;
+				LastSwiftUpdateCheck = 0920;
 				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = Tastry;
 				TargetAttributes = {
@@ -874,15 +955,18 @@
 					};
 					8CBF55931E7F7EDF00F4B1CD = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 9D6RF3S2T5;
 						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 8CBF557F1E7F7EDF00F4B1CD;
 					};
 					8CBF559E1E7F7EDF00F4B1CD = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 9D6RF3S2T5;
 						LastSwiftMigration = 0900;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 8CBF557F1E7F7EDF00F4B1CD;
+					};
+					C29034EF200B472400A860F9 = {
+						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 8CBF557F1E7F7EDF00F4B1CD;
 					};
@@ -904,6 +988,7 @@
 				8CBF557F1E7F7EDF00F4B1CD /* TastoryApp */,
 				8CBF55931E7F7EDF00F4B1CD /* TastoryAppTests */,
 				8CBF559E1E7F7EDF00F4B1CD /* TastoryAppUITests */,
+				C29034EF200B472400A860F9 /* EarlGreyUnitTest */,
 			);
 		};
 /* End PBXProject section */
@@ -954,6 +1039,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		8CBF559D1E7F7EDF00F4B1CD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C29034EE200B472400A860F9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1011,6 +1103,24 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TastoryAppUITests/Pods-TastoryAppUITests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		2E4D8BD8F66E43550B38DDEB /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-EarlGreyUnitTest-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		3AA03047B325747368B028FE /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1024,6 +1134,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TastoryApp/Pods-TastoryApp-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		680E61CB4678F324CB5313D8 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EarlGreyUnitTest/Pods-EarlGreyUnitTest-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		6982CB25E2D181CF63F2E2D6 /* [CP] Embed Pods Frameworks */ = {
@@ -1204,6 +1329,24 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TastoryAppUITests/Pods-TastoryAppUITests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		F16FD354572D2C9807EDBD3B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-EarlGreyUnitTest/Pods-EarlGreyUnitTest-frameworks.sh",
+				"${PODS_ROOT}/EarlGrey/EarlGrey/EarlGrey.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/EarlGrey.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EarlGreyUnitTest/Pods-EarlGreyUnitTest-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1338,6 +1481,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C29034EC200B472400A860F9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C29034F3200B472400A860F9 /* EarlGreyUnitTest.swift in Sources */,
+				7810B0EED29B713FDABFF380 /* EarlGrey.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1350,6 +1502,11 @@
 			isa = PBXTargetDependency;
 			target = 8CBF557F1E7F7EDF00F4B1CD /* TastoryApp */;
 			targetProxy = 8CBF55A01E7F7EDF00F4B1CD /* PBXContainerItemProxy */;
+		};
+		C29034F6200B472400A860F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8CBF557F1E7F7EDF00F4B1CD /* TastoryApp */;
+			targetProxy = C29034F5200B472400A860F9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1495,7 +1652,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 9D6RF3S2T5;
+				DEVELOPMENT_TEAM = M86SL56K82;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1505,7 +1662,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.Master;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.Victor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1521,7 +1678,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 9D6RF3S2T5;
+				DEVELOPMENT_TEAM = M86SL56K82;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1530,7 +1687,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/TastoryApp/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.Master;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.Victor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1546,7 +1703,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 9D6RF3S2T5;
+				DEVELOPMENT_TEAM = M86SL56K82;
 				INFOPLIST_FILE = TastoryAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryAppTest.iOS.Dev.Howard;
@@ -1563,7 +1720,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 9D6RF3S2T5;
+				DEVELOPMENT_TEAM = M86SL56K82;
 				INFOPLIST_FILE = TastoryAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryAppTest.iOS.Dev.Howard;
@@ -1579,7 +1736,7 @@
 			baseConfigurationReference = 5C70D313914787046073F672 /* Pods-TastoryAppUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				DEVELOPMENT_TEAM = 9D6RF3S2T5;
+				DEVELOPMENT_TEAM = M86SL56K82;
 				INFOPLIST_FILE = TastoryAppUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryAppUITest.iOS.Dev.Master;
@@ -1595,7 +1752,7 @@
 			baseConfigurationReference = 2CE3B3B388C5B06BC1D35F74 /* Pods-TastoryAppUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				DEVELOPMENT_TEAM = 9D6RF3S2T5;
+				DEVELOPMENT_TEAM = M86SL56K82;
 				INFOPLIST_FILE = TastoryAppUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryAppUITest.iOS.Dev.Master;
@@ -1603,6 +1760,53 @@
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = TastoryApp;
+			};
+			name = Release;
+		};
+		C29034F7200B472400A860F9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27E50AE84A2E3AB949AB688C /* Pods-EarlGreyUnitTest.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = M86SL56K82;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = EarlGreyUnitTest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.specc.EarlGreyUnitTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TastoryApp.app/TastoryApp";
+			};
+			name = Debug;
+		};
+		C29034F8200B472400A860F9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 860DB75BAC024342CCB4E231 /* Pods-EarlGreyUnitTest.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = M86SL56K82;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = EarlGreyUnitTest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.specc.EarlGreyUnitTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TastoryApp.app/TastoryApp";
 			};
 			name = Release;
 		};
@@ -1641,6 +1845,15 @@
 			buildConfigurations = (
 				8CBF55AF1E7F7EDF00F4B1CD /* Debug */,
 				8CBF55B01E7F7EDF00F4B1CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C29034F9200B472400A860F9 /* Build configuration list for PBXNativeTarget "EarlGreyUnitTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C29034F7200B472400A860F9 /* Debug */,
+				C29034F8200B472400A860F9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

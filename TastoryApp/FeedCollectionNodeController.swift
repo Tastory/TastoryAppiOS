@@ -271,6 +271,8 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    self.view.accessibilityIdentifier = "feedCollectionNodeController"
+
     if storyArray.count < FoodieGlobal.Constants.StoryFeedPaginationCount {
       allPagesFetched = true
     } else {

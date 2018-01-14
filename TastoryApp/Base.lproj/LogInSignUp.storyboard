@@ -44,13 +44,13 @@
                                         </constraints>
                                     </view>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Launch-tastory" translatesAutoresizingMaskIntoConstraints="NO" id="A2j-lx-HSQ">
-                                        <rect key="frame" x="24" y="160" width="240" height="77"/>
+                                        <rect key="frame" x="24" y="160" width="240" height="76"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="240" id="6i5-qx-ZQ4"/>
                                         </constraints>
                                     </imageView>
                                     <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ggg-5V-ke5">
-                                        <rect key="frame" x="0.0" y="247" width="288" height="286"/>
+                                        <rect key="frame" x="0.0" y="246" width="288" height="287"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </view>
                                 </subviews>
@@ -98,20 +98,20 @@
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="olh-fA-AHp">
-                                        <rect key="frame" x="0.0" y="90" width="260" height="77"/>
+                                        <rect key="frame" x="0.0" y="90" width="260" height="76"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="TSX-iw-chl" userLabel="Spacer">
-                                                <rect key="frame" x="0.0" y="0.0" width="20" height="77"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="20" height="76"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </view>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="990" image="Launch-tastory" translatesAutoresizingMaskIntoConstraints="NO" id="jfj-mk-Bqs">
-                                                <rect key="frame" x="20" y="0.0" width="220" height="77"/>
+                                                <rect key="frame" x="20" y="0.0" width="220" height="76"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="220" id="fvS-5B-gvQ"/>
                                                 </constraints>
                                             </imageView>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="W9B-kE-th0" userLabel="Spacer">
-                                                <rect key="frame" x="240" y="0.0" width="20" height="77"/>
+                                                <rect key="frame" x="240" y="0.0" width="20" height="76"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </view>
                                         </subviews>
@@ -120,7 +120,7 @@
                                         </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="UeZ-ET-sgS" userLabel="Username Stack">
-                                        <rect key="frame" x="0.0" y="177" width="260" height="35"/>
+                                        <rect key="frame" x="0.0" y="176" width="260" height="35"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="nQv-WB-heT" userLabel="Spacer">
                                                 <rect key="frame" x="0.0" y="0.0" width="260" height="11"/>
@@ -135,6 +135,7 @@
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Username/E-mail" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="PR8-uW-g7N">
                                                         <rect key="frame" x="38" y="0.0" width="222" height="18"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <accessibility key="accessibilityConfiguration" identifier="usernameField"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="15"/>
                                                         <textInputTraits key="textInputTraits" returnKeyType="next" textContentType="username"/>
@@ -164,7 +165,7 @@
                                         </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="GfZ-O1-CgL" userLabel="Password Stack">
-                                        <rect key="frame" x="0.0" y="222" width="260" height="35"/>
+                                        <rect key="frame" x="0.0" y="221" width="260" height="35"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="ifA-SJ-Bn9" userLabel="Spacer">
                                                 <rect key="frame" x="0.0" y="0.0" width="260" height="11"/>
@@ -179,6 +180,7 @@
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="HJT-Dp-D5z">
                                                         <rect key="frame" x="38" y="0.0" width="156" height="18"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <accessibility key="accessibilityConfiguration" identifier="passwordField"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="15"/>
                                                         <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="go" secureTextEntry="YES"/>
@@ -215,17 +217,18 @@
                                         </constraints>
                                     </stackView>
                                     <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fPd-R1-Lkr" userLabel="Spacer">
-                                        <rect key="frame" x="0.0" y="267" width="260" height="8"/>
+                                        <rect key="frame" x="0.0" y="266" width="260" height="8"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="8" id="iX0-xx-ebV"/>
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="2rI-Xv-cem" userLabel="Button Stack">
-                                        <rect key="frame" x="0.0" y="285" width="260" height="56"/>
+                                        <rect key="frame" x="0.0" y="284" width="260" height="56"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="900" verticalCompressionResistancePriority="900" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rOg-UL-hSk">
                                                 <rect key="frame" x="0.0" y="0.0" width="128" height="56"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="loginButton"/>
                                                 <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="15"/>
                                                 <state key="normal" title="Log In" backgroundImage="Login-Small">
                                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -247,11 +250,11 @@
                                         </subviews>
                                     </stackView>
                                     <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JvQ-be-Ny7" userLabel="Spacer">
-                                        <rect key="frame" x="0.0" y="351" width="260" height="50"/>
+                                        <rect key="frame" x="0.0" y="350" width="260" height="50"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </view>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QE8-8G-LAO">
-                                        <rect key="frame" x="0.0" y="411" width="260" height="40"/>
+                                        <rect key="frame" x="0.0" y="410" width="260" height="40"/>
                                         <color key="backgroundColor" red="0.25882352941176467" green="0.40392156862745099" blue="0.69803921568627447" alpha="0.90000000000000002" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="Zmf-gL-U72"/>
@@ -265,14 +268,14 @@
                                         </connections>
                                     </button>
                                     <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yg7-jy-ppf" userLabel="Spacer">
-                                        <rect key="frame" x="0.0" y="461" width="260" height="5"/>
+                                        <rect key="frame" x="0.0" y="460" width="260" height="5"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="5" id="h9b-ZS-UWq"/>
                                         </constraints>
                                     </view>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gNP-45-GYw">
-                                        <rect key="frame" x="0.0" y="476" width="260" height="17"/>
+                                        <rect key="frame" x="0.0" y="475" width="260" height="18"/>
                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="13"/>
                                         <state key="normal" title="Log In as Guest">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -504,20 +507,20 @@
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q4S-G9-0gL">
-                                        <rect key="frame" x="0.0" y="95" width="260" height="77"/>
+                                        <rect key="frame" x="0.0" y="95" width="260" height="76"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="XPX-II-tls" userLabel="Spacer">
-                                                <rect key="frame" x="0.0" y="0.0" width="20" height="77"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="20" height="76"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </view>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Launch-tastory" translatesAutoresizingMaskIntoConstraints="NO" id="Hrt-g5-GKA">
-                                                <rect key="frame" x="20" y="0.0" width="220" height="77"/>
+                                                <rect key="frame" x="20" y="0.0" width="220" height="76"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="220" id="3CJ-Jn-eEU"/>
                                                 </constraints>
                                             </imageView>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="3bs-7b-9eY" userLabel="Spacer">
-                                                <rect key="frame" x="240" y="0.0" width="20" height="77"/>
+                                                <rect key="frame" x="240" y="0.0" width="20" height="76"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </view>
                                         </subviews>
@@ -526,14 +529,14 @@
                                         </constraints>
                                     </stackView>
                                     <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LFB-UT-fNe" userLabel="Spacer">
-                                        <rect key="frame" x="0.0" y="182" width="260" height="0.0"/>
+                                        <rect key="frame" x="0.0" y="181" width="260" height="0.0"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" id="ps0-pd-Fy4"/>
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="VdR-Nh-5VO" userLabel="Username Stack">
-                                        <rect key="frame" x="0.0" y="192" width="260" height="30"/>
+                                        <rect key="frame" x="0.0" y="191" width="260" height="30"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="7KH-1j-Fst" userLabel="Spacer">
                                                 <rect key="frame" x="0.0" y="0.0" width="260" height="6"/>
@@ -574,7 +577,7 @@
                                         </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="O9w-p8-1Ts" userLabel="Email Stack">
-                                        <rect key="frame" x="0.0" y="232" width="260" height="30"/>
+                                        <rect key="frame" x="0.0" y="231" width="260" height="30"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="ntA-P5-cYj">
                                                 <rect key="frame" x="0.0" y="0.0" width="260" height="6"/>
@@ -615,7 +618,7 @@
                                         </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="QHQ-5V-gC7" userLabel="Password Stack">
-                                        <rect key="frame" x="0.0" y="272" width="260" height="30"/>
+                                        <rect key="frame" x="0.0" y="271" width="260" height="30"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="eRe-oC-qRJ">
                                                 <rect key="frame" x="0.0" y="0.0" width="260" height="6"/>
@@ -666,14 +669,14 @@
                                         </constraints>
                                     </stackView>
                                     <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d7h-cx-Blt" userLabel="Spacer">
-                                        <rect key="frame" x="0.0" y="312" width="260" height="8"/>
+                                        <rect key="frame" x="0.0" y="311" width="260" height="8"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="8" id="PqL-pD-BNF"/>
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6XM-8Y-nk8">
-                                        <rect key="frame" x="0.0" y="330" width="260" height="56"/>
+                                        <rect key="frame" x="0.0" y="329" width="260" height="56"/>
                                         <subviews>
                                             <view alpha="0.0" contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="7Jd-2y-bIp">
                                                 <rect key="frame" x="0.0" y="0.0" width="47.5" height="56"/>
@@ -699,7 +702,7 @@
                                         </constraints>
                                     </stackView>
                                     <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gbU-8D-NzX">
-                                        <rect key="frame" x="0.0" y="396" width="260" height="137"/>
+                                        <rect key="frame" x="0.0" y="395" width="260" height="138"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </view>
                                 </subviews>
@@ -775,20 +778,20 @@
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EJg-RB-iqM">
-                                        <rect key="frame" x="0.0" y="80" width="260" height="77"/>
+                                        <rect key="frame" x="0.0" y="80" width="260" height="76"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="xDg-Cc-291" userLabel="Spacer">
-                                                <rect key="frame" x="0.0" y="0.0" width="20" height="77"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="20" height="76"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </view>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Launch-tastory" translatesAutoresizingMaskIntoConstraints="NO" id="lX9-jm-fbC">
-                                                <rect key="frame" x="20" y="0.0" width="220" height="77"/>
+                                                <rect key="frame" x="20" y="0.0" width="220" height="76"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="220" id="QhS-u1-8xl"/>
                                                 </constraints>
                                             </imageView>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="Nm1-W9-PkB" userLabel="Spacer">
-                                                <rect key="frame" x="240" y="0.0" width="20" height="77"/>
+                                                <rect key="frame" x="240" y="0.0" width="20" height="76"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </view>
                                         </subviews>
@@ -797,42 +800,42 @@
                                         </constraints>
                                     </stackView>
                                     <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Enn-h4-a9x" userLabel="Spacer">
-                                        <rect key="frame" x="0.0" y="157" width="260" height="40"/>
+                                        <rect key="frame" x="0.0" y="156" width="260" height="40"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="v7C-qq-zXu"/>
                                         </constraints>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please make sure you confirm your E-mail so you can start posting." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ux7-SI-0g8">
-                                        <rect key="frame" x="0.0" y="197" width="260" height="35.5"/>
+                                        <rect key="frame" x="0.0" y="196" width="260" height="35.5"/>
                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="15"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                         <size key="shadowOffset" width="0.0" height="0.0"/>
                                     </label>
                                     <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vd8-sR-Hs4" userLabel="Spacer">
-                                        <rect key="frame" x="0.0" y="232.5" width="260" height="20"/>
+                                        <rect key="frame" x="0.0" y="231.5" width="260" height="20"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="IBC-50-swr"/>
                                         </constraints>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="For now, you can start by checking out what Tasty Stories are around you~" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GSo-GT-Djs">
-                                        <rect key="frame" x="0.0" y="252.5" width="260" height="53"/>
+                                        <rect key="frame" x="0.0" y="251.5" width="260" height="53"/>
                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="15"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                         <size key="shadowOffset" width="0.0" height="0.0"/>
                                     </label>
                                     <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gvc-yf-CoC" userLabel="Spacer">
-                                        <rect key="frame" x="0.0" y="305.5" width="260" height="30"/>
+                                        <rect key="frame" x="0.0" y="304.5" width="260" height="30"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="Pgl-8K-UfB"/>
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vgk-85-xAP">
-                                        <rect key="frame" x="0.0" y="335.5" width="260" height="56"/>
+                                        <rect key="frame" x="0.0" y="334.5" width="260" height="56"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="xUF-29-RTL">
                                                 <rect key="frame" x="0.0" y="0.0" width="2" height="56"/>
@@ -850,6 +853,7 @@
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="900" verticalCompressionResistancePriority="900" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KCa-SE-48t">
                                                 <rect key="frame" x="130" y="0.0" width="128" height="56"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="letsGoButton"/>
                                                 <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="14"/>
                                                 <state key="normal" title="Proceed" backgroundImage="Login-SmallSolid">
                                                     <color key="titleColor" red="0.98039215690000003" green="0.035294117649999998" blue="0.035294117649999998" alpha="1" colorSpace="calibratedRGB"/>
@@ -868,7 +872,7 @@
                                         </constraints>
                                     </stackView>
                                     <view alpha="0.0" contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="ODJ-2r-QhN" userLabel="Spacer">
-                                        <rect key="frame" x="0.0" y="391.5" width="260" height="141.5"/>
+                                        <rect key="frame" x="0.0" y="390.5" width="260" height="142.5"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </view>
                                 </subviews>
@@ -902,7 +906,7 @@
     </scenes>
     <resources>
         <image name="Launch-Background-Red" width="414" height="812"/>
-        <image name="Launch-tastory" width="237" height="77"/>
+        <image name="Launch-tastory" width="236" height="76"/>
         <image name="Login-EmailIcon" width="18" height="18"/>
         <image name="Login-LargeSolid" width="165" height="56"/>
         <image name="Login-LockIcon" width="18" height="18"/>

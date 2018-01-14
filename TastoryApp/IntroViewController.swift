@@ -15,7 +15,8 @@ class IntroViewController: OverlayViewController {
   var secondLabelText: String?
   var enableResend: Bool = false
 
-  
+  @IBOutlet weak var letsGoButton: UIButton!
+
   // MARK: - IBOutlet
   @IBOutlet weak var firstLabel: UILabel! {
     didSet {
