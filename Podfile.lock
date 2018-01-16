@@ -4,12 +4,12 @@ PODS:
   - AWSCore (2.6.10)
   - AWSS3 (2.6.10):
     - AWSCore (= 2.6.10)
-  - Bolts (1.8.4):
-    - Bolts/AppLinks (= 1.8.4)
-    - Bolts/Tasks (= 1.8.4)
-  - Bolts/AppLinks (1.8.4):
+  - Bolts (1.9.0):
+    - Bolts/AppLinks (= 1.9.0)
+    - Bolts/Tasks (= 1.9.0)
+  - Bolts/AppLinks (1.9.0):
     - Bolts/Tasks
-  - Bolts/Tasks (1.8.4)
+  - Bolts/Tasks (1.9.0)
   - ColorSlider (4.1)
   - Crashlytics (3.9.3):
     - Fabric (~> 1.7.2)
@@ -28,52 +28,53 @@ PODS:
     - FacebookCore (~> 0.3)
     - FBSDKCoreKit (~> 4.27)
     - FBSDKShareKit (~> 4.27)
-  - FBSDKCoreKit (4.29.0):
+  - FBSDKCoreKit (4.28.0):
     - Bolts (~> 1.7)
-  - FBSDKLoginKit (4.29.0):
+  - FBSDKLoginKit (4.28.0):
     - FBSDKCoreKit
-  - FBSDKShareKit (4.29.0):
+  - FBSDKShareKit (4.28.0):
     - FBSDKCoreKit
   - HTTPStatusCodes (3.1.2)
   - Jot (0.2.0):
     - Masonry (~> 1.0.2)
   - Masonry (1.0.2)
-  - Parse (1.15.3):
-    - Bolts/Tasks (~> 1.8)
-  - ParseFacebookUtilsV4 (1.11.1):
-    - Bolts/Tasks (>= 1.6)
-    - FBSDKCoreKit (~> 4.10)
-    - FBSDKLoginKit (~> 4.10)
-    - FBSDKTVOSKit (~> 4.10)
-    - Parse (~> 1.12)
-  - PINCache (3.0.1-beta.5):
-    - PINCache/Arc-exception-safe (= 3.0.1-beta.5)
-    - PINCache/Core (= 3.0.1-beta.5)
-  - PINCache/Arc-exception-safe (3.0.1-beta.5):
+  - Parse (1.15.4):
+    - Bolts/Tasks (~> 1.9)
+  - ParseFacebookUtilsV4 (1.11.2):
+    - Bolts/Tasks (~> 1.9)
+    - FBSDKCoreKit (~> 4.28.0)
+    - FBSDKLoginKit (~> 4.28.0)
+    - FBSDKShareKit (~> 4.28.0)
+    - FBSDKTVOSKit (~> 4.28.0)
+    - Parse (~> 1.15.1)
+  - PINCache (3.0.1-beta.6):
+    - PINCache/Arc-exception-safe (= 3.0.1-beta.6)
+    - PINCache/Core (= 3.0.1-beta.6)
+  - PINCache/Arc-exception-safe (3.0.1-beta.6):
     - PINCache/Core
-  - PINCache/Core (3.0.1-beta.5):
-    - PINOperation (= 1.0.3)
-  - PINOperation (1.0.3)
-  - PINRemoteImage/Core (3.0.0-beta.12):
+  - PINCache/Core (3.0.1-beta.6):
+    - PINOperation (~> 1.1.0)
+  - PINOperation (1.1)
+  - PINRemoteImage/Core (3.0.0-beta.13):
     - PINOperation
-  - PINRemoteImage/iOS (3.0.0-beta.12):
+  - PINRemoteImage/iOS (3.0.0-beta.13):
     - PINRemoteImage/Core
-  - PINRemoteImage/PINCache (3.0.0-beta.12):
-    - PINCache (= 3.0.1-beta.5)
+  - PINRemoteImage/PINCache (3.0.0-beta.13):
+    - PINCache (= 3.0.1-beta.6)
     - PINRemoteImage/Core
   - PryntTrimmerView (2.0.0)
   - QuadratTouch (1.1.3)
   - RATreeView (2.1.2)
   - SwiftRangeSlider (2.0.0)
   - SwiftyCam (2.6.0)
-  - Texture (2.5.1):
-    - Texture/PINRemoteImage (= 2.5.1)
-  - Texture/Core (2.5.1)
-  - Texture/PINRemoteImage (2.5.1):
-    - PINRemoteImage/iOS (= 3.0.0-beta.12)
+  - Texture (2.6):
+    - Texture/PINRemoteImage (= 2.6)
+  - Texture/Core (2.6)
+  - Texture/PINRemoteImage (2.6):
+    - PINRemoteImage/iOS (= 3.0.0-beta.13)
     - PINRemoteImage/PINCache
     - Texture/Core
-  - TLPhotoPicker (1.4.1)
+  - TLPhotoPicker (1.4.6)
 
 DEPENDENCIES:
   - AWSCognito
@@ -121,7 +122,7 @@ SPEC CHECKSUMS:
   AWSCognito: 94d97a52c51310dfd20f2db5dc4fce7ebce0e8dc
   AWSCore: 5bb072a6b5b185f43ddbd239d6554d2f8a285ad2
   AWSS3: 1124570c2c2dba6be7e6e67d123cc5181073c53d
-  Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
+  Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   ColorSlider: 3dc3b5c31b5a74aa1232c44eae06453ce59ecf36
   Crashlytics: dbb07d01876c171c5ccbdf7826410380189e452c
   EarlGrey: f7774b813c888ebdb9a21e612d67874d17d5a326
@@ -129,24 +130,24 @@ SPEC CHECKSUMS:
   FacebookCore: 3ffa190a3f1f96cec0e44d3fc221bc322c595ffa
   FacebookLogin: 0af839ea858faef99550d16596b87b4a8e8906e6
   FacebookShare: 0469964297ebd75f052be2c5083389a4208e82b7
-  FBSDKCoreKit: 6f139173dc63a1deaff4430a55f2fe5bb222d2af
-  FBSDKLoginKit: 56a057ca6822535ea0faa25f57a7c41edb697fd4
-  FBSDKShareKit: 18a2cd118aef11dd657fe7e8b64bae5c719088b2
+  FBSDKCoreKit: ca961e279113f691fd83dc634c0bbad9d4e3f370
+  FBSDKLoginKit: b077381c27d800f21661757e8140cf2c80a91e4a
+  FBSDKShareKit: 4f525556e0df4cf0f574cb3f01c675434f29d477
   HTTPStatusCodes: 88155ba36826366a898a7b4f34d311f49083d546
   Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
-  Parse: cdc0f1f975ee8be0409e66f21b05df4ae067047c
-  ParseFacebookUtilsV4: 2f30c2b7021c8005d3042781da7ef87d06589421
-  PINCache: 98e7b1ef782824ad231ade51987c218b758c30d8
-  PINOperation: ac23db44796d4a564ecf9b5ea7163510f579b71d
-  PINRemoteImage: 0cefe720c2612960bd360710efbd6c73a1991d5f
+  Parse: 1968c634e1c782fb31aad6872f6d32de911bb122
+  ParseFacebookUtilsV4: 7345d2d79d5240d9897cca1c7c815db57f03f042
+  PINCache: d195fdba255283f7e9900a55e3cced377f431f9b
+  PINOperation: 7f042fa6df5b606deb4bd5997654cf7033d5be1d
+  PINRemoteImage: d6d51c5d2adda55f1ce30c96e850b6c4ebd2856a
   PryntTrimmerView: 5ad39b9cb5793adcebdad4a1a241260a2c281a38
   QuadratTouch: 9e311cbd4f0573b58cafe6783df1fa7ce2458afa
   RATreeView: 380cde0090cfde21dc6ac29137f49d3b768fdd28
   SwiftRangeSlider: f86e3b637c961120158fa1a89277c8343845cbe4
   SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
-  Texture: c3f06e344aa091667b7a56002e525cde674d021a
-  TLPhotoPicker: 24909bb8a5a9055eb2ebbd8aa5fd9f4e6912d9cb
+  Texture: 7249074582daf75e524e59df5428b66b8e8db0e4
+  TLPhotoPicker: 74d17dfaa8e9bddcfcf74a7ebf7c8d1be7fb26d5
 
 PODFILE CHECKSUM: c528b39be31a7d26d16cb8714dcc8c7f1d8d7c38
 

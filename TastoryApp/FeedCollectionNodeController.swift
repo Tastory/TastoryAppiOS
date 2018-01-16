@@ -271,7 +271,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    self.view.accessibilityIdentifier = "feedCollectionNodeController"
+    self.view.accessibilityIdentifier = "feedCollectionNode"
 
     if storyArray.count < FoodieGlobal.Constants.StoryFeedPaginationCount {
       allPagesFetched = true
@@ -513,6 +513,7 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
       }
       coverEditButton.tag = indexPath.row
       coverEditButton.addTarget(self, action: #selector(editStory(_:)), forControlEvents: .touchUpInside)
+      coverEditButton.accessibilityIdentifier = "coverEditButton_" + String(toStoryIndex(from: indexPath))
     }
     return { return cellNode }
   }

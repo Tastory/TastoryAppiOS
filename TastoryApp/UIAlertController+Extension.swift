@@ -39,6 +39,11 @@ extension UIAlertController {
   // Consider this a convinience function for adding a UIAlertAction to the Alert Controller
   func addAlertAction(title: String?, comment: String?, style: UIAlertActionStyle, handler: ((UIAlertAction) -> Swift.Void)? = nil) {
     let alertAction = UIAlertAction(title: title, comment: comment, style: style, handler: handler)
+
+    if title != nil {
+      alertAction.accessibilityLabel = "dialogButton_" + title!
+    }
+    
     self.addAction(alertAction)
   }
 }

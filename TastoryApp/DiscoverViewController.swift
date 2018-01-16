@@ -572,7 +572,7 @@ class DiscoverViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    self.view.accessibilityIdentifier = "discoverViewController"
+    self.view.accessibilityIdentifier = "discoverView"
 
 
     NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: RefreshFeedNotification.Constants.NotificationId), object: nil)

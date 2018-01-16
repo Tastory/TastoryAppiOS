@@ -22,14 +22,12 @@
 #import "FBSDKShareConstants.h"
 #import "FBSDKShareDefines.h"
 #import "FBSDKShareError.h"
-#import "FBSDKShareMessengerGenericTemplateContent.h"
-#import "FBSDKShareMessengerMediaTemplateContent.h"
-#import "FBSDKShareMessengerOpenGraphMusicTemplateContent.h"
 #import "FBSDKShareOpenGraphContent.h"
 #import "FBSDKShareUtility.h"
 #import "FBSDKShareVideoContent.h"
 
-#define FBSDK_MESSAGE_DIALOG_APP_SCHEME @"fb-messenger-share-api"
+#define FBSDK_MESSAGE_DIALOG_APP_SCHEME @"fb-messenger-api"
+#define FBSDK_MESSAGE_METHOD_MIN_VERSION @"20140430"
 
 @implementation FBSDKMessageDialog
 
@@ -89,7 +87,7 @@
   request = [FBSDKBridgeAPIRequest bridgeAPIRequestWithProtocolType:FBSDKBridgeAPIProtocolTypeNative
                                                              scheme:FBSDK_MESSAGE_DIALOG_APP_SCHEME
                                                          methodName:methodName
-                                                      methodVersion:nil
+                                                      methodVersion:FBSDK_MESSAGE_METHOD_MIN_VERSION
                                                          parameters:parameters
                                                            userInfo:nil];
   FBSDKServerConfiguration *configuration = [FBSDKServerConfigurationManager cachedServerConfiguration];
@@ -220,19 +218,11 @@
     contentType = FBSDKAppEventsDialogShareContentTypePhoto;
   } else if ([self.shareContent isKindOfClass:[FBSDKShareVideoContent class]]) {
     contentType = FBSDKAppEventsDialogShareContentTypeVideo;
-  } else if ([self.shareContent isKindOfClass:[FBSDKShareMessengerGenericTemplateContent class]]) {
-    contentType = FBSDKAppEventsDialogShareContentTypeMessengerGenericTemplate;
-  } else if ([self.shareContent isKindOfClass:[FBSDKShareMessengerMediaTemplateContent class]]) {
-    contentType = FBSDKAppEventsDialogShareContentTypeMessengerMediaTemplate;
-  } else if ([self.shareContent isKindOfClass:[FBSDKShareMessengerOpenGraphMusicTemplateContent class]]) {
-    contentType = FBSDKAppEventsDialogShareContentTypeMessengerOpenGraphMusicTemplate;
   } else {
     contentType = FBSDKAppEventsDialogShareContentTypeUnknown;
   }
 
-  NSDictionary *parameters = @{FBSDKAppEventParameterDialogShareContentType : contentType,
-                               FBSDKAppEventParameterDialogShareContentUUID : self.shareContent.shareUUID ?: [NSNull null],
-                               FBSDKAppEventParameterDialogShareContentPageID : self.shareContent.pageID ?: [NSNull null]};
+  NSDictionary *parameters = @{FBSDKAppEventParameterDialogShareContentType : contentType};
 
   [FBSDKAppEvents logImplicitEvent:FBSDKAppEventNameFBSDKEventMessengerShareDialogShow
                         valueToSum:nil

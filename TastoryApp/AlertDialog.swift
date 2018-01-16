@@ -56,19 +56,19 @@ struct AlertDialog {
   static func presentConfirm(from vc: UIViewController, title: String, message: String, completion handler: ((UIAlertAction) -> Void)? = nil) {
     if vc.presentedViewController == nil {
       let vcTitle = vc.title ?? "Untitled ViewController"
-      let confirmButton =
-        UIKit.UIAlertAction(title: "Confirm",
-                            comment: "Confirm action as presented from \(vcTitle)",
-                            style: .destructive,
-                            handler: handler)
+
       let alertController =
         UIAlertController(title: title,
                           titleComment: "Confirm Dialog title to warn user as presented from \(vcTitle)",
                           message: message,
                           messageComment: "Confirm Dialog message to warn user as presented from \(vcTitle)",
                           preferredStyle: .alert)
+      
+      alertController.addAlertAction(title: "Confirm",
+                                     comment: "Confirm action as presented from \(vcTitle)",
+                                     style: .destructive,
+                                     handler: handler)
 
-      alertController.addAction(confirmButton)
       alertController.addAlertAction(title: "Cancel",
                                      comment: "Alert Dialog box button to cancel",
                                      style: .cancel)

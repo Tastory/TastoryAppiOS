@@ -300,6 +300,7 @@ class SettingsMenuViewController: OverlayViewController {
     let leftArrowImage = UIImage(named: "Settings-LeftArrowDark")
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
     navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutAction(_:)))
+    navigationItem.rightBarButtonItem?.accessibilityIdentifier = "logoutButton"
     
     let titleTextAttributes = [NSAttributedStringKey.font : UIFont(name: "Raleway-Semibold", size: 14)!,
                                NSAttributedStringKey.strokeColor : FoodieGlobal.Constants.TextColor]

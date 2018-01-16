@@ -42,6 +42,10 @@
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="30k-mM-bOe" customClass="CameraButton" customModule="TastoryApp" customModuleProvider="target">
                                 <rect key="frame" x="147" y="577" width="80" height="80"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <accessibility key="accessibilityConfiguration" identifier="captureButton">
+                                    <accessibilityTraits key="traits" button="YES"/>
+                                    <bool key="isElement" value="YES"/>
+                                </accessibility>
                                 <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="80" id="JUN-TB-80Y"/>
@@ -138,6 +142,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NJG-pX-rxm">
                                 <rect key="frame" x="12" y="20" width="32" height="32"/>
+                                <accessibility key="accessibilityConfiguration" identifier="backButton"/>
                                 <state key="normal" image="EntryMarkup-Back"/>
                                 <connections>
                                     <action selector="backButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="2EE-r0-yr6"/>
@@ -190,6 +195,7 @@
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NrF-32-VrF">
                                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="textButton"/>
                                         <size key="titleShadowOffset" width="2" height="2"/>
                                         <state key="normal" image="Markup-Text">
                                             <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -201,6 +207,7 @@
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ti7-uM-Tfb">
                                         <rect key="frame" x="0.0" y="48" width="40" height="40"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="drawButton"/>
                                         <state key="normal" image="Markup-Pencil"/>
                                         <connections>
                                             <action selector="drawButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="l8o-q3-L1i"/>
@@ -247,6 +254,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Da-16-S86">
                                 <rect key="frame" x="309" y="600" width="56" height="57"/>
+                                <accessibility key="accessibilityConfiguration" identifier="nextButton"/>
                                 <state key="normal" image="Markup-Next"/>
                                 <connections>
                                     <action selector="nextButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="6tx-y7-SSr"/>
@@ -355,6 +363,7 @@
                                                     </button>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Title (Required)" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yGa-MF-Thx">
                                                         <rect key="frame" x="51" y="16" width="285" height="19"/>
+                                                        <accessibility key="accessibilityConfiguration" identifier="titleTextField"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="16"/>
                                                         <textInputTraits key="textInputTraits" autocapitalizationType="words" keyboardType="alphabet" returnKeyType="done"/>
@@ -432,6 +441,7 @@
                                                     </button>
                                                     <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J5u-Se-d4s">
                                                         <rect key="frame" x="49" y="7" width="311" height="29"/>
+                                                        <accessibility key="accessibilityConfiguration" identifier="venueButton"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
                                                         <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                         <state key="normal" title="Venue (Required)">
@@ -599,6 +609,7 @@
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RsC-x5-Z6W">
                                                                 <rect key="frame" x="175" y="0.0" width="170" height="50"/>
+                                                                <accessibility key="accessibilityConfiguration" identifier="savePostButton"/>
                                                                 <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="14"/>
                                                                 <state key="normal" title="Post" backgroundImage="Entry-SaveButton">
                                                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -623,6 +634,7 @@
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Re-7f-dcm">
                                                         <rect key="frame" x="103" y="0.0" width="170" height="50"/>
+                                                        <accessibility key="accessibilityConfiguration" identifier="deletePostButton"/>
                                                         <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="14"/>
                                                         <state key="normal" title="Delete Story" backgroundImage="Entry-DiscardButton">
                                                             <color key="titleColor" red="0.98039215690000003" green="0.035294117649999998" blue="0.035294117649999998" alpha="1" colorSpace="calibratedRGB"/>
@@ -786,6 +798,7 @@
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yjC-p6-ZBb">
                                     <rect key="frame" x="0.0" y="8" width="116" height="206"/>
                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <accessibility key="accessibilityConfiguration" identifier="addMomentButton"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="32"/>
                                     <state key="normal" title="+">
                                         <color key="titleColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
@@ -860,6 +873,7 @@
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xeE-NM-jtC">
                                                 <rect key="frame" x="15" y="31" width="22" height="22"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="venueTableBackButton"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="22" id="lsy-yG-PwD"/>
                                                     <constraint firstAttribute="width" constant="22" id="z7y-oY-FAQ"/>

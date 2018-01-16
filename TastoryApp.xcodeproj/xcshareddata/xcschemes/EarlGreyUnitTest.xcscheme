@@ -22,6 +22,17 @@
                BlueprintName = "EarlGreyUnitTest"
                ReferencedContainer = "container:TastoryApp.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "EarlGreyUnitTest/testLogin()">
+               </Test>
+               <Test
+                  Identifier = "EarlGreyUnitTest/testMap()">
+               </Test>
+               <Test
+                  Identifier = "EarlGreyUnitTest/testPerformanceExample()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <EnvironmentVariables>

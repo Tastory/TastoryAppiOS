@@ -156,7 +156,10 @@ class VenueTableViewController: OverlayViewController {
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
+    venueSearchBar.accessibilityIdentifier = "venueSearchBar"
+    self.view.accessibilityIdentifier = "venueTableView"
+
     venueSearchBar.delegate = self
     locationSearchBar.delegate = self
     venueTableView.delegate = self
@@ -292,7 +295,12 @@ extension VenueTableViewController: UITableViewDataSource {
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "venueTableCell", for: indexPath)
-    
+    cell.accessibilityLabel = "venueTableViewCell"
+    cell.accessibilityTraits = UIAccessibilityTraitButton
+    cell.isAccessibilityElement = true
+    cell.isUserInteractionEnabled = true
+
+
     guard let venueResultArray = venueResultArray else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("venueResultArray = nil even tho numberOfRowsInSection = \(tableView.numberOfRows(inSection: indexPath.section))")

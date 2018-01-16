@@ -1044,6 +1044,9 @@ class StoryViewController: OverlayViewController {
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     muteObserver = AudioControl.observeMuteState(withBlock: updateAVMute)
+
+    self.view.accessibilityIdentifier = "storyView"
+
   }
   
   

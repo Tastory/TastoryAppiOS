@@ -73,12 +73,6 @@ class ConfirmationDialog {
                                      confirmCaption: String,
                                      confirmHandler: @escaping (UIAlertAction) -> Void) {
 
-    let confirmButton =
-      UIKit.UIAlertAction(title: confirmCaption,
-                          comment: "Button to confirm action",
-                          style: .destructive,
-                          handler: confirmHandler)
-
     let alertController =
       UIAlertController(title: title,
                         titleComment: "Dialog title to warn user",
@@ -86,7 +80,10 @@ class ConfirmationDialog {
                         messageComment: "Dialog message to warn user",
                         preferredStyle: .alert)
 
-    alertController.addAction(confirmButton)
+    alertController.addAlertAction(title: confirmCaption,
+                                   comment: "Button to confirm action",
+                                   style: .destructive,
+                                   handler: confirmHandler)
     alertController.addAlertAction(title: "Cancel",
                                    comment: "Alert Dialog box button",
                                    style: .cancel)

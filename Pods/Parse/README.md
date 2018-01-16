@@ -26,16 +26,16 @@ Notice the API docs aren't totally up to date when it comes to latest Swift sign
 **Other Installation Options**
 
  - **[CocoaPods](https://cocoapods.org)**
- 
+
    Add the following line to your Podfile:
    ```ruby
    pod 'Parse'
    ```
    Run `pod install`, and you should now have the latest parse release.
-    
-    
+
+
  - **[Carthage](https://github.com/carthage/carthage)**
- 
+
    Add the following line to your Cartfile:
    ```
    github "parse-community/Parse-SDK-iOS-OSX"
@@ -49,11 +49,14 @@ Notice the API docs aren't totally up to date when it comes to latest Swift sign
         # To pull in extra dependencies (Bolts and OCMock)
         git submodule update --init --recursive
 
-        # To install all the gems
+        # To install bundler
+        gem install bundler
+
+        # To install all the gems via bundler
         bundle install
 
         # Build & Package the Frameworks
-        rake package:frameworks
+        bundle exec rake package:frameworks
 
     Compiled frameworks will be in 2 archives: `Parse-iOS.zip` and `Parse-OSX.zip` inside the `build/release` folder, and you can link them as you'd please.
 
@@ -64,6 +67,18 @@ Notice the API docs aren't totally up to date when it comes to latest Swift sign
 ## How Do I Contribute?
 
 We want to make contributing to this project as easy and transparent as possible. Please refer to the [Contribution Guidelines][contributing].
+
+## Preparing for a new release
+
+### Update the version number
+
+You can use the rake task in order to bump the version number, it's safe, and will properly update all version numbers
+
+```
+$ bundle exec rake package:set_version[X.X.X]
+```
+
+Replace X.X.X by the version number and push to the repository.
 
 ## Dependencies
 
@@ -89,7 +104,7 @@ LICENSE file in the root directory of this source tree. An additional grant
 of patent rights can be found in the PATENTS file in the same directory.
 ```
 
-As of April 5, 2017, Parse, LLC has transferred this code to the parse-community organization, and will no longer be contributing to or distributing this code. 
+As of April 5, 2017, Parse, LLC has transferred this code to the parse-community organization, and will no longer be contributing to or distributing this code.
 
  [docs]: http://docs.parseplatform.org/ios/guide/
  [blog]: http://blog.parse.com/
@@ -116,7 +131,7 @@ As of April 5, 2017, Parse, LLC has transferred this code to the parse-community
 
  [podspec-svg]: https://img.shields.io/cocoapods/v/Parse.svg
  [podspec-link]: https://cocoapods.org/pods/Parse
- 
+
  [carthage-svg]: https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat
  [carthage-link]: https://github.com/carthage/carthage
 

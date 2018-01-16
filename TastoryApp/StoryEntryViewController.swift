@@ -731,6 +731,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     }
     
     appearanceForAllUI(alphaValue: 1.0, animated: true)
+
+    self.view.accessibilityIdentifier = "storyEntryView"
   }
   
   

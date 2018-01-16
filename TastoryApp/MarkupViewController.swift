@@ -509,7 +509,9 @@ class MarkupViewController: OverlayViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
+    self.view.accessibilityIdentifier = "markupView"
+
     // Initialize Media
     guard let mediaObj = mediaObj else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in

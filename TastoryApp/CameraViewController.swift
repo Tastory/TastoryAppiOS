@@ -234,7 +234,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
       }
     }
   }
-  
+
   
   override func viewDidDisappear(_ animated: Bool) {
     locationWatcher?.stop()
