@@ -118,7 +118,8 @@ class FoodieMedia: FoodieFileObject {
     // Photo wider than it should be
     if currentAspectRatio > cropAspectRatio {
       let cropWidth = imageSize.height * cropAspectRatio
-      if bufferImage.imageOrientation == .right {
+      // .right is portrait mode; .left is upside down potrait mode
+      if (bufferImage.imageOrientation == .right || bufferImage.imageOrientation == .left) {
         // Portrait photo wider than it should be
         guard let cropImage = cgImage.cropping(to: CGRect(x: 0, y:(((imageSize.width/2) - (cropWidth/2))) , width: imageSize.height, height: cropWidth)) else {
           CCLog.assert("cropImage is nil after cropping")
@@ -128,7 +129,7 @@ class FoodieMedia: FoodieFileObject {
         cgImage = cropImage
 
       } else {
-        // defualt imageOrientation is .up
+        // defualt imageOrientation is .down
         // Landscape photo wider than it should be
         guard let cropImage = cgImage.cropping(to: CGRect(x: ((imageSize.width/2) - (cropWidth/2)) , y: 0, width: cropWidth, height: imageSize.height)) else {
           CCLog.assert("cropImage is nil after cropping")
