@@ -177,13 +177,16 @@ class EarlGreyUnitTest: XCTestCase {
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("deletePostButton")).perform(grey_tap())
       EarlGrey.select(elementWithMatcher: grey_accessibilityLabel("dialogButton_Delete")).perform(grey_tap())
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("feedCollectionNode")).perform(GREYActions.actionForSwipeFast(in: GREYDirection.right))
+      sleep(5)
     }
 
     func testMoveToBurquitlam() {
 
+
       // search richmond
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("feedCollectionNode")).assert(grey_sufficientlyVisible())
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("locationField")).perform(GREYActions.action(forTypeText: "Bridgeport\n"))
+     // EarlGrey.select(elementWithMatcher: grey_accessibilityID("locationField")).assert(grey_text("Bridgeport"))
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("searchButton")).assert(grey_interactable()).perform(GREYActions.actionForTap())
 
       // search buquitlam

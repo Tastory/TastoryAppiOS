@@ -92,7 +92,7 @@
 		8CBF558B1E7F7EDF00F4B1CD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF558A1E7F7EDF00F4B1CD /* Assets.xcassets */; };
 		8CBF558E1E7F7EDF00F4B1CD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF558C1E7F7EDF00F4B1CD /* LaunchScreen.storyboard */; };
 		8CBF55991E7F7EDF00F4B1CD /* TastryAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55981E7F7EDF00F4B1CD /* TastryAppTests.swift */; };
-		8CBF55A41E7F7EDF00F4B1CD /* TastryAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55A31E7F7EDF00F4B1CD /* TastryAppUITests.swift */; };
+		8CBF55A41E7F7EDF00F4B1CD /* TastoryAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55A31E7F7EDF00F4B1CD /* TastoryAppUITests.swift */; };
 		8CC1101A1F92D07000ACBF9A /* FoodieFileObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */; };
 		8CC48D601EFC81CD003A0FC9 /* PrecisionTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */; };
 		8CCC7EFE1FA599440049AF00 /* FeedCollectionNodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */; };
@@ -157,7 +157,6 @@
 		C29CD1391F93198800A6D53F /* ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD1381F93198800A6D53F /* ConfirmationDialog.swift */; };
 		C29CD13D1F988B2000A6D53F /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */; };
 		D3272D7D673F648DD9415F7E /* Pods_TastryAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3DBF493BCE72101729EF1C /* Pods_TastryAppTests.framework */; };
-		F351A78B7F036463BBC4B536 /* Pods_TastryAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9EF05BC204B0292B02F87C3 /* Pods_TastryAppUITests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -300,7 +299,7 @@
 		8CBF55981E7F7EDF00F4B1CD /* TastryAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TastryAppTests.swift; sourceTree = "<group>"; };
 		8CBF559A1E7F7EDF00F4B1CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8CBF559F1E7F7EDF00F4B1CD /* TastoryAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TastoryAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8CBF55A31E7F7EDF00F4B1CD /* TastryAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TastryAppUITests.swift; sourceTree = "<group>"; };
+		8CBF55A31E7F7EDF00F4B1CD /* TastoryAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TastoryAppUITests.swift; sourceTree = "<group>"; };
 		8CBF55A51E7F7EDF00F4B1CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodieFileObject.swift; sourceTree = "<group>"; };
 		8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrecisionTime.swift; sourceTree = "<group>"; };
@@ -399,7 +398,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F351A78B7F036463BBC4B536 /* Pods_TastryAppUITests.framework in Frameworks */,
 				B0FF18F4BACC331B318AB032 /* Pods_TastoryAppUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -628,7 +626,7 @@
 		8CBF55A21E7F7EDF00F4B1CD /* TastryAppUITests */ = {
 			isa = PBXGroup;
 			children = (
-				8CBF55A31E7F7EDF00F4B1CD /* TastryAppUITests.swift */,
+				8CBF55A31E7F7EDF00F4B1CD /* TastoryAppUITests.swift */,
 				8CBF55A51E7F7EDF00F4B1CD /* Info.plist */,
 			);
 			name = TastryAppUITests;
@@ -1477,7 +1475,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8CBF55A41E7F7EDF00F4B1CD /* TastryAppUITests.swift in Sources */,
+				8CBF55A41E7F7EDF00F4B1CD /* TastoryAppUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
