@@ -313,6 +313,9 @@ class LogInViewController: OverlayViewController {
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    self.view.accessibilityIdentifier = "loginView"
+
     facebookButton.layer.cornerRadius = 5.0
     activitySpinner = ActivitySpinner(addTo: view, blurStyle: .prominent)
     

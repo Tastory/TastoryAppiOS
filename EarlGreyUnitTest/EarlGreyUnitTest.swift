@@ -20,6 +20,7 @@ class EarlGreyUnitTest: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        GREYConfiguration.sharedInstance().setValue("/Users/specc/Desktop/results/", forConfigKey: kGREYConfigKeyArtifactsDirLocation)
         GREYConfiguration.sharedInstance().setValue(false, forConfigKey: kGREYConfigKeyAnalyticsEnabled)
         if(Constants.enableLoginAndLogout) {
           login()
@@ -35,40 +36,65 @@ class EarlGreyUnitTest: XCTestCase {
         super.tearDown()
     }
 
+    // add mark up from scratch by drawing a T
+    private func addMarkup() {
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView")).assert(grey_sufficientlyVisible())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView_drawButton")).perform(grey_tap())
+
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView")).perform(GREYActions.actionForSwipeFast(in: GREYDirection.left))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView")).perform(GREYActions.actionForSwipeFast(in: GREYDirection.right))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView")).perform(GREYActions.actionForSwipeFast(in: GREYDirection.down))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView_backButton")).perform(grey_tap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView_nextButton")).perform(grey_tap())
+    }
+
+    // edit the existing mark up by adding an extra line from middle to top
+    private func modifyMarkup() {
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView_drawButton")).assert(grey_sufficientlyVisible()).perform(grey_tap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView")).perform(GREYActions.actionForMultiFingerSwipeSlow(in: GREYDirection.up
+      , numberOfFingers: 4))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView_backButton")).perform(grey_tap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView_nextButton")).perform(grey_tap())
+    }
+
+    // use the camera to take a picture and add markup
     private func captureMoment() {
       let waitForCameraButton = GREYCondition.init(name: "wait for camera button") { () -> Bool in
         var error: NSError?
-        EarlGrey.select(elementWithMatcher: grey_accessibilityID("captureButton")).assert(grey_enabled(), error: &error)
+        EarlGrey.select(elementWithMatcher: grey_accessibilityID("cameraView_captureButton")).assert(grey_enabled(), error: &error)
         return error == nil
       }
 
       let isCameraEnabled = waitForCameraButton?.wait(withTimeout: 15)
       if(isCameraEnabled)! {
-        //EarlGrey.select(elementWithMatcher: grey_accessibilityID("captureButton")).perform(GREYActions.actionForLongPress(withDuration: 15))
-        EarlGrey.select(elementWithMatcher: grey_accessibilityID("captureButton")).perform(grey_tap())
+        //EarlGrey.select(elementWithMatcher: grey_accessibilityID("cameraView_captureButton")).perform(GREYActions.actionForLongPress(withDuration: 15))
+        EarlGrey.select(elementWithMatcher: grey_accessibilityID("cameraView_captureButton")).perform(grey_tap())
 
-        waitForVisible("markupView")?.wait(withTimeout: 15)
-
-        EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView")).assert(grey_sufficientlyVisible())
-        EarlGrey.select(elementWithMatcher: grey_accessibilityID("drawButton")).assert(grey_sufficientlyVisible()).perform(grey_tap())
-        EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView")).perform(GREYActions.actionForMultiFingerSwipeSlow(in: GREYDirection.up
-          , numberOfFingers: 4))
-        EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView")).perform(GREYActions.actionForSwipeFast(in: GREYDirection.left))
-        EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView")).perform(GREYActions.actionForSwipeFast(in: GREYDirection.right))
-        EarlGrey.select(elementWithMatcher: grey_accessibilityID("markupView")).perform(GREYActions.actionForSwipeFast(in: GREYDirection.down))
-        EarlGrey.select(elementWithMatcher: grey_accessibilityID("backButton")).perform(grey_tap())
-        EarlGrey.select(elementWithMatcher: grey_accessibilityID("nextButton")).perform(grey_tap())
-
-
+        waitForVisible("markupView")?.wait(withTimeout: 30)
+        addMarkup()
       }
     }
 
-    private func confirmOkDialog() {
+    //press the ok button in the confirm dialog
+    private func closeConfirmOkDialog() {
       EarlGrey.select(elementWithMatcher: grey_accessibilityLabel("dialogButton_OK")).perform(grey_tap())
     }
 
+    //close the Confirm dialog
     private func closeConfirmDialog() {
       EarlGrey.select(elementWithMatcher: grey_accessibilityLabel("dialogButton_Confirm")).perform(grey_tap())
+    }
+
+    private func matchVisibleElement() -> MatchesBlock {
+      let matches: MatchesBlock = { (element: Any?) -> Bool in
+        if let element = element as? UIView {
+          return !(element.isHidden)
+        }
+        else {
+          return false
+        }
+      }
+      return matches
     }
 
     private func clearTextField() -> GREYAction {
@@ -86,19 +112,22 @@ class EarlGreyUnitTest: XCTestCase {
     }
 
     private func login() {
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("usernameField")).perform(GREYActions.action(forTypeText: "victor2"))
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("passwordField")).perform(GREYActions.action(forTypeText: "0987654321t"))
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginButton")).perform(GREYActions.actionForTap())
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("letsGoButton")).perform(GREYActions.actionForTap())
+
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginView")).assert(grey_sufficientlyVisible())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginSignUp_usernameField")).perform(GREYActions.action(forTypeText: "victor2"))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginSignUp_passwordField")).perform(GREYActions.action(forTypeText: "0987654321t"))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginSignUp_loginButton")).perform(GREYActions.actionForTap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginSignUp_letsGoButton")).perform(GREYActions.actionForTap())
     }
 
     private func logout() {
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("profileButton")).perform(grey_tap())
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("settingsButton")).perform(grey_tap())
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("logoutButton")).perform(grey_tap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView_profileButton")).perform(grey_tap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("profileView_settingsButton")).perform(grey_tap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("profileView_logoutButton")).perform(grey_tap())
       closeConfirmDialog()
     }
 
+    // helper function to wait for element
     private func waitForVisible(_ accessibilityId: String) -> GREYCondition? {
       let waitForElement = GREYCondition.init(name: "wait for element"){() -> Bool in
         var error: NSError?
@@ -108,94 +137,84 @@ class EarlGreyUnitTest: XCTestCase {
       return waitForElement
     }
 
-
-
-    func testComposeStory() {
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("feedCollectionNode")).assert(grey_sufficientlyVisible())
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("cameraButton")).perform(grey_tap())
+    func testComposeEditDeleteStory1() {
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView")).assert(grey_sufficientlyVisible())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView_cameraButton")).perform(grey_tap())
 
       captureMoment()
 
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("storyEntryView")).assert(grey_sufficientlyVisible())
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("titleTextField")).perform(GREYActions.action(forTypeText: "Test Journal\n"))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("storyEntryView_titleTextField")).perform(GREYActions.action(forTypeText: "Test Journal\n"))
 
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("venueButton")).perform(grey_tap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("storyEntryView_venueButton")).perform(grey_tap())
 
 
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("venueTableView")).assert(grey_sufficientlyVisible())
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("venueSearchBar")).perform(GREYActions.action(forTypeText: "KFC\n"))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("venueTableView_venueSearchBar")).perform(GREYActions.action(forTypeText: "KFC\n"))
 
       EarlGrey.select(elementWithMatcher: grey_text("KFC")).inRoot(grey_kindOfClass(UITableViewCell.self)).atIndex(0).perform(grey_tap())
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("addMomentButton")).perform(grey_tap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("momentCollectionView_addMomentButton")).perform(grey_tap())
 
       captureMoment()
 
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("addMomentButton")).perform(grey_tap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("momentCollectionView_addMomentButton")).perform(grey_tap())
 
       captureMoment()
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("storyEntryView")).perform(GREYActions.actionForSwipeSlow(in: GREYDirection.up))
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("savePostButton")).perform(grey_tap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("storyEntryView_savePostButton")).perform(grey_tap())
 
-      confirmOkDialog()
-        /*
-        let hidden = { () -> GREYAssertionBlock in
-          return GREYAssertionBlock.assertion(withName: "Hidden element",
-                                              assertionBlockWithError: {
-                                                (element: Any?, errorOrNil: UnsafeMutablePointer<NSError?>?) -> Bool in
-                                                guard let view = element! as! UITableView as UITableView! else {
-                                                  let errorInfo = [NSLocalizedDescriptionKey:
-                                                    NSLocalizedString("Element is not a UIView",
-                                                                      comment: "")]
-                                                  errorOrNil?.pointee =
-                                                    NSError(domain: kGREYInteractionErrorDomain,
-                                                            code: 2,
-                                                            userInfo: errorInfo)
-                                                  return false
-                                                }
-                                                return view.isHidden
-          })
-        }
-        */
-
-
-        //EarlGrey.select(elementWithMatcher: grey_kindOfClass(UITableViewCell.self)).assert(grey_text("KFC")).perform(grey_tap())
-        //EarlGrey.select(elementWithMatcher: grey_accessibilityLabel("venueTableBackButton")).perform(grey_tap())
-
-
-
-        //EarlGrey.select(elementWithMatcher: grey_accessibilityID("venueButton"))
-
-      //EarlGrey.select(elementWithMatcher: grey_accessibilityID("captureButton")).perform(GREYActions.actionForLongPress(withDuration: CFTimeInterval(15)))
-
+      closeConfirmOkDialog()
     }
 
-    func testDeleteStory() {
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("profileButton")).perform(grey_tap())
+    func testComposeEditDeleteStory2() {
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView"))
+        .assert(grey_sufficientlyVisible())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView_profileButton")).perform(grey_tap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("feedCollectionNode")).assert(grey_sufficientlyVisible())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("coverEditButton_0")).perform(grey_tap())
+
+      let nonHidden = GREYElementMatcherBlock.init(matchesBlock: matchVisibleElement()) { (description: Any) in
+        let greyDescription:GREYDescription = description as! GREYDescription
+        greyDescription.appendText("Select non hidden element")
+      }
+
+      EarlGrey.select(elementWithMatcher: nonHidden!).inRoot(grey_kindOfClass(MomentCollectionViewCell.self)).atIndex(1).perform(grey_tap())
+      EarlGrey.select(elementWithMatcher: nonHidden!).inRoot(grey_kindOfClass(MomentCollectionViewCell.self)).atIndex(1).perform(grey_doubleTap())
+      modifyMarkup()
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("storyEntryView_titleTextField")).perform(GREYActions.action(forTypeText: " Edited \n"))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("storyEntryView")).perform(GREYActions.actionForSwipeSlow(in: GREYDirection.up))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("storyEntryView_savePostButton")).perform(grey_tap())
+      closeConfirmOkDialog()
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("feedCollectionNode")).perform(GREYActions.actionForSwipeFast(in: GREYDirection.right))
+    }
+
+    func testComposeEditDeleteStory3() {
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView"))
+        .assert(grey_sufficientlyVisible())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView_profileButton")).perform(grey_tap())
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("feedCollectionNode")).assert(grey_sufficientlyVisible())
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("coverEditButton_0")).perform(grey_tap())
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("storyEntryView")).perform(GREYActions.actionForSwipeSlow(in: GREYDirection.up))
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("deletePostButton")).perform(grey_tap())
       EarlGrey.select(elementWithMatcher: grey_accessibilityLabel("dialogButton_Delete")).perform(grey_tap())
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("feedCollectionNode")).perform(GREYActions.actionForSwipeFast(in: GREYDirection.right))
-      sleep(5)
     }
 
     func testMoveToBurquitlam() {
-
-
       // search richmond
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("feedCollectionNode")).assert(grey_sufficientlyVisible())
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("locationField")).perform(GREYActions.action(forTypeText: "Bridgeport\n"))
-     // EarlGrey.select(elementWithMatcher: grey_accessibilityID("locationField")).assert(grey_text("Bridgeport"))
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("searchButton")).assert(grey_interactable()).perform(GREYActions.actionForTap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView"))
+        .assert(grey_sufficientlyVisible())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView_locationField")).assert(grey_sufficientlyVisible()).perform(GREYActions.action(forTypeText: "Bridgeport\n"))
+     // EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView_locationField")).assert(grey_text("Bridgeport"))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("searchButton")).assert(grey_sufficientlyVisible()).perform(GREYActions.actionForTap())
 
       // search buquitlam
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("feedCollectionNode")).assert(grey_sufficientlyVisible())
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("locationField"))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView_locationField"))
         .assert(grey_interactable())
         .perform(clearTextField())
 
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("locationField"))
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView_locationField"))
         .assert(grey_interactable())
         .perform(GREYActions.action(forTypeText: "Burquitlam\n"))
 
@@ -227,11 +246,13 @@ class EarlGreyUnitTest: XCTestCase {
         .perform(GREYActions.actionForSwipeFast(in: GREYDirection.down))
     }
 
+    /*
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {
             // Put the code you want to measure the time of here.
         }
     }
+    */
     
 }

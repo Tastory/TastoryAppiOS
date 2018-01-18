@@ -263,6 +263,8 @@ class MomentCollectionViewController: UICollectionViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    self.view.accessibilityIdentifier = "momentCollectionView"
+
     guard let collectionView = self.collectionView else {
       CCLog.fatal("collection view from momentViewController is nil")
     }
@@ -374,6 +376,12 @@ extension MomentCollectionViewController {
     }
     
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.MomentCellReuseId, for: indexPath) as! MomentCollectionViewCell
+
+    cell.accessibilityLabel = "momentCollectionViewCell"
+    cell.accessibilityTraits = UIAccessibilityTraitButton
+    cell.isAccessibilityElement = true
+    cell.isUserInteractionEnabled = true
+
 
     // Configure Default Cell State
     cell.configureLayers(frame: cell.bounds)

@@ -135,7 +135,7 @@
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Username/E-mail" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="PR8-uW-g7N">
                                                         <rect key="frame" x="38" y="0.0" width="222" height="18"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <accessibility key="accessibilityConfiguration" identifier="usernameField"/>
+                                                        <accessibility key="accessibilityConfiguration" identifier="loginSignUp_usernameField"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="15"/>
                                                         <textInputTraits key="textInputTraits" returnKeyType="next" textContentType="username"/>
@@ -180,7 +180,7 @@
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="HJT-Dp-D5z">
                                                         <rect key="frame" x="38" y="0.0" width="156" height="18"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <accessibility key="accessibilityConfiguration" identifier="passwordField"/>
+                                                        <accessibility key="accessibilityConfiguration" identifier="loginSignUp_passwordField"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="15"/>
                                                         <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="go" secureTextEntry="YES"/>
@@ -228,7 +228,7 @@
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="900" verticalCompressionResistancePriority="900" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rOg-UL-hSk">
                                                 <rect key="frame" x="0.0" y="0.0" width="128" height="56"/>
-                                                <accessibility key="accessibilityConfiguration" identifier="loginButton"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="loginSignUp_loginButton"/>
                                                 <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="15"/>
                                                 <state key="normal" title="Log In" backgroundImage="Login-Small">
                                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -853,7 +853,7 @@
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="900" verticalCompressionResistancePriority="900" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KCa-SE-48t">
                                                 <rect key="frame" x="130" y="0.0" width="128" height="56"/>
-                                                <accessibility key="accessibilityConfiguration" identifier="letsGoButton"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="loginSignUp_letsGoButton"/>
                                                 <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="14"/>
                                                 <state key="normal" title="Proceed" backgroundImage="Login-SmallSolid">
                                                     <color key="titleColor" red="0.98039215690000003" green="0.035294117649999998" blue="0.035294117649999998" alpha="1" colorSpace="calibratedRGB"/>

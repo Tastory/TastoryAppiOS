@@ -157,7 +157,7 @@ class VenueTableViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    venueSearchBar.accessibilityIdentifier = "venueSearchBar"
+    venueSearchBar.accessibilityIdentifier = "venueTableView_venueSearchBar"
     self.view.accessibilityIdentifier = "venueTableView"
 
     venueSearchBar.delegate = self

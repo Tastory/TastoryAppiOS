@@ -24,10 +24,16 @@
             </BuildableReference>
             <SkippedTests>
                <Test
+                  Identifier = "EarlGreyUnitTest/testExample()">
+               </Test>
+               <Test
                   Identifier = "EarlGreyUnitTest/testLogin()">
                </Test>
                <Test
                   Identifier = "EarlGreyUnitTest/testMap()">
+               </Test>
+               <Test
+                  Identifier = "EarlGreyUnitTest/testMoveToBurquitlam()">
                </Test>
                <Test
                   Identifier = "EarlGreyUnitTest/testPerformanceExample()">
@@ -54,6 +60,7 @@
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
+      stopOnEveryMainThreadCheckerIssue = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
       <AdditionalOptions>

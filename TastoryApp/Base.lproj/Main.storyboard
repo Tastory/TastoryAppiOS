@@ -92,7 +92,7 @@
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="McO-aB-Dhs" userLabel="Settings Button">
                                                 <rect key="frame" x="62.5" y="9.5" width="65.5" height="32"/>
-                                                <accessibility key="accessibilityConfiguration" identifier="settingsButton"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="profileView_settingsButton"/>
                                                 <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
                                                 <state key="normal" image="Profile-SettingsButton"/>
                                                 <connections>
@@ -295,7 +295,7 @@
                                 <subviews>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
                                         <rect key="frame" x="-26" y="-15" width="0.0" height="30"/>
-                                        <accessibility key="accessibilityConfiguration" identifier="cameraButton"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="discoverView_cameraButton"/>
                                         <state key="normal" image="Discover-CameraButton"/>
                                         <connections>
                                             <action selector="launchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="k45-JV-u3I"/>
@@ -317,7 +317,7 @@
                                             </button>
                                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A3t-Ta-aKO">
                                                 <rect key="frame" x="-26" y="-658" width="0.0" height="28"/>
-                                                <accessibility key="accessibilityConfiguration" identifier="profileButton"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="discoverView_profileButton"/>
                                                 <state key="normal" image="Discover-ProfileButton"/>
                                                 <connections>
                                                     <action selector="profileAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LLt-lz-SBf"/>
@@ -346,7 +346,7 @@
                                             </button>
                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Jump to Location" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
                                                 <rect key="frame" x="46" y="4.5" width="253" height="18"/>
-                                                <accessibility key="accessibilityConfiguration" identifier="locationField"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="discoverView_locationField"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="15"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes" textContentType="location"/>
