@@ -46,6 +46,7 @@ class DiscoverViewController: OverlayViewController {
   // MARK: - Class Constants
   fileprivate struct Constants {
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
+    static let InitQueryMinStories: UInt = 20 // Try to find a radius that at least finds 20 stories in the beginning
     static let PullTranslationForChange: CGFloat = 50.0  // In Points
     static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.6
     static let SearchBackgroundBlackAlpha: CGFloat = 0.6
@@ -351,7 +352,7 @@ class DiscoverViewController: OverlayViewController {
     if !onAllUsers {
       // Add Filter so only Post with more than Limit Disoverability can be seen
       // query.addRoleFilter(min: .user, max: nil)
-      query.addDiscoverabilityFilter(min: .normal, max: nil)
+      query.addDiscoverabilityFilter(min: .hidden, max: nil)
       
       // Make sure you can alway see your own posts
       if let currentUser = FoodieUser.current, currentUser.isRegistered {
@@ -387,7 +388,7 @@ class DiscoverViewController: OverlayViewController {
     }
   }
 
-  private func unwrapQueryRefreshDiscoveryView(stories: [FoodieStory]?,query: FoodieQuery?, error :Error?) {
+  private func unwrapQueryRefreshDiscoveryView(stories: [FoodieStory]?,query: FoodieQuery?, error :Error?, currentLocation coordinate: CLLocationCoordinate2D? = nil) {
     if let error = error {
       if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {
         AlertDialog.present(from: self, title: "Search Area Too Large", message: "Max search distance for a side is 100km. Please reduce the range and try again")
@@ -408,10 +409,10 @@ class DiscoverViewController: OverlayViewController {
 
     self.storyQuery = query
     self.storyArray = stories
-    self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true)
+    self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true, currentLocation: coordinate)
   }
 
-  private func refreshDiscoverView(onStories stories: [FoodieStory], zoomToRegion: Bool, scrollAndSelectStory: Bool) {
+  private func refreshDiscoverView(onStories stories: [FoodieStory], zoomToRegion: Bool, scrollAndSelectStory: Bool, currentLocation coordinate: CLLocationCoordinate2D? = nil) {
     var newAnnotations = [StoryMapAnnotation]()
     
     if stories.count <= 0 {
@@ -470,7 +471,7 @@ class DiscoverViewController: OverlayViewController {
       self.storyAnnotations = newAnnotations
       
       if zoomToRegion {
-        self.mapNavController?.showRegionExposed(containing: newAnnotations)
+        self.mapNavController?.showRegionExposed(containing: newAnnotations, currentLocation: coordinate)
       }
       
       self.feedCollectionNodeController.resetCollectionNode(with: stories) {
@@ -760,10 +761,7 @@ class DiscoverViewController: OverlayViewController {
       }
     }
     
-
-
-    if(forceRequery) {
-
+    if forceRequery {
       forceRequery = false
 
       guard let storyQuery = storyQuery else {
@@ -774,10 +772,9 @@ class DiscoverViewController: OverlayViewController {
       // requery
       storyQuery.initStoryQueryAndSearch { (stories, error) in
         self.unwrapQueryRefreshDiscoveryView(stories: stories, query: storyQuery, error: error)
-
       }
-
     }
+      
     // Resume from last map region
     else if let mapState = lastMapState {
 
@@ -789,11 +786,11 @@ class DiscoverViewController: OverlayViewController {
       }
       
       if let annotationIndex = lastSelectedAnnotationIndex {
-           let annotationToSelect = storyAnnotations[annotationIndex]
-            mapController.select(annotation: annotationToSelect, animated: true)
+        let annotationToSelect = storyAnnotations[annotationIndex]
+        mapController.select(annotation: annotationToSelect, animated: true)
       }
     }
-    
+      
     // First time on the map. Try to get the location, and get an initial query if successful
     else {
       LocationWatch.global.get { location, error in
@@ -818,11 +815,15 @@ class DiscoverViewController: OverlayViewController {
         // Move the map to the initial location as a fallback incase the query fails
         DispatchQueue.main.async { mapController.showCurrentRegionExposed(animated: true) }
 
-        let region = MKCoordinateRegionMakeWithDistance(location.coordinate, mapController.defaultMapWidth, mapController.defaultMapWidth)
         // Do an Initial Search near the Current Location
-        self.performQuery(at: region.toMapRect()) { stories, query, error in
-          self.unwrapQueryRefreshDiscoveryView(stories: stories, query: query, error: error)
+        FoodieQuery.queryInitStories(at: location.coordinate, minStories: Constants.InitQueryMinStories) { (stories, query, error) in
+          self.unwrapQueryRefreshDiscoveryView(stories: stories, query: query, error: error, currentLocation: location.coordinate)
         }
+        
+//        let region = MKCoordinateRegionMakeWithDistance(location.coordinate, mapController.defaultMapWidth, mapController.defaultMapWidth)
+//        self.performQuery(at: region.toMapRect()) { stories, query, error in
+//          self.unwrapQueryRefreshDiscoveryView(stories: stories, query: query, error: error)
+//        }
       }
     }
     

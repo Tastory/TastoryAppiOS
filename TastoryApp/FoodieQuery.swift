@@ -40,6 +40,10 @@ class FoodieQuery {
   struct Constants {
     static let QueryRetryCount = 5
     static let QueryRetryDelaySeconds: Double = 0.5
+    static let RadiusForMinStoriesFunctionName = "radiusForMinStories"
+    static let RadiusForMinStoriesCloudParamLatitude = "latitude"
+    static let RadiusForMinStoriesCloudParamLongitude = "longitude"
+    static let RadiusForMinStoriesCloudParamMinStories = "minStories"
   }
   
   
@@ -50,6 +54,8 @@ class FoodieQuery {
     case cannotCreatePFQuery
     case noPFQueryToPerformAnotherSearch
     case getFirstResultedInMoreThanOne
+    case queryInitStoriesNoRadius
+    case queryInitStoriesNoResults
     
     var errorDescription: String? {
       switch self {
@@ -59,6 +65,10 @@ class FoodieQuery {
         return NSLocalizedString("No initial PFQuery created, so cannot get another batch of query results", comment: "Error description for a FoodieQuery error code")
       case .getFirstResultedInMoreThanOne:
         return NSLocalizedString("Not expecting more than 1 Story when getting first from Draft", comment: "Error description for a FoodieQuery error code")
+      case .queryInitStoriesNoRadius:
+        return NSLocalizedString("Initial search radius = nil from Cloud Function", comment: "Error description for a FoodieQuery error code")
+      case .queryInitStoriesNoResults:
+        return NSLocalizedString("Initial stories = nil from initial Query", comment: "Error description for a FoodieQuery error code")
       }
     }
     
@@ -125,6 +135,60 @@ class FoodieQuery {
         callback?(objects[0], error)
       } else {
         callback?(nil, error)
+      }
+    }
+  }
+  
+  
+  static func queryInitStories(at coordinate: CLLocationCoordinate2D, minStories: UInt, withBlock callback: StoriesQueryBlock?) {
+    
+    let cloudFunctionName = Constants.RadiusForMinStoriesFunctionName
+    
+    // Setup parameters and submit Cloud function
+    var parameters = [AnyHashable: Any]()
+    parameters[Constants.RadiusForMinStoriesCloudParamLatitude] = coordinate.latitude
+    parameters[Constants.RadiusForMinStoriesCloudParamLongitude] = coordinate.longitude
+    parameters[Constants.RadiusForMinStoriesCloudParamMinStories] = minStories
+    
+    PFCloud.callFunction(inBackground: cloudFunctionName, withParameters: parameters) { (radius, error) in
+      
+      if let error = error {
+        CCLog.warning("PFCloud Function \(cloudFunctionName) failed - \(error.localizedDescription)")
+        callback?(nil, nil, error)
+        return
+      }
+      
+      guard let radius = radius as? Double else {
+        CCLog.warning("PFCloud Function \(cloudFunctionName) expected to return Radius")
+        callback?(nil, nil, ErrorCode.queryInitStoriesNoRadius)
+        return
+      }
+      
+      let query = FoodieQuery()
+      query.addLocationFilter(origin: coordinate, radius: radius)
+      query.addDiscoverabilityFilter(min: .hidden, max: nil)
+
+      query.setSkip(to: 0)
+      query.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)
+      _ = query.addArrangement(type: .discoverability, direction: .descending)
+      _ = query.addArrangement(type: .creationTime, direction: .descending)
+      
+      // Actually do the Query
+      query.initStoryQueryAndSearch { (stories, error) in
+        
+        if let error = error {
+          CCLog.warning("Create Story Query & Search failed with error: \(error.localizedDescription)")
+          callback?(nil, nil, error)
+          return
+        }
+        
+        guard let stories = stories else {
+          CCLog.warning("Create Story Query & Search returned with nil Story Array")
+          callback?(nil, nil, ErrorCode.queryInitStoriesNoResults)
+          return
+        }
+        
+        callback?(stories, query, nil)
       }
     }
   }
@@ -408,7 +472,7 @@ class FoodieQuery {
       }
       
       if let minDiscoverability = minDiscoverability {
-        coreQuery.whereKey("discoverability", greaterThanOrEqualTo: minDiscoverability.rawValue)
+        coreQuery.whereKey("discoverability", greaterThan: minDiscoverability.rawValue)
       }
     
       pfQuery = PFQuery.orQuery(withSubqueries: [coreQuery, ownQuery])
@@ -420,7 +484,7 @@ class FoodieQuery {
       }
       
       if let minDiscoverability = minDiscoverability {
-        coreQuery.whereKey("discoverability", greaterThanOrEqualTo: minDiscoverability.rawValue)
+        coreQuery.whereKey("discoverability", greaterThan: minDiscoverability.rawValue)
       }
       
       pfQuery = coreQuery

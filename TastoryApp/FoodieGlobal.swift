@@ -15,6 +15,8 @@ typealias BooleanErrorBlock = (Bool, Error?) -> Void
 typealias AnyErrorBlock = (Any?, Error?) -> Void
 typealias SimpleErrorBlock = (Error?) -> Void
 typealias UserErrorBlock = (FoodieUser?, Error?) -> Void
+typealias StoryErrorBlock = (FoodieStory?, Error?) -> Void
+typealias StoriesErrorBlock = ([FoodieStory]?, Error?) -> Void
 typealias SimpleBlock = () -> Void
 
 

@@ -33,6 +33,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   // MARK: - Types & Enums
   enum Discoverability: UInt {
+    case hidden = 0
     case limited = 10
     case normal = 20
   }

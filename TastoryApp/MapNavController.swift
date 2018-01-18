@@ -32,13 +32,12 @@ class MapNavController: ASNavigationController {
   struct Constants {
     static let DefaultCLCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(49.2781372),
                                                               longitude: CLLocationDegrees(-123.1187237))  // This is set to Vancouver
-    static let DefaultMinMapWidth: CLLocationDistance = 800 // 800m
-    static let DefaultMapWidth: CLLocationDistance = 5000 // 5.0km
-    static let DefaultMaxMapWidth: CLLocationDistance = 10000  // 10.0km
+    static let DefaultMinMapWidth: CLLocationDistance = 500 // 500m
+    static let DefaultMapWidth: CLLocationDistance = 1600 // 1.6km
+    static let DefaultMaxMapWidth: CLLocationDistance = 2500  // 1.6km
     
-    static let MapAnnotationMarginFraction: Double = 0.10
+    static let MapAnnotationMarginFraction: Double = 0.08
   }
-  
   
   
   // MARK: - Private Instance Variables
@@ -48,7 +47,6 @@ class MapNavController: ASNavigationController {
   private var exposedRect: CGRect?
   private var currentMapWidth: CLLocationDistance?
 
-  
   
   // MARK: - Public Instance Variable
   
@@ -198,7 +196,8 @@ class MapNavController: ASNavigationController {
   
   func showRegionExposed(containing annotations: [MKAnnotation],
                          onlyIfCurrentTooBig tooBigOnly: Bool = false,
-                         turnOffTracking: Bool = true) {
+                         turnOffTracking: Bool = true,
+                         currentLocation coordinate: CLLocationCoordinate2D? = nil) {
     
     if turnOffTracking { stopTracking() }
     if annotations.count <= 0 { return }
@@ -223,6 +222,23 @@ class MapNavController: ASNavigationController {
         mapMinY = annotationMapPoint.y
       } else if annotationMapPoint.y > mapMaxY {
         mapMaxY = annotationMapPoint.y
+      }
+    }
+    
+    // Include the current location in the bounding
+    if let coordinate = coordinate {
+      let currentMapPoint = MKMapPointForCoordinate(coordinate)
+      
+      if currentMapPoint.x < mapMinX {
+        mapMinX = currentMapPoint.x
+      } else if currentMapPoint.x > mapMaxX {
+        mapMaxX = currentMapPoint.x
+      }
+      
+      if currentMapPoint.y < mapMinY {
+        mapMinY = currentMapPoint.y
+      } else if currentMapPoint.y > mapMaxY {
+        mapMaxY = currentMapPoint.y
       }
     }
     
@@ -295,7 +311,6 @@ class MapNavController: ASNavigationController {
   
   
   // Map Tracking Management
-  
   func stopTracking() {
     CCLog.verbose("MapNav Stop Tracking")
     isTracking = false
@@ -311,12 +326,7 @@ class MapNavController: ASNavigationController {
   
   
   
-
-  
-  
-  
   // MARK: - View Controller Lifecycle
-  
   override func viewDidLoad() {
     super.viewDidLoad()
     
