@@ -167,6 +167,11 @@ class FoodieQuery {
       let query = FoodieQuery()
       query.addLocationFilter(origin: coordinate, radius: radius)
       query.addDiscoverabilityFilter(min: .hidden, max: nil)
+      
+      // Make sure you can alway see your own posts
+      if let currentUser = FoodieUser.current, currentUser.isRegistered {
+        query.setOwnStoriesAlso()
+      }
 
       query.setSkip(to: 0)
       query.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)

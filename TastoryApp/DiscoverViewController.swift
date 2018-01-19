@@ -814,9 +814,11 @@ class DiscoverViewController: OverlayViewController {
         
         // Move the map to the initial location as a fallback incase the query fails
         DispatchQueue.main.async { mapController.showCurrentRegionExposed(animated: true) }
-
+        self.activitySpinner.apply()
+        
         // Do an Initial Search near the Current Location
         FoodieQuery.queryInitStories(at: location.coordinate, minStories: Constants.InitQueryMinStories) { (stories, query, error) in
+          self.activitySpinner.remove()
           self.unwrapQueryRefreshDiscoveryView(stories: stories, query: query, error: error, currentLocation: location.coordinate)
         }
         
