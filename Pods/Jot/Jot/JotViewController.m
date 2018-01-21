@@ -494,9 +494,9 @@ static const CGFloat iPhone6HeightPoints = 667.0;
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
-        return YES;
-    }
+//    if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+//        return YES;
+//    }
     return NO;
 }
 
