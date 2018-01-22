@@ -43,6 +43,9 @@ class MarkupViewController: OverlayViewController {
     static let SizeSliderMaxFont: CGFloat = 64.0
     static let SizeSliderMinFont: CGFloat = 10.0
     static let SizeSliderDefaultFont: CGFloat = 36.0
+    static let StrokeSliderMaxPt: CGFloat = 32.0
+    static let StrokeSliderMinPt: CGFloat = 5.0
+    static let StrokeSliderDefaultPt: CGFloat = 18.0
     static let SemiTransparentBackingAlpha: CGFloat = 0.5
     static let WhiteTextThreshold: CGFloat = 0.1
   }
@@ -70,6 +73,7 @@ class MarkupViewController: OverlayViewController {
   
   
   // MARK: - Private Instance Variables
+  
   private var isInitialLayout = true
   
   private let jotViewController = JotViewController()
@@ -223,6 +227,11 @@ class MarkupViewController: OverlayViewController {
     
     colorSliderMode = .strokeColor
     colorSlider.color = jotViewController.drawingColor ?? UIColor.white
+    
+    var strokeWidth = jotViewController.drawingStrokeWidth
+    strokeWidth = max(jotViewController.drawingStrokeWidth, Constants.StrokeSliderMinPt)
+    strokeWidth = min(jotViewController.drawingStrokeWidth, Constants.StrokeSliderMaxPt)
+    sizeSlider.progress = 1 - ((strokeWidth - Constants.StrokeSliderMinPt)/(Constants.StrokeSliderMaxPt - Constants.StrokeSliderMinPt))
   }
   
   
@@ -411,11 +420,11 @@ class MarkupViewController: OverlayViewController {
   @objc private func sizeSliderChanged(_ slider: Slider) {
     //view.endEditing(true)
     
-    let fontSize = (1-slider.progress)*(Constants.SizeSliderMaxFont-Constants.SizeSliderMinFont)+Constants.SizeSliderMinFont
-    
     if jotViewController.state == .drawLines || jotViewController.state == .drawing {
-      jotViewController.drawingStrokeWidth = fontSize/2
+      let strokeWidth = (1-slider.progress)*(Constants.StrokeSliderMaxPt-Constants.StrokeSliderMinPt)+Constants.StrokeSliderMinPt
+      jotViewController.drawingStrokeWidth = strokeWidth
     } else {
+      let fontSize = (1-slider.progress)*(Constants.SizeSliderMaxFont-Constants.SizeSliderMinFont)+Constants.SizeSliderMinFont
       jotViewController.fontSize = fontSize
     }
   }
@@ -640,9 +649,9 @@ class MarkupViewController: OverlayViewController {
     jotViewController.delegate = self
     jotViewController.textAlignment = .center
     jotViewController.textColor = UIColor.white
-    jotViewController.font = getNextFont(size: CGFloat(Constants.SizeSliderDefaultFont))
-    jotViewController.fontSize = CGFloat(Constants.SizeSliderDefaultFont)
-    jotViewController.drawingStrokeWidth = CGFloat(Constants.SizeSliderDefaultFont)/2
+    jotViewController.font = getNextFont(size: Constants.SizeSliderDefaultFont)
+    jotViewController.fontSize = Constants.SizeSliderDefaultFont
+    jotViewController.drawingStrokeWidth = Constants.StrokeSliderDefaultPt
     jotViewController.drawingColor = UIColor.white
     jotViewController.backingColor = UIColor.white.withAlphaComponent(0.0)
     
@@ -814,8 +823,8 @@ extension MarkupViewController: JotViewControllerDelegate {
       
       // Size Slider
       var fontSize = jotViewController.fontSize
-      fontSize = CGFloat.minimum(fontSize, Constants.SizeSliderMinFont)
-      fontSize = CGFloat.maximum(fontSize, Constants.SizeSliderMaxFont)
+      fontSize = CGFloat.maximum(fontSize, Constants.SizeSliderMinFont)
+      fontSize = CGFloat.minimum(fontSize, Constants.SizeSliderMaxFont)
       sizeSlider.progress = 1 - ((fontSize - Constants.SizeSliderMinFont) / (Constants.SizeSliderMaxFont-Constants.SizeSliderMinFont))
 
       // Align Button

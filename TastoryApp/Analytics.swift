@@ -66,7 +66,7 @@ class Analytics {
   
   static func logStoryViewEvent(storyId: String, name: String, authorId: String, launchType: StoryLaunchType, totalMoments: Int) {
     Answers.logContentView(withName: name, contentType: "Story", contentId: storyId, customAttributes: ["Author ID" : authorId,
-                                                                                                        "Launch Type" : launchType,
+                                                                                                        "Launch Type" : launchType.rawValue,
                                                                                                         "Total Moments" : totalMoments])
   }
   

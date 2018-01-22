@@ -208,7 +208,7 @@
 	self.selectedLabel.numberOfLines = (self.fitOriginalFontSizeToViewWidth ? 0 : 1);
 	self.selectedLabel.initialTextInsets = self.initialTextInsets;
 	self.selectedLabel.font = self.font;
-	self.selectedLabel.unscaledFontSize = self.font.pointSize;
+  self.selectedLabel.unscaledFontSize = self.fontSize;
 	self.selectedLabel.textColor = self.textColor;
 	self.selectedLabel.textAlignment = self.textAlignment;
   self.selectedLabel.layer.backgroundColor = [self.backingColor CGColor];

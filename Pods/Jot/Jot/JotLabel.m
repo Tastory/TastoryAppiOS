@@ -291,7 +291,7 @@ CGFloat const bgCornerRadiusAsFontFraction = 0.3f;
     NSNumber *numberRed = color[kBgColorRed];
     NSNumber *numberGreen = color[kBgColorGreen];
     NSNumber *numberBlue = color[kBgColorBlue];
-    NSNumber *numberAlpha = color[kLabelColorAlpha];
+    NSNumber *numberAlpha = color[kBgColorAlpha];
     
     self.layer.backgroundColor = [[UIColor colorWithRed:[numberRed floatValue]
                                                   green:[numberGreen floatValue]

@@ -173,14 +173,14 @@ static const CGFloat iPhone6HeightPoints = 667.0;
             } else if (label.selected) {
                 // a tap on a label already selected
                 self.textEditView.textString = label.text;
-                self.textEditView.font = label.font;
                 self.textEditView.fontSize = label.unscaledFontSize;
+                self.textEditView.font = label.font;
                 self.textEditView.textColor = label.textColor;
                 self.textEditView.backingColor = [UIColor colorWithCGColor:label.layer.backgroundColor];
                 self.textAlignment = label.textAlignment;
-                
-                self.font = label.font;
+              
                 self.fontSize = label.unscaledFontSize;
+                self.font = [label.font fontWithSize:label.unscaledFontSize];
                 self.textColor = label.textColor;
                 self.backingColor = [UIColor colorWithCGColor:label.layer.backgroundColor];
                 self.textAlignment = label.textAlignment;
