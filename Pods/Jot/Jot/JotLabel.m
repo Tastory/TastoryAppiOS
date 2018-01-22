@@ -31,10 +31,12 @@ NSString *const kTextInsetBottom = @"TextInsetBottom";
 NSString *const kTextInsetLeft = @"TextInsetLeft";
 NSString *const kTextInsetRight = @"TextInsetRight";
 
+CGFloat const bgPadWidthAsFontFraction = 0.5f; // Hand tuned numbers
+CGFloat const bgPadHeightAsFontFraction = 0.25f;
+CGFloat const bgCornerRadiusAsFontFraction = 0.3f;
 
 @interface JotLabel ()
 
-@property (nonatomic, strong) CAShapeLayer *borderLayer;
 @end
 
 @implementation JotLabel
@@ -49,9 +51,33 @@ NSString *const kTextInsetRight = @"TextInsetRight";
     
     // Create a little background placeholder for the label
     self.layer.backgroundColor = [[UIColor colorWithWhite:0.0 alpha:0.0] CGColor];
-    self.layer.cornerRadius = 5.0;
 	}
 	return self;
+}
+
+- (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines
+{
+  UIEdgeInsets insets = UIEdgeInsetsMake(self.font.pointSize * bgPadHeightAsFontFraction,
+                                         self.font.pointSize * bgPadWidthAsFontFraction,
+                                         self.font.pointSize * bgPadHeightAsFontFraction,
+                                         self.font.pointSize * bgPadWidthAsFontFraction);
+  CGRect rect = [super textRectForBounds:UIEdgeInsetsInsetRect(bounds, insets)
+                  limitedToNumberOfLines:numberOfLines];
+  
+  rect.origin.x    -= insets.left;
+  rect.origin.y    -= insets.top;
+  rect.size.width  += (insets.left + insets.right);
+  rect.size.height += (insets.top + insets.bottom);
+  
+  return rect;
+}
+
+- (void)drawTextInRect:(CGRect)rect
+{
+  [super drawTextInRect:UIEdgeInsetsInsetRect(rect, UIEdgeInsetsMake(self.font.pointSize * bgPadHeightAsFontFraction,
+                                                                     self.font.pointSize * bgPadWidthAsFontFraction,
+                                                                     self.font.pointSize * bgPadHeightAsFontFraction,
+                                                                     self.font.pointSize * bgPadWidthAsFontFraction))];
 }
 
 - (void)setSelected:(BOOL)selected {
@@ -100,7 +126,8 @@ NSString *const kTextInsetRight = @"TextInsetRight";
                     _unscaledFrame.size.height * _scale);// * 1.03f);
 		CGFloat currentFontSize = self.unscaledFontSize * _scale;
 		self.font = [self.font fontWithSize:currentFontSize];
-		
+		self.layer.cornerRadius = currentFontSize * bgCornerRadiusAsFontFraction;
+    
 		self.frame = scaledFrame;
 		self.center = labelCenter;
 		self.transform = CGAffineTransformMakeRotation(angle);
@@ -139,11 +166,12 @@ NSString *const kTextInsetRight = @"TextInsetRight";
 	CGSize originalSize = [temporarySizingLabel sizeThatFits:insetViewRect.size];
 	temporarySizingLabel.frame = CGRectMake(0.f,
 											0.f,
-											originalSize.width * 1.03f,
-											originalSize.height * 1.03f);
+											originalSize.width,
+                      originalSize.height * 1.03f);
 	temporarySizingLabel.center = self.center;
   
 	self.unscaledFrame = temporarySizingLabel.frame;
+  self.layer.cornerRadius = self.unscaledFontSize * self.scale * bgCornerRadiusAsFontFraction;
 }
 
 
