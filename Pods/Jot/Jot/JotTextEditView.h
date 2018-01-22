@@ -102,11 +102,9 @@
 @property (nonatomic) BOOL adjustContentInsetsOnKeyboardFrameChange;
 
 /**
- *  Greyscale & alpha value of the textView background color
+ *  The color of the label & textView backings in the JotTextView and the JotTextEditView.
  */
-@property (nonatomic, assign) CGFloat whiteValue;
-@property (nonatomic, assign) CGFloat alphaValue;
-
+@property (nonatomic, strong) UIColor *backingColor;
 
 @end
 

@@ -27,12 +27,24 @@ protocol MarkupReturnDelegate: class {
 
 class MarkupViewController: OverlayViewController {
   
+  
+  // MARK: - Types & Enumerations
+  
+  enum ColorSliderModeEnum {
+    case strokeColor
+    case backingColor
+  }
+  
+  
+  
   // MARK: - Constants
   
   struct Constants {
     static let SizeSliderMaxFont: CGFloat = 64.0
     static let SizeSliderMinFont: CGFloat = 10.0
     static let SizeSliderDefaultFont: CGFloat = 36.0
+    static let SemiTransparentBackingAlpha: CGFloat = 0.5
+    static let WhiteTextThreshold: CGFloat = 0.1
   }
   
   
@@ -70,7 +82,7 @@ class MarkupViewController: OverlayViewController {
 
   private var colorSlider: ColorSlider!
   private var sizeSlider: Slider!
-  
+  private var colorSliderMode: ColorSliderModeEnum = .strokeColor
   private var soundOn = true
   private var fontArrayIndex = 0
   
@@ -121,12 +133,22 @@ class MarkupViewController: OverlayViewController {
     switch alignment {
     case .left:
       alignment = .center
+      alignButton.setImage(UIImage(named: "Markup-Align-Center"), for: .normal)
+      
     case .center:
       alignment = .right
+      alignButton.setImage(UIImage(named: "Markup-Align-Right"), for: .normal)
+      
     case .right:
+//      alignment = .justified // .left
+//      alignButton.setImage(UIImage(named: "Markup-Align-Justified"), for: .normal)
+//
+//    case .justified:
       alignment = .left
+      alignButton.setImage(UIImage(named: "Markup-Align-Left"), for: .normal)
+      
     default:
-      alignment = .left
+      alignment = .center
     }
     
     jotViewController.textAlignment = alignment
@@ -134,24 +156,50 @@ class MarkupViewController: OverlayViewController {
   
   
   @IBAction func backgroundButtonAction(_ sender: UIButton) {
-    var whiteValue = jotViewController.whiteValue
-    var alphaValue = jotViewController.alphaValue
     
-    //jotViewController.state = .text
+    var backingRed: CGFloat = 0.0
+    var backingGreen: CGFloat = 0.0
+    var backingBlue: CGFloat = 0.0
+    var backingAlpha: CGFloat = 0.0
+    var backingColor = jotViewController.backingColor ?? UIColor(white: 1.0, alpha: 0.0)
     
-    if whiteValue == 0.0, alphaValue == 0.0 {
-      whiteValue = 0.0
-      alphaValue = 0.3
-    } else if whiteValue == 0.0, alphaValue == 0.3 {
-      whiteValue = 1.0
-      alphaValue = 0.3
-    } else if whiteValue == 1.0, alphaValue == 0.3 {
-      whiteValue = 0.0
-      alphaValue = 0.0
+    backingColor.getRed(&backingRed, green: &backingGreen, blue: &backingBlue, alpha: &backingAlpha)
+    
+    switch backingAlpha {
+    case 1.0:
+      colorSliderMode = .strokeColor
+      jotViewController.textColor = colorSlider.color
+      
+      backingColor = UIColor.white.withAlphaComponent(0.0)
+      backgroundButton.setImage(UIImage(named: "Markup-Bg-Clear"), for: .normal)
+      
+    case 0.0:
+      colorSliderMode = .backingColor
+      
+      backingColor = colorSlider.color.withAlphaComponent(Constants.SemiTransparentBackingAlpha)
+      backgroundButton.setImage(UIImage(named: "Markup-Bg-Transparent"), for: .normal)
+      
+      jotViewController.textColor = UIColor.white
+
+    default:
+      colorSliderMode = .backingColor
+      
+      backingColor = colorSlider.color.withAlphaComponent(1.0)
+      backgroundButton.setImage(UIImage(named: "Markup-Bg-Opaque"), for: .normal)
+      
+      var backingHue: CGFloat = 0.0
+      var backingSaturation: CGFloat = 0.0
+      var backingBrightness: CGFloat = 0.0
+      backingColor.getHue(&backingHue, saturation: &backingSaturation, brightness: &backingBrightness, alpha: &backingAlpha)
+      
+      if (backingSaturation < Constants.WhiteTextThreshold), (backingBrightness > (1.0 - Constants.WhiteTextThreshold)) {
+        jotViewController.textColor = UIColor.black
+      } else {
+        jotViewController.textColor = UIColor.white
+      }
     }
     
-    jotViewController.whiteValue = whiteValue
-    jotViewController.alphaValue = alphaValue
+    jotViewController.backingColor = backingColor
   }
   
   
@@ -172,6 +220,9 @@ class MarkupViewController: OverlayViewController {
     view.endEditing(true)
     jotViewController.state = .drawing
     drawModeMinimumUI()  // Must call this here. drawBegan only pertains to actually drawing, not the draw mode
+    
+    colorSliderMode = .strokeColor
+    colorSlider.color = jotViewController.drawingColor ?? UIColor.white
   }
   
   
@@ -320,18 +371,53 @@ class MarkupViewController: OverlayViewController {
   // MARK: - Private Instance Functions
   
   @objc private func colorSliderChanged(_ slider: ColorSlider) {
-    view.endEditing(true)
-    jotViewController.drawingColor = slider.color
-    jotViewController.textColor = slider.color
+    //view.endEditing(true)
+    
+    switch colorSliderMode {
+    case .strokeColor:
+      if jotViewController.state == .drawing || jotViewController.state == .drawLines {
+        jotViewController.drawingColor = slider.color
+      } else {
+        jotViewController.textColor = slider.color
+      }
+      
+    case .backingColor:
+      var backingHue: CGFloat = 0.0
+      var backingSaturation: CGFloat = 0.0
+      var backingBrightness: CGFloat = 0.0
+      var backingAlpha: CGFloat = 0.0
+      
+      var backingColor = jotViewController.backingColor ?? UIColor(white: 1.0, alpha: 0.0)
+      backingColor.getHue(&backingHue, saturation: &backingSaturation, brightness: &backingBrightness, alpha: &backingAlpha)
+      
+      backingColor = slider.color.withAlphaComponent(backingAlpha)
+      jotViewController.backingColor = backingColor
+      
+      var textColor = UIColor.white
+      
+      if backingAlpha > Constants.SemiTransparentBackingAlpha {
+        backingColor.getHue(&backingHue, saturation: &backingSaturation, brightness: &backingBrightness, alpha: &backingAlpha)
+        
+        if (backingSaturation < Constants.WhiteTextThreshold), (backingBrightness > (1.0 - Constants.WhiteTextThreshold)) {
+          textColor = UIColor.black
+        }
+      }
+      
+      jotViewController.textColor = textColor
+    }
   }
   
   
   @objc private func sizeSliderChanged(_ slider: Slider) {
-    view.endEditing(true)
-
+    //view.endEditing(true)
+    
     let fontSize = (1-slider.progress)*(Constants.SizeSliderMaxFont-Constants.SizeSliderMinFont)+Constants.SizeSliderMinFont
-    jotViewController.fontSize = fontSize
-    jotViewController.drawingStrokeWidth = fontSize/2
+    
+    if jotViewController.state == .drawLines || jotViewController.state == .drawing {
+      jotViewController.drawingStrokeWidth = fontSize/2
+    } else {
+      jotViewController.fontSize = fontSize
+    }
   }
   
   
@@ -558,8 +644,7 @@ class MarkupViewController: OverlayViewController {
     jotViewController.fontSize = CGFloat(Constants.SizeSliderDefaultFont)
     jotViewController.drawingStrokeWidth = CGFloat(Constants.SizeSliderDefaultFont)/2
     jotViewController.drawingColor = UIColor.white
-    jotViewController.whiteValue = 0.0
-    jotViewController.alphaValue = 0.0
+    jotViewController.backingColor = UIColor.white.withAlphaComponent(0.0)
     
     addChildViewController(jotViewController)
     mediaView.addSubview(jotViewController.view)
@@ -702,6 +787,52 @@ extension MarkupViewController: JotViewControllerDelegate {
     if isEditing {
       CCLog.verbose("JotViewController is Editing")
       textEditModeMinimumUI()
+      
+      // Restore all state from the JotViewController
+      
+      // Color Slider & Background Button
+      var backingAlpha: CGFloat = 0.0
+      let backingColor = jotViewController.backingColor ?? UIColor(white: 1.0, alpha: 0.0)
+      backingColor.getHue(nil, saturation: nil, brightness: nil, alpha: &backingAlpha)
+      
+      switch backingAlpha {
+      case 0.0:
+        colorSliderMode = .strokeColor
+        colorSlider.color = jotViewController.textColor
+        backgroundButton.setImage(UIImage(named: "Markup-Bg-Clear"), for: .normal)
+        
+      case 1.0:
+        colorSliderMode = .backingColor
+        colorSlider.color = jotViewController.backingColor
+        backgroundButton.setImage(UIImage(named: "Markup-Bg-Opaque"), for: .normal)
+      
+      default:
+        colorSliderMode = .backingColor
+        colorSlider.color = jotViewController.backingColor.withAlphaComponent(1.0)
+        backgroundButton.setImage(UIImage(named: "Markup-Bg-Transparent"), for: .normal)
+      }
+      
+      // Size Slider
+      var fontSize = jotViewController.fontSize
+      fontSize = CGFloat.minimum(fontSize, Constants.SizeSliderMinFont)
+      fontSize = CGFloat.maximum(fontSize, Constants.SizeSliderMaxFont)
+      sizeSlider.progress = 1 - ((fontSize - Constants.SizeSliderMinFont) / (Constants.SizeSliderMaxFont-Constants.SizeSliderMinFont))
+
+      // Align Button
+      let alignment = jotViewController.textAlignment
+      
+      switch alignment {
+      case .left:
+        alignButton.setImage(UIImage(named: "Markup-Align-Left"), for: .normal)
+      case .right:
+        alignButton.setImage(UIImage(named: "Markup-Align-Right"), for: .normal)
+      case .justified:
+        alignButton.setImage(UIImage(named: "Markup-Align-Justified"), for: .normal)
+      default:
+        alignButton.setImage(UIImage(named: "Markup-Align-Center"), for: .normal)
+        jotViewController.textAlignment = .center
+      }
+      
     } else {
       CCLog.verbose("JotViewController is not Editing")
       textModeMinimumUI()

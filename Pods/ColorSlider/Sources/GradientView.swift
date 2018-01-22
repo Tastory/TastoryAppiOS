@@ -47,15 +47,21 @@ public final class GradientView: UIView {
 	/// Defaults to `1`.
 	public var saturation: CGFloat = 1 {
 		didSet {
-			gradient = Gradient.colorSliderGradient(saturation: saturation, whiteInset: whiteInset, blackInset: blackInset)
+			gradient = Gradient.colorSliderGradient(saturation: saturation, brightness: brightness, whiteInset: whiteInset, blackInset: blackInset)
 		}
 	}
+  
+  public var brightness: CGFloat = 1 {
+    didSet {
+      gradient = Gradient.colorSliderGradient(saturation: saturation, brightness: brightness, whiteInset: whiteInset, blackInset: blackInset)
+    }
+  }
 	
 	/// The percent of space at the beginning (top for orientation `.vertical` and left for orientation `.horizontal`) end of the slider reserved for the color white.
 	/// Defaults to `0.15`.
 	public var whiteInset: CGFloat = 0.15 {
 		didSet {
-			gradient = Gradient.colorSliderGradient(saturation: saturation, whiteInset: whiteInset, blackInset: blackInset)
+			gradient = Gradient.colorSliderGradient(saturation: saturation, brightness: brightness, whiteInset: whiteInset, blackInset: blackInset)
 		}
 	}
 	
@@ -63,7 +69,7 @@ public final class GradientView: UIView {
 	/// Defaults to `0.15`.
 	public var blackInset: CGFloat = 0.15 {
 		didSet {
-			gradient = Gradient.colorSliderGradient(saturation: saturation, whiteInset: whiteInset, blackInset: blackInset)
+			gradient = Gradient.colorSliderGradient(saturation: saturation, brightness: brightness, whiteInset: whiteInset, blackInset: blackInset)
 		}
 	}
 
@@ -82,7 +88,7 @@ public final class GradientView: UIView {
 	/// - parameter orientation: The orientation of the gradient view.
 	required public init(orientation: Orientation) {
 		self.orientation = orientation
-		self.gradient = Gradient.colorSliderGradient(saturation: 1, whiteInset: 0.15, blackInset: 0.15)
+    self.gradient = Gradient.colorSliderGradient(saturation: 0.75, brightness: 0.90, whiteInset: 0.15, blackInset: 0.15)
 		
 		super.init(frame: .zero)
 		
@@ -239,14 +245,14 @@ internal extension GradientView {
 }
 
 fileprivate extension Gradient {
-	static func colorSliderGradient(saturation: CGFloat, whiteInset: CGFloat, blackInset: CGFloat) -> Gradient {
+  static func colorSliderGradient(saturation: CGFloat, brightness: CGFloat, whiteInset: CGFloat, blackInset: CGFloat) -> Gradient {
 		// Values from 0 to 1 at intervals of 0.1
-		let values: [CGFloat] = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]
+		let values: [CGFloat] = [0.09, 0.18, 0.27, 0.36, 0.45, 0.54, 0.63, 0.72, 0.81, 0.9, 0.99]
 		
 		// Use these values as the hues for non-white and non-black colors
 		let hues = values
 		let nonGrayscaleColors = hues.map({ (hue) -> HSBColor in
-			return HSBColor(hue: hue, saturation: saturation, brightness: 1)
+			return HSBColor(hue: hue, saturation: saturation, brightness: brightness)
 		}).reversed()
 		
 		// Black and white are at the top and bottom of the slider, insert colors in between

@@ -30,8 +30,8 @@
         
         _font = [UIFont systemFontOfSize:40.f];
         _fontSize = 40.f;
-        _whiteValue = 0.f;
-        _alphaValue = 0.f;
+        _textColor = [UIColor whiteColor];
+        _backingColor = [UIColor colorWithWhite:1.0f alpha:0.0f];
         _textEditingInsets = UIEdgeInsetsMake(0.f, 0.f, 0.f, 0.f);
         
         _textContainer = [UIView new];
@@ -43,6 +43,7 @@
         }];
         
         _textView = [UITextView new];
+        self.textView.textColor = self.textColor;
         self.textView.backgroundColor = [UIColor clearColor];
         self.textView.text = self.textString;
         self.textView.keyboardType = UIKeyboardTypeDefault;
@@ -55,8 +56,8 @@
         }];
       
         _textBackground = [UIView new];
-        self.textBackground.backgroundColor = [UIColor colorWithWhite: self.whiteValue alpha: self.alphaValue];
-        self.textBackground.layer.cornerRadius = 5.f;
+        self.textBackground.backgroundColor = self.backingColor;
+        self.textBackground.layer.cornerRadius = self.fontSize * 0.30;
         self.textBackground.clipsToBounds = YES;
         [self.textContainer addSubview:self.textBackground];
         [self.textContainer insertSubview:self.textBackground belowSubview:self.textView];
@@ -248,17 +249,12 @@
 }
 
 
-- (void)setWhiteValue:(CGFloat)whiteValue
+- (void)setBackingColor:(UIColor *)backingColor
 {
-  _whiteValue = whiteValue;
-  self.textBackground.backgroundColor = [UIColor colorWithWhite: whiteValue alpha: self.alphaValue];
-}
-
-
-- (void)setAlphaValue:(CGFloat)alphaValue
-{
-  _alphaValue = alphaValue;
-  self.textBackground.backgroundColor = [UIColor colorWithWhite: self.whiteValue alpha: alphaValue];
+    if (_backingColor != backingColor) {
+        _backingColor = backingColor;
+        self.textBackground.backgroundColor = backingColor;
+    }
 }
 
 

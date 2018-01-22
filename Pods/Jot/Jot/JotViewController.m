@@ -59,8 +59,7 @@ static const CGFloat iPhone6HeightPoints = 667.0;
         _textAlignment = self.textView.textAlignment;
         _textColor = self.textView.textColor;
         _textString = @"";
-        _whiteValue = self.textView.whiteValue;
-        _alphaValue = self.textView.alphaValue;
+        _backingColor = self.textView.backingColor;
         _drawingColor = self.drawView.strokeColor;
         _drawingStrokeWidth = self.drawView.strokeWidth;
         _textEditingInsets = self.textEditView.textEditingInsets;
@@ -158,11 +157,9 @@ static const CGFloat iPhone6HeightPoints = 667.0;
         self.textEditView.isEditing = (state == JotViewStateEditingText);
         
         if (state == JotViewStateEditingText) {
-            
-            if ([self.delegate respondsToSelector:@selector(jotViewController:isEditingText:)]) {
-                [self.delegate jotViewController:self isEditingText:YES];
-            }
-            if (![self.textView labelAtPosition:self.lastTapPoint]) {
+            JotLabel * label = [self.textView labelAtPosition:self.lastTapPoint];
+          
+            if (!label) {
                 CGPoint labelPosition = CGPointEqualToPoint(self.lastTapPoint, CGPointZero)
                 ? self.textView.center
                 : self.lastTapPoint;
@@ -170,9 +167,27 @@ static const CGFloat iPhone6HeightPoints = 667.0;
                 self.textEditView.textString = @"";
                 self.textEditView.font = label.font;
                 self.textEditView.textColor = label.textColor;
-                self.textEditView.alphaValue = self.alphaValue;
-                self.textEditView.whiteValue = self.whiteValue;
+                self.textEditView.backingColor = [UIColor colorWithCGColor:label.layer.backgroundColor];
                 self.lastTapPoint = CGPointZero;
+              
+            } else if (label.selected) {
+                // a tap on a label already selected
+                self.textEditView.textString = label.text;
+                self.textEditView.font = label.font;
+                self.textEditView.fontSize = label.unscaledFontSize;
+                self.textEditView.textColor = label.textColor;
+                self.textEditView.backingColor = [UIColor colorWithCGColor:label.layer.backgroundColor];
+                self.textAlignment = label.textAlignment;
+                
+                self.font = label.font;
+                self.fontSize = label.unscaledFontSize;
+                self.textColor = label.textColor;
+                self.backingColor = [UIColor colorWithCGColor:label.layer.backgroundColor];
+                self.textAlignment = label.textAlignment;
+            }
+          
+            if ([self.delegate respondsToSelector:@selector(jotViewController:isEditingText:)]) {
+                [self.delegate jotViewController:self isEditingText:YES];
             }
         }
 		
@@ -226,19 +241,12 @@ static const CGFloat iPhone6HeightPoints = 667.0;
 	self.textView.textColor =
 	self.textEditView.textColor = textColor;
 }
-  
-- (void)setWhiteValue:(CGFloat)whiteValue
-{
-  _whiteValue = whiteValue;
-  self.textView.whiteValue = whiteValue;
-  self.textEditView.whiteValue = whiteValue;
-}
 
-- (void)setAlphaValue:(CGFloat)alphaValue
+- (void)setBackingColor:(UIColor *)backingColor
 {
-  _alphaValue = alphaValue;
-  self.textView.alphaValue = alphaValue;
-  self.textEditView.alphaValue = alphaValue;
+  _backingColor = backingColor;
+  self.textView.backingColor = backingColor;
+  self.textEditView.backingColor = backingColor;
 }
   
 - (void)setInitialTextInsets:(UIEdgeInsets)initialTextInsets
@@ -401,15 +409,6 @@ static const CGFloat iPhone6HeightPoints = 667.0;
             [self.delegate jotViewController:self didSelectLabel:[label serialize:_ratioForAspectFitAgainstiPhone6]];
           }
         }
-        self.textEditView.textString = label.text;
-        self.textEditView.font = label.font;
-        self.textEditView.textColor = label.textColor;
-        
-        CGFloat bgWhiteValue;
-        CGFloat bgAlphaValue;
-        [[UIColor colorWithCGColor: label.layer.backgroundColor] getWhite: &bgWhiteValue alpha: &bgAlphaValue];
-        self.textEditView.whiteValue = bgWhiteValue;
-        self.textEditView.alphaValue = bgAlphaValue;
       }
       else {
         // a tap on a blank space

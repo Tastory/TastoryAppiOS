@@ -164,7 +164,7 @@ public class ColorSlider: UIControl {
 		self.previewView = previewView
 		
 		gradientView = GradientView(orientation: orientation)
-		internalColor = HSBColor(hue: 0, saturation: gradientView.saturation, brightness: 1)
+		internalColor = HSBColor(hue: 0, saturation: gradientView.saturation, brightness: gradientView.brightness)
 		
 		super.init(frame: .zero)
 		

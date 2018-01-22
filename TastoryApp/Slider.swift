@@ -50,7 +50,12 @@ internal extension UITouch {
 
 public class Slider: UIControl {
 
-  var progress: CGFloat
+  var progress: CGFloat {
+    didSet {
+      centerKnob(at: CGPoint(x: progress * bounds.width, y: progress * bounds.height))
+      sendActions(for: .valueChanged)
+    }
+  }
   
   let trackView: UIView
   let knobView: UIView

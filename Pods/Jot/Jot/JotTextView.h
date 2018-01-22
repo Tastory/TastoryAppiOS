@@ -63,10 +63,9 @@
 @property (nonatomic, assign) NSTextAlignment textAlignment;
 
 /**
- *  Greyscale & alpha value of the textView background color
+ *  The color of the label & textView backings in the JotTextView and the JotTextEditView.
  */
-@property (nonatomic, assign) CGFloat whiteValue;
-@property (nonatomic, assign) CGFloat alphaValue;
+@property (nonatomic, strong) UIColor *backingColor;
 
 /**
  *  The initial insets of the text displayed in the JotTextView, which only
