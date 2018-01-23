@@ -114,9 +114,10 @@ class EarlGreyUnitTest: XCTestCase {
     private func login() {
 
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginView")).assert(grey_sufficientlyVisible())
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginSignUp_usernameField")).perform(GREYActions.action(forTypeText: "victor2"))
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginSignUp_passwordField")).perform(GREYActions.action(forTypeText: "0987654321t"))
-      EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginSignUp_loginButton")).perform(GREYActions.actionForTap())
+      EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginSignUp_usernameField")).perform(GREYActions.action(forTypeText: "victor2\n0987654321t\n"))
+
+      /*EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginSignUp_passwordField")).perform(GREYActions.action(forTypeText: ""))*/
+      //EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginSignUp_loginButton")).perform(GREYActions.actionForTap())
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("loginSignUp_letsGoButton")).perform(GREYActions.actionForTap())
     }
 
@@ -151,6 +152,7 @@ class EarlGreyUnitTest: XCTestCase {
 
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("venueTableView")).assert(grey_sufficientlyVisible())
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("venueTableView_venueSearchBar")).perform(GREYActions.action(forTypeText: "KFC\n"))
+
 
       EarlGrey.select(elementWithMatcher: grey_text("KFC")).inRoot(grey_kindOfClass(UITableViewCell.self)).atIndex(0).perform(grey_tap())
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("momentCollectionView_addMomentButton")).perform(grey_tap())
@@ -217,6 +219,8 @@ class EarlGreyUnitTest: XCTestCase {
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView_locationField"))
         .assert(grey_interactable())
         .perform(GREYActions.action(forTypeText: "Burquitlam\n"))
+
+      waitForVisible("discoverView")?.wait(withTimeout: 20)
 
       EarlGrey.select(elementWithMatcher: grey_accessibilityID("discoverView"))
         .assert(grey_sufficientlyVisible())

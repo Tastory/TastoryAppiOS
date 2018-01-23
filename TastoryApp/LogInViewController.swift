@@ -323,6 +323,10 @@ class LogInViewController: OverlayViewController {
     if FoodieStory.currentStory != nil {
       FoodieStory.removeCurrent()
     }
+
+    usernameField.delegate = self
+    passwordField.delegate = self
+
   }
 
   
@@ -330,6 +334,7 @@ class LogInViewController: OverlayViewController {
     view.endEditing(true)
   }
 }
+
 
 
 extension LogInViewController: UITextFieldDelegate {

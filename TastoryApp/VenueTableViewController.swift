@@ -251,6 +251,7 @@ extension VenueTableViewController: UISearchBarDelegate {
   func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
     if searchBar === venueSearchBar {
       fullVenueSearch()
+      venueSearchBar.resignFirstResponder()
     } else if searchBar === locationSearchBar {
       if let nearText = locationSearchBar.text {
         nearLocation = nearText
@@ -264,7 +265,7 @@ extension VenueTableViewController: UISearchBarDelegate {
       }
     }
   }
-  
+
   func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
     if searchBar === locationSearchBar {
       if let nearText = locationSearchBar.text, nearText != "" {
