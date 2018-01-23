@@ -43,11 +43,16 @@
         }];
         
         _textView = [UITextView new];
-        self.textView.textColor = self.textColor;
+        self.textView.keyboardType = UIKeyboardTypeDefault;
+        self.textView.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.textView.returnKeyType = UIReturnKeyDefault;
+        self.textView.autocapitalizationType = UITextAutocapitalizationTypeSentences;
+        self.textView.autocorrectionType = UITextAutocorrectionTypeDefault;
+        self.textView.spellCheckingType = UITextSpellCheckingTypeNo;
+      
         self.textView.backgroundColor = [UIColor clearColor];
         self.textView.text = self.textString;
-        self.textView.keyboardType = UIKeyboardTypeDefault;
-        self.textView.returnKeyType = UIReturnKeyDone;
+        self.textView.textColor = self.textColor;
         self.textView.clipsToBounds = YES;
         self.textView.delegate = self;
         [self.textContainer addSubview:self.textView];
@@ -325,10 +330,11 @@
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
-    if ([text isEqualToString: @"\n"]) {
-        self.isEditing = NO;
-        return NO;
-    }
+  // Let next line see the day of light!
+//    if ([text isEqualToString: @"\n"]) {
+//        self.isEditing = NO;
+//        return NO;
+//    }
   
     BOOL result = YES;
     NSUInteger actualTextLength = (textView.text.length - range.length);

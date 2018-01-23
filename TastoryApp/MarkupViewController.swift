@@ -670,8 +670,8 @@ class MarkupViewController: OverlayViewController {
     colorSlider.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
-      colorSlider.topAnchor.constraint(equalTo: mediaView.topAnchor, constant: 35.0),
-      colorSlider.centerXAnchor.constraint(equalTo: mediaView.trailingAnchor, constant: -30.0),
+      colorSlider.topAnchor.constraint(equalTo: mediaView.topAnchor, constant: 32.0),
+      colorSlider.centerXAnchor.constraint(equalTo: mediaView.trailingAnchor, constant: -28.0),
       colorSlider.widthAnchor.constraint(equalToConstant: 15.0),
       colorSlider.heightAnchor.constraint(equalToConstant: 140.0),
     ])
@@ -686,8 +686,8 @@ class MarkupViewController: OverlayViewController {
     sizeSlider.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
-      sizeSlider.topAnchor.constraint(equalTo: mediaView.topAnchor, constant: 233.0),
-      sizeSlider.centerXAnchor.constraint(equalTo: mediaView.trailingAnchor, constant: -30.0),
+      sizeSlider.topAnchor.constraint(equalTo: mediaView.topAnchor, constant: 228.0),
+      sizeSlider.centerXAnchor.constraint(equalTo: mediaView.trailingAnchor, constant: -28.0),
       sizeSlider.widthAnchor.constraint(equalToConstant: 15.0),
       sizeSlider.heightAnchor.constraint(equalToConstant: 50.0),
     ])
