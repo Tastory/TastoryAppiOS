@@ -325,12 +325,6 @@
   
   self.textBackground.frame = bgRect;
   self.textBackground.layer.cornerRadius = self.fontSize * bgCornerRadiusAsFontFraction;
-  
-  NSLog(@"contentView = width: %f height: %f", self.textView.contentSize.width, self.textView.contentSize.height);
-  NSLog(@"usedRect = x: %f, y: %f, width: %f height: %f", usedRect.origin.x, 
-                                                          usedRect.origin.y,
-                                                          usedRect.size.width,
-                                                          usedRect.size.height);
 }
 
 
