@@ -3,7 +3,7 @@
 //  TastoryApp
 //
 //  Created by Howard Lee on 2017-10-11.
-//  Copyright © 2017 Tastory. All rights reserved.
+//  Copyright © 2017 Tastory Lab Inc. All rights reserved.
 //
 
 import MapKit

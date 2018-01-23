@@ -3,7 +3,7 @@
 //  TastoryApp
 //
 //  Created by Howard Lee on 2017-12-31.
-//  Copyright © 2017 Tastry. All rights reserved.
+//  Copyright © 2018 Tastory Lab Inc. All rights reserved.
 //
 
 import Parse

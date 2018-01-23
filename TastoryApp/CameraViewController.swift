@@ -3,7 +3,7 @@
 //  TastoryApp
 //
 //  Created by Howard Lee on 2017-03-26.
-//  Copyright © 2017 Tastory. All rights reserved.
+//  Copyright © 2017 Tastory Lab Inc. All rights reserved.
 //
 //  This is a reusable Camera View Controller created based on the Swifty Cam - https://github.com/Awalz/SwiftyCam
 //  Input  -

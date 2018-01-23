@@ -4,7 +4,7 @@
 //  Super thin struct around C Mutexes
 //
 //  Created by Howard Lee on 2017-08-30.
-//  Copyright © 2017 Tastory. All rights reserved.
+//  Copyright © 2017 Tastory Lab Inc. All rights reserved.
 //
 
 import Foundation

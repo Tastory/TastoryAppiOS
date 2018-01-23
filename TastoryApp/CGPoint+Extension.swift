@@ -3,7 +3,7 @@
 //  PervasiveMapPrototype
 //
 //  Created by Howard Lee on 2017-11-06.
-//  Copyright © 2017 Tastory. All rights reserved.
+//  Copyright © 2017 Tastory Lab Inc. All rights reserved.
 //
 
 import CoreGraphics
