@@ -643,6 +643,7 @@ class MarkupViewController: OverlayViewController {
     // JotViewController Display Parameters Setup
     jotViewController.state = JotViewState.text
     jotViewController.fitOriginalFontSizeToViewWidth = true
+    jotViewController.clipBoundsToEditingInsets = true
     jotViewController.view.backgroundColor = .clear
     
     // JotViewController Markup Setup
@@ -710,7 +711,7 @@ class MarkupViewController: OverlayViewController {
       
       // Update Frame for JotVC based on Autolayout results
       jotViewController.view.frame = mediaView.bounds
-      jotViewController.textEditingInsets = UIEdgeInsetsMake(65, 45, 65, 45)
+      jotViewController.textEditingInsets = UIEdgeInsetsMake(65, 28, 65, 62)
       jotViewController.initialTextInsets = UIEdgeInsetsMake(65, 45, 65, 45)
       jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                                andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)

@@ -69,14 +69,13 @@ CGFloat const bgCornerRadiusAsFontFraction = 0.3f;
                                          self.font.pointSize * bgPadWidthAsFontFraction,
                                          self.font.pointSize * bgPadHeightAsFontFraction,
                                          self.font.pointSize * bgPadWidthAsFontFraction);
-  CGRect rect = [super textRectForBounds:UIEdgeInsetsInsetRect(bounds, insets)
-                  limitedToNumberOfLines:numberOfLines];
-  
+  CGRect rect = [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
+
   rect.origin.x    -= insets.left;
   rect.origin.y    -= insets.top;
   rect.size.width  += (insets.left + insets.right);
   rect.size.height += (insets.top + insets.bottom);
-  
+
   return rect;
 }
 

@@ -18,6 +18,10 @@ extern NSString *const kRotation;
 extern NSString *const kScale;
 extern NSString *const kFitWidth;
 
+extern CGFloat const bgPadWidthAsFontFraction;
+extern CGFloat const bgPadHeightAsFontFraction;
+extern CGFloat const bgCornerRadiusAsFontFraction;
+
 @interface JotLabel : UILabel
 
 @property (nonatomic) BOOL selected;

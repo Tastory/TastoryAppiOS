@@ -6,6 +6,7 @@
 //
 //
 
+#import "JotLabel.h"
 #import "JotTextEditView.h"
 #import <Masonry/Masonry.h>
 
@@ -27,13 +28,14 @@
     if ((self = [super init])) {
         
         self.backgroundColor = [UIColor clearColor];
-        
+      
+        // Initialize state parameters
         _font = [UIFont systemFontOfSize:40.f];
         _fontSize = 40.f;
         _textColor = [UIColor whiteColor];
         _backingColor = [UIColor colorWithWhite:1.0f alpha:0.0f];
         _textEditingInsets = UIEdgeInsetsMake(0.f, 0.f, 0.f, 0.f);
-        
+      
         _textContainer = [UIView new];
         self.textContainer.layer.masksToBounds = YES;
         [self addSubview:self.textContainer];
@@ -53,8 +55,14 @@
         self.textView.backgroundColor = [UIColor clearColor];
         self.textView.text = self.textString;
         self.textView.textColor = self.textColor;
-        self.textView.clipsToBounds = YES;
+        self.textView.showsVerticalScrollIndicator = NO;
+        self.textView.showsHorizontalScrollIndicator = NO;
+      
+        self.textView.textContainer.lineFragmentPadding = 0;
+        [self.textView setTextContainerInset:UIEdgeInsetsZero];
+      
         self.textView.delegate = self;
+      
         [self.textContainer addSubview:self.textView];
         [self.textView mas_makeConstraints:^(MASConstraintMaker *make) {
           make.edges.equalTo(self.textContainer).insets(_textEditingInsets);
@@ -62,7 +70,7 @@
       
         _textBackground = [UIView new];
         self.textBackground.backgroundColor = self.backingColor;
-        self.textBackground.layer.cornerRadius = self.fontSize * 0.30;
+        self.textBackground.layer.cornerRadius = self.fontSize * bgCornerRadiusAsFontFraction;
         self.textBackground.clipsToBounds = YES;
         [self.textContainer addSubview:self.textBackground];
         [self.textContainer insertSubview:self.textBackground belowSubview:self.textView];
@@ -151,12 +159,7 @@
         _textString = textString;
         self.textView.text = textString;
         [self.textView setContentOffset:CGPointZero animated:NO];
-      
-        CGFloat height = MIN(self.textView.contentSize.height, self.textView.bounds.size.height);
-        self.textBackground.frame = CGRectMake(self.textView.frame.origin.x,
-                                               self.textView.frame.origin.y,
-                                               self.textView.contentSize.width,
-                                               height);
+        [self textViewDidChange:self.textView];
     }
 }
 
@@ -171,12 +174,7 @@
 
         [self.textView layoutIfNeeded];
         [self.textView setContentOffset:CGPointZero animated:NO];
-      
-        CGFloat height = MIN(self.textView.contentSize.height, self.textView.bounds.size.height);
-        self.textBackground.frame = CGRectMake(self.textView.frame.origin.x,
-                                               self.textView.frame.origin.y,
-                                               self.textView.contentSize.width,
-                                               height);
+        [self textViewDidChange:self.textView];
     }
 }
 
@@ -185,12 +183,7 @@
     if (_font != font) {
         _font = font;
         self.textView.font = [font fontWithSize:_fontSize];
-
-      CGFloat height = MIN(self.textView.contentSize.height, self.textView.bounds.size.height);
-      self.textBackground.frame = CGRectMake(self.textView.frame.origin.x,
-                                             self.textView.frame.origin.y,
-                                             self.textView.contentSize.width,
-                                             height);
+        [self textViewDidChange:self.textView];
     }
 }
 
@@ -199,12 +192,7 @@
     if (_fontSize != fontSize) {
         _fontSize = fontSize;
         self.textView.font = [_font fontWithSize:fontSize];
-      
-      CGFloat height = MIN(self.textView.contentSize.height, self.textView.bounds.size.height);
-      self.textBackground.frame = CGRectMake(self.textView.frame.origin.x,
-                                             self.textView.frame.origin.y,
-                                             self.textView.contentSize.width,
-                                             height);
+        [self textViewDidChange:self.textView];
     }
 }
 
@@ -213,6 +201,7 @@
     if (_textAlignment != textAlignment) {
         _textAlignment = textAlignment;
         self.textView.textAlignment = textAlignment;
+        [self textViewDidChange:self.textView];
     }
 }
 
@@ -320,11 +309,28 @@
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-  CGFloat height = MIN(self.textView.contentSize.height, self.textView.bounds.size.height);
-  self.textBackground.frame = CGRectMake(self.textView.frame.origin.x,
-                                         self.textView.frame.origin.y,
-                                         self.textView.contentSize.width,
-                                         height);
+  if (textView.text.length <= 0) {
+    self.textBackground.frame = CGRectZero;
+    return;
+  }
+  
+  CGRect usedRect = [textView.layoutManager usedRectForTextContainer:textView.textContainer];
+  CGFloat height = MIN(usedRect.size.height, self.textView.bounds.size.height);
+  CGFloat widthPadding = bgPadWidthAsFontFraction * self.fontSize;
+  CGFloat heightPadding = bgPadHeightAsFontFraction * self.fontSize;
+  
+  CGRect bgRect = CGRectMake(self.textView.frame.origin.x + usedRect.origin.x - widthPadding,
+                             self.textView.frame.origin.y + usedRect.origin.y - heightPadding,
+                             usedRect.size.width + 2*widthPadding, height + 2*heightPadding);
+  
+  self.textBackground.frame = bgRect;
+  self.textBackground.layer.cornerRadius = self.fontSize * bgCornerRadiusAsFontFraction;
+  
+  NSLog(@"contentView = width: %f height: %f", self.textView.contentSize.width, self.textView.contentSize.height);
+  NSLog(@"usedRect = x: %f, y: %f, width: %f height: %f", usedRect.origin.x, 
+                                                          usedRect.origin.y,
+                                                          usedRect.size.width,
+                                                          usedRect.size.height);
 }
 
 
@@ -350,10 +356,13 @@
                     [textView.inputDelegate textWillChange:textView];
                     [textView replaceRange:textRange withText:newText];
                     [textView.inputDelegate textDidChange:textView];
+                  
+                  
                 });
             }
         }
     }
+  
     return result;
 }
 
