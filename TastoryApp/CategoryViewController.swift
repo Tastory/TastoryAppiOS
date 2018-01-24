@@ -276,6 +276,10 @@ extension CategoryViewController: UISearchBarDelegate {
       }
     }
   }
+  
+  func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    popDismiss(animated: true)
+  }
 }
 
 

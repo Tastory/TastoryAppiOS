@@ -309,13 +309,14 @@
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-  if (textView.text.length <= 0) {
+  CGRect usedRect = [textView.layoutManager usedRectForTextContainer:textView.textContainer];
+  CGFloat height = MIN(usedRect.size.height, self.textView.bounds.size.height);
+  
+  if ((height <= 0) || (textView.text.length <= 0) || CGRectEqualToRect(usedRect, CGRectZero)) {
     self.textBackground.frame = CGRectZero;
     return;
   }
   
-  CGRect usedRect = [textView.layoutManager usedRectForTextContainer:textView.textContainer];
-  CGFloat height = MIN(usedRect.size.height, self.textView.bounds.size.height);
   CGFloat widthPadding = bgPadWidthAsFontFraction * self.fontSize;
   CGFloat heightPadding = bgPadHeightAsFontFraction * self.fontSize;
   
@@ -325,6 +326,12 @@
   
   self.textBackground.frame = bgRect;
   self.textBackground.layer.cornerRadius = self.fontSize * bgCornerRadiusAsFontFraction;
+  
+//  NSLog(@"contentView = width: %f height: %f", self.textView.contentSize.width, self.textView.contentSize.height);
+//  NSLog(@"usedRect = x: %f, y: %f, width: %f height: %f", usedRect.origin.x,
+//        usedRect.origin.y,
+//        usedRect.size.width,
+//        usedRect.size.height);
 }
 
 

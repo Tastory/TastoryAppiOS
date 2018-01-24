@@ -56,6 +56,12 @@ class FiltersViewController: OverlayViewController {
   }
   
 
+  @IBAction func searchFilterAction(_ sender: UIButton) {
+    
+    
+  }
+  
+  
   
   // MARK: - Private Instance Function
   

@@ -192,9 +192,10 @@ static const CGFloat iPhone6HeightPoints = 667.0;
             }
         }
 		
-		if (state != JotViewStateText && state != JotViewStateEditingText) {
-			[self.textView deselectLabel];
-		}
+        if (state != JotViewStateText && state != JotViewStateEditingText) {
+          [self.textView deselectLabel];
+          self.lastTapPoint = CGPointZero;
+        }
         
         self.drawingContainer.multipleTouchEnabled =
         self.tapRecognizer.enabled =

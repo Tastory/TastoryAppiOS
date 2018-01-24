@@ -121,7 +121,9 @@ class MarkupViewController: OverlayViewController {
   // MARK: - IBActions
   
   @IBAction func exitButtonAction(_ sender: UIButton) {
-    dismiss(animated: true, completion: nil)  // This is okay as long as we never present this as part of any Navigation Controllers
+    AlertDialog.presentConfirm(from: self, title: "Discard", message: "Changes to your markups have not been saved. Are you sure you want to exit?") { [unowned self] _ in
+      self.dismiss(animated: true, completion: nil)  // This is okay as long as we never present this as part of any Navigation Controllers
+    }
   }
   
   
