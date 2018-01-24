@@ -11,12 +11,17 @@ import SwiftRangeSlider
 
 
 protocol FiltersViewReturnDelegate: class {
-  func filterCompleteReturn(_ filter: FoodieFilter)
+  func filterCompleteReturn(_ filter: FoodieFilter, _ performSearch: Bool)
 }
 
 
 
 class FiltersViewController: OverlayViewController {
+  
+  
+  // MARK: - Private Instance Variable
+  private var searchOnDismiss: Bool = false
+  
   
   // MARK: - Public Instance Variable
   
@@ -57,15 +62,15 @@ class FiltersViewController: OverlayViewController {
   
 
   @IBAction func searchFilterAction(_ sender: UIButton) {
-    
-    
+    searchOnDismiss = true
+    parentNavController?.popViewController(animated: true)
   }
-  
   
   
   // MARK: - Private Instance Function
   
   @objc private func dismissAction(_ sender: UIBarButtonItem) {
+    searchOnDismiss = false
     parentNavController?.popViewController(animated: true)
   }
   
@@ -139,7 +144,7 @@ class FiltersViewController: OverlayViewController {
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
     
-    delegate?.filterCompleteReturn(workingFilter)
+    delegate?.filterCompleteReturn(workingFilter, searchOnDismiss)
   }
   
   

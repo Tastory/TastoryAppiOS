@@ -79,6 +79,7 @@ class DiscoverViewController: OverlayViewController {
   
   private var discoverFilter: FoodieFilter?
   private var forceRequery: Bool = false
+  private var autoFilterSearch: Bool = false
   
   
   
@@ -774,6 +775,11 @@ class DiscoverViewController: OverlayViewController {
         self.unwrapQueryRefreshDiscoveryView(stories: stories, query: storyQuery, error: error)
       }
     }
+    
+    else if autoFilterSearch {
+      autoFilterSearch = false
+      searchWithFilter(searchButton)
+    }
       
     // Resume from last map region
     else if let mapState = lastMapState {
@@ -789,8 +795,10 @@ class DiscoverViewController: OverlayViewController {
         let annotationToSelect = storyAnnotations[annotationIndex]
         mapController.select(annotation: annotationToSelect, animated: true)
       }
-    }
       
+
+    }
+    
     // First time on the map. Try to get the location, and get an initial query if successful
     else {
       LocationWatch.global.get { location, error in
@@ -1320,13 +1328,19 @@ extension DiscoverViewController: CameraReturnDelegate {
 }
 
 extension DiscoverViewController: FiltersViewReturnDelegate {
-  func filterCompleteReturn(_ filter: FoodieFilter) {
+  func filterCompleteReturn(_ filter: FoodieFilter, _ performSearch: Bool) {
     discoverFilter = filter
     
     if discoverFilter!.isDefault {
       filterButton.setImage(UIImage(named: "Discover-FilterButton-Off"), for: .normal)
     } else {
       filterButton.setImage(UIImage(named: "Discover-FilterButton-On"), for: .normal)
+    }
+    
+    if performSearch {
+      autoFilterSearch = true
+    } else {
+      searchButtonsHidden(is: false)
     }
   }
 }
