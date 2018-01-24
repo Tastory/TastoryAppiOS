@@ -51,11 +51,11 @@ public final class GradientView: UIView {
 		}
 	}
   
-        public var brightness: CGFloat = 1 {
-               didSet {
-                        gradient = Gradient.colorSliderGradient(saturation: saturation, brightness: brightness, whiteInset: whiteInset, blackInset: blackInset)
-               }
-        }
+  public var brightness: CGFloat = 1 {
+    didSet {
+      gradient = Gradient.colorSliderGradient(saturation: saturation, brightness: brightness, whiteInset: whiteInset, blackInset: blackInset)
+    }
+  }
 	
 	/// The percent of space at the beginning (top for orientation `.vertical` and left for orientation `.horizontal`) end of the slider reserved for the color white.
 	/// Defaults to `0.15`.
@@ -72,7 +72,7 @@ public final class GradientView: UIView {
 			gradient = Gradient.colorSliderGradient(saturation: saturation, brightness: brightness, whiteInset: whiteInset, blackInset: blackInset)
 		}
 	}
-
+  
 	/// :nodoc:
 	/// The internal gradient used to draw the view.
 	fileprivate var gradient: Gradient {
@@ -88,7 +88,7 @@ public final class GradientView: UIView {
 	/// - parameter orientation: The orientation of the gradient view.
 	required public init(orientation: Orientation) {
 		self.orientation = orientation
-                self.gradient = Gradient.colorSliderGradient(saturation: 0.75, brightness: 0.90, whiteInset: 0.15, blackInset: 0.15)
+    self.gradient = Gradient.colorSliderGradient(saturation: 0.90, brightness: 0.75, whiteInset: 0.15, blackInset: 0.15)
 		
 		super.init(frame: .zero)
 		

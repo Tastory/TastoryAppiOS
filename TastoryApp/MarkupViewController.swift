@@ -55,9 +55,10 @@ class MarkupViewController: OverlayViewController {
   // MARK: - Public Static Variables
   
   static let FontChoiceArray: [String] = [
-    "Noteworthy-Bold",
-    "Futura-Medium",  // The 2nd in the list is actually is the first font
-    "BodoniSvtyTwoOSITCTT-Bold"  //"BodoniSvtyTwoOSITCTT-Book"
+    "ArimaMadurai-Black",
+    "Poppins-Black",  // The 2nd in the list is actually is the first font
+    "BodoniSvtyTwoOSITCTT-Bold",  //"BodoniSvtyTwoOSITCTT-Book"
+    "Heebo-Medium"
   ]
   
   

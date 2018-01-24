@@ -28,12 +28,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return nil
   }
   
+  private func printFonts() {
+    let fontFamilyNames = UIFont.familyNames
+    
+    for familyName in fontFamilyNames {
+      print("------------------------------")
+      print("Font Family Name = [\(familyName)]")
+      let names = UIFont.fontNames(forFamilyName: familyName)
+      print("Font Names = [\(names)]")
+    }
+  }
+  
   
   // MARK: - Public Instance Functions
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     
     var error: Error?
+    
+    // Print Fonts if needed
+    //printFonts()
     
     // Initialize Crash, Error & Log Reporting
     CCLog.initializeLogging()
