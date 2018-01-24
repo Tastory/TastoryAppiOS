@@ -48,12 +48,11 @@ static const CGFloat iPhone6HeightPoints = 667.0;
         _drawView.delegate = self;
         
         _textEditView = [JotTextEditView new];
+        _textEditView.textAlignment = NSTextAlignmentLeft;
+        _textEditView.adjustContentInsetsOnKeyboardFrameChange = YES;
         _textEditView.delegate = self;
+      
         _textView = [JotTextView new];
-        _drawingContainer = [JotDrawingContainer new];
-        self.drawingContainer.delegate = self;
-        self.drawingContainer.discreteGridSize = 0; // no grid
-        
         _font = self.textView.font;
         _fontSize = self.textView.fontSize;
         _textAlignment = self.textView.textAlignment;
@@ -67,7 +66,9 @@ static const CGFloat iPhone6HeightPoints = 667.0;
         _ratioForAspectFitAgainstiPhone6 = 1.0;  // Assume this is an iPhone 6 until told otherwise?
         _state = JotViewStateDisabled;
         
-        self.textEditView.textAlignment = NSTextAlignmentLeft;
+        _drawingContainer = [JotDrawingContainer new];
+        self.drawingContainer.delegate = self;
+        self.drawingContainer.discreteGridSize = 0; // no grid
         
         _pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchGesture:)];
         self.pinchRecognizer.delegate = self;
