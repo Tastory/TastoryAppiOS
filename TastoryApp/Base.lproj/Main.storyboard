@@ -619,6 +619,14 @@
                                         <color key="shadowColor" white="0.0" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <size key="shadowOffset" width="0.0" height="1"/>
                                     </label>
+                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NkV-78-Yh5">
+                                        <rect key="frame" x="16.5" y="57.5" width="7" height="0.0"/>
+                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                        <color key="shadowColor" white="0.0" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <size key="shadowOffset" width="0.0" height="1"/>
+                                    </label>
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="eTa-IA-SsO">
@@ -718,6 +726,7 @@
                         <outlet property="pauseButton" destination="7rC-KB-BnZ" id="F9k-fF-x4m"/>
                         <outlet property="photoView" destination="3Gc-Ev-vmE" id="tiQ-hZ-B0K"/>
                         <outlet property="playButton" destination="cOp-iU-bG1" id="KgF-FW-TMk"/>
+                        <outlet property="questionLabel" destination="NkV-78-Yh5" id="dyR-LE-hOH"/>
                         <outlet property="reactionStack" destination="Hpj-0E-WpG" id="W0W-m3-s85"/>
                         <outlet property="soundOffButton" destination="dOo-DQ-GbZ" id="P6z-4E-Yke"/>
                         <outlet property="soundOnButton" destination="t4S-lT-gBv" id="hPd-pZ-Vzh"/>

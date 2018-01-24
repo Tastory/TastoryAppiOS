@@ -30,6 +30,7 @@ class StoryViewController: OverlayViewController {
   
   
   // MARK: - Private Instance Variables
+  
   private var isAppearanceLayout: Bool = true
   private var isInitialLayout: Bool = true
   
@@ -67,6 +68,7 @@ class StoryViewController: OverlayViewController {
   @IBOutlet var reactionStack: UIStackView!
   @IBOutlet var heartButton: UIButton!
   @IBOutlet var heartLabel: UILabel!
+  @IBOutlet var questionLabel: UILabel!
   @IBOutlet var swipeStack: UIStackView!
   @IBOutlet var swipeLabel: UILabel!
   @IBOutlet var playButton: UIButton!
@@ -270,6 +272,7 @@ class StoryViewController: OverlayViewController {
       
       if story.author != FoodieUser.current {
         heartLabel.isHidden = true
+        questionLabel.isHidden = false
       }
       
     } else {
@@ -290,6 +293,7 @@ class StoryViewController: OverlayViewController {
         
         if let weakSelf = self, weakSelf.heartClicked {
           weakSelf.heartLabel.isHidden = false
+          weakSelf.questionLabel.isHidden = true
         }
         
         if let viewingStory = self?.viewingStory, viewingStory.reputation == nil {
@@ -905,10 +909,6 @@ class StoryViewController: OverlayViewController {
       swipeLabel.isHidden = true
     }
     
-    if draftPreview {
-      heartButton.isHidden = true
-    }
-    
     if story.author == FoodieUser.current, !draftPreview {
       if let reputableStory = story.reputation {
         heartLabel.text = "\(reputableStory.usersLiked)"
@@ -918,6 +918,10 @@ class StoryViewController: OverlayViewController {
     } else {
       heartLabel.isHidden = true
       heartLabel.text = ""  // This is so in the Storyboard, we can type whatever we want, but we clear it here
+      
+      if !draftPreview {
+        questionLabel.isHidden = false
+      }
     }
     
     // Get Reaction Claims to personalize UI
@@ -942,6 +946,7 @@ class StoryViewController: OverlayViewController {
             self?.heartClicked = true
             self?.heartButton.setImage(#imageLiteral(resourceName: "Story-LikeFilled"), for: .normal)
             self?.heartLabel.isHidden = false
+            self?.questionLabel.isHidden = true
             
             if let viewingStory = self?.viewingStory, let reputableStory = viewingStory.reputation {
               self?.heartLabel.text = "\(reputableStory.usersLiked)"
@@ -951,7 +956,7 @@ class StoryViewController: OverlayViewController {
         
         self?.heartButton.isEnabled = true
       }
-    } else if !FoodieUser.isCurrentRegistered {
+    } else {
       heartButton.isEnabled = false
     }
 

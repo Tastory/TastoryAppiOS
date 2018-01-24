@@ -127,8 +127,7 @@ CGFloat const bgCornerRadiusAsFontFraction = 0.3f;
 		// Convert a scale trasform (which pixelate) into a scaled font size (vector)
 		self.transform = CGAffineTransformIdentity;
 		CGPoint labelCenter = self.center;
-		CGRect scaledFrame = CGRectMake(0.f,
-										0.f,
+		CGRect scaledFrame = CGRectMake(0.f, 0.f,
 										_unscaledFrame.size.width * _scale,// * 1.03f,
                     _unscaledFrame.size.height * _scale);// * 1.03f);
 		CGFloat currentFontSize = self.unscaledFontSize * _scale;
