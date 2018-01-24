@@ -115,7 +115,8 @@ class StoryViewController: OverlayViewController {
       
       let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
       
-      Analytics.logMomentVenueEvent(venueId: story.venue?.objectId ?? "",
+      Analytics.logMomentVenueEvent(userID: FoodieUser.current?.username ?? "nil",
+                                    venueId: story.venue?.objectId ?? "",
                                     venueName: story.venue?.name ?? "",
                                     storyPercentage: storyPercentage,
                                     momentId: moment.objectId ?? "",
@@ -189,7 +190,8 @@ class StoryViewController: OverlayViewController {
       
       let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
       
-      Analytics.logMomentProfileEvent(authorId: author.username ?? "",
+      Analytics.logMomentProfileEvent(userID: FoodieUser.current?.username ?? "nil",
+                                      authorId: author.username ?? "",
                                       storyPercentage: storyPercentage,
                                       momentId: moment.objectId ?? "",
                                       momentNumber: story.getIndexOf(moment),
@@ -729,7 +731,8 @@ class StoryViewController: OverlayViewController {
 
       let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
       
-      Analytics.logMomentSwipeEvent(url: story.storyURL ?? "",
+      Analytics.logMomentSwipeEvent(userID: FoodieUser.current?.username ?? "nil",
+                                    url: story.storyURL ?? "",
                                     message: story.swipeMessage ?? "",
                                     storyPercentage: storyPercentage,
                                     momentId: moment.objectId ?? "",
@@ -918,10 +921,7 @@ class StoryViewController: OverlayViewController {
     } else {
       heartLabel.isHidden = true
       heartLabel.text = ""  // This is so in the Storyboard, we can type whatever we want, but we clear it here
-      
-      if !draftPreview {
-        questionLabel.isHidden = false
-      }
+      questionLabel.isHidden = false
     }
     
     // Get Reaction Claims to personalize UI
@@ -958,6 +958,7 @@ class StoryViewController: OverlayViewController {
       }
     } else {
       heartButton.isEnabled = false
+      questionLabel.isHidden = true
     }
 
     
@@ -1105,7 +1106,8 @@ class StoryViewController: OverlayViewController {
 
       let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
       
-      Analytics.logStoryExitEvent(storyId: story.objectId ?? "",
+      Analytics.logStoryExitEvent(userID: FoodieUser.current?.username ?? "nil",
+                                  storyId: story.objectId ?? "",
                                   name: story.title ?? "",
                                   storyPercentage: storyPercentage,
                                   authorId: story.author?.username ?? "",

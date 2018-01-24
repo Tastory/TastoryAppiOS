@@ -220,6 +220,9 @@ class LogInViewController: OverlayViewController {
         }
         return
       }
+      
+      Analytics.logLoginEvent(method: .guest, success: true, note: "")
+      
       let mapNavController = MapNavController(rootViewController: viewController)
       mapNavController.modalTransitionStyle = .crossDissolve
       self.present(mapNavController, animated: true)

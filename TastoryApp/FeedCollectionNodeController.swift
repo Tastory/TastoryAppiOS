@@ -548,14 +548,15 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
     }
     
     if isOwnStory {
-      Analytics.logStoryOwnViewEvent(launchType: launchType)
+      Analytics.logStoryOwnViewEvent(userID: FoodieUser.current?.username ?? "nil", launchType: launchType)
     } else if let moments = story.moments, moments.count > 0 {
       
       if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
       if story.title == nil { CCLog.assert("Story Title should never be nil")}
       if story.author?.username == nil { CCLog.assert("Story Author & Username should never be nil")}
       
-      Analytics.logStoryViewEvent(storyId: story.objectId ?? "",
+      Analytics.logStoryViewEvent(userID: FoodieUser.current?.username ?? "nil",
+                                  storyId: story.objectId ?? "",
                                   name: story.title ?? "",
                                   authorId: story.author?.username ?? "",
                                   launchType: launchType,

@@ -213,7 +213,8 @@ class DiscoverViewController: OverlayViewController {
       // This is pure analytics
       let searchSuccess = (error != nil && stories != nil)
       let searchNote = error?.localizedDescription ?? ""
-      Analytics.loginDiscoverFilterSearch(categoryIDs: self.discoverFilter?.selectedCategories.map( { $0.foursquareCategoryID ?? "" } ) ?? [],
+      Analytics.loginDiscoverFilterSearch(userID: FoodieUser.current?.username ?? "nil",
+                                          categoryIDs: self.discoverFilter?.selectedCategories.map( { $0.foursquareCategoryID ?? "" } ) ?? [],
                                           priceUpperLimit: self.discoverFilter?.priceUpperLimit ?? FoodieFilter.Constants.PriceUpperLimit,
                                           priceLowerLimit: self.discoverFilter?.priceLowerLimit ?? FoodieFilter.Constants.PriceLowerLimit,
                                           success: searchSuccess,
@@ -956,7 +957,7 @@ extension DiscoverViewController: UITextFieldDelegate {
 
       if let error = error as? CLError {
         
-        Analytics.loginDiscoverSearchBar(typedTerm: location, success: false, searchedTerm: "", note: error.localizedDescription)
+        Analytics.loginDiscoverSearchBar(userID: FoodieUser.current?.username ?? "nil", typedTerm: location, success: false, searchedTerm: "", note: error.localizedDescription)
         
         switch error.code {
         case .geocodeFoundNoResult:
@@ -971,7 +972,8 @@ extension DiscoverViewController: UITextFieldDelegate {
 
       guard let placemarks = placemarks else {
 
-        Analytics.loginDiscoverSearchBar(typedTerm: location, success: false, searchedTerm: "",
+        Analytics.loginDiscoverSearchBar(userID: FoodieUser.current?.username ?? "nil",
+                                         typedTerm: location, success: false, searchedTerm: "",
                                          note: "User Error - No Placemark found from location entered into text field by User")
         CCLog.info("User Error - No Placemark found from location entered into text field by User")
 
@@ -1039,7 +1041,7 @@ extension DiscoverViewController: UITextFieldDelegate {
         region = MKCoordinateRegionMakeWithDistance(clRegion.center, 2*clRegion.radius, 2*clRegion.radius)
 
       } else {
-        Analytics.loginDiscoverSearchBar(typedTerm: location, success: false, searchedTerm: textArray[0],
+        Analytics.loginDiscoverSearchBar(userID: FoodieUser.current?.username ?? "nil", typedTerm: location, success: false, searchedTerm: textArray[0],
                                          note: "Returned placemark contained no location")
         CCLog.assert("Placemark contained no location")
 
@@ -1049,7 +1051,7 @@ extension DiscoverViewController: UITextFieldDelegate {
         return
       }
 
-      Analytics.loginDiscoverSearchBar(typedTerm: location, success: true, searchedTerm: textArray[0],
+      Analytics.loginDiscoverSearchBar(userID: FoodieUser.current?.username ?? "nil", typedTerm: location, success: true, searchedTerm: textArray[0],
                                        note: "User Error - No Placemark found from location entered into text field by User")
       
       mapNavController.showRegionExposed(region, animated: true)

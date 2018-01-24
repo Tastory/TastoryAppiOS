@@ -37,8 +37,9 @@ class Analytics {
 
   // MARK: - Search & Jump Events
   
-  static func loginDiscoverFilterSearch(categoryIDs: [String], priceUpperLimit: Double, priceLowerLimit: Double, success: Bool, note: String, stories: Int) {  // Which filters are on?
-    Answers.logCustomEvent(withName: "Filter", customAttributes: ["Category IDs" : categoryIDs,
+  static func loginDiscoverFilterSearch(userID: String, categoryIDs: [String], priceUpperLimit: Double, priceLowerLimit: Double, success: Bool, note: String, stories: Int) {  // Which filters are on?
+    Answers.logCustomEvent(withName: "Filter", customAttributes: ["User ID" : userID,
+                                                                  "Category IDs" : categoryIDs,
                                                                   "Number of Categories" : categoryIDs.count,
                                                                   "Price Upper Limit" : priceUpperLimit,
                                                                   "Price Lower Limit" : priceLowerLimit,
@@ -48,8 +49,9 @@ class Analytics {
   }
   
   
-  static func loginDiscoverSearchBar(typedTerm: String, success: Bool, searchedTerm: String, note: String) {
-    Answers.logSearch(withQuery: typedTerm, customAttributes: ["Success" : success,
+  static func loginDiscoverSearchBar(userID: String, typedTerm: String, success: Bool, searchedTerm: String, note: String) {
+    Answers.logSearch(withQuery: typedTerm, customAttributes: ["User ID" : userID,
+                                                               "Success" : success,
                                                                "Searched" : searchedTerm,
                                                                "Note" : note])
   }
@@ -64,19 +66,22 @@ class Analytics {
   }
   
   
-  static func logStoryViewEvent(storyId: String, name: String, authorId: String, launchType: StoryLaunchType, totalMoments: Int) {
-    Answers.logContentView(withName: name, contentType: "Story", contentId: storyId, customAttributes: ["Author ID" : authorId,
+  static func logStoryViewEvent(userID: String, storyId: String, name: String, authorId: String, launchType: StoryLaunchType, totalMoments: Int) {
+    Answers.logContentView(withName: name, contentType: "Story", contentId: storyId, customAttributes: ["User ID" : userID,
+                                                                                                        "Author ID" : authorId,
                                                                                                         "Launch Type" : launchType.rawValue,
                                                                                                         "Total Moments" : totalMoments])
   }
   
   
-  static func logStoryOwnViewEvent(launchType: StoryLaunchType) {
-    Answers.logCustomEvent(withName: "Story Own", customAttributes: ["Launch Type" : launchType])
+  static func logStoryOwnViewEvent(userID: String, launchType: StoryLaunchType) {
+    Answers.logCustomEvent(withName: "Story Own", customAttributes: ["User ID" : userID,
+                                                                     "Launch Type" : launchType])
   }
   
   
-  static func logStoryExitEvent(storyId: String,
+  static func logStoryExitEvent(userID: String,
+                                storyId: String,
                                 name: String,
                                 storyPercentage: Double,
                                 authorId: String,
@@ -85,7 +90,8 @@ class Analytics {
                                 totalMoments: Int,
                                 videoPercentage: Double) {
     
-    Answers.logCustomEvent(withName: "Story Exit", customAttributes: ["Story ID" : storyId,
+    Answers.logCustomEvent(withName: "Story Exit", customAttributes: ["User ID" : userID,
+                                                                      "Story ID" : storyId,
                                                                       "Story Name" : name,
                                                                       "Story Percentage" : storyPercentage,
                                                                       "Author ID" : authorId,
@@ -96,7 +102,8 @@ class Analytics {
   }
   
   
-  static func logMomentSwipeEvent(url: String,
+  static func logMomentSwipeEvent(userID: String,
+                                  url: String,
                                   message: String,
                                   storyPercentage: Double,
                                   momentId: String,
@@ -107,20 +114,22 @@ class Analytics {
                                   storyName: String,
                                   authorId: String) {
     
-    Answers.logCustomEvent(withName: "Moment Swiped", customAttributes: ["URL" : url,
-                                                                        "Message" : message,
-                                                                        "Story Percentage" : storyPercentage,
-                                                                        "Moment ID" : momentId,
-                                                                        "Moment Number" : momentNumber,
-                                                                        "Total Moments" : totalMoments,
-                                                                        "Media Type" : mediaType.rawValue,
-                                                                        "Story ID" : storyId,
-                                                                        "Story Name" : storyName,
-                                                                        "Author ID" : authorId])
+    Answers.logCustomEvent(withName: "Moment Swiped", customAttributes: ["User ID" : userID,
+                                                                         "URL" : url,
+                                                                         "Message" : message,
+                                                                         "Story Percentage" : storyPercentage,
+                                                                         "Moment ID" : momentId,
+                                                                         "Moment Number" : momentNumber,
+                                                                         "Total Moments" : totalMoments,
+                                                                         "Media Type" : mediaType.rawValue,
+                                                                         "Story ID" : storyId,
+                                                                         "Story Name" : storyName,
+                                                                         "Author ID" : authorId])
   }
   
   
-  static func logMomentVenueEvent(venueId: String,
+  static func logMomentVenueEvent(userID: String,
+                                  venueId: String,
                                   venueName: String,
                                   storyPercentage: Double,
                                   momentId: String,
@@ -131,7 +140,8 @@ class Analytics {
                                   storyName: String,
                                   authorId: String) {
     
-    Answers.logCustomEvent(withName: "Venue Clicked", customAttributes: ["Venue ID" : venueId,
+    Answers.logCustomEvent(withName: "Venue Clicked", customAttributes: ["User ID" : userID,
+                                                                         "Venue ID" : venueId,
                                                                          "Venue Name" : venueName,
                                                                          "Story Percentage" : storyPercentage,
                                                                          "Moment ID" : momentId,
@@ -145,7 +155,8 @@ class Analytics {
   }
   
   
-  static func logMomentProfileEvent(authorId: String,
+  static func logMomentProfileEvent(userID: String,
+                                    authorId: String,
                                     storyPercentage: Double,
                                     momentId: String,
                                     momentNumber: Int,
@@ -154,7 +165,8 @@ class Analytics {
                                     storyId: String,
                                     storyName: String) {
     
-    Answers.logCustomEvent(withName: "Profile Clicked", customAttributes: ["Author ID" : authorId,
+    Answers.logCustomEvent(withName: "Profile Clicked", customAttributes: ["User ID" : userID,
+                                                                           "Author ID" : authorId,
                                                                            "Story Percentage" : storyPercentage,
                                                                            "Moment ID" : momentId,
                                                                            "Moment Number" : momentNumber,
@@ -169,21 +181,21 @@ class Analytics {
   
   // MARK: - Composition Events
   
-  static func logCameraPhotoEvent() {
-    Answers.logCustomEvent(withName: "Photo Captured", customAttributes: nil)
+  static func logCameraPhotoEvent(userID: String) {
+    Answers.logCustomEvent(withName: "Photo Captured", customAttributes: ["User ID" : userID])
   }
   
-  static func logCameraVideoEvent(duration: Double) {
-    Answers.logCustomEvent(withName: "Video Captured", customAttributes: ["Duration" : duration])
+  static func logCameraVideoEvent(userID: String, duration: Double) {
+    Answers.logCustomEvent(withName: "Video Captured", customAttributes: ["User ID" : userID, "Duration" : duration])
   }
 
-  static func logPickerPhotoEvent(width: Double, aspectRatio: Double) {
-    Answers.logCustomEvent(withName: "Photo Picked", customAttributes: ["Width" : width,
+  static func logPickerPhotoEvent(userID: String, width: Double, aspectRatio: Double) {
+    Answers.logCustomEvent(withName: "Photo Picked", customAttributes: ["User ID" : userID, "Width" : width,
                                                                         "Aspect Ratio" : "\(aspectRatio.truncate(places: 1))"])
   }
   
-  static func logPickerVideoEvent(width: Double, aspectRatio: Double, duration: Double) {
-    Answers.logCustomEvent(withName: "Video Picked", customAttributes: ["Width" : width,
+  static func logPickerVideoEvent(userID: String, width: Double, aspectRatio: Double, duration: Double) {
+    Answers.logCustomEvent(withName: "Video Picked", customAttributes: ["User ID" : userID, "Width" : width,
                                                                         "Aspect Ratio" : "\(aspectRatio.truncate(places: 1))",
                                                                         "Duration" : duration])
   }
