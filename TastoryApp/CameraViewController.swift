@@ -807,25 +807,55 @@ extension CameraViewController: VideoTrimmerDelegate {
     let fileName = url.lastPathComponent
     let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .video)
     mediaObject.setVideo(toLocal: url)
-    
-    mediaObject.localVideoTranscode(to: FoodieFileObject.getFileURL(for: .draft, with: fileName),
-                                    thru: FoodieFileObject.getRandomTempFileURL(),
-                                    duration: CMTimeRangeMake(startTime, endTime)) { error in
-                                      activitySpinner.remove()
-                                      if let error = error {
-                                        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-                                          CCLog.fatal("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
-                                        }
-                                        return
-                                      }
-                                      DispatchQueue.main.async {
-                                        let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-                                        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-                                        viewController.mediaObj = mediaObject
-                                        viewController.markupReturnDelegate = self
-                                        viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
-                                        self.present(viewController, animated: true)
-                                      }
+    let asset = AVAsset(url: url)
+
+    guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPreset960x540) else {
+      return
+    }
+    exportSession.outputURL = FoodieFileObject.getRandomTempFileURL()
+    exportSession.outputFileType = AVFileType.mov
+    exportSession.timeRange = CMTimeRange(start: startTime, end: endTime)
+    exportSession.exportAsynchronously{
+      switch exportSession.status {
+      case .completed:
+
+        //copy over
+        guard let outputURL = exportSession.outputURL else {
+          CCLog.fatal("outputURL = nil. Cannot switch AVPlayer backing to Local File")
+        }
+
+        let localURL = FoodieFileObject.getFileURL(for: .draft, with: fileName)
+        CCLog.verbose("Copying AVExport Output from \(outputURL.absoluteString) to \(localURL.absoluteString)")
+
+        do {
+          try FileManager.default.copyItem(at: outputURL, to: localURL)
+        } catch CocoaError.fileWriteFileExists {
+          CCLog.warning("Trying to copy AVExport from Tmp to Local for file \(localURL.absoluteString) already exist")
+        } catch {
+          CCLog.assert("Failed to copy from \(outputURL.absoluteString) to \(localURL.absoluteString)")
+        }
+
+        activitySpinner.remove()
+
+        DispatchQueue.main.async {
+          let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+          let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+          mediaObject.setVideo(toLocal: localURL)
+          viewController.mediaObj = mediaObject
+          viewController.markupReturnDelegate = self
+          viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
+          self.present(viewController, animated: true)
+        }
+      case .failed, .cancelled:
+        if let error = exportSession.error {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("AVExportPlayer export asynchronously failed with error \(error.localizedDescription)")
+          }
+          return
+        }
+
+      default: break
+      }
     }
   }
 }
