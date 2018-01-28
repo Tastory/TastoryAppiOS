@@ -311,7 +311,7 @@
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <offsetWrapper key="searchTextPositionAdjustment" horizontal="0.0" vertical="1"/>
                                                 <offsetWrapper key="searchFieldBackgroundPositionAdjustment" horizontal="0.0" vertical="0.0"/>
-                                                <textInputTraits key="textInputTraits" returnKeyType="done" textContentType="name"/>
+                                                <textInputTraits key="textInputTraits" returnKeyType="done"/>
                                             </searchBar>
                                             <view contentMode="scaleToFill" verticalHuggingPriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="2Nv-kP-2Ei" userLabel="Trailing Gap">
                                                 <rect key="frame" x="369" y="0.0" width="6" height="56"/>
