@@ -14,6 +14,7 @@ PODS:
     - Branch/Core (= 0.22.5)
   - Branch/Core (0.22.5)
   - ColorSlider (4.1)
+  - COSTouchVisualizer (1.0.6)
   - Crashlytics (3.9.3):
     - Fabric (~> 1.7.2)
   - EarlGrey (1.12.1)
@@ -84,6 +85,7 @@ DEPENDENCIES:
   - AWSS3
   - Branch
   - ColorSlider (~> 4.0)
+  - COSTouchVisualizer
   - Crashlytics
   - EarlGrey
   - Fabric
@@ -129,6 +131,7 @@ SPEC CHECKSUMS:
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   Branch: 4f0482418d99e77d15b0e6065ef216c10e24797b
   ColorSlider: 3dc3b5c31b5a74aa1232c44eae06453ce59ecf36
+  COSTouchVisualizer: a398089327a6c02897823614d7447ccc97198997
   Crashlytics: dbb07d01876c171c5ccbdf7826410380189e452c
   EarlGrey: f7774b813c888ebdb9a21e612d67874d17d5a326
   Fabric: 9cd6a848efcf1b8b07497e0b6a2e7d336353ba15
@@ -142,7 +145,7 @@ SPEC CHECKSUMS:
   Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   Parse: 1968c634e1c782fb31aad6872f6d32de911bb122
-  ParseFacebookUtilsV4: 7345d2d79d5240d9897cca1c7c815db57f03f042
+  ParseFacebookUtilsV4: 19c77fa55381eb9ed470cd207068cfdd711a155c
   PINCache: d195fdba255283f7e9900a55e3cced377f431f9b
   PINOperation: 7f042fa6df5b606deb4bd5997654cf7033d5be1d
   PINRemoteImage: d6d51c5d2adda55f1ce30c96e850b6c4ebd2856a
@@ -156,4 +159,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 9f0220cc759f88f58070a2db82ded62be4835fc1
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.4.0

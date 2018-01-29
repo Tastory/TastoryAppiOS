@@ -10,14 +10,13 @@
 import AsyncDisplayKit
 import FBSDKCoreKit
 import ParseFacebookUtilsV4
-import Branch
+import COSTouchVisualizer
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowDelegate {
 
   var window: UIWindow?
-
-
+  
   // MARK: - Private Instance Functions
   
   private func printFonts() {
@@ -41,6 +40,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Print Fonts if needed
     //printFonts()
     
+    // Setup Window
+    let cosTouchWindow = COSTouchVisualizerWindow(frame: UIScreen.main.bounds)
+    cosTouchWindow.backgroundColor = UIColor.white
+    cosTouchWindow.fillColor = UIColor.white
+    cosTouchWindow.strokeColor = UIColor.white
+    cosTouchWindow.touchAlpha = 0.2;
+    cosTouchWindow.rippleFillColor = UIColor.white
+    cosTouchWindow.rippleStrokeColor = UIColor.white
+    cosTouchWindow.touchAlpha = 0.1;
+    cosTouchWindow.touchVisualizerWindowDelegate = self
+    
+    window = cosTouchWindow
+
     // Initialize Crash, Error & Log Reporting
     CCLog.initializeLogging()
     CCLog.initializeReporting()
@@ -61,7 +73,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       CCLog.fatal("ViewController initiated not of RootViewController Class!!")
     }
     viewController.startupError = error
-    window = UIWindow(frame: UIScreen.main.bounds) 
+    //window = UIWindow(frame: UIScreen.main.bounds)
     window?.rootViewController = viewController
     window?.makeKeyAndVisible()
 
@@ -126,6 +138,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func applicationWillTerminate(_ application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+  }
+  
+  // MARK: - COSTouchVisualizerWindowDelegate
+  func touchVisualizerWindowShouldShowFingertip(_ window: COSTouchVisualizerWindow!) -> Bool {
+    return true
+  }
+  
+  func touchVisualizerWindowShouldAlwaysShowFingertip(_ window: COSTouchVisualizerWindow!) -> Bool {
+    return false
   }
 }
 
