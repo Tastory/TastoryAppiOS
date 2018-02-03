@@ -690,8 +690,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="55"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A7j-Ak-CS7">
-                                        <rect key="frame" x="4" y="16" width="48" height="40"/>
-                                        <inset key="contentEdgeInsets" minX="8" minY="8" maxX="8" maxY="0.0"/>
+                                        <rect key="frame" x="4" y="12" width="48" height="48"/>
+                                        <inset key="contentEdgeInsets" minX="8" minY="12" maxX="8" maxY="4"/>
                                         <state key="normal" image="EntryMarkup-Back"/>
                                         <connections>
                                             <action selector="backAction:" destination="qja-VH-rV7" eventType="touchUpInside" id="ra7-Lt-9Ns"/>

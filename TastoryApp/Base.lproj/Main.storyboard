@@ -65,8 +65,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="79"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XVt-7W-XFA">
-                                        <rect key="frame" x="4" y="16" width="48" height="40"/>
-                                        <inset key="contentEdgeInsets" minX="8" minY="8" maxX="8" maxY="0.0"/>
+                                        <rect key="frame" x="4" y="12" width="48" height="48"/>
+                                        <inset key="contentEdgeInsets" minX="8" minY="12" maxX="8" maxY="4"/>
                                         <state key="normal" image="EntryMarkup-Back"/>
                                         <connections>
                                             <action selector="backAction:" destination="Mls-rg-2Ue" eventType="touchUpInside" id="r7Y-Qo-qFH"/>
