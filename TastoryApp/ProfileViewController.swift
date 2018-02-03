@@ -55,7 +55,15 @@ class ProfileViewController: OverlayViewController {
   
   @IBOutlet weak var feedContainerView: UIView!
   @IBOutlet weak var topGradientBackground: UIView!
-  @IBOutlet weak var mapExposedView: UIView!
+  
+  @IBOutlet weak var mapExposedView: TouchForwardingView? {
+    didSet {
+      if let mapExposedView = mapExposedView, let mapNavController = navigationController as? MapNavController {
+        mapExposedView.passthroughViews = [mapNavController.mapView]
+      }
+    }
+  }
+  
   @IBOutlet weak var profileUIView: UIView!
   @IBOutlet weak var emptyAvatarImageView: UIImageView!
   @IBOutlet weak var avatarFrameView: UIImageView!
@@ -464,7 +472,12 @@ class ProfileViewController: OverlayViewController {
     }
     
     mapNavController = mapController
-    mapController.setExposedRect(with: mapExposedView)
+    //mapController.mapDelegate = self
+
+    if let mapExposedView = mapExposedView {
+      mapController.setExposedRect(with: mapExposedView)
+      mapExposedView.passthroughViews = [mapController.mapView]
+    }
     
     guard let feedCollectionNodeController = feedCollectionNodeController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in

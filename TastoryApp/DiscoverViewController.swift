@@ -885,6 +885,7 @@ class DiscoverViewController: OverlayViewController {
     
     // Don't allow user to go to the Camera and thus Story Entry unless they are logged-in with E-mail verified
     cameraButton.isHidden = true
+    cameraButton.isEnabled = false
     logoutButton.isHidden = false
     profileButton.isHidden = true
     
@@ -893,6 +894,7 @@ class DiscoverViewController: OverlayViewController {
       
       logoutButton.isHidden = true
       profileButton.isHidden = false
+      cameraButton.isHidden = false
       
       user.checkIfEmailVerified { verified, error in
         if let error = error {
@@ -916,7 +918,7 @@ class DiscoverViewController: OverlayViewController {
 
         } else if verified {
           DispatchQueue.main.async {
-            self.cameraButton.isHidden = false
+            self.cameraButton.isEnabled = true
           }
         }
       }

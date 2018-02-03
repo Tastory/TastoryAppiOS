@@ -65,8 +65,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="79"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XVt-7W-XFA">
-                                        <rect key="frame" x="15" y="40" width="32" height="40"/>
-                                        <inset key="contentEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="0.0"/>
+                                        <rect key="frame" x="4" y="16" width="48" height="40"/>
+                                        <inset key="contentEdgeInsets" minX="8" minY="8" maxX="8" maxY="0.0"/>
                                         <state key="normal" image="EntryMarkup-Back"/>
                                         <connections>
                                             <action selector="backAction:" destination="Mls-rg-2Ue" eventType="touchUpInside" id="r7Y-Qo-qFH"/>
@@ -75,7 +75,7 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="XVt-7W-XFA" firstAttribute="leading" secondItem="1js-VP-5AG" secondAttribute="leading" constant="15" id="P6k-KI-ZKv"/>
+                                    <constraint firstItem="XVt-7W-XFA" firstAttribute="leading" secondItem="1js-VP-5AG" secondAttribute="leading" constant="4" id="P6k-KI-ZKv"/>
                                     <constraint firstAttribute="bottom" secondItem="XVt-7W-XFA" secondAttribute="centerY" constant="19" id="SgY-Rw-p7X"/>
                                 </constraints>
                             </view>
@@ -185,8 +185,8 @@
                                     <constraint firstAttribute="width" secondItem="Pgw-9P-CO9" secondAttribute="height" multiplier="1:1" id="AQw-vN-GGf"/>
                                 </constraints>
                             </imageView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zzE-Jd-3Do" userLabel="Map Exposed View">
-                                <rect key="frame" x="0.0" y="64" width="375" height="124.66666666666669"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zzE-Jd-3Do" userLabel="Map Exposed View" customClass="TouchForwardingView" customModule="TastoryApp" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="40" width="375" height="110"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                         </subviews>
@@ -296,7 +296,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="70" translatesAutoresizingMaskIntoConstraints="NO" id="S7U-1x-ELZ" userLabel="Bottom Buttons Stack">
                                 <rect key="frame" x="26" y="796" width="323" height="0.0"/>
                                 <subviews>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-Ft-7un">
                                         <rect key="frame" x="-26" y="-15" width="0.0" height="30"/>
                                         <accessibility key="accessibilityConfiguration" identifier="discoverView_cameraButton"/>
                                         <state key="normal" image="Discover-CameraButton"/>
@@ -615,16 +615,8 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Like" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cGg-ta-BCi">
-                                        <rect key="frame" x="6.6666666666666856" y="40" width="27" height="17.666666666666671"/>
-                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                        <color key="shadowColor" white="0.0" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <size key="shadowOffset" width="0.0" height="1"/>
-                                    </label>
-                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NkV-78-Yh5">
-                                        <rect key="frame" x="16.666666666666686" y="57.666666666666671" width="7" height="0.0"/>
-                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                                        <rect key="frame" x="6.5" y="40" width="27.5" height="17.5"/>
+                                        <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="14"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                         <color key="shadowColor" white="0.0" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -742,7 +734,6 @@
                         <outlet property="pauseButton" destination="7rC-KB-BnZ" id="F9k-fF-x4m"/>
                         <outlet property="photoView" destination="3Gc-Ev-vmE" id="tiQ-hZ-B0K"/>
                         <outlet property="playButton" destination="cOp-iU-bG1" id="KgF-FW-TMk"/>
-                        <outlet property="questionLabel" destination="NkV-78-Yh5" id="dyR-LE-hOH"/>
                         <outlet property="reactionStack" destination="Hpj-0E-WpG" id="W0W-m3-s85"/>
                         <outlet property="shareButton" destination="rhf-jl-SNy" id="sXL-Gi-U0j"/>
                         <outlet property="soundOffButton" destination="dOo-DQ-GbZ" id="P6z-4E-Yke"/>

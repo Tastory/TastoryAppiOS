@@ -349,7 +349,7 @@
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" translatesAutoresizingMaskIntoConstraints="NO" id="STb-w9-4sJ">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HXH-Y5-Ju0">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HXH-Y5-Ju0" customClass="TouchForwardingView" customModule="TastoryApp" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="167"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </view>
@@ -690,8 +690,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="55"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A7j-Ak-CS7">
-                                        <rect key="frame" x="15" y="16" width="32" height="40"/>
-                                        <inset key="contentEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="0.0"/>
+                                        <rect key="frame" x="4" y="16" width="48" height="40"/>
+                                        <inset key="contentEdgeInsets" minX="8" minY="8" maxX="8" maxY="0.0"/>
                                         <state key="normal" image="EntryMarkup-Back"/>
                                         <connections>
                                             <action selector="backAction:" destination="qja-VH-rV7" eventType="touchUpInside" id="ra7-Lt-9Ns"/>
@@ -700,7 +700,7 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="A7j-Ak-CS7" firstAttribute="leading" secondItem="sbC-fK-FJI" secondAttribute="leading" constant="15" id="Bj1-L3-qgA"/>
+                                    <constraint firstItem="A7j-Ak-CS7" firstAttribute="leading" secondItem="sbC-fK-FJI" secondAttribute="leading" constant="4" id="Bj1-L3-qgA"/>
                                     <constraint firstItem="A7j-Ak-CS7" firstAttribute="centerY" secondItem="sbC-fK-FJI" secondAttribute="bottom" constant="-19" id="wxc-iO-rMp"/>
                                 </constraints>
                             </view>
@@ -743,6 +743,7 @@
                         <outlet property="titleLengthLabel" destination="rV1-7C-DT8" id="2W7-PB-UuA"/>
                         <outlet property="titleTextField" destination="yGa-MF-Thx" id="aLm-7k-9St"/>
                         <outlet property="topGradientBackground" destination="sbC-fK-FJI" id="4BD-ok-tUz"/>
+                        <outlet property="touchForwardingView" destination="HXH-Y5-Ju0" id="sB0-c6-zMd"/>
                         <outlet property="venueButton" destination="J5u-Se-d4s" id="bYq-LX-RxN"/>
                         <outlet property="venueIcon" destination="YGs-my-9hB" id="hhr-TI-kva"/>
                     </connections>

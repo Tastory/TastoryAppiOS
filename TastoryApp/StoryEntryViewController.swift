@@ -62,8 +62,17 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   // MARK: - IBOutlets
 
   @IBOutlet weak var mapExposedView: UIView!
-  @IBOutlet weak var topGradientBackground: TouchForwardingView!
+  @IBOutlet weak var topGradientBackground: UIView!
   @IBOutlet weak var scrollView: UIScrollView!
+  
+  @IBOutlet var touchForwardingView: TouchForwardingView? {
+    didSet {
+      if let touchForwardingView = touchForwardingView, let mapNavController = navigationController as? MapNavController {
+        touchForwardingView.passthroughViews = [mapNavController.mapView]
+      }
+    }
+  }
+  
   @IBOutlet weak var momentCellView: UIView!
   @IBOutlet weak var titleIcon: UIButton!
   @IBOutlet weak var titleTextField: UITextField?
@@ -693,6 +702,10 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     mapNavController = mapController
     //mapController.mapDelegate = self
     mapController.setExposedRect(with: mapExposedView)
+    
+    if let touchForwardingView = touchForwardingView {
+      touchForwardingView.passthroughViews = [mapController.mapView]
+    }
     
     if let workingStory = workingStory {
       // Lets update the map location to the top here
