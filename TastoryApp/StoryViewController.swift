@@ -907,6 +907,7 @@ class StoryViewController: OverlayViewController {
     
     if draftPreview {
       view.backgroundColor = .black
+      heartLabel.isHidden = true
     } else {
       view.backgroundColor = .clear
     }
