@@ -54,12 +54,13 @@ class ProfileViewController: OverlayViewController {
   // MARK: - IBOutlet
   
   @IBOutlet weak var feedContainerView: UIView!
+  @IBOutlet weak var mapExposedView: UIView!
   @IBOutlet weak var topGradientBackground: UIView!
-  
-  @IBOutlet weak var mapExposedView: TouchForwardingView? {
+  @IBOutlet weak var touchForwardingView: TouchForwardingView? {
     didSet {
-      if let mapExposedView = mapExposedView, let mapNavController = navigationController as? MapNavController {
-        mapExposedView.passthroughViews = [mapNavController.mapView]
+      if let touchForwardingView = touchForwardingView,
+        let mapNavController = navigationController as? MapNavController {
+        touchForwardingView.passthroughViews = [mapNavController.mapView]
       }
     }
   }
@@ -476,7 +477,10 @@ class ProfileViewController: OverlayViewController {
 
     if let mapExposedView = mapExposedView {
       mapController.setExposedRect(with: mapExposedView)
-      mapExposedView.passthroughViews = [mapController.mapView]
+    }
+    
+    if let touchForwardingView = touchForwardingView {
+      touchForwardingView.passthroughViews = [mapController.mapView]
     }
     
     guard let feedCollectionNodeController = feedCollectionNodeController else {

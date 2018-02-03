@@ -43,10 +43,10 @@
                                 <rect key="frame" x="0.0" y="339" width="375" height="439"/>
                                 <subviews>
                                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesSelf" translatesAutoresizingMaskIntoConstraints="NO" id="AMX-lO-lJU">
-                                        <rect key="frame" x="52" y="121" width="270" height="197"/>
+                                        <rect key="frame" x="52.5" y="85" width="270" height="197"/>
                                     </imageView>
                                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesOthers" translatesAutoresizingMaskIntoConstraints="NO" id="ETg-wA-zyO">
-                                        <rect key="frame" x="52" y="121" width="270" height="197"/>
+                                        <rect key="frame" x="52.5" y="85" width="270" height="197"/>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -61,11 +61,19 @@
                                 <rect key="frame" x="0.0" y="339" width="375" height="473"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zzE-Jd-3Do" userLabel="Map Exposed View">
+                                <rect key="frame" x="0.0" y="40" width="375" height="110"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1js-VP-5AG" userLabel="Top Gradient View">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="79"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="55"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UoE-Hi-yKI" userLabel="Touch Forwarding View" customClass="TouchForwardingView" customModule="TastoryApp" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="20" width="375" height="130"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XVt-7W-XFA">
-                                        <rect key="frame" x="4" y="12" width="48" height="48"/>
+                                        <rect key="frame" x="4" y="-10" width="48" height="48"/>
                                         <inset key="contentEdgeInsets" minX="8" minY="12" maxX="8" maxY="4"/>
                                         <state key="normal" image="EntryMarkup-Back"/>
                                         <connections>
@@ -75,8 +83,8 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="XVt-7W-XFA" firstAttribute="leading" secondItem="1js-VP-5AG" secondAttribute="leading" constant="4" id="P6k-KI-ZKv"/>
-                                    <constraint firstAttribute="bottom" secondItem="XVt-7W-XFA" secondAttribute="centerY" constant="19" id="SgY-Rw-p7X"/>
+                                    <constraint firstItem="XVt-7W-XFA" firstAttribute="leading" secondItem="UoE-Hi-yKI" secondAttribute="leading" constant="4" id="HN6-pH-cGe"/>
+                                    <constraint firstItem="XVt-7W-XFA" firstAttribute="top" secondItem="UoE-Hi-yKI" secondAttribute="top" constant="-10" id="SuV-Ut-y7O"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zwc-TB-L9A" userLabel="UI View">
@@ -185,10 +193,6 @@
                                     <constraint firstAttribute="width" secondItem="Pgw-9P-CO9" secondAttribute="height" multiplier="1:1" id="AQw-vN-GGf"/>
                                 </constraints>
                             </imageView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zzE-Jd-3Do" userLabel="Map Exposed View" customClass="TouchForwardingView" customModule="TastoryApp" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="40" width="375" height="110"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -198,6 +202,7 @@
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="centerY" secondItem="Zwc-TB-L9A" secondAttribute="top" id="7dp-Us-ROZ"/>
                             <constraint firstItem="sPh-PF-K39" firstAttribute="top" secondItem="Pgw-9P-CO9" secondAttribute="bottom" constant="8" id="AZO-vz-4PQ"/>
                             <constraint firstItem="1js-VP-5AG" firstAttribute="top" secondItem="IWZ-hZ-UC9" secondAttribute="top" id="Baa-Dy-4SK"/>
+                            <constraint firstItem="voX-A0-jf6" firstAttribute="top" secondItem="UoE-Hi-yKI" secondAttribute="top" id="C45-ee-KJE"/>
                             <constraint firstItem="eRP-BC-T40" firstAttribute="trailing" secondItem="Zwc-TB-L9A" secondAttribute="trailing" constant="-15" id="CFW-u6-pwF"/>
                             <constraint firstItem="0Ae-af-Oo9" firstAttribute="centerX" secondItem="Pgw-9P-CO9" secondAttribute="centerX" id="CTI-OY-9xf"/>
                             <constraint firstItem="ayV-BF-5uO" firstAttribute="top" secondItem="Zwc-TB-L9A" secondAttribute="bottom" id="DOr-Q5-Fzy"/>
@@ -206,10 +211,12 @@
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="width" secondItem="Zwc-TB-L9A" secondAttribute="width" multiplier="0.25" id="KtR-Fh-Ble"/>
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="bottom" secondItem="eRP-BC-T40" secondAttribute="bottom" id="McF-47-aWv"/>
                             <constraint firstItem="ayV-BF-5uO" firstAttribute="leading" secondItem="IWZ-hZ-UC9" secondAttribute="leading" id="Os4-9c-ixw"/>
+                            <constraint firstItem="voX-A0-jf6" firstAttribute="leading" secondItem="UoE-Hi-yKI" secondAttribute="leading" id="SNy-z5-x0w"/>
                             <constraint firstItem="0Ae-af-Oo9" firstAttribute="width" secondItem="Pgw-9P-CO9" secondAttribute="width" multiplier="0.98" id="UDc-jH-kZt"/>
                             <constraint firstItem="w1V-ap-EBM" firstAttribute="top" secondItem="Zwc-TB-L9A" secondAttribute="bottom" id="UXV-sK-HZV"/>
                             <constraint firstAttribute="trailing" secondItem="Zwc-TB-L9A" secondAttribute="trailing" id="V2d-be-adB"/>
                             <constraint firstAttribute="trailing" secondItem="ayV-BF-5uO" secondAttribute="trailing" id="aME-yI-Xga"/>
+                            <constraint firstItem="voX-A0-jf6" firstAttribute="trailing" secondItem="UoE-Hi-yKI" secondAttribute="trailing" id="h4k-ME-ouR"/>
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="leading" secondItem="Zwc-TB-L9A" secondAttribute="leading" constant="18" id="hpu-Xs-YoB"/>
                             <constraint firstItem="Zwc-TB-L9A" firstAttribute="top" secondItem="zzE-Jd-3Do" secondAttribute="bottom" id="i1E-Xs-fWI"/>
                             <constraint firstItem="zzE-Jd-3Do" firstAttribute="leading" secondItem="voX-A0-jf6" secondAttribute="leading" id="jID-ks-aJQ"/>
@@ -218,6 +225,7 @@
                             <constraint firstItem="eRP-BC-T40" firstAttribute="leading" secondItem="Pgw-9P-CO9" secondAttribute="trailing" constant="10" id="mHg-Ft-XR2"/>
                             <constraint firstItem="voX-A0-jf6" firstAttribute="trailing" secondItem="w1V-ap-EBM" secondAttribute="trailing" id="mZ0-pL-Ged"/>
                             <constraint firstItem="Zwc-TB-L9A" firstAttribute="leading" secondItem="IWZ-hZ-UC9" secondAttribute="leading" id="rYP-sG-kti"/>
+                            <constraint firstItem="UoE-Hi-yKI" firstAttribute="bottom" secondItem="Zwc-TB-L9A" secondAttribute="top" id="rhh-yy-3q6"/>
                             <constraint firstItem="voX-A0-jf6" firstAttribute="top" secondItem="zzE-Jd-3Do" secondAttribute="top" constant="-20" id="tiY-N4-m22"/>
                             <constraint firstItem="0Ae-af-Oo9" firstAttribute="height" secondItem="Pgw-9P-CO9" secondAttribute="height" multiplier="0.98" id="vsY-xE-sfU"/>
                             <constraint firstItem="w1V-ap-EBM" firstAttribute="leading" secondItem="voX-A0-jf6" secondAttribute="leading" id="wRz-LX-nyy"/>
@@ -242,6 +250,7 @@
                         <outlet property="settingsButton" destination="McO-aB-Dhs" id="gLR-CA-9rE"/>
                         <outlet property="shareButton" destination="A6M-OE-cb5" id="ybU-7u-YcU"/>
                         <outlet property="topGradientBackground" destination="1js-VP-5AG" id="hs8-5P-05N"/>
+                        <outlet property="touchForwardingView" destination="UoE-Hi-yKI" id="0zI-IS-v7q"/>
                         <outlet property="usernameLabel" destination="11R-Oq-bzz" id="dAY-Va-k9U"/>
                         <outlet property="websiteLabel" destination="PZf-fE-H2X" id="KLN-Y2-bPR"/>
                     </connections>

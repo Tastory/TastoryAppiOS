@@ -385,7 +385,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="799" text="50" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rV1-7C-DT8">
-                                                        <rect key="frame" x="346" y="18" width="14" height="14.5"/>
+                                                        <rect key="frame" x="346" y="18.5" width="14" height="14.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -551,7 +551,7 @@
                                                         </connections>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="800" text="15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QxI-Em-dBD">
-                                                        <rect key="frame" x="348" y="15" width="12" height="14.5"/>
+                                                        <rect key="frame" x="348" y="15.5" width="12" height="14.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.66000000000000003" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -687,10 +687,10 @@
                                 </constraints>
                             </scrollView>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sbC-fK-FJI" customClass="TouchForwardingView" customModule="TastoryApp" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="55"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A7j-Ak-CS7">
-                                        <rect key="frame" x="4" y="12" width="48" height="48"/>
+                                        <rect key="frame" x="4" y="10" width="48" height="48"/>
                                         <inset key="contentEdgeInsets" minX="8" minY="12" maxX="8" maxY="4"/>
                                         <state key="normal" image="EntryMarkup-Back"/>
                                         <connections>
@@ -701,7 +701,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="A7j-Ak-CS7" firstAttribute="leading" secondItem="sbC-fK-FJI" secondAttribute="leading" constant="4" id="Bj1-L3-qgA"/>
-                                    <constraint firstItem="A7j-Ak-CS7" firstAttribute="centerY" secondItem="sbC-fK-FJI" secondAttribute="bottom" constant="-19" id="wxc-iO-rMp"/>
+                                    <constraint firstItem="A7j-Ak-CS7" firstAttribute="centerY" secondItem="sbC-fK-FJI" secondAttribute="bottom" constant="-16" id="wxc-iO-rMp"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -715,7 +715,7 @@
                             <constraint firstAttribute="trailing" secondItem="sbC-fK-FJI" secondAttribute="trailing" id="ZB1-kO-oLy"/>
                             <constraint firstItem="sbC-fK-FJI" firstAttribute="leading" secondItem="I8o-dP-osX" secondAttribute="leading" id="cRy-4a-Gtw"/>
                             <constraint firstItem="sbC-fK-FJI" firstAttribute="top" secondItem="I8o-dP-osX" secondAttribute="top" id="cfL-m9-SmW"/>
-                            <constraint firstItem="m2e-JR-enO" firstAttribute="top" secondItem="sbC-fK-FJI" secondAttribute="bottom" constant="-35" id="csG-th-cCZ"/>
+                            <constraint firstItem="m2e-JR-enO" firstAttribute="top" secondItem="sbC-fK-FJI" secondAttribute="bottom" constant="-30" id="csG-th-cCZ"/>
                             <constraint firstItem="94G-0d-Gjv" firstAttribute="height" secondItem="m2e-JR-enO" secondAttribute="height" multiplier="0.23" id="jXt-5M-qLL"/>
                             <constraint firstItem="m2e-JR-enO" firstAttribute="trailing" secondItem="94G-0d-Gjv" secondAttribute="trailing" id="uMS-Je-e8s"/>
                             <constraint firstAttribute="bottom" secondItem="STb-w9-4sJ" secondAttribute="bottom" id="xt9-fD-2TH"/>
@@ -861,14 +861,14 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yzK-Rf-cN6">
-                                                    <rect key="frame" x="15" y="7" width="26.5" height="16.5"/>
+                                                    <rect key="frame" x="15" y="7" width="29.5" height="16.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                     <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="guT-IY-1FO">
-                                                    <rect key="frame" x="15" y="23.5" width="41" height="14"/>
+                                                    <rect key="frame" x="15" y="23.5" width="43" height="14.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                     <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="0.5" colorSpace="calibratedRGB"/>
