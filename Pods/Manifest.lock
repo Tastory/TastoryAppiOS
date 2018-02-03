@@ -10,6 +10,9 @@ PODS:
   - Bolts/AppLinks (1.9.0):
     - Bolts/Tasks
   - Bolts/Tasks (1.9.0)
+  - Branch (0.22.5):
+    - Branch/Core (= 0.22.5)
+  - Branch/Core (0.22.5)
   - ColorSlider (4.1)
   - Crashlytics (3.9.3):
     - Fabric (~> 1.7.2)
@@ -79,6 +82,7 @@ PODS:
 DEPENDENCIES:
   - AWSCognito
   - AWSS3
+  - Branch
   - ColorSlider (~> 4.0)
   - Crashlytics
   - EarlGrey
@@ -123,6 +127,7 @@ SPEC CHECKSUMS:
   AWSCore: 5bb072a6b5b185f43ddbd239d6554d2f8a285ad2
   AWSS3: 1124570c2c2dba6be7e6e67d123cc5181073c53d
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
+  Branch: 4f0482418d99e77d15b0e6065ef216c10e24797b
   ColorSlider: 3dc3b5c31b5a74aa1232c44eae06453ce59ecf36
   Crashlytics: dbb07d01876c171c5ccbdf7826410380189e452c
   EarlGrey: f7774b813c888ebdb9a21e612d67874d17d5a326
@@ -149,6 +154,6 @@ SPEC CHECKSUMS:
   Texture: 7249074582daf75e524e59df5428b66b8e8db0e4
   TLPhotoPicker: 74d17dfaa8e9bddcfcf74a7ebf7c8d1be7fb26d5
 
-PODFILE CHECKSUM: c528b39be31a7d26d16cb8714dcc8c7f1d8d7c38
+PODFILE CHECKSUM: 9f0220cc759f88f58070a2db82ded62be4835fc1
 
 COCOAPODS: 1.3.1

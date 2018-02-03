@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 import CoreLocation
+import Branch
 
 class DiscoverViewController: OverlayViewController {
 
@@ -243,18 +244,14 @@ class DiscoverViewController: OverlayViewController {
   
   
   @IBAction func profileAction(_ sender: UIButton) {
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
+
+    guard let user = FoodieUser.current else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("ViewController initiated not of ProfileViewController Class!!")
+        CCLog.fatal("current user is not initialized")
       }
       return
     }
-    
-    appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
-    viewController.user = FoodieUser.current
-    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
-    pushPresent(viewController, animated: true)
+    showProfileView(user)
   }
   
   
@@ -300,7 +297,7 @@ class DiscoverViewController: OverlayViewController {
       return
     }
 
-    guard let action = userInfo[RefreshFeedNotification.Constants.ActionKey] else {
+    guard let action = userInfo[AppConstants.RefreshFeedNotification.ActionKey] else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("action is not in userInfo")
       }
@@ -309,7 +306,7 @@ class DiscoverViewController: OverlayViewController {
 
     let actionStr = action as! String
 
-    if(actionStr == RefreshFeedNotification.Constants.DeleteAction || actionStr == RefreshFeedNotification.Constants.UpdateAction) {
+    if(actionStr == AppConstants.RefreshFeedNotification.DeleteAction || actionStr == AppConstants.RefreshFeedNotification.UpdateAction) {
       forceRequery = true
     }
   }
@@ -412,6 +409,7 @@ class DiscoverViewController: OverlayViewController {
     self.storyQuery = query
     self.storyArray = stories
     self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true, currentLocation: coordinate)
+    displayDeepLinkContent()
   }
 
   private func refreshDiscoverView(onStories stories: [FoodieStory], zoomToRegion: Bool, scrollAndSelectStory: Bool, currentLocation coordinate: CLLocationCoordinate2D? = nil) {
@@ -568,7 +566,51 @@ class DiscoverViewController: OverlayViewController {
       self.noStoriesMosaicView.alpha = alphaValue
     }
   }
-  
+
+  // MARK: - Private Instance Functions
+
+  func showProfileView(_ user: FoodieUser) {
+
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of ProfileViewController Class!!")
+      }
+      return
+    }
+
+    self.appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
+    viewController.user = user
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
+    self.pushPresent(viewController, animated: true)
+  }
+
+  func displayDeepLinkContent(){
+
+    guard let userName = DeepLink.deepLinkUserName else {
+      CCLog.warning("No username found in the deep link")
+      return
+    }
+
+    // check appdelegate if deeplink is used
+    FoodieUser.getUserFor(username: userName, withBlock: { (user, error) in
+      if error != nil {
+        CCLog.verbose("An error occured when looking up username: \(error!)")
+        return
+      }
+
+      guard let user:FoodieUser = user as? FoodieUser else {
+        CCLog.verbose("Failed to unwrap the user")
+        return
+      }
+      self.showProfileView(user)
+
+      if DeepLink.deepLinkStoryId == nil {
+        DeepLink.clearDeepLinkInfo()
+      }
+
+    })
+  }
   
   
   // MARK: - View Controller Life Cycle
@@ -577,8 +619,7 @@ class DiscoverViewController: OverlayViewController {
 
     self.view.accessibilityIdentifier = "discoverView"
 
-
-    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: RefreshFeedNotification.Constants.NotificationId), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: AppConstants.RefreshFeedNotification.NotificationId), object: nil)
 
     // Setup the Feed Node Controller first
     let nodeController = FeedCollectionNodeController(with: .carousel, allowLayoutChange: true, adjustScrollViewInset: false)

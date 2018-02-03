@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Tastory Dev</string>
+	<string>Tastory</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIcons</key>
@@ -24,6 +24,12 @@
 	<string>1.1</string>
 	<key>CFBundleURLTypes</key>
 	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>tastory</string>
+			</array>
+		</dict>
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
@@ -148,5 +154,12 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>branch_key</key>
+	<dict>
+		<key>live</key>
+		<string>key_live_koCQUoJoHcX9IrhmdInHGabcquhZiRug</string>
+		<key>test</key>
+		<string>key_test_oewQPfImMgYZLrejlRCinhpcvvb7gJzx</string>
+	</dict>
 </dict>
 </plist>

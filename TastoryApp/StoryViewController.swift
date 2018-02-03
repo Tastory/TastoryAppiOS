@@ -8,8 +8,10 @@
 
 import UIKit
 import AVFoundation
+import Branch
 import SafariServices
 import Jot
+
 
 class StoryViewController: OverlayViewController {
   
@@ -75,11 +77,75 @@ class StoryViewController: OverlayViewController {
   @IBOutlet var pauseButton: UIButton!
   @IBOutlet var soundOnButton: UIButton!
   @IBOutlet var soundOffButton: UIButton!
-  
-  
+  @IBOutlet weak var shareButton: UIButton!
+
   
   // MARK: - IBActions
   
+  @IBAction func shareAction(_ sender: Any) {
+
+    guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Cannot get AppDelegate.window.rootViewController!!!!")
+      }
+      return
+    }
+
+    guard let deepLink = appDelegate.deepLink else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Cannot get deeplink from AppDelegate")
+      }
+      return
+    }
+
+    guard let story = viewingStory else  {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Viewing story is nil")
+      }
+      return
+    }
+
+    guard let author = story.author else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Can't create profile deep link without an author")
+      }
+      return
+    }
+
+    guard let userName = author.username else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Can't create profile deep link without a username")
+      }
+      return
+    }
+
+    guard let storyId = story.objectId else  {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("the object id of the viewing story is nil")
+      }
+      return
+    }
+
+    deepLink.createDeepLink(username: userName, storyId: storyId) { (url, error) in
+
+      if error != nil {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("An error occured when generating link \(error!.localizedDescription))")
+        }
+        return
+      }
+
+      guard let url = url else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("No link generated")
+        }
+        return
+      }
+      UIPasteboard.general.string = url
+      AlertDialog.present(from: self, title: "Story Link", message: "\(url)")
+    }
+  }
+
   @IBAction func tapForward(_ sender: UITapGestureRecognizer) {
     CCLog.info("User tapped Forward")
     displayNextMoment()
@@ -420,6 +486,7 @@ class StoryViewController: OverlayViewController {
     pauseButton.isHidden = isPaused  // isLikelyToKeepUp can be called when paused, so UI update needs to be correct for that
     playButton.isHidden = !isPaused
     venueButton.isHidden = false
+    shareButton.isHidden = false
     authorButton.isHidden = false
     reactionStack.isHidden = false
     displaySwipeStackIfNeeded()
@@ -463,6 +530,7 @@ class StoryViewController: OverlayViewController {
       // UI Update - Really should group some of the common UI stuff into some sort of function?
       pauseButton.isHidden = false
       venueButton.isHidden = false
+      shareButton.isHidden = false
       authorButton.isHidden = false
       reactionStack.isHidden = false
       displaySwipeStackIfNeeded()
@@ -669,6 +737,7 @@ class StoryViewController: OverlayViewController {
         self.soundOnButton.alpha = alphaValue
         self.soundOffButton.alpha = alphaValue
         self.venueButton.alpha = alphaValue
+        self.shareButton.alpha = alphaValue
         self.authorButton.alpha = alphaValue
         self.reactionStack.alpha = alphaValue
         self.swipeStack.alpha = alphaValue
@@ -681,6 +750,7 @@ class StoryViewController: OverlayViewController {
       soundOnButton.alpha = alphaValue
       soundOffButton.alpha = alphaValue
       venueButton.alpha = alphaValue
+      shareButton.alpha = alphaValue
       authorButton.alpha = alphaValue
       reactionStack.alpha = alphaValue
       swipeStack.alpha = alphaValue
@@ -697,6 +767,7 @@ class StoryViewController: OverlayViewController {
     soundOffButton.isHidden = true
     authorButton.isHidden = true
     venueButton.isHidden = true
+    shareButton.isHidden = true
     reactionStack.isHidden = true
     
     swipeStack.isHidden = true

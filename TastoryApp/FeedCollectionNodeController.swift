@@ -20,7 +20,7 @@ import AsyncDisplayKit
   @objc optional func collectionNodeDidStopScrolling()
   
   @objc optional func collectionNodeLayoutChanged(to layoutType: FeedCollectionNodeController.LayoutType)
-  
+
 }
 
 
@@ -60,6 +60,8 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // MARK: - Public Instance Variable
   
   weak var delegate: FeedCollectionNodeDelegate?
+  var deepLinkStoryId: String?
+
   var storyArray = [FoodieStory]()
   var enableEdit = false
   
@@ -221,9 +223,8 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       displayStoryEntry(story)
     }
   }
-  
-  
-  
+
+
   // MARK: - Node Controller Lifecycle
   
   init(with layoutType: LayoutType,
@@ -285,7 +286,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       collectionNode.view.alwaysBounceVertical = true
       collectionNode.view.decelerationRate = UIScrollViewDecelerationRateNormal
       collectionNode.leadingScreensForBatching = CGFloat(FoodieGlobal.Constants.StoryFeedPaginationCount)/10.0
-      
+
     case .carousel:
       collectionNode.view.alwaysBounceVertical = false
       collectionNode.view.alwaysBounceHorizontal = true
@@ -294,16 +295,124 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     }
   }
 
-  
-  override func viewDidLayoutSubviews() {
-    super.viewDidLayoutSubviews()
-    collectionNode.frame = view.frame
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    if let storyId = deepLinkStoryId {
+      // check appdelegate if deeplink is used
+      for story in storyArray  {
+        if story.objectId == storyId {
+
+          guard let storyIdx = storyArray.index(of: story) else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+              CCLog.fatal("Can't determined story index")
+            }
+            return
+          }
+          collectionNode.scrollToItem(at: IndexPath(row: storyIdx, section: 0), at: .top, animated: true)
+        }
+      }
+    }
   }
-  
-  
-  
+
   // MARK: - Public Instance Function
-  
+
+  func displayStory(didSelectItemAt indexPath: IndexPath) {
+    let storyIndex = toStoryIndex(from: indexPath)
+    let story = storyArray[storyIndex]
+
+    CCLog.info("User didSelect Story Index \(storyIndex)")
+
+    // Analytics
+    let isOwnStory = story.author == FoodieUser.current
+    var launchType: Analytics.StoryLaunchType
+
+    // Determine the Launch Type
+    switch layoutType {
+    case .carousel:
+      launchType = .carousel
+    case .mosaic:
+      if allowLayoutChange {
+        launchType = .mosaic
+      } else {
+        launchType = .profile
+      }
+    }
+
+    if isOwnStory {
+      Analytics.logStoryOwnViewEvent(userID: FoodieUser.current?.username ?? "nil", launchType: launchType)
+    } else if let moments = story.moments, moments.count > 0 {
+
+      if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
+      if story.title == nil { CCLog.assert("Story Title should never be nil")}
+      if story.author?.username == nil { CCLog.assert("Story Author & Username should never be nil")}
+
+      Analytics.logStoryViewEvent(userID: FoodieUser.current?.username ?? "nil",
+                                  storyId: story.objectId ?? "",
+                                  name: story.title ?? "",
+                                  authorId: story.author?.username ?? "",
+                                  launchType: launchType,
+                                  totalMoments: moments.count)
+    }
+
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of StoryViewController Class!!")
+      }
+      return
+    }
+
+    guard let popFromNode = collectionNode.nodeForItem(at: indexPath) else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("No Feed Collection Node for Index Path?")
+      }
+      return
+    }
+
+    guard let mapNavController = navigationController as? MapNavController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("No Navigation Controller or not of MapNavConveroller")
+      }
+      return
+    }
+
+    // Go ahead, just display the Story~
+    viewController.viewingStory = story
+    viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
+    mapNavController.delegate = viewController
+    mapNavController.pushViewController(viewController, animated: true)
+
+    // Scroll the selected story to top to make sure it's not off bounds to reduce animation artifact
+    guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: indexPath) else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.assert("Cannot find Layout Attribute for item at IndexPath Section: \(indexPath.section) Row: \(indexPath.row)")
+      }
+      return
+    }
+
+    // Vertical direction adjustment
+    let topAdjustment = max(collectionNode.contentInset.top, 0)
+    let bottomAdjustment = max(collectionNode.contentInset.bottom, 0)
+
+    if layoutAttributes.frame.minY < (collectionNode.bounds.minY + topAdjustment) {
+      collectionNode.scrollToItem(at: indexPath, at: .top, animated: true)
+    } else if layoutAttributes.frame.maxY > (collectionNode.bounds.maxY - bottomAdjustment) {
+      collectionNode.scrollToItem(at: indexPath, at: .bottom, animated: true)
+    }
+
+    // Horizontal direction adjustment
+    let leftAdjustment = max(collectionNode.contentInset.left, 0)
+    let rightAdjustment = max(collectionNode.contentInset.right, 0)
+
+    if layoutAttributes.frame.minX < (collectionNode.bounds.minX + leftAdjustment) {
+      collectionNode.scrollToItem(at: indexPath, at: .left, animated: true)
+    } else if layoutAttributes.frame.maxX > (collectionNode.bounds.maxX - rightAdjustment) {
+      collectionNode.scrollToItem(at: indexPath, at: .right, animated: true)
+    }
+  }
+
+
   // More Data Fetched, update ColllectionNode
   func updateDataPage(withStory indexes: [Int], for context: AnyObject?, isLastPage: Bool) {
     
@@ -526,98 +635,7 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
 extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   func collectionNode(_ collectionNode: ASCollectionNode, didSelectItemAt indexPath: IndexPath) {
-    let storyIndex = toStoryIndex(from: indexPath)
-    let story = storyArray[storyIndex]
-    
-    CCLog.info("User didSelect Story Index \(storyIndex)")
-    
-    // Analytics
-    let isOwnStory = story.author == FoodieUser.current
-    var launchType: Analytics.StoryLaunchType
-    
-    // Determine the Launch Type
-    switch layoutType {
-    case .carousel:
-      launchType = .carousel
-    case .mosaic:
-      if allowLayoutChange {
-        launchType = .mosaic
-      } else {
-        launchType = .profile
-      }
-    }
-    
-    if isOwnStory {
-      Analytics.logStoryOwnViewEvent(userID: FoodieUser.current?.username ?? "nil", launchType: launchType)
-    } else if let moments = story.moments, moments.count > 0 {
-      
-      if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
-      if story.title == nil { CCLog.assert("Story Title should never be nil")}
-      if story.author?.username == nil { CCLog.assert("Story Author & Username should never be nil")}
-      
-      Analytics.logStoryViewEvent(userID: FoodieUser.current?.username ?? "nil",
-                                  storyId: story.objectId ?? "",
-                                  name: story.title ?? "",
-                                  authorId: story.author?.username ?? "",
-                                  launchType: launchType,
-                                  totalMoments: moments.count)
-    }
-
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("ViewController initiated not of StoryViewController Class!!")
-      }
-      return
-    }
-
-    guard let popFromNode = collectionNode.nodeForItem(at: indexPath) else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("No Feed Collection Node for Index Path?")
-      }
-      return
-    }
-    
-    guard let mapNavController = navigationController as? MapNavController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("No Navigation Controller or not of MapNavConveroller")
-      }
-      return
-    }
-    
-    // Go ahead, just display the Story~
-    viewController.viewingStory = story
-    viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
-    mapNavController.delegate = viewController
-    mapNavController.pushViewController(viewController, animated: true)
-    
-    // Scroll the selected story to top to make sure it's not off bounds to reduce animation artifact
-    guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: indexPath) else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-        CCLog.assert("Cannot find Layout Attribute for item at IndexPath Section: \(indexPath.section) Row: \(indexPath.row)")
-      }
-      return
-    }
-    
-    // Vertical direction adjustment
-    let topAdjustment = max(collectionNode.contentInset.top, 0)
-    let bottomAdjustment = max(collectionNode.contentInset.bottom, 0)
-    
-    if layoutAttributes.frame.minY < (collectionNode.bounds.minY + topAdjustment) {
-      collectionNode.scrollToItem(at: indexPath, at: .top, animated: true)
-    } else if layoutAttributes.frame.maxY > (collectionNode.bounds.maxY - bottomAdjustment) {
-      collectionNode.scrollToItem(at: indexPath, at: .bottom, animated: true)
-    }
-    
-    // Horizontal direction adjustment
-    let leftAdjustment = max(collectionNode.contentInset.left, 0)
-    let rightAdjustment = max(collectionNode.contentInset.right, 0)
-    
-    if layoutAttributes.frame.minX < (collectionNode.bounds.minX + leftAdjustment) {
-      collectionNode.scrollToItem(at: indexPath, at: .left, animated: true)
-    } else if layoutAttributes.frame.maxX > (collectionNode.bounds.maxX - rightAdjustment) {
-      collectionNode.scrollToItem(at: indexPath, at: .right, animated: true)
-    }
+    displayStory(didSelectItemAt: indexPath)
   }
   
   
@@ -667,8 +685,8 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       return UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
     }
   }
-  
-  
+
+
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
     if collectionNode.collectionViewLayout is MosaicCollectionViewLayout {
       if scrollView.contentOffset.y < Constants.MosaicPullTranslationForChange {
@@ -707,6 +725,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
     if !decelerate {
       delegate?.collectionNodeDidStopScrolling?()
+      // delegate?.displayDeepLinkContent?()
     }
   }
   

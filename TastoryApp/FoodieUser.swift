@@ -625,7 +625,43 @@ extension FoodieUser {
     return nil
   }
   
-  
+  static func getUserFor(username: String, withBlock callback: AnyErrorBlock?) {
+    guard let userQuery = PFUser.query() else {
+      CCLog.assert("Cannot create a query from PFUser")
+      return
+    }
+
+    userQuery.whereKey("username", equalTo: username)
+    userQuery.findObjectsInBackground { (objects, error) in
+
+      if let error = error {
+        let nsError = error as NSError
+        if nsError.domain == PFParseErrorDomain, nsError.code == PFErrorCode.errorObjectNotFound.rawValue {
+          CCLog.verbose("User name \(username) not found")
+          callback?(nil, nil)
+          return
+        } else {
+          CCLog.warning("Finding user with username: \(username) resulted in error - \(error)")
+          callback?(nil, error)  // Indeterminate. Let the Sign Up process finalize whether the username is indeed available
+          return
+        }
+      }
+
+      guard let users = objects as? [FoodieUser] else {
+        CCLog.warning("Finding user with username: \(username) resulted in no FoodieUsers")
+        callback?(nil, ErrorCode.getUserForEmailNone)
+        return
+      }
+
+      guard users.count == 1 else {
+        CCLog.warning("Finding user with username: \(username) resulted in more than 1 FoodieUsers")
+        callback?(nil, ErrorCode.getUserForEmailTooMany)
+        return
+      }
+      callback?(users[0] as Any, nil)
+    }
+  }
+
   static func getUserFor(email: String, withBlock callback: AnyErrorBlock?) {
     guard let userQuery = PFUser.query() else {
       CCLog.assert("Cannot create a query from PFUser")

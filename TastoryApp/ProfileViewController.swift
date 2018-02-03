@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 import SafariServices
+import Branch
 
 class ProfileViewController: OverlayViewController {
   
@@ -37,7 +38,8 @@ class ProfileViewController: OverlayViewController {
   private var removeStoryList: [FoodieStory] = []
   private var updateStoryList: [FoodieStory] = []
   
-  
+
+
   // MARK: - Public Instance Variable
   var user: FoodieUser?
   var query: FoodieQuery?
@@ -84,6 +86,55 @@ class ProfileViewController: OverlayViewController {
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
   }
+
+  @IBAction func shareAction(_ sender: Any) {
+    guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Cannot get AppDelegate.window.rootViewController!!!!")
+      }
+      return
+    }
+
+    guard let deepLink = appDelegate.deepLink else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Cannot get deeplink from AppDelegate")
+      }
+      return
+    }
+
+    guard let user = user else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("User is nil")
+      }
+      return
+    }
+
+    guard let userName = user.username else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Username is missing from user")
+      }
+      return
+    }
+
+    deepLink.createDeepLink(username: userName) { (url, error) in
+
+      if error != nil {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("An error occured when generating link \(error!.localizedDescription))")
+        }
+        return
+      }
+
+      guard let url = url else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("No link generated")
+        }
+        return
+      }
+      UIPasteboard.general.string = url
+      AlertDialog.present(from: self, title: "Profile Link", message: "\(url)")
+    }
+  }
   
   
   @IBAction func websiteTapAction(_ sender: UITapGestureRecognizer) {
@@ -104,6 +155,47 @@ class ProfileViewController: OverlayViewController {
   
   // MARK: - Private Instance Functions
 
+  //TODO remove
+  /*
+  private func createDeepLink() {
+    let buo = BranchUniversalObject(canonicalIdentifier: "content")
+    //buo.contentMetadata.customMetadata[AppConstants.DeepLink.TypeKey] = AppConstants.DeepLink.ProfileType
+
+    guard let currentUser = user else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Can't create profile deep link without a user")
+      }
+      return
+    }
+
+    guard let username = currentUser.username else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Can't create profile deep link without a username")
+      }
+      return
+    }
+
+    buo.contentMetadata.customMetadata[DeepLink.Constants.URI] = DeepLink.Constants.UserKey + "/" + username
+
+
+    let lp: BranchLinkProperties = BranchLinkProperties()
+    lp.channel = "app"
+    lp.feature = "profile_sharing"
+
+    buo.getShortUrl(with: lp) { (url, error) in
+
+      guard let url = url else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("No link generated")
+        }
+        return
+      }
+      UIPasteboard.general.string = url
+      AlertDialog.present(from: self, title: "Profile Deep Link Test", message: "\(url)")
+
+    }
+  }*/
+
    @objc func updateFeed(_ notification: NSNotification) {
 
     guard let userInfo = notification.userInfo else {
@@ -113,14 +205,14 @@ class ProfileViewController: OverlayViewController {
       return
     }
 
-    guard let action = userInfo[RefreshFeedNotification.Constants.ActionKey] else {
+    guard let action = userInfo[AppConstants.RefreshFeedNotification.ActionKey] else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("action is not in userInfo")
       }
       return
     }
 
-    guard let story = userInfo[RefreshFeedNotification.Constants.WorkingStoryKey] else {
+    guard let story = userInfo[AppConstants.RefreshFeedNotification.WorkingStoryKey] else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("workingStory is not in userInfo")
       }
@@ -130,11 +222,11 @@ class ProfileViewController: OverlayViewController {
     let actionStr = action as! String
     let workingStory = story as! FoodieStory
 
-    if(actionStr == RefreshFeedNotification.Constants.UpdateAction) {
+    if(actionStr == AppConstants.RefreshFeedNotification.UpdateAction) {
        updateStoryList.append(workingStory)
     }
 
-    if(actionStr == RefreshFeedNotification.Constants.DeleteAction) {
+    if(actionStr == AppConstants.RefreshFeedNotification.DeleteAction) {
 
       // remove from update list if a story is marked for update and delete at the same time
       if(updateStoryList.contains(workingStory)) {
@@ -195,7 +287,7 @@ class ProfileViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: RefreshFeedNotification.Constants.NotificationId), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: AppConstants.RefreshFeedNotification.NotificationId), object: nil)
 
 
     guard let user = user, user.isRegistered else {
@@ -340,10 +432,11 @@ class ProfileViewController: OverlayViewController {
     } else {
       settingsButton.isHidden = true
     }
-    
+
+    shareButton.isHidden = false
+
     // Hide all the other buttons for now
     followButton.isHidden = true
-    shareButton.isHidden = true
     filterButton.isHidden = true
   }
   
@@ -370,6 +463,7 @@ class ProfileViewController: OverlayViewController {
       nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
       nodeController.didMove(toParentViewController: self)
       nodeController.delegate = self
+      nodeController.deepLinkStoryId = DeepLink.deepLinkStoryId
       feedCollectionNodeController = nodeController
       
       
@@ -420,7 +514,6 @@ class ProfileViewController: OverlayViewController {
     }
     
     mapNavController = mapController
-    //mapController.mapDelegate = self
     mapController.setExposedRect(with: mapExposedView)
     
     guard let feedCollectionNodeController = feedCollectionNodeController else {
@@ -517,6 +610,22 @@ extension ProfileViewController: FeedCollectionNodeDelegate {
     let storiesIndexes = feedCollectionNodeController.getStoryIndexesVisible(forOver: Constants.PercentageOfStoryVisibleToStartPrefetch)
     let storiesShouldPrefetch = storiesIndexes.map { stories[$0] }
     FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
+
+    if let storyId = DeepLink.deepLinkStoryId {
+      // check appdelegate if deeplink is used
+      for story in stories  {
+        if story.objectId == storyId {
+
+          guard let storyIdx = stories.index(of: story) else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+              CCLog.fatal("Can't determined story index")
+            }
+            return
+          }
+          feedCollectionNodeController.displayStory(didSelectItemAt: IndexPath(row: storyIdx, section: 0))
+          DeepLink.clearDeepLinkInfo()
+        }
+      }
+    }
   }
 }
-

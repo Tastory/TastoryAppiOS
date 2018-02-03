@@ -8,8 +8,8 @@
 
 import Foundation
 
-class RefreshFeedNotification {
-  public struct Constants {
+struct  AppConstants {
+  struct RefreshFeedNotification {
     static let NotificationId = "FeedUpdateNotify"
     static let WorkingStoryKey = "WorkingStory"
     static let ActionKey = "Action"

@@ -60,7 +60,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
   
   // MARK: - IBOutlets
-  
+
   @IBOutlet weak var mapExposedView: UIView!
   @IBOutlet weak var topGradientBackground: TouchForwardingView!
   @IBOutlet weak var scrollView: UIScrollView!
@@ -119,8 +119,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
           self.activitySpinner.remove()
 
-          let notifyData:[String: Any] = [RefreshFeedNotification.Constants.WorkingStoryKey: workingStory, RefreshFeedNotification.Constants.ActionKey: RefreshFeedNotification.Constants.DeleteAction]
-          NotificationCenter.default.post(name: NSNotification.Name(rawValue: RefreshFeedNotification.Constants.NotificationId), object: nil, userInfo: notifyData)
+          let notifyData:[String: Any] = [AppConstants.RefreshFeedNotification.WorkingStoryKey: workingStory, AppConstants.RefreshFeedNotification.ActionKey: AppConstants.RefreshFeedNotification.DeleteAction]
+          NotificationCenter.default.post(name: NSNotification.Name(rawValue: AppConstants.RefreshFeedNotification.NotificationId), object: nil, userInfo: notifyData)
 
 
           FoodieStory.removeCurrent()
@@ -288,8 +288,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           }
           
           else  {
-            let notifyData:[String: Any] = [RefreshFeedNotification.Constants.WorkingStoryKey: story, RefreshFeedNotification.Constants.ActionKey:RefreshFeedNotification.Constants.UpdateAction]
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: RefreshFeedNotification.Constants.NotificationId), object: nil, userInfo: notifyData)
+            let notifyData:[String: Any] = [AppConstants.RefreshFeedNotification.WorkingStoryKey: story, AppConstants.RefreshFeedNotification.ActionKey:AppConstants.RefreshFeedNotification.UpdateAction]
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: AppConstants.RefreshFeedNotification.NotificationId), object: nil, userInfo: notifyData)
             
             // Analytics
             if moments.count > 0 {
@@ -398,8 +398,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         }
         
         if(story.isEditStory) {
-          let notifyData:[String: Any] = [RefreshFeedNotification.Constants.WorkingStoryKey: story, RefreshFeedNotification.Constants.ActionKey: RefreshFeedNotification.Constants.UpdateAction]
-          NotificationCenter.default.post(name: NSNotification.Name(rawValue: RefreshFeedNotification.Constants.NotificationId), object: nil, userInfo: notifyData)
+          let notifyData:[String: Any] = [AppConstants.RefreshFeedNotification.WorkingStoryKey: story, AppConstants.RefreshFeedNotification.ActionKey: AppConstants.RefreshFeedNotification.UpdateAction]
+          NotificationCenter.default.post(name: NSNotification.Name(rawValue: AppConstants.RefreshFeedNotification.NotificationId), object: nil, userInfo: notifyData)
         }
         
         self.workingStory = nil

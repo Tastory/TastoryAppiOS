@@ -25,6 +25,7 @@ target 'TastoryApp' do
   pod 'FacebookLogin', :inhibit_warnings => true
   pod 'FacebookShare', :inhibit_warnings => true
   pod 'ParseFacebookUtilsV4', :inhibit_warnings => true
+  pod 'Branch'
  
   target 'TastoryAppTests' do
     inherit! :search_paths

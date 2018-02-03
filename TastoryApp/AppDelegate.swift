@@ -1,3 +1,4 @@
+
 //
 //  AppDelegate.swift
 //  TastoryApp
@@ -9,15 +10,19 @@
 import AsyncDisplayKit
 import FBSDKCoreKit
 import ParseFacebookUtilsV4
+import Branch
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
-  
+
+  // MARK: - Public Instance Variable
+  var deepLink: DeepLink?
+   var resumeTopVC:UIViewController?
 
   // MARK: - Private Instance Functions
-  
+
   private func topViewController(for application: UIApplication) -> UIViewController? {
     if var topController = application.keyWindow?.rootViewController {
       while let presentedViewController = topController.presentedViewController {
@@ -41,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   
   // MARK: - Public Instance Functions
-  
+
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     
     var error: Error?
@@ -68,12 +73,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       CCLog.fatal("ViewController initiated not of RootViewController Class!!")
     }
     viewController.startupError = error
-    window = UIWindow(frame: UIScreen.main.bounds)
+    window = UIWindow(frame: UIScreen.main.bounds) 
     window?.rootViewController = viewController
     window?.makeKeyAndVisible()
+
+    deepLink = DeepLink(launchOptions: launchOptions) 
     return true
   }
-  
+
+  // Respond to Universal Links
+  func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
+
+    guard let deepLink = deepLink else {
+      CCLog.warning("deepLink object is nil")
+      return false
+    }
+
+    deepLink.processUniversalLink(userActivity) 
+    return true
+  }
+
   func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
     return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
   }
@@ -108,9 +127,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func applicationWillEnterForeground(_ application: UIApplication) {
     // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-    if let topOverlayViewController = topViewController(for: application) as? OverlayViewController {
+
+    resumeTopVC = self.topViewController(for: application)
+
+    if let topOverlayViewController = resumeTopVC  as? OverlayViewController {
       topOverlayViewController.topViewWillEnterForeground()
-    } else if let topMapNavController = topViewController(for: application) as? MapNavController {
+    } else if let topMapNavController = resumeTopVC as? MapNavController {
       topMapNavController.topViewWillEnterForeground()
     }
   }
