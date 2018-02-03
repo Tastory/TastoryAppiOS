@@ -78,7 +78,7 @@ public class Slider: UIControl {
 
     trackView.layer.masksToBounds = true
     trackView.layer.borderColor = UIColor.white.cgColor
-    trackView.layer.borderWidth = 2
+    trackView.layer.borderWidth = 1.5
 
     knobView = UIView()
     knobView.backgroundColor = UIColor.lightGray
@@ -86,7 +86,7 @@ public class Slider: UIControl {
     
     knobView.layer.masksToBounds = true
     knobView.layer.borderColor = UIColor.white.cgColor
-    knobView.layer.borderWidth = 3.0
+    knobView.layer.borderWidth = 2.0
     
     // Outer shadow
     knobView.layer.shadowColor = UIColor.black.cgColor

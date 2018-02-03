@@ -98,7 +98,7 @@ public final class GradientView: UIView {
 		// By default, show a border
 		layer.masksToBounds = true
 		layer.borderColor = UIColor.white.cgColor
-		layer.borderWidth = 2
+		layer.borderWidth = 1.5
 		
 		// Set up based on orientation
 		switch orientation {
