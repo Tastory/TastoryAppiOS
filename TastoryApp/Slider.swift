@@ -204,6 +204,8 @@ public class Slider: UIControl {
   
   /// Increase the tappable area of `Slider` to a minimum of 44 points on either edge.
   override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    if isHidden || alpha <= 0.01 { return super.hitTest(point, with: event) }
+    
     // Determine the delta between the width / height and 44, the iOS HIG minimum tap target size.
     // If a side is already longer than 44, add 10 points of padding to either side of the slider along that axis.
     let minimumSideLength: CGFloat = 44
