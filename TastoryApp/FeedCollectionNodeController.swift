@@ -141,7 +141,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     
     // !!! Um... Banking on that the following operations will be quick. Don't want another spinner here...
     UIApplication.shared.beginIgnoringInteractionEvents()
-    
+
     FoodieFetch.global.cancelAll()
     
     let batchRetrieving = FoodieMoment.batchRetrieve(moments) { objects, error in
@@ -299,6 +299,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     if let storyId = deepLinkStoryId {
+      UIApplication.shared.beginIgnoringInteractionEvents()
       // check appdelegate if deeplink is used
       for story in storyArray  {
         if story.objectId == storyId {
@@ -307,17 +308,27 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
             AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
               CCLog.fatal("Can't determined story index")
             }
+            UIApplication.shared.endIgnoringInteractionEvents()
             return
           }
           collectionNode.scrollToItem(at: IndexPath(row: storyIdx, section: 0), at: .top, animated: true)
+          return
         }
       }
+      // make sure interaction resumes in case we dont find the story
+       UIApplication.shared.endIgnoringInteractionEvents()
     }
   }
 
   // MARK: - Public Instance Function
 
   func displayStory(didSelectItemAt indexPath: IndexPath) {
+
+    if deepLinkStoryId != nil {
+      deepLinkStoryId = nil
+      UIApplication.shared.endIgnoringInteractionEvents()
+    }
+
     let storyIndex = toStoryIndex(from: indexPath)
     let story = storyArray[storyIndex]
 
@@ -725,7 +736,6 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
     if !decelerate {
       delegate?.collectionNodeDidStopScrolling?()
-      // delegate?.displayDeepLinkContent?()
     }
   }
   

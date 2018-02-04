@@ -131,8 +131,7 @@ class ProfileViewController: OverlayViewController {
         }
         return
       }
-      UIPasteboard.general.string = url
-      AlertDialog.present(from: self, title: "Profile Link", message: "\(url)")
+      SharedDialog.showPopUp(url: url, fromVC: self)
     }
   }
   
@@ -154,49 +153,7 @@ class ProfileViewController: OverlayViewController {
   
   
   // MARK: - Private Instance Functions
-
-  //TODO remove
-  /*
-  private func createDeepLink() {
-    let buo = BranchUniversalObject(canonicalIdentifier: "content")
-    //buo.contentMetadata.customMetadata[AppConstants.DeepLink.TypeKey] = AppConstants.DeepLink.ProfileType
-
-    guard let currentUser = user else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Can't create profile deep link without a user")
-      }
-      return
-    }
-
-    guard let username = currentUser.username else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Can't create profile deep link without a username")
-      }
-      return
-    }
-
-    buo.contentMetadata.customMetadata[DeepLink.Constants.URI] = DeepLink.Constants.UserKey + "/" + username
-
-
-    let lp: BranchLinkProperties = BranchLinkProperties()
-    lp.channel = "app"
-    lp.feature = "profile_sharing"
-
-    buo.getShortUrl(with: lp) { (url, error) in
-
-      guard let url = url else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-          CCLog.fatal("No link generated")
-        }
-        return
-      }
-      UIPasteboard.general.string = url
-      AlertDialog.present(from: self, title: "Profile Deep Link Test", message: "\(url)")
-
-    }
-  }*/
-
-   @objc func updateFeed(_ notification: NSNotification) {
+  @objc func updateFeed(_ notification: NSNotification) {
 
     guard let userInfo = notification.userInfo else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -505,7 +462,7 @@ class ProfileViewController: OverlayViewController {
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    
+
     guard let mapController = navigationController as? MapNavController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("No Map Navigation Controller. Cannot Proceed")
@@ -594,14 +551,14 @@ class ProfileViewController: OverlayViewController {
 extension ProfileViewController: FeedCollectionNodeDelegate {
   
   func collectionNodeDidStopScrolling() {
-    
+
     guard let feedCollectionNodeController = feedCollectionNodeController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Expected FeedCollectionNodeController")
       }
       return
     }
-    
+
     if let storyIndex = feedCollectionNodeController.highlightedStoryIndex, storyIndex < stories.count {
       updateProfileMap(with: stories[storyIndex])
     }
@@ -616,14 +573,18 @@ extension ProfileViewController: FeedCollectionNodeDelegate {
       for story in stories  {
         if story.objectId == storyId {
 
-          guard let storyIdx = stories.index(of: story) else {
-            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-              CCLog.fatal("Can't determined story index")
+            guard let storyIdx = stories.index(of: story) else {
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+                CCLog.fatal("Can't determined story index")
+              }
+              UIApplication.shared.endIgnoringInteractionEvents()
+              return
             }
-            return
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            feedCollectionNodeController.displayStory(didSelectItemAt: IndexPath(row: storyIdx, section: 0))
+            DeepLink.clearDeepLinkInfo()
           }
-          feedCollectionNodeController.displayStory(didSelectItemAt: IndexPath(row: storyIdx, section: 0))
-          DeepLink.clearDeepLinkInfo()
         }
       }
     }

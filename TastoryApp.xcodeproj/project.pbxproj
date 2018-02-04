@@ -187,6 +187,7 @@
 		C24F69651EB85B0300A0DB7B /* StoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69641EB85B0300A0DB7B /* StoryViewController.swift */; };
 		C265A9C81FCE981D000678E5 /* VideoTrimmerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C265A9C71FCE981D000678E5 /* VideoTrimmerViewController.swift */; };
 		C27217EF2023D91200975FEF /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27217EE2023D91200975FEF /* DeepLink.swift */; };
+		C280AAC120265F0D0065F183 /* SharedDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C280AAC020265F0D0065F183 /* SharedDialog.swift */; };
 		C29034F3200B472400A860F9 /* EarlGreyUnitTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29034F2200B472400A860F9 /* EarlGreyUnitTest.swift */; };
 		C29CD1391F93198800A6D53F /* ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD1381F93198800A6D53F /* ConfirmationDialog.swift */; };
 		C29CD13D1F988B2000A6D53F /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */; };
@@ -424,6 +425,7 @@
 		C24F69641EB85B0300A0DB7B /* StoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryViewController.swift; sourceTree = "<group>"; };
 		C265A9C71FCE981D000678E5 /* VideoTrimmerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoTrimmerViewController.swift; sourceTree = "<group>"; };
 		C27217EE2023D91200975FEF /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLink.swift; sourceTree = "<group>"; };
+		C280AAC020265F0D0065F183 /* SharedDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDialog.swift; sourceTree = "<group>"; };
 		C29034F0200B472400A860F9 /* EarlGreyUnitTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EarlGreyUnitTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C29034F2200B472400A860F9 /* EarlGreyUnitTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarlGreyUnitTest.swift; sourceTree = "<group>"; };
 		C29034F4200B472400A860F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -905,6 +907,7 @@
 				8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */,
 				8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */,
 				8CCDDA071FB3E7F600B066E7 /* OverlayViewController.swift */,
+				C280AAC020265F0D0065F183 /* SharedDialog.swift */,
 			);
 			name = Supports;
 			sourceTree = "<group>";
@@ -1563,6 +1566,7 @@
 				8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */,
 				8C7343651FF992DA000B9C25 /* ReputableUser.swift in Sources */,
 				8C10FB4E1F91C43200C26BF6 /* AVExportPlayer.swift in Sources */,
+				C280AAC120265F0D0065F183 /* SharedDialog.swift in Sources */,
 				8C8986761E91A72D00B62306 /* FoodieCategory.swift in Sources */,
 				C229DCB01FDE781300955243 /* Date+Extension.swift in Sources */,
 				8CCDDA0E1FB3E82400B066E7 /* BasicDirection.swift in Sources */,

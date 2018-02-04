@@ -603,12 +603,14 @@ class DiscoverViewController: OverlayViewController {
         CCLog.verbose("Failed to unwrap the user")
         return
       }
-      self.showProfileView(user)
 
-      if DeepLink.deepLinkStoryId == nil {
-        DeepLink.clearDeepLinkInfo()
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        self.showProfileView(user)
+
+        if DeepLink.deepLinkStoryId == nil {
+          DeepLink.clearDeepLinkInfo()
+        }
       }
-
     })
   }
   

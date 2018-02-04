@@ -141,8 +141,7 @@ class StoryViewController: OverlayViewController {
         }
         return
       }
-      UIPasteboard.general.string = url
-      AlertDialog.present(from: self, title: "Story Link", message: "\(url)")
+      SharedDialog.showPopUp(url: url, fromVC: self)
     }
   }
 
