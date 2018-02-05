@@ -35,10 +35,13 @@ class DeepLink {
   // MARK: - Private Instance Variables
   private var instance: Branch? = nil
 
+  // Mark: - Public Static Variables
+  static var global: DeepLink!
+
   // MARK: - Public Instance Variables
-  static var deepLinkUserName: String?
-  static var deepLinkStoryId: String?
   var showConfirmDiscard: Bool = false
+  var deepLinkUserId: String?
+  var deepLinkStoryId: String?
 
   init(launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
 
@@ -64,7 +67,7 @@ class DeepLink {
 
         var displayedVC = rootVC
 
-        if let resumeTopVC = appDelegate.resumeTopVC {
+        if let resumeTopVC = OverlayViewController.getTopViewController(){
           displayedVC = resumeTopVC
         }
 
@@ -97,10 +100,10 @@ class DeepLink {
           if (i+1 < paths.count) {
             switch(paths[i]) {
             case Constants.UserKey:
-              DeepLink.deepLinkUserName = paths[i+1]
+              DeepLink.global.deepLinkUserId = paths[i+1]
               break
             case Constants.StoryKey:
-              DeepLink.deepLinkStoryId = paths[i+1]
+              DeepLink.global.deepLinkStoryId = paths[i+1]
               break
             default:
               AlertDialog.standardPresent(from: displayedVC, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -121,28 +124,15 @@ class DeepLink {
         }
 
         // reset root disaplay VC only when logged in
-        if let user = FoodieUser.current(), user.isAuthenticated {
-          if displayedVC is MarkupViewController {
-            AlertDialog.presentConfirm(from: displayedVC, title: "Discard", message: "Changes to your markups have not been saved. Are you sure you want to exit?") { (action) in
-              self.dimissRootVC()
-            }
-            appDelegate.resumeTopVC = nil
-          } else {
-             self.dimissRootVC()
+        if displayedVC is MarkupViewController || displayedVC is StoryEntryViewController {
+          AlertDialog.presentConfirm(from: displayedVC, title: "Discard", message: "Your changes have not been saved. Are you sure you want to exit?") { (action) in
+            rootVC.dismiss(animated: false)
           }
+        } else {
+           rootVC.dismiss(animated: false)
         }
       }
     }
-  }
-
-  func dimissRootVC() {
-    guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let window = appDelegate.window, let rootVC = window.rootViewController else {
-      CCLog.fatal("Cannot get AppDelegate.window.rootViewController!!!!")
-    }
-    
-
-     rootVC.dismiss(animated: false)
-
   }
 
   func processUniversalLink(_ userActivity: NSUserActivity) {
@@ -154,11 +144,11 @@ class DeepLink {
     currentInstance.continue(userActivity)
   }
 
-  func createDeepLink(username: String, story: FoodieStory? = nil, block callback: @escaping (String?, Error?)->Void ) {
+  func createDeepLink(userId: String, story: FoodieStory? = nil, block callback: @escaping (String?, Error?)->Void ) {
 
     let buo = BranchUniversalObject(canonicalIdentifier: "content")
 
-    var uri = DeepLink.Constants.UserKey + "/" + username
+    var uri = DeepLink.Constants.UserKey + "/" + userId
 
     if let story = story {
 
@@ -191,7 +181,7 @@ class DeepLink {
   }
 
   static func clearDeepLinkInfo() {
-    DeepLink.deepLinkUserName = nil
-    DeepLink.deepLinkStoryId = nil
+    DeepLink.global.deepLinkUserId = nil
+    DeepLink.global.deepLinkStoryId = nil
   }
 }

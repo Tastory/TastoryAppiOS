@@ -119,6 +119,30 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   
   // MARK: - Private Instance Function
+
+  private func displayDeepLinkStory() {
+    if let storyId = DeepLink.global.deepLinkStoryId {
+      // check appdelegate if deeplink is used
+      for story in storyArray  {
+        if story.objectId == storyId {
+
+          guard let storyIdx = storyArray.index(of: story) else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+              CCLog.fatal("Can't determined story index")
+            }
+            UIApplication.shared.endIgnoringInteractionEvents()
+            return
+          }
+
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.displayStory(didSelectItemAt: IndexPath(row: storyIdx, section: 0))
+            DeepLink.clearDeepLinkInfo()
+          }
+        }
+      }
+    }
+  }
+
   private func toIndexPath(from storyIndex: Int) -> IndexPath {
     return IndexPath(row: storyIndex, section: 0)
   }
@@ -311,7 +335,13 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
             UIApplication.shared.endIgnoringInteractionEvents()
             return
           }
-          collectionNode.scrollToItem(at: IndexPath(row: storyIdx, section: 0), at: .top, animated: true)
+
+          if storyIdx == 0 {
+            delegate?.collectionNodeDidStopScrolling?()
+          } else {
+            collectionNode.scrollToItem(at: IndexPath(row: storyIdx, section: 0), at: .top, animated: true)
+
+          }
           return
         }
       }
@@ -730,18 +760,21 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
   
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
     delegate?.collectionNodeDidStopScrolling?()
+    displayDeepLinkStory()
   }
   
   
   func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
     if !decelerate {
       delegate?.collectionNodeDidStopScrolling?()
+      displayDeepLinkStory()
     }
   }
   
   
   func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
     delegate?.collectionNodeDidStopScrolling?()
+    displayDeepLinkStory()
   }
 }
 

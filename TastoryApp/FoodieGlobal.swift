@@ -30,7 +30,7 @@ enum FoodieMediaType: String {
 struct FoodieGlobal {
   
   // MARK: - Constants
-  
+
   struct Constants {
     static let ThumbnailPixels = 640.0
     static let JpegCompressionQuality: Double = 0.8
@@ -48,7 +48,14 @@ struct FoodieGlobal {
     static let DefaultUIShadowRadius: CGFloat = 3.0
     static let DefaultUIShadowOpacity: Float = 0.38
   }
-  
+
+  struct RefreshFeedNotification {
+    static let NotificationId = "FeedUpdateNotify"
+    static let WorkingStoryKey = "WorkingStory"
+    static let ActionKey = "Action"
+    static let UpdateAction = "Update"
+    static let DeleteAction = "Delete"
+  }
   
   // MARK: - Public Static Functions
   

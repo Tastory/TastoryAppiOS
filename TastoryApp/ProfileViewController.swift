@@ -8,7 +8,6 @@
 
 import AsyncDisplayKit
 import SafariServices
-import Branch
 
 class ProfileViewController: OverlayViewController {
   
@@ -88,14 +87,8 @@ class ProfileViewController: OverlayViewController {
   }
 
   @IBAction func shareAction(_ sender: Any) {
-    guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Cannot get AppDelegate.window.rootViewController!!!!")
-      }
-      return
-    }
 
-    guard let deepLink = appDelegate.deepLink else {
+    guard let deepLink = DeepLink.global else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Cannot get deeplink from AppDelegate")
       }
@@ -109,14 +102,14 @@ class ProfileViewController: OverlayViewController {
       return
     }
 
-    guard let userName = user.username else {
+    guard let userId = user.objectId else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Username is missing from user")
       }
       return
     }
 
-    deepLink.createDeepLink(username: userName) { (url, error) in
+    deepLink.createDeepLink(userId: userId) { (url, error) in
 
       if error != nil {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -162,14 +155,14 @@ class ProfileViewController: OverlayViewController {
       return
     }
 
-    guard let action = userInfo[AppConstants.RefreshFeedNotification.ActionKey] else {
+    guard let action = userInfo[FoodieGlobal.RefreshFeedNotification.ActionKey] else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("action is not in userInfo")
       }
       return
     }
 
-    guard let story = userInfo[AppConstants.RefreshFeedNotification.WorkingStoryKey] else {
+    guard let story = userInfo[FoodieGlobal.RefreshFeedNotification.WorkingStoryKey] else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("workingStory is not in userInfo")
       }
@@ -179,11 +172,11 @@ class ProfileViewController: OverlayViewController {
     let actionStr = action as! String
     let workingStory = story as! FoodieStory
 
-    if(actionStr == AppConstants.RefreshFeedNotification.UpdateAction) {
+    if(actionStr == FoodieGlobal.RefreshFeedNotification.UpdateAction) {
        updateStoryList.append(workingStory)
     }
 
-    if(actionStr == AppConstants.RefreshFeedNotification.DeleteAction) {
+    if(actionStr == FoodieGlobal.RefreshFeedNotification.DeleteAction) {
 
       // remove from update list if a story is marked for update and delete at the same time
       if(updateStoryList.contains(workingStory)) {
@@ -244,7 +237,7 @@ class ProfileViewController: OverlayViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: AppConstants.RefreshFeedNotification.NotificationId), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: FoodieGlobal.RefreshFeedNotification.NotificationId), object: nil)
 
 
     guard let user = user, user.isRegistered else {
@@ -420,7 +413,7 @@ class ProfileViewController: OverlayViewController {
       nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
       nodeController.didMove(toParentViewController: self)
       nodeController.delegate = self
-      nodeController.deepLinkStoryId = DeepLink.deepLinkStoryId
+      nodeController.deepLinkStoryId = DeepLink.global.deepLinkStoryId
       feedCollectionNodeController = nodeController
       
       
@@ -567,26 +560,5 @@ extension ProfileViewController: FeedCollectionNodeDelegate {
     let storiesIndexes = feedCollectionNodeController.getStoryIndexesVisible(forOver: Constants.PercentageOfStoryVisibleToStartPrefetch)
     let storiesShouldPrefetch = storiesIndexes.map { stories[$0] }
     FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
-
-    if let storyId = DeepLink.deepLinkStoryId {
-      // check appdelegate if deeplink is used
-      for story in stories  {
-        if story.objectId == storyId {
-
-            guard let storyIdx = stories.index(of: story) else {
-              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-                CCLog.fatal("Can't determined story index")
-              }
-              UIApplication.shared.endIgnoringInteractionEvents()
-              return
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            feedCollectionNodeController.displayStory(didSelectItemAt: IndexPath(row: storyIdx, section: 0))
-            DeepLink.clearDeepLinkInfo()
-          }
-        }
-      }
-    }
   }
 }

@@ -36,7 +36,6 @@
 		8C208FFD1FE4BB9400AA3D64 /* Bundle+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C208FFC1FE4BB9400AA3D64 /* Bundle+Extension.swift */; };
 		8C208FFF1FE4DD1F00AA3D64 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C208FFE1FE4DD1F00AA3D64 /* Analytics.swift */; };
 		8C2090031FE879AF00AA3D64 /* Double+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2090021FE879AF00AA3D64 /* Double+Extension.swift */; };
-		8C25B6DA200718E700881983 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C25B6D9200718E700881983 /* AppConstants.swift */; };
 		8C2EFCEB1FC3AF4E00937E3C /* MainVectors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */; };
 		8C2F796F1F4C0D9A00851334 /* SwiftRetry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */; };
 		8C2F79731F4E23F700851334 /* LocationWatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F79721F4E23F700851334 /* LocationWatch.swift */; };
@@ -267,7 +266,6 @@
 		8C208FFC1FE4BB9400AA3D64 /* Bundle+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Extension.swift"; sourceTree = "<group>"; };
 		8C208FFE1FE4DD1F00AA3D64 /* Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics.swift; sourceTree = "<group>"; };
 		8C2090021FE879AF00AA3D64 /* Double+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Extension.swift"; sourceTree = "<group>"; };
-		8C25B6D9200718E700881983 /* AppConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MainVectors.xcassets; sourceTree = "<group>"; };
 		8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftRetry.swift; sourceTree = "<group>"; };
 		8C2F79721F4E23F700851334 /* LocationWatch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationWatch.swift; sourceTree = "<group>"; };
@@ -520,6 +518,7 @@
 		8C40B20A1F1466A10030B5B5 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C20FF85120142BA5009F2114 /* TastoryApp.entitlements */,
 				8CBF558F1E7F7EDF00F4B1CD /* Info.plist */,
 				8C40B20B1F1466D40030B5B5 /* Jot-Bridging-Header.h */,
 				8C841B471F623E670002A5A2 /* RATreeView-Bridging-Header.h */,
@@ -661,7 +660,6 @@
 		8CBF55821E7F7EDF00F4B1CD /* TastoryApp */ = {
 			isa = PBXGroup;
 			children = (
-				C20FF85120142BA5009F2114 /* TastoryApp.entitlements */,
 				8C2EFCE91FC3AF0800937E3C /* Resources */,
 				8C40B20A1F1466A10030B5B5 /* Supporting Files */,
 				8C1D4E181ED8DEFA00939B2C /* Shared */,
@@ -898,7 +896,6 @@
 		8CE49EB81F64D334007278C1 /* Supports */ = {
 			isa = PBXGroup;
 			children = (
-				8C25B6D9200718E700881983 /* AppConstants.swift */,
 				8C2F79721F4E23F700851334 /* LocationWatch.swift */,
 				8CB207431FC6511400AFFD31 /* AudioControl.swift */,
 				8CE259AC1F53808C00310749 /* AlertDialog.swift */,
@@ -1527,7 +1524,6 @@
 				8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */,
 				8C5B48511F579D3800C18089 /* SwiftMutex.swift in Sources */,
 				8C93F6E21FAD772900596452 /* GradientNode.swift in Sources */,
-				8C25B6DA200718E700881983 /* AppConstants.swift in Sources */,
 				8CCDDA061FB3E7EC00B066E7 /* SlideTransitionAnimator.swift in Sources */,
 				8C8986741E91985700B62306 /* FoodieVenue.swift in Sources */,
 				8C6983561F97EDE50091334D /* AVPlayerItemStatus+Extension.swift in Sources */,
@@ -1824,7 +1820,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.VictorTsang;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.Master;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1851,7 +1847,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/TastoryApp/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.VictorTsang;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.Master;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

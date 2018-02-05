@@ -198,7 +198,7 @@ class FoodieFileObject {
   
   
   static func getRandomTempFileURL() -> URL {
-    return Constants.TempFolderUrl.appendingPathComponent("\(UUID().uuidString).mov", isDirectory: false)
+    return Constants.TempFolderUrl.appendingPathComponent("\(UUID().uuidString).tmp", isDirectory: false)
   }
   
   

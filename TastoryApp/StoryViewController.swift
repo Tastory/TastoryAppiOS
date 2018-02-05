@@ -8,7 +8,6 @@
 
 import UIKit
 import AVFoundation
-import Branch
 import SafariServices
 import Jot
 
@@ -84,14 +83,7 @@ class StoryViewController: OverlayViewController {
   
   @IBAction func shareAction(_ sender: Any) {
 
-    guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Cannot get AppDelegate.window.rootViewController!!!!")
-      }
-      return
-    }
-
-    guard let deepLink = appDelegate.deepLink else {
+    guard let deepLink = DeepLink.global else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Cannot get deeplink from AppDelegate")
       }
@@ -112,14 +104,14 @@ class StoryViewController: OverlayViewController {
       return
     }
 
-    guard let userName = author.username else {
+    guard let userId = author.objectId else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Can't create profile deep link without a username")
       }
       return
     }
 
-    deepLink.createDeepLink(username: userName, story: story) { (url, error) in
+    deepLink.createDeepLink(userId: userId, story: story) { (url, error) in
 
       if error != nil {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in

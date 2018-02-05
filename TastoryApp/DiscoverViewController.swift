@@ -8,7 +8,6 @@
 
 import AsyncDisplayKit
 import CoreLocation
-import Branch
 
 class DiscoverViewController: OverlayViewController {
 
@@ -297,7 +296,7 @@ class DiscoverViewController: OverlayViewController {
       return
     }
 
-    guard let action = userInfo[AppConstants.RefreshFeedNotification.ActionKey] else {
+    guard let action = userInfo[FoodieGlobal.RefreshFeedNotification.ActionKey] else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("action is not in userInfo")
       }
@@ -306,7 +305,7 @@ class DiscoverViewController: OverlayViewController {
 
     let actionStr = action as! String
 
-    if(actionStr == AppConstants.RefreshFeedNotification.DeleteAction || actionStr == AppConstants.RefreshFeedNotification.UpdateAction) {
+    if(actionStr == FoodieGlobal.RefreshFeedNotification.DeleteAction || actionStr == FoodieGlobal.RefreshFeedNotification.UpdateAction) {
       forceRequery = true
     }
   }
@@ -587,13 +586,13 @@ class DiscoverViewController: OverlayViewController {
 
   func displayDeepLinkContent(){
 
-    guard let userName = DeepLink.deepLinkUserName else {
+    guard let userId = DeepLink.global.deepLinkUserId else {
       CCLog.warning("No username found in the deep link")
       return
     }
 
     // check appdelegate if deeplink is used
-    FoodieUser.getUserFor(username: userName, withBlock: { (user, error) in
+    FoodieUser.getUserFor(userId: userId, withBlock: { (user, error) in
       if error != nil {
         CCLog.verbose("An error occured when looking up username: \(error!)")
         return
@@ -607,7 +606,7 @@ class DiscoverViewController: OverlayViewController {
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
         self.showProfileView(user)
 
-        if DeepLink.deepLinkStoryId == nil {
+        if DeepLink.global.deepLinkStoryId == nil {
           DeepLink.clearDeepLinkInfo()
         }
       }
@@ -621,7 +620,7 @@ class DiscoverViewController: OverlayViewController {
 
     self.view.accessibilityIdentifier = "discoverView"
 
-    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: AppConstants.RefreshFeedNotification.NotificationId), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: FoodieGlobal.RefreshFeedNotification.NotificationId), object: nil)
 
     // Setup the Feed Node Controller first
     let nodeController = FeedCollectionNodeController(with: .carousel, allowLayoutChange: true, adjustScrollViewInset: false)

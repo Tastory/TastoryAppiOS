@@ -195,7 +195,16 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
     }
   }
   
-  
+  // MARK: - Public Static Functions
+  static func getTopViewController() -> UIViewController? {
+    if var topController = UIApplication.shared.keyWindow?.rootViewController {
+      while let presentedViewController = topController.presentedViewController {
+        topController = presentedViewController
+      }
+      return topController
+    }
+    return nil
+  }
   
   // MARK: - Public Instance Functions
   

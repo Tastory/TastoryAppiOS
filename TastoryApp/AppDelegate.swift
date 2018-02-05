@@ -17,21 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
 
-  // MARK: - Public Instance Variable
-  var deepLink: DeepLink?
-   var resumeTopVC:UIViewController?
 
   // MARK: - Private Instance Functions
-
-  private func topViewController(for application: UIApplication) -> UIViewController? {
-    if var topController = application.keyWindow?.rootViewController {
-      while let presentedViewController = topController.presentedViewController {
-        topController = presentedViewController
-      }
-      return topController
-    }
-    return nil
-  }
   
   private func printFonts() {
     let fontFamilyNames = UIFont.familyNames
@@ -63,6 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Initialize Foodie Model
     FoodieGlobal.initialize()
     PFFacebookUtils.initializeFacebook(applicationLaunchOptions: launchOptions)
+    DeepLink.global = DeepLink(launchOptions: launchOptions)
     
     // TODO: - Any Startup Test we want to do that we should use to block Startup?
     error = nil
@@ -77,19 +65,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window?.rootViewController = viewController
     window?.makeKeyAndVisible()
 
-    deepLink = DeepLink(launchOptions: launchOptions) 
     return true
   }
 
   // Respond to Universal Links
   func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-
-    guard let deepLink = deepLink else {
-      CCLog.warning("deepLink object is nil")
-      return false
-    }
-
-    deepLink.processUniversalLink(userActivity) 
+    DeepLink.global.processUniversalLink(userActivity)
     return true
   }
 
@@ -108,9 +89,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func applicationWillResignActive(_ application: UIApplication) {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
-    if let topOverlayViewController = topViewController(for: application) as? OverlayViewController {
+    if let topOverlayViewController = OverlayViewController.getTopViewController() as? OverlayViewController {
       topOverlayViewController.topViewWillResignActive()
-    } else if let topMapNavController = topViewController(for: application) as? MapNavController {
+    } else if let topMapNavController = OverlayViewController.getTopViewController() as? MapNavController {
       topMapNavController.topViewWillResignActive()
     }
   }
@@ -118,30 +99,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func applicationDidEnterBackground(_ application: UIApplication) {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    if let topOverlayViewController = topViewController(for: application) as? OverlayViewController {
+    if let topOverlayViewController = OverlayViewController.getTopViewController() as? OverlayViewController {
       topOverlayViewController.topViewDidEnterBackground()
-    } else if let topMapNavController = topViewController(for: application) as? MapNavController {
+    } else if let topMapNavController = OverlayViewController.getTopViewController() as? MapNavController {
       topMapNavController.topViewDidEnterBackground()
     }
   }
 
   func applicationWillEnterForeground(_ application: UIApplication) {
     // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-
-    resumeTopVC = self.topViewController(for: application)
-
-    if let topOverlayViewController = resumeTopVC  as? OverlayViewController {
+    if let topOverlayViewController = OverlayViewController.getTopViewController()  as? OverlayViewController {
       topOverlayViewController.topViewWillEnterForeground()
-    } else if let topMapNavController = resumeTopVC as? MapNavController {
+    } else if let topMapNavController = OverlayViewController.getTopViewController() as? MapNavController {
       topMapNavController.topViewWillEnterForeground()
     }
   }
 
   func applicationDidBecomeActive(_ application: UIApplication) {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    if let topOverlayViewController = topViewController(for: application) as? OverlayViewController {
+    if let topOverlayViewController = OverlayViewController.getTopViewController() as? OverlayViewController {
       topOverlayViewController.topViewDidBecomeActive()
-    } else if let topMapNavController = topViewController(for: application) as? MapNavController {
+    } else if let topMapNavController = OverlayViewController.getTopViewController() as? MapNavController {
       topMapNavController.topViewDidBecomeActive()
     }
   }
