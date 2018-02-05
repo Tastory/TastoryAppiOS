@@ -38,6 +38,7 @@ class SettingsMenuViewController: OverlayViewController {
   
   @IBOutlet var saveMediaSwitch: UISwitch!
   
+  @IBOutlet var versionBuildLabel: UILabel!
   
   
   // MARK: - IBAction
@@ -323,6 +324,16 @@ class SettingsMenuViewController: OverlayViewController {
     
     saveMediaSwitch.setOn(currentUser.saveOriginalsToLibrary, animated: false)
     saveMediaToggled(saveMediaSwitch)
+    
+    let appVersionString: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
+    var buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
+    
+    // Append leading 0 to build number if needed
+    while buildNumber.count < 3 {
+      buildNumber = "0" + buildNumber
+    }
+    
+    versionBuildLabel.text = "Tastory Ver \(appVersionString) B\(buildNumber)"
   }
   
   

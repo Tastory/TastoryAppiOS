@@ -358,9 +358,20 @@
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bwi-kV-rqk" userLabel="Bottom Space Cell">
                                                 <rect key="frame" x="0.0" y="399" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tastory Ver 0.0.0 B000" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k2e-jV-2bO">
+                                                        <rect key="frame" x="15" y="17.5" width="125" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
                                                 <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
+                                                    <constraint firstAttribute="bottom" secondItem="k2e-jV-2bO" secondAttribute="bottom" constant="12" id="ZCj-BA-fck"/>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="k2e-jV-2bO" secondAttribute="trailing" priority="200" constant="375" id="ZcT-r7-O0v"/>
                                                     <constraint firstAttribute="height" constant="44" id="uZE-Qr-Jco"/>
+                                                    <constraint firstItem="k2e-jV-2bO" firstAttribute="leading" secondItem="Bwi-kV-rqk" secondAttribute="leading" constant="15" id="wL0-zv-xkI"/>
                                                 </constraints>
                                             </view>
                                         </subviews>
@@ -396,6 +407,7 @@
                         <outlet property="linkFacebookLine" destination="0wP-yH-kS9" id="dhV-6v-aFG"/>
                         <outlet property="linkFacebookTapRecognizer" destination="6PV-d4-3l7" id="QkT-sN-9HC"/>
                         <outlet property="saveMediaSwitch" destination="MHP-Tz-TZf" id="q2x-Jt-fyl"/>
+                        <outlet property="versionBuildLabel" destination="k2e-jV-2bO" id="QR5-SD-q1B"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="da1-7r-XKB" userLabel="First Responder" sceneMemberID="firstResponder"/>
