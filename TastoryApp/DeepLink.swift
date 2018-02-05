@@ -17,6 +17,21 @@ class DeepLink {
     static let URI = "URI"
   }
 
+  enum ErrorCode: LocalizedError {
+
+    case missingStoryId
+    case missingThumbnailFileName
+
+    var errorDescription: String? {
+      switch self {
+      case .missingStoryId:
+        return NSLocalizedString("The story is missing the objectId", comment: "Error description for an exception error code")
+      case .missingThumbnailFileName:
+        return NSLocalizedString("The thumbnail is missing the fileName", comment: "Error description for an exception error code")
+      }
+    }
+  }
+
   // MARK: - Private Instance Variables
   private var instance: Branch? = nil
 
@@ -37,28 +52,39 @@ class DeepLink {
       instance =  Branch.getInstance()
 
       guard let currentInstance = instance else {
-        CCLog.warning("Failed to get an initialized instance of Branch")
+        CCLog.assert("Failed to get an initialized instance of Branch")
         return
       }
 
       currentInstance.initSession(launchOptions: launchOptions)  {(params, error) in
-        if error != nil {
-          CCLog.warning("A DeepLink error occurred when getting params: \(String(describing: error))")
-          return
+
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let window = appDelegate.window, let rootVC = window.rootViewController else {
+          CCLog.fatal("Cannot get AppDelegate.window.rootViewController!!!!")
+        }
+
+        var displayedVC = rootVC
+
+        if let resumeTopVC = appDelegate.resumeTopVC {
+          displayedVC = resumeTopVC
         }
 
         guard let params = params else {
-          CCLog.warning("DeepLink Params is nil")
+          AlertDialog.standardPresent(from: displayedVC, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.assert("DeepLink Params is nil")
+          }
           return
         }
 
         guard let uri = params[Constants.URI] as? String else {
-          CCLog.warning("URI is missing from Deep Link params: \(params)")
+          CCLog.warning("No deep link URI found")
           return
         }
 
         guard let url = URL(string: uri) else {
-          CCLog.fatal("unable to create url from uri")
+          AlertDialog.standardPresent(from: displayedVC, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.assert("Unable to create url from uri")
+          }
+          return
         }
 
         // parse the content URI
@@ -77,30 +103,46 @@ class DeepLink {
               DeepLink.deepLinkStoryId = paths[i+1]
               break
             default:
+              AlertDialog.standardPresent(from: displayedVC, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+                CCLog.assert("Unknown parameter is used in the URI")
+                DeepLink.clearDeepLinkInfo()
+              }
+              return
               break
             }
+          } else {
+            AlertDialog.standardPresent(from: displayedVC, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+              CCLog.assert("URI is malformed. Exepected key and followed by value")
+              DeepLink.clearDeepLinkInfo()
+            }
+            return
           }
           i = i + 2
         }
 
         // reset root disaplay VC only when logged in
         if let user = FoodieUser.current(), user.isAuthenticated {
-
-          guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let window = appDelegate.window, let rootVC = window.rootViewController else {
-              CCLog.fatal("Cannot get AppDelegate.window.rootViewController!!!!")
-          }
-
-          if let resumeTopVC = appDelegate.resumeTopVC, resumeTopVC is MarkupViewController {
-            AlertDialog.presentConfirm(from: resumeTopVC, title: "Discard", message: "Changes to your markups have not been saved. Are you sure you want to exit?") { (action) in
-              rootVC.dismiss(animated: false)
+          if displayedVC is MarkupViewController {
+            AlertDialog.presentConfirm(from: displayedVC, title: "Discard", message: "Changes to your markups have not been saved. Are you sure you want to exit?") { (action) in
+              self.dimissRootVC()
             }
             appDelegate.resumeTopVC = nil
           } else {
-             rootVC.dismiss(animated: false)
+             self.dimissRootVC()
           }
         }
       }
     }
+  }
+
+  func dimissRootVC() {
+    guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let window = appDelegate.window, let rootVC = window.rootViewController else {
+      CCLog.fatal("Cannot get AppDelegate.window.rootViewController!!!!")
+    }
+    
+
+     rootVC.dismiss(animated: false)
+
   }
 
   func processUniversalLink(_ userActivity: NSUserActivity) {
@@ -112,13 +154,29 @@ class DeepLink {
     currentInstance.continue(userActivity)
   }
 
-  func createDeepLink(username: String, storyId: String? = nil, block callback: @escaping (String?, Error?)->Void ) {
+  func createDeepLink(username: String, story: FoodieStory? = nil, block callback: @escaping (String?, Error?)->Void ) {
+
     let buo = BranchUniversalObject(canonicalIdentifier: "content")
 
     var uri = DeepLink.Constants.UserKey + "/" + username
 
-    if storyId != nil {
-      uri = uri + "/" + DeepLink.Constants.StoryKey + "/" + storyId!
+    if let story = story {
+
+      guard let objectId = story.objectId else {
+        CCLog.assert("the story is missing an object id")
+        callback(nil, ErrorCode.missingStoryId)
+        return
+      }
+
+      guard let thumbnailName = story.thumbnailFileName else {
+        CCLog.assert("the story is missing a thumbnail file name")
+        callback(nil, ErrorCode.missingThumbnailFileName)
+        return
+      }
+
+      uri = uri + "/" + DeepLink.Constants.StoryKey + "/" + objectId
+      buo.title = story.title
+      buo.imageUrl = FoodieFileObject.getS3URL(for: thumbnailName).absoluteString
     }
 
     buo.contentMetadata.customMetadata[DeepLink.Constants.URI] = uri

@@ -119,14 +119,7 @@ class StoryViewController: OverlayViewController {
       return
     }
 
-    guard let storyId = story.objectId else  {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("the object id of the viewing story is nil")
-      }
-      return
-    }
-
-    deepLink.createDeepLink(username: userName, storyId: storyId) { (url, error) in
+    deepLink.createDeepLink(username: userName, story: story) { (url, error) in
 
       if error != nil {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
