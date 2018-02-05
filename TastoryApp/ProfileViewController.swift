@@ -401,7 +401,9 @@ class ProfileViewController: OverlayViewController {
                                                         allowLayoutChange: false,
                                                         adjustScrollViewInset: true)
       nodeController.storyArray = stories
-      
+      nodeController.delegate = self
+      nodeController.deepLinkStoryId = DeepLink.global.deepLinkStoryId
+
       if user === FoodieUser.current {
         nodeController.enableEdit = true
       } else {
@@ -412,8 +414,6 @@ class ProfileViewController: OverlayViewController {
       nodeController.node.frame = feedContainerView.bounds
       nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
       nodeController.didMove(toParentViewController: self)
-      nodeController.delegate = self
-      nodeController.deepLinkStoryId = DeepLink.global.deepLinkStoryId
       feedCollectionNodeController = nodeController
       
       

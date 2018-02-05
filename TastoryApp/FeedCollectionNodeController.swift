@@ -121,7 +121,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   // MARK: - Private Instance Function
 
   private func displayDeepLinkStory() {
-    if let storyId = DeepLink.global.deepLinkStoryId {
+    if let storyId = deepLinkStoryId{
       // check appdelegate if deeplink is used
       for story in storyArray  {
         if story.objectId == storyId {
@@ -337,10 +337,9 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
           }
 
           if storyIdx == 0 {
-            delegate?.collectionNodeDidStopScrolling?()
+            self.displayDeepLinkStory()
           } else {
             collectionNode.scrollToItem(at: IndexPath(row: storyIdx, section: 0), at: .top, animated: true)
-
           }
           return
         }
