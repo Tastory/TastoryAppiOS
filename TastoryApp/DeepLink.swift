@@ -163,23 +163,25 @@ class DeepLink {
       return
     }
 
-    guard let userName = user.username else {
-      CCLog.assert("the user name is missing from the author")
-      callback(nil, ErrorCode.missingThumbnailFileName)
-      return
-    }
+    var title = ""
+    var description = "See tasty stories curated by "
 
-    var title = userName
-
-    //if let name = user.fullName {
-
+    if let fullName = user.fullName {
+      title += fullName
+      description += fullName
       
-
-    if let bio = user.biography {
-      title = title + ": " + bio
     }
+
+    if let username = user.username {
+      let nameStr = " (@" + username + ")"
+      title += nameStr
+      description += nameStr
+    }
+
+    title += " on Tastory"
+
     buo.title = title
-    //buo.contentDescription = user.biography
+    buo.contentDescription = description
     if let mediaName = user.profileMediaFileName {
       buo.imageUrl = FoodieFileObject.getS3URL(for: mediaName).absoluteString
     }
@@ -212,12 +214,6 @@ class DeepLink {
       return
     }
 
-    guard let userName = user.username else {
-      CCLog.assert("the user name is missing from the author")
-      callback(nil, ErrorCode.missingThumbnailFileName)
-      return
-    }
-
     guard let objectId = story.objectId else {
       CCLog.assert("the story is missing an object id")
       callback(nil, ErrorCode.missingStoryId)
@@ -230,8 +226,30 @@ class DeepLink {
       return
     }
 
-    buo.title = story.title
-    buo.contentDescription = "by " + userName
+    var title = ""
+    var description = ""
+
+    if let storyTitle = story.title {
+      title = storyTitle
+    }
+
+    title += " by"
+
+    if let fullName = user.fullName {
+      title += " " + fullName
+      description += fullName
+    }
+
+    if let username = user.username {
+      let nameStr = " (@" + username + ")"
+      title += nameStr
+      description += nameStr
+    }
+
+    title += " on Tastory"
+
+    buo.title = title
+    buo.contentDescription = description + " | tasty story on Tastory"
     buo.imageUrl = FoodieFileObject.getS3URL(for: thumbnailName).absoluteString
 
     buo.contentMetadata.customMetadata[DeepLink.Constants.URI] = DeepLink.Constants.UserKey + "/" + userId + "/" + DeepLink.Constants.StoryKey + "/" + objectId
