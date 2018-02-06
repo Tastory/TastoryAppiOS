@@ -39,7 +39,7 @@ class DeepLink {
   static var global: DeepLink!
 
   // MARK: - Public Instance Variables
-  var showConfirmDiscard: Bool = false
+  var isAppResume: Bool = false
   var deepLinkUserId: String?
   var deepLinkStoryId: String?
 
@@ -123,13 +123,23 @@ class DeepLink {
           i = i + 2
         }
 
-        // reset root disaplay VC only when logged in
+        // ask for confirmation before reseting VC
         if displayedVC is MarkupViewController || displayedVC is StoryEntryViewController {
           AlertDialog.presentConfirm(from: displayedVC, title: "Discard", message: "Your changes have not been saved. Are you sure you want to exit?") { (action) in
             rootVC.dismiss(animated: false)
           }
         } else {
-           rootVC.dismiss(animated: false)
+          // check to see if other VC is on top of the discovery VC
+          if displayedVC.childViewControllers.count > 1 {
+             rootVC.dismiss(animated: false)
+          }
+          if displayedVC.childViewControllers.count == 1,  self.isAppResume {
+            self.isAppResume = false
+            CCLog.verbose("victor \(self.isAppResume)")
+            if let discoverVC = displayedVC.childViewControllers[0] as? DiscoverViewController {
+              discoverVC.displayDeepLinkContent()
+            }
+          }
         }
       }
     }
@@ -144,36 +154,91 @@ class DeepLink {
     currentInstance.continue(userActivity)
   }
 
-  func createDeepLink(userId: String, story: FoodieStory? = nil, block callback: @escaping (String?, Error?)->Void ) {
-
+  func createProfileDeepLink(user: FoodieUser, block callback: @escaping (String?, Error?)->Void ) {
     let buo = BranchUniversalObject(canonicalIdentifier: "content")
 
-    var uri = DeepLink.Constants.UserKey + "/" + userId
-
-    if let story = story {
-
-      guard let objectId = story.objectId else {
-        CCLog.assert("the story is missing an object id")
-        callback(nil, ErrorCode.missingStoryId)
-        return
-      }
-
-      guard let thumbnailName = story.thumbnailFileName else {
-        CCLog.assert("the story is missing a thumbnail file name")
-        callback(nil, ErrorCode.missingThumbnailFileName)
-        return
-      }
-
-      uri = uri + "/" + DeepLink.Constants.StoryKey + "/" + objectId
-      buo.title = story.title
-      buo.imageUrl = FoodieFileObject.getS3URL(for: thumbnailName).absoluteString
+    guard let userId = user.objectId else {
+      CCLog.assert("the user id is missing from FoodieUser")
+      callback(nil, ErrorCode.missingThumbnailFileName)
+      return
     }
 
-    buo.contentMetadata.customMetadata[DeepLink.Constants.URI] = uri
+    guard let userName = user.username else {
+      CCLog.assert("the user name is missing from the author")
+      callback(nil, ErrorCode.missingThumbnailFileName)
+      return
+    }
+
+    var title = userName
+
+    //if let name = user.fullName {
+
+      
+
+    if let bio = user.biography {
+      title = title + ": " + bio
+    }
+    buo.title = title
+    //buo.contentDescription = user.biography
+    if let mediaName = user.profileMediaFileName {
+      buo.imageUrl = FoodieFileObject.getS3URL(for: mediaName).absoluteString
+    }
+    // TODO add default url image when user is missing their profile pic
+
+    buo.contentMetadata.customMetadata[DeepLink.Constants.URI] = DeepLink.Constants.UserKey + "/" + userId
 
     let lp: BranchLinkProperties = BranchLinkProperties()
     lp.channel = "app"
     lp.feature = "profile_sharing"
+
+    buo.getShortUrl(with: lp) { (url, error) in
+      callback(url,error)
+    }
+  }
+
+  func createStoryDeepLink(story: FoodieStory, block callback: @escaping (String?, Error?)->Void ) {
+
+    let buo = BranchUniversalObject(canonicalIdentifier: "content")
+
+    guard let user = story.author else {
+      CCLog.assert("The author is missing from the foodie story")
+      callback(nil, ErrorCode.missingThumbnailFileName)
+      return
+    }
+
+    guard let userId = user.objectId else {
+      CCLog.assert("the user id is missing from FoodieUser")
+      callback(nil, ErrorCode.missingThumbnailFileName)
+      return
+    }
+
+    guard let userName = user.username else {
+      CCLog.assert("the user name is missing from the author")
+      callback(nil, ErrorCode.missingThumbnailFileName)
+      return
+    }
+
+    guard let objectId = story.objectId else {
+      CCLog.assert("the story is missing an object id")
+      callback(nil, ErrorCode.missingStoryId)
+      return
+    }
+
+    guard let thumbnailName = story.thumbnailFileName else {
+      CCLog.assert("the story is missing a thumbnail file name")
+      callback(nil, ErrorCode.missingThumbnailFileName)
+      return
+    }
+
+    buo.title = story.title
+    buo.contentDescription = "by " + userName
+    buo.imageUrl = FoodieFileObject.getS3URL(for: thumbnailName).absoluteString
+
+    buo.contentMetadata.customMetadata[DeepLink.Constants.URI] = DeepLink.Constants.UserKey + "/" + userId + "/" + DeepLink.Constants.StoryKey + "/" + objectId
+
+    let lp: BranchLinkProperties = BranchLinkProperties()
+    lp.channel = "app"
+    lp.feature = "story_sharing"
 
     buo.getShortUrl(with: lp) { (url, error) in
       callback(url,error)

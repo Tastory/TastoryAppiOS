@@ -111,14 +111,7 @@ class ProfileViewController: OverlayViewController {
       return
     }
 
-    guard let userId = user.objectId else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Username is missing from user")
-      }
-      return
-    }
-
-    deepLink.createDeepLink(userId: userId) { (url, error) in
+    deepLink.createProfileDeepLink(user: user) { (url, error) in
 
       if error != nil {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -133,7 +126,16 @@ class ProfileViewController: OverlayViewController {
         }
         return
       }
-      SharedDialog.showPopUp(url: url, fromVC: self)
+
+      // button reference for ipad pop up controller anchoring
+      guard let button = sender as? UIButton else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("No link generated")
+        }
+        return
+      }
+
+      SharedDialog.showPopUp(url: url, fromVC: self, sender: button)
     }
   }
   
@@ -326,6 +328,7 @@ class ProfileViewController: OverlayViewController {
         DispatchQueue.main.async {
           self.feedCollectionNodeController?.scrollTo(storyIndex: 0)
           self.updateProfileMap(with: stories[0])
+          self.feedCollectionNodeController?.displayDeepLinkStory()
         }
       }
     }

@@ -10,11 +10,16 @@ import Foundation
 import UIKit
 
 struct SharedDialog {
-  static func showPopUp(url: String, fromVC: UIViewController) {
+  static func showPopUp(url: String, fromVC: UIViewController, sender: UIButton) {
     let urlActivityItem : NSURL = NSURL(string: url)!
 
     let activityViewController : UIActivityViewController = UIActivityViewController(
       activityItems: [urlActivityItem], applicationActivities: nil)
+
+    if let popOverController = activityViewController.popoverPresentationController {
+      popOverController.sourceView = sender
+      popOverController.sourceRect = sender.bounds
+    }
 
     activityViewController.excludedActivityTypes = [
       UIActivityType.postToWeibo,

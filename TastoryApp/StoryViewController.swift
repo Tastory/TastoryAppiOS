@@ -96,21 +96,7 @@ class StoryViewController: OverlayViewController {
       return
     }
 
-    guard let author = story.author else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Can't create profile deep link without an author")
-      }
-      return
-    }
-
-    guard let userId = author.objectId else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Can't create profile deep link without a username")
-      }
-      return
-    }
-
-    deepLink.createDeepLink(userId: userId, story: story) { (url, error) in
+    deepLink.createStoryDeepLink(story: story) { (url, error) in
 
       if error != nil {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -125,7 +111,16 @@ class StoryViewController: OverlayViewController {
         }
         return
       }
-      SharedDialog.showPopUp(url: url, fromVC: self)
+
+      // referencing button for ipad pop up controller anchoring
+      guard let button = sender as? UIButton else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("No link generated")
+        }
+        return
+      }
+
+      SharedDialog.showPopUp(url: url, fromVC: self, sender: button)
     }
   }
 

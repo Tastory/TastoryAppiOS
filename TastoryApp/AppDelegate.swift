@@ -125,6 +125,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowD
     } else if let topMapNavController = OverlayViewController.getTopViewController() as? MapNavController {
       topMapNavController.topViewWillEnterForeground()
     }
+    DeepLink.global.isAppResume = true
   }
 
   func applicationDidBecomeActive(_ application: UIApplication) {

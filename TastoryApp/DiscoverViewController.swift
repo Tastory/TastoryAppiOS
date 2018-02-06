@@ -80,8 +80,7 @@ class DiscoverViewController: OverlayViewController {
   private var discoverFilter: FoodieFilter?
   private var forceRequery: Bool = false
   private var autoFilterSearch: Bool = false
-  
-  
+
   
   // MARK: - IBOutlets
   @IBOutlet var mosaicLayoutChangePanRecognizer: UIPanGestureRecognizer!
@@ -408,7 +407,7 @@ class DiscoverViewController: OverlayViewController {
     self.storyQuery = query
     self.storyArray = stories
     self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true, currentLocation: coordinate)
-    displayDeepLinkContent()
+    self.displayDeepLinkContent()
   }
 
   private func refreshDiscoverView(onStories stories: [FoodieStory], zoomToRegion: Bool, scrollAndSelectStory: Bool, currentLocation coordinate: CLLocationCoordinate2D? = nil) {
@@ -585,7 +584,6 @@ class DiscoverViewController: OverlayViewController {
   }
 
   func displayDeepLinkContent(){
-
     guard let userId = DeepLink.global.deepLinkUserId else {
       CCLog.warning("No username found in the deep link")
       return
