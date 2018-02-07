@@ -144,6 +144,8 @@ class DeepLink {
             } else {
               CCLog.fatal("Expected childViewController to contain DiscoveryVC")
             }
+          } else {
+            CCLog.fatal("DisplayVC is not a mapnav controller.")
           }
         }
       }
