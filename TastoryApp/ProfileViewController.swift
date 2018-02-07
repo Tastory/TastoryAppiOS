@@ -328,7 +328,7 @@ class ProfileViewController: OverlayViewController {
         DispatchQueue.main.async {
           self.feedCollectionNodeController?.scrollTo(storyIndex: 0)
           self.updateProfileMap(with: stories[0])
-          self.feedCollectionNodeController?.displayDeepLinkStory()
+          self.feedCollectionNodeController?.processDeepLinkStoryIfAvail()
         }
       }
     }

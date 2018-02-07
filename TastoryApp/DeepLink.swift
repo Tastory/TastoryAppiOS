@@ -129,15 +129,20 @@ class DeepLink {
             rootVC.dismiss(animated: false)
           }
         } else {
-          // check to see if other VC is on top of the discovery VC
-          if displayedVC.childViewControllers.count > 1 {
-             rootVC.dismiss(animated: false)
-          }
-          if displayedVC.childViewControllers.count == 1,  self.isAppResume {
-            self.isAppResume = false
-            CCLog.verbose("victor \(self.isAppResume)")
-            if let discoverVC = displayedVC.childViewControllers[0] as? DiscoverViewController {
-              discoverVC.displayDeepLinkContent()
+          // Assumption: the displayed VC is a mapNav controller and its childViewController at index 0 is a DiscoveryVC
+          if let mapNavVC = displayedVC as? MapNavController {
+            // check to see if other VC is on top of the MapNavController
+            if mapNavVC.childViewControllers.count > 1 {
+              rootVC.dismiss(animated: false)
+            } else if mapNavVC.childViewControllers.count == 1 {
+              if self.isAppResume {
+                self.isAppResume = false
+                if let discoverVC = displayedVC.childViewControllers[0] as? DiscoverViewController {
+                  discoverVC.displayDeepLinkContent()
+                }
+              }
+            } else {
+              CCLog.fatal("Expected childViewController to contain DiscoveryVC")
             }
           }
         }

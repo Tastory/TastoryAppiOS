@@ -47,6 +47,7 @@ struct FoodieGlobal {
     static let DefaultUIShadowOffset = CGSize(width: 0.0, height: 0.0)
     static let DefaultUIShadowRadius: CGFloat = 3.0
     static let DefaultUIShadowOpacity: Float = 0.38
+    static let DefaultDeepLinkWaitDelay = 0.5
   }
 
   struct RefreshFeedNotification {
