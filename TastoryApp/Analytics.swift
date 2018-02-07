@@ -215,4 +215,20 @@ class Analytics {
     Answers.logCustomEvent(withName: "Story Edit Saved", customAttributes: ["Author ID" : authorId,
                                                                             "Story ID" : storyId])
   }
+  
+  
+  
+  // MARK: - Foursquare Request Tracking
+  
+  enum FoursquareRequestType: String {
+    case venueCompact
+    case venueDetails
+    case venueHours
+    case categoryList
+  }
+  
+  
+  static func logFoursquareRequest(type: FoursquareRequestType ) {
+    Answers.logCustomEvent(withName: "Foursquare Request", customAttributes:["Type" : type.rawValue])
+  }
 }

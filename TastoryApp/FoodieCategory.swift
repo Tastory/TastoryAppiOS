@@ -95,6 +95,8 @@ class FoodieCategory: FoodiePFObject, FoodieObjectDelegate {
     
     let categoriesRetry = SwiftRetry()
     categoriesRetry.start("get Categories from Foursquare", withCountOf: Constants.FoursquareSearchRetryCount) {
+      Analytics.logFoursquareRequest(type: .categoryList)
+      
       // Get Foursquare Categories with async response handling in block
       let categoriesTask = session.venues.categories { result in
         

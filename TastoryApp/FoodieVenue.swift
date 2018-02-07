@@ -200,6 +200,8 @@ class FoodieVenue: FoodiePFObject  {
     
     let searchRetry = SwiftRetry()
     searchRetry.start("search Foursquare for \(venueName)", withCountOf: Constants.FoursquareSearchRetryCount) {
+      Analytics.logFoursquareRequest(type: .venueCompact)
+      
       // Perform Foursquare search with async response handling in block
       let searchTask = session.venues.search(parameters) { result in
         
@@ -387,10 +389,12 @@ class FoodieVenue: FoodiePFObject  {
   
   
   private static func getDetailsFromFoursquareCommon(for venue: FoodieVenue?, with venueID: String, withBlock callback: VenueErrorBlock?) {
-    
     let session = foursquareSession
     let getDetailsRetry = SwiftRetry()
+    
     getDetailsRetry.start("get details from Foursquare for \(venueID)", withCountOf: Constants.FoursquareGetDetailsRetryCount) {
+      Analytics.logFoursquareRequest(type: .venueDetails)
+      
       // Perform Foursquare Venue Details get with async response handling in block
       let getDetailsTask = session.venues.get(venueID) { (result) in
         
@@ -549,10 +553,12 @@ class FoodieVenue: FoodiePFObject  {
   
   
   private static func getHoursFromFoursquareCommon(for venue: FoodieVenue?, with venueID: String, withBlock callback: HoursErrorBlock?) {
-    
     let session = foursquareSession
     let getHoursRetry = SwiftRetry()
+    
     getHoursRetry.start("get details from Foursquare for \(venueID)", withCountOf: Constants.FoursquareGetDetailsRetryCount) {
+      Analytics.logFoursquareRequest(type: .venueHours)
+      
       // Perform Foursquare Venue Details get with async response handling in block
       let getHoursTask = session.venues.hours(venueID) { (result) in
         
