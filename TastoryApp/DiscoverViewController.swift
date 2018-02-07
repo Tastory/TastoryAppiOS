@@ -406,11 +406,12 @@ class DiscoverViewController: OverlayViewController {
 
     self.storyQuery = query
     self.storyArray = stories
-    self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true, currentLocation: coordinate)
-    self.displayDeepLinkContent()
+    self.refreshDiscoverView(onStories: stories, zoomToRegion: true, scrollAndSelectStory: true, currentLocation: coordinate) {
+       self.displayDeepLinkContent(displayDelay: 1.0)
+    }
   }
 
-  private func refreshDiscoverView(onStories stories: [FoodieStory], zoomToRegion: Bool, scrollAndSelectStory: Bool, currentLocation coordinate: CLLocationCoordinate2D? = nil) {
+  private func refreshDiscoverView(onStories stories: [FoodieStory], zoomToRegion: Bool, scrollAndSelectStory: Bool, currentLocation coordinate: CLLocationCoordinate2D? = nil, completion callback: (() -> Void)? = nil) {
     var newAnnotations = [StoryMapAnnotation]()
     
     if stories.count <= 0 {
@@ -477,6 +478,7 @@ class DiscoverViewController: OverlayViewController {
           self.feedCollectionNodeController.scrollTo(storyIndex: 0)
         }
       }
+      callback?()
     }
   }
   
@@ -583,7 +585,7 @@ class DiscoverViewController: OverlayViewController {
     self.pushPresent(viewController, animated: true)
   }
 
-  func displayDeepLinkContent(){
+  func displayDeepLinkContent(displayDelay: Double = FoodieGlobal.Constants.DefaultDeepLinkWaitDelay){
     guard let userId = DeepLink.global.deepLinkUserId else {
       CCLog.warning("No username found in the deep link")
       return
@@ -601,7 +603,7 @@ class DiscoverViewController: OverlayViewController {
         return
       }
 
-      DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
+      DispatchQueue.main.asyncAfter(deadline: .now() + displayDelay) {
         self.showProfileView(user)
 
         if DeepLink.global.deepLinkStoryId == nil {
