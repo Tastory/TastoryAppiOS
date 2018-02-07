@@ -339,7 +339,9 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
           }
 
           DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) { [weak self] in
-            if storyIdx == 0 {
+            // story with index 0 or 1 doesn't activate any scrolling so we need to manually show the stories
+            // scrolling occurs when index is above 1 and after the scrolling is completed, the deeplink content is displayed
+            if storyIdx == 0 || storyIdx == 1 {
               self?.displayStory(didSelectItemAt: IndexPath(row: storyIdx, section: 0))
             } else {
               self?.collectionNode.scrollToItem(at: IndexPath(row: storyIdx, section: 0), at: .top, animated: true)
