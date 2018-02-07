@@ -130,6 +130,7 @@ class DeepLink {
           }
         } else {
           // Assumption: the displayed VC is a mapNav controller and its childViewController at index 0 is a DiscoveryVC
+          // displayedVC could be a loginViewController if user clicked on deeplink and not logged in
           if let mapNavVC = displayedVC as? MapNavController {
             // check to see if other VC is on top of the MapNavController
             if mapNavVC.childViewControllers.count > 1 {
@@ -144,8 +145,6 @@ class DeepLink {
             } else {
               CCLog.fatal("Expected childViewController to contain DiscoveryVC")
             }
-          } else {
-            CCLog.fatal("DisplayVC is not a mapnav controller.")
           }
         }
       }
