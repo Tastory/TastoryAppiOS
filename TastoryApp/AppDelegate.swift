@@ -10,10 +10,10 @@
 import AsyncDisplayKit
 import FBSDKCoreKit
 import ParseFacebookUtilsV4
-import COSTouchVisualizer
+// import COSTouchVisualizer
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWindowDelegate*/ {
 
   var window: UIWindow?
   
@@ -41,17 +41,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowD
     //printFonts()
     
     // Setup Window
-    let cosTouchWindow = COSTouchVisualizerWindow(frame: UIScreen.main.bounds)
-    cosTouchWindow.backgroundColor = UIColor.white
-    cosTouchWindow.fillColor = UIColor.white
-    cosTouchWindow.strokeColor = UIColor.white
-    cosTouchWindow.touchAlpha = 0.2;
-    cosTouchWindow.rippleFillColor = UIColor.white
-    cosTouchWindow.rippleStrokeColor = UIColor.white
-    cosTouchWindow.touchAlpha = 0.1;
-    cosTouchWindow.touchVisualizerWindowDelegate = self
+//    let cosTouchWindow = COSTouchVisualizerWindow(frame: UIScreen.main.bounds)
+//    cosTouchWindow.backgroundColor = UIColor.white
+//    cosTouchWindow.fillColor = UIColor.white
+//    cosTouchWindow.strokeColor = UIColor.white
+//    cosTouchWindow.touchAlpha = 0.2;
+//    cosTouchWindow.rippleFillColor = UIColor.white
+//    cosTouchWindow.rippleStrokeColor = UIColor.white
+//    cosTouchWindow.touchAlpha = 0.1;
+//    cosTouchWindow.touchVisualizerWindowDelegate = self
     
-    window = cosTouchWindow
+//    window = cosTouchWindow
 
     // Initialize Crash, Error & Log Reporting
     CCLog.initializeLogging()
@@ -73,7 +73,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowD
       CCLog.fatal("ViewController initiated not of RootViewController Class!!")
     }
     viewController.startupError = error
-    //window = UIWindow(frame: UIScreen.main.bounds)
+    window = UIWindow(frame: UIScreen.main.bounds)
     window?.rootViewController = viewController
     window?.makeKeyAndVisible()
 
@@ -142,12 +142,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowD
   }
   
   // MARK: - COSTouchVisualizerWindowDelegate
-  func touchVisualizerWindowShouldShowFingertip(_ window: COSTouchVisualizerWindow!) -> Bool {
-    return true
-  }
-  
-  func touchVisualizerWindowShouldAlwaysShowFingertip(_ window: COSTouchVisualizerWindow!) -> Bool {
-    return false
-  }
+//  func touchVisualizerWindowShouldShowFingertip(_ window: COSTouchVisualizerWindow!) -> Bool {
+//    return true
+//  }
+//
+//  func touchVisualizerWindowShouldAlwaysShowFingertip(_ window: COSTouchVisualizerWindow!) -> Bool {
+//    return false
+//  }
 }
 
