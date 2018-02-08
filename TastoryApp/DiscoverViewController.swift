@@ -350,6 +350,7 @@ class DiscoverViewController: OverlayViewController {
       // Add Filter so only Post with more than Limit Disoverability can be seen
       // query.addRoleFilter(min: .user, max: nil)
       query.addDiscoverabilityFilter(min: .hidden, max: nil)
+      query.setDiscoverableOnlyTo(true)
       
       // Make sure you can alway see your own posts
       if let currentUser = FoodieUser.current, currentUser.isRegistered {

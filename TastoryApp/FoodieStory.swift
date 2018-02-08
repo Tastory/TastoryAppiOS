@@ -21,6 +21,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var storyURL: String? // URL to the Story article
   @NSManaged var swipeMessage: String? // Custom message underneath the swipe arrow indicator
   @NSManaged var discoverability: UInt
+  @NSManaged var discoverable: Bool // Is the story discoverable to everyone (but the author)
   @NSManaged var reputation: ReputableStory?
   
   

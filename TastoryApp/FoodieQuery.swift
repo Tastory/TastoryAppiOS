@@ -110,7 +110,7 @@ class FoodieQuery {
   // Parameters for filtering by Discoverability, inclusive.
   private var minDiscoverability: FoodieStory.Discoverability?
   private var maxDiscoverability: FoodieStory.Discoverability?
-  
+  private var discoverableOnly: Bool = false
   private var ownStoriesAlso: Bool = false
   
   // Constraining Parameters
@@ -167,6 +167,7 @@ class FoodieQuery {
       let query = FoodieQuery()
       query.addLocationFilter(origin: coordinate, radius: radius)
       query.addDiscoverabilityFilter(min: .hidden, max: nil)
+      query.setDiscoverableOnlyTo(true)
       
       // Make sure you can alway see your own posts
       if let currentUser = FoodieUser.current, currentUser.isRegistered {
@@ -257,9 +258,15 @@ class FoodieQuery {
   }
   
   
+  func setDiscoverableOnlyTo(_ discoverable: Bool) {
+    discoverableOnly = discoverable
+  }
+  
+  
   func addAuthorsFilter(users: [FoodieUser]) {
     authors = users
   }
+  
   
   func setOwnStoriesAlso() {
     ownStoriesAlso = true
@@ -480,6 +487,10 @@ class FoodieQuery {
         coreQuery.whereKey("discoverability", greaterThan: minDiscoverability.rawValue)
       }
     
+      if discoverableOnly {
+        coreQuery.whereKey("discoverable", equalTo: true)
+      }
+      
       pfQuery = PFQuery.orQuery(withSubqueries: [coreQuery, ownQuery])
     }
     
@@ -490,6 +501,10 @@ class FoodieQuery {
       
       if let minDiscoverability = minDiscoverability {
         coreQuery.whereKey("discoverability", greaterThan: minDiscoverability.rawValue)
+      }
+      
+      if discoverableOnly {
+        coreQuery.whereKey("discoverable", equalTo: true)
       }
       
       pfQuery = coreQuery
