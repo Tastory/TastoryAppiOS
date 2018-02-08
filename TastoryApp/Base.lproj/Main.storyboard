@@ -518,7 +518,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
-                <panGestureRecognizer minimumNumberOfTouches="1" id="Sj4-40-4nO" userLabel="Mosaic Layout Change Pan Recognizer">
+                <panGestureRecognizer enabled="NO" minimumNumberOfTouches="1" id="Sj4-40-4nO" userLabel="Mosaic Layout Change Pan Recognizer">
                     <connections>
                         <action selector="mosaicLayoutChangeAction:" destination="BYZ-38-t0r" id="Vi4-hJ-iQQ"/>
                     </connections>
