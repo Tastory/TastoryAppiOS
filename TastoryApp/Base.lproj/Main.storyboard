@@ -43,10 +43,10 @@
                                 <rect key="frame" x="0.0" y="339" width="375" height="439"/>
                                 <subviews>
                                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesSelf" translatesAutoresizingMaskIntoConstraints="NO" id="AMX-lO-lJU">
-                                        <rect key="frame" x="52.5" y="85" width="270" height="197"/>
+                                        <rect key="frame" x="52.666666666666657" y="121" width="270" height="197"/>
                                     </imageView>
                                     <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesOthers" translatesAutoresizingMaskIntoConstraints="NO" id="ETg-wA-zyO">
-                                        <rect key="frame" x="52.5" y="85" width="270" height="197"/>
+                                        <rect key="frame" x="52.666666666666657" y="121" width="270" height="197"/>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -62,15 +62,15 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zzE-Jd-3Do" userLabel="Map Exposed View">
-                                <rect key="frame" x="0.0" y="40" width="375" height="110"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="124.66666666666669"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1js-VP-5AG" userLabel="Top Gradient View">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="55"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="79"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UoE-Hi-yKI" userLabel="Touch Forwarding View" customClass="TouchForwardingView" customModule="TastoryApp" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="20" width="375" height="130"/>
+                                <rect key="frame" x="0.0" y="44" width="375" height="144.66666666666666"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XVt-7W-XFA">
                                         <rect key="frame" x="4" y="-10" width="48" height="48"/>
@@ -518,7 +518,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
-                <panGestureRecognizer enabled="NO" minimumNumberOfTouches="1" id="Sj4-40-4nO" userLabel="Mosaic Layout Change Pan Recognizer">
+                <panGestureRecognizer minimumNumberOfTouches="1" id="Sj4-40-4nO" userLabel="Mosaic Layout Change Pan Recognizer">
                     <connections>
                         <action selector="mosaicLayoutChangeAction:" destination="BYZ-38-t0r" id="Vi4-hJ-iQQ"/>
                     </connections>
@@ -624,7 +624,7 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Like" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cGg-ta-BCi">
-                                        <rect key="frame" x="6.5" y="40" width="27.5" height="17.5"/>
+                                        <rect key="frame" x="6.3333333333333126" y="40" width="27.333333333333329" height="17.666666666666671"/>
                                         <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="14"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>

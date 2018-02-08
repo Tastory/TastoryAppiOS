@@ -17,8 +17,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var thumbnailFileName: String? // URL for the thumbnail media. Needs to go with the thumbnail object.
   @NSManaged var title: String? // Title for the Story
   @NSManaged var venue: FoodieVenue? // Pointer to the Venue object
-  @NSManaged var venueName: String?  // A copy of the Venue name
-  @NSManaged var venueLocation: PFGeoPoint?  // A copy of the Venue's location
   @NSManaged var author: FoodieUser?  // Pointer? To the Authoring User
   @NSManaged var storyURL: String? // URL to the Story article
   @NSManaged var swipeMessage: String? // Custom message underneath the swipe arrow indicator
