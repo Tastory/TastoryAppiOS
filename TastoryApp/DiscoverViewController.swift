@@ -249,7 +249,7 @@ class DiscoverViewController: OverlayViewController {
       }
       return
     }
-    showProfileView(user)
+    showProfileView(user: user)
   }
   
   
@@ -569,8 +569,7 @@ class DiscoverViewController: OverlayViewController {
   }
 
   // MARK: - Private Instance Functions
-
-  func showProfileView(_ user: FoodieUser) {
+  func showProfileView(user: FoodieUser? = nil, venue: FoodieVenue? = nil) {
 
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
@@ -581,38 +580,66 @@ class DiscoverViewController: OverlayViewController {
     }
 
     self.appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
-    viewController.user = user
+
+    if user != nil {
+      viewController.user = user
+    }
+
+    if venue != nil {
+      viewController.venue = venue
+    }
+
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     self.pushPresent(viewController, animated: true)
   }
 
   func displayDeepLinkContent(displayDelay: Double = FoodieGlobal.Constants.DefaultDeepLinkWaitDelay){
-    guard let userId = DeepLink.global.deepLinkUserId else {
-      CCLog.warning("No username found in the deep link")
-      return
+    if let userId = DeepLink.global.deepLinkUserId {
+      // check appdelegate if deeplink is used
+      FoodieUser.getUserFor(userId: userId, withBlock: { (user, error) in
+        if error != nil {
+          CCLog.verbose("An error occured when looking up username: \(error!)")
+          return
+        }
+
+        guard let user:FoodieUser = user as? FoodieUser else {
+          CCLog.verbose("Failed to unwrap the user")
+          return
+        }
+        UIApplication.shared.beginIgnoringInteractionEvents()
+        DispatchQueue.main.asyncAfter(deadline: .now() + displayDelay) {
+           UIApplication.shared.endIgnoringInteractionEvents()
+          self.showProfileView(user: user)
+
+          if DeepLink.global.deepLinkStoryId == nil || DeepLink.global.deepLinkVenueId == nil{
+            DeepLink.clearDeepLinkInfo()
+          }
+        }
+      })
     }
 
-    // check appdelegate if deeplink is used
-    FoodieUser.getUserFor(userId: userId, withBlock: { (user, error) in
-      if error != nil {
-        CCLog.verbose("An error occured when looking up username: \(error!)")
-        return
-      }
-
-      guard let user:FoodieUser = user as? FoodieUser else {
-        CCLog.verbose("Failed to unwrap the user")
-        return
-      }
-      UIApplication.shared.beginIgnoringInteractionEvents()
-      DispatchQueue.main.asyncAfter(deadline: .now() + displayDelay) {
-         UIApplication.shared.endIgnoringInteractionEvents()
-        self.showProfileView(user)
-
-        if DeepLink.global.deepLinkStoryId == nil {
-          DeepLink.clearDeepLinkInfo()
+    if let venueId = DeepLink.global.deepLinkVenueId {
+      FoodieVenue.getVenueFor(venueId: venueId, withBlock: { (venue, error) in
+        if error != nil {
+          CCLog.verbose("An error occured when looking up username: \(error!)")
+          return
         }
-      }
-    })
+
+        guard let venue:FoodieVenue = venue as? FoodieVenue else {
+          CCLog.verbose("Failed to unwrap the venue")
+          return
+        }
+        UIApplication.shared.beginIgnoringInteractionEvents()
+        DispatchQueue.main.asyncAfter(deadline: .now() + displayDelay) {
+          UIApplication.shared.endIgnoringInteractionEvents()
+          self.showProfileView(venue: venue)
+
+          if DeepLink.global.deepLinkStoryId == nil || DeepLink.global.deepLinkVenueId == nil{
+            DeepLink.clearDeepLinkInfo()
+          }
+        }
+      })
+    }
   }
   
   

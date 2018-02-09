@@ -191,15 +191,20 @@ class StoryViewController: OverlayViewController {
         }
       }
     }
-    
-    if let venue = story.venue, let foursquareURLString = venue.foursquareURL, let foursquareURL = URL(string: foursquareURLString) {
-      pause()
-      CCLog.info("Opening Safari View for \(foursquareURLString)")
-      let safariViewController = SFSafariViewController(url: foursquareURL)
-      safariViewController.delegate = self
-      safariViewController.modalPresentationStyle = .overFullScreen
-      self.present(safariViewController, animated: true, completion: nil)
+
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ProfileViewController") as? ProfileViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of VenueViewController Class!!")
+      }
+      return
     }
+
+    viewController.venue = story.venue
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
+
+    removePopBgOverlay()
+    pushPresent(viewController, animated: true)
   }
   
   

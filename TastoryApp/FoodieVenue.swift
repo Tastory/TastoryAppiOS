@@ -78,6 +78,8 @@ class FoodieVenue: FoodiePFObject  {
     case foursquareResponseError
     case searchFoursquareFailedGeocode
     case invalidFoodieVenueObject
+    case getVenueNone
+    case getVenueTooMany
     
     var errorDescription: String? {
       switch self {
@@ -95,6 +97,10 @@ class FoodieVenue: FoodiePFObject  {
         return NSLocalizedString("Cannot find specified location", comment: "Error description for an exception error code")
       case .invalidFoodieVenueObject:
         return NSLocalizedString("An invalid Foodie Venue Object was supplied", comment: "Error description for an exception error code")
+      case .getVenueNone:
+        return NSLocalizedString("No FoodieVenue amongst Objects returned, or Objects is nil", comment: "Error message when getting venues results in problem")
+      case .getVenueTooMany:
+        return NSLocalizedString("More than 1 FoodieVenue in Objects returned", comment: "Error message when getting venues results in problem")
       }
     }
     
@@ -704,6 +710,43 @@ class FoodieVenue: FoodiePFObject  {
     }
   }
 
+  // MARK: - Public Static Functions
+  static func getVenueFor(venueId: String, withBlock callback: AnyErrorBlock?) {
+    guard let venueQuery = FoodieVenue.query() else {
+      CCLog.assert("Cannot create a query from FoodieVenue")
+      return
+    }
+
+    venueQuery.whereKey("objectId", equalTo: venueId)
+    venueQuery.findObjectsInBackground { (objects, error) in
+
+      if let error = error {
+        let nsError = error as NSError
+        if nsError.domain == PFParseErrorDomain, nsError.code == PFErrorCode.errorObjectNotFound.rawValue {
+          CCLog.verbose("Venue with id: \(venueId) is not found")
+          callback?(nil, nil)
+          return
+        } else {
+          CCLog.warning("Finding venue with id: \(venueId) resulted in error - \(error)")
+          callback?(nil, error)
+          return
+        }
+      }
+
+      guard let venues = objects as? [FoodieVenue] else {
+        CCLog.warning("Finding venues with id: \(venueId) resulted in no FoodieVenue")
+        callback?(nil, ErrorCode.getVenueNone)
+        return
+      }
+
+      guard venues.count == 1 else {
+        CCLog.warning("Finding venues with id: \(venueId) resulted in more than 1 FoodieVenue")
+        callback?(nil, ErrorCode.getVenueTooMany)
+        return
+      }
+      callback?(venues[0] as Any, nil)
+    }
+  }
 
   
   // MARK: - Public Instance Functions

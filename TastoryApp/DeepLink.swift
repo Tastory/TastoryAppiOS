@@ -13,19 +13,20 @@ class DeepLink {
 
   struct Constants {
     static let StoryKey = "Story"
+    static let VenueKey = "Venue"
     static let UserKey = "User"
     static let URI = "URI"
   }
 
   enum ErrorCode: LocalizedError {
 
-    case missingStoryId
+    case missingId
     case missingThumbnailFileName
 
     var errorDescription: String? {
       switch self {
-      case .missingStoryId:
-        return NSLocalizedString("The story is missing the objectId", comment: "Error description for an exception error code")
+      case .missingId:
+        return NSLocalizedString("The content is missing an identifier", comment: "Error description for an exception error code")
       case .missingThumbnailFileName:
         return NSLocalizedString("The thumbnail is missing the fileName", comment: "Error description for an exception error code")
       }
@@ -42,6 +43,7 @@ class DeepLink {
   var isAppResume: Bool = false
   var deepLinkUserId: String?
   var deepLinkStoryId: String?
+  var deepLinkVenueId: String?
 
   init(launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
 
@@ -105,6 +107,9 @@ class DeepLink {
             case Constants.StoryKey:
               DeepLink.global.deepLinkStoryId = paths[i+1]
               break
+            case Constants.VenueKey:
+              DeepLink.global.deepLinkVenueId = paths[i+1]
+              break
             default:
               AlertDialog.standardPresent(from: displayedVC, title: .genericInternalError, message: .inconsistencyFatal) { _ in
                 CCLog.assert("Unknown parameter is used in the URI")
@@ -165,7 +170,7 @@ class DeepLink {
 
     guard let userId = user.objectId else {
       CCLog.assert("the user id is missing from FoodieUser")
-      callback(nil, ErrorCode.missingThumbnailFileName)
+      callback(nil, ErrorCode.missingId)
       return
     }
 
@@ -204,6 +209,39 @@ class DeepLink {
     }
   }
 
+  func createVenueDeepLink(venue: FoodieVenue, block callback: @escaping (String?, Error?)->Void ) {
+    let buo = BranchUniversalObject(canonicalIdentifier: "content")
+
+    guard let venueId = venue.objectId else {
+      CCLog.assert("the venue id is missing from Foodievenue")
+      callback(nil, ErrorCode.missingId)
+      return
+    }
+
+    var title = ""
+    var description = "See tasty stories curated by "
+
+    if let venueName = venue.name {
+      title += venueName
+      description += venueName
+
+    }
+
+    buo.title = title
+    buo.contentDescription = description
+
+    // TODO add default url image when user is missing their profile pic
+    buo.contentMetadata.customMetadata[DeepLink.Constants.URI] = DeepLink.Constants.VenueKey + "/" + venueId
+
+    let lp: BranchLinkProperties = BranchLinkProperties()
+    lp.channel = "app"
+    lp.feature = "venue_sharing"
+
+    buo.getShortUrl(with: lp) { (url, error) in
+      callback(url,error)
+    }
+  }
+
   func createStoryDeepLink(story: FoodieStory, block callback: @escaping (String?, Error?)->Void ) {
 
     let buo = BranchUniversalObject(canonicalIdentifier: "content")
@@ -222,7 +260,7 @@ class DeepLink {
 
     guard let objectId = story.objectId else {
       CCLog.assert("the story is missing an object id")
-      callback(nil, ErrorCode.missingStoryId)
+      callback(nil, ErrorCode.missingId)
       return
     }
 

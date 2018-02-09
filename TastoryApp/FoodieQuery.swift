@@ -93,8 +93,11 @@ class FoodieQuery {
   private var lowerRightCoordiante: CLLocationCoordinate2D!
   private var originCoordinate: CLLocationCoordinate2D!
   private var radius: Double!  // In km
-  
-  // Parameters for filteringy by Category
+
+  // Parameters for filtering by Venue
+  private var  venue: String?
+
+  // Parameters for filtering by Category
   private var categories = [String]()
   
   // Parameters for filtering by Hour of Operation
@@ -267,7 +270,10 @@ class FoodieQuery {
     authors = users
   }
   
-  
+  func addVenueFilter(venueId: String) {
+    venue = venueId
+  }
+
   func setOwnStoriesAlso() {
     ownStoriesAlso = true
   }
@@ -407,7 +413,12 @@ class FoodieQuery {
       addedQueryMetric = true
       query.whereKey("priceTier", lessThanOrEqualTo: priceUpperLimit)
     }
-    
+
+    if let venueId = venue {
+      addedQueryMetric = true
+      query.whereKey("objectId", equalTo: venueId)
+    }
+
 //    if let hourOpen = hourOpen {
 //      addedQueryMetric = true
 //      CCLog.assert("Hours based query not implemented yet!")

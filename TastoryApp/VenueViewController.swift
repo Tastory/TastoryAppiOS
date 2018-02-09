@@ -1,40 +1,33 @@
 //
-//  ProfileViewController.swift
+//  VenueViewController.swift
 //  TastoryApp
 //
-//  Created by Howard Lee on 2017-10-09.
-//  Copyright © 2017 Tastory Lab Inc. All rights reserved.
+//  Created by Victor Tsang on 2018-02-07.
+//  Copyright © 2018 Tastry. All rights reserved.
 //
 
 import AsyncDisplayKit
 import SafariServices
 
-class ProfileViewController: OverlayViewController {
-
-  // MARK: - Types and Enumeration
-
-  enum LayoutType: Int {
-    case user
-    case venue
-  }
+class VenueViewController: OverlayViewController {
 
   // MARK: - Constants
-  
+
   struct Constants {
     static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.9
     static let StackShadowOffset = FoodieGlobal.Constants.DefaultUIShadowOffset
     static let StackShadowRadius = FoodieGlobal.Constants.DefaultUIShadowRadius
     static let StackShadowOpacity = FoodieGlobal.Constants.DefaultUIShadowOpacity
-    
+
     static let TopGradientBlackAlpha: CGFloat = 0.3
     static let BottomGradientBlackAlpha: CGFloat = 0.7
     static let UIDisappearanceDuration = FoodieGlobal.Constants.DefaultUIDisappearanceDuration
   }
-  
-  
-  
+
+
+
   // MARK: - Private Instance Variables
-  
+
   private var feedCollectionNodeController: FeedCollectionNodeController?
   private var mapNavController: MapNavController?
   private var avatarImageNode: ASNetworkImageNode!
@@ -43,22 +36,11 @@ class ProfileViewController: OverlayViewController {
 
   private var removeStoryList: [FoodieStory] = []
   private var updateStoryList: [FoodieStory] = []
-  
+
 
 
   // MARK: - Public Instance Variable
-  var user: FoodieUser? {
-    didSet {
-      layout = .user
-    }
-  }
-
-  var venue: FoodieVenue? {
-    didSet {
-      layout = .venue
-    }
-  }
-
+  var user: FoodieUser?
   var query: FoodieQuery?
   var stories = [FoodieStory]() {
     didSet {
@@ -66,11 +48,11 @@ class ProfileViewController: OverlayViewController {
       feedCollectionNodeController?.scrollTo(storyIndex: 0)
     }
   }
-  private var layout: LayoutType = .user
 
-  
+
+
   // MARK: - IBOutlet
-  
+
   @IBOutlet weak var feedContainerView: UIView!
   @IBOutlet weak var mapExposedView: UIView!
   @IBOutlet weak var topGradientBackground: UIView!
@@ -82,7 +64,7 @@ class ProfileViewController: OverlayViewController {
       }
     }
   }
-  
+
   @IBOutlet weak var profileUIView: UIView!
   @IBOutlet weak var emptyAvatarImageView: UIImageView!
   @IBOutlet weak var avatarFrameView: UIImageView!
@@ -96,11 +78,11 @@ class ProfileViewController: OverlayViewController {
   @IBOutlet weak var bioLabel: UILabel!
   @IBOutlet weak var noStoriesSelfImageView: UIImageView!
   @IBOutlet weak var noStoriesOthersImageView: UIImageView!
-  
-  
-  
+
+
+
   // MARK: - IBAction
-  
+
   @IBAction func settingsAction(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsNavViewController") as? SettingsNavViewController else {
@@ -122,71 +104,42 @@ class ProfileViewController: OverlayViewController {
       return
     }
 
-    if let user = user {
-      deepLink.createProfileDeepLink(user: user) { (url, error) in
-        if error != nil {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.fatal("An error occured when generating link \(error!.localizedDescription))")
-          }
-          return
-        }
-
-        guard let url = url else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.fatal("No link generated")
-          }
-          return
-        }
-
-        // button reference for ipad pop up controller anchoring
-        guard let button = sender as? UIButton else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.fatal("No link generated")
-          }
-          return
-        }
-
-        SharedDialog.showPopUp(url: url, fromVC: self, sender: button)
-      }
-    } else if let venue = venue {
-      deepLink.createVenueDeepLink(venue: venue) { (url, error) in
-        if error != nil {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.fatal("An error occured when generating link \(error!.localizedDescription))")
-          }
-          return
-        }
-
-        guard let url = url else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.fatal("No link generated")
-          }
-          return
-        }
-
-        // button reference for ipad pop up controller anchoring
-        guard let button = sender as? UIButton else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.fatal("No link generated")
-          }
-          return
-        }
-
-        SharedDialog.showPopUp(url: url, fromVC: self, sender: button)
-      }
-    } else {
+    guard let user = user else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Nothing was shared .....")
+        CCLog.fatal("User is nil")
       }
+      return
     }
 
+    deepLink.createProfileDeepLink(user: user) { (url, error) in
 
+      if error != nil {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("An error occured when generating link \(error!.localizedDescription))")
+        }
+        return
+      }
 
+      guard let url = url else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("No link generated")
+        }
+        return
+      }
 
+      // button reference for ipad pop up controller anchoring
+      guard let button = sender as? UIButton else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("No link generated")
+        }
+        return
+      }
 
+      SharedDialog.showPopUp(url: url, fromVC: self, sender: button)
+    }
   }
-  
-  
+
+
   @IBAction func websiteTapAction(_ sender: UITapGestureRecognizer) {
     if let websiteString = websiteLabel.text, let websiteUrl = URL(string: URL.addHttpIfNeeded(to: websiteString)) {
       CCLog.info("Opening Safari View for \(websiteUrl)")
@@ -195,16 +148,15 @@ class ProfileViewController: OverlayViewController {
       self.present(safariViewController, animated: true, completion: nil)
     }
   }
-  
-  
+
+
   @IBAction func backAction(_ sender: UIButton) {
     popDismiss(animated: true)
   }
-  
-  
-  
-  // MARK: - Private Instance Functions
 
+
+
+  // MARK: - Private Instance Functions
   @objc func updateFeed(_ notification: NSNotification) {
 
     guard let userInfo = notification.userInfo else {
@@ -232,7 +184,7 @@ class ProfileViewController: OverlayViewController {
     let workingStory = story as! FoodieStory
 
     if(actionStr == FoodieGlobal.RefreshFeedNotification.UpdateAction) {
-       updateStoryList.append(workingStory)
+      updateStoryList.append(workingStory)
     }
 
     if(actionStr == FoodieGlobal.RefreshFeedNotification.DeleteAction) {
@@ -247,20 +199,20 @@ class ProfileViewController: OverlayViewController {
 
   private func updateProfileMap(with story: FoodieStory) {
     let minMapWidth = mapNavController?.minMapWidth ?? MapNavController.Constants.DefaultMinMapWidth
-    
+
     if let venue = story.venue, venue.isDataAvailable {
       guard let location = venue.location else {
         CCLog.warning("Venue with no Location")
         return
       }
-      
+
       DispatchQueue.main.async {
         let coordinate = CLLocationCoordinate2DMake(location.latitude, location.longitude)
         let region = MKCoordinateRegionMakeWithDistance(coordinate, minMapWidth, minMapWidth)
-        
+
         self.mapNavController?.removeAllAnnotations()
         self.mapNavController?.showRegionExposed(region, animated: true)
-        
+
         // Add back if an annotation is requested
         if let name = venue.name {
           let annotation = StoryMapAnnotation(title: name, story: story, coordinate: region.center)
@@ -270,8 +222,8 @@ class ProfileViewController: OverlayViewController {
       }
     }
   }
-  
-  
+
+
   private func appearanceForAllUI(alphaValue: CGFloat, animated: Bool,
                                   duration: TimeInterval = FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
     if animated {
@@ -289,12 +241,23 @@ class ProfileViewController: OverlayViewController {
     }
   }
 
+
+
   // MARK: - View Controller Lifecycle
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
     NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: FoodieGlobal.RefreshFeedNotification.NotificationId), object: nil)
+
+
+    guard let user = user, user.isRegistered else {
+      AlertDialog.present(from: self, title: "Profile Error", message: "The specified user profile belongs to an unregistered user") { [unowned self] _ in
+        CCLog.assert("Entered Profile View but no valid registered user specified")
+        self.popDismiss(animated: true)
+      }
+      return
+    }
 
     settingsButton.imageView?.contentMode = .scaleAspectFit
     followButton.imageView?.contentMode = .scaleAspectFit
@@ -316,43 +279,12 @@ class ProfileViewController: OverlayViewController {
     profileUIView.layer.shadowRadius = Constants.StackShadowRadius
     profileUIView.layer.shadowOpacity = Constants.StackShadowOpacity
 
-
+    // Query everything by this user
     query = FoodieQuery()
-
-    if layout == .venue {
-      guard let venue = venue else {
-        AlertDialog.present(from: self, title: "Profile Error", message: "The specified restaurant page doesn't exist") { [unowned self] _ in
-          CCLog.assert("Entered Profile View but no valid venue found")
-          self.popDismiss(animated: true)
-        }
-        return
-      }
-
-      guard let venueObjId = venue.objectId else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain)  { [unowned self] _ in
-          CCLog.assert("FoodieVenue is missing object id")
-          self.popDismiss(animated: true)
-        }
-        return
-      }
-
-      query!.addVenueFilter(venueId: venueObjId)
-    } else {
-      guard let user = user, user.isRegistered else {
-        AlertDialog.present(from: self, title: "Profile Error", message: "The specified user profile belongs to an unregistered user") { [unowned self] _ in
-          CCLog.assert("Entered Profile View but no valid registered user specified")
-          self.popDismiss(animated: true)
-        }
-        return
-      }
-
-      // Query everything by this user
-      query!.addAuthorsFilter(users: [user])
-    }
+    query!.addAuthorsFilter(users: [user])
 
     query!.setSkip(to: 0)
     query!.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)
-
     _ = query!.addArrangement(type: .creationTime, direction: .descending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determines feed order
 
     activitySpinner = ActivitySpinner(addTo: view)
@@ -378,7 +310,7 @@ class ProfileViewController: OverlayViewController {
 
       // Show empty message if applicable
       if stories.count <= 0 {
-        if self.layout == .user , self.user === FoodieUser.current {
+        if user === FoodieUser.current {
           self.noStoriesSelfImageView.isHidden = false
           self.noStoriesOthersImageView.isHidden = true
           self.feedContainerView.isHidden = true
@@ -400,118 +332,86 @@ class ProfileViewController: OverlayViewController {
         }
       }
     }
+
     appearanceForAllUI(alphaValue: 0.0, animated: false)
   }
-  
-  
+
+
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
 
-    if(layout == .venue) {
-      guard let venue = venue else {
-        AlertDialog.present(from: self, title: "Profile Error", message: "The specified restaurant page doesn't exist") { [unowned self] _ in
-          CCLog.assert("Entered Profile View but no valid venue found")
-          self.popDismiss(animated: true)
-        }
-        return
+    guard let user = user, user.isRegistered else {
+      AlertDialog.present(from: self, title: "Profile Error", message: "The specified user profile belongs to an unregistered user") { [unowned self] _ in
+        CCLog.assert("Entered Profile View but no valid registered user specified")
+        self.popDismiss(animated: true)
       }
+      return
+    }
 
-      emptyAvatarImageView.isHidden = false
-      usernameLabel.isHidden = true
-
-      if let fullname = venue.name?.trimmingCharacters(in: .whitespacesAndNewlines), fullname != "" {
-        fullnameLabel.text = fullname
+    if let avatarFileName = user.profileMediaFileName {
+      if let mediaTypeString = user.profileMediaType, let mediaType = FoodieMediaType(rawValue: mediaTypeString), mediaType == .photo {
+        // Only Photo Avatars are supported at the moment
+        avatarImageNode!.url = FoodieFileObject.getS3URL(for: avatarFileName)
+        emptyAvatarImageView.isHidden = true
       } else {
-        fullnameLabel.isHidden = true
-      }
-
-      if let websiteUrl = venue.venueURL?.trimmingCharacters(in: .whitespacesAndNewlines), websiteUrl != "" {
-        websiteLabel.text = websiteUrl
-      } else {
-        websiteLabel.isHidden = true
-      }
-
-      shareButton.isHidden = false
-
-      // Hide all the other buttons for now
-      settingsButton.isHidden = true
-      followButton.isHidden = true
-      filterButton.isHidden = true
-      bioLabel.isHidden = true
-
-    } else {
-      guard let user = user, user.isRegistered else {
-        AlertDialog.present(from: self, title: "Profile Error", message: "The specified user profile belongs to an unregistered user") { [unowned self] _ in
-          CCLog.assert("Entered Profile View but no valid registered user specified")
-          self.popDismiss(animated: true)
-        }
-        return
-      }
-
-      if let avatarFileName = user.profileMediaFileName {
-        if let mediaTypeString = user.profileMediaType, let mediaType = FoodieMediaType(rawValue: mediaTypeString), mediaType == .photo {
-          // Only Photo Avatars are supported at the moment
-          avatarImageNode!.url = FoodieFileObject.getS3URL(for: avatarFileName)
-          emptyAvatarImageView.isHidden = true
-        } else {
-          CCLog.warning("Unsupported Avatar Media Type - \(user.profileMediaType ?? "Media Type == nil")")
-          emptyAvatarImageView.isHidden = false
-        }
-      } else {
+        CCLog.warning("Unsupported Avatar Media Type - \(user.profileMediaType ?? "Media Type == nil")")
         emptyAvatarImageView.isHidden = false
       }
-
-      guard let username = user.username else {
-        AlertDialog.present(from: self, title: "User Error", message: "User has no username. Please try another user") { _ in
-          CCLog.assert("A user does not have a username")
-        }
-        return
-      }
-
-      if let fullname = user.fullName?.trimmingCharacters(in: .whitespacesAndNewlines), fullname != "" {
-        fullnameLabel.text = fullname
-        usernameLabel.text = "@ \(username)"
-      } else {
-        fullnameLabel.text = "@ \(username)"
-        usernameLabel.isHidden = true
-      }
-
-      if let websiteUrl = user.url?.trimmingCharacters(in: .whitespacesAndNewlines), websiteUrl != "" {
-        websiteLabel.text = websiteUrl
-      } else {
-        websiteLabel.isHidden = true
-      }
-
-      if let biography = user.biography?.trimmingCharacters(in: .whitespacesAndNewlines), biography != "" {
-        bioLabel.text = biography
-      } else {
-        bioLabel.isHidden = true
-      }
-
-      if user === FoodieUser.current {
-        settingsButton.isHidden = false
-      } else {
-        settingsButton.isHidden = true
-      }
-
-      shareButton.isHidden = false
-
-      // Hide all the other buttons for now
-      followButton.isHidden = true
-      filterButton.isHidden = true
+    } else {
+      emptyAvatarImageView.isHidden = false
     }
+
+
+    guard let username = user.username else {
+      AlertDialog.present(from: self, title: "User Error", message: "User has no username. Please try another user") { _ in
+        CCLog.assert("A user does not have a username")
+      }
+      return
+    }
+
+    if let fullname = user.fullName?.trimmingCharacters(in: .whitespacesAndNewlines), fullname != "" {
+      fullnameLabel.text = fullname
+      usernameLabel.text = "@ \(username)"
+    } else {
+      fullnameLabel.text = "@ \(username)"
+      usernameLabel.isHidden = true
+    }
+
+    if let websiteUrl = user.url?.trimmingCharacters(in: .whitespacesAndNewlines), websiteUrl != "" {
+      websiteLabel.text = websiteUrl
+    } else {
+      websiteLabel.isHidden = true
+    }
+
+    if let biography = user.biography?.trimmingCharacters(in: .whitespacesAndNewlines), biography != "" {
+      bioLabel.text = biography
+    } else {
+      bioLabel.isHidden = true
+    }
+
+    if user === FoodieUser.current {
+      settingsButton.isHidden = false
+    } else {
+      settingsButton.isHidden = true
+    }
+
+    shareButton.isHidden = false
+
+    // Hide all the other buttons for now
+    followButton.isHidden = true
+    filterButton.isHidden = true
   }
-  
-  
+
+
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-    
+
     if isInitialLayout {
       isInitialLayout = false
       let nodeController = FeedCollectionNodeController(with: .mosaic,
                                                         offsetBy: MosaicCollectionViewLayout.Constants.DefaultFeedNodeMargin, //profileUIView.bounds.height,
-                                                        allowLayoutChange: false,
-                                                        adjustScrollViewInset: true)
+        allowLayoutChange: false,
+        adjustScrollViewInset: true)
       nodeController.storyArray = stories
       nodeController.delegate = self
       nodeController.deepLinkStoryId = DeepLink.global.deepLinkStoryId
@@ -527,22 +427,22 @@ class ProfileViewController: OverlayViewController {
       nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
       nodeController.didMove(toParentViewController: self)
       feedCollectionNodeController = nodeController
-      
-      
+
+
       // Layout the Avatar Image Node
       avatarImageNode.frame = avatarFrameView.frame.insetBy(dx: 2.0, dy: 2.0)
-      
+
       // Mask the avatar
       guard let maskImage = UIImage(named: "Profile-BloatedSquareMask") else {
         CCLog.fatal("Cannot get at Profile-BloatedSquareMask in Resource Bundle")
       }
-      
+
       let maskLayer = CALayer()
       maskLayer.contents = maskImage.cgImage
       maskLayer.frame = avatarImageNode.bounds
       avatarImageNode.layer.mask = maskLayer
-      
-      
+
+
       // Setup Background Gradient Views
       let topBackgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.TopGradientBlackAlpha)
       let topGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
@@ -552,7 +452,7 @@ class ProfileViewController: OverlayViewController {
       topGradientNode.frame = topGradientBackground.bounds
       topGradientBackground.addSubnode(topGradientNode)
       topGradientBackground.sendSubview(toBack: topGradientNode.view)
-      
+
       let bottomBackgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.BottomGradientBlackAlpha)
       let bottomGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
                                             endingAt: CGPoint(x: 0.5, y: 0.0),
@@ -563,8 +463,8 @@ class ProfileViewController: OverlayViewController {
       feedContainerView.sendSubview(toBack: bottomGradientNode.view)
     }
   }
-  
-  
+
+
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
 
@@ -574,25 +474,25 @@ class ProfileViewController: OverlayViewController {
       }
       return
     }
-    
+
     mapNavController = mapController
     //mapController.mapDelegate = self
 
     if let mapExposedView = mapExposedView {
       mapController.setExposedRect(with: mapExposedView)
     }
-    
+
     if let touchForwardingView = touchForwardingView {
       touchForwardingView.passthroughViews = [mapController.mapView]
     }
-    
+
     guard let feedCollectionNodeController = feedCollectionNodeController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Expected FeedCollectionNodeController")
       }
       return
     }
-    
+
     if let storyIndex = feedCollectionNodeController.highlightedStoryIndex, storyIndex < stories.count {
       updateProfileMap(with: stories[storyIndex])
     }
@@ -600,7 +500,7 @@ class ProfileViewController: OverlayViewController {
     if(stories.count == 0) {
       mapController.removeAllAnnotations()
     }
-    
+
     appearanceForAllUI(alphaValue: 1.0, animated: true)
 
     if(removeStoryList.count > 0) {
@@ -647,22 +547,22 @@ class ProfileViewController: OverlayViewController {
     appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
     mapNavController = nil
   }
-  
-  
+
+
   override var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
   }
-  
-  
+
+
   override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
     return .fade
   }
-  
+
 }
 
 
-extension ProfileViewController: FeedCollectionNodeDelegate {
-  
+extension VenueViewController: FeedCollectionNodeDelegate {
+
   func collectionNodeDidStopScrolling() {
 
     guard let feedCollectionNodeController = feedCollectionNodeController else {
@@ -675,10 +575,11 @@ extension ProfileViewController: FeedCollectionNodeDelegate {
     if let storyIndex = feedCollectionNodeController.highlightedStoryIndex, storyIndex < stories.count {
       updateProfileMap(with: stories[storyIndex])
     }
-    
+
     // Do Prefetching
     let storiesIndexes = feedCollectionNodeController.getStoryIndexesVisible(forOver: Constants.PercentageOfStoryVisibleToStartPrefetch)
     let storiesShouldPrefetch = storiesIndexes.map { stories[$0] }
     FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
   }
 }
+
