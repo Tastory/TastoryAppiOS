@@ -454,11 +454,19 @@ class StoryViewController: OverlayViewController {
   
   
   private func installUIForVideo() {
+
+    guard let story = viewingStory else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.assert("Unexpected, viewingStory = nil")
+      }
+      return
+    }
+
     updateAVMute(audioControl: AudioControl.global)
     pauseButton.isHidden = isPaused  // isLikelyToKeepUp can be called when paused, so UI update needs to be correct for that
     playButton.isHidden = !isPaused
     venueButton.isHidden = false
-    shareButton.isHidden = false
+    shareButton.isHidden = (story.objectId == nil)
     authorButton.isHidden = false
     reactionStack.isHidden = false
     displaySwipeStackIfNeeded()
@@ -493,7 +501,14 @@ class StoryViewController: OverlayViewController {
         }
         return
       }
-      
+
+      guard let story = viewingStory else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.assert("Unexpected, viewingStory = nil")
+        }
+        return
+      }
+
       // Display the Photo
       photoView.contentMode = .scaleAspectFill
       photoView.image = UIImage(data: imageBuffer)
@@ -502,7 +517,7 @@ class StoryViewController: OverlayViewController {
       // UI Update - Really should group some of the common UI stuff into some sort of function?
       pauseButton.isHidden = false
       venueButton.isHidden = false
-      shareButton.isHidden = false
+      shareButton.isHidden = (story.objectId == nil)
       authorButton.isHidden = false
       reactionStack.isHidden = false
       displaySwipeStackIfNeeded()

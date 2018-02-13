@@ -310,5 +310,6 @@ class DeepLink {
   static func clearDeepLinkInfo() {
     DeepLink.global.deepLinkUserId = nil
     DeepLink.global.deepLinkStoryId = nil
+    DeepLink.global.deepLinkVenueId = nil
   }
 }
