@@ -94,12 +94,12 @@
                                         <rect key="frame" x="122.33333333333333" y="-3" width="237.66666666666669" height="51"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t0a-m1-CUw" userLabel="Follow Button">
-                                                <rect key="frame" x="0.0" y="9.6666666666666856" width="59.333333333333336" height="32"/>
+                                                <rect key="frame" x="0.0" y="9.6666666666666856" width="52" height="32"/>
                                                 <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
                                                 <state key="normal" image="Profile-FollowButton"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="McO-aB-Dhs" userLabel="Settings Button">
-                                                <rect key="frame" x="62.333333333333321" y="9.6666666666666856" width="65.666666666666686" height="32"/>
+                                                <rect key="frame" x="55.000000000000014" y="9.6666666666666856" width="57.333333333333329" height="32"/>
                                                 <accessibility key="accessibilityConfiguration" identifier="profileView_settingsButton"/>
                                                 <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
                                                 <state key="normal" image="Profile-SettingsButton"/>
@@ -108,7 +108,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A6M-OE-cb5" userLabel="Share Button">
-                                                <rect key="frame" x="131" y="9.6666666666666856" width="54" height="32"/>
+                                                <rect key="frame" x="115.33333333333333" y="9.6666666666666856" width="47.333333333333329" height="32"/>
                                                 <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
                                                 <state key="normal" image="Profile-ShareButton"/>
                                                 <connections>
@@ -116,9 +116,16 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rZt-p7-VAc" userLabel="Filter Button">
-                                                <rect key="frame" x="188" y="9.6666666666666856" width="49.666666666666657" height="32"/>
+                                                <rect key="frame" x="165.66666666666669" y="9.6666666666666856" width="44.333333333333343" height="32"/>
                                                 <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
                                                 <state key="normal" image="Profile-FilterButton"/>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ksB-Cc-mso">
+                                                <rect key="frame" x="213" y="10.666666666666686" width="24.666666666666657" height="30"/>
+                                                <state key="normal" title="More"/>
+                                                <connections>
+                                                    <action selector="moreAction:" destination="Mls-rg-2Ue" eventType="touchUpInside" id="IhX-Af-vs6"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                     </stackView>
@@ -244,6 +251,7 @@
                         <outlet property="followButton" destination="t0a-m1-CUw" id="pN1-aq-CAE"/>
                         <outlet property="fullnameLabel" destination="hM8-0o-Mjt" id="nve-qQ-gTP"/>
                         <outlet property="mapExposedView" destination="zzE-Jd-3Do" id="eaC-LW-lEb"/>
+                        <outlet property="moreButton" destination="ksB-Cc-mso" id="8Ql-xv-Yo9"/>
                         <outlet property="noStoriesOthersImageView" destination="ETg-wA-zyO" id="Lwf-1E-Rzx"/>
                         <outlet property="noStoriesSelfImageView" destination="AMX-lO-lJU" id="aXT-YF-63z"/>
                         <outlet property="profileUIView" destination="Zwc-TB-L9A" id="kEg-uY-4py"/>

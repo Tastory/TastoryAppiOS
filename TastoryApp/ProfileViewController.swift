@@ -96,11 +96,102 @@ class ProfileViewController: OverlayViewController {
   @IBOutlet weak var bioLabel: UILabel!
   @IBOutlet weak var noStoriesSelfImageView: UIImageView!
   @IBOutlet weak var noStoriesOthersImageView: UIImageView!
-  
+  @IBOutlet weak var moreButton: UIButton!
+
   
   
   // MARK: - IBAction
-  
+  @IBAction func moreAction(_ sender: UIButton) {
+
+    guard let venue = venue else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Venue is nil")
+      }
+      return
+    }
+
+    guard let location = venue.location else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Location is missing from venue")
+      }
+      return
+    }
+
+    guard let venueName = venue.name else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("The venue name is missing")
+      }
+      return
+    }
+
+    let fourSquareButton =
+      UIAlertAction(title: "Foursquare", comment: "Button for viewing info at foursquare", style: .default) { (UIAlertAction) -> Void in
+        guard let urlStr = venue.foursquareURL else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("foursquare url is nil")
+          }
+          return
+        }
+
+        guard let fourSquareURL = URL(string: urlStr) else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("An error occurred when generating the foursquare url")
+          }
+          return
+        }
+        UIApplication.shared.open(fourSquareURL)
+    }
+
+    let googleButton =
+      UIAlertAction(title: "Google Maps", comment: "Button for viewing info at google", style: .default) { (UIAlertAction) -> Void in
+        guard let escapedVenueName:String = venueName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("An error occurred when generating the google url")
+          }
+          return
+        }
+        let url =  "https://www.google.ca/maps/search/\(escapedVenueName)/@\(location.latitude),\(location.longitude),15z"
+
+        guard let googleURL = URL(string: url) else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("An error occurred when generating the google map url")
+          }
+          return
+        }
+        UIApplication.shared.open(googleURL)
+    }
+
+    let yelpButton =
+      UIAlertAction(title: "Yelp", comment: "Button for viewing info at yelp", style: .default) { (UIAlertAction) -> Void in
+        var components = URLComponents(string: "https://www.yelp.ca/search")!
+        components.queryItems = [
+          URLQueryItem(name: "find_desc",       value: venueName),
+          URLQueryItem(name: "l", value: "a:\(location.latitude),\(location.longitude)0000001,55")
+        ]
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        guard let yelpURL = components.url else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("An error occurred when generating the yelp url")
+          }
+          return
+        }
+        UIApplication.shared.open(yelpURL)
+    }
+
+    let actionSheet = UIAlertController(title: "More information at",
+                                        titleComment: "Title for more information dialog",
+                                        message: nil, messageComment: nil,
+                                        preferredStyle: .actionSheet)
+
+    actionSheet.addAction(fourSquareButton)
+    actionSheet.addAction(googleButton)
+    actionSheet.addAction(yelpButton)
+    actionSheet.addAlertAction(title: "Cancel",
+                               comment: "Action Sheet button for Cancelling more information action",
+                               style: .cancel)
+    self.present(actionSheet, animated: true, completion: nil)
+  }
+
   @IBAction func settingsAction(_ sender: UIButton) {
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SettingsNavViewController") as? SettingsNavViewController else {
@@ -300,6 +391,7 @@ class ProfileViewController: OverlayViewController {
     followButton.imageView?.contentMode = .scaleAspectFit
     shareButton.imageView?.contentMode = .scaleAspectFit
     filterButton.imageView?.contentMode = .scaleAspectFit
+    moreButton.imageView?.contentMode = .scaleAspectFit
 
     // Add the Avatar Image Node first
     avatarImageNode = ASNetworkImageNode()
@@ -432,6 +524,7 @@ class ProfileViewController: OverlayViewController {
       }
 
       shareButton.isHidden = false
+      moreButton.isHidden = (layout == .user)
 
       // Hide all the other buttons for now
       settingsButton.isHidden = true
@@ -495,6 +588,7 @@ class ProfileViewController: OverlayViewController {
       }
 
       shareButton.isHidden = false
+      moreButton.isHidden = (layout == .user)
 
       // Hide all the other buttons for now
       followButton.isHidden = true
