@@ -23,6 +23,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var discoverability: UInt
   @NSManaged var discoverable: Bool // Is the story discoverable to everyone (but the author)
   @NSManaged var reputation: ReputableStory?
+  @NSManaged var mealType: Array<String>?
   
   
   

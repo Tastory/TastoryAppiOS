@@ -182,6 +182,7 @@
 		AAC2EB27F47832B1F91B7920 /* EarlGrey.framework in EarlGrey Copy Files */ = {isa = PBXBuildFile; fileRef = CB67F7DCE9A416DA5EC3C0F1 /* EarlGrey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		B0FF18F4BACC331B318AB032 /* Pods_TastoryAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 519C816C3C28868A0918469A /* Pods_TastoryAppUITests.framework */; };
 		B2FE476EB1FA0084987DC0AA /* Pods_TastoryAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F167D49474BA676974C7DE38 /* Pods_TastoryAppTests.framework */; };
+		C207A7C320376334001D7588 /* MealTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C207A7C220376334001D7588 /* MealTableViewController.swift */; };
 		C229DCB01FDE781300955243 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C229DCAF1FDE781300955243 /* Date+Extension.swift */; };
 		C24F69651EB85B0300A0DB7B /* StoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69641EB85B0300A0DB7B /* StoryViewController.swift */; };
 		C265A9C81FCE981D000678E5 /* VideoTrimmerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C265A9C71FCE981D000678E5 /* VideoTrimmerViewController.swift */; };
@@ -418,6 +419,7 @@
 		8CF858651F7ED8A000C46614 /* IntroViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroViewController.swift; sourceTree = "<group>"; };
 		8CFC4A1D1E99DED700A8C9CE /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		AE76D5E53CE9A8106E4C7AA0 /* Pods-TastoryAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastoryAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TastoryAppTests/Pods-TastoryAppTests.debug.xcconfig"; sourceTree = "<group>"; };
+		C207A7C220376334001D7588 /* MealTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealTableViewController.swift; sourceTree = "<group>"; };
 		C20FF85120142BA5009F2114 /* TastoryApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TastoryApp.entitlements; sourceTree = "<group>"; };
 		C229DCAF1FDE781300955243 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
 		C24F69641EB85B0300A0DB7B /* StoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryViewController.swift; sourceTree = "<group>"; };
@@ -796,6 +798,7 @@
 				8CE6B8861EA9864800D454A9 /* StoryEntryViewController.swift */,
 				8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */,
 				8C3254A41F40240900895572 /* VenueTableViewController.swift */,
+				C207A7C220376334001D7588 /* MealTableViewController.swift */,
 			);
 			name = Compose;
 			sourceTree = "<group>";
@@ -1542,6 +1545,7 @@
 				8C53FE961FE0AFD8003AEF77 /* ServiceTermsViewController.swift in Sources */,
 				8CF40C5D1FC50BC200615D43 /* DiscoverViewController.swift in Sources */,
 				8CD02DB91FB96A4C00768CF8 /* CGRect+Extension.swift in Sources */,
+				C207A7C320376334001D7588 /* MealTableViewController.swift in Sources */,
 				8CE5711B1FDB393D0023F4C7 /* FiltersViewController.swift in Sources */,
 				8C53FE921FE0AE5F003AEF77 /* PrivacyPolicyViewController.swift in Sources */,
 				8C56A9161FA19E6200D3204B /* URL+Extension.swift in Sources */,
@@ -1822,7 +1826,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.Master;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.VictorTsang;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1849,7 +1853,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/TastoryApp/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.Master;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.VictorTsang;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

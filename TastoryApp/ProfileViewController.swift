@@ -183,6 +183,28 @@ class ProfileViewController: OverlayViewController {
                                         message: nil, messageComment: nil,
                                         preferredStyle: .actionSheet)
 
+
+    if venue.venueURL != nil {
+      // add website button 
+      let websiteButton =  UIAlertAction(title: "Website", comment: "Button for viewing info at restaurant's website", style: .default) { (UIAlertAction) -> Void in
+        guard let urlStr = venue.venueURL else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("venue website url is nil")
+          }
+          return
+        }
+
+        guard let websiteURL = URL(string: urlStr) else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("An error occurred when generating the foursquare url")
+          }
+          return
+        }
+        UIApplication.shared.open(websiteURL)
+      }
+      actionSheet.addAction(websiteButton)
+    }
+
     actionSheet.addAction(fourSquareButton)
     actionSheet.addAction(googleButton)
     actionSheet.addAction(yelpButton)

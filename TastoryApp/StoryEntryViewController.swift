@@ -73,6 +73,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     }
   }
   
+  @IBOutlet weak var mealButton: UIButton!
+  @IBOutlet weak var mealIcon: UIButton!
   @IBOutlet weak var momentCellView: UIView!
   @IBOutlet weak var titleIcon: UIButton!
   @IBOutlet weak var titleTextField: UITextField?
@@ -136,6 +138,28 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           self.popDismiss(animated: true)
         }
     }
+  }
+
+  @IBAction func mealClicked(_ sender: Any) {
+    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MealTableViewController") as? MealTableViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of MealTableViewController Class!!")
+      }
+      return
+    }
+
+    guard let story = workingStory else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("workingStory is nil")
+      }
+      return
+    }
+
+    viewController.mealType = story.mealType
+    viewController.delegate = self
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
+    pushPresent(viewController, animated: true)
   }
 
   @IBAction func venueClicked(_ sender: UIButton) {
@@ -361,8 +385,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     story.swipeMessage = text
     FoodieStory.preSave(nil, withBlock: nil)
   }
-  
-  
+
   @IBAction func backAction(_ sender: UIButton) {
     guard let story = self.workingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
@@ -378,7 +401,32 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   
   
   // MARK: - Private Instance Functions
-  
+
+  private func displayMealLabel(selectedMeals: [String]) {
+    var mealStr = ""
+
+    if selectedMeals.isEmpty {
+      mealStr = "Meal"
+      DispatchQueue.main.async {
+        self.mealButton?.setTitle(mealStr, for: .normal)
+        self.mealButton?.alpha = 0.3
+        self.mealIcon?.alpha = 0.3
+      }
+    } else {
+      for meal in selectedMeals {
+        if(!mealStr.isEmpty) {
+          mealStr = mealStr + ", "
+        }
+        mealStr = mealStr + meal
+      }
+      DispatchQueue.main.async {
+        self.mealButton?.setTitle(mealStr, for: .normal)
+        self.mealButton?.alpha = 1.0
+        self.mealIcon?.alpha = 1.0
+      }
+    }
+  }
+
   private func askDiscardAndDismiss() {
     guard let story = self.workingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal)
@@ -636,7 +684,12 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         venueButton?.alpha = 0.3
         venueIcon?.alpha = 0.3
       }
-      
+
+      if workingStory.mealType == nil {
+        workingStory.mealType = []
+      }
+      displayMealLabel(selectedMeals: workingStory.mealType!)
+
       if let storyURL = workingStory.storyURL, storyURL != "" {
         linkTextField?.text = storyURL
         linkIcon.alpha = 1.0
@@ -950,4 +1003,18 @@ extension StoryEntryViewController: MarkupReturnDelegate {
   }
 }
 
+extension StoryEntryViewController: MealReturnDelegate {
+  func completedSelection(selectedMeals: [String]) {
 
+    // assign selection back to story
+    guard let story = workingStory else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("workingStory is nil")
+      }
+      return
+    }
+
+    story.mealType = selectedMeals
+    displayMealLabel(selectedMeals: selectedMeals)
+  }
+}
