@@ -561,13 +561,14 @@ class ProfileViewController: OverlayViewController {
         websiteLabel.isHidden = true
       }
 
-      if let openHour = venue.hours {
-        //let day: Int = (Calendar.current.component(.weekday, from: Date()) + 5 ) % 7
-        let day: Int = 2
 
+      var hourStr = ""
+      if let openHour = venue.hours {
+        let day: Int = (Calendar.current.component(.weekday, from: Date()) + 5 ) % 7
+    
         if day < openHour.count {
           let hours = openHour[day]
-          var hourStr = ""
+
           for hour in hours {
             if let startTime = hour["start"] as? Int64, let endTime = hour["end"] as? Int64 {
               if !hourStr.isEmpty {
@@ -583,13 +584,13 @@ class ProfileViewController: OverlayViewController {
               hourStr = hourStr + "\(startTimeStr) ~ \(endTimeStr)"
             }
           }
-
-          if hourStr.isEmpty {
-            bioLabel.isHidden = true
-          } else {
-            bioLabel.text = "Opening hours: " + hourStr
-          }
         }
+      }
+
+      if hourStr.isEmpty {
+        bioLabel.isHidden = true
+      } else {
+        bioLabel.text = "Opening hours: " + hourStr
       }
 
       shareButton.isHidden = false
