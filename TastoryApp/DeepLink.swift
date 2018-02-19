@@ -209,7 +209,7 @@ class DeepLink {
     }
   }
 
-  func createVenueDeepLink(venue: FoodieVenue, block callback: @escaping (String?, Error?)->Void ) {
+  func createVenueDeepLink(venue: FoodieVenue, thumbnailURL: String, block callback: @escaping (String?, Error?)->Void ) {
     let buo = BranchUniversalObject(canonicalIdentifier: "content")
 
     guard let venueId = venue.objectId else {
@@ -219,7 +219,7 @@ class DeepLink {
     }
 
     var title = ""
-    var description = "See tasty stories curated by "
+    var description = "See tasty stories of "
 
     if let venueName = venue.name {
       title += venueName
@@ -232,6 +232,7 @@ class DeepLink {
 
     // TODO add default url image when user is missing their profile pic
     buo.contentMetadata.customMetadata[DeepLink.Constants.URI] = DeepLink.Constants.VenueKey + "/" + venueId
+    buo.imageUrl = thumbnailURL
 
     let lp: BranchLinkProperties = BranchLinkProperties()
     lp.channel = "app"

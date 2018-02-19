@@ -261,8 +261,16 @@ class ProfileViewController: OverlayViewController {
 
         SharedDialog.showPopUp(url: url, fromVC: self, sender: button)
       }
-    } else if let venue = venue {
-      deepLink.createVenueDeepLink(venue: venue) { (url, error) in
+    } else if venue != nil && stories.count > 0 {
+
+      guard let mediaName = stories[0].thumbnailFileName else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("Failed to get thumbnail of the first story")
+        }
+        return
+      }
+
+      deepLink.createVenueDeepLink(venue: venue!, thumbnailURL: FoodieFileObject.getS3URL(for: mediaName).absoluteString) { (url, error) in
         if error != nil {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.fatal("An error occured when generating link \(error!.localizedDescription))")
