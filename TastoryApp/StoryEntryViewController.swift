@@ -420,7 +420,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     var mealStr = ""
 
     if selectedMeals.isEmpty {
-      mealStr = "Meal"
+      mealStr = "Meal Type"
       DispatchQueue.main.async {
         self.mealButton?.setTitle(mealStr, for: .normal)
         self.mealButton?.alpha = 0.3
@@ -694,7 +694,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         venueButton?.alpha = 1.0
         venueIcon?.alpha = 1.0
       } else {
-        venueButton?.setTitle("Venue", for: .normal)
+        venueButton?.setTitle("Venue (Required)", for: .normal)
         venueButton?.alpha = 0.3
         venueIcon?.alpha = 0.3
       }
