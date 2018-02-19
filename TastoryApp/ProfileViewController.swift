@@ -164,10 +164,33 @@ class ProfileViewController: OverlayViewController {
     let yelpButton =
       UIAlertAction(title: "Yelp", comment: "Button for viewing info at yelp", style: .default) { (UIAlertAction) -> Void in
         var components = URLComponents(string: "https://www.yelp.ca/search")!
-        components.queryItems = [
-          URLQueryItem(name: "find_desc",       value: venueName),
-          URLQueryItem(name: "l", value: "a:\(location.latitude),\(location.longitude)0000001,55")
+
+        var queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "find_desc",       value: venueName)
         ]
+
+        if let city = venue.city {
+          var nearBy:String = city
+
+          if let state = venue.state {
+            if !nearBy.isEmpty {
+              nearBy = nearBy + ", "
+            }
+            nearBy = nearBy + state
+          }
+
+          if let country = venue.country {
+            if !nearBy.isEmpty {
+              nearBy = nearBy + ", "
+            }
+            nearBy = nearBy + country
+          }
+          queryItems.append(URLQueryItem(name: "find_loc", value: "\(nearBy)"))
+        } else {
+          queryItems.append(URLQueryItem(name: "l", value: "a:\(location.latitude),\(location.longitude)0000001,55"))
+        }
+
+        components.queryItems = queryItems
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         guard let yelpURL = components.url else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in

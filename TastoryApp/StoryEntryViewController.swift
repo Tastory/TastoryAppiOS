@@ -156,7 +156,21 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       return
     }
 
-    viewController.mealType = story.mealType
+    var mealTypeEnum: [MealType] = []
+
+    if let mealType = story.mealType{
+      for type in mealType {
+        guard let typeEnum = MealType(rawValue: type) else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("Failed to initialize meal type enum")
+          }
+          return
+        }
+        mealTypeEnum.append(typeEnum)
+      }
+    }
+
+    viewController.mealType = mealTypeEnum
     viewController.delegate = self
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
@@ -1004,7 +1018,7 @@ extension StoryEntryViewController: MarkupReturnDelegate {
 }
 
 extension StoryEntryViewController: MealReturnDelegate {
-  func completedSelection(selectedMeals: [String]) {
+  func completedSelection(selectedMeals: [MealType]) {
 
     // assign selection back to story
     guard let story = workingStory else {
@@ -1014,7 +1028,13 @@ extension StoryEntryViewController: MealReturnDelegate {
       return
     }
 
-    story.mealType = selectedMeals
-    displayMealLabel(selectedMeals: selectedMeals)
+    var mealTypeStr: [String] = []
+
+    for meal in selectedMeals {
+      mealTypeStr.append(meal.rawValue)
+    }
+
+    story.mealType = mealTypeStr
+    displayMealLabel(selectedMeals: mealTypeStr)
   }
 }

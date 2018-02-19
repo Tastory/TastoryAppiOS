@@ -482,8 +482,48 @@
                                                     <constraint firstAttribute="height" constant="1" id="Ug0-HM-dff"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wgh-d7-Bsk" userLabel="Swipe Link Cell">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qiJ-qA-UmO" userLabel="Meal Cell">
                                                 <rect key="frame" x="0.0" y="341" width="375" height="44"/>
+                                                <subviews>
+                                                    <button opaque="NO" userInteractionEnabled="NO" alpha="0.30000001192092896" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6T0-JO-tTk">
+                                                        <rect key="frame" x="15" y="10" width="24" height="24"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="24" id="raC-Xa-b5o"/>
+                                                        </constraints>
+                                                        <state key="normal" title="Button" image="Entry-Meal"/>
+                                                    </button>
+                                                    <button opaque="NO" alpha="0.30000001192092896" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MSB-EG-VKw">
+                                                        <rect key="frame" x="49" y="7" width="311" height="29"/>
+                                                        <accessibility key="accessibilityConfiguration" identifier="storyEntryView_venueButton"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
+                                                        <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <state key="normal" title="Meal Type">
+                                                            <color key="titleColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="mealClicked:" destination="qja-VH-rV7" eventType="touchUpInside" id="H3y-Ee-8dz"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="trailing" secondItem="MSB-EG-VKw" secondAttribute="trailing" constant="15" id="0cA-2X-lbx"/>
+                                                    <constraint firstItem="6T0-JO-tTk" firstAttribute="centerY" secondItem="qiJ-qA-UmO" secondAttribute="centerY" id="ID1-br-Xyv"/>
+                                                    <constraint firstItem="6T0-JO-tTk" firstAttribute="trailing" secondItem="MSB-EG-VKw" secondAttribute="leading" constant="-10" id="NR9-Mw-rgH"/>
+                                                    <constraint firstAttribute="height" constant="44" id="Ng5-Qq-Mw5"/>
+                                                    <constraint firstItem="MSB-EG-VKw" firstAttribute="centerY" secondItem="qiJ-qA-UmO" secondAttribute="centerY" id="cUE-3o-OXg"/>
+                                                    <constraint firstItem="6T0-JO-tTk" firstAttribute="leading" secondItem="qiJ-qA-UmO" secondAttribute="leading" constant="15" id="fTN-uj-ikp"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="z3K-Sz-WWR" userLabel="Line">
+                                                <rect key="frame" x="0.0" y="385" width="375" height="1"/>
+                                                <color key="backgroundColor" red="0.91372549020000005" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="1" id="W6a-HI-VpN"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wgh-d7-Bsk" userLabel="Swipe Link Cell">
+                                                <rect key="frame" x="0.0" y="386" width="375" height="44"/>
                                                 <subviews>
                                                     <button opaque="NO" userInteractionEnabled="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EVn-2D-L2K">
                                                         <rect key="frame" x="15" y="10" width="24" height="24"/>
@@ -525,50 +565,10 @@
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UsE-kM-glY" userLabel="Line">
-                                                <rect key="frame" x="0.0" y="385" width="375" height="1"/>
-                                                <color key="backgroundColor" red="0.91372549020000005" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="1" id="WqH-2D-ATL"/>
-                                                </constraints>
-                                            </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qiJ-qA-UmO" userLabel="Meal Cell">
-                                                <rect key="frame" x="0.0" y="386" width="375" height="44"/>
-                                                <subviews>
-                                                    <button opaque="NO" userInteractionEnabled="NO" alpha="0.30000001192092896" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6T0-JO-tTk">
-                                                        <rect key="frame" x="15" y="10" width="24" height="24"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" constant="24" id="raC-Xa-b5o"/>
-                                                        </constraints>
-                                                        <state key="normal" title="Button" image="Entry-Meal"/>
-                                                    </button>
-                                                    <button opaque="NO" alpha="0.30000001192092896" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MSB-EG-VKw">
-                                                        <rect key="frame" x="49" y="7" width="311" height="29"/>
-                                                        <accessibility key="accessibilityConfiguration" identifier="storyEntryView_venueButton"/>
-                                                        <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
-                                                        <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <state key="normal" title="Meal">
-                                                            <color key="titleColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
-                                                        </state>
-                                                        <connections>
-                                                            <action selector="mealClicked:" destination="qja-VH-rV7" eventType="touchUpInside" id="H3y-Ee-8dz"/>
-                                                        </connections>
-                                                    </button>
-                                                </subviews>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="trailing" secondItem="MSB-EG-VKw" secondAttribute="trailing" constant="15" id="0cA-2X-lbx"/>
-                                                    <constraint firstItem="6T0-JO-tTk" firstAttribute="centerY" secondItem="qiJ-qA-UmO" secondAttribute="centerY" id="ID1-br-Xyv"/>
-                                                    <constraint firstItem="6T0-JO-tTk" firstAttribute="trailing" secondItem="MSB-EG-VKw" secondAttribute="leading" constant="-10" id="NR9-Mw-rgH"/>
-                                                    <constraint firstAttribute="height" constant="44" id="Ng5-Qq-Mw5"/>
-                                                    <constraint firstItem="MSB-EG-VKw" firstAttribute="centerY" secondItem="qiJ-qA-UmO" secondAttribute="centerY" id="cUE-3o-OXg"/>
-                                                    <constraint firstItem="6T0-JO-tTk" firstAttribute="leading" secondItem="qiJ-qA-UmO" secondAttribute="leading" constant="15" id="fTN-uj-ikp"/>
-                                                </constraints>
-                                            </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="z3K-Sz-WWR" userLabel="Line">
                                                 <rect key="frame" x="0.0" y="430" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.91372549020000005" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="1" id="W6a-HI-VpN"/>
+                                                    <constraint firstAttribute="height" constant="1" id="WqH-2D-ATL"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iMx-xr-Sul" userLabel="Swipe Message Cell">
@@ -903,14 +903,14 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yzK-Rf-cN6">
-                                                    <rect key="frame" x="15" y="7" width="29.5" height="16.5"/>
+                                                    <rect key="frame" x="15" y="7" width="26.5" height="16.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                     <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="guT-IY-1FO">
-                                                    <rect key="frame" x="15" y="23.5" width="43" height="14.5"/>
+                                                    <rect key="frame" x="15" y="23.5" width="41" height="14"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                     <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="0.5" colorSpace="calibratedRGB"/>

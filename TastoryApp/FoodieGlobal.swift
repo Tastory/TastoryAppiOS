@@ -26,6 +26,17 @@ enum FoodieMediaType: String {
   //case unknown = "application/octet-stream"
 }
 
+enum MealType: String {
+  case breakfast = "Breakfast"
+  case brunch = "Brunch"
+  case lunch = "Lunch"
+  case dinner = "Dinner"
+  case dessert = "Dessert"
+  case coffee = "Coffee"
+  case drinks = "Drinks"
+  // if more values are added make sure, you update the types list
+  static let types = [breakfast, brunch, lunch, dinner, dessert, coffee, drinks]
+}
 
 struct FoodieGlobal {
   

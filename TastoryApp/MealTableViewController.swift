@@ -10,29 +10,14 @@ import UIKit
 import CoreLocation
 
 protocol MealReturnDelegate: class {
-  func completedSelection(selectedMeals: [String])
+  func completedSelection(selectedMeals: [MealType])
 }
 
 
 class MealTableViewController: OverlayViewController {
 
-  // MARK: - Types & Enumerations
-  enum MealType: String {
-    case breakfast = "Breakfast"
-    case brunch = "Brunch"
-    case lunch = "Lunch"
-    case dinner = "Dinner"
-    case dessert = "Dessert"
-    case coffee = "Coffee"
-    case drinks = "Drinks"
-    // if more values are added make sure, you update the last value to get the correct count
-    static let types = [breakfast, brunch, lunch, dinner, dessert, coffee, drinks]
-  }
-
   // MARK: - Constants
   private struct Constants {
-    static let DefaultLocationPlaceholderText = "Location to search near"
-    static let SearchBarSearchDelay = 0.5
     static let StackShadowOffset = FoodieGlobal.Constants.DefaultUIShadowOffset
     static let StackShadowRadius = FoodieGlobal.Constants.DefaultUIShadowRadius
     static let StackShadowOpacity = FoodieGlobal.Constants.DefaultUIShadowOpacity
@@ -40,11 +25,10 @@ class MealTableViewController: OverlayViewController {
 
   
   // MARK: - Public Instance Variables
-  var mealType: [String]?
+  var mealType: [MealType]?
   var delegate: MealReturnDelegate? = nil
 
   // MARK: - IBOutlet
-  @IBOutlet weak var doneButtonCell: UITableViewCell!
   @IBOutlet weak var stackView: UIStackView!
   @IBOutlet weak var mealTableView: UITableView!
 
@@ -72,7 +56,14 @@ class MealTableViewController: OverlayViewController {
     mealTableView.allowsSelection = false
     mealTableView.dataSource = self
     mealTableView.register(UINib.init(nibName: String(describing: CategoryTableViewCell.self), bundle: nil), forCellReuseIdentifier: "CategoryCell")
-    //mealTableView.tableFooterView = doneButtonFooter
+
+    // Drop Shadow at the back of the View
+    view.layer.masksToBounds = false
+    view.layer.shadowColor = UIColor.black.cgColor
+    view.layer.shadowOffset = Constants.StackShadowOffset
+    view.layer.shadowRadius = Constants.StackShadowRadius
+    view.layer.shadowOpacity = Constants.StackShadowOpacity
+
   }
 }
 
@@ -105,7 +96,7 @@ extension MealTableViewController: UITableViewDataSource {
     cell.expandButton.isHidden =  true
     let mealTypeStr = MealType.types[indexPath.row].rawValue
     cell.titleLabel.text = mealTypeStr
-    if mealType != nil, mealType!.contains(mealTypeStr) {
+    if mealType != nil, mealType!.contains(MealType.types[indexPath.row]) {
       cell.setRadio(to: .selected)
     }
     return cell
@@ -127,13 +118,20 @@ extension MealTableViewController: CategoryTableViewCellDelegate {
       return
     }
 
+    guard let selectedType = MealType(rawValue: mealText) else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.assert("Failed to initialize meal type enum")
+      }
+      return
+    }
+
     if mealType != nil {
       if state == .selected {
-        if mealType!.index(of: mealText) == nil {
-          mealType!.append(mealText)
+        if mealType!.index(of: selectedType) == nil {
+          mealType!.append(selectedType)
         }
       } else if state == .unselected {
-        if let index = mealType!.index(of: mealText) {
+        if let index = mealType!.index(of: selectedType) {
           mealType!.remove(at: index)
         }
       }
