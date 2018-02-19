@@ -116,7 +116,6 @@ class DeepLink {
                 DeepLink.clearDeepLinkInfo()
               }
               return
-              break
             }
           } else {
             AlertDialog.standardPresent(from: displayedVC, title: .genericInternalError, message: .inconsistencyFatal) { _ in
