@@ -234,6 +234,12 @@ class ProfileViewController: OverlayViewController {
     actionSheet.addAlertAction(title: "Cancel",
                                comment: "Action Sheet button for Cancelling more information action",
                                style: .cancel)
+
+    if let popOverController = actionSheet.popoverPresentationController {
+      popOverController.sourceView = sender
+      popOverController.sourceRect = sender.bounds
+    }
+
     self.present(actionSheet, animated: true, completion: nil)
   }
 
