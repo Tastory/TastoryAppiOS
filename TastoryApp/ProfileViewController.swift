@@ -539,10 +539,49 @@ class ProfileViewController: OverlayViewController {
         fullnameLabel.isHidden = true
       }
 
-      if let websiteUrl = venue.venueURL?.trimmingCharacters(in: .whitespacesAndNewlines), websiteUrl != "" {
-        websiteLabel.text = websiteUrl
+      if let address = venue.streetAddress {
+        var addressStr = address
+        if let city = venue.city {
+          addressStr = addressStr + ", " + city
+        }
+
+        if let state = venue.state {
+          addressStr = addressStr + ", " + state
+        }
+        websiteLabel.text = addressStr
       } else {
         websiteLabel.isHidden = true
+      }
+
+      if let openHour = venue.hours {
+        //let day: Int = (Calendar.current.component(.weekday, from: Date()) + 5 ) % 7
+        let day: Int = 2
+
+        if day < openHour.count {
+          let hours = openHour[day]
+          var hourStr = ""
+          for hour in hours {
+            if let startTime = hour["start"] as? Int64, let endTime = hour["end"] as? Int64 {
+              if !hourStr.isEmpty {
+                hourStr = hourStr + ", "
+              }
+
+              var startTimeStr: String = String(startTime)
+              var endTimeStr: String = String(endTime)
+
+              startTimeStr.insert(":", at: startTimeStr.index(startTimeStr.endIndex, offsetBy: -2))
+              endTimeStr.insert(":", at: endTimeStr.index(endTimeStr.endIndex, offsetBy: -2))
+
+              hourStr = hourStr + "\(startTimeStr) ~ \(endTimeStr)"
+            }
+          }
+
+          if hourStr.isEmpty {
+            bioLabel.isHidden = true
+          } else {
+            bioLabel.text = "Opening hours: " + hourStr
+          }
+        }
       }
 
       shareButton.isHidden = false
@@ -552,8 +591,6 @@ class ProfileViewController: OverlayViewController {
       settingsButton.isHidden = true
       followButton.isHidden = true
       filterButton.isHidden = true
-      bioLabel.isHidden = true
-
     } else {
       guard let user = user, user.isRegistered else {
         AlertDialog.present(from: self, title: "Profile Error", message: "The specified user profile belongs to an unregistered user") { [unowned self] _ in

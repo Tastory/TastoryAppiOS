@@ -535,11 +535,11 @@
                                                 <rect key="frame" x="0.0" y="386" width="375" height="44"/>
                                                 <subviews>
                                                     <button opaque="NO" userInteractionEnabled="NO" alpha="0.30000001192092896" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6T0-JO-tTk">
-                                                        <rect key="frame" x="15" y="9" width="24" height="26"/>
+                                                        <rect key="frame" x="15" y="10" width="24" height="24"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="24" id="raC-Xa-b5o"/>
                                                         </constraints>
-                                                        <state key="normal" title="Button" image="Entry-StoryTitle"/>
+                                                        <state key="normal" title="Button" image="Entry-Meal"/>
                                                     </button>
                                                     <button opaque="NO" alpha="0.30000001192092896" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MSB-EG-VKw">
                                                         <rect key="frame" x="49" y="7" width="311" height="29"/>
@@ -903,14 +903,14 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yzK-Rf-cN6">
-                                                    <rect key="frame" x="15" y="7" width="29.5" height="16.5"/>
+                                                    <rect key="frame" x="15" y="7" width="26.5" height="16.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                     <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="guT-IY-1FO">
-                                                    <rect key="frame" x="15" y="23.5" width="43" height="14.5"/>
+                                                    <rect key="frame" x="15" y="23.5" width="41" height="14"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                     <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="0.5" colorSpace="calibratedRGB"/>
@@ -1248,10 +1248,10 @@
     </scenes>
     <resources>
         <image name="Entry-DiscardButton" width="170" height="50"/>
+        <image name="Entry-Meal" width="24" height="24"/>
         <image name="Entry-OpenLink" width="16" height="16"/>
         <image name="Entry-Preview" width="24" height="24"/>
         <image name="Entry-SaveButton" width="170" height="50"/>
-        <image name="Entry-StoryTitle" width="26" height="26"/>
         <image name="Entry-SwipeLink" width="24" height="24"/>
         <image name="Entry-SwipeMessage" width="24" height="24"/>
         <image name="Entry-Title" width="26" height="26"/>
