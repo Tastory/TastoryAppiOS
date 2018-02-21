@@ -12,7 +12,8 @@ import SVProgressHUD
 class ActivitySpinner {
   
   var blurEffectView: UIVisualEffectView? = nil
-  var activityView: UIActivityIndicatorView? = nil
+  var activityView: UIView? = nil
+  var svProgressHUD: SVProgressHUD? = nil
   var controllerView: UIView? = nil
   
   static func globalInit() {
@@ -53,17 +54,37 @@ class ActivitySpinner {
     }
   }
   
-  init(addTo view: UIView, blurStyle: UIBlurEffectStyle = .regular, spinnerStyle: UIActivityIndicatorViewStyle = .whiteLarge) {
-      let blurEffect = UIBlurEffect(style: blurStyle)
-      self.blurEffectView = UIVisualEffectView(effect: blurEffect)
-      view.addSubview(self.blurEffectView!)
-      view.sendSubview(toBack: self.blurEffectView!)
-      self.blurEffectView!.isHidden = true
-      self.activityView = UIActivityIndicatorView(activityIndicatorStyle: spinnerStyle)
-      view.addSubview(self.activityView!)
-      self.activityView!.isHidden = true
-      view.sendSubview(toBack: self.activityView!)
-      self.controllerView = view
+  init(addTo view: UIView, blurStyle: UIBlurEffectStyle = .regular, radius: CGFloat = 15.0, thickness: CGFloat = 3.0, color: UIColor = FoodieGlobal.Constants.ThemeColor) {
+    
+    let blurEffect = UIBlurEffect(style: blurStyle)
+    blurEffectView = UIVisualEffectView(effect: blurEffect)
+    view.addSubview(self.blurEffectView!)
+    blurEffectView!.isHidden = true
+    view.sendSubview(toBack: self.blurEffectView!)
+    
+    svProgressHUD = SVProgressHUD(frame: view.bounds)
+    
+    svProgressHUD!.defaultStyle = .custom
+    svProgressHUD!.defaultMaskType = .custom
+    
+    svProgressHUD!.foregroundColor = FoodieGlobal.Constants.ThemeColor
+    svProgressHUD!.backgroundColor = UIColor.clear
+    svProgressHUD!.backgroundLayerColor = UIColor.clear
+    
+    svProgressHUD!.fadeInAnimationDuration = 0.05
+    svProgressHUD!.fadeOutAnimationDuration  = 0.05
+    
+    svProgressHUD!.ringThickness = thickness
+    svProgressHUD!.ringNoTextRadius = radius
+    
+    activityView = UIView()
+    svProgressHUD!.containerView = activityView
+    activityView!.addSubview(svProgressHUD!)
+    view.addSubview(self.activityView!)
+    activityView!.isHidden = true
+    view.sendSubview(toBack: self.activityView!)
+    
+    controllerView = view
   }
   
   func apply(below subview: UIView? = nil, with completion: (() -> Void)? = nil) {
@@ -83,17 +104,18 @@ class ActivitySpinner {
         }
         blurEffectView.isHidden = false
       }
-
-      if let activityView = self.activityView {
-        activityView.center = view.center
-
+      
+      if let svProgressHUD = self.svProgressHUD, let activityView = self.activityView {
+        activityView.frame = view.bounds
+        activityView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
         if let subview = subview {
           view.insertSubview(activityView, belowSubview: subview)
         } else {
           view.bringSubview(toFront: activityView)
         }
         activityView.isHidden = false
-        activityView.startAnimating()
+        svProgressHUD.show()
       }
       completion?()
     }
@@ -111,10 +133,14 @@ class ActivitySpinner {
       }
       
       if let activityView = self.activityView {
-        activityView.stopAnimating()
         view.sendSubview(toBack: activityView)
         activityView.isHidden = true
       }
+      
+      if let svProgressHUD = self.svProgressHUD {
+        svProgressHUD.dismiss()
+      }
+      
       completion?()
     }
   }

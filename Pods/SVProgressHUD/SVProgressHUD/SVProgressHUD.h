@@ -143,5 +143,19 @@ typedef void (^SVProgressHUDDismissCompletion)(void);
 
 + (NSTimeInterval)displayDurationForString:(nullable NSString*)string;
 
+- (void)show;
+- (void)showWithMaskType:(SVProgressHUDMaskType)maskType;
+- (void)showWithStatus:(NSString*)status;
+- (void)showWithStatus:(NSString*)status maskType:(SVProgressHUDMaskType)maskType;
+- (void)showProgress:(float)progress;
+- (void)showProgress:(float)progress status:(NSString*)status;
+- (void)showProgress:(float)progress maskType:(SVProgressHUDMaskType)maskType;
+- (void)showProgress:(float)progress status:(NSString*)status maskType:(SVProgressHUDMaskType)maskType;
+
+- (void)dismiss;
+- (void)dismissWithCompletion:(SVProgressHUDDismissCompletion)completion;
+- (void)dismissWithDelay:(NSTimeInterval)delay;
+- (void)dismissWithDelay:(NSTimeInterval)delay completion:(SVProgressHUDDismissCompletion)completion;
+
 @end
 

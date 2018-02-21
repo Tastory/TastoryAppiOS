@@ -642,6 +642,8 @@ static const CGFloat SVProgressHUDLabelSpacing = 8.0f;
 #else
     if (self.viewForExtension) {
         self.frame = self.viewForExtension.frame;
+    } else if (self.containerView) {
+        self.frame = self.containerView.bounds;
     } else {
         self.frame = UIScreen.mainScreen.bounds;
     }
@@ -737,6 +739,65 @@ static const CGFloat SVProgressHUDLabelSpacing = 8.0f;
                                                             object:self
                                                           userInfo:[self notificationUserInfo]];
     }
+}
+
+
+#pragma mark - show/dismiss assist methods
+- (void)show {
+  [self showWithStatus:nil];
+}
+
+- (void)showWithMaskType:(SVProgressHUDMaskType)maskType {
+  SVProgressHUDMaskType existingMaskType = _defaultMaskType;
+  [self setDefaultMaskType:maskType];
+  [self show];
+  [self setDefaultMaskType:existingMaskType];
+}
+
+- (void)showWithStatus:(NSString*)status {
+  [self showProgress:SVProgressHUDUndefinedProgress status:status];
+}
+
+- (void)showWithStatus:(NSString*)status maskType:(SVProgressHUDMaskType)maskType {
+  SVProgressHUDMaskType existingMaskType = _defaultMaskType;
+  [self setDefaultMaskType:maskType];
+  [self showWithStatus:status];
+  [self setDefaultMaskType:existingMaskType];
+}
+
+- (void)showProgress:(float)progress {
+  [self showProgress:progress status:nil];
+}
+
+- (void)showProgress:(float)progress maskType:(SVProgressHUDMaskType)maskType {
+  SVProgressHUDMaskType existingMaskType = _defaultMaskType;
+  [self setDefaultMaskType:maskType];
+  [self showProgress:progress];
+  [self setDefaultMaskType:existingMaskType];
+}
+
+- (void)showProgress:(float)progress status:(NSString*)status maskType:(SVProgressHUDMaskType)maskType {
+  SVProgressHUDMaskType existingMaskType = _defaultMaskType;
+  [self setDefaultMaskType:maskType];
+  [self showProgress:progress status:status];
+  [self setDefaultMaskType:existingMaskType];
+}
+
+- (void)popActivity {
+  if(_activityCount > 0) {
+    _activityCount--;
+  }
+  if(_activityCount == 0) {
+    [self dismiss];
+  }
+}
+
+- (void)dismissWithCompletion:(SVProgressHUDDismissCompletion)completion {
+  [self dismissWithDelay:0.0 completion:completion];
+}
+
+- (void)dismissWithDelay:(NSTimeInterval)delay {
+  [self dismissWithDelay:delay completion:nil];
 }
 
 
@@ -1196,7 +1257,11 @@ static const CGFloat SVProgressHUDLabelSpacing = 8.0f;
     CGRect windowBounds = [[[UIApplication sharedApplication] delegate] window].bounds;
     _controlView.frame = windowBounds;
 #else
-    _controlView.frame = [UIScreen mainScreen].bounds;
+    if (self.containerView) {
+      _controlView.frame = self.containerView.bounds;
+    } else {
+      _controlView.frame = [UIScreen mainScreen].bounds;
+    }
 #endif
     
     return _controlView;

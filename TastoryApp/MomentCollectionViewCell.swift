@@ -68,7 +68,7 @@ class MomentCollectionViewCell: UICollectionViewCell {
     
     contentView.addSubview(thumbImageNode.view)
     contentView.sendSubview(toBack: thumbImageNode.view)
-    activitySpinner = ActivitySpinner(addTo: contentView)
+    activitySpinner = ActivitySpinner(addTo: contentView, radius: 10.0, thickness: 2.0)
     
     thumbImageNode.view.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
@@ -86,7 +86,7 @@ class MomentCollectionViewCell: UICollectionViewCell {
     
     contentView.addSubview(thumbImageNode.view)
     contentView.sendSubview(toBack: thumbImageNode.view)
-    activitySpinner = ActivitySpinner(addTo: contentView)
+    activitySpinner = ActivitySpinner(addTo: contentView, radius: 10.0, thickness: 2.0)
     
     thumbImageNode.view.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
