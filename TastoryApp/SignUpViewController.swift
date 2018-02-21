@@ -17,13 +17,6 @@ class SignUpViewController: OverlayViewController {
   var password: String?
   
   
-  
-  // MARK: - Private Instance Variable
-  
-  private var activitySpinner: ActivitySpinner!
-  
-  
-  
   // MARK: - IBOutlet
   
   @IBOutlet weak var titleLabel: UILabel!
@@ -114,12 +107,12 @@ class SignUpViewController: OverlayViewController {
     user.email = email
     user.password = password
     
-    activitySpinner.apply()
+    ActivitySpinner.globalApply()
     
     // Don't bother with checking whether things are available. Sign-up to find out
     // SignUp also checks for username/e-mail/password validity
     user.signUp { error in
-      self.activitySpinner.remove()
+      ActivitySpinner.globalRemove()
       
       // Handle all known error cases
       if let error = error {
@@ -159,8 +152,6 @@ class SignUpViewController: OverlayViewController {
     usernameField.delegate = self
     emailField.delegate = self
     passwordField.delegate = self
-    
-    activitySpinner = ActivitySpinner(addTo: view)
   }
   
   

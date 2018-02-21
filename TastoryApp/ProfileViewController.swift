@@ -38,7 +38,6 @@ class ProfileViewController: OverlayViewController {
   private var feedCollectionNodeController: FeedCollectionNodeController?
   private var mapNavController: MapNavController?
   private var avatarImageNode: ASNetworkImageNode!
-  private var activitySpinner: ActivitySpinner!
   private var isInitialLayout = true
 
   private var removeStoryList: [FoodieStory] = []
@@ -506,12 +505,11 @@ class ProfileViewController: OverlayViewController {
 
     _ = query!.addArrangement(type: .creationTime, direction: .descending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determines feed order
 
-    activitySpinner = ActivitySpinner(addTo: view)
-    activitySpinner.apply()
+    ActivitySpinner.globalApply()
 
     // Actually do the Query
     query!.initStoryQueryAndSearch { (stories, error) in
-      self.activitySpinner.remove()
+      ActivitySpinner.globalRemove()
 
       if let err = error {
         AlertDialog.present(from: self, title: "Query Failed", message: "Please check your network connection and try again") { _ in

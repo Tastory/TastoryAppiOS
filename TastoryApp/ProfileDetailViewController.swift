@@ -16,7 +16,6 @@ class ProfileDetailViewController: OverlayViewController {
   
   // MARK: - Private Instance Variable
   
-  private var activitySpinner: ActivitySpinner!
   private var isInitialLayout = true
   private var profileImageChanged = false
   private var unsavedChanges: Bool = true {
@@ -208,7 +207,7 @@ class ProfileDetailViewController: OverlayViewController {
       return
     }
     
-    activitySpinner.apply()
+    ActivitySpinner.globalApply()
     
     FoodieUser.checkUserAvailFor(username: username) { (usernameSuccess, usernameError) in
       FoodieUser.checkUserAvailFor(email: email) { (emailSuccess, emailError) in
@@ -220,12 +219,12 @@ class ProfileDetailViewController: OverlayViewController {
           if let usernameError = usernameError {
             AlertDialog.present(from: self, title: "Save Failed", message: "Unable to check Username Validity")
             CCLog.warning("checkUserAvailFor username: (\(username)) Failed - \(usernameError.localizedDescription)")
-            self.activitySpinner.remove()
+            ActivitySpinner.globalRemove()
             return
           } else if !usernameSuccess {
             AlertDialog.present(from: self, title: "Username Unavailable", message: "Username \(username) already taken")
             CCLog.info("checkUserAvailFor username: (\(username)) already exists")
-            self.activitySpinner.remove()
+            ActivitySpinner.globalRemove()
             return
           }
           self.user.username = username
@@ -237,13 +236,13 @@ class ProfileDetailViewController: OverlayViewController {
           if let emailError = emailError {
             AlertDialog.present(from: self, title: "Save Failed", message: "Unable to check E-mail Validity")
             CCLog.warning("checkUserAvailFor E-mail: (\(email)) Failed - \(emailError.localizedDescription)")
-            self.activitySpinner.remove()
+            ActivitySpinner.globalRemove()
             return
             
           } else if !emailSuccess {
             AlertDialog.present(from: self, title: "E-mail Unavailable", message: "E-mail Address \(email) already taken")
             CCLog.info("checkUserAvailFor E-mail: (\(email)) already exists")
-            self.activitySpinner.remove()
+            ActivitySpinner.globalRemove()
             return
           }
           self.user.email = email
@@ -262,7 +261,7 @@ class ProfileDetailViewController: OverlayViewController {
         }
         
         _ = self.user.saveWhole(to: .both, type: .cache) { error in
-          self.activitySpinner.remove()
+          ActivitySpinner.globalRemove()
           if let error = error {
             AlertDialog.present(from: self, title: "Save User Details Failed", message: "Error - \(error.localizedDescription). Please try again") { _ in
               CCLog.warning("user.saveWhole Failed. Error - \(error.localizedDescription)")
@@ -358,8 +357,6 @@ class ProfileDetailViewController: OverlayViewController {
     warningLabel.text = ""
     websiteButton.isHidden = true
 
-    activitySpinner = ActivitySpinner(addTo: view, blurStyle: .dark)
-    
     // Add a Tap gesture recognizer to dismiss th keyboard when needed
     let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
     tapGestureRecognizer.numberOfTapsRequired = 1
@@ -374,7 +371,7 @@ class ProfileDetailViewController: OverlayViewController {
     }
     user = currentUser
     
-    activitySpinner.apply()
+    ActivitySpinner.globalApply()
     
     self.user.retrieveWhole(from: .both, type: .cache, forceAnyways: true, withReady: nil) { error in
       
@@ -382,7 +379,7 @@ class ProfileDetailViewController: OverlayViewController {
         AlertDialog.standardPresent(from: self, title: .genericNetworkError, message: .networkTryAgain) { _ in
           CCLog.warning("Retreive User Recursive Failed with Error - \(error.localizedDescription)")
         }
-        self.activitySpinner.remove()
+        ActivitySpinner.globalRemove()
         return
       }
       
@@ -430,7 +427,7 @@ class ProfileDetailViewController: OverlayViewController {
         self.unsavedChanges = false
         self.profileImageChanged = false
         self.updateAllUIDisplayed()
-        self.activitySpinner.remove()
+        ActivitySpinner.globalRemove()
       }
     }
   }

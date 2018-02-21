@@ -27,6 +27,7 @@ target 'TastoryApp' do
   pod 'ParseFacebookUtilsV4', :inhibit_warnings => true
   pod 'Branch'
   pod 'COSTouchVisualizer', :inhibit_warnings => true
+  pod 'SVProgressHUD', :git => 'https://github.com/Tastory/SVProgressHUD.git', :inhibit_warnings => true
   
   target 'TastoryAppTests' do
     inherit! :search_paths

@@ -64,6 +64,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
     PFFacebookUtils.initializeFacebook(applicationLaunchOptions: launchOptions)
     DeepLink.global = DeepLink(launchOptions: launchOptions)
     
+    
+    // Initialize the Global Activity Spinner
+    ActivitySpinner.globalInit()
+    
     // TODO: - Any Startup Test we want to do that we should use to block Startup?
     error = nil
     

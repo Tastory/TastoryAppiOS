@@ -73,7 +73,7 @@ class PasswordViewController: OverlayViewController {
     
     CCLog.info("Attempting to Log-in in-order to verify entered password")
     
-    activitySpinner.apply()
+    ActivitySpinner.globalApply()
     
     // So all the field passes. Let's see if the old password is correct by re-login
     FoodieUser.logIn(for: username, using: currentText) { _, error in
@@ -81,7 +81,7 @@ class PasswordViewController: OverlayViewController {
       if let error = error {
         AlertDialog.present(from: self, title: "Password Change Failed", message: "\(error.localizedDescription). Please try again")
         CCLog.info("Login for password confirmation with \(username) failed - \(error.localizedDescription)")
-        self.activitySpinner.remove()
+        ActivitySpinner.globalRemove()
         return
       }
       
@@ -90,7 +90,7 @@ class PasswordViewController: OverlayViewController {
       
       // Save the user
       _ = self.user.saveDigest(to: .both, type: .cache) { error in
-        self.activitySpinner.remove()
+        ActivitySpinner.globalRemove()
         
         if let error = error {
           AlertDialog.present(from: self, title: "Save New Password Failed", message: "Error - \(error.localizedDescription). Please try again") { _ in
@@ -113,11 +113,7 @@ class PasswordViewController: OverlayViewController {
       }
     }
   }
-  
-  
-  // MARK: - Private Instance Variable
-  private var activitySpinner: ActivitySpinner!
-  
+
   
   // MARK: - Public Instance Variable
   var user: FoodieUser!
@@ -145,9 +141,7 @@ class PasswordViewController: OverlayViewController {
     
     // Set Default UI
     warningLabel.text = ""
-    
-    activitySpinner = ActivitySpinner(addTo: view, blurStyle: .dark)
-    
+
     // Add a Tap gesture recognizer to dismiss the keyboard when needed
     let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
     tapGestureRecognizer.numberOfTapsRequired = 1

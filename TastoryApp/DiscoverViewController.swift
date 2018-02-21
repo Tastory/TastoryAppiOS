@@ -63,7 +63,6 @@ class DiscoverViewController: OverlayViewController {
   // MARK: - Private Instance Variables
   private var feedCollectionNodeController: FeedCollectionNodeController!
   private var mapNavController: MapNavController?
-  private var activitySpinner: ActivitySpinner!
   private var lastMapState: MapNavController.MapState?
   private var lastSelectedAnnotationIndex: Int?
 
@@ -363,11 +362,11 @@ class DiscoverViewController: OverlayViewController {
     _ = query.addArrangement(type: .discoverability, direction: .descending)
     _ = query.addArrangement(type: .creationTime, direction: .descending)
     
-    activitySpinner.apply()
+    ActivitySpinner.globalApply()
     
     // Actually do the Query
     query.initStoryQueryAndSearch { (stories, error) in
-      self.activitySpinner.remove()
+      ActivitySpinner.globalRemove()
       
       if let error = error {
         AlertDialog.present(from: self, title: "Query Failed", message: error.localizedDescription) { _ in
@@ -665,8 +664,6 @@ class DiscoverViewController: OverlayViewController {
     // Setup all the IBOutlet Delegates
     locationField?.delegate = self
     
-    activitySpinner = ActivitySpinner(addTo: view)
-    
     // Setup placeholder text for the Search text field
     guard let searchBarFont = UIFont(name: Constants.SearchBarFontName, size: Constants.SearchBarFontSize) else {
       CCLog.fatal("Cannot create UIFont with name \(Constants.SearchBarFontName)")
@@ -894,11 +891,11 @@ class DiscoverViewController: OverlayViewController {
         
         // Move the map to the initial location as a fallback incase the query fails
         DispatchQueue.main.async { mapController.showCurrentRegionExposed(animated: true) }
-        self.activitySpinner.apply()
+        ActivitySpinner.globalApply()
         
         // Do an Initial Search near the Current Location
         FoodieQuery.queryInitStories(at: location.coordinate, minStories: Constants.InitQueryMinStories) { (stories, query, error) in
-          self.activitySpinner.remove()
+          ActivitySpinner.globalRemove()
           self.unwrapQueryRefreshDiscoveryView(stories: stories, query: query, error: error, currentLocation: location.coordinate)
         }
         

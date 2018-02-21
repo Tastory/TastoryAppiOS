@@ -7,13 +7,51 @@
 //
 
 import UIKit
-
+import SVProgressHUD
 
 class ActivitySpinner {
   
   var blurEffectView: UIVisualEffectView? = nil
   var activityView: UIActivityIndicatorView? = nil
   var controllerView: UIView? = nil
+  
+  static func globalInit() {
+    SVProgressHUD.setDefaultStyle(.custom)
+    SVProgressHUD.setDefaultMaskType(.custom)
+
+    SVProgressHUD.setForegroundColor(FoodieGlobal.Constants.ThemeColor)
+    SVProgressHUD.setBackgroundColor(UIColor.clear)
+    SVProgressHUD.setBackgroundLayerColor(UIColor.clear)
+    
+    SVProgressHUD.setFadeInAnimationDuration(0.05)
+    SVProgressHUD.setFadeOutAnimationDuration(0.05)
+    
+    // Text-less Appearance
+    SVProgressHUD.setRingThickness(3.0)
+    SVProgressHUD.setRingNoTextRadius(15.0)
+    
+    // Apperance with Text
+    SVProgressHUD.setRingRadius(25.0)
+    SVProgressHUD.setMinimumSize(CGSize(width: 120.0, height: 120.0))
+    SVProgressHUD.setCornerRadius(15.0)
+    
+    if let font = UIFont(name: "Raleway-SemiBold", size: 12.0) {
+      SVProgressHUD.setFont(font)
+    } else {
+      CCLog.warning("Font Raleway-Medium not found")
+    }
+  }
+  
+  static func globalApply(with status: String? = nil, with completion: (() -> Void)? = nil) {
+    SVProgressHUD.show(withStatus: status)
+    completion?()
+  }
+  
+  static func globalRemove(with completion: (() -> Void)? = nil) {
+    SVProgressHUD.dismiss {
+      completion?()
+    }
+  }
   
   init(addTo view: UIView, blurStyle: UIBlurEffectStyle = .regular, spinnerStyle: UIActivityIndicatorViewStyle = .whiteLarge) {
       let blurEffect = UIBlurEffect(style: blurStyle)
@@ -33,11 +71,11 @@ class ActivitySpinner {
       guard let view = self.controllerView else {
         CCLog.fatal("controllerView = nil when applying Activity Spinner")
       }
-      
+
       if let blurEffectView = self.blurEffectView {
         blurEffectView.frame = view.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
+
         if let subview = subview {
           view.insertSubview(blurEffectView, belowSubview: subview)
         } else {
@@ -45,10 +83,10 @@ class ActivitySpinner {
         }
         blurEffectView.isHidden = false
       }
-      
+
       if let activityView = self.activityView {
         activityView.center = view.center
-        
+
         if let subview = subview {
           view.insertSubview(activityView, belowSubview: subview)
         } else {
@@ -66,11 +104,12 @@ class ActivitySpinner {
       guard let view = self.controllerView else {
         CCLog.fatal("controllerView = nil when applying Activity Spinner")
       }
-      
+
       if let blurEffectView = self.blurEffectView {
         view.sendSubview(toBack: blurEffectView)
         blurEffectView.isHidden = true
       }
+      
       if let activityView = self.activityView {
         activityView.stopAnimating()
         view.sendSubview(toBack: activityView)

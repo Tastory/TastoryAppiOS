@@ -46,7 +46,6 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   fileprivate var outstandingConvertQueue = DispatchQueue(label: "Outstanding Convert Queue", qos: .userInitiated)
   fileprivate var moments: [FoodieMoment?] = []
   fileprivate var enableMultiPicker = false
-  fileprivate var activitySpinner: ActivitySpinner? = nil
   
   
   // MARK: - IBOutlets
@@ -135,8 +134,6 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   override func viewDidLoad() {
     
     super.viewDidLoad()
-    
-    activitySpinner = ActivitySpinner(addTo: view)
     
     // Swifty Cam Setup
     cameraDelegate = self
@@ -383,14 +380,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .video)
       mediaObject.setVideo(toLocal: url)
       
-      guard let activitySpinner = activitySpinner else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-          CCLog.fatal("Activity Spinner is not initialized")
-        }
-        return
-      }
-      
-      activitySpinner.apply()
+      ActivitySpinner.globalApply()
       
       // Analytics
       let avUrlAsset = AVURLAsset(url: url)
@@ -419,7 +409,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
             viewController.mediaLocation = self.captureLocation
             viewController.markupReturnDelegate = self
             viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
-            activitySpinner.remove()
+            ActivitySpinner.globalRemove()
             self.present(viewController, animated: true)
           }
           
@@ -553,7 +543,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   
   func dismissPhotoPicker(withTLPHAssets: [TLPHAsset]) {
 
-    self.activitySpinner?.apply()
+    ActivitySpinner.globalApply()
 
     if withTLPHAssets.count < 0 {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
@@ -594,7 +584,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   
   private func processMoments() {
 
-    self.activitySpinner?.remove()
+    ActivitySpinner.globalRemove()
 
     if(moments.count > 1)
     {
@@ -798,13 +788,6 @@ extension CameraViewController: UIVideoEditorControllerDelegate {
 extension CameraViewController: VideoTrimmerDelegate {
   func videoTrimmed(from startTime: CMTime, to endTime: CMTime, url assetURLString: String) {
     
-    guard let activitySpinner = activitySpinner else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Activity Spinner is not initialized")
-      }
-      return
-    }
-    
     guard let url = URL(string: assetURLString) else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Invalid Asset URL String")
@@ -812,7 +795,7 @@ extension CameraViewController: VideoTrimmerDelegate {
       return
     }
     
-    activitySpinner.apply()
+    ActivitySpinner.globalApply()
     
     let fileName = url.lastPathComponent
     let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .video)
@@ -845,7 +828,7 @@ extension CameraViewController: VideoTrimmerDelegate {
           CCLog.assert("Failed to copy from \(outputURL.absoluteString) to \(localURL.absoluteString)")
         }
 
-        activitySpinner.remove()
+        ActivitySpinner.globalRemove()
 
         DispatchQueue.main.async {
           let storyboard = UIStoryboard(name: "Compose", bundle: nil)

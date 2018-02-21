@@ -41,7 +41,6 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
 
   // MARK: - Private Instance Constants
   
-  private var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
   private var mapNavController: MapNavController?
   
   
@@ -110,7 +109,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       title: "Delete Story",
       confirmCaption: "Delete")
       { [unowned self] _ in
-        self.activitySpinner.apply()
+        ActivitySpinner.globalApply()
         guard let workingStory = self.workingStory else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
             CCLog.fatal("workingStory couldn't be nil at this point")
@@ -128,7 +127,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             return
           }
 
-          self.activitySpinner.remove()
+          ActivitySpinner.globalRemove()
 
           let notifyData:[String: Any] = [FoodieGlobal.RefreshFeedNotification.WorkingStoryKey: workingStory, FoodieGlobal.RefreshFeedNotification.ActionKey: FoodieGlobal.RefreshFeedNotification.DeleteAction]
           NotificationCenter.default.post(name: NSNotification.Name(rawValue: FoodieGlobal.RefreshFeedNotification.NotificationId), object: nil, userInfo: notifyData)
@@ -269,7 +268,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     }
 
     view.endEditing(true)
-    activitySpinner.apply()
+    ActivitySpinner.globalApply()
     
     // Once we hit save to server, an objectID will be assigned and this will cause isEditStory to become true if it otherwise wasn't.
     // Lets see whether this is a Draft or an Edit ahead of time
@@ -279,7 +278,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     _ = story.saveWhole(to: .both, type: .cache) { error in
       
       if let error = error {
-        self.activitySpinner.remove()
+        ActivitySpinner.globalRemove()
         
         switch error {
         case FoodieObject.ErrorCode.saveErrorOperationForbidden:
@@ -303,7 +302,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             // Best effort remove the Story from Server & Cache in this case
             _ = story.deleteWhole(from: .both, type: .cache, withBlock: nil)
             
-            self.activitySpinner.remove()
+            ActivitySpinner.globalRemove()
             CCLog.warning("Add Story to User List Failed with Error: \(error)")
             AlertDialog.present(from: self, title: "Add Story to User Failed", message: error.localizedDescription)
           }
@@ -325,7 +324,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             }
             
             self.workingStory = nil
-            self.activitySpinner.remove()
+            ActivitySpinner.globalRemove()
             
             // Pop-up Alert Dialog and then Dismiss
             CCLog.info("Story Posted!")
@@ -345,7 +344,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             }
             
             self.workingStory = nil
-            self.activitySpinner.remove()
+            ActivitySpinner.globalRemove()
 
             // Pop-up Alert Dialog and then Dismiss
             CCLog.info("Story Saved!")
@@ -459,11 +458,11 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     }
     
     ConfirmationDialog.showStoryDiscardDialog(to: self, message: discardMessage, title: discardTitle) {
-      self.activitySpinner.apply()
+      ActivitySpinner.globalApply()
       FoodieStory.cleanUpDraft() { error in
         if let error = error {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
-            self.activitySpinner.remove()
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+            ActivitySpinner.globalRemove()
             CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
           }
         }
@@ -476,7 +475,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         self.workingStory = nil
         
         self.popDismiss(animated: true)
-        self.activitySpinner.remove()
+        ActivitySpinner.globalRemove()
       }
     }
   }
@@ -592,8 +591,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     keyboardDismissRecognizer.numberOfTapsRequired = 1
     keyboardDismissRecognizer.numberOfTouchesRequired = 1
     view.addGestureRecognizer(keyboardDismissRecognizer)
-    activitySpinner = ActivitySpinner(addTo: view, blurStyle: .dark, spinnerStyle: .whiteLarge)
-    
+
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
     

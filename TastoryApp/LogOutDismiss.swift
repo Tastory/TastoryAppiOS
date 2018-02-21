@@ -27,11 +27,11 @@ struct LogOutDismiss {
   
   static func logOutAndDismiss(from viewController: UIViewController) {
     
-    let activitySpinner = ActivitySpinner(addTo: viewController.view, blurStyle: .dark, spinnerStyle: .whiteLarge)
-    activitySpinner.apply()
+    ActivitySpinner.globalApply()
     
     FoodieUser.logOutAndDeleteDraft { error in
-      activitySpinner.remove()
+      ActivitySpinner.globalRemove()
+
       if let error = error {
         AlertDialog.present(from: viewController, title: "Log Out Error", message: error.localizedDescription) { _ in
           CCLog.assert("Log Out Failed - \(error.localizedDescription)")

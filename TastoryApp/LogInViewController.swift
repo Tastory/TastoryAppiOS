@@ -10,12 +10,7 @@ import UIKit
 import SafariServices
 
 class LogInViewController: OverlayViewController {
-  
-  
-  // MARK: - Private Instance Variable
-  private var activitySpinner: ActivitySpinner! // Initialize in ViewDidLoad
-  
-  
+
   
   // MARK: - IBOutlet
   
@@ -127,10 +122,10 @@ class LogInViewController: OverlayViewController {
   
   @IBAction func facebookAction(_ sender: UIButton) {
     view.endEditing(true)
-    activitySpinner.apply()
+    ActivitySpinner.globalApply()
     
     FoodieUser.facebookLogIn() { (user, error) in
-      self.activitySpinner.remove()
+      ActivitySpinner.globalRemove()
       
       if let error = error {
         // Do not show Alert Dialog for Error related to Cancel. This is the iOS 11 case
@@ -240,10 +235,10 @@ class LogInViewController: OverlayViewController {
   private func logIn(for username: String, using password: String) {
     
     view.endEditing(true)
-    activitySpinner.apply()
+    ActivitySpinner.globalApply()
     
     FoodieUser.logIn(for: username, using: password) { (user, error) in
-      self.activitySpinner.remove()
+      ActivitySpinner.globalRemove()
       
       let loginSuccess = (error != nil && user != nil)
       let loginErrorNote = error?.localizedDescription ?? ""
@@ -320,7 +315,6 @@ class LogInViewController: OverlayViewController {
     self.view.accessibilityIdentifier = "loginView"
 
     facebookButton.layer.cornerRadius = 5.0
-    activitySpinner = ActivitySpinner(addTo: view, blurStyle: .prominent)
     
     // Gonna wipe all previous user state if you ever get here
     if FoodieStory.currentStory != nil {
