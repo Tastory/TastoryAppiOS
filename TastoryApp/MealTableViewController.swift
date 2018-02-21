@@ -130,6 +130,19 @@ extension MealTableViewController: CategoryTableViewCellDelegate {
         if mealType!.index(of: selectedType) == nil {
           mealType!.append(selectedType)
         }
+
+        if selectedType == .brunch {
+
+          if mealType!.index(of: MealType.breakfast) == nil {
+            mealType!.append(MealType.breakfast)
+          }
+
+          if mealType!.index(of: MealType.lunch) == nil {
+            mealType!.append(MealType.lunch)
+          }
+          mealTableView.reloadData()
+        }
+
       } else if state == .unselected {
         if let index = mealType!.index(of: selectedType) {
           mealType!.remove(at: index)
