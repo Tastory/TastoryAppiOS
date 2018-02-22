@@ -486,6 +486,7 @@ class ProfileViewController: OverlayViewController {
         return
       }
 
+      emptyAvatarImageView.image = UIImage(named: "Profile-VenueAvatar")
       query!.addVenueFilter(venueId: venueObjId)
     } else {
       guard let user = user, user.isRegistered else {
