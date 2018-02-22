@@ -84,6 +84,8 @@ class MomentCollectionViewCell: UICollectionViewCell {
     thumbImageNode = ASNetworkImageNode()
     super.init(coder: aDecoder)
     
+    thumbImageNode.defaultImage = UIImage.init(named: "MediaPlaceholder")
+    
     contentView.addSubview(thumbImageNode.view)
     contentView.sendSubview(toBack: thumbImageNode.view)
     activitySpinner = ActivitySpinner(addTo: contentView, radius: 10.0, thickness: 2.0)

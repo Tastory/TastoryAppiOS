@@ -47,6 +47,7 @@ class FeedCollectionCellNode: ASCellNode {
     
     self.coverImageNode = ASNetworkImageNode()
     super.init()
+    self.coverImageNode.defaultImage = UIImage(named: "MediaPlaceholder")
     self.accessibilityIdentifier = "feedCollectionCellNode_" + (story.title?.replacingOccurrences(of: " ", with: "_"))!
 
     coverImageNode.url = FoodieFileObject.getS3URL(for: thumbnailFileName)

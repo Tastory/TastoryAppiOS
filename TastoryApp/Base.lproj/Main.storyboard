@@ -548,7 +548,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3Gc-Ev-vmE">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="MediaPlaceholder" translatesAutoresizingMaskIntoConstraints="NO" id="3Gc-Ev-vmE">
                                 <rect key="frame" x="0.0" y="72.333333333333314" width="375" height="667.33333333333348"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -557,7 +557,7 @@
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nnO-KA-kth">
                                 <rect key="frame" x="0.0" y="72.333333333333314" width="375" height="667.33333333333348"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="height" multiplier="9:16" id="ZiO-WO-84l"/>
                                 </constraints>
@@ -795,6 +795,7 @@
         <image name="Discover-SearchMagnifier" width="26" height="26"/>
         <image name="Discover-SearchTextLine" width="357" height="3"/>
         <image name="EntryMarkup-Back" width="32" height="32"/>
+        <image name="MediaPlaceholder" width="1080" height="1920"/>
         <image name="Profile-BloatedSquareFrame" width="90" height="90"/>
         <image name="Profile-FilterButton" width="58" height="22"/>
         <image name="Profile-FollowButton" width="68" height="22"/>
