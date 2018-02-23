@@ -227,8 +227,23 @@ class Analytics {
     case categoryList
   }
   
-  
   static func logFoursquareRequest(type: FoursquareRequestType ) {
     Answers.logCustomEvent(withName: "Foursquare Request", customAttributes:["Type" : type.rawValue])
+  }
+  
+  
+  // MARK: - Sharing Events
+  
+  enum ShareContentType: String {
+    case story
+    case userProfile
+    case venueProfile
+  }
+  
+  static func logShareEvent(contentType: ShareContentType, userId: String, objectId: String, name: String) {
+    Answers.logCustomEvent(withName: "Content Shared", customAttributes: ["Content Type" : contentType.rawValue,
+                                                                          "User ID" : userId,
+                                                                          "Object ID" : objectId,
+                                                                          "Name" : name])
   }
 }

@@ -288,8 +288,22 @@ class ProfileViewController: OverlayViewController {
         }
 
         SharedDialog.showPopUp(url: url, fromVC: self, sender: button)
+        
+        // Do analytics on share event
+        var currentUserId = "nil"
+        if let currentUser = FoodieUser.current, let userId = currentUser.objectId {
+          currentUserId = userId
+        }
+        
+        let objectId = user.objectId ?? "nil"
+        let objectName = user.username ?? "nil"
+        
+        Analytics.logShareEvent(contentType: .userProfile,
+                                userId: currentUserId,
+                                objectId: objectId,
+                                name: objectName)
       }
-    } else if venue != nil && stories.count > 0 {
+    } else if let venue = venue, stories.count > 0 {
 
       guard let mediaName = stories[0].thumbnailFileName else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -298,7 +312,7 @@ class ProfileViewController: OverlayViewController {
         return
       }
 
-      deepLink.createVenueDeepLink(venue: venue!, thumbnailURL: FoodieFileObject.getS3URL(for: mediaName).absoluteString) { (url, error) in
+      deepLink.createVenueDeepLink(venue: venue, thumbnailURL: FoodieFileObject.getS3URL(for: mediaName).absoluteString) { (url, error) in
         if error != nil {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.fatal("An error occured when generating link \(error!.localizedDescription))")
@@ -322,6 +336,20 @@ class ProfileViewController: OverlayViewController {
         }
 
         SharedDialog.showPopUp(url: url, fromVC: self, sender: button)
+        
+        // Do analytics on share event
+        var currentUserId = "nil"
+        if let currentUser = FoodieUser.current, let userId = currentUser.objectId {
+          currentUserId = userId
+        }
+        
+        let objectId = venue.objectId ?? "nil"
+        let objectName = venue.name ?? "nil"
+        
+        Analytics.logShareEvent(contentType: .venueProfile,
+                                userId: currentUserId,
+                                objectId: objectId,
+                                name: objectName)
       }
     } else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -438,6 +466,7 @@ class ProfileViewController: OverlayViewController {
     }
   }
 
+  
   // MARK: - View Controller Lifecycle
   
   override func viewDidLoad() {

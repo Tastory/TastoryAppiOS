@@ -84,6 +84,7 @@ class ReputableClaim: PFObject {
     case swiped = 1
     case venue = 2
     case profile = 3
+    case shared = 4
   }
   
   

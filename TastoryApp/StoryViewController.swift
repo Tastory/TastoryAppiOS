@@ -53,6 +53,7 @@ class StoryViewController: OverlayViewController {
   private var swipeClaimed = false
   private var venueClaimed = false
   private var profileClaimed = false
+  private var shareClaimed = false
   private var maxMomentNumber = 0
   
   
@@ -96,6 +97,26 @@ class StoryViewController: OverlayViewController {
       return
     }
 
+    // Increment reputation for the Story
+    if !shareClaimed, !draftPreview {
+      shareClaimed = true
+      
+      CCLog.verbose("Making Reputation Claim for Shared Action against Story ID: \(story.objectId ?? "")")
+      ReputableClaim.storyViewAction(for: story, actionType: .shared) { [weak self] (reputation, error) in
+        if let error = error {
+          CCLog.warning("Story Viewing Action Reputation Claim failed - \(error.localizedDescription)")
+          return
+        }
+        
+        if let reputation = reputation {
+          if let viewingStory = self?.viewingStory, viewingStory.reputation == nil {
+            viewingStory.reputation = reputation
+          }
+          self?.heartLabel.text = "\(reputation.usersLiked)"
+        }
+      }
+    }
+    
     deepLink.createStoryDeepLink(story: story) { (url, error) in
 
       if error != nil {
@@ -119,8 +140,22 @@ class StoryViewController: OverlayViewController {
         }
         return
       }
-
+      
       SharedDialog.showPopUp(url: url, fromVC: self, sender: button)
+      
+      // Do analytics on share event
+      var currentUserId = "nil"
+      if let currentUser = FoodieUser.current, let userId = currentUser.objectId {
+        currentUserId = userId
+      }
+      
+      let objectId = story.objectId ?? "nil"
+      let objectName = story.title ?? "nil"
+      
+      Analytics.logShareEvent(contentType: .story,
+                              userId: currentUserId,
+                              objectId: objectId,
+                              name: objectName)
     }
   }
 
@@ -994,8 +1029,9 @@ class StoryViewController: OverlayViewController {
           self?.profileClaimed = ReputableClaim.storyActionClaimExists(of: .profile, in: claims)
           self?.venueClaimed = ReputableClaim.storyActionClaimExists(of: .venue, in: claims)
           self?.swipeClaimed = ReputableClaim.storyActionClaimExists(of: .swiped, in: claims)
+          self?.shareClaimed = ReputableClaim.storyActionClaimExists(of: .shared, in: claims)
           self?.maxMomentNumber = ReputableClaim.storyViewedMomentNumber(in: claims) ?? 0
-          
+
           if ReputableClaim.storyReactionClaimExists(of: .like, in: claims) {
             self?.heartClicked = true
             self?.heartButton.setImage(#imageLiteral(resourceName: "Story-LikeFilled"), for: .normal)
