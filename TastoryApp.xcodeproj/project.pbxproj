@@ -82,6 +82,7 @@
 		8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */; };
 		8CAA445F1F8C102C0053CD4F /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAA445E1F8C102C0053CD4F /* ProfileViewController.swift */; };
 		8CAA44611F8C12D60053CD4F /* LogOutDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */; };
+		8CAB70772042215500F630CE /* UILabel+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAB70762042215500F630CE /* UILabel+Extension.swift */; };
 		8CAE5BFE1FBC23040069C582 /* Compose.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CAE5BFD1FBC23040069C582 /* Compose.storyboard */; };
 		8CAE5C001FBC403E0069C582 /* TextButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAE5BFF1FBC403E0069C582 /* TextButtonNode.swift */; };
 		8CB207441FC6511500AFFD31 /* AudioControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB207431FC6511400AFFD31 /* AudioControl.swift */; };
@@ -315,6 +316,7 @@
 		8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+Extension.swift"; sourceTree = "<group>"; };
 		8CAA445E1F8C102C0053CD4F /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutDismiss.swift; sourceTree = "<group>"; };
+		8CAB70762042215500F630CE /* UILabel+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Extension.swift"; sourceTree = "<group>"; };
 		8CAE5BFD1FBC23040069C582 /* Compose.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Compose.storyboard; sourceTree = "<group>"; };
 		8CAE5BFF1FBC403E0069C582 /* TextButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextButtonNode.swift; sourceTree = "<group>"; };
 		8CB207431FC6511400AFFD31 /* AudioControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioControl.swift; sourceTree = "<group>"; };
@@ -735,6 +737,7 @@
 				8CA693731E9D8C4500647D6C /* UIAlertAction+Extension.swift */,
 				8C7EC58E1F8E0D2400C8E80B /* MKCoordinateRegion+Extension.swift */,
 				8C2090021FE879AF00AA3D64 /* Double+Extension.swift */,
+				8CAB70762042215500F630CE /* UILabel+Extension.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -1576,6 +1579,7 @@
 				8CCDDA0E1FB3E82400B066E7 /* BasicDirection.swift in Sources */,
 				8C208FFD1FE4BB9400AA3D64 /* Bundle+Extension.swift in Sources */,
 				8C1FF1351F7DA1760062312C /* FoodieRole.swift in Sources */,
+				8CAB70772042215500F630CE /* UILabel+Extension.swift in Sources */,
 				8CC1101A1F92D07000ACBF9A /* FoodieFileObject.swift in Sources */,
 				8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */,
 				8C1A0D7F1E88F711001DE075 /* CameraButton.swift in Sources */,

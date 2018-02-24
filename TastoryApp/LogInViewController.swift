@@ -314,7 +314,7 @@ class LogInViewController: OverlayViewController {
 
     self.view.accessibilityIdentifier = "loginView"
 
-    facebookButton.layer.cornerRadius = 5.0
+    facebookButton.layer.cornerRadius = 7.0
     
     // Gonna wipe all previous user state if you ever get here
     if FoodieStory.currentStory != nil {

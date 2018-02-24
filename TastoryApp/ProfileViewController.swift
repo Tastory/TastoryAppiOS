@@ -94,10 +94,11 @@ class ProfileViewController: OverlayViewController {
   @IBOutlet weak var usernameLabel: UILabel!
   @IBOutlet weak var websiteLabel: UILabel!
   @IBOutlet weak var bioLabel: UILabel!
-  @IBOutlet weak var noStoriesSelfImageView: UIImageView!
-  @IBOutlet weak var noStoriesOthersImageView: UIImageView!
   @IBOutlet weak var moreButton: UIButton!
-
+  @IBOutlet weak var emptyPlaceholderView: UIView!
+  @IBOutlet weak var emptyPlaceholderTitle: UILabel!
+  @IBOutlet weak var emptyPlaceholderText: UILabel!
+  
   
   
   // MARK: - IBAction
@@ -456,14 +457,12 @@ class ProfileViewController: OverlayViewController {
       UIView.animate(withDuration: duration) {
         self.topGradientBackground.alpha = alphaValue
         self.bottomGradientNode?.alpha = alphaValue
-        self.noStoriesSelfImageView.alpha = alphaValue
-        self.noStoriesOthersImageView.alpha = alphaValue
+        self.emptyPlaceholderView.alpha = alphaValue
       }
     } else {
       topGradientBackground.alpha = alphaValue
       bottomGradientNode?.alpha = alphaValue
-      noStoriesSelfImageView.alpha = alphaValue
-      noStoriesOthersImageView.alpha = alphaValue
+      emptyPlaceholderView.alpha = alphaValue
     }
   }
 
@@ -558,18 +557,23 @@ class ProfileViewController: OverlayViewController {
 
       // Show empty message if applicable
       if stories.count <= 0 {
-        if self.layout == .user , self.user === FoodieUser.current {
-          self.noStoriesSelfImageView.isHidden = false
-          self.noStoriesOthersImageView.isHidden = true
-          self.feedContainerView.isHidden = true
+        self.emptyPlaceholderTitle.addCharactersSpacing(spacing: 1.5, text: "NO STORIES YET")
+        
+        if self.layout == .user {
+          if self.user === FoodieUser.current {
+            self.emptyPlaceholderText.text = "Tap on the camera on the main screen to post your first story!"
+          } else {
+            self.emptyPlaceholderText.text = "This user doesn't have any stories yet"
+          }
         } else {
-          self.noStoriesSelfImageView.isHidden = true
-          self.noStoriesOthersImageView.isHidden = false
-          self.feedContainerView.isHidden = true
+          self.emptyPlaceholderText.text = "Tap on the camera on the main screen to post the first story!"
         }
+        
+        self.emptyPlaceholderView.isHidden = false
+        self.feedContainerView.isHidden = true
       } else {
-        self.noStoriesSelfImageView.isHidden = true
-        self.noStoriesOthersImageView.isHidden = true
+        
+        self.emptyPlaceholderView.isHidden = true
         self.feedContainerView.isHidden = false
         self.stories = stories
 

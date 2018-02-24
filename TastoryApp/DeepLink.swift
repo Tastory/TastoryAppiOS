@@ -3,7 +3,7 @@
 //  TastoryApp
 //
 //  Created by Victor Tsang on 2018-02-01.
-//  Copyright © 2018 Tastry. All rights reserved.
+//  Copyright © 2018 Tastory Lab Inc. All rights reserved.
 //
 
 import Foundation
