@@ -60,6 +60,7 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
   
   
   func remove(_ view: UIView, thenAddTo container: UIView) {
+    CCLog.verbose("PopTransitionAnimator Remove from \(container)")
     let originalFrame = view.frame
     guard let originalSuperview = view.superview else {
       CCLog.fatal("View to remove must have a Superview")
@@ -71,7 +72,7 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
   
   
   func putBack(_ view: UIView, to originalSuperview: UIView, at originalFrame: CGRect) {
-    CCLog.verbose("PopTransitionAnimator Put Back")
+    CCLog.verbose("PopTransitionAnimator Put Back to \(originalSuperview)")
     view.removeFromSuperview()
     view.layer.transform = CATransform3DIdentity
     view.frame = originalFrame

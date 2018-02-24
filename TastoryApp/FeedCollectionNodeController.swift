@@ -422,12 +422,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       return
     }
 
-    // Go ahead, just display the Story~
-    viewController.viewingStory = story
-    viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
-    mapNavController.delegate = viewController
-    mapNavController.pushViewController(viewController, animated: true)
-
     // Scroll the selected story to top to make sure it's not off bounds to reduce animation artifact
     guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: indexPath) else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
@@ -435,25 +429,34 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       }
       return
     }
-
-    // Vertical direction adjustment
-    let topAdjustment = max(collectionNode.contentInset.top, 0)
-    let bottomAdjustment = max(collectionNode.contentInset.bottom, 0)
-
-    if layoutAttributes.frame.minY < (collectionNode.bounds.minY + topAdjustment) {
-      collectionNode.scrollToItem(at: indexPath, at: .top, animated: true)
-    } else if layoutAttributes.frame.maxY > (collectionNode.bounds.maxY - bottomAdjustment) {
-      collectionNode.scrollToItem(at: indexPath, at: .bottom, animated: true)
-    }
-
-    // Horizontal direction adjustment
-    let leftAdjustment = max(collectionNode.contentInset.left, 0)
-    let rightAdjustment = max(collectionNode.contentInset.right, 0)
-
-    if layoutAttributes.frame.minX < (collectionNode.bounds.minX + leftAdjustment) {
-      collectionNode.scrollToItem(at: indexPath, at: .left, animated: true)
-    } else if layoutAttributes.frame.maxX > (collectionNode.bounds.maxX - rightAdjustment) {
-      collectionNode.scrollToItem(at: indexPath, at: .right, animated: true)
+    
+    // Go ahead, just display the Story~
+    viewController.viewingStory = story
+    let transitionDuration = viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
+    mapNavController.delegate = viewController
+    mapNavController.pushViewController(viewController, animated: true)
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + transitionDuration.magnitude) {
+      
+      // Vertical direction adjustment
+      let topAdjustment = max(self.collectionNode.contentInset.top, 0)
+      let bottomAdjustment = max(self.collectionNode.contentInset.bottom, 0)
+      
+      if layoutAttributes.frame.minY < (self.collectionNode.bounds.minY + topAdjustment) {
+        self.collectionNode.scrollToItem(at: indexPath, at: .top, animated: false)
+      } else if layoutAttributes.frame.maxY > (self.collectionNode.bounds.maxY - bottomAdjustment) {
+        self.collectionNode.scrollToItem(at: indexPath, at: .bottom, animated: false)
+      }
+      
+      // Horizontal direction adjustment
+//      let leftAdjustment = max(self.collectionNode.contentInset.left, 0)
+//      let rightAdjustment = max(self.collectionNode.contentInset.right, 0)
+//
+//      if layoutAttributes.frame.minX < (self.collectionNode.bounds.minX + leftAdjustment) {
+//        self.collectionNode.scrollToItem(at: indexPath, at: .left, animated: false)
+//      } else if layoutAttributes.frame.maxX > (self.collectionNode.bounds.maxX - rightAdjustment) {
+//        self.collectionNode.scrollToItem(at: indexPath, at: .right, animated: false)
+//      }
     }
   }
 
@@ -646,7 +649,7 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
     let cellNode = FeedCollectionCellNode(story: story, edit: enableEdit)
     cellNode.layer.cornerRadius = Constants.DefaultGuestimatedCellNodeWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
     cellNode.placeholderEnabled = true
-    cellNode.backgroundColor = UIColor.lightGray
+    cellNode.backgroundColor = UIColor.gray
     
     // TODO: Nice to Have, shadow underneath the cards
 //    cellNode.clipsToBounds = true

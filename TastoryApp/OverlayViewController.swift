@@ -162,7 +162,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
           CCLog.verbose("Pop Interaction Ended for \(self.restorationIdentifier != nil ? self.restorationIdentifier! : "")")
           
           // Adjust the progress so that the Transition Animator completes at the exact same time as the pop return animation
-          let adjustedProgress = 1.0 - Constants.DragReturnTransitionDuration/animator.duration.magnitude
+          let adjustedProgress = 1.0 - Constants.DragReturnTransitionDuration/animator.duration.magnitude  // 0.1 just to make sure
           interactor.update(CGFloat(max(0.0, adjustedProgress)))
           interactor.finish()
           
@@ -260,7 +260,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
   func setPopTransition(popFrom fromView: UIView,
                         withBgOverlay bgOverlay: Bool,
                         dismissIsInteractive: Bool,
-                        duration: TimeInterval = Constants.PopTransitionDuration) {
+                        duration: TimeInterval = Constants.PopTransitionDuration) -> TimeInterval {
     
     self.animator = PopTransitionAnimator(from: fromView, withBgOverlay: bgOverlay, transitionFor: Constants.PopTransitionDuration)
     self.navigationController?.delegate = self  // This will usually be nil. The Pusher needs to set the navigationControllerDelegate
@@ -270,6 +270,8 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
       self.dragGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGestureAction(_:)))
       self.interactor = PercentInteractor()
     }
+    
+    return duration
   }
   
   
