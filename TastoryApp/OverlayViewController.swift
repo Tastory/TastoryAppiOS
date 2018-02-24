@@ -132,6 +132,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
         // Don't do anything if this is not considered a downwards gesture
         if directionalTranslation > 0 {
           interactor.update(progress)
+          animator.bgOverlayView?.alpha = 1.0 - progress  // Take the background alpha into own hands to prevent flashing when interaction ends
           
           let dragTransform = CATransform3DMakeTranslation(gestureTranslation.x, gestureTranslation.y, 0.0)
           let scaleFactor = 1 - progress
@@ -148,33 +149,41 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
           // Remove the popFromView and place it in the container view for animation, temporarily
           let containerSuperview = self.view.superview!
           let presentingView = animator.popFromView
+          let presentingFrame = presentingView.superview!.convert(presentingView.frame, to: containerSuperview)
+          
           animator.remove(presentingView, thenAddTo: containerSuperview)
           containerSuperview.insertSubview(presentingView, belowSubview: self.view)
-          
-          let popSmallerTransform = animator.calculateScaleMove3DTransform(from: containerSuperview.frame, to: presentingView.frame)
-          let popToDragTransform = animator.calculateScaleMove3DTransform(from: presentingView.frame, to: self.view.frame)
+
+          let popSmallerTransform = animator.calculateScaleMove3DTransform(from: containerSuperview.frame, to: presentingFrame)
+          let popToDragTransform = animator.calculateScaleMove3DTransform(from: presentingFrame, to: self.view.frame)
           presentingView.layer.transform = popToDragTransform
           presentingView.isHidden = false
           
-          interactor.finish()
-          
           CCLog.verbose("Pop Interaction Ended for \(self.restorationIdentifier != nil ? self.restorationIdentifier! : "")")
+          
+          // Adjust the progress so that the Transition Animator completes at the exact same time as the pop return animation
+          let adjustedProgress = 1.0 - Constants.DragReturnTransitionDuration/animator.duration.magnitude
+          interactor.update(CGFloat(max(0.0, adjustedProgress)))
+          interactor.finish()
           
           UIView.animate(withDuration: Constants.DragReturnTransitionDuration, animations: {
             self.view.layer.transform = popSmallerTransform
             self.view.alpha = 0.0
+            animator.bgOverlayView?.alpha = 0.0  // Take the background alpha into own hands to prevent flashing when interaction ends
             presentingView.layer.transform = CATransform3DIdentity
             
           }, completion: { _ in
+            
             // Return the popFromView to where it was
-            guard let popFromSuperView = animator.popFromSuperview, let popFromOriginalCenter = animator.popFromOriginalCenter else {
+            guard let popFromSuperView = animator.popFromSuperview, let popFromOriginalFrame = animator.popFromOriginalFrame else {
               AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
                 CCLog.assert("Still expected PopFrom original information to be preserved by this point")
               }
               return
             }
+
             CCLog.verbose("Executing Put Back for \(self.restorationIdentifier != nil ? self.restorationIdentifier! : "")")
-            animator.putBack(presentingView, to: popFromSuperView, at: popFromOriginalCenter)
+            animator.putBack(presentingView, to: popFromSuperView, at: popFromOriginalFrame)
           })
           
           return
@@ -253,7 +262,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
                         dismissIsInteractive: Bool,
                         duration: TimeInterval = Constants.PopTransitionDuration) {
     
-    self.animator = PopTransitionAnimator(from: fromView, withBgOverlay: bgOverlay, transitionFor: duration)
+    self.animator = PopTransitionAnimator(from: fromView, withBgOverlay: bgOverlay, transitionFor: Constants.PopTransitionDuration)
     self.navigationController?.delegate = self  // This will usually be nil. The Pusher needs to set the navigationControllerDelegate
     self.transitioningDelegate = self
     

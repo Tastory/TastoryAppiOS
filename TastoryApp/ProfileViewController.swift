@@ -38,6 +38,7 @@ class ProfileViewController: OverlayViewController {
   private var feedCollectionNodeController: FeedCollectionNodeController?
   private var mapNavController: MapNavController?
   private var avatarImageNode: ASNetworkImageNode!
+  private var bottomGradientNode: GradientNode?
   private var isInitialLayout = true
 
   private var removeStoryList: [FoodieStory] = []
@@ -454,13 +455,13 @@ class ProfileViewController: OverlayViewController {
     if animated {
       UIView.animate(withDuration: duration) {
         self.topGradientBackground.alpha = alphaValue
-        self.feedContainerView.alpha = alphaValue
+        self.bottomGradientNode?.alpha = alphaValue
         self.noStoriesSelfImageView.alpha = alphaValue
         self.noStoriesOthersImageView.alpha = alphaValue
       }
     } else {
       topGradientBackground.alpha = alphaValue
-      feedContainerView.alpha = alphaValue
+      bottomGradientNode?.alpha = alphaValue
       noStoriesSelfImageView.alpha = alphaValue
       noStoriesOthersImageView.alpha = alphaValue
     }
@@ -769,17 +770,19 @@ class ProfileViewController: OverlayViewController {
                                          with: [topBackgroundBlackAlpha, .clear])
       topGradientNode.isOpaque = false
       topGradientNode.frame = topGradientBackground.bounds
+      topGradientBackground.alpha = 0.0
       topGradientBackground.addSubnode(topGradientNode)
       topGradientBackground.sendSubview(toBack: topGradientNode.view)
       
       let bottomBackgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.BottomGradientBlackAlpha)
-      let bottomGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
+      bottomGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
                                             endingAt: CGPoint(x: 0.5, y: 0.0),
                                             with: [bottomBackgroundBlackAlpha, .clear])
-      bottomGradientNode.isOpaque = false
-      bottomGradientNode.frame = feedContainerView.bounds
-      feedContainerView.addSubnode(bottomGradientNode)
-      feedContainerView.sendSubview(toBack: bottomGradientNode.view)
+      bottomGradientNode!.alpha = 0.0
+      bottomGradientNode!.isOpaque = false
+      bottomGradientNode!.frame = feedContainerView.bounds
+      feedContainerView.addSubnode(bottomGradientNode!)
+      feedContainerView.sendSubview(toBack: bottomGradientNode!.view)
     }
   }
   

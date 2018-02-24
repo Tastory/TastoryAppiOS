@@ -82,7 +82,7 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
     let scaleTransform = CATransform3DMakeScale(scale, scale, 1)
     let offsetTransform = CATransform3DMakeTranslation(0.0, -offset, 0.0)
       
-    attributes.alpha = alpha
+    //attributes.alpha = alpha  // This is so the smaller side covers is somewhat transparent. Is this really needed?
     attributes.transform3D = CATransform3DConcat(scaleTransform, offsetTransform)
     attributes.zIndex = Int(alpha * 10)
   }

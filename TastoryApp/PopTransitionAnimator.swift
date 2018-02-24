@@ -20,14 +20,12 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
   var overridePopDismiss: Bool = false
   var popFromView: UIView
   var popFromSuperview: UIView?
-  var popFromOriginalCenter: CGPoint?
+  var popFromOriginalFrame: CGRect?
   var popSmallerTransform: CATransform3D?
-  
-  
+  var duration: TimeInterval
+  var bgOverlayView: UIView?
   
   // MARK: - Private Instance Variable
-  private var bgOverlayView: UIView?
-  private var duration: TimeInterval
 
   
   
@@ -62,22 +60,22 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
   
   
   func remove(_ view: UIView, thenAddTo container: UIView) {
-    let originalCenter = view.center
+    let originalFrame = view.frame
     guard let originalSuperview = view.superview else {
       CCLog.fatal("View to remove must have a Superview")
     }
     view.removeFromSuperview()
+    view.frame = originalSuperview.convert(originalFrame, to: container)
     container.addSubview(view)
-    view.center = originalSuperview.convert(originalCenter, to: container)
   }
   
   
-  func putBack(_ view: UIView, to originalSuperview: UIView, at originalCenter: CGPoint) {
-    CCLog.verbose("PopTransitionAnimator Put Back at originalCenter x \(originalCenter.x), y \(originalCenter) for view.frame x \(view.frame.origin.x), y \(view.frame.origin.y)")
+  func putBack(_ view: UIView, to originalSuperview: UIView, at originalFrame: CGRect) {
+    CCLog.verbose("PopTransitionAnimator Put Back")
     view.removeFromSuperview()
-    originalSuperview.addSubview(view)
     view.layer.transform = CATransform3DIdentity
-    view.center = originalCenter
+    view.frame = originalFrame
+    originalSuperview.addSubview(view)
   }
   
   
@@ -96,7 +94,13 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     let containerView = transitionContext.containerView
     let presentingSubFrame = popFromView.superview!.convert(popFromView.frame, to: containerView)
     popFromSuperview = popFromView.superview!
-    popFromOriginalCenter = popFromView.center
+    popFromOriginalFrame = popFromView.frame
+    
+    // Printing the Pop From View
+//    CCLog.info("isPresenting = \(isPresenting)")
+//    CCLog.info("presentingSubFrame originX: \(presentingSubFrame.origin.x), originY: \(presentingSubFrame.origin.y), width: \(presentingSubFrame.width), height: \(presentingSubFrame.height)")
+//    CCLog.info("popFromView.frame originX: \(popFromView.frame.origin.x), originY: \(popFromView.frame.origin.y), width: \(popFromView.frame.width), height: \(popFromView.frame.height)")
+//    CCLog.info("popFromView.center x: \(popFromView.center.x), y: \(popFromView.center.y)")
     
     // Present Case
     if isPresenting {
@@ -116,6 +120,10 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
       // Remove the popFromView and place it in the container view for animation, temporarily
       remove(popFromView, thenAddTo: containerView)
       containerView.bringSubview(toFront: popFromView)
+      
+//      CCLog.info("popFromView after Removal")
+//      CCLog.info("popFromView.frame originX: \(popFromView.frame.origin.x), originY: \(popFromView.frame.origin.y), width: \(popFromView.frame.width), height: \(popFromView.frame.height)")
+//      CCLog.info("popFromView.center x: \(popFromView.center.x), y: \(popFromView.center.y)")
       
       // Down size the Presented View so it'll animate to the expected size
       let presentedSubFrame = toVC.view.frame
@@ -145,7 +153,7 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
       
       }, completion: { _ in
         // Return the popFromView to where it was
-        self.putBack(self.popFromView, to: self.popFromSuperview!, at: self.popFromOriginalCenter!)
+        self.putBack(self.popFromView, to: self.popFromSuperview!, at: self.popFromOriginalFrame!)
         self.popFromView.isHidden = true  // Hide it so it looks like it's popped out
         
         let transitionWasCancelled = transitionContext.transitionWasCancelled  // Get the Bool first, so there wont' be a retain cycle
@@ -179,11 +187,11 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
       UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0.0, options: timingCurve, animations: {
         toVC.view.alpha = 1.0
         
-        if let bgOverlayView = self.bgOverlayView {
-          bgOverlayView.alpha = 0.0
-        }
-        
         if !self.overridePopDismiss {
+          if let bgOverlayView = self.bgOverlayView {
+            bgOverlayView.alpha = 0.0
+          }
+          
           self.popFromView.layer.transform = CATransform3DIdentity
           
           let presentedSubFrame = fromVC.view.frame
@@ -195,7 +203,7 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
       }, completion: { _ in
         if !self.overridePopDismiss {
           // Return the popFromView to where it was
-          self.putBack(self.popFromView, to: self.popFromSuperview!, at: self.popFromOriginalCenter!)
+          self.putBack(self.popFromView, to: self.popFromSuperview!, at: self.popFromOriginalFrame!)
         }
         let transitionWasCancelled = transitionContext.transitionWasCancelled  // Get the Bool first, so there wont' be a retain cycle
         transitionContext.completeTransition(!transitionWasCancelled)
