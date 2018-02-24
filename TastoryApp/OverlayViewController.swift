@@ -191,6 +191,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
         
         UIView.animate(withDuration: Constants.FailInteractionAnimationDuration, animations: {
           self.view.layer.transform = CATransform3DIdentity
+          animator.bgOverlayView?.alpha = 1.0
         })
       }
     }
