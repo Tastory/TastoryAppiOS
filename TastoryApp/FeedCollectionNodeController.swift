@@ -649,7 +649,8 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
     let cellNode = FeedCollectionCellNode(story: story, edit: enableEdit)
     cellNode.layer.cornerRadius = Constants.DefaultGuestimatedCellNodeWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
     cellNode.placeholderEnabled = true
-    cellNode.backgroundColor = UIColor.gray
+    cellNode.backgroundColor = UIColor.clear
+    cellNode.isOpaque = false
     
     // TODO: Nice to Have, shadow underneath the cards
 //    cellNode.clipsToBounds = true

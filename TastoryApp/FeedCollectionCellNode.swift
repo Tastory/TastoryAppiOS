@@ -51,6 +51,7 @@ class FeedCollectionCellNode: ASCellNode {
     self.accessibilityIdentifier = "feedCollectionCellNode_" + (story.title?.replacingOccurrences(of: " ", with: "_"))!
 
     coverImageNode.url = FoodieFileObject.getS3URL(for: thumbnailFileName)
+    coverImageNode.isOpaque = false
     coverImageNode.placeholderColor = UIColor.gray
     coverImageNode.backgroundColor = UIColor.clear
     coverImageNode.placeholderEnabled = true
@@ -60,6 +61,7 @@ class FeedCollectionCellNode: ASCellNode {
       coverEditButton = ImageButtonNode()
       coverEditButton!.image = UIImage(named: "Profile-EditButton")
       coverEditButton!.isLayerBacked = false
+      coverEditButton!.isOpaque = false
     } else {
       enableSubtreeRasterization()
     }
@@ -71,6 +73,8 @@ class FeedCollectionCellNode: ASCellNode {
       coverTitleNode!.placeholderColor = Constants.CoverTitleTextColor
       coverTitleNode!.placeholderEnabled = true
       coverTitleNode!.isLayerBacked = true
+      coverTitleNode!.isOpaque = false
+      
       // Do we need this if we plan to drop shadows? coverTitleNode!.isOpaque = false
       
       // Create a gradient layer as title backing

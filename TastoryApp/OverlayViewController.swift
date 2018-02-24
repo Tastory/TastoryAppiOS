@@ -149,22 +149,23 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
           // Remove the popFromView and place it in the container view for animation, temporarily
           let containerSuperview = self.view.superview!
           let presentingView = animator.popFromView
-          let presentingFrame = presentingView.superview!.convert(presentingView.frame, to: containerSuperview)
           
-          animator.remove(presentingView, thenAddTo: containerSuperview)
+          // Remove should always be the first mutating call, as it contains a ignore interaction inside
+          let (popFromSuperview, popFromOriginalFrame) = animator.remove(presentingView, thenAddTo: containerSuperview)
+          let presentingFrame = presentingView.frame
           containerSuperview.insertSubview(presentingView, belowSubview: self.view)
 
-          let popSmallerTransform = animator.calculateScaleMove3DTransform(from: containerSuperview.frame, to: presentingFrame)
-          let popToDragTransform = animator.calculateScaleMove3DTransform(from: presentingFrame, to: self.view.frame)
+          let popSmallerTransform = PopTransitionAnimator.calculateScaleMove3DTransform(from: containerSuperview.frame, to: presentingFrame)
+          let popToDragTransform = PopTransitionAnimator.calculateScaleMove3DTransform(from: presentingFrame, to: self.view.frame)
           presentingView.layer.transform = popToDragTransform
           presentingView.isHidden = false
-          
-          CCLog.verbose("Pop Interaction Ended for \(self.restorationIdentifier != nil ? self.restorationIdentifier! : "")")
           
           // Adjust the progress so that the Transition Animator completes at the exact same time as the pop return animation
           let adjustedProgress = 1.0 - Constants.DragReturnTransitionDuration/animator.duration.magnitude  // 0.1 just to make sure
           interactor.update(CGFloat(max(0.0, adjustedProgress)))
           interactor.finish()
+          
+          CCLog.verbose("Pop Interaction Ended for \(self.restorationIdentifier != nil ? self.restorationIdentifier! : "")")
           
           UIView.animate(withDuration: Constants.DragReturnTransitionDuration, animations: {
             self.view.layer.transform = popSmallerTransform
@@ -174,16 +175,9 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
             
           }, completion: { _ in
             
-            // Return the popFromView to where it was
-            guard let popFromSuperView = animator.popFromSuperview, let popFromOriginalFrame = animator.popFromOriginalFrame else {
-              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                CCLog.assert("Still expected PopFrom original information to be preserved by this point")
-              }
-              return
-            }
-
+            // Putback should always be the last call, as it contains a end ignore interaction inside
             CCLog.verbose("Executing Put Back for \(self.restorationIdentifier != nil ? self.restorationIdentifier! : "")")
-            animator.putBack(presentingView, to: popFromSuperView, at: popFromOriginalFrame)
+            animator.putBack(presentingView, to: popFromSuperview, at: popFromOriginalFrame)
           })
           
           return
@@ -193,8 +187,6 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
       default:
         touchPointCenterOffset = nil
         interactor.hasStarted = false
-        animator.overridePopDismiss = false
-        
         interactor.cancel()
         
         UIView.animate(withDuration: Constants.FailInteractionAnimationDuration, animations: {
