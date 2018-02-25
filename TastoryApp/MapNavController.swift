@@ -280,6 +280,8 @@ class MapNavController: ASNavigationController {
   // Annotation Management
   
   func select(annotation: MKAnnotation, animated: Bool) {
+    //let annotationView = mapView.view(for: annotation)
+    
     mapView.selectAnnotation(annotation, animated: animated)
   }
   
@@ -429,9 +431,40 @@ class MapNavController: ASNavigationController {
 
 extension MapNavController: MKMapViewDelegate {
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+
+    if #available(iOS 11.0, *), let markerView = view as? MKMarkerAnnotationView {
+      markerView.titleVisibility = .visible
+    }
+    
+//    if let annotation = view.annotation as? StoryMapAnnotation, annotation.isSelected == false {
+//      annotation.isSelected = true
+//
+//      if #available(iOS 11.0, *) {
+//        mapView.removeAnnotation(annotation)
+//        mapView.addAnnotation(annotation)
+//        mapView.selectAnnotation(annotation, animated: true)
+//      }
+//    }
+
     if let annotation = view.annotation {
       mapDelegate?.mapNavController?(self, didSelect: annotation)
     }
+  }
+  
+  func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+    
+    if #available(iOS 11.0, *), let markerView = view as? MKMarkerAnnotationView {
+      markerView.titleVisibility = .adaptive
+    }
+    
+//    if let annotation = view.annotation, let storyAnnotation = annotation as? StoryMapAnnotation, mapView.annotations.contains(where: { $0 === annotation }) {
+//      storyAnnotation.isSelected = false
+//
+//      if #available(iOS 11.0, *) {
+//        mapView.removeAnnotation(storyAnnotation)
+//        mapView.addAnnotation(storyAnnotation)
+//      }
+//    }
   }
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -440,11 +473,35 @@ extension MapNavController: MKMapViewDelegate {
     }
     else if #available(iOS 11.0, *) {
       let markerAnnotationView = MKMarkerAnnotationView()
-      markerAnnotationView.titleVisibility = .visible
+      markerAnnotationView.image = UIImage(named: "TastoryPin")
+      markerAnnotationView.markerTintColor = UIColor.clear
+      markerAnnotationView.glyphTintColor = UIColor.clear
+      markerAnnotationView.glyphText = ""
+      
+//      if let storyAnnotation = annotation as? StoryMapAnnotation {
+//
+//        if storyAnnotation.isSelected {
+//          markerAnnotationView.titleVisibility = .visible
+//          markerAnnotationView.displayPriority = .required
+//          //markerAnnotationView.setSelected(true, animated: true)
+//        } else {
+//          markerAnnotationView.titleVisibility = .adaptive
+//          markerAnnotationView.displayPriority = .required
+//        }
+//      } else {
+//        markerAnnotationView.titleVisibility = .adaptive
+//        markerAnnotationView.displayPriority = .required
+//      }
+      
+      markerAnnotationView.titleVisibility = .adaptive
       markerAnnotationView.displayPriority = .required
       return markerAnnotationView
+      
     } else {
-      return nil
+      let pointAnnotation = MKAnnotationView()
+      pointAnnotation.image = UIImage(named: "TastoryPin")
+      pointAnnotation.canShowCallout = true
+      return pointAnnotation
     }
   }
 }
