@@ -179,16 +179,13 @@ class LogInViewController: OverlayViewController {
         
         let storyboard = UIStoryboard(name: "LogInSignUp", bundle: nil)
         
-        guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "IntroViewController") as? IntroViewController else {
+        guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "UsernameViewController") as? UsernameViewController else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.fatal("ViewController initiated not of IntroViewController Class!!")
+            CCLog.fatal("ViewController initiated not of UsernameViewController Class!!")
           }
           return
         }
         
-        viewController.firstLabelText = "Thanks for Signing Up!"
-        viewController.secondLabelText = "Go ahead, drool over the Tasty Stories around you~"
-        viewController.enableResend = false
         viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: false)
         self.pushPresent(viewController, animated: true)
         
@@ -323,7 +320,6 @@ class LogInViewController: OverlayViewController {
 
     usernameField.delegate = self
     passwordField.delegate = self
-
   }
 
   

@@ -468,7 +468,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vxU-Ul-XjE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="226.875" y="-471.12676056338029"/>
+            <point key="canvasLocation" x="226" y="-466"/>
         </scene>
         <!--Sign Up View Controller-->
         <scene sceneID="1mq-CY-cVV">
@@ -902,6 +902,133 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="R5s-HR-NSv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="874" y="879"/>
+        </scene>
+        <!--Username View Controller-->
+        <scene sceneID="m61-6z-EjS">
+            <objects>
+                <viewController storyboardIdentifier="UsernameViewController" id="Nag-ca-uxh" customClass="UsernameViewController" customModule="TastoryApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="jym-Zv-cWN">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Launch-Background-Red" translatesAutoresizingMaskIntoConstraints="NO" id="3rZ-Ei-AgU">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            </imageView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="cFI-hJ-5G6">
+                                <rect key="frame" x="57.5" y="183" width="260" height="141"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Please choose a username" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JlY-5X-MBj">
+                                        <rect key="frame" x="0.0" y="0.0" width="260" height="18"/>
+                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="15"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                        <size key="shadowOffset" width="0.0" height="0.0"/>
+                                    </label>
+                                    <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fzw-cy-FLU" userLabel="Spacer">
+                                        <rect key="frame" x="0.0" y="18" width="260" height="12"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="12" id="MwM-MN-QLj"/>
+                                        </constraints>
+                                    </view>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="QhL-I1-biK">
+                                        <rect key="frame" x="0.0" y="30" width="260" height="35"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="Mca-0w-Fdq" userLabel="Spacer">
+                                                <rect key="frame" x="0.0" y="0.0" width="260" height="11"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </view>
+                                            <stackView opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="ryO-yJ-jTF">
+                                                <rect key="frame" x="0.0" y="11" width="260" height="18"/>
+                                                <subviews>
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="900" verticalCompressionResistancePriority="900" image="Login-UserIcon" translatesAutoresizingMaskIntoConstraints="NO" id="D1w-GP-5Qp">
+                                                        <rect key="frame" x="0.0" y="0.0" width="18" height="18"/>
+                                                    </imageView>
+                                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="15" translatesAutoresizingMaskIntoConstraints="NO" id="WdH-pG-Nwu" userLabel="Username Field">
+                                                        <rect key="frame" x="38" y="0.0" width="222" height="18"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="15"/>
+                                                        <textInputTraits key="textInputTraits" textContentType="email"/>
+                                                    </textField>
+                                                </subviews>
+                                            </stackView>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r2H-ge-Pp5" userLabel="Spacer">
+                                                <rect key="frame" x="0.0" y="29" width="260" height="5"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="5" id="M3o-I7-OSg"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OfK-kB-RGS" userLabel="Line">
+                                                <rect key="frame" x="0.0" y="34" width="260" height="1"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="1" id="a9T-Vb-sIc"/>
+                                                </constraints>
+                                            </view>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="35" id="MgB-zq-IgH"/>
+                                        </constraints>
+                                    </stackView>
+                                    <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="56j-dD-eCo" userLabel="Spacer">
+                                        <rect key="frame" x="0.0" y="65" width="260" height="20"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="ofY-Ol-tPU"/>
+                                        </constraints>
+                                    </view>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZRq-eu-sSe">
+                                        <rect key="frame" x="0.0" y="85" width="260" height="56"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="GLB-Hb-Nhz">
+                                                <rect key="frame" x="0.0" y="0.0" width="66" height="56"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </view>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uhh-5l-dy5">
+                                                <rect key="frame" x="66" y="0.0" width="128" height="56"/>
+                                                <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="15"/>
+                                                <state key="normal" title="OK" backgroundImage="Login-SmallSolid">
+                                                    <color key="titleColor" red="0.98039215690000003" green="0.035294117649999998" blue="0.035294117649999998" alpha="1" colorSpace="calibratedRGB"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="okAction:" destination="Nag-ca-uxh" eventType="touchUpInside" id="pUJ-As-ibR"/>
+                                                </connections>
+                                            </button>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="10" verticalHuggingPriority="10" horizontalCompressionResistancePriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="TxK-zf-7vN">
+                                                <rect key="frame" x="194" y="0.0" width="66" height="56"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </view>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="TxK-zf-7vN" firstAttribute="width" secondItem="GLB-Hb-Nhz" secondAttribute="width" id="6SV-KP-kw7"/>
+                                        </constraints>
+                                    </stackView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="260" id="TgZ-ou-ceS"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="cFI-hJ-5G6" firstAttribute="centerY" secondItem="jym-Zv-cWN" secondAttribute="centerY" constant="-80" id="82l-00-m1r"/>
+                            <constraint firstAttribute="bottom" secondItem="3rZ-Ei-AgU" secondAttribute="bottom" id="ElT-d1-chT"/>
+                            <constraint firstItem="cFI-hJ-5G6" firstAttribute="centerX" secondItem="Llu-e3-for" secondAttribute="centerX" id="LWB-FZ-2FY"/>
+                            <constraint firstItem="3rZ-Ei-AgU" firstAttribute="leading" secondItem="jym-Zv-cWN" secondAttribute="leading" id="N9p-Aw-Sgw"/>
+                            <constraint firstAttribute="trailing" secondItem="3rZ-Ei-AgU" secondAttribute="trailing" id="bBA-NB-sZT"/>
+                            <constraint firstItem="3rZ-Ei-AgU" firstAttribute="top" secondItem="jym-Zv-cWN" secondAttribute="top" id="yJn-YQ-2mE"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Llu-e3-for"/>
+                    </view>
+                    <connections>
+                        <outlet property="usernameField" destination="WdH-pG-Nwu" id="LRm-LH-Cjb"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="E7M-UU-9He" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="225" y="878"/>
         </scene>
     </scenes>
     <resources>

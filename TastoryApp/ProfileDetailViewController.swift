@@ -357,7 +357,7 @@ class ProfileDetailViewController: OverlayViewController {
     warningLabel.text = ""
     websiteButton.isHidden = true
 
-    // Add a Tap gesture recognizer to dismiss th keyboard when needed
+    // Add a Tap gesture recognizer to dismiss the keyboard when needed
     let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
     tapGestureRecognizer.numberOfTapsRequired = 1
     tapGestureRecognizer.numberOfTouchesRequired = 1
