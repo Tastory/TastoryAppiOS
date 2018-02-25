@@ -192,7 +192,7 @@ class CategoryViewController: OverlayViewController {
     navigationItem.rightBarButtonItem!.setTitleTextAttributes(titleTextAttributes, for: .normal)
     navigationItem.rightBarButtonItem!.tintColor = FoodieGlobal.Constants.ThemeColor
     
-    // Update the appearance
+    // Update the Search bar appearance
     UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor]
     categorySearchBar.delegate = self
     

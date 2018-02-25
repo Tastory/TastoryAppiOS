@@ -33,7 +33,8 @@ class FiltersViewController: OverlayViewController {
   
   // MARK: - IBOutlet
   
-  @IBOutlet var selectedLabel: UILabel!
+  @IBOutlet var categoriesLabel: UILabel!
+  @IBOutlet var mealTypesLabel: UILabel!
   @IBOutlet var priceSlider: RangeSlider!
   @IBOutlet var priceRangeView: UIView!
   
@@ -49,6 +50,23 @@ class FiltersViewController: OverlayViewController {
       }
       return
     }
+    viewController.delegate = self
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: 2.0, dismissIsInteractive: true)
+    pushPresent(viewController, animated: true)
+  }
+  
+  
+  @IBAction func mealTypeTap(_ sender: UITapGestureRecognizer) {
+    let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MealTableViewController") as? MealTableViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of MealTableViewController Class!!")
+      }
+      return
+    }
+    
+    viewController.mealType = workingFilter.selectedMealTypes
+    viewController.isInNavController = true
     viewController.delegate = self
     viewController.setSlideTransition(presentTowards: .left, withGapSize: 2.0, dismissIsInteractive: true)
     pushPresent(viewController, animated: true)
@@ -82,22 +100,41 @@ class FiltersViewController: OverlayViewController {
     priceSlider.lowerValue = workingFilter.priceLowerLimit
     priceSlider.upperValue = workingFilter.priceUpperLimit
     updateSelectedCategoriesLabel()
+    updateSelectedMealTypesLabel()
   }
   
   
   private func updateSelectedCategoriesLabel() {
     if workingFilter.selectedCategories.count > 0 {
       if workingFilter.selectedCategories.count == 1, let name = workingFilter.selectedCategories[0].name {
-        selectedLabel.text = name
+        categoriesLabel.text = name
       } else {
-        selectedLabel.text = "\(workingFilter.selectedCategories.count) selected"
+        categoriesLabel.text = "\(workingFilter.selectedCategories.count) selected"
       }
-      selectedLabel.isHidden = false
+      categoriesLabel.isHidden = false
     } else {
-      selectedLabel.isHidden = true
+      categoriesLabel.isHidden = true
     }
   }
   
+  
+  private func updateSelectedMealTypesLabel() {
+    mealTypesLabel.text = ""
+    
+    if workingFilter.selectedMealTypes.count > 0 {
+      
+      for selectedMealType in workingFilter.selectedMealTypes {
+        if mealTypesLabel.text!.count > 1 {
+          mealTypesLabel.text! += ", "
+        }
+        mealTypesLabel.text! += selectedMealType.rawValue
+      }
+      
+      mealTypesLabel.isHidden = false
+    } else {
+      mealTypesLabel.isHidden = true
+    }
+  }
   
   
   // MARK: - View Controller Lifecycle
@@ -122,6 +159,7 @@ class FiltersViewController: OverlayViewController {
     priceSlider.lowerValue = workingFilter.priceLowerLimit
     priceSlider.upperValue = workingFilter.priceUpperLimit
     updateSelectedCategoriesLabel()
+    updateSelectedMealTypesLabel()
   }
   
   
@@ -160,5 +198,13 @@ extension FiltersViewController: CategoryReturnDelegate {
   func categorySearchComplete(categories: [FoodieCategory]) {
     workingFilter.selectedCategories = categories
     updateSelectedCategoriesLabel()
+  }
+}
+
+
+extension FiltersViewController: MealReturnDelegate {
+  func completedSelection(selectedMeals: [MealType]) {
+    workingFilter.selectedMealTypes = selectedMeals
+    updateSelectedMealTypesLabel()
   }
 }

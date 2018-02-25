@@ -215,6 +215,7 @@ class DiscoverViewController: OverlayViewController {
                                           categoryIDs: self.discoverFilter?.selectedCategories.map( { $0.foursquareCategoryID ?? "" } ) ?? [],
                                           priceUpperLimit: self.discoverFilter?.priceUpperLimit ?? FoodieFilter.Constants.PriceUpperLimit,
                                           priceLowerLimit: self.discoverFilter?.priceLowerLimit ?? FoodieFilter.Constants.PriceLowerLimit,
+                                          mealTypes: self.discoverFilter?.selectedMealTypes.map( { $0.rawValue }) ?? [],
                                           success: searchSuccess,
                                           note: searchNote,
                                           stories: stories?.count ?? 0)
@@ -343,6 +344,7 @@ class DiscoverViewController: OverlayViewController {
     if let filter = discoverFilter {
       query.addCategoryFilter(for: filter.selectedCategories)
       query.addPriceFilter(lowerLimit: filter.priceLowerLimit, upperLimit: filter.priceUpperLimit)
+      query.addMealTypeFilter(for: filter.selectedMealTypes)
     }
     
     if !onAllUsers {
@@ -385,6 +387,7 @@ class DiscoverViewController: OverlayViewController {
     }
   }
 
+  
   private func unwrapQueryRefreshDiscoveryView(stories: [FoodieStory]?,query: FoodieQuery?, error :Error?, currentLocation coordinate: CLLocationCoordinate2D? = nil) {
     if let error = error {
       if let error = error as? ErrorCode, error == .mapQueryExceededMaxLat {

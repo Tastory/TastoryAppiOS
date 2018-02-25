@@ -100,6 +100,9 @@ class FoodieQuery {
   // Parameters for filtering by Category
   private var categories = [String]()
   
+  // Paramters for filtering by Meal Type
+  private var mealTypes = [String]()
+  
   // Parameters for filtering by Hour of Operation
   private var hourOpen: String?
   
@@ -243,6 +246,14 @@ class FoodieQuery {
     }
   }
   
+  
+  func addMealTypeFilter(for mealTypes: [MealType]) {
+    self.mealTypes.removeAll()
+    
+    for mealType in mealTypes {
+      self.mealTypes.append(mealType.rawValue)
+    }
+  }
   
   
   func addHourFilter() {
@@ -483,6 +494,11 @@ class FoodieQuery {
     if let venueSubQuery = setupVenueQuery(for: venueSubQuery) {
       coreQuery.whereKey("venue", matchesQuery: venueSubQuery)
       pfVenueSubQuery = venueSubQuery
+    }
+    
+    // If there's any Meal Type filtering criteria
+    if mealTypes.count > 0 {
+      coreQuery.whereKey("mealType", containedIn: mealTypes)
     }
     
     // See your own story in addition to Discoverability filtering?

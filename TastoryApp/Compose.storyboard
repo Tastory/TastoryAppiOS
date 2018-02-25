@@ -1137,44 +1137,26 @@
             </objects>
             <point key="canvasLocation" x="3031" y="-1865"/>
         </scene>
-        <!--Meal Table View Controller-->
+        <!--Looking for a Meal?-->
         <scene sceneID="4ND-T8-TCT">
             <objects>
-                <viewController storyboardIdentifier="MealTableViewController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Z1H-G4-gW1" customClass="MealTableViewController" customModule="TastoryApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MealTableViewController" title="Looking for a Meal?" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Z1H-G4-gW1" customClass="MealTableViewController" customModule="TastoryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="JId-5n-ugh">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="249" alwaysBounceVertical="YES" keyboardDismissMode="interactive" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="72b-Dl-NDb">
-                                <rect key="frame" x="0.0" y="65" width="375" height="602"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <view key="tableFooterView" contentMode="scaleToFill" id="FTO-aD-Rbw">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Rm-H0-sNN">
-                                            <rect key="frame" x="100.5" y="10" width="174" height="40"/>
-                                            <state key="normal" title="Done" backgroundImage="ProfileDetails-ButtonFrame">
-                                                <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                            </state>
-                                            <connections>
-                                                <action selector="doneAction:" destination="Z1H-G4-gW1" eventType="touchUpInside" id="5Lr-De-SaD"/>
-                                            </connections>
-                                        </button>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstAttribute="bottom" secondItem="2Rm-H0-sNN" secondAttribute="bottom" constant="10" id="FIS-hb-i4k"/>
-                                        <constraint firstItem="2Rm-H0-sNN" firstAttribute="top" secondItem="FTO-aD-Rbw" secondAttribute="top" constant="10" id="frW-Zk-I1V"/>
-                                        <constraint firstItem="2Rm-H0-sNN" firstAttribute="centerX" secondItem="FTO-aD-Rbw" secondAttribute="centerX" id="r6g-vV-etA"/>
-                                    </constraints>
-                                </view>
-                            </tableView>
-                            <stackView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="02f-G3-Zrl">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="65"/>
+                            <stackView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="02f-G3-Zrl" userLabel="Header Stack">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <subviews>
-                                    <view opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="375" placeholderIntrinsicHeight="20" translatesAutoresizingMaskIntoConstraints="NO" id="T4b-Wz-UQ0">
+                                    <view opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="375" placeholderIntrinsicHeight="20" translatesAutoresizingMaskIntoConstraints="NO" id="T4b-Wz-UQ0" userLabel="Header">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
                                         <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose a Meal" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e76-8z-Zug">
+                                                <rect key="frame" x="132" y="32.5" width="111" height="19"/>
+                                                <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="16"/>
+                                                <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ojM-v5-pid">
                                                 <rect key="frame" x="15" y="31" width="22" height="22"/>
                                                 <accessibility key="accessibilityConfiguration" identifier="venueTableBackButton"/>
@@ -1190,6 +1172,9 @@
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
+                                            <constraint firstItem="e76-8z-Zug" firstAttribute="centerX" secondItem="T4b-Wz-UQ0" secondAttribute="centerX" id="DT4-Yu-igM"/>
+                                            <constraint firstItem="e76-8z-Zug" firstAttribute="centerY" secondItem="T4b-Wz-UQ0" secondAttribute="bottom" constant="-22" id="GDq-V9-hqY"/>
+                                            <constraint firstItem="e76-8z-Zug" firstAttribute="centerY" secondItem="ojM-v5-pid" secondAttribute="centerY" id="KO1-Jm-hco"/>
                                             <constraint firstItem="ojM-v5-pid" firstAttribute="leading" secondItem="T4b-Wz-UQ0" secondAttribute="leading" constant="15" id="rHR-Fp-MlS"/>
                                         </constraints>
                                     </view>
@@ -1200,35 +1185,48 @@
                                             <constraint firstAttribute="height" constant="1" id="Qej-wA-wL4"/>
                                         </constraints>
                                     </view>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="249" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" keyboardDismissMode="interactive" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="72b-Dl-NDb">
+                                        <rect key="frame" x="0.0" y="65" width="375" height="602"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <view key="tableFooterView" contentMode="scaleToFill" id="FTO-aD-Rbw" userLabel="Done Block">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Rm-H0-sNN">
+                                                    <rect key="frame" x="100.5" y="10" width="174" height="40"/>
+                                                    <state key="normal" title="Done" backgroundImage="ProfileDetails-ButtonFrame">
+                                                        <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    </state>
+                                                    <connections>
+                                                        <action selector="doneAction:" destination="Z1H-G4-gW1" eventType="touchUpInside" id="5Lr-De-SaD"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="2Rm-H0-sNN" secondAttribute="bottom" constant="10" id="FIS-hb-i4k"/>
+                                                <constraint firstItem="2Rm-H0-sNN" firstAttribute="top" secondItem="FTO-aD-Rbw" secondAttribute="top" constant="10" id="frW-Zk-I1V"/>
+                                                <constraint firstItem="2Rm-H0-sNN" firstAttribute="centerX" secondItem="FTO-aD-Rbw" secondAttribute="centerX" id="r6g-vV-etA"/>
+                                            </constraints>
+                                        </view>
+                                    </tableView>
                                 </subviews>
                             </stackView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose a Meal" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e76-8z-Zug">
-                                <rect key="frame" x="132" y="33" width="111" height="19"/>
-                                <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="16"/>
-                                <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="02f-G3-Zrl" firstAttribute="leading" secondItem="nyb-08-fOZ" secondAttribute="leading" id="2UU-7E-76Y"/>
                             <constraint firstItem="02f-G3-Zrl" firstAttribute="top" secondItem="JId-5n-ugh" secondAttribute="top" id="6GO-jx-yJo"/>
-                            <constraint firstAttribute="bottom" secondItem="72b-Dl-NDb" secondAttribute="bottom" id="6GX-d3-nti"/>
-                            <constraint firstItem="72b-Dl-NDb" firstAttribute="leading" secondItem="nyb-08-fOZ" secondAttribute="leading" id="7n5-Oo-Bck"/>
-                            <constraint firstItem="e76-8z-Zug" firstAttribute="centerX" secondItem="T4b-Wz-UQ0" secondAttribute="centerX" id="AUB-zQ-Zwf"/>
-                            <constraint firstItem="ojM-v5-pid" firstAttribute="centerY" secondItem="e76-8z-Zug" secondAttribute="centerY" id="Eqc-CJ-uXJ"/>
-                            <constraint firstItem="72b-Dl-NDb" firstAttribute="top" secondItem="02f-G3-Zrl" secondAttribute="bottom" id="YJt-uM-bUq"/>
-                            <constraint firstItem="e76-8z-Zug" firstAttribute="centerY" secondItem="T4b-Wz-UQ0" secondAttribute="bottom" constant="-22" id="aEW-b3-6Wv"/>
+                            <constraint firstAttribute="bottom" secondItem="02f-G3-Zrl" secondAttribute="bottom" id="Dyy-s8-t8V"/>
                             <constraint firstItem="nyb-08-fOZ" firstAttribute="trailing" secondItem="02f-G3-Zrl" secondAttribute="trailing" id="fQO-DU-ZrG"/>
-                            <constraint firstItem="nyb-08-fOZ" firstAttribute="trailing" secondItem="72b-Dl-NDb" secondAttribute="trailing" id="rQI-6K-SIQ"/>
                             <constraint firstItem="nyb-08-fOZ" firstAttribute="top" secondItem="T4b-Wz-UQ0" secondAttribute="bottom" constant="-44" id="wgC-do-S3J"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="nyb-08-fOZ"/>
                     </view>
                     <connections>
+                        <outlet property="headerLineView" destination="VMj-DU-Vj1" id="Opw-Vs-Hn7"/>
+                        <outlet property="headerView" destination="T4b-Wz-UQ0" id="umY-qv-KCb"/>
                         <outlet property="mealTableView" destination="72b-Dl-NDb" id="Wtg-wN-8RW"/>
-                        <outlet property="stackView" destination="02f-G3-Zrl" id="qDs-GF-IqO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mJn-j9-hXr" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -27,9 +27,13 @@ class MealTableViewController: OverlayViewController {
   // MARK: - Public Instance Variables
   var mealType: [MealType]?
   var delegate: MealReturnDelegate? = nil
-
+  var isInNavController: Bool = false
+  
+  
   // MARK: - IBOutlet
-  @IBOutlet weak var stackView: UIStackView!
+
+  @IBOutlet var headerView: UIView!
+  @IBOutlet var headerLineView: UIView!
   @IBOutlet weak var mealTableView: UITableView!
 
 
@@ -38,6 +42,7 @@ class MealTableViewController: OverlayViewController {
      popDismiss(animated: true)
   }
 
+  
   @IBAction func doneAction(_ sender: UIButton) {
     guard let mealType = mealType else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
@@ -50,22 +55,37 @@ class MealTableViewController: OverlayViewController {
     popDismiss(animated: true)
   }
 
+  
   // MARK: - View Controller Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
+    
     mealTableView.allowsSelection = false
     mealTableView.dataSource = self
     mealTableView.register(UINib.init(nibName: String(describing: CategoryTableViewCell.self), bundle: nil), forCellReuseIdentifier: "CategoryCell")
-
-    // Drop Shadow at the back of the View
-    view.layer.masksToBounds = false
-    view.layer.shadowColor = UIColor.black.cgColor
-    view.layer.shadowOffset = Constants.StackShadowOffset
-    view.layer.shadowRadius = Constants.StackShadowRadius
-    view.layer.shadowOpacity = Constants.StackShadowOpacity
-
+    
+    // This is embedded as part of a standard Nav Controller, adjust VC accordingly
+    if isInNavController {
+      navigationController?.delegate = self
+      
+      // We don't need the header in this case
+      headerView.isHidden = true
+      headerLineView.isHidden = true
+      
+      let leftArrowImage = UIImage(named: "Settings-LeftArrowDark")
+      navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(leftBarButtonAction(_:)))
+      
+    } else {
+      // Drop Shadow at the back of the View if not part of a standard Nav Controller
+      view.layer.masksToBounds = false
+      view.layer.shadowColor = UIColor.black.cgColor
+      view.layer.shadowOffset = Constants.StackShadowOffset
+      view.layer.shadowRadius = Constants.StackShadowRadius
+      view.layer.shadowOpacity = Constants.StackShadowOpacity
+    }
   }
 }
+
 
 // MARK: - Table View Data Source Protocol Conformance
 extension MealTableViewController: UITableViewDataSource {
@@ -102,6 +122,7 @@ extension MealTableViewController: UITableViewDataSource {
     return cell
   }
 }
+
 
 // MARK: - Category Table View Cell Delegate Protocol Conformance
 extension MealTableViewController: CategoryTableViewCellDelegate {

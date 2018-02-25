@@ -24,12 +24,12 @@ class FoodieFilter {
   static var main = FoodieFilter()
   
   
+  
   // MARK: - Public Instance Variables
   
   var isDefault: Bool {
-    if selectedCategories.count == 0,
-      priceLowerLimit == Constants.PriceLowerLimit,
-      priceUpperLimit == Constants.PriceUpperLimit {
+    if selectedCategories.count == 0, selectedMealTypes.count == 0,
+      priceLowerLimit == Constants.PriceLowerLimit, priceUpperLimit == Constants.PriceUpperLimit {
       return true
     } else {
       return false
@@ -37,19 +37,22 @@ class FoodieFilter {
   }
   
   
+  
   // MARK: - Public Instance Variables
   
   var selectedCategories = [FoodieCategory]()
   var priceLowerLimit = Constants.PriceLowerLimit
   var priceUpperLimit = Constants.PriceUpperLimit
+  var selectedMealTypes: [MealType] = []
+  
   
   
   // MARK: - Public Instance Functions
+  
   func resetAll() {
     selectedCategories = [FoodieCategory]()
     priceLowerLimit = Constants.PriceLowerLimit
     priceUpperLimit = Constants.PriceUpperLimit
+    selectedMealTypes = []
   }
 }
-
-
