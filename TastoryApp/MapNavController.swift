@@ -10,7 +10,7 @@
 import AsyncDisplayKit
 
 @objc protocol MapNavControllerDelegate {
-  @objc optional func mapNavController(_ mapNavController: MapNavController, didSelect annotation: MKAnnotation, byCode isCodeSelection: Bool)
+  @objc optional func mapNavController(_ mapNavController: MapNavController, didSelect annotation: MKAnnotation)
   
   @objc optional func mapNavControllerWasMovedByUser(_ mapNavController: MapNavController)
 }
@@ -46,8 +46,7 @@ class MapNavController: ASNavigationController {
   private var exposedRectInset: UIEdgeInsets?
   private var exposedRect: CGRect?
   private var currentMapWidth: CLLocationDistance?
-  private var lastCodeSelectedAnnotation: MKAnnotation?
-  
+
   
   // MARK: - Public Instance Variable
   
@@ -281,15 +280,9 @@ class MapNavController: ASNavigationController {
   // Annotation Management
   
   func select(annotation: MKAnnotation, animated: Bool) {
+    //let annotationView = mapView.view(for: annotation)
     
-    if mapView.selectedAnnotations.isEmpty {
-      lastCodeSelectedAnnotation = annotation
-      mapView.selectAnnotation(annotation, animated: animated)
-      
-    } else if mapView.selectedAnnotations[0] !== annotation {
-      lastCodeSelectedAnnotation = annotation
-      mapView.selectAnnotation(annotation, animated: animated)
-    }
+    mapView.selectAnnotation(annotation, animated: animated)
   }
   
   func add(annotation: MKAnnotation) {
@@ -454,14 +447,7 @@ extension MapNavController: MKMapViewDelegate {
 //    }
 
     if let annotation = view.annotation {
-      var isCodeSelected = false
-      
-      if lastCodeSelectedAnnotation === annotation {
-        isCodeSelected = true
-        lastCodeSelectedAnnotation = nil
-      }
-      
-      mapDelegate?.mapNavController?(self, didSelect: annotation, byCode: isCodeSelected)
+      mapDelegate?.mapNavController?(self, didSelect: annotation)
     }
   }
   
@@ -488,7 +474,7 @@ extension MapNavController: MKMapViewDelegate {
     else if #available(iOS 11.0, *) {
       let markerAnnotationView = MKMarkerAnnotationView()
       markerAnnotationView.markerTintColor = UIColor(red: 1.0, green: 85.0/255.0, blue: 95.0/255.0, alpha: 1.0)
-      markerAnnotationView.glyphImage = UIImage(named: "PinHead")
+      markerAnnotationView.glyphImage = UIImage(named: "PinHole")
       
 //      if let storyAnnotation = annotation as? StoryMapAnnotation {
 //

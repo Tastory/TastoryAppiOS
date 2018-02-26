@@ -355,12 +355,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     }
   }
 
-  
-  func displayStory(withStoryIndex storyIndex: Int) {
-    displayStory(didSelectItemAt: toIndexPath(from: storyIndex))
-  }
-  
-  
   func displayStory(didSelectItemAt indexPath: IndexPath) {
 
     if deepLinkStoryId != nil {
