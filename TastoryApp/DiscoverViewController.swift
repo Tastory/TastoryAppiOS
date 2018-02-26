@@ -1293,7 +1293,13 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
             }
             searchButtonsHidden(is: true)
           }
-          mapNavController?.select(annotation: annotation, animated: true)
+          
+          // If there is a selected annotation and the annotations matches, then just break. Else select the annotation
+          guard let selectedAnnotation = mapNavController?.selectedAnnotation, selectedAnnotation === annotation else {
+            mapNavController?.select(annotation: annotation, animated: true)
+            return
+          }
+          break
         }
       }
     }
@@ -1350,12 +1356,19 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
 
 extension DiscoverViewController: MapNavControllerDelegate {
   
-  func mapNavController(_ mapNavController: MapNavController, didSelect annotation: MKAnnotation) {
+  func mapNavController(_ mapNavController: MapNavController, didSelect annotation: MKAnnotation, byCode isCodeSelected: Bool) {
     
     if let storyAnnotation = annotation as? StoryMapAnnotation, feedCollectionNodeController.layoutType == .carousel {
       for index in 0..<storyArray.count {
         if storyAnnotation.story === storyArray[index] {
-          feedCollectionNodeController.scrollTo(storyIndex: index)
+          
+          if let highlightedIndex = feedCollectionNodeController.highlightedStoryIndex, highlightedIndex == index {
+            if !isCodeSelected {
+              //feedCollectionNodeController.displayStory(withStoryIndex: index)
+            }
+          } else {
+            feedCollectionNodeController.scrollTo(storyIndex: index)
+          }
           break
         }
       }
