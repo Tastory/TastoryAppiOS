@@ -36,6 +36,7 @@
 		8C208FFD1FE4BB9400AA3D64 /* Bundle+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C208FFC1FE4BB9400AA3D64 /* Bundle+Extension.swift */; };
 		8C208FFF1FE4DD1F00AA3D64 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C208FFE1FE4DD1F00AA3D64 /* Analytics.swift */; };
 		8C2090031FE879AF00AA3D64 /* Double+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2090021FE879AF00AA3D64 /* Double+Extension.swift */; };
+		8C29E5512043B98300196D1E /* UsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C29E5502043B98300196D1E /* UsernameViewController.swift */; };
 		8C2EFCEB1FC3AF4E00937E3C /* MainVectors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */; };
 		8C2F796F1F4C0D9A00851334 /* SwiftRetry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */; };
 		8C2F79731F4E23F700851334 /* LocationWatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2F79721F4E23F700851334 /* LocationWatch.swift */; };
@@ -268,6 +269,7 @@
 		8C208FFC1FE4BB9400AA3D64 /* Bundle+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Extension.swift"; sourceTree = "<group>"; };
 		8C208FFE1FE4DD1F00AA3D64 /* Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics.swift; sourceTree = "<group>"; };
 		8C2090021FE879AF00AA3D64 /* Double+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Extension.swift"; sourceTree = "<group>"; };
+		8C29E5502043B98300196D1E /* UsernameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameViewController.swift; sourceTree = "<group>"; };
 		8C2EFCEA1FC3AF4E00937E3C /* MainVectors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MainVectors.xcassets; sourceTree = "<group>"; };
 		8C2F796E1F4C0D9A00851334 /* SwiftRetry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftRetry.swift; sourceTree = "<group>"; };
 		8C2F79721F4E23F700851334 /* LocationWatch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationWatch.swift; sourceTree = "<group>"; };
@@ -771,6 +773,7 @@
 		8CD5A4DB1F9BFD4900CFD670 /* LogInSignUp */ = {
 			isa = PBXGroup;
 			children = (
+				8C29E5502043B98300196D1E /* UsernameViewController.swift */,
 				8C0590481EC65B0000027E91 /* RootViewController.swift */,
 				8C1FF1301F7CA6C10062312C /* LogInViewController.swift */,
 				8C14E28A1F7F42FD001CC869 /* EmailResetViewController.swift */,
@@ -1353,7 +1356,6 @@
 				"${BUILT_PRODUCTS_DIR}/PINOperation/PINOperation.framework",
 				"${BUILT_PRODUCTS_DIR}/PINRemoteImage/PINRemoteImage.framework",
 				"${BUILT_PRODUCTS_DIR}/Parse/Parse.framework",
-				"${BUILT_PRODUCTS_DIR}/ParseFacebookUtilsV4/ParseFacebookUtilsV4.framework",
 				"${BUILT_PRODUCTS_DIR}/PryntTrimmerView/PryntTrimmerView.framework",
 				"${BUILT_PRODUCTS_DIR}/QuadratTouch/QuadratTouch.framework",
 				"${BUILT_PRODUCTS_DIR}/RATreeView/RATreeView.framework",
@@ -1385,7 +1387,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PINOperation.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PINRemoteImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Parse.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ParseFacebookUtilsV4.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PryntTrimmerView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/QuadratTouch.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RATreeView.framework",
@@ -1590,6 +1591,7 @@
 				8CF40C5F1FC50BDD00615D43 /* FoodieFont.swift in Sources */,
 				8CD5A4E01F9BFDD700CFD670 /* SettingsNavViewController.swift in Sources */,
 				C27217EF2023D91200975FEF /* DeepLink.swift in Sources */,
+				8C29E5512043B98300196D1E /* UsernameViewController.swift in Sources */,
 				8CCC7F001FA5A32F0049AF00 /* FeedCollectionCellNode.swift in Sources */,
 				8CCDDA021FB3E7D600B066E7 /* MapNavController.swift in Sources */,
 				8CE49EB11F637918007278C1 /* ExpandButton.swift in Sources */,

@@ -1,9 +1,9 @@
 PODS:
-  - AWSCognito (2.6.10):
-    - AWSCore (= 2.6.10)
-  - AWSCore (2.6.10)
-  - AWSS3 (2.6.10):
-    - AWSCore (= 2.6.10)
+  - AWSCognito (2.6.12):
+    - AWSCore (= 2.6.12)
+  - AWSCore (2.6.12)
+  - AWSS3 (2.6.12):
+    - AWSCore (= 2.6.12)
   - Bolts (1.9.0):
     - Bolts/AppLinks (= 1.9.0)
     - Bolts/Tasks (= 1.9.0)
@@ -13,12 +13,12 @@ PODS:
   - Branch (0.22.5):
     - Branch/Core (= 0.22.5)
   - Branch/Core (0.22.5)
-  - ColorSlider (4.1)
+  - ColorSlider (4.1.2)
   - COSTouchVisualizer (1.0.6)
-  - Crashlytics (3.9.3):
-    - Fabric (~> 1.7.2)
+  - Crashlytics (3.10.0):
+    - Fabric (~> 1.7.3)
   - EarlGrey (1.12.1)
-  - Fabric (1.7.2)
+  - Fabric (1.7.3)
   - FacebookCore (0.3.0):
     - Bolts (~> 1.8)
     - FBSDKCoreKit (~> 4.27)
@@ -42,15 +42,16 @@ PODS:
   - Jot (0.2.0):
     - Masonry (~> 1.0.2)
   - Masonry (1.0.2)
-  - Parse (1.15.4):
+  - Parse (1.16.0):
+    - Parse/Core (= 1.16.0)
+  - Parse/Core (1.16.0):
     - Bolts/Tasks (~> 1.9)
-  - ParseFacebookUtilsV4 (1.11.2):
-    - Bolts/Tasks (~> 1.9)
+  - Parse/FacebookUtils (1.16.0):
     - FBSDKCoreKit (~> 4.28.0)
     - FBSDKLoginKit (~> 4.28.0)
     - FBSDKShareKit (~> 4.28.0)
     - FBSDKTVOSKit (~> 4.28.0)
-    - Parse (~> 1.15.1)
+    - Parse/Core
   - PINCache (3.0.1-beta.6):
     - PINCache/Arc-exception-safe (= 3.0.1-beta.6)
     - PINCache/Core (= 3.0.1-beta.6)
@@ -58,7 +59,7 @@ PODS:
     - PINCache/Core
   - PINCache/Core (3.0.1-beta.6):
     - PINOperation (~> 1.1.0)
-  - PINOperation (1.1)
+  - PINOperation (1.1.1)
   - PINRemoteImage/Core (3.0.0-beta.13):
     - PINOperation
   - PINRemoteImage/iOS (3.0.0-beta.13):
@@ -79,7 +80,7 @@ PODS:
     - PINRemoteImage/iOS (= 3.0.0-beta.13)
     - PINRemoteImage/PINCache
     - Texture/Core
-  - TLPhotoPicker (1.4.6)
+  - TLPhotoPicker (1.5.0)
 
 DEPENDENCIES:
   - AWSCognito
@@ -96,7 +97,7 @@ DEPENDENCIES:
   - HTTPStatusCodes (~> 3.1.2)
   - Jot (from `https://github.com/biscottigelato/Jot.git`)
   - Parse
-  - ParseFacebookUtilsV4
+  - Parse/FacebookUtils
   - PryntTrimmerView (from `https://github.com/specc/PryntTrimmerView.git`)
   - QuadratTouch (from `https://github.com/Constantine-Fry/das-quadrat.git`, branch `develop`)
   - RATreeView
@@ -119,7 +120,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Jot:
-    :commit: 1a023aa4fd04b62397953b88c23331825e3f8b42
+    :commit: 9bdec62a5b09b30ffb238fe4c1261bb1c396011f
     :git: https://github.com/biscottigelato/Jot.git
   PryntTrimmerView:
     :commit: ae2c2f531c545e260aa93415f46a1a5c4b812994
@@ -128,20 +129,20 @@ CHECKOUT OPTIONS:
     :commit: 4f10166069b9482da15a9b118e81102c3fffd507
     :git: https://github.com/Constantine-Fry/das-quadrat.git
   SVProgressHUD:
-    :commit: 37cde289749608fd9c695c93563de3ce4433d1ed
+    :commit: d714813e2f9e4b49894a50e6fc6b789c6cab03b5
     :git: https://github.com/Tastory/SVProgressHUD.git
 
 SPEC CHECKSUMS:
-  AWSCognito: 94d97a52c51310dfd20f2db5dc4fce7ebce0e8dc
-  AWSCore: 5bb072a6b5b185f43ddbd239d6554d2f8a285ad2
-  AWSS3: 1124570c2c2dba6be7e6e67d123cc5181073c53d
+  AWSCognito: c69d91501b460c8abe22e224a0d5c3277486a21b
+  AWSCore: d0d6e4f6831754aaf98058d2306a016ae71510fe
+  AWSS3: c35608e0cdd5172f9e1d943221fd5fde01c5f749
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   Branch: 4f0482418d99e77d15b0e6065ef216c10e24797b
-  ColorSlider: 3dc3b5c31b5a74aa1232c44eae06453ce59ecf36
+  ColorSlider: 6ad9a2b1ff168ba2f8c3265e9d4fe5ea3575cb7c
   COSTouchVisualizer: a398089327a6c02897823614d7447ccc97198997
-  Crashlytics: dbb07d01876c171c5ccbdf7826410380189e452c
+  Crashlytics: a989ef242b66605577a425733797f810bd2725eb
   EarlGrey: f7774b813c888ebdb9a21e612d67874d17d5a326
-  Fabric: 9cd6a848efcf1b8b07497e0b6a2e7d336353ba15
+  Fabric: bb495bb9a7a7677c6d03a1f8b83d95bc49b47e41
   FacebookCore: 3ffa190a3f1f96cec0e44d3fc221bc322c595ffa
   FacebookLogin: 0af839ea858faef99550d16596b87b4a8e8906e6
   FacebookShare: 0469964297ebd75f052be2c5083389a4208e82b7
@@ -151,10 +152,9 @@ SPEC CHECKSUMS:
   HTTPStatusCodes: 88155ba36826366a898a7b4f34d311f49083d546
   Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
-  Parse: 1968c634e1c782fb31aad6872f6d32de911bb122
-  ParseFacebookUtilsV4: 19c77fa55381eb9ed470cd207068cfdd711a155c
+  Parse: 5b36dc2c2f0a2fd82a257ae018bc3d68cf2c24e7
   PINCache: d195fdba255283f7e9900a55e3cced377f431f9b
-  PINOperation: 7f042fa6df5b606deb4bd5997654cf7033d5be1d
+  PINOperation: a6219e6fc9db9c269eb7a7b871ac193bcf400aac
   PINRemoteImage: d6d51c5d2adda55f1ce30c96e850b6c4ebd2856a
   PryntTrimmerView: 5ad39b9cb5793adcebdad4a1a241260a2c281a38
   QuadratTouch: 9e311cbd4f0573b58cafe6783df1fa7ce2458afa
@@ -163,8 +163,8 @@ SPEC CHECKSUMS:
   SwiftRangeSlider: f86e3b637c961120158fa1a89277c8343845cbe4
   SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
   Texture: 7249074582daf75e524e59df5428b66b8e8db0e4
-  TLPhotoPicker: 74d17dfaa8e9bddcfcf74a7ebf7c8d1be7fb26d5
+  TLPhotoPicker: 3fc7f1c48641cd2258041fe866b6db422f058187
 
-PODFILE CHECKSUM: cd0f5eb0fc51dd69d1a040446757515a9cc911ad
+PODFILE CHECKSUM: c64acc32e8eeb0e5264a827d45321834093da397
 
 COCOAPODS: 1.4.0

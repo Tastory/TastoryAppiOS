@@ -8,7 +8,6 @@
 
 
 import Parse
-import ParseFacebookUtilsV4
 import FacebookCore
 import FacebookLogin
 import FacebookShare

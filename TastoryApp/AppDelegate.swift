@@ -8,8 +8,8 @@
 //
 
 import AsyncDisplayKit
+import Parse
 import FBSDKCoreKit
-import ParseFacebookUtilsV4
 // import COSTouchVisualizer
 
 @UIApplicationMain

@@ -132,7 +132,7 @@ public class DefaultPreviewView: UIView {
 		layer.cornerRadius = min(bounds.width, bounds.height) / 2
 		
 		// Inset the color view by 3 points, round the corners
-		let colorViewFrame = bounds.insetBy(dx: 2, dy: 2)
+		let colorViewFrame = bounds.insetBy(dx: 3, dy: 3)
 		colorView.frame = colorViewFrame
 		colorView.layer.cornerRadius = min(colorViewFrame.width, colorViewFrame.height) / 2
 	}

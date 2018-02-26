@@ -17,6 +17,7 @@ public protocol TLPhotosPickerViewControllerDelegate: class {
     func dismissComplete()
     func photoPickerDidCancel()
     func didExceedMaximumNumberOfSelection(picker: TLPhotosPickerViewController)
+    func handleNoCameraPermissions(picker: TLPhotosPickerViewController)
 }
 extension TLPhotosPickerViewControllerDelegate {
     public func dismissPhotoPicker(withPHAssets: [PHAsset]) { }
@@ -117,6 +118,7 @@ open class TLPhotosPickerViewController: UIViewController {
         }
     }
     @objc open var didExceedMaximumNumberOfSelection: ((TLPhotosPickerViewController) -> Void)? = nil
+    @objc open var handleNoCameraPermissions: ((TLPhotosPickerViewController) -> Void)? = nil
     @objc open var dismissCompletion: (() -> Void)? = nil
     fileprivate var completionWithPHAssets: (([PHAsset]) -> Void)? = nil
     fileprivate var completionWithTLPHAssets: (([TLPHAsset]) -> Void)? = nil
@@ -450,6 +452,26 @@ extension TLPhotosPickerViewController: TLPhotoLibraryDelegate {
 
 // MARK: - Camera Picker
 extension TLPhotosPickerViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    fileprivate func showCameraIfAuthorized() {
+        let cameraAuthorization = AVCaptureDevice.authorizationStatus(for: .video)
+        switch cameraAuthorization {
+        case .authorized:
+            self.showCamera()
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video, completionHandler: { [weak self] (authorized) in
+                DispatchQueue.main.async { [weak self] in
+                    if authorized {
+                        self?.showCamera()
+                    } else {
+                        self?.handleNoCameraAuthorization()
+                    }
+                }
+            })
+        case .restricted, .denied:
+            self.handleNoCameraAuthorization()
+        }
+    }
+
     fileprivate func showCamera() {
         guard !maxCheck() else { return }
         let picker = UIImagePickerController()
@@ -464,6 +486,11 @@ extension TLPhotosPickerViewController: UIImagePickerControllerDelegate, UINavig
         picker.allowsEditing = false
         picker.delegate = self
         self.present(picker, animated: true, completion: nil)
+    }
+
+    fileprivate func handleNoCameraAuthorization() {
+        self.delegate?.handleNoCameraPermissions(picker: self)
+        self.handleNoCameraPermissions?(self)
     }
     
     open func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -649,7 +676,7 @@ extension TLPhotosPickerViewController: UICollectionViewDelegate,UICollectionVie
                 if let nibName = self.configure.cameraCellNibSet?.nibName {
                     cell.selectedCell()
                 }else {
-                    showCamera()
+                    showCameraIfAuthorized()
                 }
                 return
             }
@@ -739,6 +766,10 @@ extension TLPhotosPickerViewController: UICollectionViewDelegate,UICollectionVie
                     DispatchQueue.main.async {
                         if self.requestIds[indexPath] != nil {
                             cell?.imageView?.image = image
+                            if self.allowedVideo {
+                                cell?.durationView?.isHidden = asset.type != .video
+                                cell?.duration = asset.type == .video ? phAsset.duration : nil
+                            }
                             if complete {
                                 self.requestIds.removeValue(forKey: indexPath)
                             }
@@ -796,12 +827,15 @@ extension TLPhotosPickerViewController: UICollectionViewDelegate,UICollectionVie
         if self.usedPrefetch {
             queue.async { [weak self] in
                 guard let `self` = self, let collection = self.focusedCollection else { return }
-                if indexPaths.count <= collection.count,let first = indexPaths.first?.row, let last = indexPaths.last?.row {
-                    guard let assets = collection.getAssets(at: first...last) else { return }
-                    let scale = max(UIScreen.main.scale,2)
-                    let targetSize = CGSize(width: self.thumbnailSize.width*scale, height: self.thumbnailSize.height*scale)
-                    self.photoLibrary.imageManager.startCachingImages(for: assets, targetSize: targetSize, contentMode: .aspectFill, options: nil)
+                var assets = [PHAsset]()
+                for indexPath in indexPaths {
+                    if let asset = collection.getAsset(at: indexPath.row) {
+                        assets.append(asset)
+                    }
                 }
+                let scale = max(UIScreen.main.scale,2)
+                let targetSize = CGSize(width: self.thumbnailSize.width*scale, height: self.thumbnailSize.height*scale)
+                self.photoLibrary.imageManager.startCachingImages(for: assets, targetSize: targetSize, contentMode: .aspectFill, options: nil)
             }
         }
     }
@@ -815,12 +849,25 @@ extension TLPhotosPickerViewController: UICollectionViewDelegate,UICollectionVie
             }
             queue.async { [weak self] in
                 guard let `self` = self, let collection = self.focusedCollection else { return }
-                if indexPaths.count <= collection.count,let first = indexPaths.first?.row, let last = indexPaths.last?.row {
-                    guard let assets = collection.getAssets(at: first...last) else { return }
-                    let scale = max(UIScreen.main.scale,2)
-                    let targetSize = CGSize(width: self.thumbnailSize.width*scale, height: self.thumbnailSize.height*scale)
-                    self.photoLibrary.imageManager.stopCachingImages(for: assets, targetSize: targetSize, contentMode: .aspectFill, options: nil)
+                var assets = [PHAsset]()
+                for indexPath in indexPaths {
+                    if let asset = collection.getAsset(at: indexPath.row) {
+                        assets.append(asset)
+                    }
                 }
+                let scale = max(UIScreen.main.scale,2)
+                let targetSize = CGSize(width: self.thumbnailSize.width*scale, height: self.thumbnailSize.height*scale)
+                self.photoLibrary.imageManager.stopCachingImages(for: assets, targetSize: targetSize, contentMode: .aspectFill, options: nil)
+            }
+        }
+    }
+    public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if self.usedPrefetch, let cell = cell as? TLPhotoCollectionViewCell, let collection = self.focusedCollection, let asset = collection.getTLAsset(at: indexPath.row) {
+            if let selectedAsset = getSelectedAssets(asset) {
+                cell.selectedAsset = true
+                cell.orderLabel?.text = "\(selectedAsset.selectedOrder)"
+            }else{
+                cell.selectedAsset = false
             }
         }
     }

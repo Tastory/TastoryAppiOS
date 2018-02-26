@@ -480,6 +480,10 @@ extension CameraViewController: MarkupReturnDelegate {
 
 
 extension CameraViewController: TLPhotosPickerViewControllerDelegate {
+  func handleNoCameraPermissions(picker: TLPhotosPickerViewController) {
+    // TODO: Some new required delegate yet to be implemented
+  }
+  
   
   private func displayMarkUpController(mediaObj: FoodieMedia) {
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
