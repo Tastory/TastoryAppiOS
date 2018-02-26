@@ -631,7 +631,7 @@
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nnO-KA-kth">
                                 <rect key="frame" x="0.0" y="72.333333333333314" width="375" height="667.33333333333348"/>
-                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="height" multiplier="9:16" id="ZiO-WO-84l"/>
                                 </constraints>
