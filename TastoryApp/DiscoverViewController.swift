@@ -109,7 +109,7 @@ class DiscoverViewController: OverlayViewController {
   @IBOutlet var searchBackgroundView: UIView!
   @IBOutlet var feedContainerView: UIView!
   @IBOutlet var mosaicMapView: UIView!
-  @IBOutlet var carouselMapView: UIView!
+  @IBOutlet var carouselMapView: UIImageView!
   @IBOutlet var feedBackgroundView: UIView!
   
   @IBOutlet var searchStack: UIStackView!
@@ -511,6 +511,7 @@ class DiscoverViewController: OverlayViewController {
   
   private func searchButtonsHidden(is hide: Bool) {
     searchButton.isHidden = hide
+    carouselMapView.isHidden = hide
     
     if hide {
       allStoriesButton.isHidden = hide
@@ -536,6 +537,7 @@ class DiscoverViewController: OverlayViewController {
         self.searchStack.alpha = alphaValue
         self.middleStack.alpha = alphaValue
         self.draftButton.alpha = alphaValue
+        self.carouselMapView.alpha = alphaValue
         self.currentLocationButton.alpha = alphaValue
         self.searchBackgroundView.alpha = alphaValue
       })
@@ -543,6 +545,7 @@ class DiscoverViewController: OverlayViewController {
       self.searchStack.alpha = alphaValue
       self.middleStack.alpha = alphaValue
       self.draftButton.alpha = alphaValue
+      self.carouselMapView.alpha = alphaValue
       self.currentLocationButton.alpha = alphaValue
       self.searchBackgroundView.alpha = alphaValue
     }
@@ -1259,7 +1262,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
   
   
   func collectionNodeDidStopScrolling() {
-    if let storyIndex = self.feedCollectionNodeController.highlightedStoryIndex, storyIndex < storyArray.count {
+    if let storyIndex = self.feedCollectionNodeController.highlightedStoryIndex, storyIndex >= 0, storyIndex < storyArray.count {
       self.highlightedStoryIndex = storyIndex
       
       for annotation in self.storyAnnotations {
@@ -1301,8 +1304,17 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
     // Do Prefetching? In reality doing this slows down the whole app. And assets don't seem to be ready any quicker.... If not slower all together.....
     let storiesIndexes = self.feedCollectionNodeController.getStoryIndexesVisible(forOver: Constants.PercentageOfStoryVisibleToStartPrefetch)
     if storiesIndexes.count > 0 {
-      let storiesShouldPrefetch = storiesIndexes.map { self.storyArray[$0] }
-      FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
+      var storiesShouldPrefetch = [FoodieStory]()
+        
+      for storyIndex in storiesIndexes {
+        if storyIndex >= 0, storyIndex < self.storyArray.count {
+          storiesShouldPrefetch.append(self.storyArray[storyIndex])
+        }
+      }
+        
+      if storiesShouldPrefetch.count > 0 {
+        FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
+      }
     }
   }
   

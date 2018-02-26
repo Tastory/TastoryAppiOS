@@ -500,7 +500,7 @@ class StoryViewController: OverlayViewController {
     updateAVMute(audioControl: AudioControl.global)
     pauseButton.isHidden = isPaused  // isLikelyToKeepUp can be called when paused, so UI update needs to be correct for that
     playButton.isHidden = !isPaused
-    venueButton.isHidden = false
+    if !draftPreview { venueButton.isHidden = false }
     shareButton.isHidden = (story.objectId == nil)
     authorButton.isHidden = false
     reactionStack.isHidden = false
@@ -551,7 +551,7 @@ class StoryViewController: OverlayViewController {
 
       // UI Update - Really should group some of the common UI stuff into some sort of function?
       pauseButton.isHidden = false
-      venueButton.isHidden = false
+      if !draftPreview { venueButton.isHidden = false }
       shareButton.isHidden = (story.objectId == nil)
       authorButton.isHidden = false
       reactionStack.isHidden = false
@@ -993,7 +993,7 @@ class StoryViewController: OverlayViewController {
       authorButton.isHidden = true
     }
     
-    if let venue = story.venue, let venueName = venue.name {
+    if let venue = story.venue, let venueName = venue.name, !draftPreview {
       venueButton.setTitle(venueName, for: .normal)
     } else {
       CCLog.info("Cannot get at venue name from Story \(story.getUniqueIdentifier)")

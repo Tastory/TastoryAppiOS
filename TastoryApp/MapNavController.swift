@@ -473,7 +473,7 @@ extension MapNavController: MKMapViewDelegate {
     }
     else if #available(iOS 11.0, *) {
       let markerAnnotationView = MKMarkerAnnotationView()
-      markerAnnotationView.markerTintColor = UIColor(red: 1.0, green: 85.0/255.0, blue: 95.0/255.0, alpha: 1.0)
+      markerAnnotationView.markerTintColor = UIColor(red: 1.0, green: 80.0/255.0, blue: 80.0/255.0, alpha: 1.0)
       markerAnnotationView.glyphImage = UIImage(named: "PinHead")
       
 //      if let storyAnnotation = annotation as? StoryMapAnnotation {
