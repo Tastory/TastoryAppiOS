@@ -125,8 +125,24 @@ class DiscoverViewController: OverlayViewController {
   @IBOutlet var feedBackgroundMosaicConstraint: NSLayoutConstraint!
   
   
-  
-  
+  //TODO Remove
+  @IBAction func searchAction(_ sender: Any) {
+    let storyboard = UIStoryboard(name: "Filters", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "UniversalSearchViewController") as? UniversalSearchViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of UniversalSearchViewController Class!!")
+      }
+      return
+    }
+
+    viewController.delegate = self
+
+    appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
+    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
+    pushPresent(viewController, animated: true)
+  }
+
+
   // MARK: - IBActions
   @IBAction func launchDraftStory(_ sender: Any) {
     // This is used for viewing the draft story to be used with update story later
@@ -1430,3 +1446,32 @@ extension DiscoverViewController: FiltersViewReturnDelegate {
     }
   }
 }
+
+extension DiscoverViewController: SearchResultDisplayDelegate {
+  func display(story: FoodieStory) {
+
+  }
+
+  func display(user: FoodieUser) {
+    DispatchQueue.main.async {
+      self.popDismiss(animated: true)
+      self.showProfileView(user: user)
+    }
+  }
+
+  func display(venue: FoodieVenue) {
+    DispatchQueue.main.async {
+      self.popDismiss(animated: true)
+      self.showProfileView(venue: venue)
+    }
+  }
+
+  func applyFilter(meal: MealType) {
+
+  }
+
+  func applyFilter(category: FoodieCategory) {
+
+  }
+}
+

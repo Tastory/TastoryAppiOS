@@ -192,6 +192,8 @@
 		C29034F3200B472400A860F9 /* EarlGreyUnitTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29034F2200B472400A860F9 /* EarlGreyUnitTest.swift */; };
 		C29CD1391F93198800A6D53F /* ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD1381F93198800A6D53F /* ConfirmationDialog.swift */; };
 		C29CD13D1F988B2000A6D53F /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */; };
+		C2CE441B2045C1CC002780EA /* UniversalSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2CE441A2045C1CC002780EA /* UniversalSearchViewController.swift */; };
+		C2CE441D2045C1FF002780EA /* SearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2CE441C2045C1FF002780EA /* SearchResultCell.swift */; };
 		C2FD8F80201D5BE200550EC3 /* TastoryApp.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = C20FF85120142BA5009F2114 /* TastoryApp.entitlements */; };
 /* End PBXBuildFile section */
 
@@ -433,6 +435,8 @@
 		C29034F4200B472400A860F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C29CD1381F93198800A6D53F /* ConfirmationDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmationDialog.swift; sourceTree = "<group>"; };
 		C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
+		C2CE441A2045C1CC002780EA /* UniversalSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalSearchViewController.swift; sourceTree = "<group>"; };
+		C2CE441C2045C1FF002780EA /* SearchResultCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultCell.swift; sourceTree = "<group>"; };
 		CB67F7DCE9A416DA5EC3C0F1 /* EarlGrey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EarlGrey.framework; path = Pods/EarlGrey/EarlGrey/EarlGrey.framework; sourceTree = SOURCE_ROOT; };
 		CE96672FBDE59A26FF838F5A /* Pods-TastoryApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastoryApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-TastoryApp/Pods-TastoryApp.release.xcconfig"; sourceTree = "<group>"; };
 		D0990A4DB26CAD0EFD0F0177 /* Pods-TastoryAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastoryAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TastoryAppTests/Pods-TastoryAppTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -596,6 +600,7 @@
 				8C02CC7D1FCC1A2000D38F47 /* MomentAddFooterReusableView.swift */,
 				8C841B4A1F6244700002A5A2 /* CategoryTableViewCell.swift */,
 				8C841B481F6242C00002A5A2 /* CategoryTableViewCell.xib */,
+				C2CE441C2045C1FF002780EA /* SearchResultCell.swift */,
 			);
 			name = "Cell, Headers/Footers";
 			sourceTree = "<group>";
@@ -921,6 +926,7 @@
 				8CE5711A1FDB393D0023F4C7 /* FiltersViewController.swift */,
 				8CE571181FDB38C40023F4C7 /* FiltersNavViewController.swift */,
 				8C900D321F60C0E50058BDFE /* CategoryViewController.swift */,
+				C2CE441A2045C1CC002780EA /* UniversalSearchViewController.swift */,
 			);
 			name = Filters;
 			sourceTree = "<group>";
@@ -1522,11 +1528,13 @@
 				8C2F796F1F4C0D9A00851334 /* SwiftRetry.swift in Sources */,
 				8C53FE901FE0AE44003AEF77 /* LibrariesViewController.swift in Sources */,
 				8CF44DA61F86F422007E905A /* CameraCrossLayer.swift in Sources */,
+				C2CE441B2045C1CC002780EA /* UniversalSearchViewController.swift in Sources */,
 				8C1C3A361FCCCFDC00DB19A4 /* SettingsMenuViewController.swift in Sources */,
 				8C7EBAC61F9D477C004E43D8 /* PasswordViewController.swift in Sources */,
 				8C02CC7E1FCC1A2000D38F47 /* MomentAddFooterReusableView.swift in Sources */,
 				8C9AD0661E8F615D005F337E /* MarkupViewController.swift in Sources */,
 				8C1ED6F21F5D15A300A8CC94 /* ThumbnailFrameLayer.swift in Sources */,
+				C2CE441D2045C1FF002780EA /* SearchResultCell.swift in Sources */,
 				8CAE5C001FBC403E0069C582 /* TextButtonNode.swift in Sources */,
 				8CD02DB51FB8245600768CF8 /* MosaicCollectionViewLayout.swift in Sources */,
 				8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */,
@@ -1830,7 +1838,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.Master;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.VictorTsang;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1857,7 +1865,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/TastoryApp/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.Master;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.VictorTsang;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
