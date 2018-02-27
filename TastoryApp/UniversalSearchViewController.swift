@@ -16,6 +16,7 @@ protocol SearchResultDisplayDelegate: class {
   func display(venue: FoodieVenue)
   func applyFilter(meal: MealType)
   func applyFilter(category: FoodieCategory)
+  func applyFilter(location: String) 
 }
 class UniversalSearchViewController: OverlayViewController {
 
@@ -366,6 +367,37 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
 
   func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
     searchResults = completer.results
+    var results:[SearchResult] = []
+    var i = 0
+    for result in searchResults {
+
+      let decimals = CharacterSet.decimalDigits
+      let titleHasNumber = result.title.rangeOfCharacter(from: decimals) != nil
+      let subtitleHasNumber = result.subtitle.rangeOfCharacter(from: decimals) != nil
+
+      if !titleHasNumber && !subtitleHasNumber {
+        let title = result.title
+        if titleSet.contains(title) {
+          // skip entry as the title of this entry already existed
+          continue
+        }
+
+        var searchResult = SearchResult()
+        searchResult.cellType = .location
+        searchResult.title = title
+        searchResult.detail = result.subtitle
+        searchResult.iconName = "Entry-Venue"
+        titleSet.insert(title)
+        results.append(searchResult)
+      }
+      i = i + 1
+      // limit 3 results from locations
+      if( i > 3) {
+        break
+      }
+    }
+    push(results: results)
+
     //searchResultsTableView.reloadData()
   }
 
@@ -384,7 +416,49 @@ extension UniversalSearchViewController: UITableViewDelegate {
       return
     }
 
+    popDismiss(animated: true)
+    
     switch type {
+
+    case .location:
+
+        var location = result.title
+        if !result.detail.isEmpty {
+          location = location +  ", " + result.detail
+        }
+        delegate?.applyFilter(location: location)
+
+      break
+    case .category:
+        guard let category = result.category else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+            CCLog.assert("Category is nil")
+          }
+          return
+        }
+        delegate?.applyFilter(category: category)
+      break
+
+    case .meal:
+        guard let meal = result.meal else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+            CCLog.assert("Meal is nil")
+          }
+          return
+        }
+        delegate?.applyFilter(meal: meal)
+      break
+
+    case .story:
+      guard let story = result.story else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+          CCLog.assert("Story is nil")
+        }
+        return
+      }
+      delegate?.display(story: story)
+      break
+
     case .user:
       guard let user = result.user else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in

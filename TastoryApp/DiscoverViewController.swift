@@ -1450,28 +1450,84 @@ extension DiscoverViewController: FiltersViewReturnDelegate {
 extension DiscoverViewController: SearchResultDisplayDelegate {
   func display(story: FoodieStory) {
 
+    guard let user:FoodieUser = story.author else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Foodiestory's author is nil")
+      }
+      return
+    }
+
+    // show story as in it was a deepLink
+    DeepLink.global.deepLinkUserId = user.objectId
+    DeepLink.global.deepLinkStoryId = story.objectId
+
+    UIApplication.shared.beginIgnoringInteractionEvents()
+    DispatchQueue.main.asyncAfter(deadline: .now() +  FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
+      UIApplication.shared.endIgnoringInteractionEvents()
+      self.showProfileView(user: user)
+
+      if DeepLink.global.deepLinkStoryId == nil && DeepLink.global.deepLinkVenueId == nil{
+        DeepLink.clearDeepLinkInfo()
+      }
+    }
+
   }
 
   func display(user: FoodieUser) {
-    DispatchQueue.main.async {
-      self.popDismiss(animated: true)
+    UIApplication.shared.beginIgnoringInteractionEvents()
+    DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
+      UIApplication.shared.endIgnoringInteractionEvents()
       self.showProfileView(user: user)
     }
   }
 
   func display(venue: FoodieVenue) {
-    DispatchQueue.main.async {
-      self.popDismiss(animated: true)
+    UIApplication.shared.beginIgnoringInteractionEvents()
+    DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
+      UIApplication.shared.endIgnoringInteractionEvents()
       self.showProfileView(venue: venue)
     }
   }
 
   func applyFilter(meal: MealType) {
 
+    var filter: FoodieFilter
+    if let discoveryFilter = self.discoverFilter {
+      filter = discoveryFilter
+    } else {
+      filter = FoodieFilter()
+    }
+
+    filter.selectedMealTypes.append(meal)
+    filterCompleteReturn(filter, true)
   }
 
   func applyFilter(category: FoodieCategory) {
 
+    var filter: FoodieFilter
+    if let discoveryFilter = self.discoverFilter {
+      filter = discoveryFilter
+    } else {
+      filter = FoodieFilter()
+    }
+
+    filter.selectedCategories.append(category)
+    filterCompleteReturn(filter, true)
+  }
+
+  func applyFilter(location: String) {
+    UIApplication.shared.beginIgnoringInteractionEvents()
+    DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
+      UIApplication.shared.endIgnoringInteractionEvents()
+      self.locationField.text = location
+      self.textFieldShouldReturn(self.locationField)
+      // let the map move to the location first
+      DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+        if self.searchButton.isEnabled {
+          self.searchButton.sendActions(for: .touchUpInside)
+        }
+      }
+    }
   }
 }
 
