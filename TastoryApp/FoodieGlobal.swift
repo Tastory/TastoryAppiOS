@@ -38,6 +38,30 @@ enum MealType: String {
   static let types = [breakfast, brunch, lunch, dinner, dessert, coffee, drinks]
 }
 
+struct SearchResult {
+
+  enum resultType {
+    case venue
+    case category
+    case location
+    case story
+    case user
+    case meal
+  }
+
+  // MARK: - public Variables
+  public var cellType: resultType?
+  public var user: FoodieUser?
+  public var venue: FoodieVenue?
+  public var story: FoodieStory?
+  public var category: FoodieCategory?
+  public var meal: MealType?
+
+  public var title: NSMutableAttributedString = NSMutableAttributedString()
+  public var detail: NSMutableAttributedString = NSMutableAttributedString()
+  public var iconName: String = ""
+}
+
 struct FoodieGlobal {
   
   // MARK: - Constants

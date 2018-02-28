@@ -10,127 +10,76 @@ import UIKit
 import Parse
 import MapKit
 
-protocol SearchResultDisplayDelegate: class {
-  func display(story: FoodieStory)
-  func display(user: FoodieUser)
-  func display(venue: FoodieVenue)
-  func applyFilter(meal: MealType)
-  func applyFilter(category: FoodieCategory)
-  func applyFilter(location: String) 
-}
 class UniversalSearchViewController: OverlayViewController {
 
-  struct SearchResult {
-    // MARK: - Constants/Enums
-    enum resultType {
-      case venue
-      case category
-      case location
-      case story
-      case user
-      case meal
-    }
-
-    // MARK: - public Variables
-    public var cellType: resultType?
-    public var user: FoodieUser?
-    public var venue: FoodieVenue?
-    public var story: FoodieStory?
-    public var category: FoodieCategory?
-    public var meal: MealType?
-
-    public var title: String = ""
-    public var detail: String = ""
-    public var iconName: String = ""
-  }
-
+  // MARK: - Constants/Enums
   private struct Constants {
     static let SearchBarSearchDelay = 0.75
-    static let resultTreeViewRowHeight: CGFloat = 60.0
   }
 
   // MARK: - Private Instance Functions
-  private var searchResults = [MKLocalSearchCompletion]()
-  private var resultsData = [SearchResult]()
-  private var titleSet: Set<String> = Set() // keep track of titles of each cell to avoid duplicate entries
   private var searchKeyWord = ""
+  private var resultTableVC: SearchResultTableViewController?
+
 
   // MARK: - Public Instance Functions
   var delegate: SearchResultDisplayDelegate?
+  var currentLocation: CLLocation?
 
   // MARK: - IBOutlets
-  @IBOutlet weak var resultTableView: UITableView!
   @IBOutlet weak var searchBar: UISearchBar!
-
+  @IBOutlet weak var tablePlaceHolder: UIView!
+  
   // MARK: - IBActions
   @IBAction func cancelAction(_ sender: UIButton) {
     popDismiss(animated: true)
   }
 
+  // MARK: - Public Instance Functions
+  private func highlightSearchTerms(text: String) -> (NSMutableAttributedString, Bool) {
+    let index = text.index(of: searchKeyWord)
+    let attrText = NSMutableAttributedString()
+
+    if let index = index {
+      attrText.normal(String(text[text.startIndex..<index]))
+      attrText.bold(searchKeyWord)
+      let offsetIdx = text.index(index, offsetBy: searchKeyWord.count)
+      attrText.normal(String(text[offsetIdx..<text.endIndex]))
+      return (attrText, true)
+    } else {
+      // didnt find the searchKeyWord
+      attrText.normal(text)
+      return (attrText, false)
+    }
+  }
+
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
-
-    resultTableView.dataSource = self
-    resultTableView.delegate = self
-    resultTableView.tableFooterView = UIView()
-    resultTableView.rowHeight = Constants.resultTreeViewRowHeight
-
     searchBar.delegate = self
-  }
 
-  // MARK: - Private Instance Functions
-  private func pushFront(results: [SearchResult]) {
-    DispatchQueue.main.async {
-      CCLog.verbose("before push tableResults.count:\(self.resultsData.count)")
-      let isInsert = (self.resultsData.count != 0)
-      var insertedIdx: [IndexPath] = []
-      var i = 0
-      for result in results {
-        self.resultsData.insert(result, at: 0)
-        insertedIdx.append(IndexPath(row: i, section: 0))
-        i = i + 1
+    let storyboard = UIStoryboard(name: "Filters", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SearchResultTableViewController") as? SearchResultTableViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of FiltersNavViewController Class!!")
       }
-
-      if isInsert {
-        self.resultTableView.insertRows(at: insertedIdx, with: .automatic)
-      } else {
-        self.resultTableView.reloadData()
-      }
+      return
     }
-  }
-
-  private func push(results: [SearchResult]) {
-    DispatchQueue.main.async  {
-      CCLog.verbose("before push tableResults.count:\(self.resultsData.count)")
-      let isInsert = (self.resultsData.count != 0)
-
-      var insertedIdx: [IndexPath] = []
-      var i = self.resultsData.count
-      for result in results {
-        self.resultsData.append(result)
-        insertedIdx.append(IndexPath(row: i, section: 0))
-        i = i + 1
-      }
-
-      CCLog.verbose("after append tableResults.count:\(self.resultsData.count)")
-      CCLog.verbose("number of indices inserted: \(insertedIdx.count)")
-
-      if isInsert  {
-        self.resultTableView.insertRows(at: insertedIdx, with: .automatic)
-      } else {
-        self.resultTableView.reloadData()
-      }
-    }
+    resultTableVC = viewController
+    viewController.delegate = delegate
+    self.addChildViewController(viewController)
+    tablePlaceHolder.addSubview(viewController.view)
   }
 
   @objc func search() {
-
-    DispatchQueue.main.async {
-      self.resultsData.removeAll()
-      self.titleSet.removeAll()
-      self.resultTableView.reloadData()
+    guard let resultTableVC = resultTableVC else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Search Result Table View Controller is nil!!")
+      }
+      return
     }
+
+    resultTableVC.clearTable()
 
     if searchKeyWord != "" {
 
@@ -138,7 +87,6 @@ class UniversalSearchViewController: OverlayViewController {
       localComplete.delegate = self
       localComplete.filterType = .locationsOnly
       localComplete.queryFragment = searchKeyWord
-
 
       // search meal type
       let mealMatches:[MealType] = MealType.types.filter { (mealType) -> Bool in
@@ -151,25 +99,26 @@ class UniversalSearchViewController: OverlayViewController {
         var results:[SearchResult] = []
         for meal in mealMatches {
 
-          if titleSet.contains(meal.rawValue) {
-            // skip entry as the title of this entry already existed
+          var result = SearchResult()
+
+          let (title, highlighted) = highlightSearchTerms(text: meal.rawValue)
+
+          if !highlighted {
             continue
           }
 
-          var result = SearchResult()
-          result.title = meal.rawValue
+          result.title = title
           result.cellType = .meal
           result.meal = meal
           result.iconName = "Entry-Meal"
-
-          titleSet.insert(meal.rawValue)
           results.append(result)
+
           i = i + 1
           if( i > 2) {
             break
           }
         }
-        pushFront(results: results)
+        resultTableVC.pushFront(results: results)
       }
 
       // search category
@@ -196,17 +145,15 @@ class UniversalSearchViewController: OverlayViewController {
             return
           }
 
-          if titleSet.contains(categoryName) {
-            // skip entry as the title of this entry already existed
+          let (title, highlighted) = highlightSearchTerms(text: categoryName)
+          if !highlighted {
             continue
           }
 
           var result = SearchResult()
           result.cellType = .category
           result.category = category.value
-          result.title = categoryName
-
-          titleSet.insert(categoryName)
+          result.title = title
           results.append(result)
 
           i = i + 1
@@ -214,7 +161,66 @@ class UniversalSearchViewController: OverlayViewController {
             break
           }
         }
-        pushFront(results: results)
+        resultTableVC.pushFront(results: results)
+      }
+
+      // search four square
+      guard let location = currentLocation else {
+        AlertDialog.present(from: self, title: "Location Error", message: "Obtained invalid location information") { _ in
+          CCLog.warning("LocationWatch.get() returned locaiton = nil")
+        }
+        return
+      }
+
+      FoodieVenue.searchFoursquare(for: self.searchKeyWord, at: location){ (venues, geocode, error) in
+
+        if let error = error {
+          AlertDialog.standardPresent(from: self, title: .genericLocationError, message: .locationTryAgain)
+          CCLog.fatal("An error occured when searching on foursquare - \(error.localizedDescription)")
+        }
+
+        guard let venues = venues else {
+          AlertDialog.standardPresent(from: self, title: .genericLocationError, message: .locationTryAgain) { _ in
+            CCLog.warning("The returned venues array is nil")
+          }
+          return
+        }
+
+        var results:[SearchResult] = []
+        var i = 0
+        for venue in venues {
+          guard let venueName = venue.name else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+              CCLog.fatal("venueName is nil")
+            }
+            return
+          }
+
+          var result = SearchResult()
+          var isDetailHighlighted = false
+          if let address = venue.streetAddress {
+            let (detail, highlightedDetail) = self.highlightSearchTerms(text: address)
+            isDetailHighlighted = highlightedDetail
+            result.detail = detail
+          }
+
+          let (title, highlighted) = self.highlightSearchTerms(text: venueName)
+          if !highlighted && !isDetailHighlighted {
+            continue
+          }
+
+          result.title = title
+          result.iconName = "Entry-Venue"
+          result.cellType = .venue
+          result.venue = venue
+          results.append(result)
+          // limit 3 results
+          i = i + 1
+          if( i > 3) {
+            break
+          }
+        }
+        resultTableVC.push(results: results)
       }
 
       // Setup parameters and submit Cloud function
@@ -239,16 +245,11 @@ class UniversalSearchViewController: OverlayViewController {
             if obj is FoodieStory, let story = obj as? FoodieStory {
               result.cellType = .story
 
-              guard let title = story.title else {
+              guard let storyTitle = story.title else {
                 AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
                   CCLog.fatal("Title is missing from FoodieStory")
                 }
                 return
-              }
-
-              if self.titleSet.contains(title) {
-                // skip entry as the title of this entry already existed
-                continue
               }
 
               guard let user = story.author else {
@@ -290,12 +291,17 @@ class UniversalSearchViewController: OverlayViewController {
                 return
               }
 
+              let (title, isTitleHighlighted) = self.highlightSearchTerms(text: storyTitle)
+              let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: venueName + " @" + userName)
+              if !isTitleHighlighted && !isDetailHighlighted {
+                continue
+              }
+
               result.title = title
-              result.detail = venueName + " " + userName
+              result.detail = detail
               result.iconName = "Entry-StoryTitle"
               result.story = story
 
-              self.titleSet.insert(title)
               results.append(result)
             } else if obj is FoodieUser, let user = obj as? FoodieUser {
 
@@ -307,23 +313,25 @@ class UniversalSearchViewController: OverlayViewController {
               }
 
               // full name could be null
-              if let fullName = user.fullName {
-                result.title = fullName
+              var titleStr:String
+              if let fullName = user.fullName, !fullName.isEmpty {
+                titleStr = fullName
               } else {
-                result.title = userName
+                titleStr = userName
               }
 
-              if self.titleSet.contains(result.title) {
-                // skip entry as the title of this entry already existed
+              let (title, isTitleHighlighted) = self.highlightSearchTerms(text: titleStr)
+              let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: "@" + userName)
+              if !isTitleHighlighted && !isDetailHighlighted {
                 continue
               }
 
-              result.detail = "@" + userName
+              result.title = title
+              result.detail = detail
               result.iconName = "Discover-ProfileButton"
               result.cellType = .user
               result.user = user
 
-              self.titleSet.insert(result.title)
               results.append(result)
             } else if obj is FoodieVenue, let venue = obj as? FoodieVenue {
 
@@ -334,21 +342,24 @@ class UniversalSearchViewController: OverlayViewController {
                 return
               }
 
-              if self.titleSet.contains(venueName) {
-                // skip entry as the title of this entry already existed
+              var isDetailHighlighted = false
+              if let address = venue.streetAddress {
+                let (detail, detailHighlighted) = self.highlightSearchTerms(text: address)
+                isDetailHighlighted = detailHighlighted
+                result.detail = detail
+              }
+
+              let (title, isTitleHighlighted) = self.highlightSearchTerms(text: venueName)
+
+              if !isTitleHighlighted && !isDetailHighlighted {
                 continue
               }
 
-              if let address = venue.streetAddress {
-                result.detail = address
-              }
-
-              result.title = venueName
+              result.title = title
               result.iconName = "Entry-Venue"
               result.cellType = .venue
               result.venue = venue
 
-              self.titleSet.insert(venueName)
               results.append(result)
             } else {
               AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -356,7 +367,7 @@ class UniversalSearchViewController: OverlayViewController {
               }
             }
           }
-          self.push(results: results)
+          resultTableVC.push(results: results)
         }
       }
     }
@@ -366,28 +377,36 @@ class UniversalSearchViewController: OverlayViewController {
 extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
 
   func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
-    searchResults = completer.results
     var results:[SearchResult] = []
     var i = 0
-    for result in searchResults {
+
+    guard let resultTableVC = resultTableVC else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Search Result Table View Controller is nil!!")
+      }
+      return
+    }
+
+    for result in completer.results {
 
       let decimals = CharacterSet.decimalDigits
       let titleHasNumber = result.title.rangeOfCharacter(from: decimals) != nil
       let subtitleHasNumber = result.subtitle.rangeOfCharacter(from: decimals) != nil
 
       if !titleHasNumber && !subtitleHasNumber {
-        let title = result.title
-        if titleSet.contains(title) {
-          // skip entry as the title of this entry already existed
+        let titleStr = result.title
+
+        let (title, isTitleHighlighted) = self.highlightSearchTerms(text: titleStr)
+        let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: result.subtitle)
+        if !isTitleHighlighted && !isDetailHighlighted {
           continue
         }
 
         var searchResult = SearchResult()
         searchResult.cellType = .location
         searchResult.title = title
-        searchResult.detail = result.subtitle
+        searchResult.detail = detail
         searchResult.iconName = "Entry-Venue"
-        titleSet.insert(title)
         results.append(searchResult)
       }
       i = i + 1
@@ -396,138 +415,11 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
         break
       }
     }
-    push(results: results)
-
-    //searchResultsTableView.reloadData()
+    resultTableVC.push(results: results)
   }
 
   func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
     // handle error
-  }
-}
-
-extension UniversalSearchViewController: UITableViewDelegate {
-  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let result = resultsData[indexPath.row]
-    guard let type = result.cellType else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-        CCLog.assert("CellType is nil from result")
-      }
-      return
-    }
-
-    popDismiss(animated: true)
-    
-    switch type {
-
-    case .location:
-
-        var location = result.title
-        if !result.detail.isEmpty {
-          location = location +  ", " + result.detail
-        }
-        delegate?.applyFilter(location: location)
-
-      break
-    case .category:
-        guard let category = result.category else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-            CCLog.assert("Category is nil")
-          }
-          return
-        }
-        delegate?.applyFilter(category: category)
-      break
-
-    case .meal:
-        guard let meal = result.meal else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-            CCLog.assert("Meal is nil")
-          }
-          return
-        }
-        delegate?.applyFilter(meal: meal)
-      break
-
-    case .story:
-      guard let story = result.story else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-          CCLog.assert("Story is nil")
-        }
-        return
-      }
-      delegate?.display(story: story)
-      break
-
-    case .user:
-      guard let user = result.user else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-          CCLog.assert("User is nil")
-        }
-        return
-      }
-
-      delegate?.display(user: user)
-      break
-
-    case .venue:
-
-      guard let venue = result.venue else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-          CCLog.assert("Venue is nil")
-        }
-        return
-      }
-
-      delegate?.display(venue: venue)
-      break
-
-    default:
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-        CCLog.assert("Unknown cell type")
-      }
-      break
-    }
-  }
-}
-
-extension UniversalSearchViewController: UITableViewDataSource {
-
-  func numberOfSections(in tableView: UITableView) -> Int {
-    return 1  // Hard coded to 1 for now?
-  }
-
-  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return resultsData.count
-  }
-
-
-  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    guard let cell = resultTableView.dequeueReusableCell(withIdentifier: "SearchResultCell", for: indexPath) as? SearchResultCell else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-        CCLog.assert("TableView dequeued nil or non-SearchResultCell")
-      }
-      return UITableViewCell()  // Return some new cell to prevent crashing
-    }
-
-    // used for earl grey testing
-    cell.accessibilityLabel = "searchResultCell"
-    cell.accessibilityTraits = UIAccessibilityTraitButton
-    cell.isAccessibilityElement = true
-    cell.isUserInteractionEnabled = true
-
-    // clear cell
-    cell.title.text = ""
-    cell.detail.text = ""
-
-    let dataCell = resultsData[indexPath.row]
-
-    // display the correct info based on the different results
-    cell.title.text = dataCell.title
-    cell.detail.text = dataCell.detail
-    cell.icon.image = UIImage(named:dataCell.iconName)
-
-    return cell
   }
 }
 
@@ -545,3 +437,25 @@ extension UniversalSearchViewController: UISearchBarDelegate {
   }
 }
 
+extension NSMutableAttributedString {
+  @discardableResult func bold(_ text: String) -> NSMutableAttributedString {
+    let attrs: [NSAttributedStringKey: Any] = [.font: UIFont(name: FoodieFont.Raleway.Bold, size: 17)!]
+    let boldString = NSMutableAttributedString(string:text, attributes: attrs)
+    append(boldString)
+
+    return self
+  }
+
+  @discardableResult func normal(_ text: String) -> NSMutableAttributedString {
+    let normal = NSAttributedString(string: text)
+    append(normal)
+
+    return self
+  }
+}
+
+extension String {
+  func index(of string: String, options: CompareOptions = .caseInsensitive) -> Index? {
+    return range(of: string, options: options)?.lowerBound
+  }
+}

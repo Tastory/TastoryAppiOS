@@ -79,6 +79,7 @@ class DiscoverViewController: OverlayViewController {
   private var discoverFilter: FoodieFilter?
   private var forceRequery: Bool = false
   private var autoFilterSearch: Bool = false
+  private var currentLocation: CLLocation?
 
   
   // MARK: - IBOutlets
@@ -136,6 +137,7 @@ class DiscoverViewController: OverlayViewController {
     }
 
     viewController.delegate = self
+    viewController.currentLocation = currentLocation
 
     appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
     viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
@@ -909,7 +911,9 @@ class DiscoverViewController: OverlayViewController {
           mapController.startTracking()
           return
         }
-        
+
+        self.currentLocation = location
+
         // Move the map to the initial location as a fallback incase the query fails
         DispatchQueue.main.async { mapController.showCurrentRegionExposed(animated: true) }
         ActivitySpinner.globalApply()
@@ -1449,7 +1453,7 @@ extension DiscoverViewController: FiltersViewReturnDelegate {
 
 extension DiscoverViewController: SearchResultDisplayDelegate {
   func display(story: FoodieStory) {
-
+    popDismiss(animated: true)
     guard let user:FoodieUser = story.author else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Foodiestory's author is nil")
@@ -1474,6 +1478,7 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
   }
 
   func display(user: FoodieUser) {
+    popDismiss(animated: true)
     UIApplication.shared.beginIgnoringInteractionEvents()
     DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
       UIApplication.shared.endIgnoringInteractionEvents()
@@ -1482,6 +1487,7 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
   }
 
   func display(venue: FoodieVenue) {
+    popDismiss(animated: true)
     UIApplication.shared.beginIgnoringInteractionEvents()
     DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
       UIApplication.shared.endIgnoringInteractionEvents()
@@ -1490,7 +1496,7 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
   }
 
   func applyFilter(meal: MealType) {
-
+    popDismiss(animated: true)
     var filter: FoodieFilter
     if let discoveryFilter = self.discoverFilter {
       filter = discoveryFilter
@@ -1503,7 +1509,7 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
   }
 
   func applyFilter(category: FoodieCategory) {
-
+    popDismiss(animated: true)
     var filter: FoodieFilter
     if let discoveryFilter = self.discoverFilter {
       filter = discoveryFilter
@@ -1516,6 +1522,7 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
   }
 
   func applyFilter(location: String) {
+    popDismiss(animated: true)
     UIApplication.shared.beginIgnoringInteractionEvents()
     DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
       UIApplication.shared.endIgnoringInteractionEvents()

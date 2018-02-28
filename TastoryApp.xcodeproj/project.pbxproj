@@ -194,6 +194,7 @@
 		C29CD13D1F988B2000A6D53F /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */; };
 		C2CE441B2045C1CC002780EA /* UniversalSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2CE441A2045C1CC002780EA /* UniversalSearchViewController.swift */; };
 		C2CE441D2045C1FF002780EA /* SearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2CE441C2045C1FF002780EA /* SearchResultCell.swift */; };
+		C2CE4421204624AA002780EA /* SearchResultTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2CE4420204624AA002780EA /* SearchResultTableViewController.swift */; };
 		C2FD8F80201D5BE200550EC3 /* TastoryApp.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = C20FF85120142BA5009F2114 /* TastoryApp.entitlements */; };
 /* End PBXBuildFile section */
 
@@ -437,6 +438,7 @@
 		C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
 		C2CE441A2045C1CC002780EA /* UniversalSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalSearchViewController.swift; sourceTree = "<group>"; };
 		C2CE441C2045C1FF002780EA /* SearchResultCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultCell.swift; sourceTree = "<group>"; };
+		C2CE4420204624AA002780EA /* SearchResultTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultTableViewController.swift; sourceTree = "<group>"; };
 		CB67F7DCE9A416DA5EC3C0F1 /* EarlGrey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EarlGrey.framework; path = Pods/EarlGrey/EarlGrey/EarlGrey.framework; sourceTree = SOURCE_ROOT; };
 		CE96672FBDE59A26FF838F5A /* Pods-TastoryApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastoryApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-TastoryApp/Pods-TastoryApp.release.xcconfig"; sourceTree = "<group>"; };
 		D0990A4DB26CAD0EFD0F0177 /* Pods-TastoryAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TastoryAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TastoryAppTests/Pods-TastoryAppTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -927,6 +929,7 @@
 				8CE571181FDB38C40023F4C7 /* FiltersNavViewController.swift */,
 				8C900D321F60C0E50058BDFE /* CategoryViewController.swift */,
 				C2CE441A2045C1CC002780EA /* UniversalSearchViewController.swift */,
+				C2CE4420204624AA002780EA /* SearchResultTableViewController.swift */,
 			);
 			name = Filters;
 			sourceTree = "<group>";
@@ -1548,6 +1551,7 @@
 				8C1ED6F01F5D15A300A8CC94 /* CameraButtonRingLayer.swift in Sources */,
 				8CCDDA0C1FB3E81700B066E7 /* CGPoint+Extension.swift in Sources */,
 				8CE49EB31F638162007278C1 /* ArrowLayer.swift in Sources */,
+				C2CE4421204624AA002780EA /* SearchResultTableViewController.swift in Sources */,
 				8C7343671FF992EA000B9C25 /* ReputableClaim.swift in Sources */,
 				8C1C71F61ED1602F00D2E4F8 /* FoodieGlobal.swift in Sources */,
 				8C53FE8E1FDF3D2D003AEF77 /* FoodieFilter.swift in Sources */,

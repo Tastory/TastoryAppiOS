@@ -532,17 +532,16 @@ class ProfileViewController: OverlayViewController {
         }
         return
       }
-      
-      guard let venueObjId = venue.objectId else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain)  { [unowned self] _ in
-          CCLog.assert("FoodieVenue is missing object id")
-          self.popDismiss(animated: true)
-        }
-        return
+
+      // it is possible to display a venue that is not in our database
+      if let venueObjId = venue.objectId {
+        query!.addVenueFilter(venueId: venueObjId)
+      } else {
+        // TODO not sure what to search to empty out results 
+        query!.addVenueFilter(venueId: "empty")
       }
-      
       emptyAvatarImageView.image = UIImage(named: "Profile-VenueAvatar")
-      query!.addVenueFilter(venueId: venueObjId)
+
     } else {
       guard let user = user, user.isRegistered else {
         AlertDialog.present(from: self, title: "Profile Error", message: "The specified user profile belongs to an unregistered user") { [unowned self] _ in
@@ -692,7 +691,7 @@ class ProfileViewController: OverlayViewController {
         bioLabel.text = "Opening hours: " + hourStr
       }
 
-      shareButton.isHidden = false
+      shareButton.isHidden = (venue.objectId == nil)
       moreButton.isHidden = (layout == .user)
 
       // Hide all the other buttons for now
