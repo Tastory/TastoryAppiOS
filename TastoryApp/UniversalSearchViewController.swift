@@ -49,8 +49,8 @@ class UniversalSearchViewController: OverlayViewController {
 
     if let index = index {
       attrText.normal(String(text[text.startIndex..<index]))
-      attrText.bold(searchKeyWord)
       let offsetIdx = text.index(index, offsetBy: searchKeyWord.count)
+      attrText.bold(String(text[index..<offsetIdx]))
       attrText.normal(String(text[offsetIdx..<text.endIndex]))
       return (attrText, true)
     } else {
@@ -111,7 +111,7 @@ class UniversalSearchViewController: OverlayViewController {
       return
     }
 
-    guard let StoriesVC = resultTableVC.pages[result.Stories.rawValue] as? SearchResultTableViewController else {
+    guard let storiesVC = resultTableVC.pages[result.Stories.rawValue] as? SearchResultTableViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
       }
@@ -278,6 +278,7 @@ class UniversalSearchViewController: OverlayViewController {
           var results:[SearchResult] = []
           var venues: [SearchResult] = []
           var users: [SearchResult] = []
+          var stories: [SearchResult] = []
 
           for obj in pfobjs {
 
@@ -306,45 +307,33 @@ class UniversalSearchViewController: OverlayViewController {
                 }
                 return
               }
-              
-              // fetch the pfobject pointers
-              DispatchQueue.global(qos: .userInitiated).async {
-                do {
-                  try user.fetchIfNeeded()
-                  try venue.fetchIfNeeded()
-                } catch {
-                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                    CCLog.fatal("An error occurred when fetching user and venue")
-                  }
-                  return
+         
+              guard let userName = user.username else {
+                AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                  CCLog.fatal("UserName is missing from FoodieUser")
                 }
-
-                guard let userName = user.username else {
-                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                    CCLog.fatal("UserName is missing from FoodieUser")
-                  }
-                  return
-                }
-
-                guard let venueName = venue.name else {
-                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                    CCLog.fatal("name is missing from FoodieVenue")
-                  }
-                  return
-                }
-
-                let (title, isTitleHighlighted) = self.highlightSearchTerms(text: storyTitle)
-                let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: venueName + " @" + userName)
-                if isTitleHighlighted || isDetailHighlighted {
-                  result.title = title
-                  result.detail = detail
-                  result.iconName = "Entry-StoryTitle"
-                  result.story = story
-
-                  topVC.push(results: [result])
-                  StoriesVC.push(results: [result])
-                }
+                return
               }
+
+              guard let venueName = venue.name else {
+                AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                  CCLog.fatal("name is missing from FoodieVenue")
+                }
+                return
+              }
+
+              let (title, isTitleHighlighted) = self.highlightSearchTerms(text: storyTitle)
+              let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: venueName + " @" + userName)
+              if isTitleHighlighted || isDetailHighlighted {
+                result.title = title
+                result.detail = detail
+                result.iconName = "Entry-StoryTitle"
+                result.story = story
+
+                results.append(result)
+                stories.append(result)
+              }
+
             } else if obj is FoodieUser, let user = obj as? FoodieUser {
 
               guard let userName = user.username else {
@@ -414,6 +403,7 @@ class UniversalSearchViewController: OverlayViewController {
           topVC.push(results: results)
           venueVC.push(results: venues)
           peopleVC.push(results: users)
+          storiesVC.push(results: stories)
         }
       }
     }
