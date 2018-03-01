@@ -743,20 +743,6 @@
                                     <action selector="shareAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="58m-hd-dEW"/>
                                 </connections>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t4S-lT-gBv" userLabel="SoundOn Button">
-                                <rect key="frame" x="8" y="694.33333333333337" width="40" height="40"/>
-                                <state key="normal" image="StoryMarkup-SoundOnButton"/>
-                                <connections>
-                                    <action selector="soundOnAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="89H-Iu-eGB"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dOo-DQ-GbZ" userLabel="SoundOff Button">
-                                <rect key="frame" x="8" y="694.33333333333337" width="40" height="40"/>
-                                <state key="normal" image="StoryMarkup-SoundOffButton"/>
-                                <connections>
-                                    <action selector="soundOffAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="Bpx-5U-g7F"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
@@ -770,23 +756,19 @@
                             <constraint firstItem="dzk-89-di2" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="Gxz-XK-kxM"/>
                             <constraint firstItem="Nrk-FM-KHI" firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="width" multiplier="0.35" id="K0U-ZI-iHh"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="KXu-Vh-dh4"/>
-                            <constraint firstItem="dOo-DQ-GbZ" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" constant="8" id="Keg-tZ-0i1"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="L9O-xu-4M6"/>
                             <constraint firstItem="ZiO-0U-WG2" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="MCx-CB-BJe"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="centerY" secondItem="cgZ-7E-g3q" secondAttribute="centerY" id="NYN-aq-dcH"/>
                             <constraint firstItem="dzk-89-di2" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" id="NvP-co-bdy"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="bottom" secondItem="ZiO-0U-WG2" secondAttribute="bottom" id="O1c-k7-dig"/>
-                            <constraint firstItem="t4S-lT-gBv" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" constant="8" id="Vgi-zL-Muh"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="trailing" secondItem="nxS-Eu-LGj" secondAttribute="trailing" id="WD0-hq-DLo"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="height" relation="lessThanOrEqual" secondItem="cgZ-7E-g3q" secondAttribute="height" id="Yef-Ng-2NU"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" priority="900" id="YkJ-cK-ygV"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="height" relation="lessThanOrEqual" secondItem="cgZ-7E-g3q" secondAttribute="height" id="ci3-Pa-YAB"/>
                             <constraint firstItem="nxS-Eu-LGj" firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="width" multiplier="0.65" id="cmr-Xm-15e"/>
                             <constraint firstItem="Hpj-0E-WpG" firstAttribute="top" secondItem="ZiO-0U-WG2" secondAttribute="top" constant="3" id="ctT-HE-dB2"/>
-                            <constraint firstItem="dOo-DQ-GbZ" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-5" id="d4J-nn-CJF"/>
                             <constraint firstItem="nxS-Eu-LGj" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="eXL-2f-A15"/>
                             <constraint firstItem="rhf-jl-SNy" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" constant="12" id="ffm-fT-SkA"/>
-                            <constraint firstItem="t4S-lT-gBv" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-5" id="iHb-gO-R40"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="bottom" secondItem="nxS-Eu-LGj" secondAttribute="bottom" id="jhR-31-wUi"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="m09-bu-nxu"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="mjE-GH-24V"/>
@@ -807,8 +789,6 @@
                         <outlet property="photoView" destination="3Gc-Ev-vmE" id="tiQ-hZ-B0K"/>
                         <outlet property="reactionStack" destination="Hpj-0E-WpG" id="W0W-m3-s85"/>
                         <outlet property="shareButton" destination="rhf-jl-SNy" id="sXL-Gi-U0j"/>
-                        <outlet property="soundOffButton" destination="dOo-DQ-GbZ" id="P6z-4E-Yke"/>
-                        <outlet property="soundOnButton" destination="t4S-lT-gBv" id="hPd-pZ-Vzh"/>
                         <outlet property="swipeLabel" destination="f5Y-qe-Xu1" id="SzU-Uu-zBn"/>
                         <outlet property="swipeStack" destination="eTa-IA-SsO" id="DIZ-0F-oYo"/>
                         <outlet property="tapBackwardGestureRecognizer" destination="Nrk-FM-KHI" id="Lg0-K0-zEc"/>
@@ -860,8 +840,6 @@
         <image name="Profile-ShareButton" width="62" height="22"/>
         <image name="Story-LikeButton" width="40" height="40"/>
         <image name="Story-Share" width="40" height="40"/>
-        <image name="StoryMarkup-SoundOffButton" width="40" height="40"/>
-        <image name="StoryMarkup-SoundOnButton" width="40" height="40"/>
         <image name="StoryMarkup-SwipeUpArrow" width="22" height="12"/>
     </resources>
 </document>

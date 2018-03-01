@@ -46,7 +46,6 @@ class StoryViewController: OverlayViewController {
   private var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
   private var photoTimeRemaining: TimeInterval = 0.0
   private var isPaused: Bool = false
-  private var muteObserver: NSKeyValueObservation?
   
   // Track Claims & Reactions...?
   private var reactionDebounce = false  // Ideally implement using spinlock or semaphore. But should be sufficient for user interaction speed
@@ -73,8 +72,6 @@ class StoryViewController: OverlayViewController {
   @IBOutlet var heartLabel: UILabel!
   @IBOutlet var swipeStack: UIStackView!
   @IBOutlet var swipeLabel: UILabel!
-  @IBOutlet var soundOnButton: UIButton!
-  @IBOutlet var soundOffButton: UIButton!
   @IBOutlet weak var shareButton: UIButton!
 
   
@@ -327,14 +324,6 @@ class StoryViewController: OverlayViewController {
     play()
   }
   
-  @IBAction func soundOnAction(_ sender: UIButton) {
-    AudioControl.unmute()
-  }
-  
-  @IBAction func soundOffAction(_ sender: UIButton) {
-    AudioControl.mute()
-  }
-  
   @IBAction func heartAction(_ sender: UIButton) {
     if reactionDebounce { return }  // If there's already a Reaction claim in progress, just return. Not gonna let the user hammer reactions
     reactionDebounce = true
@@ -382,10 +371,8 @@ class StoryViewController: OverlayViewController {
   
   // MARK: - Private Instance Functions
   
-  private func updateAVMute(audioControl: AudioControl) {
-    
+  private func updateAVMute() {
     guard let playingMoment = currentMoment else {
-      // Not playing any moment, Sound button should do nothing and just return
       return
     }
     
@@ -397,20 +384,9 @@ class StoryViewController: OverlayViewController {
     }
 
     if playingMoment.playSound {
-      if !audioControl.isAppMuted {
         avPlayer.volume = 1.0
-        soundOnButton.isHidden = true
-        soundOffButton.isHidden = false
-      } else {
-        avPlayer.volume = 0.0
-        soundOffButton.isHidden = true
-        soundOnButton.isHidden = false
-      }
-    
-  } else {
+    } else {
       avPlayer.volume = 0.0
-      soundOffButton.isHidden = true
-      soundOnButton.isHidden = true
     }
   }
   
@@ -492,7 +468,7 @@ class StoryViewController: OverlayViewController {
       return
     }
 
-    updateAVMute(audioControl: AudioControl.global)
+    updateAVMute()
     if !draftPreview { venueButton.isHidden = false }
     shareButton.isHidden = (story.objectId == nil)
     authorButton.isHidden = false
@@ -746,8 +722,6 @@ class StoryViewController: OverlayViewController {
   private func appearanceForAllUI(alphaValue: CGFloat, animated: Bool) {
     if animated {
       UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
-        self.soundOnButton.alpha = alphaValue
-        self.soundOffButton.alpha = alphaValue
         self.venueButton.alpha = alphaValue
         self.shareButton.alpha = alphaValue
         self.authorButton.alpha = alphaValue
@@ -757,8 +731,6 @@ class StoryViewController: OverlayViewController {
         self.bottomStackBackgroundView.alpha = alphaValue
       }
     } else {
-      soundOnButton.alpha = alphaValue
-      soundOffButton.alpha = alphaValue
       venueButton.alpha = alphaValue
       shareButton.alpha = alphaValue
       authorButton.alpha = alphaValue
@@ -771,8 +743,6 @@ class StoryViewController: OverlayViewController {
   
   
   private func hideAllUI() {
-    soundOnButton.isHidden = true
-    soundOffButton.isHidden = true
     authorButton.isHidden = true
     venueButton.isHidden = true
     shareButton.isHidden = true
@@ -1140,8 +1110,6 @@ class StoryViewController: OverlayViewController {
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    muteObserver = AudioControl.observeMuteState(withBlock: updateAVMute)
-
     self.view.accessibilityIdentifier = "storyView"
 
     if isPaused { play() }
@@ -1158,10 +1126,6 @@ class StoryViewController: OverlayViewController {
     } else {
       CCLog.assert("Expected a viewingStory even tho dismissing")
     }
-    
-    // Need to Invalidate and nil in-order to break retain cycle
-    muteObserver?.invalidate()
-    muteObserver = nil
   }
   
   
