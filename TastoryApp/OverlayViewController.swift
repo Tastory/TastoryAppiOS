@@ -159,6 +159,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
           let popToDragTransform = PopTransitionAnimator.calculateScaleMove3DTransform(from: presentingFrame, to: self.view.frame)
           presentingView.layer.transform = popToDragTransform
           presentingView.isHidden = false
+          presentingView.setNeedsDisplay()
           
           // Adjust the progress so that the Transition Animator completes at the exact same time as the pop return animation
           let adjustedProgress = 1.0 - Constants.DragReturnTransitionDuration/animator.duration.magnitude  // 0.1 just to make sure

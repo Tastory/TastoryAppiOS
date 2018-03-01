@@ -171,6 +171,7 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         let presentedSubFrame = fromVC.view.frame
         popFromView.layer.transform = PopTransitionAnimator.calculateScaleMove3DTransform(from: presentingSubFrame!, to: presentedSubFrame)
         popFromView.isHidden = false
+        popFromView.setNeedsDisplay()
       }
       
       // Add the toVC to the correct view order
