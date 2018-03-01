@@ -40,6 +40,7 @@ class StoryViewController: OverlayViewController {
   private var currentExportPlayer: AVExportPlayer?
   private var localVideoPlayer = AVPlayer()
   private var photoTimer: Timer?
+  private var longPressGestureRecognizer: UILongPressGestureRecognizer!
   private var swipeUpGestureRecognizer: UISwipeGestureRecognizer!  // Set by ViewDidLoad
   private var avPlayerLayer: AVPlayerLayer!  // Set by ViewDidLoad
   private var activitySpinner: ActivitySpinner!  // Set by ViewDidLoad
@@ -72,8 +73,6 @@ class StoryViewController: OverlayViewController {
   @IBOutlet var heartLabel: UILabel!
   @IBOutlet var swipeStack: UIStackView!
   @IBOutlet var swipeLabel: UILabel!
-  @IBOutlet var playButton: UIButton!
-  @IBOutlet var pauseButton: UIButton!
   @IBOutlet var soundOnButton: UIButton!
   @IBOutlet var soundOffButton: UIButton!
   @IBOutlet weak var shareButton: UIButton!
@@ -452,8 +451,6 @@ class StoryViewController: OverlayViewController {
     
     // Update the app states
     isPaused = true
-    pauseButton.isHidden = true
-    playButton.isHidden = false
   }
   
   
@@ -483,8 +480,6 @@ class StoryViewController: OverlayViewController {
     
     // Update the app states
     isPaused = false
-    pauseButton.isHidden = false
-    playButton.isHidden = true
   }
   
   
@@ -498,8 +493,6 @@ class StoryViewController: OverlayViewController {
     }
 
     updateAVMute(audioControl: AudioControl.global)
-    pauseButton.isHidden = isPaused  // isLikelyToKeepUp can be called when paused, so UI update needs to be correct for that
-    playButton.isHidden = !isPaused
     if !draftPreview { venueButton.isHidden = false }
     shareButton.isHidden = (story.objectId == nil)
     authorButton.isHidden = false
@@ -550,7 +543,6 @@ class StoryViewController: OverlayViewController {
       view.insertSubview(photoView, belowSubview: jotViewController.view)
 
       // UI Update - Really should group some of the common UI stuff into some sort of function?
-      pauseButton.isHidden = false
       if !draftPreview { venueButton.isHidden = false }
       shareButton.isHidden = (story.objectId == nil)
       authorButton.isHidden = false
@@ -754,8 +746,6 @@ class StoryViewController: OverlayViewController {
   private func appearanceForAllUI(alphaValue: CGFloat, animated: Bool) {
     if animated {
       UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
-        self.pauseButton.alpha = alphaValue
-        self.playButton.alpha = alphaValue
         self.soundOnButton.alpha = alphaValue
         self.soundOffButton.alpha = alphaValue
         self.venueButton.alpha = alphaValue
@@ -767,8 +757,6 @@ class StoryViewController: OverlayViewController {
         self.bottomStackBackgroundView.alpha = alphaValue
       }
     } else {
-      pauseButton.alpha = alphaValue
-      playButton.alpha = alphaValue
       soundOnButton.alpha = alphaValue
       soundOffButton.alpha = alphaValue
       venueButton.alpha = alphaValue
@@ -783,8 +771,6 @@ class StoryViewController: OverlayViewController {
   
   
   private func hideAllUI() {
-    pauseButton.isHidden = true
-    playButton.isHidden = true
     soundOnButton.isHidden = true
     soundOffButton.isHidden = true
     authorButton.isHidden = true
@@ -800,7 +786,7 @@ class StoryViewController: OverlayViewController {
   
   
   @objc private func swipeUp(_ sender: UISwipeGestureRecognizer) {
-    CCLog.info("User swiped Up")
+    CCLog.info("User swiped up")
     
     guard let story = viewingStory else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -865,6 +851,20 @@ class StoryViewController: OverlayViewController {
       safariViewController.delegate = self
       safariViewController.modalPresentationStyle = .overFullScreen
       self.present(safariViewController, animated: true, completion: nil)
+    }
+  }
+  
+  
+  @objc private func longPress(_ longPressGesture: UILongPressGestureRecognizer) {
+    CCLog.info("User long pressed")
+    
+    switch longPressGesture.state {
+    case .began:
+      pause()
+    case .cancelled, .failed, .ended:
+      play()
+    default:
+      break
     }
   }
   
@@ -1056,6 +1056,10 @@ class StoryViewController: OverlayViewController {
     swipeUpGestureRecognizer.numberOfTouchesRequired = 1
     view.addGestureRecognizer(swipeUpGestureRecognizer)
     dragGestureRecognizer?.require(toFail: swipeUpGestureRecognizer)  // This is needed so that the Swipe down to dismiss from OverlayViewController will only have an effect if this is not a Swipe Up to SafariAccou
+    
+    longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
+    longPressGestureRecognizer.minimumPressDuration = 0.5 // seconds
+    view.addGestureRecognizer(longPressGestureRecognizer)
   }
 
   
@@ -1140,6 +1144,7 @@ class StoryViewController: OverlayViewController {
 
     self.view.accessibilityIdentifier = "storyView"
 
+    if isPaused { play() }
   }
   
   
