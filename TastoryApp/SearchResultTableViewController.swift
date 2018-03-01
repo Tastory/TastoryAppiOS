@@ -21,7 +21,6 @@ protocol SearchResultDisplayDelegate: class {
 
 class SearchResultTableViewController: UIViewController {
 
-  // MARK: - Constants/Enums
   private struct Constants {
     static let resultTreeViewRowHeight: CGFloat = 60.0
   }
@@ -30,7 +29,7 @@ class SearchResultTableViewController: UIViewController {
   private var resultsData = [SearchResult]()
   private var titleSet: Set<String> = Set() // keep track of titles of each cell to avoid duplicate entries
 
-  // MARK: - Private Instance Variables
+  // MARK: - Public Instance Variables
   public var delegate: SearchResultDisplayDelegate?
 
   // MARK: - IBOutlets
@@ -42,6 +41,8 @@ class SearchResultTableViewController: UIViewController {
     resultTableView.delegate = self
     resultTableView.tableFooterView = UIView()
     resultTableView.rowHeight = Constants.resultTreeViewRowHeight
+    // fix scrolling problem when item is right at the bottom edge of the screen
+    resultTableView.contentInset = UIEdgeInsetsMake(self.topLayoutGuide.length, 0, 80, 0)
   }
 
   // MARK: - Public Instance Functions
@@ -98,7 +99,7 @@ class SearchResultTableViewController: UIViewController {
 
             guard let sourceVenue = result.venue else {
               AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                CCLog.assert("the venue from resultsData is nil")
+                CCLog.assert("the venue is nil")
               }
               return
             }
@@ -111,8 +112,17 @@ class SearchResultTableViewController: UIViewController {
             // find the existing venue entry
             var i = 0
             for data in self.resultsData {
-              if data.title == result.title {
-                self.resultsData[i].venue = sourceVenue
+              if data.cellType == .venue {
+                guard let targetVenue = data.venue else {
+                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                    CCLog.assert("the venue is nil")
+                  }
+                  return
+                }
+
+                if targetVenue.foursquareVenueID == sourceVenue.foursquareVenueID {
+                   self.resultsData[i].venue = sourceVenue
+                }
               }
               i = i + 1
             }

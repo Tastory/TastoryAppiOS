@@ -17,9 +17,16 @@ class UniversalSearchViewController: OverlayViewController {
     static let SearchBarSearchDelay = 0.75
   }
 
+  enum result: Int {
+    case Top = 0
+    case Venues = 1
+    case People = 2
+    case Stories = 3
+  }
+
   // MARK: - Private Instance Functions
   private var searchKeyWord = ""
-  private var resultTableVC: SearchResultTableViewController?
+  private var resultPageVC: ResultPageViewController?
 
 
   // MARK: - Public Instance Functions
@@ -35,7 +42,7 @@ class UniversalSearchViewController: OverlayViewController {
     popDismiss(animated: true)
   }
 
-  // MARK: - Public Instance Functions
+  // MARK: - Private Instance Functions
   private func highlightSearchTerms(text: String) -> (NSMutableAttributedString, Bool) {
     let index = text.index(of: searchKeyWord)
     let attrText = NSMutableAttributedString()
@@ -59,27 +66,58 @@ class UniversalSearchViewController: OverlayViewController {
     searchBar.delegate = self
 
     let storyboard = UIStoryboard(name: "Filters", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "SearchResultTableViewController") as? SearchResultTableViewController else {
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "ResultPageViewController") as? ResultPageViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("ViewController initiated not of FiltersNavViewController Class!!")
+        CCLog.fatal("ViewController initiated not of ResultPageViewController Class!!")
       }
       return
     }
-    resultTableVC = viewController
-    viewController.delegate = delegate
+    resultPageVC = viewController
+    viewController.displayDelegate = delegate
+
     self.addChildViewController(viewController)
     tablePlaceHolder.addSubview(viewController.view)
   }
 
   @objc func search() {
-    guard let resultTableVC = resultTableVC else {
+
+    guard let resultTableVC = resultPageVC else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Search Result Table View Controller is nil!!")
       }
       return
     }
 
-    resultTableVC.clearTable()
+    resultTableVC.clearAllResults()
+
+    guard let topVC = resultTableVC.pages[result.Top.rawValue] as? SearchResultTableViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
+      }
+      return
+    }
+
+    guard let venueVC = resultTableVC.pages[result.Venues.rawValue] as? SearchResultTableViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
+      }
+      return
+    }
+
+    guard let peopleVC = resultTableVC.pages[result.People.rawValue] as? SearchResultTableViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
+      }
+      return
+    }
+
+    guard let StoriesVC = resultTableVC.pages[result.Stories.rawValue] as? SearchResultTableViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
+      }
+      return
+    }
+
 
     if searchKeyWord != "" {
 
@@ -118,7 +156,7 @@ class UniversalSearchViewController: OverlayViewController {
             break
           }
         }
-        resultTableVC.pushFront(results: results)
+        topVC.pushFront(results: results)
       }
 
       // search category
@@ -161,7 +199,7 @@ class UniversalSearchViewController: OverlayViewController {
             break
           }
         }
-        resultTableVC.pushFront(results: results)
+        topVC.pushFront(results: results)
       }
 
       // search four square
@@ -220,7 +258,8 @@ class UniversalSearchViewController: OverlayViewController {
             break
           }
         }
-        resultTableVC.push(results: results)
+        topVC.push(results: results)
+        venueVC.push(results: results)
       }
 
       // Setup parameters and submit Cloud function
@@ -237,6 +276,8 @@ class UniversalSearchViewController: OverlayViewController {
 
         if let pfobjs = objects as? [PFObject] {
           var results:[SearchResult] = []
+          var venues: [SearchResult] = []
+          var users: [SearchResult] = []
 
           for obj in pfobjs {
 
@@ -265,44 +306,45 @@ class UniversalSearchViewController: OverlayViewController {
                 }
                 return
               }
-
+              
               // fetch the pfobject pointers
-              do {
-                try user.fetchIfNeeded()
-                try venue.fetchIfNeeded()
-              } catch {
-                AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                  CCLog.fatal("An error occurred when fetching user and venue")
+              DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                  try user.fetchIfNeeded()
+                  try venue.fetchIfNeeded()
+                } catch {
+                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                    CCLog.fatal("An error occurred when fetching user and venue")
+                  }
+                  return
                 }
-                return
-              }
 
-              guard let userName = user.username else {
-                AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                  CCLog.fatal("UserName is missing from FoodieUser")
+                guard let userName = user.username else {
+                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                    CCLog.fatal("UserName is missing from FoodieUser")
+                  }
+                  return
                 }
-                return
-              }
 
-              guard let venueName = venue.name else {
-                AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                  CCLog.fatal("name is missing from FoodieVenue")
+                guard let venueName = venue.name else {
+                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                    CCLog.fatal("name is missing from FoodieVenue")
+                  }
+                  return
                 }
-                return
+
+                let (title, isTitleHighlighted) = self.highlightSearchTerms(text: storyTitle)
+                let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: venueName + " @" + userName)
+                if isTitleHighlighted || isDetailHighlighted {
+                  result.title = title
+                  result.detail = detail
+                  result.iconName = "Entry-StoryTitle"
+                  result.story = story
+
+                  topVC.push(results: [result])
+                  StoriesVC.push(results: [result])
+                }
               }
-
-              let (title, isTitleHighlighted) = self.highlightSearchTerms(text: storyTitle)
-              let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: venueName + " @" + userName)
-              if !isTitleHighlighted && !isDetailHighlighted {
-                continue
-              }
-
-              result.title = title
-              result.detail = detail
-              result.iconName = "Entry-StoryTitle"
-              result.story = story
-
-              results.append(result)
             } else if obj is FoodieUser, let user = obj as? FoodieUser {
 
               guard let userName = user.username else {
@@ -333,6 +375,7 @@ class UniversalSearchViewController: OverlayViewController {
               result.user = user
 
               results.append(result)
+              users.append(result)
             } else if obj is FoodieVenue, let venue = obj as? FoodieVenue {
 
               guard let venueName = venue.name else {
@@ -360,6 +403,7 @@ class UniversalSearchViewController: OverlayViewController {
               result.cellType = .venue
               result.venue = venue
 
+              venues.append(result)
               results.append(result)
             } else {
               AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -367,7 +411,9 @@ class UniversalSearchViewController: OverlayViewController {
               }
             }
           }
-          resultTableVC.push(results: results)
+          topVC.push(results: results)
+          venueVC.push(results: venues)
+          peopleVC.push(results: users)
         }
       }
     }
@@ -380,9 +426,16 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
     var results:[SearchResult] = []
     var i = 0
 
-    guard let resultTableVC = resultTableVC else {
+    guard let resultTableVC = resultPageVC else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Search Result Table View Controller is nil!!")
+      }
+      return
+    }
+
+    guard let topVC = resultTableVC.pages[result.Top.rawValue] as? SearchResultTableViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
       }
       return
     }
@@ -415,7 +468,7 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
         break
       }
     }
-    resultTableVC.push(results: results)
+    topVC.push(results: results)
   }
 
   func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
