@@ -103,7 +103,7 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
       }
 
       player.pause()
-      playButton.setImage(UIImage(named:"StoryMarkup-PlayButton"), for: .normal)
+      playButton.setImage(UIImage(named:"Trim-PlayButton"), for: .normal)
       stopPlaybackTimeChecker()
     }
 
@@ -116,7 +116,7 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
       }
 
       player.play()
-      playButton.setImage(UIImage(named:"StoryMarkup-PauseButton"), for: .normal)
+      playButton.setImage(UIImage(named:"Trim-PauseButton"), for: .normal)
       startPlaybackTimeChecker()
     }
 

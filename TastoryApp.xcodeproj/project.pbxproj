@@ -86,7 +86,6 @@
 		8CAB70772042215500F630CE /* UILabel+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAB70762042215500F630CE /* UILabel+Extension.swift */; };
 		8CAE5BFE1FBC23040069C582 /* Compose.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CAE5BFD1FBC23040069C582 /* Compose.storyboard */; };
 		8CAE5C001FBC403E0069C582 /* TextButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAE5BFF1FBC403E0069C582 /* TextButtonNode.swift */; };
-		8CB207441FC6511500AFFD31 /* AudioControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB207431FC6511400AFFD31 /* AudioControl.swift */; };
 		8CB207461FC693CB00AFFD31 /* ComposeVectors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8CB207451FC693CB00AFFD31 /* ComposeVectors.xcassets */; };
 		8CBF55841E7F7EDF00F4B1CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */; };
 		8CBF55891E7F7EDF00F4B1CD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CBF55871E7F7EDF00F4B1CD /* Main.storyboard */; };
@@ -321,7 +320,6 @@
 		8CAB70762042215500F630CE /* UILabel+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Extension.swift"; sourceTree = "<group>"; };
 		8CAE5BFD1FBC23040069C582 /* Compose.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Compose.storyboard; sourceTree = "<group>"; };
 		8CAE5BFF1FBC403E0069C582 /* TextButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextButtonNode.swift; sourceTree = "<group>"; };
-		8CB207431FC6511400AFFD31 /* AudioControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioControl.swift; sourceTree = "<group>"; };
 		8CB207451FC693CB00AFFD31 /* ComposeVectors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ComposeVectors.xcassets; sourceTree = "<group>"; };
 		8CBF55801E7F7EDF00F4B1CD /* TastoryApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TastoryApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -906,7 +904,6 @@
 			isa = PBXGroup;
 			children = (
 				8C2F79721F4E23F700851334 /* LocationWatch.swift */,
-				8CB207431FC6511400AFFD31 /* AudioControl.swift */,
 				8CE259AC1F53808C00310749 /* AlertDialog.swift */,
 				8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */,
 				C29CD1381F93198800A6D53F /* ConfirmationDialog.swift */,
@@ -1596,7 +1593,6 @@
 				8CCDDA021FB3E7D600B066E7 /* MapNavController.swift in Sources */,
 				8CE49EB11F637918007278C1 /* ExpandButton.swift in Sources */,
 				C29CD1391F93198800A6D53F /* ConfirmationDialog.swift in Sources */,
-				8CB207441FC6511500AFFD31 /* AudioControl.swift in Sources */,
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */,
 				8CEA8DB81F9EBE0400557CE5 /* UITextViewWithPlaceholder.swift in Sources */,
 				8CE259AD1F53808C00310749 /* AlertDialog.swift in Sources */,

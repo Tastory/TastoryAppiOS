@@ -238,7 +238,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jIA-aA-ex6">
                                         <rect key="frame" x="37" y="0.0" width="45" height="50"/>
                                         <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="5" maxY="5"/>
-                                        <state key="normal" image="StoryMarkup-SoundOnButton"/>
+                                        <state key="normal" image="Markup-SoundOn"/>
                                         <connections>
                                             <action selector="soundOnButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="5ZF-o8-XSr"/>
                                         </connections>
@@ -246,7 +246,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lmH-xM-Ly2">
                                         <rect key="frame" x="87" y="0.0" width="45" height="50"/>
                                         <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="5" maxY="5"/>
-                                        <state key="normal" image="StoryMarkup-SoundOffButton"/>
+                                        <state key="normal" image="Markup-SoundOff"/>
                                         <connections>
                                             <action selector="soundOffButtonAction:" destination="3Lz-hF-LGR" eventType="touchUpInside" id="RJ5-By-odb"/>
                                         </connections>
@@ -1089,7 +1089,7 @@
                                     <constraint firstAttribute="height" constant="36" id="Vpe-sd-CXI"/>
                                     <constraint firstAttribute="width" constant="36" id="gGc-Av-99f"/>
                                 </constraints>
-                                <state key="normal" title="Play" image="StoryMarkup-PlayButton"/>
+                                <state key="normal" title="Play" image="Trim-PlayButton"/>
                                 <connections>
                                     <action selector="play:" destination="8PR-Jc-D76" eventType="touchUpInside" id="uMQ-oe-0Rp"/>
                                 </connections>
@@ -1254,14 +1254,14 @@
         <image name="Markup-FontSmall" width="28" height="28"/>
         <image name="Markup-Next" width="56" height="57"/>
         <image name="Markup-Pencil" width="40" height="40"/>
+        <image name="Markup-SoundOff" width="40" height="40"/>
+        <image name="Markup-SoundOn" width="40" height="40"/>
         <image name="Markup-Text" width="40" height="40"/>
         <image name="Markup-Trash" width="40" height="40"/>
         <image name="Markup-Undo" width="40" height="40"/>
         <image name="ProfileDetails-ButtonFrame" width="174" height="40"/>
         <image name="SelfieIcon" width="40" height="36"/>
         <image name="Settings-LeftArrowDark" width="24" height="24"/>
-        <image name="StoryMarkup-PlayButton" width="40" height="40"/>
-        <image name="StoryMarkup-SoundOffButton" width="40" height="40"/>
-        <image name="StoryMarkup-SoundOnButton" width="40" height="40"/>
+        <image name="Trim-PlayButton" width="40" height="40"/>
     </resources>
 </document>

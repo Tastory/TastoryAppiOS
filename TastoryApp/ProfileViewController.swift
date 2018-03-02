@@ -95,6 +95,7 @@ class ProfileViewController: OverlayViewController {
   @IBOutlet weak var websiteLabel: UILabel!
   @IBOutlet weak var bioLabel: UILabel!
   @IBOutlet weak var moreButton: UIButton!
+  @IBOutlet weak var tabBar: UITabBar!
   @IBOutlet weak var emptyPlaceholderView: UIView!
   @IBOutlet weak var emptyPlaceholderTitle: UILabel!
   @IBOutlet weak var emptyPlaceholderText: UILabel!
@@ -495,7 +496,11 @@ class ProfileViewController: OverlayViewController {
     profileUIView.layer.shadowRadius = Constants.StackShadowRadius
     profileUIView.layer.shadowOpacity = Constants.StackShadowOpacity
 
-
+    // Configure Tab bar control
+    UITabBar.appearance().shadowImage = UIImage()
+    UITabBar.appearance().backgroundImage = UIImage()
+    tabBar.selectedItem = tabBar.items![0]
+    
     query = FoodieQuery()
 
     if layout == .venue {

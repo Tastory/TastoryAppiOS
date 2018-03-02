@@ -40,17 +40,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="w1V-ap-EBM" userLabel="Empty Placeholder View">
-                                <rect key="frame" x="0.0" y="338.66666666666674" width="375" height="439.33333333333326"/>
+                                <rect key="frame" x="0.0" y="331.33333333333326" width="375" height="446.66666666666674"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-NoStoriesBacking" translatesAutoresizingMaskIntoConstraints="NO" id="ETg-wA-zyO">
-                                        <rect key="frame" x="52.666666666666657" y="121.33333333333331" width="270" height="197"/>
+                                        <rect key="frame" x="52.666666666666657" y="125" width="270" height="197"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="270" id="HE5-oQ-FpF"/>
                                             <constraint firstAttribute="height" constant="197" id="wGd-oi-TMh"/>
                                         </constraints>
                                     </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="j0a-dw-C5p" userLabel="Margin Frame">
-                                        <rect key="frame" x="80.666666666666686" y="138.33333333333331" width="214" height="152"/>
+                                        <rect key="frame" x="80.666666666666686" y="142" width="214" height="152"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" horizontalCompressionResistancePriority="200" verticalCompressionResistancePriority="200" translatesAutoresizingMaskIntoConstraints="NO" id="pJh-Jv-4s6" userLabel="Spacer 1">
                                                 <rect key="frame" x="-5" y="0.0" width="240" height="9.6666666666666661"/>
@@ -64,27 +64,27 @@
                                                 </constraints>
                                             </imageView>
                                             <view contentMode="scaleToFill" horizontalCompressionResistancePriority="200" verticalCompressionResistancePriority="200" translatesAutoresizingMaskIntoConstraints="NO" id="qn9-Zg-JPn" userLabel="Spacer 2">
-                                                <rect key="frame" x="-5" y="82.666666666666629" width="240" height="9.3333333333333286"/>
+                                                <rect key="frame" x="-5" y="82.666666666666686" width="240" height="9.6666666666666714"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="NO STORIES YET" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mOq-IM-kKa">
-                                                <rect key="frame" x="0.0" y="92" width="214" height="14.333333333333329"/>
+                                                <rect key="frame" x="0.0" y="92.333333333333314" width="214" height="14.333333333333329"/>
                                                 <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
                                                 <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <view contentMode="scaleToFill" horizontalCompressionResistancePriority="200" verticalCompressionResistancePriority="200" translatesAutoresizingMaskIntoConstraints="NO" id="CW1-MA-s0s" userLabel="Spacer 3">
-                                                <rect key="frame" x="-5" y="106.33333333333337" width="240" height="10"/>
+                                                <rect key="frame" x="-5" y="106.66666666666669" width="240" height="9.3333333333333286"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap on the camera on the main screen to post your first story!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fNA-mS-YxU">
-                                                <rect key="frame" x="0.0" y="116.33333333333337" width="214" height="26"/>
+                                                <rect key="frame" x="0.0" y="116.00000000000006" width="214" height="26"/>
                                                 <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="11"/>
                                                 <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <view contentMode="scaleToFill" horizontalCompressionResistancePriority="200" verticalCompressionResistancePriority="200" translatesAutoresizingMaskIntoConstraints="NO" id="i13-NX-gK4" userLabel="Spacer 4">
-                                                <rect key="frame" x="-5" y="142.33333333333337" width="240" height="9.6666666666666572"/>
+                                                <rect key="frame" x="-5" y="142.00000000000006" width="240" height="10"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </view>
                                         </subviews>
@@ -128,11 +128,11 @@
                                 </constraints>
                             </view>
                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ayV-BF-5uO">
-                                <rect key="frame" x="0.0" y="338.66666666666674" width="375" height="473.33333333333326"/>
+                                <rect key="frame" x="0.0" y="331.33333333333326" width="375" height="480.66666666666674"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zzE-Jd-3Do" userLabel="Map Exposed View">
-                                <rect key="frame" x="0.0" y="64" width="375" height="124.66666666666669"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="110"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1js-VP-5AG" userLabel="Top Gradient View">
@@ -140,7 +140,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UoE-Hi-yKI" userLabel="Touch Forwarding View" customClass="TouchForwardingView" customModule="TastoryApp" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="44" width="375" height="144.66666666666666"/>
+                                <rect key="frame" x="0.0" y="44" width="375" height="130"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XVt-7W-XFA">
                                         <rect key="frame" x="4" y="-10" width="48" height="48"/>
@@ -158,41 +158,41 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zwc-TB-L9A" userLabel="UI View">
-                                <rect key="frame" x="0.0" y="188.66666666666663" width="375" height="150"/>
+                                <rect key="frame" x="0.0" y="174" width="375" height="157.33333333333337"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="eRP-BC-T40">
-                                        <rect key="frame" x="122.33333333333333" y="-3" width="237.66666666666669" height="50.666666666666664"/>
+                                        <rect key="frame" x="121.66666666666667" y="0.0" width="238.33333333333331" height="37"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t0a-m1-CUw" userLabel="Follow Button">
-                                                <rect key="frame" x="0.0" y="9.3333333333333428" width="48.333333333333336" height="32"/>
-                                                <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
+                                                <rect key="frame" x="0.0" y="3" width="48.666666666666664" height="31"/>
+                                                <inset key="contentEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="1"/>
                                                 <state key="normal" image="Profile-FollowButton"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="McO-aB-Dhs" userLabel="Settings Button">
-                                                <rect key="frame" x="51.333333333333329" y="9.3333333333333428" width="53.333333333333329" height="32"/>
+                                                <rect key="frame" x="51.666666666666671" y="3" width="53.333333333333329" height="31"/>
                                                 <accessibility key="accessibilityConfiguration" identifier="profileView_settingsButton"/>
-                                                <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
+                                                <inset key="contentEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="1"/>
                                                 <state key="normal" image="Profile-SettingsButton"/>
                                                 <connections>
                                                     <action selector="settingsAction:" destination="Mls-rg-2Ue" eventType="touchUpInside" id="32a-iq-0Ca"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A6M-OE-cb5" userLabel="Share Button">
-                                                <rect key="frame" x="107.66666666666667" y="9.3333333333333428" width="44.333333333333329" height="32"/>
-                                                <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
+                                                <rect key="frame" x="107.99999999999999" y="3" width="44.333333333333329" height="31"/>
+                                                <inset key="contentEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="1"/>
                                                 <state key="normal" image="Profile-ShareButton"/>
                                                 <connections>
                                                     <action selector="shareAction:" destination="Mls-rg-2Ue" eventType="touchUpInside" id="UJP-08-JNT"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rZt-p7-VAc" userLabel="Filter Button">
-                                                <rect key="frame" x="155" y="9.3333333333333428" width="41" height="32"/>
-                                                <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
+                                                <rect key="frame" x="155.33333333333331" y="3" width="41.333333333333343" height="31"/>
+                                                <inset key="contentEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="1"/>
                                                 <state key="normal" image="Profile-FilterButton"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ksB-Cc-mso">
-                                                <rect key="frame" x="199" y="9.3333333333333428" width="38.666666666666657" height="32"/>
-                                                <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
+                                                <rect key="frame" x="199.66666666666663" y="3" width="38.666666666666657" height="31"/>
+                                                <inset key="contentEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="1"/>
                                                 <state key="normal" image="Profile-MoreButton"/>
                                                 <connections>
                                                     <action selector="moreAction:" destination="Mls-rg-2Ue" eventType="touchUpInside" id="IhX-Af-vs6"/>
@@ -201,7 +201,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="sPh-PF-K39">
-                                        <rect key="frame" x="16" y="55.666666666666679" width="344" height="76.333333333333314"/>
+                                        <rect key="frame" x="16" y="44.999999999999993" width="344" height="106.33333333333331"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Ysv-L1-rS0">
                                                 <rect key="frame" x="0.0" y="0.0" width="344" height="21.333333333333332"/>
@@ -247,26 +247,45 @@
                                                 </subviews>
                                             </stackView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="700" text="Always looking for new and interesting experiences. Love telling stories. Eats all the time. Follow me on my Instagram!" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="r9U-GH-GMa">
-                                                <rect key="frame" x="0.0" y="47.999999999999972" width="344" height="28.333333333333329"/>
+                                                <rect key="frame" x="0.0" y="48" width="344" height="28.333333333333329"/>
                                                 <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                 <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <tabBar contentMode="scaleToFill" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="600" verticalCompressionResistancePriority="600" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9v7-Va-Yvr">
+                                                <rect key="frame" x="0.0" y="81.333333333333314" width="344" height="25"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="25" id="cKZ-0N-tai"/>
+                                                </constraints>
+                                                <items>
+                                                    <tabBarItem title="" image="Profile-StoriesTab" id="TdN-di-eKC">
+                                                        <inset key="imageInsets" minX="0.0" minY="5" maxX="0.0" maxY="-5"/>
+                                                        <offsetWrapper key="titlePositionAdjustment" horizontal="0.0" vertical="100"/>
+                                                    </tabBarItem>
+                                                    <tabBarItem image="Profile-BookmarkTab" id="wju-o8-keb">
+                                                        <inset key="imageInsets" minX="0.0" minY="5" maxX="0.0" maxY="-5"/>
+                                                        <offsetWrapper key="titlePositionAdjustment" horizontal="0.0" vertical="100"/>
+                                                    </tabBarItem>
+                                                </items>
+                                                <color key="barTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <color key="selectedImageTintColor" red="0.98039215690000003" green="0.035294117649999998" blue="0.035294117649999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            </tabBar>
                                         </subviews>
                                     </stackView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="eRP-BC-T40" firstAttribute="top" secondItem="Zwc-TB-L9A" secondAttribute="top" constant="-3" id="HZE-Dr-JO8"/>
-                                    <constraint firstAttribute="bottom" secondItem="sPh-PF-K39" secondAttribute="bottom" constant="18" id="Ryw-va-crl"/>
+                                    <constraint firstItem="eRP-BC-T40" firstAttribute="top" secondItem="Zwc-TB-L9A" secondAttribute="top" id="HZE-Dr-JO8"/>
+                                    <constraint firstAttribute="bottom" secondItem="sPh-PF-K39" secondAttribute="bottom" constant="6" id="Ryw-va-crl"/>
                                     <constraint firstAttribute="trailing" secondItem="sPh-PF-K39" secondAttribute="trailing" constant="15" id="U4p-I1-vYM"/>
                                 </constraints>
                             </view>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Avatar-Empty2" translatesAutoresizingMaskIntoConstraints="NO" id="0Ae-af-Oo9">
-                                <rect key="frame" x="18.333333333333336" y="143" width="92.666666666666657" height="92.666666666666686"/>
+                                <rect key="frame" x="18.666666666666664" y="119" width="91.333333333333343" height="91.333333333333314"/>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile-BloatedSquareFrame" translatesAutoresizingMaskIntoConstraints="NO" id="Pgw-9P-CO9">
-                                <rect key="frame" x="17.999999999999993" y="142" width="94.333333333333314" height="94.333333333333314"/>
+                                <rect key="frame" x="18.000000000000007" y="117.66666666666669" width="93.666666666666686" height="93.333333333333314"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="Pgw-9P-CO9" secondAttribute="height" multiplier="1:1" id="AQw-vN-GGf"/>
                                 </constraints>
@@ -277,14 +296,14 @@
                             <constraint firstAttribute="bottom" secondItem="ayV-BF-5uO" secondAttribute="bottom" id="0dq-gv-7PF"/>
                             <constraint firstItem="voX-A0-jf6" firstAttribute="top" secondItem="1js-VP-5AG" secondAttribute="bottom" constant="-35" id="5YK-sv-1pl"/>
                             <constraint firstItem="0Ae-af-Oo9" firstAttribute="centerY" secondItem="Pgw-9P-CO9" secondAttribute="centerY" id="6bD-mw-ojP"/>
-                            <constraint firstItem="Pgw-9P-CO9" firstAttribute="centerY" secondItem="Zwc-TB-L9A" secondAttribute="top" id="7dp-Us-ROZ"/>
+                            <constraint firstItem="Pgw-9P-CO9" firstAttribute="centerY" secondItem="Zwc-TB-L9A" secondAttribute="top" constant="-10" id="7dp-Us-ROZ"/>
                             <constraint firstItem="sPh-PF-K39" firstAttribute="top" secondItem="Pgw-9P-CO9" secondAttribute="bottom" constant="8" id="AZO-vz-4PQ"/>
                             <constraint firstItem="1js-VP-5AG" firstAttribute="top" secondItem="IWZ-hZ-UC9" secondAttribute="top" id="Baa-Dy-4SK"/>
                             <constraint firstItem="voX-A0-jf6" firstAttribute="top" secondItem="UoE-Hi-yKI" secondAttribute="top" id="C45-ee-KJE"/>
                             <constraint firstItem="eRP-BC-T40" firstAttribute="trailing" secondItem="Zwc-TB-L9A" secondAttribute="trailing" constant="-15" id="CFW-u6-pwF"/>
                             <constraint firstItem="0Ae-af-Oo9" firstAttribute="centerX" secondItem="Pgw-9P-CO9" secondAttribute="centerX" id="CTI-OY-9xf"/>
                             <constraint firstItem="ayV-BF-5uO" firstAttribute="top" secondItem="Zwc-TB-L9A" secondAttribute="bottom" id="DOr-Q5-Fzy"/>
-                            <constraint firstItem="Zwc-TB-L9A" firstAttribute="height" relation="lessThanOrEqual" secondItem="voX-A0-jf6" secondAttribute="height" multiplier="0.25" id="GWi-rx-KVH"/>
+                            <constraint firstItem="Zwc-TB-L9A" firstAttribute="height" relation="lessThanOrEqual" secondItem="voX-A0-jf6" secondAttribute="height" multiplier="0.29" id="GWi-rx-KVH"/>
                             <constraint firstAttribute="trailing" secondItem="1js-VP-5AG" secondAttribute="trailing" id="IKG-kE-gTP"/>
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="width" secondItem="Zwc-TB-L9A" secondAttribute="width" multiplier="0.25" id="KtR-Fh-Ble"/>
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="bottom" secondItem="eRP-BC-T40" secondAttribute="bottom" id="McF-47-aWv"/>
@@ -298,7 +317,7 @@
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="leading" secondItem="Zwc-TB-L9A" secondAttribute="leading" constant="18" id="hpu-Xs-YoB"/>
                             <constraint firstItem="Zwc-TB-L9A" firstAttribute="top" secondItem="zzE-Jd-3Do" secondAttribute="bottom" id="i1E-Xs-fWI"/>
                             <constraint firstItem="zzE-Jd-3Do" firstAttribute="leading" secondItem="voX-A0-jf6" secondAttribute="leading" id="jID-ks-aJQ"/>
-                            <constraint firstItem="zzE-Jd-3Do" firstAttribute="height" secondItem="voX-A0-jf6" secondAttribute="height" multiplier="0.17" id="jRG-tW-3tO"/>
+                            <constraint firstItem="zzE-Jd-3Do" firstAttribute="height" secondItem="voX-A0-jf6" secondAttribute="height" multiplier="0.15" id="jRG-tW-3tO"/>
                             <constraint firstItem="Pgw-9P-CO9" firstAttribute="leading" secondItem="sPh-PF-K39" secondAttribute="leading" constant="2" id="m6p-xP-ttw"/>
                             <constraint firstItem="eRP-BC-T40" firstAttribute="leading" secondItem="Pgw-9P-CO9" secondAttribute="trailing" constant="10" id="mHg-Ft-XR2"/>
                             <constraint firstItem="voX-A0-jf6" firstAttribute="trailing" secondItem="w1V-ap-EBM" secondAttribute="trailing" id="mZ0-pL-Ged"/>
@@ -329,6 +348,7 @@
                         <outlet property="profileUIView" destination="Zwc-TB-L9A" id="kEg-uY-4py"/>
                         <outlet property="settingsButton" destination="McO-aB-Dhs" id="gLR-CA-9rE"/>
                         <outlet property="shareButton" destination="A6M-OE-cb5" id="ybU-7u-YcU"/>
+                        <outlet property="tabBar" destination="9v7-Va-Yvr" id="RO4-gR-Ymd"/>
                         <outlet property="topGradientBackground" destination="1js-VP-5AG" id="hs8-5P-05N"/>
                         <outlet property="touchForwardingView" destination="UoE-Hi-yKI" id="0zI-IS-v7q"/>
                         <outlet property="usernameLabel" destination="11R-Oq-bzz" id="dAY-Va-k9U"/>
@@ -504,7 +524,7 @@
                                 <rect key="frame" x="0.0" y="499.33333333333326" width="375" height="296.66666666666674"/>
                                 <subviews>
                                     <imageView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Discover-NoStoriesFoundCarousel" translatesAutoresizingMaskIntoConstraints="NO" id="Bvk-d2-7kU">
-                                        <rect key="frame" x="22.666666666666657" y="92.333333333333314" width="331" height="112"/>
+                                        <rect key="frame" x="22.666666666666657" y="92.000000000000057" width="331" height="112"/>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -623,21 +643,21 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="MediaPlaceholder" translatesAutoresizingMaskIntoConstraints="NO" id="3Gc-Ev-vmE">
-                                <rect key="frame" x="0.0" y="72.666666666666686" width="375" height="666.66666666666652"/>
+                                <rect key="frame" x="0.0" y="72.333333333333314" width="375" height="667.33333333333348"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="3Gc-Ev-vmE" secondAttribute="height" multiplier="9:16" id="72H-kh-yhL"/>
                                 </constraints>
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nnO-KA-kth">
-                                <rect key="frame" x="0.0" y="72.666666666666686" width="375" height="666.66666666666652"/>
+                                <rect key="frame" x="0.0" y="72.333333333333314" width="375" height="667.33333333333348"/>
                                 <color key="backgroundColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="height" multiplier="9:16" id="ZiO-WO-84l"/>
                                 </constraints>
                             </view>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nxS-Eu-LGj" userLabel="TapForward">
-                                <rect key="frame" x="130.66666666666663" y="72.666666666666686" width="244.33333333333337" height="666.66666666666652"/>
+                                <rect key="frame" x="130.66666666666663" y="72.333333333333314" width="244.33333333333337" height="667.33333333333348"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <gestureRecognizers/>
@@ -646,7 +666,7 @@
                                 </connections>
                             </view>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nrk-FM-KHI" userLabel="TapBackwards">
-                                <rect key="frame" x="0.0" y="72.666666666666686" width="130.66666666666666" height="666.66666666666652"/>
+                                <rect key="frame" x="0.0" y="72.333333333333314" width="130.66666666666666" height="667.33333333333348"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <gestureRecognizers/>
@@ -655,15 +675,15 @@
                                 </connections>
                             </view>
                             <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Osh-UL-Qz9">
-                                <rect key="frame" x="0.0" y="72.666666666666671" width="375" height="57.000000000000014"/>
+                                <rect key="frame" x="0.0" y="72.333333333333329" width="375" height="56.999999999999986"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
-                            <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dzk-89-di2">
-                                <rect key="frame" x="0.0" y="686.33333333333337" width="375" height="53"/>
+                            <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dzk-89-di2">
+                                <rect key="frame" x="0.0" y="690.66666666666663" width="375" height="49"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="900" axis="vertical" distribution="fillProportionally" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="ZiO-0U-WG2" userLabel="Author Venue Time Stack">
-                                <rect key="frame" x="0.0" y="72.666666666666671" width="141" height="57.000000000000014"/>
+                                <rect key="frame" x="0.0" y="72.333333333333329" width="141" height="56.999999999999986"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="900" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NkP-5B-uyd">
                                         <rect key="frame" x="0.0" y="0.0" width="141" height="31"/>
@@ -697,7 +717,7 @@
                                 </constraints>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Hpj-0E-WpG" userLabel="Reaction Stack">
-                                <rect key="frame" x="323" y="75.666666666666671" width="40" height="57.666666666666671"/>
+                                <rect key="frame" x="323" y="75.333333333333329" width="40" height="57.666666666666671"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cta-7E-0oI">
                                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
@@ -717,10 +737,10 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="eTa-IA-SsO">
-                                <rect key="frame" x="158.33333333333334" y="699" width="59.333333333333343" height="28.333333333333371"/>
+                                <rect key="frame" x="158.66666666666666" y="699.33333333333337" width="59.333333333333343" height="28.333333333333371"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="StoryMarkup-SwipeUpArrow" translatesAutoresizingMaskIntoConstraints="NO" id="DvN-vq-oUI">
-                                        <rect key="frame" x="18.666666666666657" y="0.0" width="22" height="12"/>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Story-SwipeUpArrow" translatesAutoresizingMaskIntoConstraints="NO" id="DvN-vq-oUI">
+                                        <rect key="frame" x="18.666666666666686" y="0.0" width="22" height="12"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swipe Up" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f5Y-qe-Xu1">
                                         <rect key="frame" x="0.0" y="11.999999999999998" width="59.333333333333336" height="16.333333333333329"/>
@@ -733,7 +753,7 @@
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="fill" contentVerticalAlignment="fill" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rhf-jl-SNy" userLabel="Share Button">
-                                <rect key="frame" x="280" y="84.666666666666671" width="40" height="40"/>
+                                <rect key="frame" x="14" y="695.66666666666663" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="V17-1U-ltY"/>
                                     <constraint firstAttribute="width" secondItem="rhf-jl-SNy" secondAttribute="height" multiplier="1:1" id="q6v-Tn-g5n"/>
@@ -742,6 +762,11 @@
                                 <connections>
                                     <action selector="shareAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="58m-hd-dEW"/>
                                 </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q3B-8e-K7S" userLabel="Bookmark Button">
+                                <rect key="frame" x="323" y="695" width="40" height="40"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" image="Story-Bookmark"/>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -754,6 +779,7 @@
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" priority="900" id="E7O-Gs-SMy"/>
                             <constraint firstItem="Nrk-FM-KHI" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="GSI-W5-GBB"/>
                             <constraint firstItem="dzk-89-di2" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="Gxz-XK-kxM"/>
+                            <constraint firstItem="rhf-jl-SNy" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-4" id="J0t-Qc-qhv"/>
                             <constraint firstItem="Nrk-FM-KHI" firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="width" multiplier="0.35" id="K0U-ZI-iHh"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="KXu-Vh-dh4"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="L9O-xu-4M6"/>
@@ -767,12 +793,12 @@
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="height" relation="lessThanOrEqual" secondItem="cgZ-7E-g3q" secondAttribute="height" id="ci3-Pa-YAB"/>
                             <constraint firstItem="nxS-Eu-LGj" firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="width" multiplier="0.65" id="cmr-Xm-15e"/>
                             <constraint firstItem="Hpj-0E-WpG" firstAttribute="top" secondItem="ZiO-0U-WG2" secondAttribute="top" constant="3" id="ctT-HE-dB2"/>
+                            <constraint firstItem="dzk-89-di2" firstAttribute="top" secondItem="rhf-jl-SNy" secondAttribute="top" constant="-5" id="dUU-Zv-Izb"/>
                             <constraint firstItem="nxS-Eu-LGj" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="eXL-2f-A15"/>
-                            <constraint firstItem="rhf-jl-SNy" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" constant="12" id="ffm-fT-SkA"/>
+                            <constraint firstItem="rhf-jl-SNy" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" constant="14" id="hoB-vj-9dv"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="bottom" secondItem="nxS-Eu-LGj" secondAttribute="bottom" id="jhR-31-wUi"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="m09-bu-nxu"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="mjE-GH-24V"/>
-                            <constraint firstItem="Hpj-0E-WpG" firstAttribute="leading" secondItem="rhf-jl-SNy" secondAttribute="trailing" constant="3" id="tPX-A8-iQX"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="trailing" secondItem="Hpj-0E-WpG" secondAttribute="trailing" constant="12" id="txf-Aa-FSx"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="centerY" secondItem="cgZ-7E-g3q" secondAttribute="centerY" id="u8s-ak-ahJ"/>
                             <constraint firstItem="dzk-89-di2" firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" id="uZH-Sk-qKZ"/>
@@ -831,6 +857,7 @@
         <image name="EntryMarkup-Back" width="32" height="32"/>
         <image name="MediaPlaceholder" width="1080" height="1920"/>
         <image name="Profile-BloatedSquareFrame" width="90" height="90"/>
+        <image name="Profile-BookmarkTab" width="20" height="20"/>
         <image name="Profile-FilterButton" width="58" height="22"/>
         <image name="Profile-FollowButton" width="68" height="22"/>
         <image name="Profile-MoreButton" width="59" height="22"/>
@@ -838,8 +865,10 @@
         <image name="Profile-NoStoriesBook" width="91" height="73"/>
         <image name="Profile-SettingsButton" width="75" height="22"/>
         <image name="Profile-ShareButton" width="62" height="22"/>
+        <image name="Profile-StoriesTab" width="20" height="20"/>
+        <image name="Story-Bookmark" width="40" height="40"/>
         <image name="Story-LikeButton" width="40" height="40"/>
         <image name="Story-Share" width="40" height="40"/>
-        <image name="StoryMarkup-SwipeUpArrow" width="22" height="12"/>
+        <image name="Story-SwipeUpArrow" width="22" height="12"/>
     </resources>
 </document>
