@@ -112,6 +112,7 @@ class FoodieQuery {
   
   // Parameters for filtering by Author(s). This is ORed with the Role(s) filter
   private var authors: [FoodieUser]?
+  private var bookmarkOfUser: FoodieUser?
   
   // Parameters for filtering by Discoverability, inclusive.
   private var minDiscoverability: FoodieStory.Discoverability?
@@ -285,6 +286,10 @@ class FoodieQuery {
     venue = venueId
   }
 
+  func addBookmarkFilter(for user: FoodieUser) {
+    bookmarkOfUser = user
+  }
+  
   func setOwnStoriesAlso() {
     ownStoriesAlso = true
   }
@@ -472,10 +477,18 @@ class FoodieQuery {
   
   func initStoryQueryAndSearch(withBlock callback: StoriesErrorBlock?) {
     
-    guard let coreQuery = FoodieStory.query() else {
-      CCLog.assert("Cannot create a PFQuery object from FoodieStory")
-      callback?(nil, ErrorCode.cannotCreatePFQuery)
-      return
+    var coreQuery = PFQuery()
+    
+    if let user = bookmarkOfUser {
+      coreQuery = user.relation(forKey: "bookmarkedStories").query()
+    } else {
+      
+      guard let query = FoodieStory.query() else {
+        CCLog.assert("Cannot create a PFQuery object from FoodieStory")
+        callback?(nil, ErrorCode.cannotCreatePFQuery)
+        return
+      }
+      coreQuery = query
     }
     
     guard let venueSubQuery = FoodieVenue.query() else {

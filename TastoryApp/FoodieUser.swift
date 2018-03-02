@@ -31,11 +31,11 @@ class FoodieUser: PFUser {
   // User Properties
   @NSManaged var isFacebookOnly: Bool
   @NSManaged var roleLevel: Int
-  //@NSManaged var authoredStories: PFRelation<PFObject>
-  
+
   // History & Bookmarks
+  @NSManaged var bookmarkedStories: PFRelation<PFObject>
   //@NSManaged var historyStories: PFRelation<PFObject>
-  //@NSManaged var bookmarkStories: PFRelation<PFObject>
+
   
   // Social Connections
   //@NSManaged var followingUsers: PFRelation<PFObject>
@@ -107,6 +107,7 @@ class FoodieUser: PFUser {
     case reverficiationVerified
     
     case checkVerificationNoProperty
+    case bookmarkedNotStories
     
     case operationCancelled
     
@@ -193,6 +194,9 @@ class FoodieUser: PFUser {
         return NSLocalizedString("Reverfication requested for E-mail already verified", comment: "Error message when trying to reverify an E-mail address")
       case .checkVerificationNoProperty:
         return NSLocalizedString("User has no status for whether E-mail is verified", comment: "Error message when trying to check E-mail verfiication status")
+        
+      case .bookmarkedNotStories:
+        return NSLocalizedString("Bookmarked objects not of Story type", comment: "Error message when trying to query for bookmarked stories")
         
       case .operationCancelled:
         return NSLocalizedString("User Operation Cancelled", comment: "Error message for reason why an operation failed")
@@ -1230,46 +1234,64 @@ extension FoodieUser {
   
   // MARK: - Public Instance Functions
   
-  func addAuthoredStory(_ story: FoodieStory, withBlock callback: SimpleErrorBlock?) {
+  func addBookmark(on story: FoodieStory, withBlock callback: SimpleErrorBlock?) {
     // Do a retrieve before adding
     retrieveFromLocalThenServer(forceAnyways: true, type: .cache) { error in
       if let error = error {
-        CCLog.warning("Retrieve for add authored story failed - \(error.localizedDescription)")
+        CCLog.warning("Retrieve for add bookmark on story failed - \(error.localizedDescription)")
         callback?(error)
         return
       }
       
-      let relation = self.relation(forKey: "authoredStories")
+      let relation = self.relation(forKey: "bookmarkedStories")
       relation.add(story)
-      
+
       self.saveToLocalNServer(type: .cache) { error in
         if let error = error {
-          CCLog.warning("Save for add authored story failed - \(error.localizedDescription)")
+          CCLog.warning("Save for add bookmark on story failed - \(error.localizedDescription)")
         }
         callback?(error)
       }
     }
   }
   
-  func removeAuthoredStory(_ story: FoodieStory, withBlock callback: SimpleErrorBlock?) {
-    // Do a retrieve before adding
+  
+  func removeBookmark(on story: FoodieStory, withBlock callback: SimpleErrorBlock?) {
+    // Do a retrieve before removing
     retrieveFromLocalThenServer(forceAnyways: true, type: .cache) { error in
       if let error = error {
-        CCLog.warning("Retrieve for add authored story failed - \(error.localizedDescription)")
+        CCLog.warning("Retrieve for remove bookmark on story failed - \(error.localizedDescription)")
         callback?(error)
         return
       }
-      let relation = self.relation(forKey: "authoredStories")
+      
+      let relation = self.relation(forKey: "bookmarkedStories")
       relation.remove(story)
       
       self.saveToLocalNServer(type: .cache) { error in
         if let error = error {
-          CCLog.warning("Save for add authored story failed - \(error.localizedDescription)")
+          CCLog.warning("Save for remove bookmark on story failed - \(error.localizedDescription)")
         }
         callback?(error)
       }
     }
   }
+  
+  
+  func queryBookmarkedStories(withBlock callback: StoriesErrorBlock?) {
+    
+    let query = self.relation(forKey: "bookmarkedStories").query()
+    query.findObjectsInBackground { (objects, error) in
+      
+      guard let stories = objects as? [FoodieStory] else {
+        callback?(nil, ErrorCode.bookmarkedNotStories)
+        return
+      }
+      
+      callback?(stories, nil)
+    }
+  }
+  
   
 //  func addHistoryStory(_ story: FoodieStory) {
 //    if historyStories == nil {
@@ -1279,24 +1301,10 @@ extension FoodieUser {
 //  }
 //  
 //  func removeHistoryStory(_ story: FoodieStory) {
-//    guard let historyStories = authoredStories else {
+//    guard let historyStories = historyStories else {
 //      CCLog.fatal("Cannot remove from a nil historyStories relation")
 //    }
 //    historyStories.remove(story)
-//  }
-//  
-//  func addBookmarkStory(_ story: FoodieStory) {
-//    if bookmarkStories == nil {
-//      bookmarkStories = PFRelation<FoodieStory>()
-//    }
-//    bookmarkStories!.add(story)
-//  }
-//  
-//  func removeBookmarkStory(_ story: FoodieStory) {
-//    guard let bookmarkStories = bookmarkStories else {
-//      CCLog.fatal("Cannot remove from a nil bookmarkStories relation")
-//    }
-//    bookmarkStories.remove(story)
 //  }
 //  
 //  func addFollowingUser(_ user: FoodieUser) {

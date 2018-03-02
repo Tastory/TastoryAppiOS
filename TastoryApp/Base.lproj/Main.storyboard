@@ -252,6 +252,13 @@
                                                 <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="u1r-Ve-BB2">
+                                                <rect key="frame" x="0.0" y="79" width="344" height="8"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="8" id="BwI-QJ-ZfW"/>
+                                                </constraints>
+                                            </view>
                                             <tabBar contentMode="scaleToFill" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="600" verticalCompressionResistancePriority="600" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9v7-Va-Yvr">
                                                 <rect key="frame" x="0.0" y="81.333333333333314" width="344" height="25"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -349,6 +356,7 @@
                         <outlet property="settingsButton" destination="McO-aB-Dhs" id="gLR-CA-9rE"/>
                         <outlet property="shareButton" destination="A6M-OE-cb5" id="ybU-7u-YcU"/>
                         <outlet property="tabBar" destination="9v7-Va-Yvr" id="RO4-gR-Ymd"/>
+                        <outlet property="tabSpacer" destination="u1r-Ve-BB2" id="lnD-xe-wbO"/>
                         <outlet property="topGradientBackground" destination="1js-VP-5AG" id="hs8-5P-05N"/>
                         <outlet property="touchForwardingView" destination="UoE-Hi-yKI" id="0zI-IS-v7q"/>
                         <outlet property="usernameLabel" destination="11R-Oq-bzz" id="dAY-Va-k9U"/>
@@ -679,7 +687,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dzk-89-di2">
-                                <rect key="frame" x="0.0" y="690.66666666666663" width="375" height="49"/>
+                                <rect key="frame" x="0.0" y="691.66666666666663" width="375" height="48"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="900" axis="vertical" distribution="fillProportionally" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="ZiO-0U-WG2" userLabel="Author Venue Time Stack">
@@ -753,7 +761,7 @@
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="fill" contentVerticalAlignment="fill" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rhf-jl-SNy" userLabel="Share Button">
-                                <rect key="frame" x="14" y="695.66666666666663" width="40" height="40"/>
+                                <rect key="frame" x="14" y="696.66666666666663" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="V17-1U-ltY"/>
                                     <constraint firstAttribute="width" secondItem="rhf-jl-SNy" secondAttribute="height" multiplier="1:1" id="q6v-Tn-g5n"/>
@@ -763,10 +771,12 @@
                                     <action selector="shareAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="58m-hd-dEW"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q3B-8e-K7S" userLabel="Bookmark Button">
-                                <rect key="frame" x="323" y="695" width="40" height="40"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q3B-8e-K7S" userLabel="Bookmark Button">
+                                <rect key="frame" x="323" y="696.66666666666663" width="40" height="40"/>
                                 <state key="normal" image="Story-Bookmark"/>
+                                <connections>
+                                    <action selector="bookmarkAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="hqa-M8-afr"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -779,7 +789,7 @@
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" priority="900" id="E7O-Gs-SMy"/>
                             <constraint firstItem="Nrk-FM-KHI" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="GSI-W5-GBB"/>
                             <constraint firstItem="dzk-89-di2" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="Gxz-XK-kxM"/>
-                            <constraint firstItem="rhf-jl-SNy" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-4" id="J0t-Qc-qhv"/>
+                            <constraint firstItem="rhf-jl-SNy" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-3" id="J0t-Qc-qhv"/>
                             <constraint firstItem="Nrk-FM-KHI" firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="width" multiplier="0.35" id="K0U-ZI-iHh"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="KXu-Vh-dh4"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="L9O-xu-4M6"/>
@@ -787,6 +797,7 @@
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="centerY" secondItem="cgZ-7E-g3q" secondAttribute="centerY" id="NYN-aq-dcH"/>
                             <constraint firstItem="dzk-89-di2" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" id="NvP-co-bdy"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="bottom" secondItem="ZiO-0U-WG2" secondAttribute="bottom" id="O1c-k7-dig"/>
+                            <constraint firstItem="q3B-8e-K7S" firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" constant="-12" id="Rug-oF-6dP"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="trailing" secondItem="nxS-Eu-LGj" secondAttribute="trailing" id="WD0-hq-DLo"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="height" relation="lessThanOrEqual" secondItem="cgZ-7E-g3q" secondAttribute="height" id="Yef-Ng-2NU"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" priority="900" id="YkJ-cK-ygV"/>
@@ -795,6 +806,7 @@
                             <constraint firstItem="Hpj-0E-WpG" firstAttribute="top" secondItem="ZiO-0U-WG2" secondAttribute="top" constant="3" id="ctT-HE-dB2"/>
                             <constraint firstItem="dzk-89-di2" firstAttribute="top" secondItem="rhf-jl-SNy" secondAttribute="top" constant="-5" id="dUU-Zv-Izb"/>
                             <constraint firstItem="nxS-Eu-LGj" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="eXL-2f-A15"/>
+                            <constraint firstItem="q3B-8e-K7S" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-3" id="fbD-te-YC7"/>
                             <constraint firstItem="rhf-jl-SNy" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" constant="14" id="hoB-vj-9dv"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="bottom" secondItem="nxS-Eu-LGj" secondAttribute="bottom" id="jhR-31-wUi"/>
                             <constraint firstItem="3Gc-Ev-vmE" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="m09-bu-nxu"/>
@@ -809,6 +821,7 @@
                     </view>
                     <connections>
                         <outlet property="authorButton" destination="NkP-5B-uyd" id="ZmK-I1-PM7"/>
+                        <outlet property="bookmarkButton" destination="q3B-8e-K7S" id="fYW-Ww-iBp"/>
                         <outlet property="bottomStackBackgroundView" destination="dzk-89-di2" id="Skp-Gi-r9b"/>
                         <outlet property="heartButton" destination="cta-7E-0oI" id="RFp-XK-RIk"/>
                         <outlet property="heartLabel" destination="cGg-ta-BCi" id="kTT-GJ-IXL"/>

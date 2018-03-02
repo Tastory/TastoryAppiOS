@@ -50,6 +50,7 @@ class StoryViewController: OverlayViewController {
   // Track Claims & Reactions...?
   private var reactionDebounce = false  // Ideally implement using spinlock or semaphore. But should be sufficient for user interaction speed
   private var heartClicked = false
+  private var bookmarked = false
   private var swipeClaimed = false
   private var venueClaimed = false
   private var profileClaimed = false
@@ -70,9 +71,10 @@ class StoryViewController: OverlayViewController {
   @IBOutlet var reactionStack: UIStackView!
   @IBOutlet var heartButton: UIButton!
   @IBOutlet var heartLabel: UILabel!
+  @IBOutlet var bookmarkButton: UIButton!
   @IBOutlet var swipeStack: UIStackView!
   @IBOutlet var swipeLabel: UILabel!
-  @IBOutlet weak var shareButton: UIButton!
+  @IBOutlet var shareButton: UIButton!
 
   
   // MARK: - IBActions
@@ -317,13 +319,6 @@ class StoryViewController: OverlayViewController {
   }
   
   
-  @IBAction func pauseAction(_ sender: UIButton) { pause() }
-  
-  @IBAction func playAction(_ sender: UIButton) {
-    CCLog.debug("Calling play()")
-    play()
-  }
-  
   @IBAction func heartAction(_ sender: UIButton) {
     if reactionDebounce { return }  // If there's already a Reaction claim in progress, just return. Not gonna let the user hammer reactions
     reactionDebounce = true
@@ -367,6 +362,43 @@ class StoryViewController: OverlayViewController {
       self?.reactionDebounce = false
     }
   }
+  
+  
+  @IBAction func bookmarkAction(_ sender: UIButton) {
+//    if reactionDebounce { return }  // If there's already a Reaction claim in progress, just return. Not gonna let the user hammer reactions
+//    reactionDebounce = true
+    
+    guard let story = viewingStory else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.assert("viewingStory = nil")
+      }
+      return
+    }
+    
+    guard let user = FoodieUser.current else {
+      CCLog.warning("No current user when trying to bookmark? Should not be possible")
+      return
+    }
+    
+    guard user.isRegistered else {
+      CCLog.warning("Unregistered User attempted to click the heart. Should not be possible")
+      return
+    }
+    
+    if bookmarked {
+      bookmarked = false
+      bookmarkButton.setImage(#imageLiteral(resourceName: "Story-Bookmark"), for: .normal)
+      user.removeBookmark(on: story, withBlock: nil)
+      
+    } else {
+      bookmarked = true
+      bookmarkButton.setImage(#imageLiteral(resourceName: "Story-Bookmarked"), for: .normal)
+      user.addBookmark(on: story, withBlock: nil)
+    }
+    
+    CCLog.info("Bookmarked changed to \(bookmarked) by \(FoodieUser.current?.objectId ?? "") on Story \(viewingStory?.objectId ?? "")")
+  }
+  
   
   
   // MARK: - Private Instance Functions
@@ -471,6 +503,7 @@ class StoryViewController: OverlayViewController {
     updateAVMute()
     if !draftPreview { venueButton.isHidden = false }
     shareButton.isHidden = (story.objectId == nil)
+    bookmarkButton.isHidden = (story.objectId == nil)
     authorButton.isHidden = false
     reactionStack.isHidden = false
     displaySwipeStackIfNeeded()
@@ -521,6 +554,7 @@ class StoryViewController: OverlayViewController {
       // UI Update - Really should group some of the common UI stuff into some sort of function?
       if !draftPreview { venueButton.isHidden = false }
       shareButton.isHidden = (story.objectId == nil)
+      bookmarkButton.isHidden = (story.objectId == nil)
       authorButton.isHidden = false
       reactionStack.isHidden = false
       displaySwipeStackIfNeeded()
@@ -724,6 +758,7 @@ class StoryViewController: OverlayViewController {
       UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
         self.venueButton.alpha = alphaValue
         self.shareButton.alpha = alphaValue
+        self.bookmarkButton.alpha = alphaValue
         self.authorButton.alpha = alphaValue
         self.reactionStack.alpha = alphaValue
         self.swipeStack.alpha = alphaValue
@@ -733,6 +768,7 @@ class StoryViewController: OverlayViewController {
     } else {
       venueButton.alpha = alphaValue
       shareButton.alpha = alphaValue
+      bookmarkButton.alpha = alphaValue
       authorButton.alpha = alphaValue
       reactionStack.alpha = alphaValue
       swipeStack.alpha = alphaValue
@@ -746,6 +782,7 @@ class StoryViewController: OverlayViewController {
     authorButton.isHidden = true
     venueButton.isHidden = true
     shareButton.isHidden = true
+    bookmarkButton.isHidden = true
     reactionStack.isHidden = true
     
     swipeStack.isHidden = true
@@ -1014,9 +1051,36 @@ class StoryViewController: OverlayViewController {
         
         self?.heartButton.isEnabled = true
       }
+      
+      // Check to see if the story have been bookmarked
+      currentUser.queryBookmarkedStories { [weak self] stories, error in
+        
+        if let error = error {
+          CCLog.warning("Cannot check for bookmarked Stories - \(error.localizedDescription)")
+          self?.bookmarked = false
+        }
+        
+        if let stories = stories, stories.contains(story) {
+          self?.bookmarked = true
+        } else {
+          CCLog.warning("Bookmark returned nil Stories array")
+          self?.bookmarked = false
+        }
+        
+        if let strongSelf = self, strongSelf.bookmarked {
+          strongSelf.bookmarkButton.setImage(#imageLiteral(resourceName: "Story-Bookmarked"), for: .normal)
+        } else {
+          self?.bookmarkButton.setImage(#imageLiteral(resourceName: "Story-Bookmark"), for: .normal)
+        }
+        self?.bookmarkButton.isEnabled = true
+      }
+      
     } else {
       heartButton.isEnabled = false
+      bookmarkButton.isEnabled = false
     }
+    
+    //
 
     
     activitySpinner = ActivitySpinner(addTo: view)

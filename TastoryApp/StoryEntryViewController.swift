@@ -294,63 +294,50 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         // ?? So in this case, isStoryEdit will be true or false?
         
       } else {
-        // Add this Story to the User's authored list
-        // TODO: - Is this really even needed anymore? Just always query 'Story with author == user'
-        currentUser.addAuthoredStory(story) { error in
-          
+        
+        FoodieStory.cleanUpDraft() { error in
           if let error = error {
-            // Best effort remove the Story from Server & Cache in this case
-            _ = story.deleteWhole(from: .both, type: .cache, withBlock: nil)
-            
-            ActivitySpinner.globalRemove()
-            CCLog.warning("Add Story to User List Failed with Error: \(error)")
-            AlertDialog.present(from: self, title: "Add Story to User Failed", message: error.localizedDescription)
-          }
-
-          FoodieStory.cleanUpDraft() { error in
-            if let error = error {
-              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
-              }
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+              CCLog.assert("Error when cleaning up story draft- \(error.localizedDescription)")
             }
+          }
+        }
+        
+        if storyIsNewDraft {
+          // Analytics
+          if moments.count > 0 {
+            Analytics.logStoryPosted(authorId: currentUser.username ?? "",
+                                     storyId: story.objectId ?? "",
+                                     totalMoments: moments.count)
           }
           
-          if storyIsNewDraft {
-            // Analytics
-            if moments.count > 0 {
-              Analytics.logStoryPosted(authorId: currentUser.username ?? "",
-                                       storyId: story.objectId ?? "",
-                                       totalMoments: moments.count)
-            }
-            
-            self.workingStory = nil
-            ActivitySpinner.globalRemove()
-            
-            // Pop-up Alert Dialog and then Dismiss
-            CCLog.info("Story Posted!")
-            AlertDialog.present(from: self, title: "Story Posted", message: "Mmm that was mouthwatering. Thank you for sharing!") { [unowned self] _ in
-              self.popDismiss(animated: true)
-            }
+          self.workingStory = nil
+          ActivitySpinner.globalRemove()
+          
+          // Pop-up Alert Dialog and then Dismiss
+          CCLog.info("Story Posted!")
+          AlertDialog.present(from: self, title: "Story Posted", message: "Mmm that was mouthwatering. Thank you for sharing!") { [unowned self] _ in
+            self.popDismiss(animated: true)
+          }
+        }
+        
+        else  {
+          let notifyData:[String: Any] = [FoodieGlobal.RefreshFeedNotification.WorkingStoryKey: story, FoodieGlobal.RefreshFeedNotification.ActionKey:FoodieGlobal.RefreshFeedNotification.UpdateAction]
+          NotificationCenter.default.post(name: NSNotification.Name(rawValue: FoodieGlobal.RefreshFeedNotification.NotificationId), object: nil, userInfo: notifyData)
+          
+          // Analytics
+          if moments.count > 0 {
+            Analytics.logStoryEditSaved(authorId: currentUser.username ?? "",
+                                        storyId: story.objectId ?? "")
           }
           
-          else  {
-            let notifyData:[String: Any] = [FoodieGlobal.RefreshFeedNotification.WorkingStoryKey: story, FoodieGlobal.RefreshFeedNotification.ActionKey:FoodieGlobal.RefreshFeedNotification.UpdateAction]
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FoodieGlobal.RefreshFeedNotification.NotificationId), object: nil, userInfo: notifyData)
-            
-            // Analytics
-            if moments.count > 0 {
-              Analytics.logStoryEditSaved(authorId: currentUser.username ?? "",
-                                          storyId: story.objectId ?? "")
-            }
-            
-            self.workingStory = nil
-            ActivitySpinner.globalRemove()
+          self.workingStory = nil
+          ActivitySpinner.globalRemove()
 
-            // Pop-up Alert Dialog and then Dismiss
-            CCLog.info("Story Saved!")
-            AlertDialog.present(from: self, title: "Changes Saved", message: "Looks good! Your changes have been saved.") { [unowned self] _ in
-              self.popDismiss(animated: true)
-            }
+          // Pop-up Alert Dialog and then Dismiss
+          CCLog.info("Story Saved!")
+          AlertDialog.present(from: self, title: "Changes Saved", message: "Looks good! Your changes have been saved.") { [unowned self] _ in
+            self.popDismiss(animated: true)
           }
         }
       }

@@ -95,6 +95,7 @@ class ProfileViewController: OverlayViewController {
   @IBOutlet weak var websiteLabel: UILabel!
   @IBOutlet weak var bioLabel: UILabel!
   @IBOutlet weak var moreButton: UIButton!
+  @IBOutlet weak var tabSpacer: UIView!
   @IBOutlet weak var tabBar: UITabBar!
   @IBOutlet weak var emptyPlaceholderView: UIView!
   @IBOutlet weak var emptyPlaceholderTitle: UILabel!
@@ -497,12 +498,32 @@ class ProfileViewController: OverlayViewController {
     profileUIView.layer.shadowOpacity = Constants.StackShadowOpacity
 
     // Configure Tab bar control
-    UITabBar.appearance().shadowImage = UIImage()
-    UITabBar.appearance().backgroundImage = UIImage()
-    tabBar.selectedItem = tabBar.items![0]
+    if layout == .venue {
+      tabBar.isHidden = true
+      tabSpacer.isHidden = false
+      
+    } else {
+      if self.user == FoodieUser.current {
+        UITabBar.appearance().shadowImage = UIImage()
+        UITabBar.appearance().backgroundImage = UIImage()
+        tabBar.selectedItem = tabBar.items![0]
+        tabBar.delegate = self
+        tabSpacer.isHidden = true
+        
+      } else {
+        tabBar.isHidden = true
+        tabSpacer.isHidden = false
+      }
+    }
     
+    queryStories()
+    appearanceForAllUI(alphaValue: 0.0, animated: false)
+  }
+  
+  
+  func queryStories() {
     query = FoodieQuery()
-
+    
     if layout == .venue {
       guard let venue = venue else {
         AlertDialog.present(from: self, title: "Profile Error", message: "The specified restaurant page doesn't exist") { [unowned self] _ in
@@ -511,7 +532,7 @@ class ProfileViewController: OverlayViewController {
         }
         return
       }
-
+      
       guard let venueObjId = venue.objectId else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain)  { [unowned self] _ in
           CCLog.assert("FoodieVenue is missing object id")
@@ -519,7 +540,7 @@ class ProfileViewController: OverlayViewController {
         }
         return
       }
-
+      
       emptyAvatarImageView.image = UIImage(named: "Profile-VenueAvatar")
       query!.addVenueFilter(venueId: venueObjId)
     } else {
@@ -530,43 +551,55 @@ class ProfileViewController: OverlayViewController {
         }
         return
       }
-
-      // Query everything by this user
-      query!.addAuthorsFilter(users: [user])
+      
+      if let currentUser = FoodieUser.current, user == currentUser {
+        if tabBar.selectedItem == tabBar.items![1] {
+          query!.addBookmarkFilter(for: user)
+        } else {
+          query!.addAuthorsFilter(users: [user])
+        }
+      } else {
+        // If it's not current user, just go ahead and search authored stories
+        query!.addAuthorsFilter(users: [user])
+      }
     }
-
+    
     query!.setSkip(to: 0)
     query!.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)
-
+    
     _ = query!.addArrangement(type: .creationTime, direction: .descending) // TODO: - Should this be user configurable? Or eventualy we need a seperate function/algorithm that determines feed order
-
+    
     ActivitySpinner.globalApply()
-
+    
     // Actually do the Query
     query!.initStoryQueryAndSearch { (stories, error) in
       ActivitySpinner.globalRemove()
-
+      
       if let err = error {
         AlertDialog.present(from: self, title: "Query Failed", message: "Please check your network connection and try again") { _ in
           CCLog.assert("Create Story Query & Search failed with error: \(err.localizedDescription)")
         }
         return
       }
-
+      
       guard let stories = stories else {
         AlertDialog.present(from: self, title: "Query Failed", message: "Please check your network connection and try again") { _ in
           CCLog.assert("Create Story Query & Search returned with nil Story Array")
         }
         return
       }
-
+      
       // Show empty message if applicable
       if stories.count <= 0 {
         self.emptyPlaceholderTitle.addCharactersSpacing(spacing: 1.5, text: "NO STORIES YET")
         
         if self.layout == .user {
           if self.user === FoodieUser.current {
-            self.emptyPlaceholderText.text = "Tap on the camera on the main screen to post your first story!"
+            if self.tabBar.selectedItem == self.tabBar.items![1] {
+              self.emptyPlaceholderText.text = "You do not have any stories saved yet. Bookmark stories you want to see again"
+            } else {
+              self.emptyPlaceholderText.text = "Tap on the camera on the main screen to post your first story!"
+            }
           } else {
             self.emptyPlaceholderText.text = "This user doesn't have any stories yet"
           }
@@ -581,7 +614,7 @@ class ProfileViewController: OverlayViewController {
         self.emptyPlaceholderView.isHidden = true
         self.feedContainerView.isHidden = false
         self.stories = stories
-
+        
         DispatchQueue.main.async {
           self.feedCollectionNodeController?.scrollTo(storyIndex: 0)
           self.updateProfileMap(with: stories[0])
@@ -589,7 +622,6 @@ class ProfileViewController: OverlayViewController {
         }
       }
     }
-    appearanceForAllUI(alphaValue: 0.0, animated: false)
   }
   
   
@@ -744,12 +776,13 @@ class ProfileViewController: OverlayViewController {
       nodeController.storyArray = stories
       nodeController.delegate = self
       nodeController.deepLinkStoryId = DeepLink.global.deepLinkStoryId
-
-      if user === FoodieUser.current {
+      
+      if user === FoodieUser.current, tabBar.selectedItem == tabBar.items![0] {
         nodeController.enableEdit = true
       } else {
         nodeController.enableEdit = false
       }
+
       addChildViewController(nodeController)
       feedContainerView.addSubnode(nodeController.node)
       nodeController.node.frame = feedContainerView.bounds
@@ -863,6 +896,7 @@ class ProfileViewController: OverlayViewController {
       feedCollectionNodeController.scrollTo(storyIndex: 0)
       removeStoryList.removeAll()
       updateStoryList.removeAll()
+      
     } else {
       if(updateStoryList.count > 0) {
         for story in updateStoryList {
@@ -911,5 +945,19 @@ extension ProfileViewController: FeedCollectionNodeDelegate {
     let storiesIndexes = feedCollectionNodeController.getStoryIndexesVisible(forOver: Constants.PercentageOfStoryVisibleToStartPrefetch)
     let storiesShouldPrefetch = storiesIndexes.map { stories[$0] }
     FoodieFetch.global.cancelAllBut(storiesShouldPrefetch)
+  }
+}
+
+
+extension ProfileViewController: UITabBarDelegate {
+  
+  func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+    if user === FoodieUser.current, tabBar.selectedItem == tabBar.items![0] {
+      feedCollectionNodeController?.enableEdit = true
+    } else {
+      feedCollectionNodeController?.enableEdit = false
+    }
+    
+    queryStories()
   }
 }
