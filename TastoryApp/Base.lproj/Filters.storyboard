@@ -15,6 +15,9 @@
         <array key="Raleway-Medium.ttf">
             <string>Raleway-Medium</string>
         </array>
+        <array key="Raleway-Regular.ttf">
+            <string>Raleway-Regular</string>
+        </array>
         <array key="Raleway-SemiBold.ttf">
             <string>Raleway-SemiBold</string>
         </array>
@@ -53,7 +56,7 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Category" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vaF-5f-qI4">
-                                                        <rect key="frame" x="15" y="14.5" width="57.5" height="16.5"/>
+                                                        <rect key="frame" x="15" y="14.5" width="60.5" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" white="0.35999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -62,7 +65,7 @@
                                                         <rect key="frame" x="336" y="10" width="24" height="24"/>
                                                     </imageView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="38Q-e0-qgg">
-                                                        <rect key="frame" x="301.5" y="14.5" width="34.5" height="16.5"/>
+                                                        <rect key="frame" x="299" y="14.5" width="37" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="0.5" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
@@ -95,7 +98,7 @@
                                                 <rect key="frame" x="0.0" y="45" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Meal Type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EpY-nc-RNV">
-                                                        <rect key="frame" x="15" y="14.5" width="64" height="16.5"/>
+                                                        <rect key="frame" x="15" y="14.5" width="67" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" white="0.35999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -104,7 +107,7 @@
                                                         <rect key="frame" x="336" y="10" width="24" height="24"/>
                                                     </imageView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YPL-Lu-eSN" userLabel="MealTypes Label">
-                                                        <rect key="frame" x="301.5" y="14.5" width="34.5" height="16.5"/>
+                                                        <rect key="frame" x="299" y="14.5" width="37" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="0.5" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
@@ -137,7 +140,7 @@
                                                 <rect key="frame" x="0.0" y="90" width="375" height="110"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Price Range" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kKo-Ca-cf2">
-                                                        <rect key="frame" x="15" y="14" width="76.5" height="16.5"/>
+                                                        <rect key="frame" x="15" y="14" width="79" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" white="0.35999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -198,25 +201,25 @@
                                                         </constraints>
                                                     </view>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YIY-R9-WQR">
-                                                        <rect key="frame" x="38" y="75" width="8" height="16.5"/>
+                                                        <rect key="frame" x="37.5" y="75" width="9" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$$" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wKf-lw-ccq">
-                                                        <rect key="frame" x="131" y="75" width="16" height="16.5"/>
+                                                        <rect key="frame" x="130.5" y="75" width="17.5" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$$$" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0H9-Gt-iia">
-                                                        <rect key="frame" x="224.5" y="75" width="23.5" height="16.5"/>
+                                                        <rect key="frame" x="223" y="75" width="26.5" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$$$$" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="89l-Gv-L1m">
-                                                        <rect key="frame" x="318" y="74.5" width="31.5" height="16.5"/>
+                                                        <rect key="frame" x="315.5" y="74.5" width="35" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
@@ -429,7 +432,7 @@
                                                     <constraint firstAttribute="width" constant="6" id="8kv-Qs-Gzh"/>
                                                 </constraints>
                                             </view>
-                                            <searchBar opaque="NO" contentMode="redraw" searchBarStyle="minimal" text="" placeholder="Search for " translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Nv-NK-7QZ">
+                                            <searchBar opaque="NO" contentMode="redraw" searchBarStyle="minimal" text="" placeholder="Category, Venue, Location, User, Meat Type" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Nv-NK-7QZ">
                                                 <rect key="frame" x="6" y="0.0" width="302" height="118"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <offsetWrapper key="searchTextPositionAdjustment" horizontal="0.0" vertical="1"/>
@@ -445,9 +448,9 @@
                                             </view>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iEb-jx-CPl">
                                                 <rect key="frame" x="314" y="0.0" width="55" height="118"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                 <state key="normal" title="Cancel">
-                                                    <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <color key="titleColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                 </state>
                                                 <connections>
                                                     <action selector="cancelAction:" destination="SHb-rU-ImI" eventType="touchUpInside" id="sJn-3G-nDI"/>
@@ -469,7 +472,7 @@
                                             <constraint firstAttribute="height" constant="1" id="HNU-aM-c3d"/>
                                         </constraints>
                                     </view>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="pxb-Nm-Q58">
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="pxb-Nm-Q58" customClass="SegmentedControl" customModule="TastoryApp" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="119" width="375" height="41"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="0Y8-JY-oyr"/>
@@ -500,7 +503,7 @@
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="pxb-Nm-Q58" secondAttribute="trailing" id="1cy-fX-unJ"/>
                                     <constraint firstAttribute="bottom" secondItem="pGm-TO-hEF" secondAttribute="bottom" id="Bq9-FQ-Zrh"/>
-                                    <constraint firstItem="pGm-TO-hEF" firstAttribute="top" secondItem="LHc-nf-yxv" secondAttribute="bottom" id="HjT-FD-Dzo"/>
+                                    <constraint firstItem="pGm-TO-hEF" firstAttribute="top" secondItem="cj3-Ve-HVh" secondAttribute="bottom" constant="42" id="HjT-FD-Dzo"/>
                                     <constraint firstItem="pxb-Nm-Q58" firstAttribute="leading" secondItem="qfV-kL-WgM" secondAttribute="leading" id="MgK-NE-nfJ"/>
                                     <constraint firstItem="pGm-TO-hEF" firstAttribute="leading" secondItem="qfV-kL-WgM" secondAttribute="leading" id="SkW-zX-fZZ"/>
                                     <constraint firstAttribute="trailing" secondItem="pGm-TO-hEF" secondAttribute="trailing" id="T2A-ov-8fL"/>
@@ -518,7 +521,7 @@
                         <viewLayoutGuide key="safeArea" id="0AM-pn-hVj"/>
                     </view>
                     <connections>
-                        <outlet property="categoryButton" destination="pxb-Nm-Q58" id="sCY-E4-niT"/>
+                        <outlet property="categoryButton" destination="pxb-Nm-Q58" id="idJ-dk-BSh"/>
                         <outlet property="searchBar" destination="8Nv-NK-7QZ" id="IHX-Hk-hli"/>
                         <outlet property="tablePlaceHolder" destination="pGm-TO-hEF" id="ZPa-17-8qZ"/>
                     </connections>
@@ -547,20 +550,20 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Bpl-KO-0S5">
-                                                    <rect key="frame" x="54" y="5" width="33.5" height="20.5"/>
+                                                    <rect key="frame" x="54" y="7" width="28.5" height="16.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
+                                                    <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
+                                                    <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="PNR-HU-rIf">
-                                                    <rect key="frame" x="54" y="25.5" width="44" height="14.5"/>
+                                                    <rect key="frame" x="54" y="23.5" width="43" height="14.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                    <nil key="textColor"/>
+                                                    <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
+                                                    <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="0.5" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" image="imageView:hYB-OB-qDs:image" id="hYB-OB-qDs">
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.29999999999999999" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" image="imageView:hYB-OB-qDs:image" id="hYB-OB-qDs">
                                                     <rect key="frame" x="15" y="9" width="24" height="24"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>

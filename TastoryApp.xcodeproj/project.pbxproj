@@ -193,6 +193,9 @@
 		C29CD1391F93198800A6D53F /* ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD1381F93198800A6D53F /* ConfirmationDialog.swift */; };
 		C29CD13D1F988B2000A6D53F /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */; };
 		C2A615EA20477C7F009516C7 /* ResultPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A615E920477C7F009516C7 /* ResultPageViewController.swift */; };
+		C2A615EE204A0549009516C7 /* SegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A615ED204A0549009516C7 /* SegmentedControl.swift */; };
+		C2A615F0204A0955009516C7 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A615EF204A0955009516C7 /* String+Extension.swift */; };
+		C2A615F2204A09C6009516C7 /* NSMutableAttributedString+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A615F1204A09C6009516C7 /* NSMutableAttributedString+Extension.swift */; };
 		C2CE441B2045C1CC002780EA /* UniversalSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2CE441A2045C1CC002780EA /* UniversalSearchViewController.swift */; };
 		C2CE441D2045C1FF002780EA /* SearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2CE441C2045C1FF002780EA /* SearchResultCell.swift */; };
 		C2CE4421204624AA002780EA /* SearchResultTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2CE4420204624AA002780EA /* SearchResultTableViewController.swift */; };
@@ -438,6 +441,9 @@
 		C29CD1381F93198800A6D53F /* ConfirmationDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmationDialog.swift; sourceTree = "<group>"; };
 		C29CD13C1F988B2000A6D53F /* PHAsset+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
 		C2A615E920477C7F009516C7 /* ResultPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultPageViewController.swift; sourceTree = "<group>"; };
+		C2A615ED204A0549009516C7 /* SegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControl.swift; sourceTree = "<group>"; };
+		C2A615EF204A0955009516C7 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
+		C2A615F1204A09C6009516C7 /* NSMutableAttributedString+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSMutableAttributedString+Extension.swift"; sourceTree = "<group>"; };
 		C2CE441A2045C1CC002780EA /* UniversalSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalSearchViewController.swift; sourceTree = "<group>"; };
 		C2CE441C2045C1FF002780EA /* SearchResultCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultCell.swift; sourceTree = "<group>"; };
 		C2CE4420204624AA002780EA /* SearchResultTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultTableViewController.swift; sourceTree = "<group>"; };
@@ -747,6 +753,9 @@
 				8C7EC58E1F8E0D2400C8E80B /* MKCoordinateRegion+Extension.swift */,
 				8C2090021FE879AF00AA3D64 /* Double+Extension.swift */,
 				8CAB70762042215500F630CE /* UILabel+Extension.swift */,
+				C2A615ED204A0549009516C7 /* SegmentedControl.swift */,
+				C2A615EF204A0955009516C7 /* String+Extension.swift */,
+				C2A615F1204A09C6009516C7 /* NSMutableAttributedString+Extension.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -1576,6 +1585,7 @@
 				8C8986721E91982E00B62306 /* FoodieStory.swift in Sources */,
 				8C2090031FE879AF00AA3D64 /* Double+Extension.swift in Sources */,
 				8C14E2891F7F188E001CC869 /* FoodiePermission.swift in Sources */,
+				C2A615F2204A09C6009516C7 /* NSMutableAttributedString+Extension.swift in Sources */,
 				8C89867A1E933E2E00B62306 /* FoodieUser.swift in Sources */,
 				8C8986701E91981C00B62306 /* FoodieMarkup.swift in Sources */,
 				C24F69651EB85B0300A0DB7B /* StoryViewController.swift in Sources */,
@@ -1609,6 +1619,7 @@
 				8CCDDA021FB3E7D600B066E7 /* MapNavController.swift in Sources */,
 				8CE49EB11F637918007278C1 /* ExpandButton.swift in Sources */,
 				C29CD1391F93198800A6D53F /* ConfirmationDialog.swift in Sources */,
+				C2A615F0204A0955009516C7 /* String+Extension.swift in Sources */,
 				8CFC4A1E1E99DED700A8C9CE /* UIAlertController+Extension.swift in Sources */,
 				8CEA8DB81F9EBE0400557CE5 /* UITextViewWithPlaceholder.swift in Sources */,
 				8CE259AD1F53808C00310749 /* AlertDialog.swift in Sources */,
@@ -1629,6 +1640,7 @@
 				8C3254A51F40240900895572 /* VenueTableViewController.swift in Sources */,
 				8C61BCDC1E985D1300DDF248 /* CleanCrashLog.swift in Sources */,
 				8C700BEC1FEC8D0F00C78EE8 /* BranchVariables.swift in Sources */,
+				C2A615EE204A0549009516C7 /* SegmentedControl.swift in Sources */,
 				8CE0DE1E1F89B12800F258E5 /* PercentInteractor.swift in Sources */,
 				8CA693741E9D8C4500647D6C /* UIAlertAction+Extension.swift in Sources */,
 				8CAA445F1F8C102C0053CD4F /* ProfileViewController.swift in Sources */,

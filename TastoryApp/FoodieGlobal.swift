@@ -71,6 +71,7 @@ struct FoodieGlobal {
     static let JpegCompressionQuality: Double = 0.8
     static let ThemeColor = UIColor(red: 250/256, green: 9/256, blue: 9/256, alpha: 1.0)
     static let TextColor = UIColor(red: 74/256, green: 74/256, blue: 74/256, alpha: 1.0)
+    static let TextColorHalfAlpha = UIColor(red: 74/256, green: 74/256, blue: 74/256, alpha: 0.5)
     static let StoryFeedPaginationCount = 50
     static let DefaultServerRequestRetryCount = 3
     static let DefaultServerRequestRetryDelay = 3.0

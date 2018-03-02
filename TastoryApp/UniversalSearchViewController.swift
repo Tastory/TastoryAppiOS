@@ -26,12 +26,17 @@ class UniversalSearchViewController: OverlayViewController {
     static var count: Int { return ResultsCategory.Stories.hashValue + 1}
   }
 
+  enum Direction {
+    case Left
+    case Right
+  }
+
   // MARK: - Private Instance Functions
   private var searchKeyWord = ""
   private var resultPageVC: ResultPageViewController?
-  private var lastCategorySelected = ResultsCategory.Top.rawValue
   private var toPageIdx = 0
-
+  private let underlineBorder = CALayer()
+  private var lastPointX:CGFloat = 0
 
   // MARK: - Public Instance Functions
   var delegate: SearchResultDisplayDelegate?
@@ -40,11 +45,14 @@ class UniversalSearchViewController: OverlayViewController {
   // MARK: - IBOutlets
   @IBOutlet weak var searchBar: UISearchBar!
   @IBOutlet weak var tablePlaceHolder: UIView!
-  @IBOutlet weak var categoryButton: UISegmentedControl!
-  
+  @IBOutlet weak var categoryButton: SegmentedControl!
+
   // MARK: - IBActions
   @IBAction func categoryClicked(_ sender: UISegmentedControl) {
+    underlineBorder.borderWidth = 0
     let currentIdx = sender.selectedSegmentIndex
+    //categoryButton.layer.addSublayer(underlineBorder)
+
     guard let category = ResultsCategory.init(rawValue: currentIdx) else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Failed to initialize ResultsCategory enum")
@@ -60,12 +68,15 @@ class UniversalSearchViewController: OverlayViewController {
     }
 
     var direction: UIPageViewControllerNavigationDirection = .forward
-      if(lastCategorySelected > currentIdx) {
+      if(categoryButton.previousSelectedSegmentIndex > currentIdx) {
       direction = .reverse
     }
 
-    resultTableVC.display(category: category, direction: direction)
-    lastCategorySelected = sender.selectedSegmentIndex
+    resultTableVC.display(category: category, direction: direction) { (isCompleted) in
+      self.underlineBorder.borderWidth = 2
+      self.underlineCategory()
+      CCLog.verbose("animate from \(self.categoryButton.previousSelectedSegmentIndex) to \(self.categoryButton.selectedSegmentIndex)")
+    }
   }
 
   @IBAction func cancelAction(_ sender: UIButton) {
@@ -74,14 +85,32 @@ class UniversalSearchViewController: OverlayViewController {
   }
 
   // MARK: - Private Instance Functions
-  private func highlightSearchTerms(text: String) -> (NSMutableAttributedString, Bool) {
+
+  private func underlineCategory(xOffset: CGFloat = 0) {
+
+      underlineBorder.removeFromSuperlayer()
+      let width: CGFloat = categoryButton.frame.size.width/4
+      let x = (CGFloat(categoryButton.selectedSegmentIndex) * width) + (xOffset * width)
+      let y = categoryButton.frame.size.height - underlineBorder.borderWidth
+      underlineBorder.frame = CGRect(x: x, y: y, width: width, height: underlineBorder.borderWidth)
+    DispatchQueue.main.async{
+      self.categoryButton.layer.addSublayer(self.underlineBorder)
+    }
+  }
+
+  private func highlightSearchTerms(text: String, isDetail: Bool = false) -> (NSMutableAttributedString, Bool) {
     let index = text.index(of: searchKeyWord)
     let attrText = NSMutableAttributedString()
 
     if let index = index {
       attrText.normal(String(text[text.startIndex..<index]))
       let offsetIdx = text.index(index, offsetBy: searchKeyWord.count)
-      attrText.bold(String(text[index..<offsetIdx]))
+      if isDetail {
+         attrText.bold12(String(text[index..<offsetIdx]))
+      } else {
+         attrText.bold14(String(text[index..<offsetIdx]))
+      }
+
       attrText.normal(String(text[offsetIdx..<text.endIndex]))
       return (attrText, true)
     } else {
@@ -109,16 +138,34 @@ class UniversalSearchViewController: OverlayViewController {
 
     self.addChildViewController(viewController)
     tablePlaceHolder.addSubview(viewController.view)
-    categoryButton.setTitleTextAttributes([NSAttributedStringKey.foregroundColor: UIColor.black], for: UIControlState.selected)
-    categoryButton.setTitleTextAttributes([NSAttributedStringKey.foregroundColor: UIColor.lightGray], for: UIControlState.normal)
-    categoryButton.tintColor = UIColor.clear
 
+
+    categoryButton.tintColor = UIColor.clear
     categoryButton.removeAllSegments()
     categoryButton.insertSegment(withTitle: "Top", at: ResultsCategory.Top.rawValue, animated: false)
     categoryButton.insertSegment(withTitle: "Venues", at: ResultsCategory.Venues.rawValue, animated: false)
     categoryButton.insertSegment(withTitle: "People", at: ResultsCategory.People.rawValue, animated: false)
     categoryButton.insertSegment(withTitle: "Stories", at: ResultsCategory.Stories.rawValue, animated: false)
     categoryButton.selectedSegmentIndex = ResultsCategory.Top.rawValue
+
+    // initializes underline
+    underlineBorder.borderColor = UIColor.black.cgColor
+    underlineBorder.borderWidth = 2
+    underlineCategory()
+
+
+    // find scroll view within uipagecontroller
+    for view in viewController.view.subviews {
+      if view is UIScrollView, let view = view as? UIScrollView {
+        view.delegate = self
+      }
+    }
+
+    // setup fonts
+     UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 12)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor]
+    categoryButton.setTitleTextAttributes([NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Medium", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor,NSAttributedStringKey.foregroundColor: FoodieGlobal.Constants.TextColor], for: UIControlState.selected)
+    categoryButton.setTitleTextAttributes([NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColorHalfAlpha, NSAttributedStringKey.foregroundColor: FoodieGlobal.Constants.TextColorHalfAlpha], for: UIControlState.normal)
+
   }
 
   @objc func search() {
@@ -289,7 +336,7 @@ class UniversalSearchViewController: OverlayViewController {
           var result = SearchResult()
           var isDetailHighlighted = false
           if let address = venue.streetAddress {
-            let (detail, highlightedDetail) = self.highlightSearchTerms(text: address)
+            let (detail, highlightedDetail) = self.highlightSearchTerms(text: address, isDetail: true)
             isDetailHighlighted = highlightedDetail
             result.detail = detail
           }
@@ -372,7 +419,7 @@ class UniversalSearchViewController: OverlayViewController {
               }
 
               let (title, isTitleHighlighted) = self.highlightSearchTerms(text: storyTitle)
-              let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: venueName + " @" + userName)
+              let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: venueName + " @" + userName, isDetail: true)
               if isTitleHighlighted || isDetailHighlighted {
                 result.title = title
                 result.detail = detail
@@ -401,7 +448,7 @@ class UniversalSearchViewController: OverlayViewController {
               }
 
               let (title, isTitleHighlighted) = self.highlightSearchTerms(text: titleStr)
-              let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: "@" + userName)
+              let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: "@" + userName, isDetail:  true)
               if !isTitleHighlighted && !isDetailHighlighted {
                 continue
               }
@@ -425,7 +472,7 @@ class UniversalSearchViewController: OverlayViewController {
 
               var isDetailHighlighted = false
               if let address = venue.streetAddress {
-                let (detail, detailHighlighted) = self.highlightSearchTerms(text: address)
+                let (detail, detailHighlighted) = self.highlightSearchTerms(text: address, isDetail: true)
                 isDetailHighlighted = detailHighlighted
                 result.detail = detail
               }
@@ -493,7 +540,7 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
         let titleStr = result.title
 
         let (title, isTitleHighlighted) = self.highlightSearchTerms(text: titleStr)
-        let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: result.subtitle)
+        let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: result.subtitle, isDetail: true)
         if !isTitleHighlighted && !isDetailHighlighted {
           continue
         }
@@ -511,7 +558,9 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
   }
 
   func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
-    // handle error
+    AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+      CCLog.fatal("An error occured while searching for location error: \(error.localizedDescription)")
+    }
   }
 }
 
@@ -526,31 +575,6 @@ extension UniversalSearchViewController: UISearchBarDelegate {
 
   func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
     searchBar.resignFirstResponder()
-  }
-}
-
-// extention for highlighting text
-extension NSMutableAttributedString {
-  @discardableResult func bold(_ text: String) -> NSMutableAttributedString {
-    let attrs: [NSAttributedStringKey: Any] = [.font: UIFont(name: FoodieFont.Raleway.Bold, size: 17)!]
-    let boldString = NSMutableAttributedString(string:text, attributes: attrs)
-    append(boldString)
-
-    return self
-  }
-
-  @discardableResult func normal(_ text: String) -> NSMutableAttributedString {
-    let normal = NSAttributedString(string: text)
-    append(normal)
-
-    return self
-  }
-}
-
-// finding index of substring
-extension String {
-  func index(of string: String, options: CompareOptions = .caseInsensitive) -> Index? {
-    return range(of: string, options: options)?.lowerBound
   }
 }
 
@@ -579,4 +603,16 @@ extension UniversalSearchViewController: UIPageViewControllerDelegate {
     }
   }
 }
+
+extension UniversalSearchViewController: UIScrollViewDelegate {
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+
+      let point:CGPoint = scrollView.contentOffset
+      let percentComplete: CGFloat
+
+      percentComplete = ((point.x) - self.view.frame.size.width)/CGFloat(self.view.frame.size.width);
+      underlineCategory(xOffset: percentComplete)
+   }
+}
+
 
