@@ -128,20 +128,7 @@ class DiscoverViewController: OverlayViewController {
   
   //TODO Remove
   @IBAction func searchAction(_ sender: Any) {
-    let storyboard = UIStoryboard(name: "Filters", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "UniversalSearchViewController") as? UniversalSearchViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("ViewController initiated not of UniversalSearchViewController Class!!")
-      }
-      return
-    }
 
-    viewController.delegate = self
-    viewController.currentLocation = currentLocation
-
-    appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
-    viewController.setSlideTransition(presentTowards: .left, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: true)
-    pushPresent(viewController, animated: true)
   }
 
 
@@ -199,7 +186,7 @@ class DiscoverViewController: OverlayViewController {
 
   
   @IBAction func magnifyingGlassClick(_ sender: UIButton) {
-    locationField.becomeFirstResponder()
+    showUniversalSearch()
   }
   
   
@@ -324,6 +311,23 @@ class DiscoverViewController: OverlayViewController {
     if(actionStr == FoodieGlobal.RefreshFeedNotification.DeleteAction || actionStr == FoodieGlobal.RefreshFeedNotification.UpdateAction) {
       forceRequery = true
     }
+  }
+
+  private func showUniversalSearch() {
+    let storyboard = UIStoryboard(name: "Filters", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "UniversalSearchViewController") as? UniversalSearchViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of UniversalSearchViewController Class!!")
+      }
+      return
+    }
+
+    viewController.delegate = self
+    viewController.currentLocation = currentLocation
+
+    appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
+    viewController.setSlideTransition(presentTowards: .down, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: false)
+    pushPresent(viewController, animated: true)
   }
 
   private func performQuery(onAllUsers: Bool = false, at mapRect: MKMapRect? = nil, withBlock callback: FoodieQuery.StoriesQueryBlock?) {
@@ -1158,7 +1162,7 @@ extension DiscoverViewController: UITextFieldDelegate {
     return true
   }
 
-
+  
   func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
     if textField === locationField {
       // Set the text field color back to black once user starts editing. Might have been set to Red for errors.
@@ -1212,6 +1216,7 @@ extension DiscoverViewController: UITextFieldDelegate {
     
     textField.attributedPlaceholder = attributedPlaceholderText
   }
+
 }
 
 
@@ -1517,7 +1522,31 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
       filter = FoodieFilter()
     }
 
-    filter.selectedCategories.append(category)
+    filter.selectedCategories.removeAll()
+    FoodieCategory.setAllSelection(to: .unselected)
+
+    guard let foursquareId = category.foursquareCategoryID else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("FoursquareCategory ID is missing")
+      }
+      return
+    }
+
+    if FoodieCategory.list.index(forKey: foursquareId) != nil {
+      FoodieCategory.list[foursquareId]!.setSelectionRecursive(to: .selected)
+
+      for (_ ,category) in FoodieCategory.list {
+        if category.selected == .selected {
+          filter.selectedCategories.append(category)
+        }
+      }
+
+    } else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("The foodiecategory with foursquareid: \(foursquareId) is missing from the FoodieCategory list")
+      }
+      return
+    }
     filterCompleteReturn(filter, true)
   }
 

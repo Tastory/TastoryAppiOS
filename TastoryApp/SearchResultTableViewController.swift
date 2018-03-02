@@ -42,7 +42,7 @@ class SearchResultTableViewController: UIViewController {
     resultTableView.tableFooterView = UIView()
     resultTableView.rowHeight = Constants.resultTreeViewRowHeight
     // fix scrolling problem when item is right at the bottom edge of the screen
-    resultTableView.contentInset = UIEdgeInsetsMake(self.topLayoutGuide.length, 0, 80, 0)
+    resultTableView.contentInset = UIEdgeInsetsMake(self.topLayoutGuide.length, 0, 200, 0)
   }
 
   // MARK: - Public Instance Functions

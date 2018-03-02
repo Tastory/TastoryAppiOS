@@ -17,16 +17,20 @@ class UniversalSearchViewController: OverlayViewController {
     static let SearchBarSearchDelay = 0.75
   }
 
-  enum result: Int {
+  enum ResultsCategory: Int {
     case Top = 0
     case Venues = 1
     case People = 2
     case Stories = 3
+    // make sure you update the count value if you add a new category
+    static var count: Int { return ResultsCategory.Stories.hashValue + 1}
   }
 
   // MARK: - Private Instance Functions
   private var searchKeyWord = ""
   private var resultPageVC: ResultPageViewController?
+  private var lastCategorySelected = ResultsCategory.Top.rawValue
+  private var toPageIdx = 0
 
 
   // MARK: - Public Instance Functions
@@ -36,10 +40,37 @@ class UniversalSearchViewController: OverlayViewController {
   // MARK: - IBOutlets
   @IBOutlet weak var searchBar: UISearchBar!
   @IBOutlet weak var tablePlaceHolder: UIView!
+  @IBOutlet weak var categoryButton: UISegmentedControl!
   
   // MARK: - IBActions
+  @IBAction func categoryClicked(_ sender: UISegmentedControl) {
+    let currentIdx = sender.selectedSegmentIndex
+    guard let category = ResultsCategory.init(rawValue: currentIdx) else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Failed to initialize ResultsCategory enum")
+      }
+      return
+    }
+
+    guard let resultTableVC = resultPageVC else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Search Result Table View Controller is nil!!")
+      }
+      return
+    }
+
+    var direction: UIPageViewControllerNavigationDirection = .forward
+      if(lastCategorySelected > currentIdx) {
+      direction = .reverse
+    }
+
+    resultTableVC.display(category: category, direction: direction)
+    lastCategorySelected = sender.selectedSegmentIndex
+  }
+
   @IBAction func cancelAction(_ sender: UIButton) {
-    popDismiss(animated: true)
+    self.navigationController?.popViewController(animated: true)
+    //popDismiss(animated: true)
   }
 
   // MARK: - Private Instance Functions
@@ -74,9 +105,20 @@ class UniversalSearchViewController: OverlayViewController {
     }
     resultPageVC = viewController
     viewController.displayDelegate = delegate
+    viewController.delegate = self
 
     self.addChildViewController(viewController)
     tablePlaceHolder.addSubview(viewController.view)
+    categoryButton.setTitleTextAttributes([NSAttributedStringKey.foregroundColor: UIColor.black], for: UIControlState.selected)
+    categoryButton.setTitleTextAttributes([NSAttributedStringKey.foregroundColor: UIColor.lightGray], for: UIControlState.normal)
+    categoryButton.tintColor = UIColor.clear
+
+    categoryButton.removeAllSegments()
+    categoryButton.insertSegment(withTitle: "Top", at: ResultsCategory.Top.rawValue, animated: false)
+    categoryButton.insertSegment(withTitle: "Venues", at: ResultsCategory.Venues.rawValue, animated: false)
+    categoryButton.insertSegment(withTitle: "People", at: ResultsCategory.People.rawValue, animated: false)
+    categoryButton.insertSegment(withTitle: "Stories", at: ResultsCategory.Stories.rawValue, animated: false)
+    categoryButton.selectedSegmentIndex = ResultsCategory.Top.rawValue
   }
 
   @objc func search() {
@@ -90,28 +132,28 @@ class UniversalSearchViewController: OverlayViewController {
 
     resultTableVC.clearAllResults()
 
-    guard let topVC = resultTableVC.pages[result.Top.rawValue] as? SearchResultTableViewController else {
+    guard let topVC = resultTableVC.pages[ResultsCategory.Top.rawValue] as? SearchResultTableViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
       }
       return
     }
 
-    guard let venueVC = resultTableVC.pages[result.Venues.rawValue] as? SearchResultTableViewController else {
+    guard let venueVC = resultTableVC.pages[ResultsCategory.Venues.rawValue] as? SearchResultTableViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
       }
       return
     }
 
-    guard let peopleVC = resultTableVC.pages[result.People.rawValue] as? SearchResultTableViewController else {
+    guard let peopleVC = resultTableVC.pages[ResultsCategory.People.rawValue] as? SearchResultTableViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
       }
       return
     }
 
-    guard let storiesVC = resultTableVC.pages[result.Stories.rawValue] as? SearchResultTableViewController else {
+    guard let storiesVC = resultTableVC.pages[ResultsCategory.Stories.rawValue] as? SearchResultTableViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
       }
@@ -137,6 +179,10 @@ class UniversalSearchViewController: OverlayViewController {
         var results:[SearchResult] = []
         for meal in mealMatches {
 
+          if( i >= 2) {
+            break
+          }
+
           var result = SearchResult()
 
           let (title, highlighted) = highlightSearchTerms(text: meal.rawValue)
@@ -148,13 +194,11 @@ class UniversalSearchViewController: OverlayViewController {
           result.title = title
           result.cellType = .meal
           result.meal = meal
-          result.iconName = "Entry-Meal"
+          result.iconName = "Search-MealTypeIcon"
           results.append(result)
 
           i = i + 1
-          if( i > 2) {
-            break
-          }
+
         }
         topVC.pushFront(results: results)
       }
@@ -176,6 +220,10 @@ class UniversalSearchViewController: OverlayViewController {
         var results:[SearchResult] = []
         for category in categoryMatches {
 
+          if( i >= 2) {
+            break
+          }
+
           guard let categoryName = category.value.name else {
             AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
               CCLog.fatal("Category name is nil")
@@ -192,12 +240,11 @@ class UniversalSearchViewController: OverlayViewController {
           result.cellType = .category
           result.category = category.value
           result.title = title
+          result.iconName = "Search-CategoryIcon"
           results.append(result)
 
           i = i + 1
-          if( i > 2) {
-            break
-          }
+
         }
         topVC.pushFront(results: results)
       }
@@ -227,6 +274,11 @@ class UniversalSearchViewController: OverlayViewController {
         var results:[SearchResult] = []
         var i = 0
         for venue in venues {
+
+          if( i >= 2) {
+            break
+          }
+
           guard let venueName = venue.name else {
             AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
               CCLog.fatal("venueName is nil")
@@ -248,15 +300,12 @@ class UniversalSearchViewController: OverlayViewController {
           }
 
           result.title = title
-          result.iconName = "Entry-Venue"
+          result.iconName = "Search-VenueIcon"
           result.cellType = .venue
           result.venue = venue
           results.append(result)
-          // limit 3 results
           i = i + 1
-          if( i > 3) {
-            break
-          }
+
         }
         topVC.push(results: results)
         venueVC.push(results: results)
@@ -327,7 +376,7 @@ class UniversalSearchViewController: OverlayViewController {
               if isTitleHighlighted || isDetailHighlighted {
                 result.title = title
                 result.detail = detail
-                result.iconName = "Entry-StoryTitle"
+                result.iconName = "Search-StoryIcon"
                 result.story = story
 
                 results.append(result)
@@ -359,7 +408,7 @@ class UniversalSearchViewController: OverlayViewController {
 
               result.title = title
               result.detail = detail
-              result.iconName = "Discover-ProfileButton"
+              result.iconName = "Search-UserIcon"
               result.cellType = .user
               result.user = user
 
@@ -388,7 +437,7 @@ class UniversalSearchViewController: OverlayViewController {
               }
 
               result.title = title
-              result.iconName = "Entry-Venue"
+              result.iconName = "Search-VenueIcon"
               result.cellType = .venue
               result.venue = venue
 
@@ -423,7 +472,7 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
       return
     }
 
-    guard let topVC = resultTableVC.pages[result.Top.rawValue] as? SearchResultTableViewController else {
+    guard let topVC = resultTableVC.pages[ResultsCategory.Top.rawValue] as? SearchResultTableViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
       }
@@ -431,6 +480,10 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
     }
 
     for result in completer.results {
+
+      if( i >= 2) {
+        break
+      }
 
       let decimals = CharacterSet.decimalDigits
       let titleHasNumber = result.title.rangeOfCharacter(from: decimals) != nil
@@ -449,14 +502,10 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
         searchResult.cellType = .location
         searchResult.title = title
         searchResult.detail = detail
-        searchResult.iconName = "Entry-Venue"
+        searchResult.iconName = "Search-LocationIcon"
         results.append(searchResult)
       }
       i = i + 1
-      // limit 3 results from locations
-      if( i > 3) {
-        break
-      }
     }
     topVC.push(results: results)
   }
@@ -480,6 +529,7 @@ extension UniversalSearchViewController: UISearchBarDelegate {
   }
 }
 
+// extention for highlighting text
 extension NSMutableAttributedString {
   @discardableResult func bold(_ text: String) -> NSMutableAttributedString {
     let attrs: [NSAttributedStringKey: Any] = [.font: UIFont(name: FoodieFont.Raleway.Bold, size: 17)!]
@@ -497,8 +547,36 @@ extension NSMutableAttributedString {
   }
 }
 
+// finding index of substring
 extension String {
   func index(of string: String, options: CompareOptions = .caseInsensitive) -> Index? {
     return range(of: string, options: options)?.lowerBound
   }
 }
+
+extension UniversalSearchViewController: UIPageViewControllerDelegate {
+  func pageViewController(_: UIPageViewController, willTransitionTo: [UIViewController]) {
+    guard let resultTableVC = resultPageVC else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Search Result Table View Controller is nil!!")
+      }
+      return
+    }
+
+    if willTransitionTo.isEmpty {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("Impossible the transiton cant have empty array")
+      }
+      return
+    }
+
+    toPageIdx = resultTableVC.pages.index(of: willTransitionTo[0])!
+  }
+
+  func pageViewController(_: UIPageViewController, didFinishAnimating: Bool, previousViewControllers: [UIViewController], transitionCompleted: Bool) {
+    if transitionCompleted {
+      categoryButton.selectedSegmentIndex = toPageIdx
+    }
+  }
+}
+

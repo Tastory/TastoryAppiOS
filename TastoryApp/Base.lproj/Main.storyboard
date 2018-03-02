@@ -407,16 +407,6 @@
                             </view>
                             <view multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QC2-XK-jf4" customClass="TouchForwardingView" customModule="TastoryApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="499.33333333333331"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="800" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5dE-sp-iTI">
-                                        <rect key="frame" x="335" y="132" width="26" height="26"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" image="Discover-SearchMagnifier"/>
-                                        <connections>
-                                            <action selector="searchAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="2Hu-Lw-MnB"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                             </view>
