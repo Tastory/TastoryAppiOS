@@ -83,7 +83,7 @@ class DiscoverViewController: OverlayViewController {
   
   // MARK: - IBOutlets
   @IBOutlet var mosaicLayoutChangePanRecognizer: UIPanGestureRecognizer!
-  @IBOutlet var carouselLayoutChangeTapRecognizer: UITapGestureRecognizer!
+  @IBOutlet var carouselLayoutChangeRecognizer: EndGestureRecognizer!
   
   @IBOutlet var locationField: UITextField!
   @IBOutlet var filterButton: UIButton!
@@ -278,11 +278,10 @@ class DiscoverViewController: OverlayViewController {
   }
   
   
-  @IBAction func carouselLayoutChangeAction(_ tapGesture: UITapGestureRecognizer) {
-    carouselLayoutChangeTapRecognizer.isEnabled = false
+  @IBAction func carouselLayoutChangeAction(_ sender: EndGestureRecognizer) {
+    carouselLayoutChangeRecognizer.isEnabled = false
     feedCollectionNodeController.changeLayout(to: .carousel, animated: true)
   }
-  
   
   
   // MARK: - Private Instance Functions
@@ -664,7 +663,7 @@ class DiscoverViewController: OverlayViewController {
     nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     nodeController.didMove(toParentViewController: self)
     feedCollectionNodeController = nodeController
-    carouselLayoutChangeTapRecognizer.isEnabled = false
+    carouselLayoutChangeRecognizer.isEnabled = false
     feedContainerView.isHidden = true
     
     // Setup all the IBOutlet Delegates
@@ -1205,7 +1204,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
     case .mosaic:
       mosaicMapWidth = mapNavController?.boundedMapWidth()
       mapNavController?.setExposedRect(with: mosaicMapView)
-      carouselLayoutChangeTapRecognizer.isEnabled = true
+      carouselLayoutChangeRecognizer.isEnabled = true
       view.insertSubview(mosaicMapView, aboveSubview: touchForwardingView!)
       
       // Hide top buttons

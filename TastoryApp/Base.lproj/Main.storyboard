@@ -402,7 +402,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                                 <connections>
-                                    <outletCollection property="gestureRecognizers" destination="t9x-jg-cUa" appends="YES" id="m4O-H5-V30"/>
+                                    <outletCollection property="gestureRecognizers" destination="dAD-wk-NtX" appends="YES" id="8jR-a2-rdh"/>
                                 </connections>
                             </view>
                             <view multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QC2-XK-jf4" customClass="TouchForwardingView" customModule="TastoryApp" customModuleProvider="target">
@@ -603,7 +603,7 @@
                     <connections>
                         <outlet property="allStoriesButton" destination="8lR-o3-9WI" id="nPe-7b-jkM"/>
                         <outlet property="cameraButton" destination="m1j-Ft-7un" id="5xu-my-dGT"/>
-                        <outlet property="carouselLayoutChangeTapRecognizer" destination="t9x-jg-cUa" id="hnr-jt-DSA"/>
+                        <outlet property="carouselLayoutChangeRecognizer" destination="dAD-wk-NtX" id="n1m-XM-RaZ"/>
                         <outlet property="carouselMapView" destination="ZmD-Mw-oob" id="MTH-vG-fAA"/>
                         <outlet property="currentLocationButton" destination="sNl-Tb-SAf" id="GPT-FJ-P0w"/>
                         <outlet property="draftButton" destination="1zZ-dd-fcW" id="xkV-cw-rjf"/>
@@ -634,11 +634,11 @@
                         <action selector="mosaicLayoutChangeAction:" destination="BYZ-38-t0r" id="Vi4-hJ-iQQ"/>
                     </connections>
                 </panGestureRecognizer>
-                <tapGestureRecognizer id="t9x-jg-cUa">
+                <gestureRecognizer id="dAD-wk-NtX" customClass="EndGestureRecognizer" customModule="TastoryApp" customModuleProvider="target">
                     <connections>
-                        <action selector="carouselLayoutChangeAction:" destination="BYZ-38-t0r" id="6tB-FM-gDS"/>
+                        <action selector="carouselLayoutChangeAction:" destination="BYZ-38-t0r" id="4v3-os-tGe"/>
                     </connections>
-                </tapGestureRecognizer>
+                </gestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-1162.4000000000001" y="-1352.9556650246307"/>
         </scene>
