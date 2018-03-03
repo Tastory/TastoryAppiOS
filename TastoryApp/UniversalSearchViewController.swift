@@ -36,7 +36,8 @@ class UniversalSearchViewController: OverlayViewController {
   private var resultPageVC: ResultPageViewController?
   private var toPageIdx = 0
   private let underlineBorder = CALayer()
-  private var lastPointX:CGFloat = 0
+  private var isInitialLayout:Bool = true
+
 
   // MARK: - Public Instance Functions
   var delegate: SearchResultDisplayDelegate?
@@ -120,6 +121,24 @@ class UniversalSearchViewController: OverlayViewController {
     }
   }
 
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+
+    if isInitialLayout {
+
+      guard let resultTableVC = resultPageVC else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("Search Result Table View Controller is nil!!")
+        }
+        return
+      }
+      resultTableVC.view.frame = tablePlaceHolder.bounds
+      self.addChildViewController(resultTableVC)
+      tablePlaceHolder.addSubview(resultTableVC.view)
+      isInitialLayout = false
+    }
+  }
+
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -136,8 +155,7 @@ class UniversalSearchViewController: OverlayViewController {
     viewController.displayDelegate = delegate
     viewController.delegate = self
 
-    self.addChildViewController(viewController)
-    tablePlaceHolder.addSubview(viewController.view)
+
 
 
     categoryButton.tintColor = UIColor.clear
