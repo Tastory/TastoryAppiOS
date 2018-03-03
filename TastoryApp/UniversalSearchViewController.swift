@@ -37,7 +37,7 @@ class UniversalSearchViewController: OverlayViewController {
   private var toPageIdx = 0
   private let underlineBorder = CALayer()
   private var isInitialLayout:Bool = true
-
+  private let localComplete = MKLocalSearchCompleter.init()
 
   // MARK: - Public Instance Functions
   var delegate: SearchResultDisplayDelegate?
@@ -186,7 +186,7 @@ class UniversalSearchViewController: OverlayViewController {
 
   }
 
-  @objc func search() {
+  @objc private func search() {
 
     guard let resultTableVC = resultPageVC else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -228,9 +228,16 @@ class UniversalSearchViewController: OverlayViewController {
 
     if searchKeyWord != "" {
 
-      let localComplete = MKLocalSearchCompleter.init()
+      // cancel existing existing search
+      if(localComplete.isSearching) {
+        localComplete.cancel()
+        localComplete.queryFragment = ""
+      }
+
+      // location search
       localComplete.delegate = self
       localComplete.filterType = .locationsOnly
+      CCLog.verbose("searching \(searchKeyWord)")
       localComplete.queryFragment = searchKeyWord
 
       // search meal type
@@ -343,6 +350,22 @@ class UniversalSearchViewController: OverlayViewController {
           if( i >= 2) {
             break
           }
+
+          // check if category is part of food category
+          var isInCategory = false
+          if venue.foursquareCategoryIDs != nil {
+            for category in venue.foursquareCategoryIDs! {
+              if FoodieCategory.list.index(forKey: category) != nil {
+                isInCategory = isInCategory || true
+                break
+              }
+            }
+          }
+
+          if !isInCategory {
+            continue
+          }
+
 
           guard let venueName = venue.name else {
             AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
@@ -545,8 +568,10 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
     }
 
     for result in completer.results {
+      CCLog.verbose("title \(result.title)")
+      CCLog.verbose("subtitle: \(result.subtitle)")
 
-      if( i >= 2) {
+      if i >= 5 {
         break
       }
 
@@ -559,9 +584,9 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
 
         let (title, isTitleHighlighted) = self.highlightSearchTerms(text: titleStr)
         let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: result.subtitle, isDetail: true)
-        if !isTitleHighlighted && !isDetailHighlighted {
-          continue
-        }
+        //if !isTitleHighlighted && !isDetailHighlighted {
+        //  continue
+        //}
 
         var searchResult = SearchResult()
         searchResult.cellType = .location
@@ -569,8 +594,8 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
         searchResult.detail = detail
         searchResult.iconName = "Search-LocationIcon"
         results.append(searchResult)
+        i = i + 1
       }
-      i = i + 1
     }
     topVC.push(results: results)
   }
@@ -587,7 +612,7 @@ extension UniversalSearchViewController: UISearchBarDelegate {
 
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     searchKeyWord = searchText
-    NSObject.cancelPreviousPerformRequests(withTarget: #selector(search))
+    NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(search), object: nil)
     self.perform(#selector(search), with: nil, afterDelay: Constants.SearchBarSearchDelay)
   }
 

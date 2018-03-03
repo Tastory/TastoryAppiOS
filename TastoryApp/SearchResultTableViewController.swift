@@ -81,7 +81,6 @@ class SearchResultTableViewController: UIViewController {
 
   public func push(results: [SearchResult]) {
     DispatchQueue.main.async  {
-      CCLog.verbose("before push tableResults.count:\(self.resultsData.count)")
       let isInsert = (self.resultsData.count != 0)
 
       var insertedIdx: [IndexPath] = []
@@ -133,9 +132,6 @@ class SearchResultTableViewController: UIViewController {
         insertedIdx.append(IndexPath(row: i, section: 0))
         i = i + 1
       }
-
-      CCLog.verbose("after append tableResults.count:\(self.resultsData.count)")
-      CCLog.verbose("number of indices inserted: \(insertedIdx.count)")
 
       if isInsert  {
         self.resultTableView.insertRows(at: insertedIdx, with: .automatic)

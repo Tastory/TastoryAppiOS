@@ -184,7 +184,7 @@ class FoodieVenue: FoodiePFObject  {
   // MARK: - Private Static Functions
   
   // Search Foursquare and return list of matching Compact responses
-  private static func searchFoursquareCommon(for venueName: String, near area: String? = nil, at point: CLLocation? = nil, withBlock callback: VenueArrayErrorBlock?) {
+  private static func searchFoursquareCommon(for venueName: String, near area: String? = nil, at point: CLLocation? = nil, includeCategory: Bool = false, withBlock callback: VenueArrayErrorBlock?) {
     
     if (area != nil && point != nil) || (area == nil && point == nil) {
       callback?(nil, nil, ErrorCode.searchFoursquareBothNearAndLocation)
@@ -329,8 +329,25 @@ class FoodieVenue: FoodiePFObject  {
               if let country = location["country"] as? String {
                 foodieVenue.country = country
               }
-              
-              // Category, URL, Price and Hour information is not necassary at this point. Defer to only when the user actually do want this Venue
+
+              if includeCategory {
+                var foodieCategories: [String]?
+                if let categories = venue["categories"] as? [[String : AnyObject]] {
+                  foodieCategories = [String]()
+                  for category in categories {
+                    if let categoryID = category["id"] as? String {
+                      if let primary = category["primary"] as? Bool, primary == true {
+                        foodieCategories!.insert(categoryID, at: 0)
+                      } else {
+                        foodieCategories!.append(categoryID)
+                      }
+                    }
+                  }
+                }
+                foodieVenue.foursquareCategoryIDs = foodieCategories
+              }
+
+              //URL, Price and Hour information is not necassary at this point. Defer to only when the user actually do want this Venue
               responseVenueArray.append(foodieVenue)
             }
             

@@ -240,7 +240,7 @@ extension VenueTableViewController: UISearchBarDelegate {
     if searchBar === venueSearchBar {
       if let venueSearchText = venueSearchBar.text {
         venueName = venueSearchText
-        NSObject.cancelPreviousPerformRequests(withTarget: #selector(fullVenueSearch))
+        NSObject.cancelPreviousPerformRequests(withTarget:self, selector: #selector(fullVenueSearch), object: nil)
         self.perform(#selector(fullVenueSearch), with: nil, afterDelay: Constants.SearchBarSearchDelay)
       } else {
         venueName = ""
