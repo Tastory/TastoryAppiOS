@@ -262,7 +262,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       return
     }
 
-    if(moments.count < 3 && !story.isEditStory) {
+    if moments.count < 3 && !story.isEditStory {
       AlertDialog.present(from: self, title: "Oops", message: "Your story looks incomplete. Try adding at least 3 moments.")
       return
     }

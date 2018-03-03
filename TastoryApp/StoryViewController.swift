@@ -501,9 +501,9 @@ class StoryViewController: OverlayViewController {
     }
 
     updateAVMute()
-    if !draftPreview { venueButton.isHidden = false }
-    shareButton.isHidden = (story.objectId == nil)
-    bookmarkButton.isHidden = (story.objectId == nil)
+    venueButton.isHidden = (story.venue == nil)
+    shareButton.isHidden = false
+    bookmarkButton.isHidden = false
     authorButton.isHidden = false
     reactionStack.isHidden = false
     displaySwipeStackIfNeeded()
@@ -552,9 +552,9 @@ class StoryViewController: OverlayViewController {
       view.insertSubview(photoView, belowSubview: jotViewController.view)
 
       // UI Update - Really should group some of the common UI stuff into some sort of function?
-      if !draftPreview { venueButton.isHidden = false }
-      shareButton.isHidden = (story.objectId == nil)
-      bookmarkButton.isHidden = (story.objectId == nil)
+      venueButton.isHidden = (story.venue == nil)
+      shareButton.isHidden = false
+      bookmarkButton.isHidden = false
       authorButton.isHidden = false
       reactionStack.isHidden = false
       displaySwipeStackIfNeeded()
@@ -1000,8 +1000,12 @@ class StoryViewController: OverlayViewController {
       authorButton.isHidden = true
     }
     
-    if let venue = story.venue, let venueName = venue.name, !draftPreview {
+    if let venue = story.venue, let venueName = venue.name {
       venueButton.setTitle(venueName, for: .normal)
+      
+      if draftPreview {
+        venueButton.isEnabled = false
+      }
     } else {
       CCLog.info("Cannot get at venue name from Story \(story.getUniqueIdentifier)")
       venueButton.isHidden = true
@@ -1011,6 +1015,12 @@ class StoryViewController: OverlayViewController {
       swipeLabel.text = swipeMessage
     } else {
       swipeLabel.isHidden = true
+    }
+    
+    if story.objectId != nil, !draftPreview {
+      shareButton.isEnabled = true
+    } else {
+      shareButton.isEnabled = false
     }
     
     heartLabel.text = "0"
@@ -1051,6 +1061,8 @@ class StoryViewController: OverlayViewController {
         
         self?.heartButton.isEnabled = true
       }
+      
+      bookmarkButton.isEnabled = false
       
       // Check to see if the story have been bookmarked
       currentUser.queryBookmarkedStories { [weak self] stories, error in

@@ -115,8 +115,8 @@ class FoodieQuery {
   private var bookmarkOfUser: FoodieUser?
   
   // Parameters for filtering by Discoverability, inclusive.
-  private var minDiscoverability: FoodieStory.Discoverability?
-  private var maxDiscoverability: FoodieStory.Discoverability?
+  private var minDiscoverability: Double?
+  private var maxDiscoverability: Double?
   private var discoverableOnly: Bool = false
   private var ownStoriesAlso: Bool = false
   
@@ -173,13 +173,13 @@ class FoodieQuery {
       
       let query = FoodieQuery()
       query.addLocationFilter(origin: coordinate, radius: radius)
-      query.addDiscoverabilityFilter(min: .hidden, max: nil)
+      query.addDiscoverabilityFilter(min: 0.01, max: nil)
       query.setDiscoverableOnlyTo(true)
       
       // Make sure you can alway see your own posts
-      if let currentUser = FoodieUser.current, currentUser.isRegistered {
-        query.setOwnStoriesAlso()
-      }
+//      if let currentUser = FoodieUser.current, currentUser.isRegistered {
+//        query.setOwnStoriesAlso()
+//      }
 
       query.setSkip(to: 0)
       query.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)
@@ -267,7 +267,7 @@ class FoodieQuery {
   }
   
   
-  func addDiscoverabilityFilter(min: FoodieStory.Discoverability?, max: FoodieStory.Discoverability?) {
+  func addDiscoverabilityFilter(min: Double?, max: Double?) {
     minDiscoverability = min
     maxDiscoverability = max
   }
@@ -520,11 +520,11 @@ class FoodieQuery {
       ownQuery.whereKey("author", equalTo: currentUser)
       
       if let maxDiscoverability = maxDiscoverability {
-        coreQuery.whereKey("discoverability", lessThanOrEqualTo: maxDiscoverability.rawValue)
+        coreQuery.whereKey("discoverability", lessThanOrEqualTo: maxDiscoverability)
       }
       
       if let minDiscoverability = minDiscoverability {
-        coreQuery.whereKey("discoverability", greaterThan: minDiscoverability.rawValue)
+        coreQuery.whereKey("discoverability", greaterThanOrEqualTo: minDiscoverability)
       }
     
       if discoverableOnly {
@@ -536,11 +536,11 @@ class FoodieQuery {
     
     else {
       if let maxDiscoverability = maxDiscoverability {
-        coreQuery.whereKey("discoverability", lessThanOrEqualTo: maxDiscoverability.rawValue)
+        coreQuery.whereKey("discoverability", lessThanOrEqualTo: maxDiscoverability)
       }
       
       if let minDiscoverability = minDiscoverability {
-        coreQuery.whereKey("discoverability", greaterThan: minDiscoverability.rawValue)
+        coreQuery.whereKey("discoverability", greaterThanOrEqualTo: minDiscoverability)
       }
       
       if discoverableOnly {

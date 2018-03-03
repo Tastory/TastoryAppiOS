@@ -32,13 +32,7 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
   
   
   // MARK: - Types & Enums
-  enum Discoverability: UInt {
-    case hidden = 0
-    case limited = 10
-    case normal = 20
-  }
-  
-  
+
   enum OperationType: String {
     case retrieveRecursive
     case saveRecursive
@@ -347,7 +341,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
       }
       author = currentUser
-      discoverability = 100  // Placeholder discoverability. Should be override by server  // currentUser.defaultDiscoverability.rawValue
     }
     
     // Calculate how many outstanding children operations there will be before hand
@@ -464,7 +457,6 @@ class FoodieStory: FoodiePFObject, FoodieObjectDelegate {
         CCLog.fatal("No Current User when trying to do saveOpRecursive on a Story")
       }
       author = currentUser
-      discoverability = 100  // Placeholder discoverability. Should be override by server  // currentUser.defaultDiscoverability.rawValue
     }
     
     // Calculate how many outstanding children operations there will be before hand

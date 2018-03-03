@@ -1217,21 +1217,7 @@ extension FoodieUser {
 // MARK: - Properties Manipulation Functions
   
 extension FoodieUser {
-  
-  // Force Queries to be done out of the FoodieQuery class?
-  
-  
-  // MARK: - Public Instance Computed Variables
-  
-  var defaultDiscoverability: FoodieStory.Discoverability {
-    if roleLevel >= FoodieRole.Level.user.rawValue {
-      return .normal
-    } else {
-      return .limited
-    }
-  }
-  
-  
+
   // MARK: - Public Instance Functions
   
   func addBookmark(on story: FoodieStory, withBlock callback: SimpleErrorBlock?) {

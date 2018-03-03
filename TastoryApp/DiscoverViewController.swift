@@ -46,7 +46,7 @@ class DiscoverViewController: OverlayViewController {
   // MARK: - Class Constants
   fileprivate struct Constants {
     static let QueryMaxLatDelta: CLLocationDegrees = 1.0  // Approximately 111km
-    static let InitQueryMinStories: UInt = 20 // Try to find a radius that at least finds 20 stories in the beginning
+    static let InitQueryMinStories: UInt = 10 // Try to find a radius that at least finds 20 stories in the beginning
     static let PullTranslationForChange: CGFloat = 50.0  // In Points
     static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.6
     static let SearchBackgroundBlackAlpha: CGFloat = 0.6
@@ -350,13 +350,13 @@ class DiscoverViewController: OverlayViewController {
     if !onAllUsers {
       // Add Filter so only Post with more than Limit Disoverability can be seen
       // query.addRoleFilter(min: .user, max: nil)
-      query.addDiscoverabilityFilter(min: .hidden, max: nil)
+      query.addDiscoverabilityFilter(min: 0.01, max: nil)
       query.setDiscoverableOnlyTo(true)
       
       // Make sure you can alway see your own posts
-      if let currentUser = FoodieUser.current, currentUser.isRegistered {
-        query.setOwnStoriesAlso()
-      }
+//      if let currentUser = FoodieUser.current, currentUser.isRegistered {
+//        query.setOwnStoriesAlso()
+//      }
     }
     
     query.setSkip(to: 0)
