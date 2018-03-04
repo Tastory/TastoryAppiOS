@@ -15,6 +15,7 @@
 		8C0590491EC65B0000027E91 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590481EC65B0000027E91 /* RootViewController.swift */; };
 		8C05904B1EC6671400027E91 /* UIStoryboard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */; };
 		8C0590511EC7E6A400027E91 /* FoodieMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0590501EC7E6A400027E91 /* FoodieMedia.swift */; };
+		8C076686204B81400075F867 /* EndGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C076685204B81400075F867 /* EndGestureRecognizer.swift */; };
 		8C10893A1EB321F100457E66 /* MomentCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */; };
 		8C10FB4E1F91C43200C26BF6 /* AVExportPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C10FB4D1F91C43100C26BF6 /* AVExportPlayer.swift */; };
 		8C14E2891F7F188E001CC869 /* FoodiePermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C14E2881F7F188E001CC869 /* FoodiePermission.swift */; };
@@ -254,6 +255,7 @@
 		8C0590481EC65B0000027E91 /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		8C05904A1EC6671400027E91 /* UIStoryboard+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+Extension.swift"; sourceTree = "<group>"; };
 		8C0590501EC7E6A400027E91 /* FoodieMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodieMedia.swift; sourceTree = "<group>"; };
+		8C076685204B81400075F867 /* EndGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EndGestureRecognizer.swift; sourceTree = "<group>"; };
 		8C1089391EB321F100457E66 /* MomentCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MomentCollectionViewController.swift; sourceTree = "<group>"; };
 		8C10FB4D1F91C43100C26BF6 /* AVExportPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVExportPlayer.swift; sourceTree = "<group>"; };
 		8C14E2881F7F188E001CC869 /* FoodiePermission.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodiePermission.swift; sourceTree = "<group>"; };
@@ -922,13 +924,14 @@
 			isa = PBXGroup;
 			children = (
 				8C2F79721F4E23F700851334 /* LocationWatch.swift */,
-				8CE259AC1F53808C00310749 /* AlertDialog.swift */,
 				8C4AF66D1F91B1B900AADA5C /* ActivitySpinner.swift */,
+				8CE259AC1F53808C00310749 /* AlertDialog.swift */,
+				C280AAC020265F0D0065F183 /* SharedDialog.swift */,
 				C29CD1381F93198800A6D53F /* ConfirmationDialog.swift */,
 				8CAA44601F8C12D60053CD4F /* LogOutDismiss.swift */,
 				8CE49EB91F64D36A007278C1 /* StoryMapAnnotation.swift */,
+				8C076685204B81400075F867 /* EndGestureRecognizer.swift */,
 				8CCDDA071FB3E7F600B066E7 /* OverlayViewController.swift */,
-				C280AAC020265F0D0065F183 /* SharedDialog.swift */,
 			);
 			name = Supports;
 			sourceTree = "<group>";
@@ -1614,6 +1617,7 @@
 				8CF40C5F1FC50BDD00615D43 /* FoodieFont.swift in Sources */,
 				8CD5A4E01F9BFDD700CFD670 /* SettingsNavViewController.swift in Sources */,
 				C27217EF2023D91200975FEF /* DeepLink.swift in Sources */,
+				8C076686204B81400075F867 /* EndGestureRecognizer.swift in Sources */,
 				8C29E5512043B98300196D1E /* UsernameViewController.swift in Sources */,
 				8CCC7F001FA5A32F0049AF00 /* FeedCollectionCellNode.swift in Sources */,
 				8CCDDA021FB3E7D600B066E7 /* MapNavController.swift in Sources */,
