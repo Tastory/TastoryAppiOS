@@ -132,7 +132,6 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   
   // MARK: - View Controller Life Cycle
   override func viewDidLoad() {
-    
     super.viewDidLoad()
     
     // Swifty Cam Setup
@@ -218,6 +217,8 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   
   
   override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    
     captureLocation = nil
     captureLocationError = nil
     locationWatcher = LocationWatch.global.start() { (location, error) in
@@ -234,6 +235,8 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
 
   
   override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    
     locationWatcher?.stop()
   }
   

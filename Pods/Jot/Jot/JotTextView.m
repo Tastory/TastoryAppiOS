@@ -20,7 +20,8 @@
 @property (nonatomic, strong) UIPinchGestureRecognizer *activePinchRecognizer;
 @property (nonatomic, strong) UIRotationGestureRecognizer *activeRotationRecognizer;
 @property (nonatomic, assign) CGFloat scale;
-
+@property (nonatomic, strong) UIImpactFeedbackGenerator *impactFeedbackGenerator;
+@property (nonatomic, assign) Boolean rotateSnapped;
 @end
 
 @implementation JotTextView
@@ -262,43 +263,73 @@
 - (void)handlePinchOrRotateGesture:(UIGestureRecognizer *)recognizer
 {
     switch (recognizer.state) {
+        
         case UIGestureRecognizerStateBegan: {
+          
             if ([recognizer isKindOfClass:[UIRotationGestureRecognizer class]]) {
                 self.activeRotationRecognizer = (UIRotationGestureRecognizer *)recognizer;
+              
             } else {
                 self.activePinchRecognizer = (UIPinchGestureRecognizer *)recognizer;
             }
+          
+            // Initialize and prepare Impact Feedback whenever Pinch or Rotate begins
+            self.impactFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
+            [self.impactFeedbackGenerator prepare];
+          
+            // See if snapped
+            CGFloat snapMargin = 0.01 * 2.0 * M_PI; // 1%
+            CGFloat currentAngle = atan2f(self.selectedLabel.initialRotationTransform.b, self.selectedLabel.initialRotationTransform.a);
+          
+            if (((currentAngle > -snapMargin) && (currentAngle < snapMargin)) ||
+                ((currentAngle > (M_PI/2 - snapMargin)) && (currentAngle < (M_PI/2 + snapMargin))) ||
+                ((currentAngle > (M_PI - snapMargin)) && (currentAngle < (M_PI + snapMargin))) ||
+                ((currentAngle > (3*M_PI/2 - snapMargin)) && (currentAngle < (3*M_PI/2 + snapMargin))) ||
+                ((currentAngle > (2*M_PI - snapMargin)) && (currentAngle < (2*M_PI + snapMargin)))) {
+
+                self.rotateSnapped = true;
+            } else {
+                self.rotateSnapped = false;
+            }
             break;
         }
+        
         case UIGestureRecognizerStateChanged: {
+          
             CGAffineTransform currentTransform = self.selectedLabel.initialRotationTransform;
-			// Apply the rotation
-			currentTransform = [self.class applyRecognizer:self.activeRotationRecognizer toTransform:currentTransform];
-			// Apply the scale
-            currentTransform = [self.class applyRecognizer:self.activePinchRecognizer toTransform:currentTransform];
+          
+            // Apply the rotation
+            currentTransform = [self applyRecognizer:self.activeRotationRecognizer toTransform:currentTransform];
+          
+            // Apply the scale
+            currentTransform = [self applyRecognizer:self.activePinchRecognizer toTransform:currentTransform];
             
             self.selectedLabel.transform = currentTransform;
             break;
         }
+        
         case UIGestureRecognizerStateEnded: {
+          
             if ([recognizer isKindOfClass:[UIRotationGestureRecognizer class]]) {
-                self.selectedLabel.initialRotationTransform = [self.class applyRecognizer:recognizer toTransform:self.selectedLabel.initialRotationTransform];
+                self.selectedLabel.initialRotationTransform = [self applyRecognizer:recognizer toTransform:self.selectedLabel.initialRotationTransform];
                 self.activeRotationRecognizer = nil;
 				
             } else if ([recognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
-				self.selectedLabel.scale *= self.activePinchRecognizer.scale;
+                self.selectedLabel.scale *= self.activePinchRecognizer.scale;
                 self.activePinchRecognizer = nil;
             }
-            
+          
+            self.impactFeedbackGenerator = nil;
             break;
         }
             
         default:
+            self.impactFeedbackGenerator = nil;
             break;
     }
 }
 
-+ (CGAffineTransform)applyRecognizer:(UIGestureRecognizer *)recognizer toTransform:(CGAffineTransform)transform
+- (CGAffineTransform)applyRecognizer:(UIGestureRecognizer *)recognizer toTransform:(CGAffineTransform)transform
 {
     if (!recognizer
         || !([recognizer isKindOfClass:[UIRotationGestureRecognizer class]]
@@ -307,8 +338,54 @@
     }
     
     if ([recognizer isKindOfClass:[UIRotationGestureRecognizer class]]) {
-        
-        return CGAffineTransformRotate(transform, [(UIRotationGestureRecognizer *)recognizer rotation]);
+      
+        Boolean wasSnapped = self.rotateSnapped;
+        CGFloat snapMargin = 0.01 * 2.0 * M_PI; // 1%
+        CGFloat currentAngle = atan2f(transform.b, transform.a);
+        CGFloat rotation = [(UIRotationGestureRecognizer *)recognizer rotation];
+        CGFloat newAngle = fmod((currentAngle + rotation), (2.0 * M_PI));
+      
+        if (newAngle < 0.0) {
+          newAngle += (2.0 * M_PI);
+        }
+      
+        // 0 O'clock position
+        if ((newAngle > -snapMargin) && (newAngle < snapMargin)) {
+          newAngle = 0;
+          self.rotateSnapped = true;
+          
+          
+        // 3 O'clock position
+        } else if ((newAngle > (M_PI/2 - snapMargin)) && (newAngle < (M_PI/2 + snapMargin))) {
+          newAngle = M_PI/2;
+          self.rotateSnapped = true;
+          
+        // 6 O'clock position
+        } else if ((newAngle > (M_PI - snapMargin)) && (newAngle < (M_PI + snapMargin))) {
+          newAngle = M_PI;
+          self.rotateSnapped = true;
+          
+        // 9 O'clock position
+        } else if ((newAngle > (3*M_PI/2 - snapMargin)) && (newAngle < (3*M_PI/2 + snapMargin))) {
+          newAngle = 3*M_PI/2;
+          self.rotateSnapped = true;
+          
+        // 12 O'clock position
+        } else if ((newAngle > (2*M_PI - snapMargin)) && (newAngle < (2*M_PI + snapMargin))) {
+          newAngle = 0;
+          self.rotateSnapped = true;
+          
+        } else {
+          self.rotateSnapped = false;
+        }
+      
+        if (!wasSnapped && self.rotateSnapped) {
+          [self.impactFeedbackGenerator impactOccurred];
+          [self.impactFeedbackGenerator prepare];
+          NSLog(@"Feedback Triggered");
+        }
+
+        return CGAffineTransformRotate(transform, newAngle - currentAngle);
     }
     
     CGFloat scale = [(UIPinchGestureRecognizer *)recognizer scale];
