@@ -57,6 +57,12 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
   var allAttributes = [UICollectionViewLayoutAttributes]()
   
   
+  // MARK: - Public Static Functions
+  static func defaultColumnWidth(for collectionWidth: CGFloat) -> CGFloat {
+    let columnSpacing = Constants.DefaultFeedNodeMargin
+    let numberOfColumns = Constants.DefaultColumns
+    return (collectionWidth - 2*columnSpacing - CGFloat(numberOfColumns - 1)*columnSpacing) / CGFloat(numberOfColumns)
+  }
   
   
   // MARK: - Public Instance Functions
@@ -110,6 +116,7 @@ class MosaicCollectionViewLayout: UICollectionViewLayout {
     
     for section in 0 ..< numberOfSections {
       let numberOfItems = collectionView.numberOfItems(inSection: section)
+      sectionInset = calculateSectionInset(for: collectionView.bounds, at: section)
       
       top += sectionInset.top
       

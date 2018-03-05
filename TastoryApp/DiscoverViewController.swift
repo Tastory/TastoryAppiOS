@@ -679,6 +679,7 @@ class DiscoverViewController: OverlayViewController {
 
     // Setup the Feed Node Controller first
     let nodeController = FeedCollectionNodeController(with: .carousel, allowLayoutChange: true, adjustScrollViewInset: false)
+    nodeController.roundMosaicTop = true
     addChildViewController(nodeController)
     feedContainerView.addSubview(nodeController.view)
     nodeController.view.frame = feedContainerView.bounds

@@ -62,9 +62,9 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   weak var delegate: FeedCollectionNodeDelegate?
   var deepLinkStoryId: String?
-
   var storyArray = [FoodieStory]()
   var enableEdit = false
+  var roundMosaicTop = false
   
   var layoutType: LayoutType {
     if collectionNode.collectionViewLayout is CarouselCollectionViewLayout {
@@ -316,6 +316,43 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   }
 
 
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    
+    if roundMosaicTop {
+      let collectionWidth = collectionNode.view.bounds.width
+      let collectionHeight = collectionNode.view.bounds.height
+      let numOfColumns = MosaicCollectionViewLayout.Constants.DefaultColumns
+      let columnMargin = MosaicCollectionViewLayout.Constants.DefaultFeedNodeMargin
+      let columnWidth = MosaicCollectionViewLayout.defaultColumnWidth(for: collectionWidth)
+      let cornerRadii = Constants.DefaultGuestimatedCellNodeWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
+      let shapeLayerPath = UIBezierPath()
+      
+      for columnNumber in 0..<numOfColumns {
+        
+        let roundedRect = CGRect(x: CGFloat(columnNumber)*columnWidth + CGFloat(columnNumber+1)*columnMargin, y: 0.0, width: columnWidth, height: collectionHeight)
+        let cornerSize = CGSize(width: cornerRadii, height: cornerRadii)
+        let roundedPath = UIBezierPath(roundedRect: roundedRect, byRoundingCorners: [.topLeft, .topRight], cornerRadii: cornerSize)
+        
+        shapeLayerPath.append(roundedPath)
+      }
+      
+      let rectPath = UIBezierPath(rect: CGRect(x: 0.0, y: cornerRadii + 1.0, width: collectionWidth, height: collectionHeight - cornerRadii - 1.0))
+      shapeLayerPath.append(rectPath)
+      
+      
+      let maskLayer = CAShapeLayer()
+      maskLayer.frame = collectionNode.view.bounds
+      maskLayer.path = shapeLayerPath.cgPath
+      maskLayer.lineWidth = 0.0
+      maskLayer.strokeColor = UIColor.black.cgColor
+      maskLayer.fillColor = UIColor.black.cgColor
+      
+      collectionNode.view.layer.mask = maskLayer
+    }
+  }
+  
+  
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     if deepLinkStoryId != nil {
