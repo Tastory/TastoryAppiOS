@@ -306,7 +306,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
         if storyIsNewDraft {
           // Analytics
           if moments.count > 0 {
-            Analytics.logStoryPosted(authorId: currentUser.username ?? "",
+            Analytics.logStoryPosted(authorName: currentUser.username ?? "",
                                      storyId: story.objectId ?? "",
                                      totalMoments: moments.count)
           }
@@ -327,7 +327,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
           
           // Analytics
           if moments.count > 0 {
-            Analytics.logStoryEditSaved(authorId: currentUser.username ?? "",
+            Analytics.logStoryEditSaved(authorName: currentUser.username ?? "",
                                         storyId: story.objectId ?? "")
           }
           
@@ -590,7 +590,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     scrollView.layer.shadowOpacity = Constants.StackShadowOpacity
     
     if let story = workingStory, story.isEditStory, let author = story.author {
-      Analytics.logStoryEditAttempted(authorId: author.username ?? "",
+      Analytics.logStoryEditAttempted(authorName: author.username ?? "",
                                       storyId: story.objectId ?? "")
     }
   }

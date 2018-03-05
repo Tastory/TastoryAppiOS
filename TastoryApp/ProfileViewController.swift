@@ -294,16 +294,16 @@ class ProfileViewController: OverlayViewController {
         SharedDialog.showPopUp(url: url, fromVC: self, sender: button)
         
         // Do analytics on share event
-        var currentUserId = "nil"
-        if let currentUser = FoodieUser.current, let userId = currentUser.objectId {
-          currentUserId = userId
+        var currentUserName = "nil"
+        if let currentUser = FoodieUser.current, let username = currentUser.username {
+          currentUserName = username
         }
         
         let objectId = user.objectId ?? "nil"
         let objectName = user.username ?? "nil"
         
         Analytics.logShareEvent(contentType: .userProfile,
-                                userId: currentUserId,
+                                username: currentUserName,
                                 objectId: objectId,
                                 name: objectName)
       }
@@ -342,16 +342,16 @@ class ProfileViewController: OverlayViewController {
         SharedDialog.showPopUp(url: url, fromVC: self, sender: button)
         
         // Do analytics on share event
-        var currentUserId = "nil"
-        if let currentUser = FoodieUser.current, let userId = currentUser.objectId {
-          currentUserId = userId
+        var currentUserName = "nil"
+        if let currentUser = FoodieUser.current, let username = currentUser.username {
+          currentUserName = username
         }
         
         let objectId = venue.objectId ?? "nil"
         let objectName = venue.name ?? "nil"
         
         Analytics.logShareEvent(contentType: .venueProfile,
-                                userId: currentUserId,
+                                username: currentUserName,
                                 objectId: objectId,
                                 name: objectName)
       }

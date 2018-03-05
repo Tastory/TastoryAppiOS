@@ -263,7 +263,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     // Returns a UIImage captured from the current session
     CCLog.info("User Action - didTakePhoto") // TODO: Make photos brighter too
     
-    Analytics.logCameraPhotoEvent(userID: FoodieUser.current?.username ?? "nil")
+    Analytics.logCameraPhotoEvent(username: FoodieUser.current?.username ?? "nil")
     
     //  Metadata/EXIF data Extraction Example
     //   1. By the time SwiftyCam have made it from a CGDataProvider -> CGImage -> UIImage and we convert it back to a CGDataProvider, it seems that everything is stripped
@@ -388,7 +388,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
       // Analytics
       let avUrlAsset = AVURLAsset(url: url)
       let duration = CMTimeGetSeconds(avUrlAsset.duration)
-      Analytics.logCameraVideoEvent(userID: FoodieUser.current?.username ?? "nil", duration: Double(duration))
+      Analytics.logCameraVideoEvent(username: FoodieUser.current?.username ?? "nil", duration: Double(duration))
       
       mediaObject.localVideoTranscode(to: FoodieFileObject.getFileURL(for: .draft, with: fileName), thru: FoodieFileObject.getRandomTempFileURL()) { error in
         if let error = error {
@@ -694,7 +694,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
         let mediaSize = avUrlTrack.naturalSize.applying(avUrlTrack.preferredTransform)
         let aspectRatio = mediaSize.width / mediaSize.height
         let duration = CMTimeGetSeconds(avUrlAsset.duration)
-        Analytics.logPickerVideoEvent(userID: FoodieUser.current?.username ?? "nil",
+        Analytics.logPickerVideoEvent(username: FoodieUser.current?.username ?? "nil",
                                       width: abs(Double(mediaSize.width)),
                                       aspectRatio: abs(Double(aspectRatio)),
                                       duration: duration)
@@ -735,7 +735,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       }
       
       // Analytics
-      Analytics.logPickerPhotoEvent(userID: FoodieUser.current?.username ?? "nil", width: Double(image.size.width), aspectRatio: Double(image.size.width/image.size.height))
+      Analytics.logPickerPhotoEvent(username: FoodieUser.current?.username ?? "nil", width: Double(image.size.width), aspectRatio: Double(image.size.width/image.size.height))
       
       mediaObject = FoodieMedia(for: mediaName, localType: .draft, mediaType: .photo)
       mediaObject.imageFormatter(image: image)

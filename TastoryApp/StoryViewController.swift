@@ -55,6 +55,7 @@ class StoryViewController: OverlayViewController {
   private var venueClaimed = false
   private var profileClaimed = false
   private var shareClaimed = false
+  private var bookmarkClaimed = false
   private var maxMomentNumber = 0
   
   
@@ -142,16 +143,16 @@ class StoryViewController: OverlayViewController {
       SharedDialog.showPopUp(url: url, fromVC: self, sender: button)
       
       // Do analytics on share event
-      var currentUserId = "nil"
-      if let currentUser = FoodieUser.current, let userId = currentUser.objectId {
-        currentUserId = userId
+      var currentUserName = "nil"
+      if let currentUser = FoodieUser.current, let username = currentUser.username {
+        currentUserName = username
       }
       
       let objectId = story.objectId ?? "nil"
       let objectName = story.title ?? "nil"
       
       Analytics.logShareEvent(contentType: .story,
-                              userId: currentUserId,
+                              username: currentUserName,
                               objectId: objectId,
                               name: objectName)
     }
@@ -192,7 +193,7 @@ class StoryViewController: OverlayViewController {
       
       let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
       
-      Analytics.logMomentVenueEvent(userID: FoodieUser.current?.username ?? "nil",
+      Analytics.logMomentVenueEvent(username: FoodieUser.current?.username ?? "nil",
                                     venueId: story.venue?.objectId ?? "",
                                     venueName: story.venue?.name ?? "",
                                     storyPercentage: storyPercentage,
@@ -202,7 +203,7 @@ class StoryViewController: OverlayViewController {
                                     mediaType: mediaType,
                                     storyId: story.objectId ?? "",
                                     storyName: story.title ?? "",
-                                    authorId: story.author?.username ?? "")
+                                    authorName: story.author?.username ?? "")
     }
     
     // Reputation Story Venue Clicked Action
@@ -272,8 +273,8 @@ class StoryViewController: OverlayViewController {
       
       let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
       
-      Analytics.logMomentProfileEvent(userID: FoodieUser.current?.username ?? "nil",
-                                      authorId: author.username ?? "",
+      Analytics.logMomentProfileEvent(username: FoodieUser.current?.username ?? "nil",
+                                      authorName: author.username ?? "",
                                       storyPercentage: storyPercentage,
                                       momentId: moment.objectId ?? "",
                                       momentNumber: story.getIndexOf(moment),
@@ -391,6 +392,53 @@ class StoryViewController: OverlayViewController {
       user.removeBookmark(on: story, withBlock: nil)
       
     } else {
+      
+      // Fabric Analytics
+      if story.author != FoodieUser.current,
+        !draftPreview,
+        let moment = currentMoment,
+        let moments = story.moments,
+        moments.count > 0,
+        let mediaTypeString = moment.mediaType,
+        let mediaType = FoodieMediaType(rawValue: mediaTypeString) {  // Let's not log Previews for Analytics purposes
+        
+        if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
+        if story.title == nil { CCLog.assert("Story Title should never be nil") }
+        if story.author?.username == nil { CCLog.assert("Story Author & Username should never be nil") }
+        
+        let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
+        
+        Analytics.logBookmarkEvent(username: FoodieUser.current?.username ?? "nil",
+                                   authorName: story.author?.username ?? "",
+                                   storyPercentage: storyPercentage,
+                                   momentId: moment.objectId ?? "",
+                                   momentNumber: story.getIndexOf(moment),
+                                   totalMoments: moments.count,
+                                   mediaType: mediaType,
+                                   storyId: story.objectId ?? "",
+                                   storyName: story.title ?? "")
+      }
+      
+      // Reputation Story Venue Clicked Action
+      if !bookmarkClaimed, !draftPreview {
+        bookmarkClaimed = true
+        
+        CCLog.verbose("Making Reputation Claim for Bookmark Action against Story ID: \(story.objectId ?? "")")
+        ReputableClaim.storyViewAction(for: story, actionType: .bookmark) { [weak self] (reputation, error) in
+          if let error = error {
+            CCLog.warning("Story Viewing Action Reputation Claim failed - \(error.localizedDescription)")
+            return
+          }
+          
+          if let reputation = reputation {
+            if let viewingStory = self?.viewingStory, viewingStory.reputation == nil {
+              viewingStory.reputation = reputation
+            }
+            self?.heartLabel.text = "\(reputation.usersLiked)"
+          }
+        }
+      }
+      
       bookmarked = true
       bookmarkButton.setImage(#imageLiteral(resourceName: "Story-Bookmarked"), for: .normal)
       user.addBookmark(on: story, withBlock: nil)
@@ -817,7 +865,7 @@ class StoryViewController: OverlayViewController {
 
       let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
       
-      Analytics.logMomentSwipeEvent(userID: FoodieUser.current?.username ?? "nil",
+      Analytics.logMomentSwipeEvent(username: FoodieUser.current?.username ?? "nil",
                                     url: story.storyURL ?? "",
                                     message: story.swipeMessage ?? "",
                                     storyPercentage: storyPercentage,
@@ -827,7 +875,7 @@ class StoryViewController: OverlayViewController {
                                     mediaType: mediaType,
                                     storyId: story.objectId ?? "",
                                     storyName: story.title ?? "",
-                                    authorId: story.author?.username ?? "")
+                                    authorName: story.author?.username ?? "")
     }
     
     // Reputation Story Swipe Up Action
@@ -1047,6 +1095,7 @@ class StoryViewController: OverlayViewController {
           self?.venueClaimed = ReputableClaim.storyActionClaimExists(of: .venue, in: claims)
           self?.swipeClaimed = ReputableClaim.storyActionClaimExists(of: .swiped, in: claims)
           self?.shareClaimed = ReputableClaim.storyActionClaimExists(of: .shared, in: claims)
+          self?.bookmarkClaimed = ReputableClaim.storyActionClaimExists(of: .bookmark, in: claims)
           self?.maxMomentNumber = ReputableClaim.storyViewedMomentNumber(in: claims) ?? 0
 
           if ReputableClaim.storyReactionClaimExists(of: .like, in: claims) {
@@ -1238,11 +1287,11 @@ class StoryViewController: OverlayViewController {
 
       let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
       
-      Analytics.logStoryExitEvent(userID: FoodieUser.current?.username ?? "nil",
+      Analytics.logStoryExitEvent(username: FoodieUser.current?.username ?? "nil",
                                   storyId: story.objectId ?? "",
                                   name: story.title ?? "",
                                   storyPercentage: storyPercentage,
-                                  authorId: story.author?.username ?? "",
+                                  authorName: story.author?.username ?? "",
                                   momentId: moment.objectId ?? "",
                                   momentNumber: story.getIndexOf(moment),
                                   totalMoments: moments.count,

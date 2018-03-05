@@ -57,7 +57,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   private var carouselBatchPending = false
   private var lastScrollIndex: Int?
   
-  
   // MARK: - Public Instance Variable
   
   weak var delegate: FeedCollectionNodeDelegate?
@@ -319,7 +318,8 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
-    if roundMosaicTop {
+    if roundMosaicTop && layoutType == .mosaic {
+      
       let collectionWidth = collectionNode.view.bounds.width
       let collectionHeight = collectionNode.view.bounds.height
       let numOfColumns = MosaicCollectionViewLayout.Constants.DefaultColumns
@@ -327,28 +327,39 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       let columnWidth = MosaicCollectionViewLayout.defaultColumnWidth(for: collectionWidth)
       let cornerRadii = Constants.DefaultGuestimatedCellNodeWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
       let shapeLayerPath = UIBezierPath()
-      
+
       for columnNumber in 0..<numOfColumns {
-        
+
         let roundedRect = CGRect(x: CGFloat(columnNumber)*columnWidth + CGFloat(columnNumber+1)*columnMargin, y: 0.0, width: columnWidth, height: collectionHeight)
         let cornerSize = CGSize(width: cornerRadii, height: cornerRadii)
         let roundedPath = UIBezierPath(roundedRect: roundedRect, byRoundingCorners: [.topLeft, .topRight], cornerRadii: cornerSize)
-        
+
         shapeLayerPath.append(roundedPath)
       }
-      
+
       let rectPath = UIBezierPath(rect: CGRect(x: 0.0, y: cornerRadii + 1.0, width: collectionWidth, height: collectionHeight - cornerRadii - 1.0))
       shapeLayerPath.append(rectPath)
-      
-      
+
+
       let maskLayer = CAShapeLayer()
       maskLayer.frame = collectionNode.view.bounds
       maskLayer.path = shapeLayerPath.cgPath
       maskLayer.lineWidth = 0.0
       maskLayer.strokeColor = UIColor.black.cgColor
       maskLayer.fillColor = UIColor.black.cgColor
+
+      collectionNode.layer.mask = maskLayer
       
-      collectionNode.view.layer.mask = maskLayer
+//      let gradientLayer = CAGradientLayer()
+//      gradientLayer.startPoint = CGPoint(x: 0.5, y: 1.0)
+//      gradientLayer.endPoint = CGPoint(x: 0.5, y: 0.0)
+//      gradientLayer.colors = [UIColor.black.cgColor, UIColor.black.cgColor, UIColor.clear.cgColor]
+//      gradientLayer.locations = [0.0, 0.90, 1.0]
+//      gradientLayer.frame = collectionNode.bounds
+//
+//      collectionNode.layer.mask = gradientLayer
+    } else {
+      collectionNode.layer.mask = nil
     }
   }
   
@@ -422,17 +433,17 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     }
 
     if isOwnStory {
-      Analytics.logStoryOwnViewEvent(userID: FoodieUser.current?.username ?? "nil", launchType: launchType)
+      Analytics.logStoryOwnViewEvent(username: FoodieUser.current?.username ?? "nil", launchType: launchType)
     } else if let moments = story.moments, moments.count > 0 {
 
       if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
       if story.title == nil { CCLog.assert("Story Title should never be nil")}
       if story.author?.username == nil { CCLog.assert("Story Author & Username should never be nil")}
 
-      Analytics.logStoryViewEvent(userID: FoodieUser.current?.username ?? "nil",
+      Analytics.logStoryViewEvent(username: FoodieUser.current?.username ?? "nil",
                                   storyId: story.objectId ?? "",
                                   name: story.title ?? "",
-                                  authorId: story.author?.username ?? "",
+                                  authorName: story.author?.username ?? "",
                                   launchType: launchType,
                                   totalMoments: moments.count)
     }

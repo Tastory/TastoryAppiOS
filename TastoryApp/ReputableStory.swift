@@ -50,6 +50,10 @@ class ReputableStory: PFObject {
     return object(forKey: "usersShared") as? Int ?? 0
   }
   
+  var usersBookmarked: Int {
+    return object(forKey: "usersBookmarked") as? Int ?? 0
+  }
+  
   var totalMomentNumber: Int {
     return object(forKey: "totalMomentNumber") as? Int ?? 0
   }
