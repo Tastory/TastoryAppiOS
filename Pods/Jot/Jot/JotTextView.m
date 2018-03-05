@@ -274,7 +274,7 @@
             }
           
             // Initialize and prepare Impact Feedback whenever Pinch or Rotate begins
-            self.impactFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
+            self.impactFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight];
             [self.impactFeedbackGenerator prepare];
           
             // See if snapped

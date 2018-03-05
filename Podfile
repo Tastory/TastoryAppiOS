@@ -5,6 +5,9 @@ target 'TastoryApp' do
   # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
   use_frameworks!
 
+  # ignore all warnings from all pods
+  inhibit_all_warnings!
+
   # Pods for TastoryApp
   pod 'Parse', :inhibit_warnings => true
   pod 'Parse/FacebookUtils', :inhibit_warnings => true
