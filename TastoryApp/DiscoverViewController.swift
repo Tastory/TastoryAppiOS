@@ -499,7 +499,7 @@ class DiscoverViewController: OverlayViewController {
       
       self.feedCollectionNodeController.resetCollectionNode(with: stories) {
         if scrollAndSelectStory {
-          self.feedCollectionNodeController.scrollTo(storyIndex: 0)
+          self.mapNavController?.select(annotation: newAnnotations[0], animated: true)
         }
       }
       callback?()
@@ -1250,6 +1250,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       
       if let highlightedStoryIndex = highlightedStoryIndex {
         feedCollectionNodeController.scrollTo(storyIndex: highlightedStoryIndex)
+        collectionNodeDidStopScrolling()
       }
       
     case .carousel:
