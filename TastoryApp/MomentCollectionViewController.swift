@@ -459,13 +459,12 @@ extension MomentCollectionViewController {
           return reusableView
         }
         footerView.addMomentButton.addTarget(self, action: #selector(openCamera), for: .touchUpInside)
-        footerView.addMomentButton.isHidden = workingStory.isEditStory
-
         reusableView = footerView
 
     default:
       CCLog.fatal("Unrecognized Kind '\(kind)' for Supplementary Element")
     }
+    
     return reusableView
   }
   
@@ -507,9 +506,13 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-    let height = collectionView.bounds.height - 2*Constants.InteritemSpacing
-    let width = height * FoodieGlobal.Constants.DefaultMomentAspectRatio + Constants.SectionInsetSpacing
-    return CGSize(width: width, height: collectionView.bounds.height)
+    if workingStory.isEditStory {
+      return CGSize.zero
+    } else {
+      let height = collectionView.bounds.height - 2*Constants.InteritemSpacing
+      let width = height * FoodieGlobal.Constants.DefaultMomentAspectRatio + Constants.SectionInsetSpacing
+      return CGSize(width: width, height: collectionView.bounds.height)
+    }
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
