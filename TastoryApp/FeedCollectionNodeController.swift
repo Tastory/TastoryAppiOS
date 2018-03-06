@@ -42,8 +42,9 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     static let DefaultGuestimatedCellNodeWidth: CGFloat = 150.0
     static let DefaultFeedNodeCornerRadiusFraction:CGFloat = 0.05
     static let MosaicPullTranslationForChange: CGFloat = -100
-    static let MosaicHighlightThresholdOffset: CGFloat = 20
+    static let MosaicHighlightThresholdOffset: CGFloat = 80
     static let CarouselPullTrasnlationForBatchFetch: CGFloat = 50
+    static let SelectionFrameWidth: CGFloat = 2.0
   }
   
   
@@ -76,6 +77,8 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       CCLog.fatal("Did not recognize CollectionNode Layout Type")
     }
   }
+  
+  var selectedStoryIndex: Int?
   
   var highlightedStoryIndex: Int? {
     
@@ -216,6 +219,112 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
         mapNavController.pushViewController(viewController, animated: true)
         UIApplication.shared.endIgnoringInteractionEvents()
       }
+    }
+  }
+  
+  
+  private func displayStory(didSelectItemAt indexPath: IndexPath) {
+    
+    if deepLinkStoryId != nil {
+      deepLinkStoryId = nil
+      UIApplication.shared.endIgnoringInteractionEvents()
+      DeepLink.clearDeepLinkInfo()
+    }
+    
+    let storyIndex = toStoryIndex(from: indexPath)
+    let story = storyArray[storyIndex]
+    
+    CCLog.info("User didSelect Story Index \(storyIndex)")
+    
+    // Analytics
+    let isOwnStory = story.author == FoodieUser.current
+    var launchType: Analytics.StoryLaunchType
+    
+    // Determine the Launch Type
+    switch layoutType {
+    case .carousel:
+      launchType = .carousel
+    case .mosaic:
+      if allowLayoutChange {
+        launchType = .mosaic
+      } else {
+        launchType = .profile
+      }
+    }
+    
+    if isOwnStory {
+      Analytics.logStoryOwnViewEvent(username: FoodieUser.current?.username ?? "nil", launchType: launchType)
+    } else if let moments = story.moments, moments.count > 0 {
+      
+      if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
+      if story.title == nil { CCLog.assert("Story Title should never be nil")}
+      if story.author?.username == nil { CCLog.assert("Story Author & Username should never be nil")}
+      
+      Analytics.logStoryViewEvent(username: FoodieUser.current?.username ?? "nil",
+                                  storyId: story.objectId ?? "",
+                                  name: story.title ?? "",
+                                  authorName: story.author?.username ?? "",
+                                  launchType: launchType,
+                                  totalMoments: moments.count)
+    }
+    
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("ViewController initiated not of StoryViewController Class!!")
+      }
+      return
+    }
+    
+    guard let popFromNode = collectionNode.nodeForItem(at: indexPath) else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("No Feed Collection Node for Index Path?")
+      }
+      return
+    }
+    
+    guard let mapNavController = navigationController as? MapNavController else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+        CCLog.fatal("No Navigation Controller or not of MapNavConveroller")
+      }
+      return
+    }
+    
+    // Scroll the selected story to top to make sure it's not off bounds to reduce animation artifact
+    guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: indexPath) else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.assert("Cannot find Layout Attribute for item at IndexPath Section: \(indexPath.section) Row: \(indexPath.row)")
+      }
+      return
+    }
+    
+    // Go ahead, just display the Story~
+    viewController.viewingStory = story
+    let transitionDuration = viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
+    mapNavController.delegate = viewController
+    mapNavController.pushViewController(viewController, animated: true)
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + transitionDuration.magnitude) {
+      
+      // Vertical direction adjustment
+      let topAdjustment = max(self.collectionNode.contentInset.top, 0)
+      let bottomAdjustment = max(self.collectionNode.contentInset.bottom, 0)
+      
+      if layoutAttributes.frame.minY < (self.collectionNode.bounds.minY + topAdjustment) {
+        self.collectionNode.scrollToItem(at: indexPath, at: .top, animated: false)
+      } else if layoutAttributes.frame.maxY > (self.collectionNode.bounds.maxY - bottomAdjustment) {
+        self.collectionNode.scrollToItem(at: indexPath, at: .bottom, animated: false)
+      }
+      
+      // Horizontal direction adjustment
+      //      let leftAdjustment = max(self.collectionNode.contentInset.left, 0)
+      //      let rightAdjustment = max(self.collectionNode.contentInset.right, 0)
+      //
+      //      if layoutAttributes.frame.minX < (self.collectionNode.bounds.minX + leftAdjustment) {
+      //        self.collectionNode.scrollToItem(at: indexPath, at: .left, animated: false)
+      //      } else if layoutAttributes.frame.maxX > (self.collectionNode.bounds.maxX - rightAdjustment) {
+      //        self.collectionNode.scrollToItem(at: indexPath, at: .right, animated: false)
+      //      }
     }
   }
   
@@ -403,111 +512,6 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     }
   }
 
-  func displayStory(didSelectItemAt indexPath: IndexPath) {
-
-    if deepLinkStoryId != nil {
-      deepLinkStoryId = nil
-      UIApplication.shared.endIgnoringInteractionEvents()
-      DeepLink.clearDeepLinkInfo()
-    }
-
-    let storyIndex = toStoryIndex(from: indexPath)
-    let story = storyArray[storyIndex]
-
-    CCLog.info("User didSelect Story Index \(storyIndex)")
-
-    // Analytics
-    let isOwnStory = story.author == FoodieUser.current
-    var launchType: Analytics.StoryLaunchType
-
-    // Determine the Launch Type
-    switch layoutType {
-    case .carousel:
-      launchType = .carousel
-    case .mosaic:
-      if allowLayoutChange {
-        launchType = .mosaic
-      } else {
-        launchType = .profile
-      }
-    }
-
-    if isOwnStory {
-      Analytics.logStoryOwnViewEvent(username: FoodieUser.current?.username ?? "nil", launchType: launchType)
-    } else if let moments = story.moments, moments.count > 0 {
-
-      if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
-      if story.title == nil { CCLog.assert("Story Title should never be nil")}
-      if story.author?.username == nil { CCLog.assert("Story Author & Username should never be nil")}
-
-      Analytics.logStoryViewEvent(username: FoodieUser.current?.username ?? "nil",
-                                  storyId: story.objectId ?? "",
-                                  name: story.title ?? "",
-                                  authorName: story.author?.username ?? "",
-                                  launchType: launchType,
-                                  totalMoments: moments.count)
-    }
-
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "StoryViewController") as? StoryViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("ViewController initiated not of StoryViewController Class!!")
-      }
-      return
-    }
-
-    guard let popFromNode = collectionNode.nodeForItem(at: indexPath) else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("No Feed Collection Node for Index Path?")
-      }
-      return
-    }
-
-    guard let mapNavController = navigationController as? MapNavController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("No Navigation Controller or not of MapNavConveroller")
-      }
-      return
-    }
-
-    // Scroll the selected story to top to make sure it's not off bounds to reduce animation artifact
-    guard let layoutAttributes = collectionNode.view.layoutAttributesForItem(at: indexPath) else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-        CCLog.assert("Cannot find Layout Attribute for item at IndexPath Section: \(indexPath.section) Row: \(indexPath.row)")
-      }
-      return
-    }
-    
-    // Go ahead, just display the Story~
-    viewController.viewingStory = story
-    let transitionDuration = viewController.setPopTransition(popFrom: popFromNode.view, withBgOverlay: true, dismissIsInteractive: true)
-    mapNavController.delegate = viewController
-    mapNavController.pushViewController(viewController, animated: true)
-    
-    DispatchQueue.main.asyncAfter(deadline: .now() + transitionDuration.magnitude) {
-      
-      // Vertical direction adjustment
-      let topAdjustment = max(self.collectionNode.contentInset.top, 0)
-      let bottomAdjustment = max(self.collectionNode.contentInset.bottom, 0)
-      
-      if layoutAttributes.frame.minY < (self.collectionNode.bounds.minY + topAdjustment) {
-        self.collectionNode.scrollToItem(at: indexPath, at: .top, animated: false)
-      } else if layoutAttributes.frame.maxY > (self.collectionNode.bounds.maxY - bottomAdjustment) {
-        self.collectionNode.scrollToItem(at: indexPath, at: .bottom, animated: false)
-      }
-      
-      // Horizontal direction adjustment
-//      let leftAdjustment = max(self.collectionNode.contentInset.left, 0)
-//      let rightAdjustment = max(self.collectionNode.contentInset.right, 0)
-//
-//      if layoutAttributes.frame.minX < (self.collectionNode.bounds.minX + leftAdjustment) {
-//        self.collectionNode.scrollToItem(at: indexPath, at: .left, animated: false)
-//      } else if layoutAttributes.frame.maxX > (self.collectionNode.bounds.maxX - rightAdjustment) {
-//        self.collectionNode.scrollToItem(at: indexPath, at: .right, animated: false)
-//      }
-    }
-  }
-
 
   // More Data Fetched, update ColllectionNode
   func updateDataPage(withStory indexes: [Int], for context: AnyObject?, isLastPage: Bool) {
@@ -663,6 +667,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     return visibleStoryIndexes
   }
 
+  
   func updateStory(_ story: FoodieStory) {
     let storyIdx = storyArray.index(of: story)
 
@@ -673,6 +678,31 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
 
     storyArray[storyIndex] = story
     collectionNode.reloadItems(at: [IndexPath(item: storyIndex, section: 0)])
+  }
+  
+  
+  func showSelectionFrameAround(story: FoodieStory) {
+    if let storyIdx = storyArray.index(of: story) {
+      showSelectionFrameAround(storyIndex: storyIdx)
+    }
+  }
+  
+  func showSelectionFrameAround(storyIndex: Int) {
+    clearSelectionFrame()
+    
+    if let cellNode = collectionNode.nodeForItem(at: toIndexPath(from: storyIndex)) {
+      selectedStoryIndex = storyIndex
+      cellNode.layer.borderColor = FoodieGlobal.Constants.ThemeColor.cgColor
+      cellNode.layer.borderWidth = Constants.SelectionFrameWidth
+    }
+  }
+  
+  func clearSelectionFrame() {
+    if let selectedStoryIndex = selectedStoryIndex,
+      let cellNode = collectionNode.nodeForItem(at: toIndexPath(from: selectedStoryIndex)) {
+      cellNode.layer.borderColor = UIColor.clear.cgColor
+      cellNode.layer.borderWidth = 0.0
+    }
   }
 }
 
@@ -700,16 +730,6 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
     cellNode.backgroundColor = UIColor.clear
     cellNode.isOpaque = false
     
-    // TODO: Nice to Have, shadow underneath the cards
-//    cellNode.clipsToBounds = true
-//
-//    cellNode.layer.backgroundColor = UIColor.lightGray.cgColor
-//    cellNode.layer.shadowPath = UIBezierPath(roundedRect: cellNode.bounds, cornerRadius: cellNode.cornerRadius).cgPath
-//    cellNode.layer.shadowOffset = CGSize(width: 0.0, height: 8.0)
-//    cellNode.layer.shadowColor = UIColor.black.cgColor
-//    cellNode.layer.shadowRadius = 4.0
-//    cellNode.layer.shadowOpacity = 1.0
-
     if enableEdit {
       guard let coverEditButton = cellNode.coverEditButton else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -721,6 +741,7 @@ extension FeedCollectionNodeController: ASCollectionDataSource {
       coverEditButton.addTarget(self, action: #selector(editStory(_:)), forControlEvents: .touchUpInside)
       coverEditButton.accessibilityIdentifier = "coverEditButton_" + String(toStoryIndex(from: indexPath))
     }
+    
     return { return cellNode }
   }
 }

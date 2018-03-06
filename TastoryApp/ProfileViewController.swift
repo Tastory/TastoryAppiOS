@@ -447,6 +447,7 @@ class ProfileViewController: OverlayViewController {
           let annotation = StoryMapAnnotation(title: name, story: story, coordinate: region.center)
           self.mapNavController?.add(annotation: annotation)
           self.mapNavController?.select(annotation: annotation, animated: true)
+          self.feedCollectionNodeController?.showSelectionFrameAround(story: story)
         }
       }
     }

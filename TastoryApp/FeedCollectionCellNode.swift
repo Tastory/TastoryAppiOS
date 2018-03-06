@@ -45,10 +45,10 @@ class FeedCollectionCellNode: ASCellNode {
       CCLog.fatal("No Thumbnail Filename in Story \(story.getUniqueIdentifier())")
     }
     
-    self.coverImageNode = ASNetworkImageNode()
+    coverImageNode = ASNetworkImageNode()
     super.init()
-    self.coverImageNode.defaultImage = UIImage(named: "MediaPlaceholder")
-    self.accessibilityIdentifier = "feedCollectionCellNode_" + (story.title?.replacingOccurrences(of: " ", with: "_"))!
+    coverImageNode.defaultImage = UIImage(named: "MediaPlaceholder")
+    accessibilityIdentifier = "feedCollectionCellNode_" + (story.title?.replacingOccurrences(of: " ", with: "_"))!
 
     coverImageNode.url = FoodieFileObject.getS3URL(for: thumbnailFileName)
     coverImageNode.isOpaque = false

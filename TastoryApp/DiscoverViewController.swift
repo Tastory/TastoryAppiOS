@@ -80,7 +80,8 @@ class DiscoverViewController: OverlayViewController {
   private var forceRequery: Bool = false
   private var autoFilterSearch: Bool = false
   private var currentLocation: CLLocation?
-
+  private var scrollSelect: Bool = false
+  
   
   // MARK: - IBOutlets
   @IBOutlet var mosaicLayoutChangePanRecognizer: UIPanGestureRecognizer!
@@ -896,6 +897,7 @@ class DiscoverViewController: OverlayViewController {
       
       if let annotationIndex = lastSelectedAnnotationIndex {
         let annotationToSelect = storyAnnotations[annotationIndex]
+        scrollSelect = true
         mapController.select(annotation: annotationToSelect, animated: true)
       }
       
@@ -1027,7 +1029,11 @@ class DiscoverViewController: OverlayViewController {
       
       // Release the mapNavController
       mapNavController.stopTracking()
-      mapNavController.mapDelegate = nil
+      
+      if mapNavController.mapDelegate === self {
+        mapNavController.mapDelegate = nil
+      }
+      
       self.mapNavController = nil
     }
   }
@@ -1244,19 +1250,19 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       // Hide top buttons
       appearanceForTopUI(alphaValue: 0.0, animated: true)
       
-      self.topGradientCarouselConstraint.isActive = false
-      self.feedBackgroundCarouselConstraint.isActive = false
-      self.topGradientMosaicConstraint.isActive = true
-      self.feedBackgroundMosaicConstraint.isActive = true
+      topGradientCarouselConstraint.isActive = false
+      feedBackgroundCarouselConstraint.isActive = false
+      topGradientMosaicConstraint.isActive = true
+      feedBackgroundMosaicConstraint.isActive = true
       
-      self.touchForwardingMosaicConstraint.isActive = true
-      self.touchForwardingCarouselConstraint.isActive = false
-      self.touchForwardingHeightConstraint.isActive = false
+      touchForwardingMosaicConstraint.isActive = true
+      touchForwardingCarouselConstraint.isActive = false
+      touchForwardingHeightConstraint.isActive = false
       
-      self.view.updateConstraintsIfNeeded()
-      self.topGradientView.layoutIfNeeded()
-      self.feedBackgroundView.layoutIfNeeded()
-      self.touchForwardingView?.layoutIfNeeded()
+      view.updateConstraintsIfNeeded()
+      topGradientView.layoutIfNeeded()
+      feedBackgroundView.layoutIfNeeded()
+      touchForwardingView?.layoutIfNeeded()
       
       UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
         self.topGradientView.alpha = 1.0
@@ -1273,25 +1279,26 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
       
     case .carousel:
 
+      feedCollectionNodeController.clearSelectionFrame()
       mosaicLayoutChangePanRecognizer.isEnabled = true
-      self.backButton.isHidden = true
+      backButton.isHidden = true
       
       // Should we show top buttons?
       appearanceForTopUI(alphaValue: 1.0, animated: true)
       
-      self.topGradientMosaicConstraint.isActive = false
-      self.feedBackgroundMosaicConstraint.isActive = false
-      self.topGradientCarouselConstraint.isActive = true
-      self.feedBackgroundCarouselConstraint.isActive = true
+      topGradientMosaicConstraint.isActive = false
+      feedBackgroundMosaicConstraint.isActive = false
+      topGradientCarouselConstraint.isActive = true
+      feedBackgroundCarouselConstraint.isActive = true
       
-      self.touchForwardingMosaicConstraint.isActive = false
-      self.touchForwardingCarouselConstraint.isActive = true
-      self.touchForwardingHeightConstraint.isActive = true
+      touchForwardingMosaicConstraint.isActive = false
+      touchForwardingCarouselConstraint.isActive = true
+      touchForwardingHeightConstraint.isActive = true
       
-      self.view.updateConstraintsIfNeeded()
-      self.topGradientView.layoutIfNeeded()
-      self.feedBackgroundView.layoutIfNeeded()
-      self.touchForwardingView?.layoutIfNeeded()
+      view.updateConstraintsIfNeeded()
+      topGradientView.layoutIfNeeded()
+      feedBackgroundView.layoutIfNeeded()
+      touchForwardingView?.layoutIfNeeded()
       
       DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultTransitionAnimationDuration/2) {
         if self.storyAnnotations.count > 0 {
@@ -1307,6 +1314,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
   
   
   func collectionNodeDidStopScrolling() {
+    
     if let storyIndex = self.feedCollectionNodeController.highlightedStoryIndex, storyIndex >= 0, storyIndex < storyArray.count {
       self.highlightedStoryIndex = storyIndex
       
@@ -1321,6 +1329,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
             let mapHeight = mapWidth/CLLocationDistance(mosaicMapAspectRatio)
             let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, mapHeight/2, mapWidth/2)  // divided by 2 is hand tuned
             mapNavController?.showRegionExposed(region, animated: true)
+            feedCollectionNodeController.showSelectionFrameAround(storyIndex: storyIndex)
             
           case .carousel:
             // TODO: Does the exposed map already show the annotation? Only zoom to all annotations if not already shown
@@ -1341,7 +1350,11 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
             }
             searchButtonsHidden(is: true)
           }
-          mapNavController?.select(annotation: annotation, animated: true)
+          
+          if let mapController = mapNavController,  annotation != mapController.selectedAnnotation as? StoryMapAnnotation {
+            scrollSelect = true
+            mapNavController?.select(annotation: annotation, animated: true)
+          }
         }
       }
     }
@@ -1409,7 +1422,11 @@ extension DiscoverViewController: MapNavControllerDelegate {
   
   func mapNavController(_ mapNavController: MapNavController, didSelect annotation: MKAnnotation) {
     
-    if let storyAnnotation = annotation as? StoryMapAnnotation /*, feedCollectionNodeController.layoutType == .carousel*/ {
+    if scrollSelect {
+      scrollSelect = false
+    }
+      
+    else if let storyAnnotation = annotation as? StoryMapAnnotation {
       for index in 0..<storyArray.count {
         if storyAnnotation.story === storyArray[index] {
           feedCollectionNodeController.scrollTo(storyIndex: index)
