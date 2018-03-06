@@ -49,7 +49,8 @@ class DiscoverViewController: OverlayViewController {
     static let InitQueryMinStories: UInt = 10 // Try to find a radius that at least finds 20 stories in the beginning
     static let PullTranslationForChange: CGFloat = 50.0  // In Points
     static let PercentageOfStoryVisibleToStartPrefetch: CGFloat = 0.6
-    static let SearchBackgroundBlackAlpha: CGFloat = 0.6
+    static let TopGradientCarouselBlackAlpha: CGFloat = 0.6
+    static let TopGradientMosaicBlackAlpha: CGFloat = 0.3
     static let FeedBackgroundBlackAlpha: CGFloat = 0.8
     static let SearchBarFontName = FoodieFont.Raleway.SemiBold
     static let SearchBarFontSize: CGFloat = 15.0
@@ -67,9 +68,8 @@ class DiscoverViewController: OverlayViewController {
   private var lastSelectedAnnotationIndex: Int?
 
   private var highlightedStoryIndex: Int?
-  private var mosaicMapWidth: CLLocationDistance?
   
-  private var searchGradientNode: GradientNode!
+  private var topGradientNode: GradientNode!
   private var feedGradientNode: GradientNode!
   
   private var storyQuery: FoodieQuery?
@@ -84,7 +84,6 @@ class DiscoverViewController: OverlayViewController {
   
   // MARK: - IBOutlets
   @IBOutlet var mosaicLayoutChangePanRecognizer: UIPanGestureRecognizer!
-  @IBOutlet var carouselLayoutChangeRecognizer: EndGestureRecognizer!
   
   @IBOutlet var locationField: UITextField!
   @IBOutlet var filterButton: UIButton!
@@ -95,6 +94,7 @@ class DiscoverViewController: OverlayViewController {
   @IBOutlet var profileButton: UIButton!
   @IBOutlet var searchButton: UIButton!
   @IBOutlet var allStoriesButton: UIButton!
+  @IBOutlet var backButton: UIButton!
   
   @IBOutlet var touchForwardingView: TouchForwardingView? {
     didSet {
@@ -107,7 +107,7 @@ class DiscoverViewController: OverlayViewController {
     }
   }
   
-  @IBOutlet var searchBackgroundView: UIView!
+  @IBOutlet var topGradientView: UIView!
   @IBOutlet var feedContainerView: UIView!
   @IBOutlet var mosaicMapView: UIView!
   @IBOutlet var carouselMapView: UIImageView!
@@ -119,19 +119,18 @@ class DiscoverViewController: OverlayViewController {
   @IBOutlet var noStoriesMosaicView: UIImageView!
   @IBOutlet var noStoriesCarouselView: UIView!
   
-  @IBOutlet var searchBackgroundMosaicConstraint: NSLayoutConstraint!
-  @IBOutlet var searchBackgroundCarouselConstraint: NSLayoutConstraint!
+  @IBOutlet var topGradientMosaicConstraint: NSLayoutConstraint!
+  @IBOutlet var topGradientCarouselConstraint: NSLayoutConstraint!
   
   @IBOutlet var feedBackgroundCarouselConstraint: NSLayoutConstraint!
   @IBOutlet var feedBackgroundMosaicConstraint: NSLayoutConstraint!
+
+  @IBOutlet weak var touchForwardingCarouselConstraint: NSLayoutConstraint!
+  @IBOutlet weak var touchForwardingMosaicConstraint: NSLayoutConstraint!
+  @IBOutlet weak var touchForwardingHeightConstraint: NSLayoutConstraint!
   
   
-  //TODO Remove
-  @IBAction func searchAction(_ sender: Any) {
-
-  }
-
-
+  
   // MARK: - IBActions
   @IBAction func launchDraftStory(_ sender: Any) {
     // This is used for viewing the draft story to be used with update story later
@@ -269,7 +268,6 @@ class DiscoverViewController: OverlayViewController {
       if directionalTranslation < 0 {
         if directionalTranslation < -Constants.PullTranslationForChange {
           CCLog.info("FeedCollectionNode should change layout to Mosaic")
-          touchForwardingView?.isHidden = true
           mosaicLayoutChangePanRecognizer.isEnabled = false
           feedCollectionNodeController.changeLayout(to: .mosaic, animated: true)
         } else {
@@ -283,8 +281,7 @@ class DiscoverViewController: OverlayViewController {
   }
   
   
-  @IBAction func carouselLayoutChangeAction(_ sender: EndGestureRecognizer) {
-    carouselLayoutChangeRecognizer.isEnabled = false
+  @IBAction func carouselLayoutChangeAction(_ sender: UIButton) {
     feedCollectionNodeController.changeLayout(to: .carousel, animated: true)
   }
   
@@ -560,7 +557,8 @@ class DiscoverViewController: OverlayViewController {
         self.draftButton.alpha = alphaValue
         self.carouselMapView.alpha = alphaValue
         self.currentLocationButton.alpha = alphaValue
-        self.searchBackgroundView.alpha = alphaValue
+        self.topGradientView.alpha = alphaValue
+        self.backButton.alpha = alphaValue
       })
     } else {
       self.searchStack.alpha = alphaValue
@@ -568,7 +566,8 @@ class DiscoverViewController: OverlayViewController {
       self.draftButton.alpha = alphaValue
       self.carouselMapView.alpha = alphaValue
       self.currentLocationButton.alpha = alphaValue
-      self.searchBackgroundView.alpha = alphaValue
+      self.topGradientView.alpha = alphaValue
+      self.backButton.alpha = alphaValue
     }
   }
 
@@ -686,7 +685,6 @@ class DiscoverViewController: OverlayViewController {
     nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     nodeController.didMove(toParentViewController: self)
     feedCollectionNodeController = nodeController
-    carouselLayoutChangeRecognizer.isEnabled = false
     feedContainerView.isHidden = true
     
     // Setup all the IBOutlet Delegates
@@ -722,13 +720,6 @@ class DiscoverViewController: OverlayViewController {
     
     
     // Setup Background Gradient Views
-    let searchBackgroundBlackLevel = UIColor.black.withAlphaComponent(Constants.SearchBackgroundBlackAlpha)
-    searchGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
-                                          endingAt: CGPoint(x: 0.5, y: 1.0),
-                                          with: [searchBackgroundBlackLevel, .clear])
-    searchGradientNode.isOpaque = false
-    searchBackgroundView.addSubnode(searchGradientNode)
-    
     let feedBackgroundBlackLevel = UIColor.black.withAlphaComponent(Constants.FeedBackgroundBlackAlpha)
     feedGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
                                         endingAt: CGPoint(x: 0.5, y: 0.0),
@@ -821,18 +812,33 @@ class DiscoverViewController: OverlayViewController {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
-    searchGradientNode.frame = searchBackgroundView.bounds
-    feedGradientNode.frame = feedBackgroundView.bounds
-
+    var topGradientBlack: UIColor
     
     // Layout changed, so set Exposed Rect accordingly
     switch feedCollectionNodeController.layoutType {
     case .carousel:
       mapNavController?.setExposedRect(with: carouselMapView)
+      topGradientBlack = UIColor.black.withAlphaComponent(Constants.TopGradientCarouselBlackAlpha)
       
     case .mosaic:
       mapNavController?.setExposedRect(with: mosaicMapView)
+      topGradientBlack = UIColor.black.withAlphaComponent(Constants.TopGradientMosaicBlackAlpha)
     }
+    
+    // Setup Background Gradient Views
+    let topGradient = GradientNode(startingAt: CGPoint(x: 0.5, y: 0.0),
+                                   endingAt: CGPoint(x: 0.5, y: 1.0),
+                                   with: [topGradientBlack, .clear])
+    topGradient.isOpaque = false
+    topGradient.frame = topGradientView.bounds
+    
+    if let topGradientNode = topGradientNode {
+      topGradientNode.removeFromSupernode()
+    }
+    topGradientView.addSubnode(topGradient)
+    topGradientNode = topGradient
+    
+    self.feedGradientNode.frame = self.feedBackgroundView.bounds
   }
   
   
@@ -982,6 +988,11 @@ class DiscoverViewController: OverlayViewController {
     
     if self.feedCollectionNodeController.layoutType == .carousel {
       appearanceForTopUI(alphaValue: 1.0, animated: true)
+    } else {
+      UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
+        self.topGradientView.alpha = 1.0
+        self.backButton.alpha = 1.0
+      })
     }
     appearanceForFeedUI(alphaValue: 1.0, animated: true)
   }
@@ -1196,6 +1207,7 @@ extension DiscoverViewController: UITextFieldDelegate {
     }
   }
   
+  
   func textFieldDidEndEditing(_ textField: UITextField) {
     guard let searchBarFont = UIFont(name: Constants.SearchBarFontName, size: Constants.SearchBarFontSize) else {
       CCLog.fatal("Cannot create UIFont with name \(Constants.SearchBarFontName)")
@@ -1228,60 +1240,67 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
     
     switch layoutType {
     case .mosaic:
-      mosaicMapWidth = mapNavController?.boundedMapWidth()
-      mapNavController?.setExposedRect(with: mosaicMapView)
-      carouselLayoutChangeRecognizer.isEnabled = true
-      view.insertSubview(mosaicMapView, aboveSubview: touchForwardingView!)
       
       // Hide top buttons
       appearanceForTopUI(alphaValue: 0.0, animated: true)
       
-      self.searchBackgroundCarouselConstraint.isActive = false
+      self.topGradientCarouselConstraint.isActive = false
       self.feedBackgroundCarouselConstraint.isActive = false
-      self.searchBackgroundMosaicConstraint.isActive = true
+      self.topGradientMosaicConstraint.isActive = true
       self.feedBackgroundMosaicConstraint.isActive = true
       
+      self.touchForwardingMosaicConstraint.isActive = true
+      self.touchForwardingCarouselConstraint.isActive = false
+      self.touchForwardingHeightConstraint.isActive = false
+      
+      self.view.updateConstraintsIfNeeded()
+      self.topGradientView.layoutIfNeeded()
+      self.feedBackgroundView.layoutIfNeeded()
+      self.touchForwardingView?.layoutIfNeeded()
+      
       UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
-        self.searchBackgroundView.alpha = 1.0
-        self.view.updateConstraintsIfNeeded()
-        self.searchBackgroundView.layoutIfNeeded()
-        self.feedBackgroundView.layoutIfNeeded()
+        self.topGradientView.alpha = 1.0
+        self.backButton.alpha = 1.0
+        self.backButton.isHidden = false
       })
       
       if let highlightedStoryIndex = highlightedStoryIndex {
-        feedCollectionNodeController.scrollTo(storyIndex: highlightedStoryIndex)
-        collectionNodeDidStopScrolling()
+        DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultTransitionAnimationDuration/2) {
+          self.feedCollectionNodeController.scrollTo(storyIndex: highlightedStoryIndex)
+          self.collectionNodeDidStopScrolling()
+        }
       }
       
     case .carousel:
-      if let touchForwardingView = touchForwardingView {
-        touchForwardingView.isHidden = false
-      }
-      mapNavController?.setExposedRect(with: carouselMapView)
+
       mosaicLayoutChangePanRecognizer.isEnabled = true
-      
-      view.insertSubview(touchForwardingView!, aboveSubview: mosaicMapView)
-      
-      if storyAnnotations.count > 0 {
-        mapNavController?.showRegionExposed(containing: storyAnnotations)
-      }
+      self.backButton.isHidden = true
       
       // Should we show top buttons?
       appearanceForTopUI(alphaValue: 1.0, animated: true)
       
-      self.searchBackgroundMosaicConstraint.isActive = false
+      self.topGradientMosaicConstraint.isActive = false
       self.feedBackgroundMosaicConstraint.isActive = false
-      self.searchBackgroundCarouselConstraint.isActive = true
+      self.topGradientCarouselConstraint.isActive = true
       self.feedBackgroundCarouselConstraint.isActive = true
       
-      UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
-        self.view.updateConstraintsIfNeeded()
-        self.searchBackgroundView.layoutIfNeeded()
-        self.feedBackgroundView.layoutIfNeeded()
-      })
+      self.touchForwardingMosaicConstraint.isActive = false
+      self.touchForwardingCarouselConstraint.isActive = true
+      self.touchForwardingHeightConstraint.isActive = true
       
-      if let highlightedStoryIndex = highlightedStoryIndex {
-        feedCollectionNodeController.scrollTo(storyIndex: highlightedStoryIndex)
+      self.view.updateConstraintsIfNeeded()
+      self.topGradientView.layoutIfNeeded()
+      self.feedBackgroundView.layoutIfNeeded()
+      self.touchForwardingView?.layoutIfNeeded()
+      
+      DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultTransitionAnimationDuration/2) {
+        if self.storyAnnotations.count > 0 {
+          self.mapNavController?.showRegionExposed(containing: self.storyAnnotations)
+        }
+        
+        if let highlightedStoryIndex = self.highlightedStoryIndex {
+          self.feedCollectionNodeController.scrollTo(storyIndex: highlightedStoryIndex)
+        }
       }
     }
   }
@@ -1390,7 +1409,7 @@ extension DiscoverViewController: MapNavControllerDelegate {
   
   func mapNavController(_ mapNavController: MapNavController, didSelect annotation: MKAnnotation) {
     
-    if let storyAnnotation = annotation as? StoryMapAnnotation, feedCollectionNodeController.layoutType == .carousel {
+    if let storyAnnotation = annotation as? StoryMapAnnotation /*, feedCollectionNodeController.layoutType == .carousel*/ {
       for index in 0..<storyArray.count {
         if storyAnnotation.story === storyArray[index] {
           feedCollectionNodeController.scrollTo(storyIndex: index)
@@ -1403,7 +1422,10 @@ extension DiscoverViewController: MapNavControllerDelegate {
   
   func mapNavControllerWasMovedByUser(_ mapNavController: MapNavController) {
     mapNavController.stopTracking()
-    searchButtonsHidden(is: false)
+    
+    if feedCollectionNodeController.layoutType == .carousel {
+      searchButtonsHidden(is: false)
+    }
   }
 }
 
@@ -1558,7 +1580,7 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
     DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
       UIApplication.shared.endIgnoringInteractionEvents()
       self.locationField.text = location
-      self.textFieldShouldReturn(self.locationField)
+      _ = self.textFieldShouldReturn(self.locationField)
       // let the map move to the location first
       DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
         if self.searchButton.isEnabled {
