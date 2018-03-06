@@ -193,7 +193,7 @@ class StoryViewController: OverlayViewController {
       
       let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
       
-      Analytics.logMomentVenueEvent(username: FoodieUser.current?.username ?? "nil",
+      Analytics.logStoryVenueEvent(username: FoodieUser.current?.username ?? "nil",
                                     venueId: story.venue?.objectId ?? "",
                                     venueName: story.venue?.name ?? "",
                                     storyPercentage: storyPercentage,
@@ -273,7 +273,7 @@ class StoryViewController: OverlayViewController {
       
       let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
       
-      Analytics.logMomentProfileEvent(username: FoodieUser.current?.username ?? "nil",
+      Analytics.logStoryProfileEvent(username: FoodieUser.current?.username ?? "nil",
                                       authorName: author.username ?? "",
                                       storyPercentage: storyPercentage,
                                       momentId: moment.objectId ?? "",
@@ -342,6 +342,34 @@ class StoryViewController: OverlayViewController {
     } else {
       heartClicked = true
       heartButton.setImage(#imageLiteral(resourceName: "Story-LikeFilled"), for: .normal)
+      
+      // Fabric Analytics
+      if story.author != FoodieUser.current,
+        !draftPreview,
+        let moment = currentMoment,
+        let moments = story.moments,
+        moments.count > 0,
+        let mediaTypeString = moment.mediaType,
+        let mediaType = FoodieMediaType(rawValue: mediaTypeString) {  // Let's not log Previews for Analytics purposes
+        
+        if story.objectId == nil { CCLog.assert("Story object ID should never be nil") }
+        if story.title == nil { CCLog.assert("Story Title should never be nil") }
+        if story.author?.username == nil { CCLog.assert("Story Author & Username should never be nil") }
+        
+        let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
+        
+        Analytics.logStoryLikedEvent(username: FoodieUser.current?.username ?? "nil",
+                                     authorName: story.author?.username ?? "",
+                                     storyPercentage: storyPercentage,
+                                     momentId: moment.objectId ?? "",
+                                     momentNumber: story.getIndexOf(moment),
+                                     totalMoments: moments.count,
+                                     mediaType: mediaType,
+                                     storyId: story.objectId ?? "",
+                                     storyName: story.title ?? "")
+      }
+      
+      
     }
     
     CCLog.info("Heart Clicked changed to \(heartClicked) by \(FoodieUser.current?.objectId ?? "") on Story \(viewingStory?.objectId ?? "")")
@@ -865,7 +893,7 @@ class StoryViewController: OverlayViewController {
 
       let storyPercentage = Double(story.getIndexOf(moment) + 1)/Double(moments.count)
       
-      Analytics.logMomentSwipeEvent(username: FoodieUser.current?.username ?? "nil",
+      Analytics.logStorySwipeEvent(username: FoodieUser.current?.username ?? "nil",
                                     url: story.storyURL ?? "",
                                     message: story.swipeMessage ?? "",
                                     storyPercentage: storyPercentage,

@@ -104,19 +104,41 @@ class Analytics {
   }
   
   
-  static func logMomentSwipeEvent(username: String,
-                                  url: String,
-                                  message: String,
-                                  storyPercentage: Double,
-                                  momentId: String,
-                                  momentNumber: Int,
-                                  totalMoments: Int,
-                                  mediaType: FoodieMediaType,
-                                  storyId: String,
-                                  storyName: String,
-                                  authorName: String) {
+  static func logStoryLikedEvent(username: String,
+                                 authorName: String,
+                                 storyPercentage: Double,
+                                 momentId: String,
+                                 momentNumber: Int,
+                                 totalMoments: Int,
+                                 mediaType: FoodieMediaType,
+                                 storyId: String,
+                                 storyName: String) {
     
-    Answers.logCustomEvent(withName: "Moment Swiped", customAttributes: ["Username" : username,
+    Answers.logCustomEvent(withName: "Story Liked", customAttributes: ["Username" : username,
+                                                                       "Author Name" : authorName,
+                                                                       "Story Percentage" : storyPercentage,
+                                                                       "Moment ID" : momentId,
+                                                                       "Moment Number" : momentNumber,
+                                                                       "Total Moments" : totalMoments,
+                                                                       "Media Type" : mediaType.rawValue,
+                                                                       "Story ID" : storyId,
+                                                                       "Story Name" : storyName])
+  }
+  
+  
+  static func logStorySwipeEvent(username: String,
+                                 url: String,
+                                 message: String,
+                                 storyPercentage: Double,
+                                 momentId: String,
+                                 momentNumber: Int,
+                                 totalMoments: Int,
+                                 mediaType: FoodieMediaType,
+                                 storyId: String,
+                                 storyName: String,
+                                 authorName: String) {
+    
+    Answers.logCustomEvent(withName: "Story Swiped", customAttributes: ["Username" : username,
                                                                          "URL" : url,
                                                                          "Message" : message,
                                                                          "Story Percentage" : storyPercentage,
@@ -130,17 +152,17 @@ class Analytics {
   }
   
   
-  static func logMomentVenueEvent(username: String,
-                                  venueId: String,
-                                  venueName: String,
-                                  storyPercentage: Double,
-                                  momentId: String,
-                                  momentNumber: Int,
-                                  totalMoments: Int,
-                                  mediaType: FoodieMediaType,
-                                  storyId: String,
-                                  storyName: String,
-                                  authorName: String) {
+  static func logStoryVenueEvent(username: String,
+                                 venueId: String,
+                                 venueName: String,
+                                 storyPercentage: Double,
+                                 momentId: String,
+                                 momentNumber: Int,
+                                 totalMoments: Int,
+                                 mediaType: FoodieMediaType,
+                                 storyId: String,
+                                 storyName: String,
+                                 authorName: String) {
     
     Answers.logCustomEvent(withName: "Venue Clicked", customAttributes: ["Username" : username,
                                                                          "Venue ID" : venueId,
@@ -157,15 +179,15 @@ class Analytics {
   }
   
   
-  static func logMomentProfileEvent(username: String,
-                                    authorName: String,
-                                    storyPercentage: Double,
-                                    momentId: String,
-                                    momentNumber: Int,
-                                    totalMoments: Int,
-                                    mediaType: FoodieMediaType,
-                                    storyId: String,
-                                    storyName: String) {
+  static func logStoryProfileEvent(username: String,
+                                   authorName: String,
+                                   storyPercentage: Double,
+                                   momentId: String,
+                                   momentNumber: Int,
+                                   totalMoments: Int,
+                                   mediaType: FoodieMediaType,
+                                   storyId: String,
+                                   storyName: String) {
     
     Answers.logCustomEvent(withName: "Profile Clicked", customAttributes: ["Username" : username,
                                                                            "Author Name" : authorName,
