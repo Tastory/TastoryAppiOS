@@ -10,6 +10,7 @@
 import AsyncDisplayKit
 import Parse
 import FBSDKCoreKit
+import Firebase
 // import COSTouchVisualizer
 
 @UIApplicationMain
@@ -38,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
     var error: Error?
     
     // Print Fonts if needed
-    //printFonts()
+//    printFonts()
     
     // Setup Window
 //    let cosTouchWindow = COSTouchVisualizerWindow(frame: UIScreen.main.bounds)
@@ -50,7 +51,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
 //    cosTouchWindow.rippleStrokeColor = UIColor.white
 //    cosTouchWindow.touchAlpha = 0.1;
 //    cosTouchWindow.touchVisualizerWindowDelegate = self
-    
 //    window = cosTouchWindow
 
     // Initialize Crash, Error & Log Reporting
@@ -63,6 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
     FoodieGlobal.initialize()
     PFFacebookUtils.initializeFacebook(applicationLaunchOptions: launchOptions)
     DeepLink.global = DeepLink(launchOptions: launchOptions)
+    FirebaseApp.configure()
     
     
     // Initialize the Global Activity Spinner

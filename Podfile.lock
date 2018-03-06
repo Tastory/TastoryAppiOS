@@ -38,10 +38,30 @@ PODS:
     - FBSDKCoreKit
   - FBSDKShareKit (4.28.0):
     - FBSDKCoreKit
+  - Firebase/Core (4.9.0):
+    - FirebaseAnalytics (= 4.0.9)
+    - FirebaseCore (= 4.0.15)
+  - FirebaseAnalytics (4.0.9):
+    - FirebaseCore (~> 4.0)
+    - FirebaseInstanceID (~> 2.0)
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - nanopb (~> 0.3)
+  - FirebaseCore (4.0.15):
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+  - FirebaseInstanceID (2.0.9):
+    - FirebaseCore (~> 4.0)
+  - GoogleToolboxForMac/Defines (2.1.3)
+  - GoogleToolboxForMac/NSData+zlib (2.1.3):
+    - GoogleToolboxForMac/Defines (= 2.1.3)
   - HTTPStatusCodes (3.1.2)
   - Jot (0.2.0):
     - Masonry (~> 1.0.2)
   - Masonry (1.0.2)
+  - nanopb (0.3.8):
+    - nanopb/decode (= 0.3.8)
+    - nanopb/encode (= 0.3.8)
+  - nanopb/decode (0.3.8)
+  - nanopb/encode (0.3.8)
   - Parse (1.16.0):
     - Parse/Core (= 1.16.0)
   - Parse/Core (1.16.0):
@@ -94,6 +114,7 @@ DEPENDENCIES:
   - FacebookCore
   - FacebookLogin
   - FacebookShare
+  - Firebase/Core
   - HTTPStatusCodes (~> 3.1.2)
   - Jot (from `https://github.com/biscottigelato/Jot.git`)
   - Parse
@@ -149,9 +170,15 @@ SPEC CHECKSUMS:
   FBSDKCoreKit: ca961e279113f691fd83dc634c0bbad9d4e3f370
   FBSDKLoginKit: b077381c27d800f21661757e8140cf2c80a91e4a
   FBSDKShareKit: 4f525556e0df4cf0f574cb3f01c675434f29d477
+  Firebase: 632216af3ed7f31e3be34776947fdc7546cfb572
+  FirebaseAnalytics: 388b630c15713f5dbf364071f5f3d6077fb52f4e
+  FirebaseCore: 3bd047463058fa6b5d312c97502c52e45401cdfb
+  FirebaseInstanceID: d2058a35e9bebda1b6dd42486b84917bde552a9d
+  GoogleToolboxForMac: 2501e2ad72a52eb3dfe7bd9aee7dad11b858bd20
   HTTPStatusCodes: 88155ba36826366a898a7b4f34d311f49083d546
   Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
+  nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Parse: 5b36dc2c2f0a2fd82a257ae018bc3d68cf2c24e7
   PINCache: d195fdba255283f7e9900a55e3cced377f431f9b
   PINOperation: a6219e6fc9db9c269eb7a7b871ac193bcf400aac
@@ -165,6 +192,6 @@ SPEC CHECKSUMS:
   Texture: 7249074582daf75e524e59df5428b66b8e8db0e4
   TLPhotoPicker: 3fc7f1c48641cd2258041fe866b6db422f058187
 
-PODFILE CHECKSUM: c64acc32e8eeb0e5264a827d45321834093da397
+PODFILE CHECKSUM: 230df069e183cc8d8e74f025ba20304cb030659e
 
 COCOAPODS: 1.4.0
