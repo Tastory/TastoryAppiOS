@@ -238,6 +238,14 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     super.viewDidDisappear(animated)
     
     locationWatcher?.stop()
+    
+    // Always return to Solo Ambient just in case
+    do {
+      try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategorySoloAmbient, with: [])
+    }
+    catch {
+      CCLog.warning("Failed to clear background audio preference")
+    }
   }
   
   
