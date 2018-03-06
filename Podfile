@@ -16,7 +16,7 @@ target 'TastoryApp' do
   pod 'FacebookShare', :inhibit_warnings => true
   pod 'Firebase/Core', :inhibit_warnings => true
   pod 'Fabric', :inhibit_warnings => true
-  pod 'Crashlytics', :inhibit_warnings => true
+  pod 'Crashlytics', '~> 3.10', :inhibit_warnings => true
   pod 'Branch', :inhibit_warnings => true
   pod 'AWSS3', :inhibit_warnings => true
   pod 'AWSCognito', :inhibit_warnings => true

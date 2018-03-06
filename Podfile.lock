@@ -15,10 +15,10 @@ PODS:
   - Branch/Core (0.22.5)
   - ColorSlider (4.1.2)
   - COSTouchVisualizer (1.0.6)
-  - Crashlytics (3.10.0):
-    - Fabric (~> 1.7.3)
+  - Crashlytics (3.10.1):
+    - Fabric (~> 1.7.5)
   - EarlGrey (1.12.1)
-  - Fabric (1.7.3)
+  - Fabric (1.7.5)
   - FacebookCore (0.3.0):
     - Bolts (~> 1.8)
     - FBSDKCoreKit (~> 4.27)
@@ -38,15 +38,15 @@ PODS:
     - FBSDKCoreKit
   - FBSDKShareKit (4.28.0):
     - FBSDKCoreKit
-  - Firebase/Core (4.9.0):
-    - FirebaseAnalytics (= 4.0.9)
-    - FirebaseCore (= 4.0.15)
-  - FirebaseAnalytics (4.0.9):
+  - Firebase/Core (4.10.0):
+    - FirebaseAnalytics (= 4.1.0)
+    - FirebaseCore (= 4.0.16)
+  - FirebaseAnalytics (4.1.0):
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
     - nanopb (~> 0.3)
-  - FirebaseCore (4.0.15):
+  - FirebaseCore (4.0.16):
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
   - FirebaseInstanceID (2.0.9):
     - FirebaseCore (~> 4.0)
@@ -108,7 +108,7 @@ DEPENDENCIES:
   - Branch
   - ColorSlider (~> 4.0)
   - COSTouchVisualizer
-  - Crashlytics
+  - Crashlytics (~> 3.10)
   - EarlGrey
   - Fabric
   - FacebookCore
@@ -141,7 +141,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Jot:
-    :commit: 9bdec62a5b09b30ffb238fe4c1261bb1c396011f
+    :commit: 402d0a0c202d752a26c8fa9c3c86372b2c8f51f5
     :git: https://github.com/biscottigelato/Jot.git
   PryntTrimmerView:
     :commit: ae2c2f531c545e260aa93415f46a1a5c4b812994
@@ -161,18 +161,18 @@ SPEC CHECKSUMS:
   Branch: 4f0482418d99e77d15b0e6065ef216c10e24797b
   ColorSlider: 6ad9a2b1ff168ba2f8c3265e9d4fe5ea3575cb7c
   COSTouchVisualizer: a398089327a6c02897823614d7447ccc97198997
-  Crashlytics: a989ef242b66605577a425733797f810bd2725eb
+  Crashlytics: aee1a064cbbf99b32efa3f056a5f458d846bc8ff
   EarlGrey: f7774b813c888ebdb9a21e612d67874d17d5a326
-  Fabric: bb495bb9a7a7677c6d03a1f8b83d95bc49b47e41
+  Fabric: ae7146a5f505ea370a1e44820b4b1dc8890e2890
   FacebookCore: 3ffa190a3f1f96cec0e44d3fc221bc322c595ffa
   FacebookLogin: 0af839ea858faef99550d16596b87b4a8e8906e6
   FacebookShare: 0469964297ebd75f052be2c5083389a4208e82b7
   FBSDKCoreKit: ca961e279113f691fd83dc634c0bbad9d4e3f370
   FBSDKLoginKit: b077381c27d800f21661757e8140cf2c80a91e4a
   FBSDKShareKit: 4f525556e0df4cf0f574cb3f01c675434f29d477
-  Firebase: 632216af3ed7f31e3be34776947fdc7546cfb572
-  FirebaseAnalytics: 388b630c15713f5dbf364071f5f3d6077fb52f4e
-  FirebaseCore: 3bd047463058fa6b5d312c97502c52e45401cdfb
+  Firebase: c98c8b1fbcbdccd82539a36c2b17a9b1bb0ee798
+  FirebaseAnalytics: 3dfae28d4a5e06f86c4fae830efc2ad3fadb19bc
+  FirebaseCore: eb9e1a56733ff1094ecf3e28af9069c344b25239
   FirebaseInstanceID: d2058a35e9bebda1b6dd42486b84917bde552a9d
   GoogleToolboxForMac: 2501e2ad72a52eb3dfe7bd9aee7dad11b858bd20
   HTTPStatusCodes: 88155ba36826366a898a7b4f34d311f49083d546
@@ -192,6 +192,6 @@ SPEC CHECKSUMS:
   Texture: 7249074582daf75e524e59df5428b66b8e8db0e4
   TLPhotoPicker: 3fc7f1c48641cd2258041fe866b6db422f058187
 
-PODFILE CHECKSUM: 230df069e183cc8d8e74f025ba20304cb030659e
+PODFILE CHECKSUM: 0a60b6af7eeb7ab2754ecd491a1bd4ad0acc9f31
 
 COCOAPODS: 1.4.0

@@ -95,6 +95,7 @@
 		8CBF55991E7F7EDF00F4B1CD /* TastryAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55981E7F7EDF00F4B1CD /* TastryAppTests.swift */; };
 		8CBF55A41E7F7EDF00F4B1CD /* TastoryAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF55A31E7F7EDF00F4B1CD /* TastoryAppUITests.swift */; };
 		8CC1101A1F92D07000ACBF9A /* FoodieFileObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */; };
+		8CC142F6204F2F8000A0B8D6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CC142F5204F2F7F00A0B8D6 /* GoogleService-Info.plist */; };
 		8CC48D601EFC81CD003A0FC9 /* PrecisionTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */; };
 		8CCC7EFE1FA599440049AF00 /* FeedCollectionNodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */; };
 		8CCC7F001FA5A32F0049AF00 /* FeedCollectionCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCC7EFF1FA5A32F0049AF00 /* FeedCollectionCellNode.swift */; };
@@ -343,6 +344,7 @@
 		8CBF55A31E7F7EDF00F4B1CD /* TastoryAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TastoryAppUITests.swift; sourceTree = "<group>"; };
 		8CBF55A51E7F7EDF00F4B1CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8CC110191F92D06F00ACBF9A /* FoodieFileObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodieFileObject.swift; sourceTree = "<group>"; };
+		8CC142F5204F2F7F00A0B8D6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8CC48D5F1EFC81CD003A0FC9 /* PrecisionTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrecisionTime.swift; sourceTree = "<group>"; };
 		8CCC7EFD1FA599440049AF00 /* FeedCollectionNodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionNodeController.swift; sourceTree = "<group>"; };
 		8CCC7EFF1FA5A32F0049AF00 /* FeedCollectionCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionCellNode.swift; sourceTree = "<group>"; };
@@ -540,6 +542,7 @@
 			children = (
 				C20FF85120142BA5009F2114 /* TastoryApp.entitlements */,
 				8CBF558F1E7F7EDF00F4B1CD /* Info.plist */,
+				8CC142F5204F2F7F00A0B8D6 /* GoogleService-Info.plist */,
 				8C40B20B1F1466D40030B5B5 /* Jot-Bridging-Header.h */,
 				8C841B471F623E670002A5A2 /* RATreeView-Bridging-Header.h */,
 				8CBF55831E7F7EDF00F4B1CD /* AppDelegate.swift */,
@@ -1200,6 +1203,7 @@
 				8CF40C761FC50CBE00615D43 /* Raleway-BoldItalic.ttf in Resources */,
 				8CD8A96520184D9A0006BA84 /* Heebo-Regular.ttf in Resources */,
 				8CD8A98220184DA90006BA84 /* Poppins-Medium.ttf in Resources */,
+				8CC142F6204F2F8000A0B8D6 /* GoogleService-Info.plist in Resources */,
 				8CD5A4E51F9C078D00CFD670 /* Settings.storyboard in Resources */,
 				8CD8A98D20184DA90006BA84 /* Poppins-SemiBold.ttf in Resources */,
 				8CF40C731FC50CBE00615D43 /* Raleway-Black.ttf in Resources */,
@@ -1370,6 +1374,7 @@
 				"${BUILT_PRODUCTS_DIR}/FacebookCore/FacebookCore.framework",
 				"${BUILT_PRODUCTS_DIR}/FacebookLogin/FacebookLogin.framework",
 				"${BUILT_PRODUCTS_DIR}/FacebookShare/FacebookShare.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/HTTPStatusCodes/HTTPStatusCodes.framework",
 				"${BUILT_PRODUCTS_DIR}/Jot/Jot.framework",
 				"${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework",
@@ -1385,6 +1390,7 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftyCam/SwiftyCam.framework",
 				"${BUILT_PRODUCTS_DIR}/TLPhotoPicker/TLPhotoPicker.framework",
 				"${BUILT_PRODUCTS_DIR}/Texture/AsyncDisplayKit.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -1401,6 +1407,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookLogin.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookShare.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HTTPStatusCodes.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Jot.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Masonry.framework",
@@ -1416,6 +1423,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyCam.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TLPhotoPicker.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AsyncDisplayKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
