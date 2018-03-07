@@ -497,7 +497,7 @@
                                                         <accessibility key="accessibilityConfiguration" identifier="storyEntryView_venueButton"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
                                                         <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <state key="normal" title="Meal Type">
+                                                        <state key="normal" title="Meal Type of Story">
                                                             <color key="titleColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                                                         </state>
                                                         <connections>
@@ -903,14 +903,14 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yzK-Rf-cN6">
-                                                    <rect key="frame" x="15" y="7" width="26.5" height="16.5"/>
+                                                    <rect key="frame" x="15" y="7" width="29.5" height="16.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                     <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="guT-IY-1FO">
-                                                    <rect key="frame" x="15" y="23.5" width="41" height="14"/>
+                                                    <rect key="frame" x="15" y="23.5" width="43" height="14.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                     <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="0.5" colorSpace="calibratedRGB"/>
