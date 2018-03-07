@@ -45,6 +45,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     static let MosaicHighlightThresholdOffset: CGFloat = 80
     static let CarouselPullTrasnlationForBatchFetch: CGFloat = 50
     static let SelectionFrameWidth: CGFloat = 2.0
+    static let SelectionFrameColor: CGColor = UIColor(red: 1.0, green: 0.4, blue: 0.4, alpha: 0.7).cgColor
   }
   
   
@@ -79,6 +80,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   }
   
   var selectedStoryIndex: Int?
+  var selectedLayer: CALayer?
   
   var highlightedStoryIndex: Int? {
     
@@ -692,8 +694,25 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     
     if let cellNode = collectionNode.nodeForItem(at: toIndexPath(from: storyIndex)) {
       selectedStoryIndex = storyIndex
-      cellNode.layer.borderColor = FoodieGlobal.Constants.ThemeColor.cgColor
+      cellNode.layer.borderColor = Constants.SelectionFrameColor
       cellNode.layer.borderWidth = Constants.SelectionFrameWidth
+      
+//      let cornerRadius = Constants.DefaultGuestimatedCellNodeWidth * CGFloat(Constants.DefaultFeedNodeCornerRadiusFraction)
+//      let pointA = CGPoint(x: cornerRadius, y: cellNode.bounds.height)
+//      let pointB = CGPoint(x: cellNode.bounds.width - cornerRadius, y: cellNode.bounds.height)
+//      let underlinePath = UIBezierPath()
+//      underlinePath.move(to: pointA)
+//      underlinePath.addLine(to: pointB)
+//
+//      let selectionLayer = CAShapeLayer()
+//      selectionLayer.frame = cellNode.bounds
+//      selectionLayer.path = underlinePath.cgPath
+//      selectionLayer.strokeColor = FoodieGlobal.Constants.ThemeColor.cgColor
+//      selectionLayer.lineWidth = 3.0 // Constants.SelectionFrameWidth
+//      selectionLayer.lineCap = kCALineCapRound
+//      selectedLayer = selectionLayer
+//
+//      cellNode.layer.addSublayer(selectionLayer)
     }
   }
   
@@ -703,6 +722,10 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       cellNode.layer.borderColor = UIColor.clear.cgColor
       cellNode.layer.borderWidth = 0.0
     }
+    
+//    if let selectedLayer = selectedLayer {
+//      selectedLayer.removeFromSuperlayer()
+//    }
   }
 }
 

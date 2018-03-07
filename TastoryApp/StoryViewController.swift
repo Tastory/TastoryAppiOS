@@ -932,7 +932,7 @@ class StoryViewController: OverlayViewController {
       CCLog.info("Opening Safari View for \(storyLinkString)")
       let safariViewController = SFSafariViewController(url: storyLinkUrl)
       safariViewController.delegate = self
-      safariViewController.modalPresentationStyle = .overFullScreen
+      safariViewController.modalPresentationStyle = .overCurrentContext
       self.present(safariViewController, animated: true, completion: nil)
     }
   }

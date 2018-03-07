@@ -372,7 +372,7 @@ class ProfileViewController: OverlayViewController {
     if let websiteString = websiteLabel.text, let websiteUrl = URL(string: URL.addHttpIfNeeded(to: websiteString)) {
       CCLog.info("Opening Safari View for \(websiteUrl)")
       let safariViewController = SFSafariViewController(url: websiteUrl)
-      safariViewController.modalPresentationStyle = .overFullScreen
+      safariViewController.modalPresentationStyle = .overCurrentContext
       self.present(safariViewController, animated: true, completion: nil)
     }
   }
@@ -961,3 +961,4 @@ extension ProfileViewController: UITabBarDelegate {
     queryStories()
   }
 }
+
