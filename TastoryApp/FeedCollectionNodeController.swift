@@ -52,6 +52,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   
   // MARK: - Private Instance Variable
   
+  private let mosaicLayoutInspector = MosaicCollectionViewLayoutInspector()
   private var collectionNode: ASCollectionNode
   private var allowLayoutChange: Bool
   private var allPagesFetched: Bool
@@ -369,7 +370,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     case .mosaic:
       let mosaicLayout = MosaicCollectionViewLayout()
       collectionNode = ASCollectionNode(collectionViewLayout: mosaicLayout)
-      collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
+      collectionNode.layoutInspector = mosaicLayoutInspector
       
       if contentInset > 0 {
         collectionNode.contentInset = UIEdgeInsetsMake(contentInset + MosaicCollectionViewLayout.Constants.DefaultFeedNodeMargin, 0.0, 0.0, 0.0)
@@ -557,7 +558,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     case .mosaic:
       let mosaicLayout = MosaicCollectionViewLayout()
       mosaicLayout.delegate = self
-      collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
+      collectionNode.layoutInspector = mosaicLayoutInspector
       layout = mosaicLayout
       collectionNode.leadingScreensForBatching = CGFloat(FoodieGlobal.Constants.StoryFeedPaginationCount)/10.0
       
@@ -573,13 +574,13 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     }
     
     //collectionNode.collectionViewLayout.invalidateLayout()  // Don't know why this causes Carousel to Mosaic swap to crash
-    collectionNode.view.setCollectionViewLayout(layout, animated: animated) { _ in
+    collectionNode.view.setCollectionViewLayout(layout, animated: animated) { [unowned self] _ in
       self.collectionNode.relayoutItems()
       self.collectionNode.delegate = self
       
       switch layoutType {
       case .mosaic:
-       self.collectionNode.layoutInspector = MosaicCollectionViewLayoutInspector()
+       self.collectionNode.layoutInspector = self.mosaicLayoutInspector
         self.collectionNode.view.alwaysBounceHorizontal = false
         self.collectionNode.view.alwaysBounceVertical = true
         self.collectionNode.view.decelerationRate = UIScrollViewDecelerationRateNormal

@@ -236,7 +236,7 @@ class MomentCollectionViewController: UICollectionViewController {
       }
       return
     }
-
+    
     if let reusableCell = cell as? MomentCollectionViewCell {
       let moment = momentArray[indexPath.item]
 
@@ -247,7 +247,14 @@ class MomentCollectionViewController: UICollectionViewController {
           reusableCell.thumbFrameLayer?.isHidden = true
         }
         reusableCell.activitySpinner.remove()
-        if(!workingStory.isEditStory) {
+        
+        var isModerator = false
+        
+        if let user = FoodieUser.current, user.roleLevel >= FoodieRole.Level.moderator.rawValue {
+          isModerator = true
+        }
+        
+        if !workingStory.isEditStory || isModerator {
           reusableCell.deleteButton.isHidden = false
         }
       }
@@ -506,12 +513,19 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-    if workingStory.isEditStory {
-      return CGSize.zero
-    } else {
+    
+    var isModerator = false
+    
+    if let user = FoodieUser.current, user.roleLevel >= FoodieRole.Level.moderator.rawValue {
+      isModerator = true
+    }
+    
+    if !workingStory.isEditStory || isModerator {
       let height = collectionView.bounds.height - 2*Constants.InteritemSpacing
       let width = height * FoodieGlobal.Constants.DefaultMomentAspectRatio + Constants.SectionInsetSpacing
       return CGSize(width: width, height: collectionView.bounds.height)
+    } else {
+      return CGSize.zero
     }
   }
   

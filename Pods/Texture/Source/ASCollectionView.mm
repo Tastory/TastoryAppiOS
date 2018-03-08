@@ -368,6 +368,8 @@ static NSString * const kReuseIdentifier = @"_ASCollectionReuseIdentifier";
   [_dataController relayoutAllNodesWithInvalidationBlock:^{
     [self.collectionViewLayout invalidateLayout];
     [self invalidateFlowLayoutDelegateMetrics];
+    _layoutController = [[ASCollectionViewLayoutController alloc] initWithCollectionView:self];
+    _rangeController.layoutController = _layoutController;
   }];
 }
 

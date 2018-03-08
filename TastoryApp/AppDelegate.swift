@@ -58,6 +58,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
     CCLog.initializeReporting()
     
     ASDisableLogging()
+    // ASDisplayNode.shouldShowRangeDebugOverlay = true
     
     // Initialize Foodie Model
     FoodieGlobal.initialize()
