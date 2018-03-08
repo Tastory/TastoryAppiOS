@@ -21,13 +21,34 @@ protocol SearchResultDisplayDelegate: class {
 
 class SearchResultTableViewController: UIViewController {
 
+  struct DisplayCell: Hashable {
+    var hashValue: Int {
+      return title.hashValue ^ detail.hashValue
+    }
+
+    init(title: String, detail: String) {
+      self.title = title
+      self.detail = detail
+    }
+
+    static func ==(lhs: SearchResultTableViewController.DisplayCell, rhs: SearchResultTableViewController.DisplayCell) -> Bool {
+      if lhs.title == rhs.title && lhs.detail == rhs.detail {
+        return true
+      }
+      return false
+    }
+
+    var title: String = ""
+    var detail: String = ""
+  }
+
   private struct Constants {
     static let resultTreeViewRowHeight: CGFloat = 60.0
   }
   
   // MARK: - Private Instance Variables
   private var resultsData = [SearchResult]()
-  private var titleSet: Set<String> = Set() // keep track of titles of each cell to avoid duplicate entries
+  private var displayCellSet: Set<DisplayCell> = Set() // keep track of titles of each cell to avoid duplicate entries
 
   // MARK: - Public Instance Variables
   public var delegate: SearchResultDisplayDelegate?
@@ -43,29 +64,91 @@ class SearchResultTableViewController: UIViewController {
     resultTableView.rowHeight = Constants.resultTreeViewRowHeight
   }
 
+  // MARL: - Private Instance Functions
+  func switchVenue(result: SearchResult) {
+    // if it is venue then we need to make sure that the venue from our database gets priority
+    // by switching out the venue object
+    if result.cellType == .venue {
+
+      guard let sourceVenue = result.venue else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+          CCLog.assert("the venue is nil")
+        }
+        return
+      }
+
+      if sourceVenue.objectId == nil {
+        // no replacement needed as this entry itself is generated on the fly from foursquare
+        return
+      }
+
+      // find the existing venue entry
+      var i = 0
+      for data in self.resultsData {
+        if data.cellType == .venue {
+          guard let targetVenue = data.venue else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+              CCLog.assert("the venue is nil")
+            }
+            return
+          }
+
+          if targetVenue.foursquareVenueID == sourceVenue.foursquareVenueID {
+            self.resultsData[i].venue = sourceVenue
+          }
+        }
+        i = i + 1
+      }
+    }
+  }
+
   // MARK: - Public Instance Functions
   public func clearTable() {
     DispatchQueue.main.async {
       self.resultsData.removeAll()
-      self.titleSet.removeAll()
+      self.displayCellSet.removeAll()
+      self.resultTableView.reloadData()
+    }
+  }
+  public func insertByDistance(results: [SearchResult]) {
+    DispatchQueue.main.async {
+      for result in results {
+        var i = 0
+
+        for data in self.resultsData {
+          if result.venueDistance >= data.venueDistance {
+            i = i + 1
+          }
+        }
+        let cell = DisplayCell(title: result.title.string,detail: result.detail.string)
+        if self.displayCellSet.contains(cell) {
+          self.switchVenue(result: result)
+          // skip entry as the title of this entry already existed
+          continue
+        }
+
+        self.displayCellSet.insert(cell)
+        self.resultsData.insert(result, at: i)
+      }
       self.resultTableView.reloadData()
     }
   }
 
   public func pushFront(results: [SearchResult]) {
     DispatchQueue.main.async {
-      CCLog.verbose("before push tableResults.count:\(self.resultsData.count)")
       let isInsert = (self.resultsData.count != 0)
       var insertedIdx: [IndexPath] = []
       var i = 0
       for result in results {
 
-        if self.titleSet.contains(result.title.string) {
+        let cell = DisplayCell(title: result.title.string,detail: result.detail.string)
+        if self.displayCellSet.contains(cell) {
+          self.switchVenue(result: result)
           // skip entry as the title of this entry already existed
           continue
         }
 
-        self.titleSet.insert(result.title.string)
+        self.displayCellSet.insert(cell)
         self.resultsData.insert(result, at: 0)
         insertedIdx.append(IndexPath(row: i, section: 0))
         i = i + 1
@@ -87,47 +170,14 @@ class SearchResultTableViewController: UIViewController {
       var i = self.resultsData.count
       for result in results {
 
-        if self.titleSet.contains(result.title.string) {
+        let cell = DisplayCell(title: result.title.string,detail: result.detail.string)
+        if self.displayCellSet.contains(cell) {
+          self.switchVenue(result: result)
           // skip entry as the title of this entry already existed
-          
-          // if it is venue then we need to make sure that the venue from our database gets priority
-          // by switching out the venue object
-          if result.cellType == .venue {
-
-            guard let sourceVenue = result.venue else {
-              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                CCLog.assert("the venue is nil")
-              }
-              return
-            }
-
-            if sourceVenue.objectId == nil {
-              // no replacement needed as this entry itself is generated on the fly from foursquare
-              continue
-            }
-
-            // find the existing venue entry
-            var i = 0
-            for data in self.resultsData {
-              if data.cellType == .venue {
-                guard let targetVenue = data.venue else {
-                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                    CCLog.assert("the venue is nil")
-                  }
-                  return
-                }
-
-                if targetVenue.foursquareVenueID == sourceVenue.foursquareVenueID {
-                   self.resultsData[i].venue = sourceVenue
-                }
-              }
-              i = i + 1
-            }
-          }
           continue
         }
 
-        self.titleSet.insert(result.title.string)
+        self.displayCellSet.insert(cell)
         self.resultsData.append(result)
         insertedIdx.append(IndexPath(row: i, section: 0))
         i = i + 1

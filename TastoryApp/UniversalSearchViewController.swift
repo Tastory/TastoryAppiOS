@@ -82,7 +82,6 @@ class UniversalSearchViewController: OverlayViewController {
 
   @IBAction func cancelAction(_ sender: UIButton) {
     self.navigationController?.popViewController(animated: true)
-    //popDismiss(animated: true)
   }
 
   // MARK: - Private Instance Functions
@@ -100,25 +99,71 @@ class UniversalSearchViewController: OverlayViewController {
   }
 
   private func highlightSearchTerms(text: String, isDetail: Bool = false) -> (NSMutableAttributedString, Bool) {
-    let index = text.index(of: searchKeyWord)
-    let attrText = NSMutableAttributedString()
 
-    if let index = index {
-      attrText.normal(String(text[text.startIndex..<index]))
-      let offsetIdx = text.index(index, offsetBy: searchKeyWord.count)
-      if isDetail {
-         attrText.bold12(String(text[index..<offsetIdx]))
-      } else {
-         attrText.bold14(String(text[index..<offsetIdx]))
+    let trimmed = searchKeyWord.trimmingCharacters(in: .whitespacesAndNewlines)
+    let keywordList = trimmed.components(separatedBy: .whitespaces)
+    var highlightIndex: [(Int, Int)] = []
+
+    for keyword in keywordList {
+
+      let startIndices = text.indicesOf(string: keyword)
+      for startIdx in startIndices {
+        highlightIndex.append((startIdx,startIdx + keyword.count))
       }
+    }
 
-      attrText.normal(String(text[offsetIdx..<text.endIndex]))
-      return (attrText, true)
-    } else {
-      // didnt find the searchKeyWord
+    // sort highlight based on starting index
+    highlightIndex.sort() {
+      return ($0.0 == $1.0 ? $0.1 < $1.1 : $0.0 < $1.0)
+    }
+
+    let attrText = NSMutableAttributedString()
+    if highlightIndex.isEmpty {
       attrText.normal(text)
       return (attrText, false)
     }
+
+
+    var stackMerged: [(Int,Int)] = []
+    for highlight in highlightIndex {
+      if stackMerged.isEmpty {
+        stackMerged.append(highlight)
+      } else {
+        let lastItem = stackMerged.count - 1
+        if highlight.0 >= stackMerged[lastItem].0 && highlight.0 <= stackMerged[lastItem].1 {
+          // overlapping
+          // make sure the new index is bigger than the old index before updating
+          if highlight.1 >= stackMerged[lastItem].1 {
+            stackMerged[lastItem].1 = highlight.1
+          }
+        } else {
+          stackMerged.append(highlight)
+        }
+      }
+    }
+
+    var lastEndIdx = 0
+    for highlight in stackMerged {
+
+      if attrText.string.isEmpty {
+          attrText.normal(String(text[text.startIndex..<String.Index(encodedOffset: highlight.0)]))
+      } else {
+        attrText.normal(String(text[String.Index(encodedOffset:lastEndIdx)..<String.Index(encodedOffset: highlight.0)]))
+      }
+
+      if isDetail {
+        attrText.bold12(String(text[String.Index(encodedOffset: highlight.0)..<String.Index(encodedOffset: highlight.1)]))
+      } else {
+        attrText.bold14(String(text[String.Index(encodedOffset: highlight.0)..<String.Index(encodedOffset: highlight.1)]))
+      }
+      lastEndIdx = highlight.1
+    }
+
+    if (text.count - 1 >= lastEndIdx) {
+      attrText.normal(String(text[String.Index(encodedOffset: lastEndIdx)..<text.endIndex]))
+    }
+
+    return (attrText, true)
   }
 
   override func viewDidLayoutSubviews() {
@@ -154,9 +199,6 @@ class UniversalSearchViewController: OverlayViewController {
     resultPageVC = viewController
     viewController.displayDelegate = delegate
     viewController.delegate = self
-
-
-
 
     categoryButton.tintColor = UIColor.clear
     categoryButton.removeAllSegments()
@@ -324,12 +366,12 @@ class UniversalSearchViewController: OverlayViewController {
       // search four square
       guard let location = currentLocation else {
         AlertDialog.present(from: self, title: "Location Error", message: "Obtained invalid location information") { _ in
-          CCLog.warning("LocationWatch.get() returned locaiton = nil")
+          CCLog.warning("currentLocation cached from LocationWatch.get() is nil")
         }
         return
       }
 
-      FoodieVenue.searchFoursquare(for: self.searchKeyWord, at: location){ (venues, geocode, error) in
+      FoodieVenue.searchFoursquare(for: self.searchKeyWord, at: location, includeCategory: true){ (venues, geocode, error) in
 
         if let error = error {
           AlertDialog.standardPresent(from: self, title: .genericLocationError, message: .locationTryAgain)
@@ -347,7 +389,7 @@ class UniversalSearchViewController: OverlayViewController {
         var i = 0
         for venue in venues {
 
-          if( i >= 2) {
+          if( i > 5) {
             break
           }
 
@@ -362,14 +404,25 @@ class UniversalSearchViewController: OverlayViewController {
             }
           }
 
+          // remove junk entries that are restaurants but doesn't even have details of the city
+          if venue.city == nil {
+            continue
+          }
+
           if !isInCategory {
             continue
           }
 
-
           guard let venueName = venue.name else {
             AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
               CCLog.fatal("venueName is nil")
+            }
+            return
+          }
+
+          guard let venueLocation = venue.location else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+              CCLog.fatal("venue location is nil")
             }
             return
           }
@@ -387,21 +440,23 @@ class UniversalSearchViewController: OverlayViewController {
             continue
           }
 
+          result.venueDistance = location.distance(from: CLLocation(latitude: venueLocation.latitude, longitude: venueLocation.longitude))
           result.title = title
           result.iconName = "Search-VenueIcon"
           result.cellType = .venue
           result.venue = venue
           results.append(result)
           i = i + 1
-
         }
         topVC.push(results: results)
-        venueVC.push(results: results)
+        venueVC.insertByDistance(results: results)
       }
 
       // Setup parameters and submit Cloud function
       var parameters = [AnyHashable: Any]()
       parameters["keywords"] = searchKeyWord
+      parameters["latitude"] = location.coordinate.latitude
+      parameters["longitude"] = location.coordinate.longitude
 
       PFCloud.callFunction(inBackground: "universalSearch" , withParameters: parameters) { (objects, error) in
         if error != nil {
@@ -511,6 +566,13 @@ class UniversalSearchViewController: OverlayViewController {
                 return
               }
 
+              guard let venueLocation = venue.location else {
+                AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                  CCLog.fatal("venue location is nil")
+                }
+                return
+              }
+
               var isDetailHighlighted = false
               if let address = venue.streetAddress {
                 let (detail, detailHighlighted) = self.highlightSearchTerms(text: address, isDetail: true)
@@ -524,6 +586,7 @@ class UniversalSearchViewController: OverlayViewController {
                 continue
               }
 
+              result.venueDistance = location.distance(from: CLLocation(latitude: venueLocation.latitude, longitude: venueLocation.longitude))
               result.title = title
               result.iconName = "Search-VenueIcon"
               result.cellType = .venue
@@ -538,7 +601,7 @@ class UniversalSearchViewController: OverlayViewController {
             }
           }
           topVC.push(results: results)
-          venueVC.push(results: venues)
+          venueVC.insertByDistance(results: venues)
           peopleVC.push(results: users)
           storiesVC.push(results: stories)
         }
@@ -584,9 +647,9 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
 
         let (title, isTitleHighlighted) = self.highlightSearchTerms(text: titleStr)
         let (detail, isDetailHighlighted) = self.highlightSearchTerms(text: result.subtitle, isDetail: true)
-        //if !isTitleHighlighted && !isDetailHighlighted {
-        //  continue
-        //}
+        if !isTitleHighlighted && !isDetailHighlighted {
+          continue
+        }
 
         var searchResult = SearchResult()
         searchResult.cellType = .location

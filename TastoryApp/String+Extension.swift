@@ -14,4 +14,20 @@ extension String {
   func index(of string: String, options: CompareOptions = .caseInsensitive) -> Index? {
     return range(of: string, options: options)?.lowerBound
   }
+
+  func indicesOf(string: String, options: CompareOptions = .caseInsensitive) -> [Int] {
+    var indices = [Int]()
+    var searchStartIndex = self.startIndex
+
+    while searchStartIndex < self.endIndex,
+      let range = self.range(of: string, options: options, range: searchStartIndex..<self.endIndex),
+      !range.isEmpty
+    {
+      let index = distance(from: self.startIndex, to: range.lowerBound)
+      indices.append(index)
+      searchStartIndex = range.upperBound
+    }
+
+    return indices
+  }
 }

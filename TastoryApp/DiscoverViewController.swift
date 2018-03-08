@@ -1550,6 +1550,7 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
       filter = FoodieFilter()
     }
 
+    filter.selectedMealTypes.removeAll()
     filter.selectedMealTypes.append(meal)
     filterCompleteReturn(filter, true)
   }

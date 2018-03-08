@@ -60,6 +60,7 @@ struct SearchResult {
   public var title: NSMutableAttributedString = NSMutableAttributedString()
   public var detail: NSMutableAttributedString = NSMutableAttributedString()
   public var iconName: String = ""
+  public var venueDistance: Double = 0
 }
 
 struct FoodieGlobal {

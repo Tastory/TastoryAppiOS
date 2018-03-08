@@ -148,10 +148,10 @@ class FoodieVenue: FoodiePFObject  {
     searchFoursquareCommon(for: venueName, near: location, withBlock: callback)
   }
   
-  static func searchFoursquare(for venueName: String, at location: CLLocation, withBlock callback: VenueArrayErrorBlock?) {
-    searchFoursquareCommon(for: venueName, at: location, withBlock: callback)
+  static func searchFoursquare(for venueName: String, at location: CLLocation, includeCategory: Bool = false, withBlock callback: VenueArrayErrorBlock?) {
+    searchFoursquareCommon(for: venueName, at: location, includeCategory: includeCategory, withBlock: callback)
   }
-  
+
   static func getDetailsFromFoursquare(forVenue venue: FoodieVenue, withBlock callback: VenueErrorBlock?) {
     guard let venueID = venue.foursquareVenueID else {
       callback?(nil, ErrorCode.invalidFoodieVenueObject)
