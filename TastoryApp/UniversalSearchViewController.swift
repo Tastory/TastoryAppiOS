@@ -448,7 +448,6 @@ class UniversalSearchViewController: OverlayViewController {
           results.append(result)
           i = i + 1
         }
-        topVC.push(results: results)
         venueVC.insertByDistance(results: results)
       }
 
@@ -522,8 +521,10 @@ class UniversalSearchViewController: OverlayViewController {
                 result.iconName = "Search-StoryIcon"
                 result.story = story
 
-                results.append(result)
                 stories.append(result)
+                if stories.count <= 2 {
+                  results.append(result)
+                }
               }
 
             } else if obj is FoodieUser, let user = obj as? FoodieUser {
@@ -555,8 +556,10 @@ class UniversalSearchViewController: OverlayViewController {
               result.cellType = .user
               result.user = user
 
-              results.append(result)
               users.append(result)
+              if users.count <= 2 {
+                results.append(result)
+              }
             } else if obj is FoodieVenue, let venue = obj as? FoodieVenue {
 
               guard let venueName = venue.name else {
@@ -593,7 +596,9 @@ class UniversalSearchViewController: OverlayViewController {
               result.venue = venue
 
               venues.append(result)
-              results.append(result)
+              if venues.count <= 2 {
+                results.append(result)
+              }
             } else {
               AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
                 CCLog.fatal("Error occured when converting foodie types")
@@ -631,10 +636,10 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
     }
 
     for result in completer.results {
-      CCLog.verbose("title \(result.title)")
-      CCLog.verbose("subtitle: \(result.subtitle)")
+      //CCLog.verbose("title \(result.title)")
+      //CCLog.verbose("subtitle: \(result.subtitle)")
 
-      if i >= 5 {
+      if i >= 3 {
         break
       }
 

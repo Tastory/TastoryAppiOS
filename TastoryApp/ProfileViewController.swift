@@ -127,22 +127,23 @@ class ProfileViewController: OverlayViewController {
       return
     }
 
-    let fourSquareButton =
-      UIAlertAction(title: "Foursquare", comment: "Button for viewing info at foursquare", style: .default) { (UIAlertAction) -> Void in
-        guard let urlStr = venue.foursquareURL else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.fatal("foursquare url is nil")
-          }
-          return
-        }
+    let actionSheet = UIAlertController(title: "More information at",
+                                        titleComment: "Title for more information dialog",
+                                        message: nil, messageComment: nil,
+                                        preferredStyle: .actionSheet)
 
-        guard let fourSquareURL = URL(string: urlStr) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.fatal("An error occurred when generating the foursquare url")
+    if let fourSquareURLStr = venue.foursquareURL {
+      let fourSquareButton =
+        UIAlertAction(title: "Foursquare", comment: "Button for viewing info at foursquare", style: .default) { (UIAlertAction) -> Void in
+          guard let fourSquareURL = URL(string: fourSquareURLStr) else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+              CCLog.fatal("An error occurred when generating the foursquare url")
+            }
+            return
           }
-          return
-        }
-        UIApplication.shared.open(fourSquareURL)
+          UIApplication.shared.open(fourSquareURL)
+      }
+      actionSheet.addAction(fourSquareButton)
     }
 
     let googleButton =
@@ -204,12 +205,6 @@ class ProfileViewController: OverlayViewController {
         UIApplication.shared.open(yelpURL)
     }
 
-    let actionSheet = UIAlertController(title: "More information at",
-                                        titleComment: "Title for more information dialog",
-                                        message: nil, messageComment: nil,
-                                        preferredStyle: .actionSheet)
-
-
     if venue.venueURL != nil {
       // add website button 
       let websiteButton =  UIAlertAction(title: "Website", comment: "Button for viewing info at restaurant's website", style: .default) { (UIAlertAction) -> Void in
@@ -231,7 +226,7 @@ class ProfileViewController: OverlayViewController {
       actionSheet.addAction(websiteButton)
     }
 
-    actionSheet.addAction(fourSquareButton)
+
     actionSheet.addAction(googleButton)
     actionSheet.addAction(yelpButton)
     actionSheet.addAlertAction(title: "Cancel",

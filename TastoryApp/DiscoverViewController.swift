@@ -86,7 +86,9 @@ class DiscoverViewController: OverlayViewController {
   // MARK: - IBOutlets
   @IBOutlet var mosaicLayoutChangePanRecognizer: UIPanGestureRecognizer!
   
-  @IBOutlet var locationField: UITextField!
+  @IBOutlet var locationField: UILabel!
+
+//  @IBOutlet var locationField: UITextField!
   @IBOutlet var filterButton: UIButton!
   @IBOutlet var draftButton: UIButton!
   @IBOutlet var currentLocationButton: UIButton!
@@ -185,6 +187,8 @@ class DiscoverViewController: OverlayViewController {
   }
 
   
+
+
   @IBAction func magnifyingGlassClick(_ sender: UIButton) {
     showUniversalSearch()
   }
@@ -210,25 +214,7 @@ class DiscoverViewController: OverlayViewController {
   
   
   @IBAction func searchWithFilter(_ sender: UIButton) {
-    
-    performQuery { stories, query, error in
-      
-      // This is pure analytics
-      let searchSuccess = (error != nil && stories != nil)
-      let searchNote = error?.localizedDescription ?? ""
-      Analytics.loginDiscoverFilterSearch(username: FoodieUser.current?.username ?? "nil",
-                                          categoryIDs: self.discoverFilter?.selectedCategories.map( { $0.foursquareCategoryID ?? "" } ) ?? [],
-                                          priceUpperLimit: self.discoverFilter?.priceUpperLimit ?? FoodieFilter.Constants.PriceUpperLimit,
-                                          priceLowerLimit: self.discoverFilter?.priceLowerLimit ?? FoodieFilter.Constants.PriceLowerLimit,
-                                          mealTypes: self.discoverFilter?.selectedMealTypes.map( { $0.rawValue }) ?? [],
-                                          success: searchSuccess,
-                                          note: searchNote,
-                                          stories: stories?.count ?? 0)
-
-      // Now we are actually unwrapping the search results
-      self.unwrapQueryRefreshDiscoveryView(stories: stories, query: query, error: error)
-      self.searchButtonsHidden(is: true)
-    }
+    searchFilter()
   }
   
   
@@ -311,7 +297,7 @@ class DiscoverViewController: OverlayViewController {
     }
   }
 
-  private func showUniversalSearch() {
+  @objc private func showUniversalSearch() {
     let storyboard = UIStoryboard(name: "Filters", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "UniversalSearchViewController") as? UniversalSearchViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -326,6 +312,27 @@ class DiscoverViewController: OverlayViewController {
     appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
     viewController.setSlideTransition(presentTowards: .down, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: false)
     pushPresent(viewController, animated: true)
+  }
+
+  private func searchFilter() {
+    performQuery { stories, query, error in
+
+      // This is pure analytics
+      let searchSuccess = (error != nil && stories != nil)
+      let searchNote = error?.localizedDescription ?? ""
+      Analytics.loginDiscoverFilterSearch(username: FoodieUser.current?.username ?? "nil",
+                                          categoryIDs: self.discoverFilter?.selectedCategories.map( { $0.foursquareCategoryID ?? "" } ) ?? [],
+                                          priceUpperLimit: self.discoverFilter?.priceUpperLimit ?? FoodieFilter.Constants.PriceUpperLimit,
+                                          priceLowerLimit: self.discoverFilter?.priceLowerLimit ?? FoodieFilter.Constants.PriceLowerLimit,
+                                          mealTypes: self.discoverFilter?.selectedMealTypes.map( { $0.rawValue }) ?? [],
+                                          success: searchSuccess,
+                                          note: searchNote,
+                                          stories: stories?.count ?? 0)
+
+      // Now we are actually unwrapping the search results
+      self.unwrapQueryRefreshDiscoveryView(stories: stories, query: query, error: error)
+      self.searchButtonsHidden(is: true)
+    }
   }
 
   private func performQuery(onAllUsers: Bool = false, at mapRect: MKMapRect? = nil, withBlock callback: FoodieQuery.StoriesQueryBlock?) {
@@ -689,13 +696,15 @@ class DiscoverViewController: OverlayViewController {
     feedContainerView.isHidden = true
     
     // Setup all the IBOutlet Delegates
-    locationField?.delegate = self
-    
+    //locationField?.delegate = self
+    let tap = UITapGestureRecognizer(target: self, action: #selector(showUniversalSearch))
+    locationField.addGestureRecognizer(tap)
+
     // Setup placeholder text for the Search text field
     guard let searchBarFont = UIFont(name: Constants.SearchBarFontName, size: Constants.SearchBarFontSize) else {
       CCLog.fatal("Cannot create UIFont with name \(Constants.SearchBarFontName)")
     }
-    let placeholderString = locationField.placeholder
+    let placeholderString = locationField.text //.placeholder
     let paragraphStyle = NSMutableParagraphStyle()
     paragraphStyle.alignment = .left
     
@@ -704,18 +713,19 @@ class DiscoverViewController: OverlayViewController {
     shadow.shadowColor = UIColor.black.withAlphaComponent(Constants.SearchBarTextShadowAlpha)
     shadow.shadowBlurRadius = 1.0
     
-    let attributedPlaceholderText = NSAttributedString(string: placeholderString?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
+    let attributedText = NSAttributedString(string: placeholderString?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
                                                        attributes: [.font : searchBarFont,
                                                                     .foregroundColor : UIColor.white,
                                                                     .paragraphStyle : paragraphStyle,
                                                                     .shadow : shadow])
-    
-    locationField.attributedPlaceholder = attributedPlaceholderText
-    locationField.defaultTextAttributes = [NSAttributedStringKey.paragraphStyle.rawValue : paragraphStyle, NSAttributedStringKey.shadow.rawValue : shadow]
-    locationField.typingAttributes = [NSAttributedStringKey.font.rawValue : searchBarFont,
+    locationField.attributedText = attributedText
+    /*locationField.
+    //locationField.attributedPlaceholder = attributedPlaceholderText
+    //locationField.defaultTextAttributes = [NSAttributedStringKey.paragraphStyle.rawValue : paragraphStyle, NSAttributedStringKey.shadow.rawValue : shadow]
+    //locationField.typingAttributes = [NSAttributedStringKey.font.rawValue : searchBarFont,
                                       NSAttributedStringKey.foregroundColor.rawValue : UIColor.white,
                                       NSAttributedStringKey.paragraphStyle.rawValue : paragraphStyle,
-                                      NSAttributedStringKey.shadow.rawValue : shadow]
+                                      NSAttributedStringKey.shadow.rawValue : shadow]*/
     locationField.font = searchBarFont
     locationField.textColor = .white
     
@@ -1044,7 +1054,7 @@ class DiscoverViewController: OverlayViewController {
 extension DiscoverViewController: UITextFieldDelegate {
 
   // TODO: textFieldShouldReturn, implement Dynamic Filter Querying with another Geocoder
-  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+  func textFieldShouldReturn(_ textField: UILabel) -> Bool {
     
     // DEBUG: Forces a Crash!!!!!
     if let text = textField.text {
@@ -1171,16 +1181,17 @@ extension DiscoverViewController: UITextFieldDelegate {
       Analytics.loginDiscoverSearchBar(username: FoodieUser.current?.username ?? "nil", typedTerm: location, success: true, searchedTerm: textArray[0],
                                        note: "User Error - No Placemark found from location entered into text field by User")
       
-      mapNavController.showRegionExposed(region, animated: true)
-      self.searchButtonsHidden(is: false)
+      mapNavController.showRegionExposed(region, animated: false)
+      self.searchFilter()
+      //self.searchButtonsHidden(is: false)
     }
 
     // Get rid of the keybaord
-    textField.resignFirstResponder()
+    //textField.resignFirstResponder()
     return true
   }
 
-  
+  /*
   func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
     if textField === locationField {
       // Set the text field color back to black once user starts editing. Might have been set to Red for errors.
@@ -1212,8 +1223,8 @@ extension DiscoverViewController: UITextFieldDelegate {
       return false
     }
   }
-  
-  
+  */
+  /*
   func textFieldDidEndEditing(_ textField: UITextField) {
     guard let searchBarFont = UIFont(name: Constants.SearchBarFontName, size: Constants.SearchBarFontSize) else {
       CCLog.fatal("Cannot create UIFont with name \(Constants.SearchBarFontName)")
@@ -1234,7 +1245,7 @@ extension DiscoverViewController: UITextFieldDelegate {
                                                                     .shadow : shadow])
     
     textField.attributedPlaceholder = attributedPlaceholderText
-  }
+  }*/
 
 }
 
@@ -1600,11 +1611,11 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
       self.locationField.text = location
       _ = self.textFieldShouldReturn(self.locationField)
       // let the map move to the location first
-      DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+      /*DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
         if self.searchButton.isEnabled {
           self.searchButton.sendActions(for: .touchUpInside)
         }
-      }
+      }*/
     }
   }
 }

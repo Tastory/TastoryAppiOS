@@ -474,13 +474,12 @@
                                                     <action selector="magnifyingGlassClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="wvl-om-r7c"/>
                                                 </connections>
                                             </button>
-                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Jump to Location" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="0wJ-kE-Bqf">
-                                                <rect key="frame" x="46" y="4.6666666666666643" width="253" height="18"/>
-                                                <accessibility key="accessibilityConfiguration" identifier="discoverView_locationField"/>
-                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Search" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x94-jq-aBS">
+                                                <rect key="frame" x="46" y="4.6666666666666643" width="253" height="17.666666666666668"/>
                                                 <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="15"/>
-                                                <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="yes" textContentType="location"/>
-                                            </textField>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9xC-Zn-CZy">
                                                 <rect key="frame" x="319" y="0.6666666666666643" width="24" height="26"/>
                                                 <state key="normal" image="Discover-FilterButton-Off"/>
@@ -628,7 +627,7 @@
                         <outlet property="feedBackgroundView" destination="mLg-YP-WIi" id="jLF-W8-OPE"/>
                         <outlet property="feedContainerView" destination="QP7-f7-wk1" id="5wA-qf-gbI"/>
                         <outlet property="filterButton" destination="9xC-Zn-CZy" id="rni-Wj-j75"/>
-                        <outlet property="locationField" destination="0wJ-kE-Bqf" id="udw-u7-LkJ"/>
+                        <outlet property="locationField" destination="x94-jq-aBS" id="0Iw-wl-PeE"/>
                         <outlet property="logoutButton" destination="xAk-Bi-Jwa" id="sAq-I6-br1"/>
                         <outlet property="middleStack" destination="UxH-nM-VsY" id="Jpm-zl-LhD"/>
                         <outlet property="mosaicLayoutChangePanRecognizer" destination="Sj4-40-4nO" id="fbE-TI-okl"/>
