@@ -19,6 +19,7 @@ class StoryViewController: OverlayViewController {
   struct Constants {
     static let MomentsViewingTimeInterval = 5.0
     static let BackgroundGradientBlackAlpha: CGFloat = 0.38
+    static let RoundedCornerRadius: CGFloat = 10.0
   }
   
   
@@ -1051,7 +1052,12 @@ class StoryViewController: OverlayViewController {
     
     avPlayerLayer = AVPlayerLayer()
     avPlayerLayer.videoGravity = .resizeAspectFill
+    avPlayerLayer.masksToBounds = true
     videoView.layer.addSublayer(avPlayerLayer)
+    
+    photoView.layer.cornerRadius = Constants.RoundedCornerRadius
+    videoView.layer.cornerRadius = Constants.RoundedCornerRadius
+    avPlayerLayer.cornerRadius = Constants.RoundedCornerRadius
     
 //  This is commented out for backwards compatibility
 //  And we don't need this anyways. Normalized insets should be stored within all Markups going forward
