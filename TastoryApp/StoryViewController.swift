@@ -1060,9 +1060,6 @@ class StoryViewController: OverlayViewController {
     videoView.layer.addSublayer(avPlayerLayer)
     
     scrollView.layer.cornerRadius = Constants.RoundedCornerRadius
-    photoView.layer.cornerRadius = Constants.RoundedCornerRadius
-    videoView.layer.cornerRadius = Constants.RoundedCornerRadius
-    avPlayerLayer.cornerRadius = Constants.RoundedCornerRadius
     
 //  This is commented out for backwards compatibility
 //  And we don't need this anyways. Normalized insets should be stored within all Markups going forward
