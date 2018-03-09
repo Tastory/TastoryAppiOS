@@ -1212,6 +1212,20 @@ class StoryViewController: OverlayViewController {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
+    // Pinch to Zoom doesn't play nice with other recognizers in iOS 10...
+    if #available(iOS 11.0, *) { }
+    else {
+      scrollView.isScrollEnabled = false
+      scrollView.panGestureRecognizer.isEnabled = false
+      scrollView.pinchGestureRecognizer?.isEnabled = false
+    }
+    
+    avPlayerLayer.frame = mediaView.bounds
+    jotViewController.view.frame = mediaView.bounds
+    jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
+                                             andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
+    jotViewController.view.layoutIfNeeded()
+    
     if isInitialLayout {
       isInitialLayout = false
       
@@ -1234,12 +1248,6 @@ class StoryViewController: OverlayViewController {
     
     if isAppearanceLayout {
       isAppearanceLayout = false
-      
-      avPlayerLayer.frame = videoView.bounds
-      jotViewController.view.frame = mediaView.frame
-      jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
-                                               andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
-      jotViewController.view.layoutIfNeeded()
       
       guard let story = viewingStory else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { [unowned self] _ in
