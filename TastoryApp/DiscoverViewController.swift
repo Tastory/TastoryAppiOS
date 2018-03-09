@@ -57,6 +57,7 @@ class DiscoverViewController: OverlayViewController {
     static let SearchBarTextShadowAlpha: CGFloat = 0.25
     static let SearchBarPlaceholderColor = UIColor.lightGray
     static let UIDisappearanceDuration = FoodieGlobal.Constants.DefaultUIDisappearanceDuration
+    static let SearchBarTitle: String = "Search"
   }
 
   
@@ -86,9 +87,8 @@ class DiscoverViewController: OverlayViewController {
   // MARK: - IBOutlets
   @IBOutlet var mosaicLayoutChangePanRecognizer: UIPanGestureRecognizer!
   
-  @IBOutlet var locationField: UILabel!
-
-//  @IBOutlet var locationField: UITextField!
+  @IBOutlet var searchField: UIButton!
+  //@IBOutlet var searchField: UILabel!
   @IBOutlet var filterButton: UIButton!
   @IBOutlet var draftButton: UIButton!
   @IBOutlet var currentLocationButton: UIButton!
@@ -104,7 +104,7 @@ class DiscoverViewController: OverlayViewController {
       if let touchForwardingView = touchForwardingView, let mapNavController = navigationController as? MapNavController {
         touchForwardingView.passthroughViews = [mapNavController.mapView]
         touchForwardingView.touchBlock = {
-          self.locationField?.resignFirstResponder()
+          self.searchField?.resignFirstResponder()
         }
       }
     }
@@ -131,10 +131,12 @@ class DiscoverViewController: OverlayViewController {
   @IBOutlet weak var touchForwardingCarouselConstraint: NSLayoutConstraint!
   @IBOutlet weak var touchForwardingMosaicConstraint: NSLayoutConstraint!
   @IBOutlet weak var touchForwardingHeightConstraint: NSLayoutConstraint!
-  
-  
-  
+
   // MARK: - IBActions
+  @IBAction func searchFieldAction(_ sender: Any) {
+    showUniversalSearch()
+  }
+
   @IBAction func launchDraftStory(_ sender: Any) {
     // This is used for viewing the draft story to be used with update story later
     // Hide the button as needed, due to problems with empty draft story and saving an empty story is problematic
@@ -176,7 +178,7 @@ class DiscoverViewController: OverlayViewController {
   
   @IBAction func currentLocationReturn(_ sender: UIButton) {
     // Clear the text field while at it
-    locationField.text = ""
+    searchField.setTitle(Constants.SearchBarTitle, for: .normal)
     
     if let dialog = LocationWatch.checkAndRequestAuthorizations() {
       present(dialog, animated: true, completion: nil)
@@ -306,8 +308,12 @@ class DiscoverViewController: OverlayViewController {
       return
     }
 
-    viewController.delegate = self
+    viewController.displayDelegate = self
     viewController.currentLocation = currentLocation
+
+    if let keyword = searchField.currentTitle , keyword != Constants.SearchBarTitle {
+      viewController.searchKeyWord = keyword
+    }
 
     appearanceForAllUI(alphaValue: 0.0, animated: true, duration: Constants.UIDisappearanceDuration)
     viewController.setSlideTransition(presentTowards: .down, withGapSize: FoodieGlobal.Constants.DefaultSlideVCGapSize, dismissIsInteractive: false)
@@ -697,14 +703,12 @@ class DiscoverViewController: OverlayViewController {
     
     // Setup all the IBOutlet Delegates
     //locationField?.delegate = self
-    let tap = UITapGestureRecognizer(target: self, action: #selector(showUniversalSearch))
-    locationField.addGestureRecognizer(tap)
-
+ 
     // Setup placeholder text for the Search text field
     guard let searchBarFont = UIFont(name: Constants.SearchBarFontName, size: Constants.SearchBarFontSize) else {
       CCLog.fatal("Cannot create UIFont with name \(Constants.SearchBarFontName)")
     }
-    let placeholderString = locationField.text //.placeholder
+    let placeholderString = searchField.currentTitle  //.placeholder
     let paragraphStyle = NSMutableParagraphStyle()
     paragraphStyle.alignment = .left
     
@@ -718,7 +722,8 @@ class DiscoverViewController: OverlayViewController {
                                                                     .foregroundColor : UIColor.white,
                                                                     .paragraphStyle : paragraphStyle,
                                                                     .shadow : shadow])
-    locationField.attributedText = attributedText
+    searchField.setAttributedTitle(attributedText, for: .normal)
+    searchField.setTitle(Constants.SearchBarTitle, for: .normal)
     /*locationField.
     //locationField.attributedPlaceholder = attributedPlaceholderText
     //locationField.defaultTextAttributes = [NSAttributedStringKey.paragraphStyle.rawValue : paragraphStyle, NSAttributedStringKey.shadow.rawValue : shadow]
@@ -726,8 +731,8 @@ class DiscoverViewController: OverlayViewController {
                                       NSAttributedStringKey.foregroundColor.rawValue : UIColor.white,
                                       NSAttributedStringKey.paragraphStyle.rawValue : paragraphStyle,
                                       NSAttributedStringKey.shadow.rawValue : shadow]*/
-    locationField.font = searchBarFont
-    locationField.textColor = .white
+    //searchField.font = searchBarFont
+    //searchField.textColor = .white
     
     
     // Setup Background Gradient Views
@@ -872,7 +877,7 @@ class DiscoverViewController: OverlayViewController {
     if let touchForwardingView = touchForwardingView {
       touchForwardingView.passthroughViews = [mapController.mapView]
       touchForwardingView.touchBlock = {
-        self.locationField?.resignFirstResponder()
+        self.searchField?.resignFirstResponder()
       }
     }
     
@@ -1182,8 +1187,7 @@ extension DiscoverViewController: UITextFieldDelegate {
                                        note: "User Error - No Placemark found from location entered into text field by User")
       
       mapNavController.showRegionExposed(region, animated: false)
-      self.searchFilter()
-      //self.searchButtonsHidden(is: false)
+      self.searchButtonsHidden(is: false)
     }
 
     // Get rid of the keybaord
@@ -1509,7 +1513,12 @@ extension DiscoverViewController: FiltersViewReturnDelegate {
 }
 
 extension DiscoverViewController: SearchResultDisplayDelegate {
-  func display(story: FoodieStory) {
+
+  func clearSearchKeyWord() {
+    self.searchField.setTitle(Constants.SearchBarTitle, for: .normal)
+  }
+
+  func display(story: FoodieStory, keyword: String) {
     popDismiss(animated: true)
     guard let user:FoodieUser = story.author else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -1521,6 +1530,8 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
     // show story as in it was a deepLink
     DeepLink.global.deepLinkUserId = user.objectId
     DeepLink.global.deepLinkStoryId = story.objectId
+
+    self.searchField.setTitle(keyword, for: .normal)
 
     UIApplication.shared.beginIgnoringInteractionEvents()
     DispatchQueue.main.asyncAfter(deadline: .now() +  FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
@@ -1534,25 +1545,28 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
 
   }
 
-  func display(user: FoodieUser) {
+  func display(user: FoodieUser, keyword: String) {
     popDismiss(animated: true)
     UIApplication.shared.beginIgnoringInteractionEvents()
+    self.searchField.setTitle(keyword, for: .normal)
+
     DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
       UIApplication.shared.endIgnoringInteractionEvents()
       self.showProfileView(user: user)
     }
   }
 
-  func display(venue: FoodieVenue) {
+  func display(venue: FoodieVenue, keyword: String) {
     popDismiss(animated: true)
     UIApplication.shared.beginIgnoringInteractionEvents()
+    self.searchField.setTitle(keyword, for: .normal)
     DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
       UIApplication.shared.endIgnoringInteractionEvents()
       self.showProfileView(venue: venue)
     }
   }
 
-  func applyFilter(meal: MealType) {
+  func applyFilter(meal: MealType, keyword: String) {
     popDismiss(animated: true)
     var filter: FoodieFilter
     if let discoveryFilter = self.discoverFilter {
@@ -1560,14 +1574,17 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
     } else {
       filter = FoodieFilter()
     }
+
+    self.searchField.setTitle(keyword, for: .normal)
 
     filter.selectedMealTypes.removeAll()
     filter.selectedMealTypes.append(meal)
     filterCompleteReturn(filter, true)
   }
 
-  func applyFilter(category: FoodieCategory) {
+  func applyFilter(category: FoodieCategory, keyword: String) {
     popDismiss(animated: true)
+
     var filter: FoodieFilter
     if let discoveryFilter = self.discoverFilter {
       filter = discoveryFilter
@@ -1575,6 +1592,7 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
       filter = FoodieFilter()
     }
 
+    self.searchField.setTitle(keyword, for: .normal)
     filter.selectedCategories.removeAll()
     FoodieCategory.setAllSelection(to: .unselected)
 
@@ -1603,19 +1621,74 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
     filterCompleteReturn(filter, true)
   }
 
-  func applyFilter(location: String) {
+  func applyFilter(location: String, keyword: String) {
     popDismiss(animated: true)
     UIApplication.shared.beginIgnoringInteractionEvents()
     DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
       UIApplication.shared.endIgnoringInteractionEvents()
-      self.locationField.text = location
-      _ = self.textFieldShouldReturn(self.locationField)
-      // let the map move to the location first
-      /*DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-        if self.searchButton.isEnabled {
-          self.searchButton.sendActions(for: .touchUpInside)
+      self.searchField.setTitle(keyword, for: .normal)
+
+      guard let mapNavController = self.mapNavController else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("No Map Nav Controller")
         }
-      }*/
+        return
+      }
+
+      let clRegion = CLCircularRegion(center: mapNavController.exposedRegion.center,
+                                      radius: mapNavController.exposedRegion.longitudinalMeters/2,
+                                      identifier: "currentCLRegion")
+      let geocoder = CLGeocoder()
+
+      geocoder.geocodeAddressString(location, in: clRegion) { (placemarks, error) in
+
+        if let error = error {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("Geocoder returned with error: \(error.localizedDescription)")
+          }
+        }
+
+        guard let placemarks = placemarks else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("Placemarks returned by geocoder is nil")
+          }
+          return
+        }
+
+        guard let location = placemarks[0].location else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("Location is nil")
+          }
+          return
+        }
+
+        var region: MKCoordinateRegion!
+        var maxRadius: Double = 4.0
+
+        // The coordinate in placemarks.region is highly inaccurate. So use the location coordinate when possible.
+        if let coordinate = placemarks[0].location?.coordinate, let clRegion = placemarks[0].region as? CLCircularRegion {
+          // Determine region via placemark.locaiton.coordinate if possible
+          region = MKCoordinateRegionMakeWithDistance(coordinate, 2*clRegion.radius, 2*clRegion.radius)
+          maxRadius = clRegion.radius / 1000 // convert meters to km
+
+        } else if let coordinate = placemarks[0].location?.coordinate {
+          // Determine region via placemark.location.coordinate and default max delta if clRegion is not available
+          region = MKCoordinateRegionMakeWithDistance(coordinate, mapNavController.defaultMapWidth, mapNavController.defaultMapWidth)
+
+        } else if let clRegion = placemarks[0].region as? CLCircularRegion {
+          // Determine region via placemarks.region as fall back
+          region = MKCoordinateRegionMakeWithDistance(clRegion.center, 2*clRegion.radius, 2*clRegion.radius)
+          maxRadius = clRegion.radius / 1000 // convert meters to km
+        } else {
+          CCLog.assert("Placemark contained no location")
+        }
+
+        mapNavController.showRegionExposed(region, animated: true)
+        //self.searchButtonsHidden(is: true)
+        FoodieQuery.queryInitStories(at: location.coordinate, minStories: 3, maxRadius: maxRadius){ (stories, query, error) in
+          self.unwrapQueryRefreshDiscoveryView(stories: stories, query: query, error: error, currentLocation: location.coordinate)
+        }
+      }
     }
   }
 }

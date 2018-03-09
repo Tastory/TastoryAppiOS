@@ -9,16 +9,6 @@
 import Foundation
 import UIKit
 
-
-protocol SearchResultDisplayDelegate: class {
-  func display(story: FoodieStory)
-  func display(user: FoodieUser)
-  func display(venue: FoodieVenue)
-  func applyFilter(meal: MealType)
-  func applyFilter(category: FoodieCategory)
-  func applyFilter(location: String)
-}
-
 class SearchResultTableViewController: UIViewController {
 
   struct DisplayCell: Hashable {
@@ -51,7 +41,8 @@ class SearchResultTableViewController: UIViewController {
   private var displayCellSet: Set<DisplayCell> = Set() // keep track of titles of each cell to avoid duplicate entries
 
   // MARK: - Public Instance Variables
-  public var delegate: SearchResultDisplayDelegate?
+  public var displayDelegate: SearchResultDisplayDelegate?
+  public var keywordDelegate: SearchKeywordDelegate?
 
   // MARK: - IBOutlets
   @IBOutlet weak var resultTableView: UITableView!
@@ -62,10 +53,24 @@ class SearchResultTableViewController: UIViewController {
     resultTableView.delegate = self
     resultTableView.tableFooterView = UIView()
     resultTableView.rowHeight = Constants.resultTreeViewRowHeight
+
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+
   }
 
   // MARL: - Private Instance Functions
-  func switchVenue(result: SearchResult) {
+  @objc private func keyboardWillShow(_ notification: NSNotification) {
+    if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+      resultTableView.contentInset.bottom = keyboardSize.height
+    }
+  }
+
+  @objc private func keyboardWillHide(_ notification: NSNotification) {
+    resultTableView.contentInset.bottom = 0
+  }
+
+  private func switchVenue(result: SearchResult) {
     // if it is venue then we need to make sure that the venue from our database gets priority
     // by switching out the venue object
     if result.cellType == .venue {
@@ -243,6 +248,13 @@ extension SearchResultTableViewController: UITableViewDelegate {
       return
     }
 
+    guard let keyword = keywordDelegate?.getSearchKeyWord() else {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.assert("Failed to get keyword from search which is impossible since you already got result")
+      }
+      return
+    }
+
     switch type {
 
     case .location:
@@ -251,7 +263,7 @@ extension SearchResultTableViewController: UITableViewDelegate {
       if !result.detail.string.isEmpty {
         location = location +  ", " + result.detail.string
       }
-      delegate?.applyFilter(location: location)
+      displayDelegate?.applyFilter(location: location, keyword: keyword)
 
       break
     case .category:
@@ -261,7 +273,7 @@ extension SearchResultTableViewController: UITableViewDelegate {
         }
         return
       }
-      delegate?.applyFilter(category: category)
+      displayDelegate?.applyFilter(category: category, keyword: keyword)
       break
 
     case .meal:
@@ -271,7 +283,7 @@ extension SearchResultTableViewController: UITableViewDelegate {
         }
         return
       }
-      delegate?.applyFilter(meal: meal)
+      displayDelegate?.applyFilter(meal: meal, keyword: keyword)
       break
 
     case .story:
@@ -281,7 +293,7 @@ extension SearchResultTableViewController: UITableViewDelegate {
         }
         return
       }
-      delegate?.display(story: story)
+      displayDelegate?.display(story: story, keyword: keyword)
       break
 
     case .user:
@@ -292,7 +304,7 @@ extension SearchResultTableViewController: UITableViewDelegate {
         return
       }
 
-      delegate?.display(user: user)
+      displayDelegate?.display(user: user, keyword: keyword)
       break
 
     case .venue:
@@ -304,7 +316,7 @@ extension SearchResultTableViewController: UITableViewDelegate {
         return
       }
 
-      delegate?.display(venue: venue)
+      displayDelegate?.display(venue: venue, keyword: keyword)
       break
 
     default:

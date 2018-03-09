@@ -474,12 +474,19 @@
                                                     <action selector="magnifyingGlassClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="wvl-om-r7c"/>
                                                 </connections>
                                             </button>
-                                            <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Search" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x94-jq-aBS">
-                                                <rect key="frame" x="46" y="4.6666666666666643" width="253" height="17.666666666666668"/>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PG1-Um-URe">
+                                                <rect key="frame" x="46" y="0.0" width="253" height="27"/>
                                                 <fontDescription key="fontDescription" name="Raleway-SemiBold" family="Raleway" pointSize="15"/>
-                                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
+                                                <inset key="contentEdgeInsets" minX="0.0" minY="5" maxX="0.0" maxY="5"/>
+                                                <size key="titleShadowOffset" width="0.0" height="1"/>
+                                                <state key="normal">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="0.25" colorSpace="calibratedRGB"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="searchFieldAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="9hL-sM-ZgB"/>
+                                                </connections>
+                                            </button>
                                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="800" contentHorizontalAlignment="right" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9xC-Zn-CZy">
                                                 <rect key="frame" x="319" y="0.6666666666666643" width="24" height="26"/>
                                                 <state key="normal" image="Discover-FilterButton-Off"/>
@@ -627,7 +634,6 @@
                         <outlet property="feedBackgroundView" destination="mLg-YP-WIi" id="jLF-W8-OPE"/>
                         <outlet property="feedContainerView" destination="QP7-f7-wk1" id="5wA-qf-gbI"/>
                         <outlet property="filterButton" destination="9xC-Zn-CZy" id="rni-Wj-j75"/>
-                        <outlet property="locationField" destination="x94-jq-aBS" id="0Iw-wl-PeE"/>
                         <outlet property="logoutButton" destination="xAk-Bi-Jwa" id="sAq-I6-br1"/>
                         <outlet property="middleStack" destination="UxH-nM-VsY" id="Jpm-zl-LhD"/>
                         <outlet property="mosaicLayoutChangePanRecognizer" destination="Sj4-40-4nO" id="fbE-TI-okl"/>
@@ -636,6 +642,7 @@
                         <outlet property="noStoriesMosaicView" destination="DCh-q1-bnC" id="sQV-Re-1fG"/>
                         <outlet property="profileButton" destination="A3t-Ta-aKO" id="B2K-m7-Nv7"/>
                         <outlet property="searchButton" destination="8yq-x6-CLY" id="IE5-TV-ULt"/>
+                        <outlet property="searchField" destination="PG1-Um-URe" id="93b-Yc-Gth"/>
                         <outlet property="searchStack" destination="q7R-1K-TkS" id="jfw-y0-3sD"/>
                         <outlet property="topGradientCarouselConstraint" destination="SnE-qj-GeG" id="Nw5-Xb-TV2"/>
                         <outlet property="topGradientMosaicConstraint" destination="IfV-Fb-Uv0" id="qrs-cb-fpe"/>

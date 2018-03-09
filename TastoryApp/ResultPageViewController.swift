@@ -11,12 +11,14 @@ import UIKit
 
 class ResultPageViewController: UIPageViewController
 {
-  // MARK: - Public Instance Variables
-  var displayDelegate: SearchResultDisplayDelegate?
-  var pages: [UIViewController] = []
 
-
+  // MARK: - Private Instance Variables
   private var toIdx = 0
+
+  // MARK: - Public Instance Variables
+  public var displayDelegate: SearchResultDisplayDelegate?
+  public var keywordDelegate: SearchKeywordDelegate?
+  public var pages: [UIViewController] = []
 
   // MARK: - Public Instance Functions
   public func clearAllResults()   {
@@ -51,7 +53,8 @@ class ResultPageViewController: UIPageViewController
         }
         return
       }
-      viewController.delegate = displayDelegate
+      viewController.displayDelegate = displayDelegate
+      viewController.keywordDelegate = keywordDelegate
       // TODO fix this HACKY way to load up all view controllers.....
       setViewControllers([viewController], direction: .reverse, animated: true, completion: nil)
       pages.insert(viewController, at: 0)

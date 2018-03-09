@@ -147,7 +147,7 @@ class FoodieQuery {
   }
   
   
-  static func queryInitStories(at coordinate: CLLocationCoordinate2D, minStories: UInt, withBlock callback: StoriesQueryBlock?) {
+  static func queryInitStories(at coordinate: CLLocationCoordinate2D, minStories: UInt, maxRadius: Double? = nil,  withBlock callback: StoriesQueryBlock?) {
     
     let cloudFunctionName = Constants.RadiusForMinStoriesFunctionName
     
@@ -165,12 +165,16 @@ class FoodieQuery {
         return
       }
       
-      guard let radius = radius as? Double else {
+      guard var radius = radius as? Double else {
         CCLog.warning("PFCloud Function \(cloudFunctionName) expected to return Radius")
         callback?(nil, nil, ErrorCode.queryInitStoriesNoRadius)
         return
       }
-      
+
+      if let maxRadius = maxRadius, radius > maxRadius {
+        radius = maxRadius
+      }
+
       let query = FoodieQuery()
       query.addLocationFilter(origin: coordinate, radius: radius)
       query.addDiscoverabilityFilter(min: 0.01, max: nil)

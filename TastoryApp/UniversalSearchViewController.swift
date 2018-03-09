@@ -10,6 +10,20 @@ import UIKit
 import Parse
 import MapKit
 
+protocol SearchKeywordDelegate {
+  func getSearchKeyWord() -> String
+}
+
+protocol SearchResultDisplayDelegate: class {
+  func display(story: FoodieStory, keyword: String)
+  func display(user: FoodieUser, keyword: String)
+  func display(venue: FoodieVenue, keyword: String)
+  func applyFilter(meal: MealType, keyword: String)
+  func applyFilter(category: FoodieCategory, keyword: String)
+  func applyFilter(location: String, keyword: String)
+  func clearSearchKeyWord()
+}
+
 class UniversalSearchViewController: OverlayViewController {
 
   // MARK: - Constants/Enums
@@ -31,17 +45,17 @@ class UniversalSearchViewController: OverlayViewController {
     case Right
   }
 
-  // MARK: - Private Instance Functions
-  private var searchKeyWord = ""
+  // MARK: - Private Instance Members
   private var resultPageVC: ResultPageViewController?
   private var toPageIdx = 0
   private let underlineBorder = CALayer()
   private var isInitialLayout:Bool = true
   private let localComplete = MKLocalSearchCompleter.init()
 
-  // MARK: - Public Instance Functions
-  var delegate: SearchResultDisplayDelegate?
+  // MARK: - Public Instance Members
+  var displayDelegate: SearchResultDisplayDelegate?
   var currentLocation: CLLocation?
+  var searchKeyWord = ""
 
   // MARK: - IBOutlets
   @IBOutlet weak var searchBar: UISearchBar!
@@ -82,6 +96,7 @@ class UniversalSearchViewController: OverlayViewController {
 
   @IBAction func cancelAction(_ sender: UIButton) {
     self.navigationController?.popViewController(animated: true)
+    self.displayDelegate?.clearSearchKeyWord()
   }
 
   // MARK: - Private Instance Functions
@@ -197,7 +212,9 @@ class UniversalSearchViewController: OverlayViewController {
       return
     }
     resultPageVC = viewController
-    viewController.displayDelegate = delegate
+    viewController.displayDelegate = displayDelegate
+    viewController.keywordDelegate = self
+    // this delegate refers to the page delegate
     viewController.delegate = self
 
     categoryButton.tintColor = UIColor.clear
@@ -225,6 +242,13 @@ class UniversalSearchViewController: OverlayViewController {
      UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 12)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor]
     categoryButton.setTitleTextAttributes([NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Medium", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor,NSAttributedStringKey.foregroundColor: FoodieGlobal.Constants.TextColor], for: UIControlState.selected)
     categoryButton.setTitleTextAttributes([NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColorHalfAlpha, NSAttributedStringKey.foregroundColor: FoodieGlobal.Constants.TextColorHalfAlpha], for: UIControlState.normal)
+
+    if !searchKeyWord.isEmpty {
+      searchBar.text = searchKeyWord
+      search()
+    }
+
+
 
   }
 
@@ -287,35 +311,7 @@ class UniversalSearchViewController: OverlayViewController {
         return mealType.rawValue.localizedCaseInsensitiveContains(searchKeyWord)
       }
 
-      if mealMatches.count > 0  {
-        // limit 2 matches
-        var i = 0
-        var results:[SearchResult] = []
-        for meal in mealMatches {
 
-          if( i >= 2) {
-            break
-          }
-
-          var result = SearchResult()
-
-          let (title, highlighted) = highlightSearchTerms(text: meal.rawValue)
-
-          if !highlighted {
-            continue
-          }
-
-          result.title = title
-          result.cellType = .meal
-          result.meal = meal
-          result.iconName = "Search-MealTypeIcon"
-          results.append(result)
-
-          i = i + 1
-
-        }
-        topVC.pushFront(results: results)
-      }
 
       // search category
       let categoryMatches:[String:FoodieCategory] = FoodieCategory.list.filter { (key, category) -> Bool in
@@ -355,6 +351,36 @@ class UniversalSearchViewController: OverlayViewController {
           result.category = category.value
           result.title = title
           result.iconName = "Search-CategoryIcon"
+          results.append(result)
+
+          i = i + 1
+
+        }
+        topVC.pushFront(results: results)
+      }
+
+      if mealMatches.count > 0  {
+        // limit 2 matches
+        var i = 0
+        var results:[SearchResult] = []
+        for meal in mealMatches {
+
+          if( i >= 2) {
+            break
+          }
+
+          var result = SearchResult()
+
+          let (title, highlighted) = highlightSearchTerms(text: meal.rawValue)
+
+          if !highlighted {
+            continue
+          }
+
+          result.title = title
+          result.cellType = .meal
+          result.meal = meal
+          result.iconName = "Search-MealTypeIcon"
           results.append(result)
 
           i = i + 1
@@ -605,6 +631,7 @@ class UniversalSearchViewController: OverlayViewController {
               }
             }
           }
+
           topVC.push(results: results)
           venueVC.insertByDistance(results: venues)
           peopleVC.push(results: users)
@@ -726,4 +753,9 @@ extension UniversalSearchViewController: UIScrollViewDelegate {
    }
 }
 
+extension UniversalSearchViewController: SearchKeywordDelegate {
+  func getSearchKeyWord() -> String {
+    return searchKeyWord
+  }
+}
 
