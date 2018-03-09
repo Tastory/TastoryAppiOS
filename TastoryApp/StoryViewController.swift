@@ -62,6 +62,9 @@ class StoryViewController: OverlayViewController {
   
   // MARK: - IBOutlets
   
+  @IBOutlet var sizingView: UIView!
+  @IBOutlet var scrollView: UIScrollView!
+  @IBOutlet var mediaView: UIView!
   @IBOutlet var photoView: UIImageView!
   @IBOutlet var videoView: UIView!
   @IBOutlet var topStackBackgroundView: UIView!
@@ -626,8 +629,7 @@ class StoryViewController: OverlayViewController {
       // Display the Photo
       photoView.contentMode = .scaleAspectFill
       photoView.image = UIImage(data: imageBuffer)
-      view.insertSubview(photoView, belowSubview: jotViewController.view)
-
+      mediaView.insertSubview(photoView, belowSubview: jotViewController.view)
       // UI Update - Really should group some of the common UI stuff into some sort of function?
       venueButton.isHidden = (story.venue == nil)
       shareButton.isHidden = false
@@ -667,7 +669,7 @@ class StoryViewController: OverlayViewController {
       }
 
       avPlayerLayer.player = avPlayer
-      view.insertSubview(videoView, belowSubview: jotViewController.view)
+      mediaView.insertSubview(videoView, belowSubview: jotViewController.view)
       
       avPlayer.seek(to: kCMTimeZero)
       avPlayer.play()
@@ -1046,6 +1048,8 @@ class StoryViewController: OverlayViewController {
       view.backgroundColor = .clear
     }
     
+    scrollView.delegate = self
+    
     localVideoPlayer.automaticallyWaitsToMinimizeStalling = false
     localVideoPlayer.allowsExternalPlayback = false
     localVideoPlayer.actionAtItemEnd = .none
@@ -1055,6 +1059,7 @@ class StoryViewController: OverlayViewController {
     avPlayerLayer.masksToBounds = true
     videoView.layer.addSublayer(avPlayerLayer)
     
+    scrollView.layer.cornerRadius = Constants.RoundedCornerRadius
     photoView.layer.cornerRadius = Constants.RoundedCornerRadius
     videoView.layer.cornerRadius = Constants.RoundedCornerRadius
     avPlayerLayer.cornerRadius = Constants.RoundedCornerRadius
@@ -1067,8 +1072,7 @@ class StoryViewController: OverlayViewController {
     jotViewController.fitOriginalFontSizeToViewWidth = true
     addChildViewController(jotViewController)
     
-    view.addSubview(jotViewController.view)
-    view.insertSubview(jotViewController.view, belowSubview: tapForwardGestureRecognizer)
+    mediaView.addSubview(jotViewController.view)
     jotViewController.didMove(toParentViewController: self)
     
     guard let story = viewingStory else {
@@ -1232,7 +1236,7 @@ class StoryViewController: OverlayViewController {
       isAppearanceLayout = false
       
       avPlayerLayer.frame = videoView.bounds
-      jotViewController.view.frame = videoView.frame
+      jotViewController.view.frame = mediaView.frame
       jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                                andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
       jotViewController.view.layoutIfNeeded()
@@ -1367,5 +1371,33 @@ extension StoryViewController: AVPlayAndExportDelegate {
   
   func avExportPlayer(completedPlaying avExportPlayer: AVExportPlayer) {
     displayNextMoment()
+  }
+}
+
+
+// MARK: - UIScrollView Conformance
+extension StoryViewController: UIScrollViewDelegate {
+  
+  func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+    return mediaView
+  }
+  
+  func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
+    pause()
+    appearanceForAllUI(alphaValue: 0.0, animated: false)
+  }
+  
+  func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    scrollView.setZoomScale(1.0, animated: true)
+    appearanceForAllUI(alphaValue: 1.0, animated: false)
+    play()
+  }
+  
+  func scrollViewDidZoom(_ scrollView: UIScrollView) {
+    if scrollView.zoomScale < 1.0 {
+      scrollView.setZoomScale(1.0, animated: false)
+      appearanceForAllUI(alphaValue: 1.0, animated: false)
+      play()
+    }
   }
 }
