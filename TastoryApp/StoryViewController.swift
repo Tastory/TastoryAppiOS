@@ -1209,22 +1209,16 @@ class StoryViewController: OverlayViewController {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
-    // Pinch to Zoom doesn't play nice with other recognizers in iOS 10...
-    if #available(iOS 11.0, *) { }
-    else {
-      scrollView.isScrollEnabled = false
-      scrollView.panGestureRecognizer.isEnabled = false
-      scrollView.pinchGestureRecognizer?.isEnabled = false
-    }
-    
-    avPlayerLayer.frame = mediaView.bounds
-    jotViewController.view.frame = mediaView.bounds
-    jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
-                                             andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
-    jotViewController.view.layoutIfNeeded()
-    
     if isInitialLayout {
       isInitialLayout = false
+      
+      // Pinch to Zoom doesn't play nice with other recognizers in iOS 10...
+      if #available(iOS 11.0, *) { }
+      else {
+        scrollView.isScrollEnabled = false
+        scrollView.panGestureRecognizer.isEnabled = false
+        scrollView.pinchGestureRecognizer?.isEnabled = false
+      }
       
       // Setup Background Gradient Views
       let backgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.BackgroundGradientBlackAlpha)
@@ -1261,6 +1255,12 @@ class StoryViewController: OverlayViewController {
         }
         return
       }
+      
+      avPlayerLayer.frame = sizingView.bounds
+      jotViewController.view.frame = sizingView.bounds
+      jotViewController.setupRatioForAspectFit(onWindowWidth: sizingView.bounds.width,
+                                               andHeight: sizingView.bounds.height)
+      jotViewController.view.layoutIfNeeded()
       
       // If a moment was already in play, just display that again. Otherwise try to display the first moment
       if currentMoment == nil {

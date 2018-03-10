@@ -706,7 +706,7 @@
                                         </constraints>
                                     </view>
                                     <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nxS-Eu-LGj" userLabel="TapForward">
-                                        <rect key="frame" x="112.66666666666666" y="-0.33333333333331439" width="262.33333333333337" height="667.33333333333326"/>
+                                        <rect key="frame" x="112.66666666666666" y="-0.33333333333331439" width="262.33333333333337" height="667"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <gestureRecognizers/>
@@ -715,7 +715,7 @@
                                         </connections>
                                     </view>
                                     <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nrk-FM-KHI" userLabel="TapBackwards">
-                                        <rect key="frame" x="0.0" y="-0.33333333333331439" width="112.66666666666667" height="667.33333333333326"/>
+                                        <rect key="frame" x="0.0" y="-0.33333333333331439" width="112.66666666666667" height="667"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <gestureRecognizers/>
@@ -837,9 +837,11 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="Nrk-FM-KHI" firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="width" multiplier="0.3" id="7tc-DI-L22"/>
                             <constraint firstItem="ZiO-0U-WG2" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="9zk-j6-dQ2"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" id="BJq-rc-6Af"/>
                             <constraint firstItem="6kx-ur-lVu" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="ENe-VZ-0xN"/>
+                            <constraint firstItem="TAi-Je-D3i" firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="width" id="FWj-QO-MVE"/>
                             <constraint firstItem="dzk-89-di2" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="Gxz-XK-kxM"/>
                             <constraint firstItem="rhf-jl-SNy" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-3" id="J0t-Qc-qhv"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" id="KXu-Vh-dh4"/>
@@ -848,15 +850,13 @@
                             <constraint firstItem="dzk-89-di2" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" id="NvP-co-bdy"/>
                             <constraint firstItem="6kx-ur-lVu" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="O16-a8-Cb2"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="bottom" secondItem="ZiO-0U-WG2" secondAttribute="bottom" id="O1c-k7-dig"/>
-                            <constraint firstItem="nxS-Eu-LGj" firstAttribute="width" secondItem="MnW-AF-GTa" secondAttribute="width" multiplier="0.7" id="QlI-eL-a3C"/>
                             <constraint firstItem="q3B-8e-K7S" firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" constant="-12" id="Rug-oF-6dP"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="height" relation="lessThanOrEqual" secondItem="cgZ-7E-g3q" secondAttribute="height" id="Yef-Ng-2NU"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" priority="900" id="YkJ-cK-ygV"/>
                             <constraint firstItem="Hpj-0E-WpG" firstAttribute="top" secondItem="ZiO-0U-WG2" secondAttribute="top" constant="3" id="ctT-HE-dB2"/>
                             <constraint firstItem="dzk-89-di2" firstAttribute="top" secondItem="rhf-jl-SNy" secondAttribute="top" constant="-5" id="dUU-Zv-Izb"/>
                             <constraint firstItem="q3B-8e-K7S" firstAttribute="bottom" secondItem="nnO-KA-kth" secondAttribute="bottom" constant="-3" id="fbD-te-YC7"/>
-                            <constraint firstItem="Nrk-FM-KHI" firstAttribute="width" secondItem="MnW-AF-GTa" secondAttribute="width" multiplier="0.3" id="fof-61-xhJ"/>
-                            <constraint firstItem="TAi-Je-D3i" firstAttribute="width" secondItem="MnW-AF-GTa" secondAttribute="width" id="hPh-EG-h8r"/>
+                            <constraint firstItem="nxS-Eu-LGj" firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="width" multiplier="0.7" id="few-Xv-t9y"/>
                             <constraint firstItem="rhf-jl-SNy" firstAttribute="leading" secondItem="nnO-KA-kth" secondAttribute="leading" constant="14" id="hoB-vj-9dv"/>
                             <constraint firstItem="6kx-ur-lVu" firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" id="i18-xU-g6n"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="centerX" secondItem="cgZ-7E-g3q" secondAttribute="centerX" id="mjE-GH-24V"/>
