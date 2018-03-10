@@ -1237,6 +1237,12 @@ class StoryViewController: OverlayViewController {
       bottomStackBackgroundView.addSubnode(bottomGradientNode)
     }
     
+    // Sizing goes haywired if this is not done every time...
+    jotViewController.view.frame = sizingView.bounds
+    jotViewController.setupRatioForAspectFit(onWindowWidth: sizingView.bounds.width,
+                                             andHeight: sizingView.bounds.height)
+    jotViewController.view.layoutIfNeeded()
+    
     if isAppearanceLayout {
       isAppearanceLayout = false
       
@@ -1257,10 +1263,6 @@ class StoryViewController: OverlayViewController {
       }
       
       avPlayerLayer.frame = sizingView.bounds
-      jotViewController.view.frame = sizingView.bounds
-      jotViewController.setupRatioForAspectFit(onWindowWidth: sizingView.bounds.width,
-                                               andHeight: sizingView.bounds.height)
-      jotViewController.view.layoutIfNeeded()
       
       // If a moment was already in play, just display that again. Otherwise try to display the first moment
       if currentMoment == nil {
