@@ -11,14 +11,16 @@ import UIKit
 
 class ResultPageViewController: UIPageViewController
 {
-
-  // MARK: - Private Instance Variables
-  private var toIdx = 0
-
   // MARK: - Public Instance Variables
   public var displayDelegate: SearchResultDisplayDelegate?
   public var keywordDelegate: SearchKeywordDelegate?
   public var pages: [UIViewController] = []
+
+  // intentionally set to implicit unwrap until we initializes all the controllers for each page
+  public var topTable: SearchResultTableViewController!
+  public var venuesTable: SearchResultTableViewController!
+  public var peopleTable: SearchResultTableViewController!
+  public var storiesTable: SearchResultTableViewController!
 
   // MARK: - Public Instance Functions
   public func clearAllResults()   {
@@ -60,6 +62,11 @@ class ResultPageViewController: UIPageViewController
       pages.insert(viewController, at: 0)
       i = i - 1
     }
+
+    topTable = pages[UniversalSearchViewController.ResultsCategory.Top.rawValue] as? SearchResultTableViewController
+    venuesTable = pages[UniversalSearchViewController.ResultsCategory.Venues.rawValue] as? SearchResultTableViewController
+    peopleTable = pages[UniversalSearchViewController.ResultsCategory.People.rawValue] as? SearchResultTableViewController
+    storiesTable = pages[UniversalSearchViewController.ResultsCategory.Stories.rawValue] as? SearchResultTableViewController
   }
 }
 

@@ -12,15 +12,11 @@ import MapKit
 
 protocol SearchKeywordDelegate {
   func getSearchKeyWord() -> String
+  func dismissUniveralSearch()
 }
 
 protocol SearchResultDisplayDelegate: class {
-  func display(story: FoodieStory, keyword: String)
-  func display(user: FoodieUser, keyword: String)
-  func display(venue: FoodieVenue, keyword: String)
-  func applyFilter(meal: MealType, keyword: String)
-  func applyFilter(category: FoodieCategory, keyword: String)
-  func applyFilter(location: String, keyword: String)
+  func showSearchResult(result: SearchResult, keyword: String)
   func clearSearchKeyWord()
 }
 
@@ -29,6 +25,15 @@ class UniversalSearchViewController: OverlayViewController {
   // MARK: - Constants/Enums
   private struct Constants {
     static let SearchBarSearchDelay = 0.75
+  }
+
+  enum Icons: String {
+    case category = "Search-CategoryIcon"
+    case meal = "Search-MealTypeIcon"
+    case venue = "Search-VenueIcon"
+    case story = "Search-StoryIcon"
+    case user = "Search-UserIcon"
+    case location = "Search-LocationIcon"
   }
 
   enum ResultsCategory: Int {
@@ -90,7 +95,8 @@ class UniversalSearchViewController: OverlayViewController {
     resultTableVC.display(category: category, direction: direction) { (isCompleted) in
       self.underlineBorder.borderWidth = 2
       self.underlineCategory()
-      CCLog.verbose("animate from \(self.categoryButton.previousSelectedSegmentIndex) to \(self.categoryButton.selectedSegmentIndex)")
+      // TODO add animation for smooth transition between categories
+      //CCLog.verbose("animate from \(self.categoryButton.previousSelectedSegmentIndex) to \(self.categoryButton.selectedSegmentIndex)")
     }
   }
 
@@ -115,12 +121,13 @@ class UniversalSearchViewController: OverlayViewController {
 
   private func highlightSearchTerms(text: String, isDetail: Bool = false) -> (NSMutableAttributedString, Bool) {
 
+    // trim white space and breakup kewords into a list
     let trimmed = searchKeyWord.trimmingCharacters(in: .whitespacesAndNewlines)
     let keywordList = trimmed.components(separatedBy: .whitespaces)
     var highlightIndex: [(Int, Int)] = []
 
+    // add all the starting indices of the matching keyword
     for keyword in keywordList {
-
       let startIndices = text.indicesOf(string: keyword)
       for startIdx in startIndices {
         highlightIndex.append((startIdx,startIdx + keyword.count))
@@ -133,12 +140,14 @@ class UniversalSearchViewController: OverlayViewController {
     }
 
     let attrText = NSMutableAttributedString()
+    // nothing can be highlighted return normal text
     if highlightIndex.isEmpty {
       attrText.normal(text)
       return (attrText, false)
     }
 
-
+    // use a stack to merge overlapping interval
+    // assumption need to sort the starting index first
     var stackMerged: [(Int,Int)] = []
     for highlight in highlightIndex {
       if stackMerged.isEmpty {
@@ -157,6 +166,7 @@ class UniversalSearchViewController: OverlayViewController {
       }
     }
 
+    // highlight the items based on the merged highlight index
     var lastEndIdx = 0
     for highlight in stackMerged {
 
@@ -184,6 +194,8 @@ class UniversalSearchViewController: OverlayViewController {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
 
+    // show the category highlight line in here only because the line depends on the width of the screen
+    underlineCategory()
     if isInitialLayout {
 
       guard let resultTableVC = resultPageVC else {
@@ -228,8 +240,6 @@ class UniversalSearchViewController: OverlayViewController {
     // initializes underline
     underlineBorder.borderColor = UIColor.black.cgColor
     underlineBorder.borderWidth = 2
-    underlineCategory()
-
 
     // find scroll view within uipagecontroller
     for view in viewController.view.subviews {
@@ -262,35 +272,6 @@ class UniversalSearchViewController: OverlayViewController {
     }
 
     resultTableVC.clearAllResults()
-
-    guard let topVC = resultTableVC.pages[ResultsCategory.Top.rawValue] as? SearchResultTableViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
-      }
-      return
-    }
-
-    guard let venueVC = resultTableVC.pages[ResultsCategory.Venues.rawValue] as? SearchResultTableViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
-      }
-      return
-    }
-
-    guard let peopleVC = resultTableVC.pages[ResultsCategory.People.rawValue] as? SearchResultTableViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
-      }
-      return
-    }
-
-    guard let storiesVC = resultTableVC.pages[ResultsCategory.Stories.rawValue] as? SearchResultTableViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
-      }
-      return
-    }
-
 
     if searchKeyWord != "" {
 
@@ -350,13 +331,13 @@ class UniversalSearchViewController: OverlayViewController {
           result.cellType = .category
           result.category = category.value
           result.title = title
-          result.iconName = "Search-CategoryIcon"
+          result.iconName = Icons.category.rawValue
           results.append(result)
 
           i = i + 1
 
         }
-        topVC.pushFront(results: results)
+        resultTableVC.topTable.pushFront(results: results)
       }
 
       if mealMatches.count > 0  {
@@ -380,13 +361,13 @@ class UniversalSearchViewController: OverlayViewController {
           result.title = title
           result.cellType = .meal
           result.meal = meal
-          result.iconName = "Search-MealTypeIcon"
+          result.iconName = Icons.meal.rawValue
           results.append(result)
 
           i = i + 1
 
         }
-        topVC.pushFront(results: results)
+        resultTableVC.topTable.pushFront(results: results)
       }
 
       // search four square
@@ -468,13 +449,13 @@ class UniversalSearchViewController: OverlayViewController {
 
           result.venueDistance = location.distance(from: CLLocation(latitude: venueLocation.latitude, longitude: venueLocation.longitude))
           result.title = title
-          result.iconName = "Search-VenueIcon"
+          result.iconName = Icons.venue.rawValue
           result.cellType = .venue
           result.venue = venue
           results.append(result)
           i = i + 1
         }
-        venueVC.insertByDistance(results: results)
+        resultTableVC.venuesTable.insertByDistance(results: results)
       }
 
       // Setup parameters and submit Cloud function
@@ -544,7 +525,7 @@ class UniversalSearchViewController: OverlayViewController {
               if isTitleHighlighted || isDetailHighlighted {
                 result.title = title
                 result.detail = detail
-                result.iconName = "Search-StoryIcon"
+                result.iconName = Icons.story.rawValue
                 result.story = story
 
                 stories.append(result)
@@ -578,7 +559,7 @@ class UniversalSearchViewController: OverlayViewController {
 
               result.title = title
               result.detail = detail
-              result.iconName = "Search-UserIcon"
+              result.iconName = Icons.user.rawValue
               result.cellType = .user
               result.user = user
 
@@ -617,7 +598,7 @@ class UniversalSearchViewController: OverlayViewController {
 
               result.venueDistance = location.distance(from: CLLocation(latitude: venueLocation.latitude, longitude: venueLocation.longitude))
               result.title = title
-              result.iconName = "Search-VenueIcon"
+              result.iconName = Icons.venue.rawValue
               result.cellType = .venue
               result.venue = venue
 
@@ -632,10 +613,10 @@ class UniversalSearchViewController: OverlayViewController {
             }
           }
 
-          topVC.push(results: results)
-          venueVC.insertByDistance(results: venues)
-          peopleVC.push(results: users)
-          storiesVC.push(results: stories)
+          resultTableVC.topTable.push(results: results)
+          resultTableVC.venuesTable.insertByDistance(results: venues)
+          resultTableVC.peopleTable.push(results: users)
+          resultTableVC.storiesTable.push(results: stories)
         }
       }
     }
@@ -651,13 +632,6 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
     guard let resultTableVC = resultPageVC else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
         CCLog.fatal("Search Result Table View Controller is nil!!")
-      }
-      return
-    }
-
-    guard let topVC = resultTableVC.pages[ResultsCategory.Top.rawValue] as? SearchResultTableViewController else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-        CCLog.fatal("Failed to unwrap SearchResultTableViewController from ResultPageViewController")
       }
       return
     }
@@ -687,17 +661,17 @@ extension UniversalSearchViewController: MKLocalSearchCompleterDelegate {
         searchResult.cellType = .location
         searchResult.title = title
         searchResult.detail = detail
-        searchResult.iconName = "Search-LocationIcon"
+        searchResult.iconName = Icons.location.rawValue
         results.append(searchResult)
         i = i + 1
       }
     }
-    topVC.push(results: results)
+    resultTableVC.topTable.push(results: results)
   }
 
   func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
     AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-      CCLog.fatal("An error occured while searching for location error: \(error.localizedDescription)")
+      CCLog.warning("An error occured while using MKLocalSearch to search for location: \(completer.queryFragment) error: \(error.localizedDescription)")
     }
   }
 }
@@ -757,5 +731,10 @@ extension UniversalSearchViewController: SearchKeywordDelegate {
   func getSearchKeyWord() -> String {
     return searchKeyWord
   }
+
+  func dismissUniveralSearch() {
+    popDismiss(animated: true)
+  }
+
 }
 

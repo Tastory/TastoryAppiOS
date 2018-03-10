@@ -241,12 +241,6 @@ extension SearchResultTableViewController: UITableViewDataSource {
 extension SearchResultTableViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let result = resultsData[indexPath.row]
-    guard let type = result.cellType else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-        CCLog.assert("CellType is nil from result")
-      }
-      return
-    }
 
     guard let keyword = keywordDelegate?.getSearchKeyWord() else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
@@ -254,76 +248,12 @@ extension SearchResultTableViewController: UITableViewDelegate {
       }
       return
     }
-
-    switch type {
-
-    case .location:
-
-      var location = result.title.string
-      if !result.detail.string.isEmpty {
-        location = location +  ", " + result.detail.string
-      }
-      displayDelegate?.applyFilter(location: location, keyword: keyword)
-
-      break
-    case .category:
-      guard let category = result.category else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-          CCLog.assert("Category is nil")
-        }
-        return
-      }
-      displayDelegate?.applyFilter(category: category, keyword: keyword)
-      break
-
-    case .meal:
-      guard let meal = result.meal else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-          CCLog.assert("Meal is nil")
-        }
-        return
-      }
-      displayDelegate?.applyFilter(meal: meal, keyword: keyword)
-      break
-
-    case .story:
-      guard let story = result.story else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-          CCLog.assert("Story is nil")
-        }
-        return
-      }
-      displayDelegate?.display(story: story, keyword: keyword)
-      break
-
-    case .user:
-      guard let user = result.user else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-          CCLog.assert("User is nil")
-        }
-        return
-      }
-
-      displayDelegate?.display(user: user, keyword: keyword)
-      break
-
-    case .venue:
-
-      guard let venue = result.venue else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-          CCLog.assert("Venue is nil")
-        }
-        return
-      }
-
-      displayDelegate?.display(venue: venue, keyword: keyword)
-      break
-
-    default:
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-        CCLog.assert("Unknown cell type")
-      }
-      break
+    // add delay for showing content
+    UIApplication.shared.beginIgnoringInteractionEvents()
+    DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
+      UIApplication.shared.endIgnoringInteractionEvents()
+      self.displayDelegate?.showSearchResult(result: result, keyword: keyword)
+      self.keywordDelegate?.dismissUniveralSearch()
     }
   }
 }
