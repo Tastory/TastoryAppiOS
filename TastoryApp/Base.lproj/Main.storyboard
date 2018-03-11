@@ -826,6 +826,13 @@
                                     <action selector="shareAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="58m-hd-dEW"/>
                                 </connections>
                             </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v6T-Hp-DGN" userLabel="Link Button">
+                                <rect key="frame" x="58" y="696.66666666666663" width="40" height="40"/>
+                                <state key="normal" image="Story-Link"/>
+                                <connections>
+                                    <action selector="linkAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="iKj-xg-6uk"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q3B-8e-K7S" userLabel="Bookmark Button">
                                 <rect key="frame" x="323" y="696.66666666666663" width="40" height="40"/>
                                 <state key="normal" image="Story-Bookmark"/>
@@ -837,6 +844,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="v6T-Hp-DGN" firstAttribute="leading" secondItem="rhf-jl-SNy" secondAttribute="trailing" constant="4" id="21k-wA-HqH"/>
                             <constraint firstItem="Nrk-FM-KHI" firstAttribute="width" secondItem="nnO-KA-kth" secondAttribute="width" multiplier="0.3" id="7tc-DI-L22"/>
                             <constraint firstItem="ZiO-0U-WG2" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="9zk-j6-dQ2"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" id="BJq-rc-6Af"/>
@@ -851,6 +859,7 @@
                             <constraint firstItem="6kx-ur-lVu" firstAttribute="top" secondItem="nnO-KA-kth" secondAttribute="top" id="O16-a8-Cb2"/>
                             <constraint firstItem="Osh-UL-Qz9" firstAttribute="bottom" secondItem="ZiO-0U-WG2" secondAttribute="bottom" id="O1c-k7-dig"/>
                             <constraint firstItem="q3B-8e-K7S" firstAttribute="trailing" secondItem="nnO-KA-kth" secondAttribute="trailing" constant="-12" id="Rug-oF-6dP"/>
+                            <constraint firstItem="v6T-Hp-DGN" firstAttribute="top" secondItem="rhf-jl-SNy" secondAttribute="top" id="TQs-oJ-2zh"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="height" relation="lessThanOrEqual" secondItem="cgZ-7E-g3q" secondAttribute="height" id="Yef-Ng-2NU"/>
                             <constraint firstItem="nnO-KA-kth" firstAttribute="width" secondItem="cgZ-7E-g3q" secondAttribute="width" priority="900" id="YkJ-cK-ygV"/>
                             <constraint firstItem="Hpj-0E-WpG" firstAttribute="top" secondItem="ZiO-0U-WG2" secondAttribute="top" constant="3" id="ctT-HE-dB2"/>
@@ -875,6 +884,7 @@
                         <outlet property="bottomStackBackgroundView" destination="dzk-89-di2" id="Skp-Gi-r9b"/>
                         <outlet property="heartButton" destination="cta-7E-0oI" id="RFp-XK-RIk"/>
                         <outlet property="heartLabel" destination="cGg-ta-BCi" id="kTT-GJ-IXL"/>
+                        <outlet property="linkButton" destination="v6T-Hp-DGN" id="NLc-Zc-HJ2"/>
                         <outlet property="mediaView" destination="TAi-Je-D3i" id="hJZ-XA-3i9"/>
                         <outlet property="photoView" destination="3Gc-Ev-vmE" id="tiQ-hZ-B0K"/>
                         <outlet property="reactionStack" destination="Hpj-0E-WpG" id="W0W-m3-s85"/>
@@ -934,6 +944,7 @@
         <image name="Profile-StoriesTab" width="20" height="20"/>
         <image name="Story-Bookmark" width="40" height="40"/>
         <image name="Story-LikeButton" width="40" height="40"/>
+        <image name="Story-Link" width="40" height="40"/>
         <image name="Story-Share" width="40" height="40"/>
         <image name="Story-SwipeUpArrow" width="22" height="12"/>
     </resources>

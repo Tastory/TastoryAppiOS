@@ -80,7 +80,9 @@ class StoryViewController: OverlayViewController {
   @IBOutlet var swipeStack: UIStackView!
   @IBOutlet var swipeLabel: UILabel!
   @IBOutlet var shareButton: UIButton!
-
+  @IBOutlet var linkButton: UIButton!
+  
+  
   
   // MARK: - IBActions
   
@@ -480,6 +482,21 @@ class StoryViewController: OverlayViewController {
   }
   
   
+  @IBAction func linkAction(_ button: UIButton) {
+    
+    guard let moment = currentMoment, let mediaFilename = moment.mediaFileName else  {
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+        CCLog.warning("Curent moment/media filename is nil")
+      }
+      return
+    }
+    
+    let url = FoodieFileObject.getS3URL(for: mediaFilename)
+    SharedDialog.showPopUp(url: url.absoluteString, fromVC: self, sender: button)
+  }
+  
+  
+  
   
   // MARK: - Private Instance Functions
   
@@ -571,6 +588,16 @@ class StoryViewController: OverlayViewController {
   }
   
   
+  private func getUserLevel() -> Int {
+    guard let user = FoodieUser.current else {
+      CCLog.warning("No current user")
+      return 0
+    }
+    
+    return user.roleLevel
+  }
+  
+  
   private func installUIForVideo() {
 
     guard let story = viewingStory else {
@@ -584,6 +611,7 @@ class StoryViewController: OverlayViewController {
     venueButton.isHidden = (story.venue == nil)
     shareButton.isHidden = false
     bookmarkButton.isHidden = false
+    linkButton.isHidden = (getUserLevel() < FoodieRole.Level.moderator.rawValue)
     authorButton.isHidden = false
     reactionStack.isHidden = false
     displaySwipeStackIfNeeded()
@@ -633,6 +661,7 @@ class StoryViewController: OverlayViewController {
       // UI Update - Really should group some of the common UI stuff into some sort of function?
       venueButton.isHidden = (story.venue == nil)
       shareButton.isHidden = false
+      linkButton.isHidden = (getUserLevel() < FoodieRole.Level.moderator.rawValue)
       bookmarkButton.isHidden = false
       authorButton.isHidden = false
       reactionStack.isHidden = false
@@ -837,6 +866,7 @@ class StoryViewController: OverlayViewController {
       UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration) {
         self.venueButton.alpha = alphaValue
         self.shareButton.alpha = alphaValue
+        self.linkButton.alpha = alphaValue
         self.bookmarkButton.alpha = alphaValue
         self.authorButton.alpha = alphaValue
         self.reactionStack.alpha = alphaValue
@@ -847,6 +877,7 @@ class StoryViewController: OverlayViewController {
     } else {
       venueButton.alpha = alphaValue
       shareButton.alpha = alphaValue
+      linkButton.alpha = alphaValue
       bookmarkButton.alpha = alphaValue
       authorButton.alpha = alphaValue
       reactionStack.alpha = alphaValue
@@ -861,6 +892,7 @@ class StoryViewController: OverlayViewController {
     authorButton.isHidden = true
     venueButton.isHidden = true
     shareButton.isHidden = true
+    linkButton.isHidden = true
     bookmarkButton.isHidden = true
     reactionStack.isHidden = true
     
@@ -1102,8 +1134,10 @@ class StoryViewController: OverlayViewController {
     
     if story.objectId != nil, !draftPreview {
       shareButton.isEnabled = true
+      linkButton.isEnabled = true
     } else {
       shareButton.isEnabled = false
+      linkButton.isEnabled = false
     }
     
     heartLabel.text = "0"
