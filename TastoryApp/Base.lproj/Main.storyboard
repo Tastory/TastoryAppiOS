@@ -142,7 +142,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UoE-Hi-yKI" userLabel="Touch Forwarding View" customClass="TouchForwardingView" customModule="TastoryApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="174"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XVt-7W-XFA">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XVt-7W-XFA">
                                         <rect key="frame" x="4" y="34" width="48" height="48"/>
                                         <inset key="contentEdgeInsets" minX="8" minY="12" maxX="8" maxY="4"/>
                                         <state key="normal" image="EntryMarkup-Back"/>
@@ -405,7 +405,7 @@
                             <view multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QC2-XK-jf4" customClass="TouchForwardingView" customModule="TastoryApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="499.33333333333331"/>
                                 <subviews>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eNc-jJ-9zW">
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eNc-jJ-9zW">
                                         <rect key="frame" x="4" y="34" width="48" height="48"/>
                                         <inset key="contentEdgeInsets" minX="8" minY="12" maxX="8" maxY="4"/>
                                         <state key="normal" image="EntryMarkup-Back"/>
@@ -826,14 +826,14 @@
                                     <action selector="shareAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="58m-hd-dEW"/>
                                 </connections>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v6T-Hp-DGN" userLabel="Link Button">
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v6T-Hp-DGN" userLabel="Link Button">
                                 <rect key="frame" x="58" y="696.66666666666663" width="40" height="40"/>
                                 <state key="normal" image="Story-Link"/>
                                 <connections>
                                     <action selector="linkAction:" destination="l2J-hP-Z7q" eventType="touchUpInside" id="iKj-xg-6uk"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q3B-8e-K7S" userLabel="Bookmark Button">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q3B-8e-K7S" userLabel="Bookmark Button">
                                 <rect key="frame" x="323" y="696.66666666666663" width="40" height="40"/>
                                 <state key="normal" image="Story-Bookmark"/>
                                 <connections>
