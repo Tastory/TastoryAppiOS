@@ -42,7 +42,7 @@ class SearchResultTableViewController: UIViewController {
 
   // MARK: - Public Instance Variables
   public var displayDelegate: SearchResultDisplayDelegate?
-  public var keywordDelegate: SearchKeywordDelegate?
+  public var universalSearchDelegate: UniversalSearchDelegate?
 
   // MARK: - IBOutlets
   @IBOutlet weak var resultTableView: UITableView!
@@ -236,13 +236,17 @@ extension SearchResultTableViewController: UITableViewDataSource {
 
     return cell
   }
+
+  func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    self.universalSearchDelegate?.dismissKeyboard()
+  }
 }
 
 extension SearchResultTableViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let result = resultsData[indexPath.row]
 
-    guard let keyword = keywordDelegate?.getSearchKeyWord() else {
+    guard let keyword = universalSearchDelegate?.getSearchKeyWord() else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.assert("Failed to get keyword from search which is impossible since you already got result")
       }
@@ -253,7 +257,7 @@ extension SearchResultTableViewController: UITableViewDelegate {
     DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
       UIApplication.shared.endIgnoringInteractionEvents()
       self.displayDelegate?.showSearchResult(result: result, keyword: keyword)
-      self.keywordDelegate?.dismissUniveralSearch()
+      self.universalSearchDelegate?.dismissUniveralSearch()
     }
   }
 }

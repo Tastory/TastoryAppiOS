@@ -13,7 +13,7 @@ class ResultPageViewController: UIPageViewController
 {
   // MARK: - Public Instance Variables
   public var displayDelegate: SearchResultDisplayDelegate?
-  public var keywordDelegate: SearchKeywordDelegate?
+  public var universalSearchDelegate: UniversalSearchDelegate?
   public var pages: [UIViewController] = []
 
   // intentionally set to implicit unwrap until we initializes all the controllers for each page
@@ -56,7 +56,7 @@ class ResultPageViewController: UIPageViewController
         return
       }
       viewController.displayDelegate = displayDelegate
-      viewController.keywordDelegate = keywordDelegate
+      viewController.universalSearchDelegate = universalSearchDelegate
       // TODO fix this HACKY way to load up all view controllers.....
       setViewControllers([viewController], direction: .reverse, animated: true, completion: nil)
       pages.insert(viewController, at: 0)

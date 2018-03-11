@@ -10,9 +10,10 @@ import UIKit
 import Parse
 import MapKit
 
-protocol SearchKeywordDelegate {
+protocol UniversalSearchDelegate{
   func getSearchKeyWord() -> String
   func dismissUniveralSearch()
+  func dismissKeyboard()
 }
 
 protocol SearchResultDisplayDelegate: class {
@@ -225,7 +226,7 @@ class UniversalSearchViewController: OverlayViewController {
     }
     resultPageVC = viewController
     viewController.displayDelegate = displayDelegate
-    viewController.keywordDelegate = self
+    viewController.universalSearchDelegate = self
     // this delegate refers to the page delegate
     viewController.delegate = self
 
@@ -727,7 +728,7 @@ extension UniversalSearchViewController: UIScrollViewDelegate {
    }
 }
 
-extension UniversalSearchViewController: SearchKeywordDelegate {
+extension UniversalSearchViewController: UniversalSearchDelegate {
   func getSearchKeyWord() -> String {
     return searchKeyWord
   }
@@ -736,5 +737,8 @@ extension UniversalSearchViewController: SearchKeywordDelegate {
     popDismiss(animated: true)
   }
 
+  func dismissKeyboard() {
+    self.view.endEditing(true)
+  }
 }
 

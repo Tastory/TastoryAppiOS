@@ -1000,6 +1000,9 @@ class DiscoverViewController: OverlayViewController {
     // display universal search result
     if let result = searchResult {
 
+      let keyword = searchField.currentTitle ?? ""
+      let currentUserName = FoodieUser.current?.username ?? "nil"
+
       guard let type = result.cellType else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("CellType is nil from result")
@@ -1007,13 +1010,12 @@ class DiscoverViewController: OverlayViewController {
         return
       }
 
-
       switch type {
 
         case .location:
-          var location = result.title.string
+          var locationName = result.title.string
           if !result.detail.string.isEmpty {
-            location = location +  ", " + result.detail.string
+            locationName = locationName +  ", " + result.detail.string
           }
 
           guard let mapNavController = self.mapNavController else {
@@ -1028,7 +1030,7 @@ class DiscoverViewController: OverlayViewController {
                                           identifier: "currentCLRegion")
           let geocoder = CLGeocoder()
 
-          geocoder.geocodeAddressString(location, in: clRegion) { (placemarks, error) in
+          geocoder.geocodeAddressString(locationName, in: clRegion) { (placemarks, error) in
 
             if let error = error {
               AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -1049,6 +1051,8 @@ class DiscoverViewController: OverlayViewController {
               }
               return
             }
+
+            Analytics.logUniversalSearchResult(username: currentUserName, keyword: keyword, location: locationName, longitude: location.coordinate.longitude, latitude: location.coordinate.latitude)
 
             var region: MKCoordinateRegion!
             var maxRadius: Double = 4.0
@@ -1128,7 +1132,11 @@ class DiscoverViewController: OverlayViewController {
             }
             return
           }
+
+          Analytics.logUniversalSearchResult(username: currentUserName, keyword: keyword, categoryIDs: filter.selectedCategories.map( { $0.foursquareCategoryID ?? "" }))
+
           filterCompleteReturn(filter, true)
+          searchWithFilter(searchButton)
         break
 
         case .meal:
@@ -1148,7 +1156,11 @@ class DiscoverViewController: OverlayViewController {
           filter.selectedCategories.removeAll()
           filter.selectedMealTypes.removeAll()
           filter.selectedMealTypes.append(meal)
+
+          Analytics.logUniversalSearchResult(username: currentUserName, keyword: keyword, mealTypes: filter.selectedMealTypes.map( { $0.rawValue }))
+
           filterCompleteReturn(filter, true)
+          searchWithFilter(searchButton)
         break
 
        case .story:
@@ -1165,6 +1177,8 @@ class DiscoverViewController: OverlayViewController {
           }
           return
          }
+
+         Analytics.logUniversalSearchResult(username: currentUserName, keyword: keyword, storyID: story.objectId ?? "", title: story.title ?? "")
 
          // show story as in it was a deepLink
          DeepLink.global.deepLinkUserId = user.objectId
@@ -1188,6 +1202,8 @@ class DiscoverViewController: OverlayViewController {
            }
            return
          }
+
+         Analytics.logUniversalSearchResult(username: currentUserName, keyword: keyword, authorID: user.objectId ?? "", authorUserName: user.username ?? "", authorFullName: user.fullName ?? "")
          self.showProfileView(user: user)
        break
 
@@ -1198,6 +1214,7 @@ class DiscoverViewController: OverlayViewController {
             }
             return
          }
+         Analytics.logUniversalSearchResult(username: currentUserName, keyword: keyword, venueID: venue.objectId ?? "", venueName: venue.name ?? "")
          self.showProfileView(venue: venue)
        break
        }

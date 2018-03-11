@@ -233,7 +233,7 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="148" height="16.666666666666668"/>
                                                         <gestureRecognizers/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
-                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <color key="textColor" red="0.75294117647058822" green="0.0" blue="0.0" alpha="0.5" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
                                                         <connections>
                                                             <outletCollection property="gestureRecognizers" destination="JcB-kz-f5q" appends="YES" id="hvQ-4y-b9k"/>

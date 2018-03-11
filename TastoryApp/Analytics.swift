@@ -57,7 +57,51 @@ class Analytics {
                                                                "Searched" : searchedTerm,
                                                                "Note" : note])
   }
-  
+
+  static func logUniversalSearchResult(username: String, keyword:String, categoryIDs:[String]) {
+    Answers.logCustomEvent(withName: "UniversalSearchCategory", customAttributes: ["Username" : username,
+                                                                           "Keyword" : keyword,
+                                                                           "Category IDs" : categoryIDs,
+                                                                           "Number of Categories" : categoryIDs.count])
+  }
+
+  static func logUniversalSearchResult(username: String, keyword:String, mealTypes:[String]) {
+    Answers.logCustomEvent(withName: "UniversalSearchMeal", customAttributes: ["Username" : username,
+                                                                           "Keyword" : keyword,
+                                                                           "Meal Types" : mealTypes,
+                                                                           "Number of Meal Types" : mealTypes.count])
+  }
+
+  static func logUniversalSearchResult(username: String, keyword:String, location: String, longitude: Double, latitude: Double) {
+    Answers.logCustomEvent(withName: "UniversalSearchLocation", customAttributes: ["Username" : username,
+                                                                               "Keyword" : keyword,
+                                                                               "Location" : location,
+                                                                               "Longitude" : longitude,
+                                                                               "Latitude" : latitude])
+  }
+
+  static func logUniversalSearchResult(username: String, keyword:String, venueID: String, venueName: String) {
+    Answers.logCustomEvent(withName: "UniversalSearchVenue", customAttributes: ["Username" : username,
+                                                                               "Keyword" : keyword,
+                                                                               "Venue ID" : venueID,
+                                                                               "Venue Name" : venueName])
+  }
+
+  static func logUniversalSearchResult(username: String, keyword:String, authorID: String, authorUserName: String, authorFullName: String) {
+    Answers.logCustomEvent(withName: "UniversalSearchPeople", customAttributes: ["Username" : username,
+                                                                               "Keyword" : keyword,
+                                                                               "Author ID" : authorID,
+                                                                               "Author User Name" : authorUserName,
+                                                                               "Author Full Name" : authorFullName])
+  }
+
+  static func logUniversalSearchResult(username: String, keyword:String, storyID: String, title: String) {
+    Answers.logCustomEvent(withName: "UniversalSearchStory", customAttributes: ["Username" : username,
+                                                                               "Keyword" : keyword,
+                                                                               "Story ID" : storyID,
+                                                                               "Story Title" : title])
+  }
+
   
   // MARK: - Content View Events
 
