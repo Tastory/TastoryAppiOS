@@ -22,4 +22,17 @@ extension Date {
   func offsetToNoon(byNumberOfDays numberOfDays: Int) -> Date {
     return Calendar.current.date(byAdding: .day, value: numberOfDays, to: noon)!
   }
+
+  func dayOfTheWeek() -> String {
+    let weekdays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Satudrday"
+    ]
+    return weekdays[Calendar.current.component(.weekday, from: Date()) - 1]
+  }
 }

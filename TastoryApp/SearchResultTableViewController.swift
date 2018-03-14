@@ -244,20 +244,26 @@ extension SearchResultTableViewController: UITableViewDataSource {
 
 extension SearchResultTableViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let result = resultsData[indexPath.row]
 
-    guard let keyword = universalSearchDelegate?.getSearchKeyWord() else {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-        CCLog.assert("Failed to get keyword from search which is impossible since you already got result")
+    if indexPath.row < resultsData.count {
+      let result = resultsData[indexPath.row]
+
+      guard let keyword = universalSearchDelegate?.getSearchKeyWord() else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+          CCLog.assert("Failed to get keyword from search which is impossible since you already got result")
+        }
+        return
       }
-      return
-    }
-    // add delay for showing content
-    UIApplication.shared.beginIgnoringInteractionEvents()
-    DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
-      UIApplication.shared.endIgnoringInteractionEvents()
-      self.displayDelegate?.showSearchResult(result: result, keyword: keyword)
-      self.universalSearchDelegate?.dismissUniveralSearch()
+      // add delay for showing content
+      UIApplication.shared.beginIgnoringInteractionEvents()
+      DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
+        UIApplication.shared.endIgnoringInteractionEvents()
+        self.displayDelegate?.showSearchResult(result: result, keyword: keyword)
+        self.universalSearchDelegate?.dismissUniveralSearch()
+      }
+    } else {
+      // this case is possible when the table is being cleared while the user is selecting an item in the table
+      CCLog.warning("The selected index is outside the table view's data array")
     }
   }
 }

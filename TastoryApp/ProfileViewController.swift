@@ -148,15 +148,8 @@ class ProfileViewController: OverlayViewController {
 
     let googleButton =
       UIAlertAction(title: "Google Maps", comment: "Button for viewing info at google", style: .default) { (UIAlertAction) -> Void in
-        guard let escapedVenueName:String = venueName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
-            CCLog.fatal("An error occurred when generating the google url")
-          }
-          return
-        }
-        let url =  "https://www.google.ca/maps/search/\(escapedVenueName)/@\(location.latitude),\(location.longitude),15z"
 
-        guard let googleURL = URL(string: url) else {
+        guard let googleURL = self.getGoogleURL() else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.fatal("An error occurred when generating the google map url")
           }
@@ -364,11 +357,23 @@ class ProfileViewController: OverlayViewController {
   
   
   @IBAction func websiteTapAction(_ sender: UITapGestureRecognizer) {
-    if let websiteString = websiteLabel.text, let websiteUrl = URL(string: URL.addHttpIfNeeded(to: websiteString)) {
-      CCLog.info("Opening Safari View for \(websiteUrl)")
-      let safariViewController = SFSafariViewController(url: websiteUrl)
-      safariViewController.modalPresentationStyle = .overCurrentContext
-      self.present(safariViewController, animated: true, completion: nil)
+
+    if layout == .venue {
+      // the address of a venue is stored in the website placeholder when people click on it, it will go to google maps
+      guard let googleURL = getGoogleURL() else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("An error occurred when generating the google map url")
+        }
+        return
+      }
+      UIApplication.shared.open(googleURL)
+    } else {
+      if let websiteString = websiteLabel.text, let websiteUrl = URL(string: URL.addHttpIfNeeded(to: websiteString)) {
+        CCLog.info("Opening Safari View for \(websiteUrl)")
+        let safariViewController = SFSafariViewController(url: websiteUrl)
+        safariViewController.modalPresentationStyle = .overCurrentContext
+        self.present(safariViewController, animated: true, completion: nil)
+      }
     }
   }
   
@@ -420,6 +425,61 @@ class ProfileViewController: OverlayViewController {
       }
       removeStoryList.append(workingStory)
     }
+  }
+
+  private func getGoogleURL() -> URL? {
+
+    if layout == .venue {
+      guard let venue = venue else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("Venue is nil")
+        }
+        return nil
+      }
+
+      guard let location = venue.location else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("Location is missing from venue")
+        }
+        return nil
+      }
+
+      guard var venueName = venue.name else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("The venue name is missing")
+        }
+        return nil
+      }
+
+      if let address =  venue.streetAddress {
+        venueName += " " + address
+      }
+
+      if let city =  venue.city {
+        venueName += " " + city
+      }
+
+      if let country = venue.country {
+        venueName += " " + country
+      }
+
+      guard let escapedVenueName:String = venueName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("An error occurred when generating the google url")
+        }
+        return nil
+      }
+      let url =  "https://www.google.ca/maps/search/\(escapedVenueName)/@\(location.latitude),\(location.longitude),15z"
+
+      guard let googleURL = URL(string: url) else {
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("An error occurred when generating the google map url")
+        }
+        return nil
+      }
+      return googleURL
+    }
+    return nil
   }
 
   private func updateProfileMap(with story: FoodieStory) {
@@ -679,13 +739,19 @@ class ProfileViewController: OverlayViewController {
               hourStr = hourStr + "\(startTimeStr) ~ \(endTimeStr)"
             }
           }
+
+          if hourStr.isEmpty {
+            hourStr = "Closed on " +  Date().dayOfTheWeek()
+          } else {
+            hourStr = "Opening hours: " + hourStr
+          }
         }
       }
 
       if hourStr.isEmpty {
         bioLabel.isHidden = true
       } else {
-        bioLabel.text = "Opening hours: " + hourStr
+        bioLabel.text = hourStr
       }
 
       shareButton.isHidden = (venue.objectId == nil)
