@@ -599,12 +599,56 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
   }
   
   
-  func scrollTo(storyIndex: Int) {
-    switch layoutType {
-    case .carousel:
-      collectionNode.scrollToItem(at: toIndexPath(from: storyIndex), at: .centeredHorizontally, animated: true)
-    case .mosaic:
-      collectionNode.scrollToItem(at: toIndexPath(from: storyIndex), at: .top, animated: true)
+  var scrollPoint: CGPoint?
+  var endPoint: CGPoint?
+  var scrollTimer: Timer?
+  var scrollingUp = false
+  var scrollCompletion: (()->())?
+  
+  func scrollToIndexPath(path: IndexPath, completion: (()->())? = nil) {
+    let atts = collectionNode.view.layoutAttributesForItem(at: path)
+    endPoint = CGPoint(x: 0, y: atts!.frame.origin.y - collectionNode.contentInset.top)
+    scrollPoint = collectionNode.contentOffset
+    scrollingUp = collectionNode.contentOffset.y > self.endPoint!.y
+    scrollCompletion = completion
+    
+    scrollTimer?.invalidate()
+    scrollTimer = Timer.scheduledTimer(timeInterval: 0.001, target: self, selector: #selector(scrollTimerTriggered(timer:)), userInfo: nil, repeats: true)
+  }
+  
+  
+  @objc func scrollTimerTriggered(timer: Timer) {
+    // let dif = fabs(scrollPoint!.y - endPoint!.y) / 1000.0
+    let modifier: CGFloat = scrollingUp ? -2 : 2
+    
+    scrollPoint = CGPoint(x: scrollPoint!.x, y: scrollPoint!.y + modifier) //(modifier * dif))
+    collectionNode.contentOffset = scrollPoint!
+    
+    if scrollingUp && collectionNode.contentOffset.y <= endPoint!.y {
+      collectionNode.contentOffset = endPoint!
+      timer.invalidate()
+      scrollCompletion?()
+    } else if !scrollingUp && collectionNode.contentOffset.y >= endPoint!.y {
+      collectionNode.contentOffset = endPoint!
+      timer.invalidate()
+      scrollCompletion?()
+    }
+  }
+  
+  
+  func scrollTo(storyIndex: Int, slow: Bool = false, completion: (()->())? = nil) {
+    
+    if slow {
+      scrollToIndexPath(path: toIndexPath(from: storyIndex)) {
+        self.delegate?.collectionNodeDidStopScrolling?()
+      }
+    } else {
+      switch layoutType {
+      case .carousel:
+        collectionNode.scrollToItem(at: toIndexPath(from: storyIndex), at: .centeredHorizontally, animated: true)
+      case .mosaic:
+        collectionNode.scrollToItem(at: toIndexPath(from: storyIndex), at: .top, animated: true)
+      }
     }
   }
   

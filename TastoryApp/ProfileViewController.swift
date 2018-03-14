@@ -375,12 +375,13 @@ class ProfileViewController: OverlayViewController {
   
   @IBAction func backAction(_ sender: UIButton) {
     popDismiss(animated: true)
+    //self.feedCollectionNodeController?.scrollTo(storyIndex: 8, slow: true)
   }
   
   
   
   // MARK: - Private Instance Functions
-
+  
   @objc func updateFeed(_ notification: NSNotification) {
 
     guard let userInfo = notification.userInfo else {
