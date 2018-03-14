@@ -348,6 +348,8 @@ class MapNavController: ASNavigationController {
     mapView.isPitchEnabled = false
     mapView.showsCompass = false
     mapView.showsScale = false
+    mapView.showsPointsOfInterest = false
+    mapView.showsBuildings = false
     mapView.showsUserLocation = true
     mapView.setUserTrackingMode(.none, animated: false)
     
@@ -432,18 +434,8 @@ class MapNavController: ASNavigationController {
 extension MapNavController: MKMapViewDelegate {
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
 
-    if #available(iOS 11.0, *), let markerView = view as? MKMarkerAnnotationView {
-      markerView.titleVisibility = .visible
-    }
-    
-//    if let annotation = view.annotation as? StoryMapAnnotation, annotation.isSelected == false {
-//      annotation.isSelected = true
-//
-//      if #available(iOS 11.0, *) {
-//        mapView.removeAnnotation(annotation)
-//        mapView.addAnnotation(annotation)
-//        mapView.selectAnnotation(annotation, animated: true)
-//      }
+//    if #available(iOS 11.0, *), let markerView = view as? MKMarkerAnnotationView {
+//      markerView.titleVisibility = .visible
 //    }
 
     if let annotation = view.annotation {
@@ -453,17 +445,8 @@ extension MapNavController: MKMapViewDelegate {
   
   func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
     
-    if #available(iOS 11.0, *), let markerView = view as? MKMarkerAnnotationView {
-      markerView.titleVisibility = .adaptive
-    }
-    
-//    if let annotation = view.annotation, let storyAnnotation = annotation as? StoryMapAnnotation, mapView.annotations.contains(where: { $0 === annotation }) {
-//      storyAnnotation.isSelected = false
-//
-//      if #available(iOS 11.0, *) {
-//        mapView.removeAnnotation(storyAnnotation)
-//        mapView.addAnnotation(storyAnnotation)
-//      }
+//    if #available(iOS 11.0, *), let markerView = view as? MKMarkerAnnotationView {
+//      markerView.titleVisibility = .adaptive
 //    }
   }
   
@@ -472,34 +455,38 @@ extension MapNavController: MKMapViewDelegate {
       return nil
     }
     else if #available(iOS 11.0, *) {
-      let markerAnnotationView = MKMarkerAnnotationView()
-      markerAnnotationView.markerTintColor = UIColor(red: 1.0, green: 80.0/255.0, blue: 80.0/255.0, alpha: 1.0)
-      markerAnnotationView.glyphImage = UIImage(named: "PinHead")
+      let identifier = "marker"
+      var markerAnnotationView: MKMarkerAnnotationView
       
-//      if let storyAnnotation = annotation as? StoryMapAnnotation {
-//
-//        if storyAnnotation.isSelected {
-//          markerAnnotationView.titleVisibility = .visible
-//          markerAnnotationView.displayPriority = .required
-//          //markerAnnotationView.setSelected(true, animated: true)
-//        } else {
-//          markerAnnotationView.titleVisibility = .adaptive
-//          markerAnnotationView.displayPriority = .required
-//        }
-//      } else {
-//        markerAnnotationView.titleVisibility = .adaptive
-//        markerAnnotationView.displayPriority = .required
-//      }
-      
+      if let dequeueView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView {
+        dequeueView.annotation = annotation
+        markerAnnotationView = dequeueView
+      } else {
+        markerAnnotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+        markerAnnotationView.markerTintColor = UIColor(red: 1.0, green: 80.0/255.0, blue: 80.0/255.0, alpha: 1.0)
+        markerAnnotationView.glyphImage = UIImage(named: "PinHole")
+      }
+
       markerAnnotationView.titleVisibility = .adaptive
       markerAnnotationView.displayPriority = .required
+      
       return markerAnnotationView
       
     } else {
-      let pointAnnotation = MKAnnotationView()
-      pointAnnotation.image = UIImage(named: "TastoryPin")
-      pointAnnotation.canShowCallout = true
-      return pointAnnotation
+      let identifier = "point"
+      var pointAnnotationView: MKAnnotationView
+      
+      if let dequeueView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) {
+        dequeueView.annotation = annotation
+        pointAnnotationView = dequeueView
+      } else {
+        pointAnnotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+      }
+
+      pointAnnotationView.image = UIImage(named: "TastoryPin")
+      pointAnnotationView.canShowCallout = true
+      
+      return pointAnnotationView
     }
   }
 }
