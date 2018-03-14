@@ -39,11 +39,11 @@ class Analytics {
   
   static func loginDiscoverFilterSearch(username: String, categoryIDs: [String], priceUpperLimit: Double, priceLowerLimit: Double, mealTypes: [String], success: Bool, note: String, stories: Int) {  // Which filters are on?
     Answers.logCustomEvent(withName: "Filter", customAttributes: ["Username" : username,
-                                                                  "Category IDs" : categoryIDs,
+                                                                  "Category IDs" : categoryIDs.joined(separator: ", "),
                                                                   "Number of Categories" : categoryIDs.count,
                                                                   "Price Upper Limit" : priceUpperLimit,
                                                                   "Price Lower Limit" : priceLowerLimit,
-                                                                  "Meal Types:": mealTypes,
+                                                                  "Meal Types:": mealTypes.joined(separator: ", "),
                                                                   "Number of Meal Types" : mealTypes.count,
                                                                   "Success" : success,
                                                                   "Note" : note,
@@ -61,14 +61,14 @@ class Analytics {
   static func logUniversalSearchResult(username: String, keyword:String, categoryIDs:[String]) {
     Answers.logCustomEvent(withName: "UniversalSearchCategory", customAttributes: ["Username" : username,
                                                                            "Keyword" : keyword,
-                                                                           "Category IDs" : categoryIDs,
+                                                                           "Category IDs" : categoryIDs.joined(separator: ", "),
                                                                            "Number of Categories" : categoryIDs.count])
   }
 
   static func logUniversalSearchResult(username: String, keyword:String, mealTypes:[String]) {
     Answers.logCustomEvent(withName: "UniversalSearchMeal", customAttributes: ["Username" : username,
                                                                            "Keyword" : keyword,
-                                                                           "Meal Types" : mealTypes,
+                                                                           "Meal Types" : mealTypes.joined(separator: ", "),
                                                                            "Number of Meal Types" : mealTypes.count])
   }
 
