@@ -420,34 +420,34 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="qfV-kL-WgM">
-                                <rect key="frame" x="0.0" y="44" width="375" height="97"/>
+                                <rect key="frame" x="0.0" y="44" width="375" height="734"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cj3-Ve-HVh">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="56"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" verticalHuggingPriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="siR-cb-Lao" userLabel="Leading Gap">
-                                                <rect key="frame" x="0.0" y="0.0" width="4" height="56"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="4" height="50"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="4" id="8kv-Qs-Gzh"/>
                                                 </constraints>
                                             </view>
                                             <searchBar opaque="NO" contentMode="redraw" horizontalHuggingPriority="100" horizontalCompressionResistancePriority="200" searchBarStyle="minimal" text="" placeholder="Location, Category, Meal, etc" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Nv-NK-7QZ">
-                                                <rect key="frame" x="4" y="0.0" width="308" height="56"/>
+                                                <rect key="frame" x="4" y="0.0" width="308" height="50"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <offsetWrapper key="searchTextPositionAdjustment" horizontal="0.0" vertical="1"/>
                                                 <offsetWrapper key="searchFieldBackgroundPositionAdjustment" horizontal="0.0" vertical="0.0"/>
                                                 <textInputTraits key="textInputTraits" returnKeyType="done"/>
                                             </searchBar>
                                             <view contentMode="scaleToFill" verticalHuggingPriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="d5q-Qp-1vO" userLabel="Gap">
-                                                <rect key="frame" x="312" y="0.0" width="4" height="56"/>
+                                                <rect key="frame" x="312" y="0.0" width="4" height="50"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="4" id="2qE-VY-2fw"/>
                                                 </constraints>
                                             </view>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iEb-jx-CPl">
-                                                <rect key="frame" x="316" y="0.0" width="46" height="56"/>
+                                                <rect key="frame" x="316" y="0.0" width="46" height="50"/>
                                                 <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                 <state key="normal" title="Cancel">
                                                     <color key="titleColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
@@ -457,7 +457,7 @@
                                                 </connections>
                                             </button>
                                             <view contentMode="scaleToFill" verticalHuggingPriority="10" verticalCompressionResistancePriority="10" translatesAutoresizingMaskIntoConstraints="NO" id="b7L-8B-FFh" userLabel="Trailing Gap">
-                                                <rect key="frame" x="362" y="0.0" width="13" height="56"/>
+                                                <rect key="frame" x="362" y="0.0" width="13" height="50"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="13" id="x4L-1h-oPW"/>
@@ -469,14 +469,14 @@
                                         </constraints>
                                     </stackView>
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TFj-YL-ceI" userLabel="Line">
-                                        <rect key="frame" x="0.0" y="56" width="375" height="1"/>
+                                        <rect key="frame" x="0.0" y="50" width="375" height="1"/>
                                         <color key="backgroundColor" red="0.91372549020000005" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="HNU-aM-c3d"/>
                                         </constraints>
                                     </view>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="pxb-Nm-Q58" customClass="SegmentedControl" customModule="TastoryApp" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="56" width="375" height="41"/>
+                                        <rect key="frame" x="0.0" y="50" width="375" height="41"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="0Y8-JY-oyr"/>
                                         </constraints>
@@ -492,17 +492,25 @@
                                         </connections>
                                     </segmentedControl>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LHc-nf-yxv" userLabel="Line2">
-                                        <rect key="frame" x="0.0" y="96" width="375" height="1"/>
+                                        <rect key="frame" x="0.0" y="90" width="375" height="1"/>
                                         <color key="backgroundColor" red="0.91372549020000005" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="5GH-Jg-Cy3"/>
                                         </constraints>
                                     </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pGm-TO-hEF">
+                                        <rect key="frame" x="0.0" y="91" width="375" height="643"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </view>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="LHc-nf-yxv" firstAttribute="top" secondItem="pxb-Nm-Q58" secondAttribute="bottom" id="0rW-IJ-25n"/>
                                     <constraint firstAttribute="trailing" secondItem="pxb-Nm-Q58" secondAttribute="trailing" id="1cy-fX-unJ"/>
+                                    <constraint firstAttribute="bottom" secondItem="pGm-TO-hEF" secondAttribute="bottom" id="Bq9-FQ-Zrh"/>
                                     <constraint firstItem="pxb-Nm-Q58" firstAttribute="leading" secondItem="qfV-kL-WgM" secondAttribute="leading" id="MgK-NE-nfJ"/>
+                                    <constraint firstItem="pGm-TO-hEF" firstAttribute="leading" secondItem="qfV-kL-WgM" secondAttribute="leading" id="SkW-zX-fZZ"/>
+                                    <constraint firstAttribute="trailing" secondItem="pGm-TO-hEF" secondAttribute="trailing" id="T2A-ov-8fL"/>
+                                    <constraint firstItem="pGm-TO-hEF" firstAttribute="top" secondItem="LHc-nf-yxv" secondAttribute="bottom" id="axp-J0-pEZ"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -518,6 +526,7 @@
                     <connections>
                         <outlet property="categoryButton" destination="pxb-Nm-Q58" id="idJ-dk-BSh"/>
                         <outlet property="searchBar" destination="8Nv-NK-7QZ" id="IHX-Hk-hli"/>
+                        <outlet property="tablePlaceHolder" destination="pGm-TO-hEF" id="ZPa-17-8qZ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sVV-4M-PRe" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -544,14 +553,14 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Bpl-KO-0S5">
-                                                    <rect key="frame" x="54.000000000000007" y="7" width="26.333333333333332" height="16.333333333333332"/>
+                                                    <rect key="frame" x="54.000000000000007" y="7" width="28.333333333333332" height="16.666666666666668"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="14"/>
                                                     <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="PNR-HU-rIf">
-                                                    <rect key="frame" x="54" y="23.333333333333332" width="41" height="14"/>
+                                                    <rect key="frame" x="54" y="23.666666666666668" width="43" height="14.333333333333334"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" name="Raleway-Regular" family="Raleway" pointSize="12"/>
                                                     <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="0.5" colorSpace="calibratedRGB"/>
