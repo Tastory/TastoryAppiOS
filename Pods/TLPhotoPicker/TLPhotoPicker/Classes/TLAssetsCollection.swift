@@ -146,7 +146,8 @@ public struct TLPHAsset {
             type = phAsset.mediaType == .video ? .video : .photo
         }
         guard let resource = (PHAssetResource.assetResources(for: phAsset).filter{ $0.type == type }).first else { return nil }
-        let fileName = resource.originalFilename
+        // append UUID in case file names are the same
+        let fileName = "\(UUID().uuidString)_" + resource.originalFilename
         var writeURL: URL? = nil
         if #available(iOS 10.0, *) {
             writeURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(fileName)")
@@ -162,15 +163,6 @@ public struct TLPHAsset {
                 DispatchQueue.main.async {
                     progressBlock?(progress, error)
                 }
-            }
-
-            // make sure the file is always fresh from the library not some old file in tmp
-            let fileManager = FileManager.default
-            if fileManager.fileExists(atPath: localURL.path) {
-              do {
-                try fileManager.removeItem(at: localURL)
-              } catch {
-              }
             }
 
             return PHImageManager.default().requestExportSession(forVideo: phAsset, options: options, exportPreset: AVAssetExportPreset1280x720) { (session, infoDict) in
