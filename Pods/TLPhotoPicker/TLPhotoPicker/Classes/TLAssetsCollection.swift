@@ -56,7 +56,7 @@ public struct TLPHAsset {
     }
     
     @discardableResult
-    public func cloudImageDownload(progressBlock: @escaping (Double) -> Void, completionBlock:@escaping (UIImage?)-> Void ) -> PHImageRequestID? {
+    public func cloudImageDownload(progressBlock: @escaping (Double, Error?) -> Void, completionBlock:@escaping (UIImage?)-> Void ) -> PHImageRequestID? {
         guard let phAsset = self.phAsset else { return nil }
         return TLPhotoLibrary.cloudImageDownload(asset: phAsset, progressBlock: progressBlock, completionBlock: completionBlock)
     }
@@ -137,7 +137,7 @@ public struct TLPHAsset {
     }
     
     @discardableResult
-    public func tempCopyMediaFile(progressBlock:((Double) -> Void)? = nil, completionBlock:@escaping ((URL,String) -> Void)) -> PHImageRequestID? {
+    public func tempCopyMediaFile(progressBlock:((Double, Error?) -> Void)? = nil, completionBlock:@escaping ((URL,String) -> Void)) -> PHImageRequestID? {
         guard let phAsset = self.phAsset else { return nil }
         var type: PHAssetResourceType? = nil
         if phAsset.mediaSubtypes.contains(.photoLive) == true {
@@ -160,10 +160,20 @@ public struct TLPHAsset {
             options.isNetworkAccessAllowed = true
             options.progressHandler = { (progress, error, stop, info) in
                 DispatchQueue.main.async {
-                    progressBlock?(progress)
+                    progressBlock?(progress, error)
                 }
             }
-            return PHImageManager.default().requestExportSession(forVideo: phAsset, options: options, exportPreset: AVAssetExportPresetHighestQuality) { (session, infoDict) in
+
+            // make sure the file is always fresh from the library not some old file in tmp
+            let fileManager = FileManager.default
+            if fileManager.fileExists(atPath: localURL.path) {
+              do {
+                try fileManager.removeItem(at: localURL)
+              } catch {
+              }
+            }
+
+            return PHImageManager.default().requestExportSession(forVideo: phAsset, options: options, exportPreset: AVAssetExportPreset1280x720) { (session, infoDict) in
                 session?.outputURL = localURL
                 session?.outputFileType = AVFileType.mov
                 session?.exportAsynchronously(completionHandler: {
@@ -177,7 +187,7 @@ public struct TLPHAsset {
             options.isNetworkAccessAllowed = true
             options.progressHandler = { (progress, error, stop, info) in
                 DispatchQueue.main.async {
-                    progressBlock?(progress)
+                    progressBlock?(progress, error)
                 }
             }
             return PHImageManager.default().requestImageData(for: phAsset, options: options, resultHandler: { (data, uti, orientation, info) in

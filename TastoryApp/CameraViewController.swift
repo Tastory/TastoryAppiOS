@@ -45,7 +45,8 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   fileprivate var outstandingConvertOperations = 0
   fileprivate var outstandingConvertQueue = DispatchQueue(label: "Outstanding Convert Queue", qos: .userInitiated)
   fileprivate var moments: [FoodieMoment?] = []
-  fileprivate var enableMultiPicker = false
+  fileprivate var enableMultiPicker = true
+  fileprivate var pendingVideoTrim: [Int]  = []
   
   
   // MARK: - IBOutlets
@@ -67,7 +68,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
       var configure = TLPhotosPickerConfigure()
       configure.usedCameraButton = false
       configure.allowedLivePhotos = false
-      configure.maxSelectedAssets = 10
+      configure.maxSelectedAssets = 5
       configure.muteAudio = true
       photoPickerController.delegate = self
       photoPickerController.configure = configure
@@ -494,8 +495,7 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   func handleNoCameraPermissions(picker: TLPhotosPickerViewController) {
     // TODO: Some new required delegate yet to be implemented
   }
-  
-  
+
   private func displayMarkUpController(mediaObj: FoodieMedia) {
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
@@ -513,7 +513,9 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   func convertToMedia(from tlphAsset: TLPHAsset, isLimitDuration: Bool, withBlock callback: @escaping (FoodieMedia?) -> Void) {
     DispatchQueue.global(qos: .userInitiated).async {
       guard tlphAsset.phAsset != nil else {
-        CCLog.assert("Failed to unwrap phAsset from TLPHAsset")
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+          CCLog.fatal("Failed to unwrap phAsset from TLPHAsset")
+        }
         return
       }
       
@@ -523,12 +525,20 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
           let mediaObject = FoodieMedia(for: photoName, localType: .draft, mediaType: .photo)
           if(tlphAsset.fullResolutionImage == nil) {
             // icloud image
-            tlphAsset.cloudImageDownload(progressBlock: { (completion) in
-              CCLog.verbose("downloading \(photoName) completed at \(completion * 100)%")
+            tlphAsset.cloudImageDownload(progressBlock: { (completion, error) in
+
+              if let error = error {
+                AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                  CCLog.fatal("An error occured when downloading image from icloud \(error.localizedDescription)")
+                }
+              }
+              CCLog.verbose("downloading \(photoName) from icloud completed at \(completion * 100)%")
             }, completionBlock: { (uiImage) in
 
               guard let uiImage = uiImage else {
-                CCLog.assert("Failed to unwrap uiImage downloaded from iCloud")
+                AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+                  CCLog.fatal("Failed to unwrap uiImage downloaded from iCloud")
+                }
                 return
               }
               mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(uiImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
@@ -536,7 +546,6 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
             })
 
           } else {
-
             mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(tlphAsset.fullResolutionImage!, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
             callback(mediaObject)
           }
@@ -544,141 +553,256 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
         case .video:
 
           let videoName = FoodieFileObject.newVideoFileName()
-          tlphAsset.tempCopyMediaFile(progressBlock: { (completion) in
-            CCLog.verbose("downloading \(videoName) at \(completion * 100)%")
+          tlphAsset.tempCopyMediaFile(progressBlock: { (completion, error) in
+
+            if let error = error {
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                CCLog.fatal("An error occured when downloading video from icloud \(error.localizedDescription)")
+              }
+              return
+            }
+
+            CCLog.verbose("downloading \(videoName) from icloud at \(completion * 100)%")
           }) { (url, mimeType) in
               let mediaObject = FoodieMedia(for: videoName, localType: .draft, mediaType: .video)
               mediaObject.setVideo(toLocal: url)
               callback(mediaObject)
-            }
+          }
       }
     }
   }
   
   
   func dismissPhotoPicker(withTLPHAssets: [TLPHAsset]) {
-
-    ActivitySpinner.globalApply()
-
-    if withTLPHAssets.count < 0 {
-      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-        CCLog.assert("No asset returned from TLPHAsset")
-      }
-    }
-    
-    outstandingConvertQueue.async {
+    if withTLPHAssets.count <= 0 {
+      // photo picker will be dimissed after this
+      CCLog.warning("No asset returned from TLPHAsset")
+    } else {
+      ActivitySpinner.globalApply()
       self.moments = Array.init(repeatElement(nil, count: withTLPHAssets.count))
-      
+
       for tlphAsset in withTLPHAssets {
         self.outstandingConvertOperations += 1
         self.convertToMedia(from: tlphAsset, isLimitDuration: withTLPHAssets.count > 1) { (foodieMedia) in
-          
+
           guard let foodieMedia = foodieMedia else {
             CCLog.assert("Failed to convert tlphAsset to FoodieMedia as foodieMedia is nil")
             return
           }
-          
-          let moment = FoodieMoment(foodieMedia: foodieMedia)
-          self.moments[(tlphAsset.selectedOrder - 1)] = moment
-          
-          self.outstandingConvertQueue.async {
+
+          self.outstandingConvertQueue.sync {
+
+            let moment = FoodieMoment(foodieMedia: foodieMedia)
+            self.moments[(tlphAsset.selectedOrder - 1)] = moment
+
             self.outstandingConvertOperations -= 1
-            if self.outstandingConvertOperations == 0 { self.processMoments() }
+            if self.outstandingConvertOperations == 0 {
+              ActivitySpinner.globalRemove()
+              self.processMoments()
+            }
           }
         }
       }
     }
   }
   
-  
   func dismissComplete() {
     // to display all the buttons properly in markup this code must be in this function otherwise
     // the buttons will be hidden
+
   }
   
   
   private func processMoments() {
 
-    ActivitySpinner.globalRemove()
-
     if(moments.count > 1)
     {
       var selectedMoments: [FoodieMoment] = []
+      var i = 0
       for moment in moments {
-        
-        
+
         guard let unwrappedMoment = moment else {
-          CCLog.assert("moment is nil")
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+             CCLog.assert("moment is nil")
+          }
           return
         }
-        
-        selectedMoments.append(unwrappedMoment)
-      }
-      
-      var workingStory: FoodieStory
-      if(FoodieStory.currentStory == nil)
-      {
-        workingStory =  FoodieStory.newCurrent()
-        self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
-      }
-      else
-      {
-        workingStory = FoodieStory.currentStory!
-        
-        if(addToExistingStoryOnly) {
-          DispatchQueue.main.async {
-            self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
+
+        guard let media = unwrappedMoment.media else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.assert("media is nil")
           }
-        } else {
-          ConfirmationDialog.displayStorySelection(to: self, newStoryHandler: { (uiaction) in
-            ConfirmationDialog.showStoryDiscardDialog(to: self, withBlock: {
-              FoodieStory.cleanUpDraft() { error in
-                
-                if let error = error {
-                  AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                    CCLog.assert("Error when cleaning up story from draft- \(error.localizedDescription)")
-                  }
-                  return
-                }
-                self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: FoodieStory.newCurrent())
-              }
-            })
-          }, addToCurrentHandler: { (uiaction) in
-            self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
-          })
+          return
         }
+
+        guard let mediaType = media.mediaType else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.assert("mediaType is nil")
+          }
+          return
+        }
+
+        if mediaType == .video {
+          pendingVideoTrim.append(i)
+        }
+
+        selectedMoments.append(unwrappedMoment)
+        i = i + 1
+      }
+
+
+      if pendingVideoTrim.isEmpty {
+        var workingStory: FoodieStory
+        if(FoodieStory.currentStory == nil)
+        {
+          workingStory =  FoodieStory.newCurrent()
+          self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
+        }
+        else
+        {
+          workingStory = FoodieStory.currentStory!
+
+          if(addToExistingStoryOnly) {
+            DispatchQueue.main.async {
+              self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
+            }
+          } else {
+            ConfirmationDialog.displayStorySelection(to: self, newStoryHandler: { (uiaction) in
+              ConfirmationDialog.showStoryDiscardDialog(to: self, withBlock: {
+                FoodieStory.cleanUpDraft() { error in
+
+                  if let error = error {
+                    AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                      CCLog.fatal("Error when cleaning up story from draft- \(error.localizedDescription)")
+                    }
+                    return
+                  }
+                  self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: FoodieStory.newCurrent())
+                }
+              })
+            }, addToCurrentHandler: { (uiaction) in
+              self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
+            }, displayAt: self.view,
+               popUpControllerDelegate: self)
+          }
+        }
+      } else {
+        // show trimmer for all videos
+        guard let moment = moments[pendingVideoTrim[0]] else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+            CCLog.fatal("moment is nil")
+          }
+          return
+        }
+
+        guard let media = moment.media else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+             CCLog.assert("media is nil")
+          }
+          return
+        }
+
+        guard let localURL = media.localVideoUrl else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+             CCLog.assert("media object's video url is nil")
+          }
+          return
+        }
+        showVideoTrimmer(urlStr: localURL.relativePath)
       }
     } else {
       if(moments.count == 1) {
         guard let moment = moments[0] else {
-          CCLog.assert("Unwrapped nil moment")
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+            CCLog.assert("Unwrapped nil moment")
+          }
           return
         }
         
         guard let mediaObj = moment.media else {
-          CCLog.assert("Unwrapped nil moment")
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+            CCLog.assert("Media is nil")
+          }
           return
         }
-        
-        let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VideoTrimmerViewController") as! VideoTrimmerViewController
-        viewController.avAsset = AVURLAsset(url: (mediaObj.localVideoUrl)!)
-        viewController.delegate = self
-        DispatchQueue.main.async {
-          self.present(viewController, animated: true, completion: nil)
+
+        guard let mediaType = mediaObj.mediaType else {
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+              CCLog.assert("Media object doesn't have a media type")
+          }
+          return
+        }
+
+        switch(mediaType) {
+
+        case FoodieMediaType.video :
+          guard let localURL = mediaObj.localVideoUrl else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+               CCLog.assert("media object's video url is nil")
+            }
+            return
+          }
+
+          DispatchQueue.main.async {
+            self.showVideoTrimmer(urlStr: localURL.relativePath)
+          }
+          break
+
+        case FoodieMediaType.photo:
+          DispatchQueue.main.async {
+            let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+            let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+            viewController.mediaObj = mediaObj
+            viewController.markupReturnDelegate = self
+            viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
+            self.present(viewController, animated: true)
+          }
+          break
+        }
+      }
+    }
+  }
+
+  private func showVideoTrimmer(urlStr: String) {
+    DispatchQueue.main.async {
+      let videoEditor = VideoEditorController()
+      videoEditor.videoPath = urlStr //localURL.relativePath
+      videoEditor.videoQuality = .typeIFrame960x540
+      videoEditor.videoMaximumDuration = TimeInterval(15.0)
+      videoEditor.delegate = self
+
+      if UIDevice.current.userInterfaceIdiom == .pad {
+        videoEditor.modalPresentationStyle = UIModalPresentationStyle.popover
+
+        guard let popOverController =  videoEditor.popoverPresentationController else {
+          // TODO add dialog
+          CCLog.assert("PopoverPresentationController is nil")
+          return
+        }
+
+        popOverController.sourceView = videoEditor.view
+        popOverController.delegate = self
+        popOverController.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
+      }
+
+      self.present(videoEditor, animated: true) {
+          // adjusting the view for full screen on an ipad
+        if UIDevice.current.userInterfaceIdiom == .pad {
+          videoEditor.preferredContentSize = CGSize(width: self.view.bounds.width, height: self.view.bounds.height)
+          videoEditor.popoverPresentationController?.containerView?.setNeedsDisplay()
         }
       }
     }
   }
 }
 
-
-
 extension CameraViewController: UIImagePickerControllerDelegate {
   public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
     
     guard let mediaType = info[UIImagePickerControllerMediaType] as? String else {
-      CCLog.assert("Media type is expected after selection from image picker")
+      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+         CCLog.assert("Media type is expected after selection from image picker")
+      }
       return
     }
     
@@ -692,7 +816,9 @@ extension CameraViewController: UIImagePickerControllerDelegate {
     case String(kUTTypeMovie):
       
       guard let movieUrl = info[UIImagePickerControllerMediaURL] as? URL else {
-        CCLog.assert("video URL is not returned from image picker")
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+          CCLog.assert("video URL is not returned from image picker")
+        }
         return
       }
       
@@ -710,23 +836,8 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       
       // Go into Video Clip trimming if the Video can be edited
       if UIVideoEditorController.canEditVideo(atPath: movieUrl.relativePath) {
-
-
-        let videoEditor = UIVideoEditorController()
-        videoEditor.videoPath = movieUrl.relativePath
-        videoEditor.videoQuality = .typeIFrame960x540
-        videoEditor.videoMaximumDuration = TimeInterval(15.0)
-        videoEditor.delegate = self
-        present(videoEditor, animated: true, completion: nil)
-
-        /*
-        let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-        let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "VideoTrimmerViewController") as! VideoTrimmerViewController
-        viewController.avAsset = AVURLAsset(url: movieUrl)
-        viewController.delegate = self
-        present(viewController, animated: true, completion: nil)
+        showVideoTrimmer(urlStr: movieUrl.relativePath)
         return
-        */
       }
       
       CCLog.warning("Video at URL \(movieUrl) cannot be edited")
@@ -738,7 +849,9 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       mediaName = FoodieFileObject.newPhotoFileName()
       
       guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
-        CCLog.assert("UIImage is not returned from image picker")
+        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+          CCLog.assert("UIImage is not returned from image picker")
+        }
         return
       }
       
@@ -768,33 +881,123 @@ extension CameraViewController: UIImagePickerControllerDelegate {
 
 
 extension CameraViewController: UIVideoEditorControllerDelegate {
+  // after movie is trimmed
   func videoEditorController(_ editor: UIVideoEditorController, didSaveEditedVideoToPath editedVideoPath: String) {
-    
-    let movieUrl = URL(fileURLWithPath: editedVideoPath, isDirectory: false)
-    let movieName = movieUrl.lastPathComponent
-    
-    let mediaObject = FoodieMedia(for: movieName, localType: .draft, mediaType: .video)
-    mediaObject.setVideo(toLocal: movieUrl)
-    
-    editor.dismiss(animated: true) {
-      let storyboard = UIStoryboard(name: "Compose", bundle: nil)
-      let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
-      viewController.mediaObj = mediaObject
-      viewController.markupReturnDelegate = self
-      viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
-      
-      self.present(viewController, animated: true)
+    editor.dismiss(animated:true){
+      if self.moments.count > 1 {
+        if self.pendingVideoTrim.count > 0 {
+          // update path of trimmer media
+          let movieUrl = URL(fileURLWithPath: editedVideoPath, isDirectory: false)
+          let movieName = movieUrl.lastPathComponent
+
+          let mediaObject = FoodieMedia(for: movieName, localType: .draft, mediaType: .video)
+          mediaObject.setVideo(toLocal: movieUrl)
+
+          self.moments[self.pendingVideoTrim[0]]!.media = mediaObject
+
+          //remove last moment index
+          self.pendingVideoTrim.remove(at: 0)
+        }
+
+        if self.pendingVideoTrim.isEmpty {
+          // done
+
+          var selectedMoments: [FoodieMoment] = []
+          for moment in self.moments {
+
+            guard let unwrappedMoment = moment else {
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                 CCLog.assert("moment is nil")
+              }
+              return
+            }
+            selectedMoments.append(unwrappedMoment)
+          }
+
+          var workingStory: FoodieStory
+          if(FoodieStory.currentStory == nil)
+          {
+            workingStory =  FoodieStory.newCurrent()
+            self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
+          }
+          else
+          {
+            workingStory = FoodieStory.currentStory!
+
+            if(self.addToExistingStoryOnly) {
+              DispatchQueue.main.async {
+                self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
+              }
+            } else {
+              ConfirmationDialog.displayStorySelection(to: self, newStoryHandler: { (uiaction) in
+                ConfirmationDialog.showStoryDiscardDialog(to: self, withBlock: {
+                  FoodieStory.cleanUpDraft() { error in
+
+                    if let error = error {
+                      AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                        CCLog.assert("Error when cleaning up story from draft- \(error.localizedDescription)")
+                      }
+                      return
+                    }
+                    self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: FoodieStory.newCurrent())
+                  }
+                })
+              }, addToCurrentHandler: { (uiaction) in
+                self.cameraReturnDelegate?.captureComplete(markedupMoments: selectedMoments, suggestedStory: workingStory)
+              }, displayAt:  self.view, popUpControllerDelegate: self)
+            }
+          }
+        } else {
+          guard let moment = self.moments[self.pendingVideoTrim[0]] else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+              CCLog.assert("moment is nil")
+            }
+            return
+          }
+
+          guard let media = moment.media else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+              CCLog.assert("media is nil")
+            }
+            return
+          }
+
+          guard let localURL = media.localVideoUrl else {
+            AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+              CCLog.assert("media object's video url is nil")
+            }
+            return
+          }
+
+          self.showVideoTrimmer(urlStr: localURL.relativePath)
+        }
+      } else {
+        let movieUrl = URL(fileURLWithPath: editedVideoPath, isDirectory: false)
+        let movieName = movieUrl.lastPathComponent
+        let mediaObject = FoodieMedia(for: movieName, localType: .draft, mediaType: .video)
+         mediaObject.setVideo(toLocal: movieUrl)
+        DispatchQueue.main.async {
+          let storyboard = UIStoryboard(name: "Compose", bundle: nil)
+          let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
+          viewController.mediaObj = mediaObject
+          viewController.markupReturnDelegate = self
+          viewController.addToExistingStoryOnly = self.addToExistingStoryOnly
+          self.present(viewController, animated: true)
+        }
+      }
     }
   }
   
   func videoEditorControllerDidCancel(_ editor: UIVideoEditorController) {
     CCLog.info("User cancelled Video Editor")
+    dismiss(animated: true, completion: nil)
   }
   
   func videoEditorController(_ editor: UIVideoEditorController, didFailWithError error: Error) {
     AlertDialog.present(from: self, title: "Video Edit Failed", message: error.localizedDescription) { _ in
       CCLog.assert("Video Editing Failed with Error - \(error.localizedDescription)")
     }
+    dismiss(animated:true)
   }
 }
 
@@ -829,7 +1032,10 @@ extension CameraViewController: VideoTrimmerDelegate {
 
         //copy over
         guard let outputURL = exportSession.outputURL else {
-          CCLog.fatal("outputURL = nil. Cannot switch AVPlayer backing to Local File")
+          AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
+            CCLog.fatal("outputURL = nil. Cannot switch AVPlayer backing to Local File")
+          }
+          return
         }
 
         let localURL = FoodieFileObject.getFileURL(for: .draft, with: fileName)
@@ -865,6 +1071,12 @@ extension CameraViewController: VideoTrimmerDelegate {
       default: break
       }
     }
+  }
+}
+
+extension CameraViewController: UIPopoverPresentationControllerDelegate {
+  func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
+    return false
   }
 }
 

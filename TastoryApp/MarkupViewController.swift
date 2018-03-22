@@ -366,8 +366,9 @@ class MarkupViewController: OverlayViewController {
               }
             }
         },
-          addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoments: [momentObj], suggestedStory: story) }
-        )
+          addToCurrentHandler: { UIAlertAction -> Void in self.cleanupAndReturn(markedUpMoments: [momentObj], suggestedStory: story) },
+        displayAt: self.view,
+        popUpControllerDelegate: self)
       }
     }
     else {
@@ -868,5 +869,11 @@ extension MarkupViewController: JotViewControllerDelegate {
 //      alignButton.isHidden = false
 //      fontButton.isHidden = false
     }
+  }
+}
+
+extension MarkupViewController: UIPopoverPresentationControllerDelegate {
+  func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
+    return false
   }
 }

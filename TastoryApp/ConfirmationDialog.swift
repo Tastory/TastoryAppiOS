@@ -10,7 +10,12 @@ import UIKit
 
 class ConfirmationDialog {
 
-  static func displayStorySelection(to viewController: UIViewController, newStoryHandler: @escaping (UIAlertAction) -> Void, addToCurrentHandler: @escaping (UIAlertAction) -> Void) {
+  struct Constants {
+    static let dialogWidth: CGFloat = 300.0
+    static let dialogHeight: CGFloat = 350.0
+  }
+
+  static func displayStorySelection(to viewController: UIViewController, newStoryHandler: @escaping (UIAlertAction) -> Void, addToCurrentHandler: @escaping (UIAlertAction) -> Void, displayAt: UIView? = nil, popUpControllerDelegate: UIPopoverPresentationControllerDelegate? = nil) {
     // Display Action Sheet to ask user if they want to add this Moment to current Story, or a new one, or Cancel
     // Create a button and associated Callback for adding the Moment to a new Story
     let addToNewButton =
@@ -35,6 +40,22 @@ class ConfirmationDialog {
     actionSheet.addAlertAction(title: "Cancel",
                                comment: "Action Sheet button for Cancelling Adding a Moment in MarkupImageView",
                                style: .cancel)
+
+    if let popOverController = actionSheet.popoverPresentationController {
+      if displayAt == nil {
+        // ipad must display this dialog as a popover controller otherwise it will crash
+        CCLog.fatal("Ipad can't display story selection dialog without displayAt rect")
+      }
+      actionSheet.modalPresentationStyle = .popover
+      let viewWidth = displayAt!.bounds.width
+      let viewHeight = displayAt!.bounds.height
+
+      popOverController.sourceRect = CGRect(x: (viewWidth / 2) - (Constants.dialogWidth/2), y: (viewHeight / 2) - (Constants.dialogHeight / 2), width: Constants.dialogWidth , height: Constants.dialogHeight)
+      popOverController.sourceView = displayAt!
+      popOverController.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
+      popOverController.delegate = popUpControllerDelegate
+    }
+
     viewController.present(actionSheet, animated: true, completion: nil)
   }
 

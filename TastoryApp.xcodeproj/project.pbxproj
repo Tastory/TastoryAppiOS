@@ -187,6 +187,7 @@
 		B2FE476EB1FA0084987DC0AA /* Pods_TastoryAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F167D49474BA676974C7DE38 /* Pods_TastoryAppTests.framework */; };
 		C207A7C320376334001D7588 /* MealTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C207A7C220376334001D7588 /* MealTableViewController.swift */; };
 		C229DCB01FDE781300955243 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C229DCAF1FDE781300955243 /* Date+Extension.swift */; };
+		C23EEDA22060997D00911FB2 /* VideoEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23EEDA12060997D00911FB2 /* VideoEditorController.swift */; };
 		C24F69651EB85B0300A0DB7B /* StoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24F69641EB85B0300A0DB7B /* StoryViewController.swift */; };
 		C265A9C81FCE981D000678E5 /* VideoTrimmerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C265A9C71FCE981D000678E5 /* VideoTrimmerViewController.swift */; };
 		C27217EF2023D91200975FEF /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27217EE2023D91200975FEF /* DeepLink.swift */; };
@@ -435,6 +436,7 @@
 		C207A7C220376334001D7588 /* MealTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealTableViewController.swift; sourceTree = "<group>"; };
 		C20FF85120142BA5009F2114 /* TastoryApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TastoryApp.entitlements; sourceTree = "<group>"; };
 		C229DCAF1FDE781300955243 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
+		C23EEDA12060997D00911FB2 /* VideoEditorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEditorController.swift; sourceTree = "<group>"; };
 		C24F69641EB85B0300A0DB7B /* StoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryViewController.swift; sourceTree = "<group>"; };
 		C265A9C71FCE981D000678E5 /* VideoTrimmerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoTrimmerViewController.swift; sourceTree = "<group>"; };
 		C27217EE2023D91200975FEF /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLink.swift; sourceTree = "<group>"; };
@@ -761,6 +763,7 @@
 				C2A615ED204A0549009516C7 /* SegmentedControl.swift */,
 				C2A615EF204A0955009516C7 /* String+Extension.swift */,
 				C2A615F1204A09C6009516C7 /* NSMutableAttributedString+Extension.swift */,
+				C23EEDA12060997D00911FB2 /* VideoEditorController.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -1646,6 +1649,7 @@
 				8CE6B8871EA9864800D454A9 /* StoryEntryViewController.swift in Sources */,
 				8CE49EB51F64C8E8007278C1 /* PickerSquareLayer.swift in Sources */,
 				8C45B6101ECACF1E0067CDC0 /* FoodiePFObject.swift in Sources */,
+				C23EEDA22060997D00911FB2 /* VideoEditorController.swift in Sources */,
 				8CE6B88B1EAC2DB400D454A9 /* MomentCollectionViewCell.swift in Sources */,
 				8CD02DB71FB8D61E00768CF8 /* CarouselCollectionViewLayout.swift in Sources */,
 				C29CD13D1F988B2000A6D53F /* PHAsset+Extension.swift in Sources */,
@@ -1870,7 +1874,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.Master;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.VictorTsang;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1897,7 +1901,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/TastoryApp/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks' @rpath";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.Master;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tastory.TastoryApp.iOS.Dev.VictorTsang;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
