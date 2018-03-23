@@ -74,7 +74,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
       configure.muteAudio = true
       photoPickerController.delegate = self
       photoPickerController.configure = configure
-      self.present(photoPickerController, animated: false, completion: nil)
+      self.present(photoPickerController, animated: true, completion: nil)
     }
     else {
       session.stopRunning()
