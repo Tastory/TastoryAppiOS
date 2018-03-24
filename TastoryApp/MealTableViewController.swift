@@ -31,12 +31,14 @@ class MealTableViewController: OverlayViewController {
   
   
   // MARK: - IBOutlet
-
   @IBOutlet var headerView: UIView!
   @IBOutlet var headerLineView: UIView!
-  @IBOutlet weak var mealTableView: UITableView!
-
-
+  @IBOutlet var mealTableView: UITableView!
+  @IBOutlet var headerConstraint: NSLayoutConstraint!
+  @IBOutlet var headerLineConstraint: NSLayoutConstraint!
+  @IBOutlet var superStackConstraint: NSLayoutConstraint!
+  
+  
   // MARK: - IBActions
   @IBAction func leftBarButtonAction(_ sender: UIButton) {
      popDismiss(animated: true)
@@ -71,6 +73,10 @@ class MealTableViewController: OverlayViewController {
       // We don't need the header in this case
       headerView.isHidden = true
       headerLineView.isHidden = true
+      
+      headerConstraint.isActive = false
+      headerLineConstraint.isActive = false
+      superStackConstraint.constant = 20.0
       
       let leftArrowImage = UIImage(named: "Settings-LeftArrowDark")
       navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(leftBarButtonAction(_:)))

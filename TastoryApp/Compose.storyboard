@@ -1224,9 +1224,12 @@
                         <viewLayoutGuide key="safeArea" id="nyb-08-fOZ"/>
                     </view>
                     <connections>
+                        <outlet property="headerConstraint" destination="wgC-do-S3J" id="vNt-nA-mJZ"/>
+                        <outlet property="headerLineConstraint" destination="Qej-wA-wL4" id="xWl-9y-dPw"/>
                         <outlet property="headerLineView" destination="VMj-DU-Vj1" id="Opw-Vs-Hn7"/>
                         <outlet property="headerView" destination="T4b-Wz-UQ0" id="umY-qv-KCb"/>
                         <outlet property="mealTableView" destination="72b-Dl-NDb" id="Wtg-wN-8RW"/>
+                        <outlet property="superStackConstraint" destination="6GO-jx-yJo" id="5am-0v-EmO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mJn-j9-hXr" userLabel="First Responder" sceneMemberID="firstResponder"/>
