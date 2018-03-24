@@ -64,6 +64,8 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   @IBAction func launchImagePicker(_ sender: Any) {
     
     if(enableMultiPicker) {
+      session.stopRunning()
+      
       let photoPickerController = TLPhotosPickerViewController()
       var configure = TLPhotosPickerConfigure()
       configure.usedCameraButton = false
@@ -75,6 +77,8 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
       self.present(photoPickerController, animated: false, completion: nil)
     }
     else {
+      session.stopRunning()
+      
       let imagePickerController = UIImagePickerController()
       imagePickerController.sourceType = .photoLibrary
       imagePickerController.mediaTypes = [kUTTypeImage, kUTTypeMovie] as [String]
@@ -219,6 +223,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
+    CCLog.verbose("viewWillAppear")
     
     captureLocation = nil
     captureLocationError = nil
@@ -237,7 +242,8 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
   
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    
+    CCLog.verbose("viewDidDisappear")
+
     locationWatcher?.stop()
     
     // Always return to Solo Ambient just in case
@@ -343,6 +349,8 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
     mediaObject.imageFormatter(image: image)
     
+    session.stopRunning()
+    
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -410,6 +418,8 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
           mediaObject.setVideo(toLocal: FoodieFileObject.getFileURL(for: .draft, with: fileName))
           
           DispatchQueue.main.async {
+            self.session.stopRunning()
+            
             let storyboard = UIStoryboard(name: "Compose", bundle: nil)
             guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
               AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -497,6 +507,9 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
   }
 
   private func displayMarkUpController(mediaObj: FoodieMedia) {
+    
+    session.stopRunning()
+    
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     guard let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as? MarkupViewController else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
@@ -750,6 +763,8 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
 
         case FoodieMediaType.photo:
           DispatchQueue.main.async {
+            self.session.stopRunning()
+            
             let storyboard = UIStoryboard(name: "Compose", bundle: nil)
             let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
             viewController.mediaObj = mediaObj
@@ -785,6 +800,8 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
         popOverController.permittedArrowDirections = UIPopoverArrowDirection(rawValue: 0)
       }
 
+      self.session.stopRunning()
+      
       self.present(videoEditor, animated: true) {
           // adjusting the view for full screen on an ipad
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -868,6 +885,8 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       }
       return
     }
+    
+    session.stopRunning()
     
     let storyboard = UIStoryboard(name: "Compose", bundle: nil)
     let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
@@ -977,6 +996,8 @@ extension CameraViewController: UIVideoEditorControllerDelegate {
         let mediaObject = FoodieMedia(for: movieName, localType: .draft, mediaType: .video)
          mediaObject.setVideo(toLocal: movieUrl)
         DispatchQueue.main.async {
+          self.session.stopRunning()
+          
           let storyboard = UIStoryboard(name: "Compose", bundle: nil)
           let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
           viewController.mediaObj = mediaObject
@@ -1052,6 +1073,8 @@ extension CameraViewController: VideoTrimmerDelegate {
         ActivitySpinner.globalRemove()
 
         DispatchQueue.main.async {
+          self.session.stopRunning()
+          
           let storyboard = UIStoryboard(name: "Compose", bundle: nil)
           let viewController = storyboard.instantiateFoodieViewController(withIdentifier: "MarkupViewController") as! MarkupViewController
           mediaObject.setVideo(toLocal: localURL)
