@@ -809,7 +809,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
     self.init()
     thumbnail = foodieMedia.generateThumbnail()
     thumbnailFileName = thumbnail!.foodieFileName
-    
+    playSound = true
     // didSet does not get called in initialization context...
     media = foodieMedia
     mediaFileName = foodieMedia.foodieFileName
