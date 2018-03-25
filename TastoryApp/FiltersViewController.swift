@@ -37,7 +37,7 @@ class FiltersViewController: OverlayViewController {
   @IBOutlet var mealTypesLabel: UILabel!
   @IBOutlet var priceSlider: RangeSlider!
   @IBOutlet var priceRangeView: UIView!
-  
+  @IBOutlet var curatedSwitch: UISwitch!
   
   
   // MARK: - IBAction
@@ -85,6 +85,12 @@ class FiltersViewController: OverlayViewController {
   }
   
   
+  @IBAction func switchToggled(_ sender: UISwitch) {
+    FoodieFilter.main.showEverything = !sender.isOn  // On = Curated, Off = Everything
+  }
+  
+  
+  
   // MARK: - Private Instance Function
   
   @objc private func dismissAction(_ sender: UIBarButtonItem) {
@@ -99,6 +105,7 @@ class FiltersViewController: OverlayViewController {
     
     priceSlider.lowerValue = workingFilter.priceLowerLimit
     priceSlider.upperValue = workingFilter.priceUpperLimit
+    curatedSwitch.setOn(true, animated: true)
     updateSelectedCategoriesLabel()
     updateSelectedMealTypesLabel()
   }
@@ -158,6 +165,7 @@ class FiltersViewController: OverlayViewController {
     
     priceSlider.lowerValue = workingFilter.priceLowerLimit
     priceSlider.upperValue = workingFilter.priceUpperLimit
+    curatedSwitch.setOn(!workingFilter.showEverything, animated: false)
     updateSelectedCategoriesLabel()
     updateSelectedMealTypesLabel()
   }

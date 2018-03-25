@@ -29,7 +29,8 @@ class FoodieFilter {
   
   var isDefault: Bool {
     if selectedCategories.count == 0, selectedMealTypes.count == 0,
-      priceLowerLimit == Constants.PriceLowerLimit, priceUpperLimit == Constants.PriceUpperLimit {
+      priceLowerLimit == Constants.PriceLowerLimit, priceUpperLimit == Constants.PriceUpperLimit,
+      showEverything == false {
       return true
     } else {
       return false
@@ -44,6 +45,7 @@ class FoodieFilter {
   var priceLowerLimit = Constants.PriceLowerLimit
   var priceUpperLimit = Constants.PriceUpperLimit
   var selectedMealTypes: [MealType] = []
+  var showEverything = false
   
   
   
@@ -54,5 +56,6 @@ class FoodieFilter {
     priceLowerLimit = Constants.PriceLowerLimit
     priceUpperLimit = Constants.PriceUpperLimit
     selectedMealTypes = []
+    showEverything = false
   }
 }

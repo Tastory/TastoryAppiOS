@@ -341,6 +341,7 @@ class DiscoverViewController: OverlayViewController {
   private func performQuery(onAllUsers: Bool = false, at mapRect: MKMapRect? = nil, withBlock callback: FoodieQuery.StoriesQueryBlock?) {
     
     var searchMapRect = MKMapRect()
+    var showEverything = onAllUsers
     
     if mapRect == nil {
       guard let mapController = mapNavController else {
@@ -376,13 +377,17 @@ class DiscoverViewController: OverlayViewController {
       query.addCategoryFilter(for: filter.selectedCategories)
       query.addPriceFilter(lowerLimit: filter.priceLowerLimit, upperLimit: filter.priceUpperLimit)
       query.addMealTypeFilter(for: filter.selectedMealTypes)
+      
+      if filter.showEverything {
+        showEverything = true
+      }
     }
     
-    if !onAllUsers {
+    if !showEverything {
       // Add Filter so only Post with more than Limit Disoverability can be seen
       // query.addRoleFilter(min: .user, max: nil)
       query.addDiscoverabilityFilter(min: 0.01, max: nil)
-      query.setDiscoverableOnlyTo(true)
+      query.setDiscoverableOnly(to: true)
       
       // Make sure you can alway see your own posts
 //      if let currentUser = FoodieUser.current, currentUser.isRegistered {

@@ -178,8 +178,11 @@ class FoodieQuery {
 
       let query = FoodieQuery()
       query.addLocationFilter(origin: coordinate, radius: radius)
-      query.addDiscoverabilityFilter(min: 0.01, max: nil)
-      query.setDiscoverableOnlyTo(true)
+      
+      if !FoodieFilter.main.showEverything {
+        query.addDiscoverabilityFilter(min: 0.01, max: nil)
+        query.setDiscoverableOnly(to: true)
+      }
       
       // Make sure you can alway see your own posts
 //      if let currentUser = FoodieUser.current, currentUser.isRegistered {
@@ -286,7 +289,7 @@ class FoodieQuery {
   }
   
   
-  func setDiscoverableOnlyTo(_ discoverable: Bool) {
+  func setDiscoverableOnly(to discoverable: Bool) {
     discoverableOnly = discoverable
   }
   
