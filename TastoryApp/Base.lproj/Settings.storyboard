@@ -49,7 +49,7 @@
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="12p-Q8-9BM">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="443"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="533"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Q8c-Z8-2qr" userLabel="Account Header Cell">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -227,11 +227,11 @@
                                                     <constraint firstAttribute="height" constant="44" id="WRD-8d-Kw0"/>
                                                 </constraints>
                                             </view>
-                                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="u01-UY-F8v" userLabel="3rd Party Libraries Cell">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="u01-UY-F8v" userLabel="Frequently Asked Questions">
                                                 <rect key="frame" x="0.0" y="310" width="375" height="44"/>
                                                 <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="3rd Party Libraries &amp; APIs" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iBc-eJ-1pz">
-                                                        <rect key="frame" x="15" y="14.5" width="163.5" height="16.5"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Frequently Asked Questions" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iBc-eJ-1pz" userLabel="Frequently Asked Questions">
+                                                        <rect key="frame" x="15" y="14" width="183.5" height="16.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
                                                         <color key="textColor" white="0.35999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -251,18 +251,52 @@
                                                     <constraint firstItem="o9l-Cx-oTu" firstAttribute="centerY" secondItem="u01-UY-F8v" secondAttribute="centerY" id="TwG-7o-QTx"/>
                                                 </constraints>
                                                 <connections>
-                                                    <outletCollection property="gestureRecognizers" destination="BtG-XE-gv6" appends="YES" id="VG1-L3-RLw"/>
+                                                    <outletCollection property="gestureRecognizers" destination="KMj-Ly-IwW" appends="YES" id="4t3-9a-yHq"/>
                                                 </connections>
                                             </view>
-                                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G2u-e9-4pO" userLabel="Line">
-                                                <rect key="frame" x="0.0" y="310" width="375" height="1"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G2u-e9-4pO" userLabel="Line">
+                                                <rect key="frame" x="0.0" y="354" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="V7b-Zl-zqe"/>
                                                 </constraints>
                                             </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IVh-G3-fJZ" userLabel="3rd Party Libraries Cell">
+                                                <rect key="frame" x="0.0" y="355" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="3rd Party Libraries &amp; APIs" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CY0-b3-v9h">
+                                                        <rect key="frame" x="15" y="14.5" width="163.5" height="16.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="14"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <imageView userInteractionEnabled="NO" alpha="0.5" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" image="Settings-RightArrowDark" translatesAutoresizingMaskIntoConstraints="NO" id="Foz-NB-fMh">
+                                                        <rect key="frame" x="336" y="10" width="24" height="24"/>
+                                                    </imageView>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="44" id="60L-Vc-W3p"/>
+                                                    <constraint firstItem="CY0-b3-v9h" firstAttribute="leading" secondItem="IVh-G3-fJZ" secondAttribute="leading" constant="15" id="CdJ-FL-6r8"/>
+                                                    <constraint firstItem="CY0-b3-v9h" firstAttribute="centerY" secondItem="IVh-G3-fJZ" secondAttribute="centerY" id="Jws-s8-lsa"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Foz-NB-fMh" secondAttribute="trailing" constant="15" id="KwN-MC-LwC"/>
+                                                    <constraint firstItem="Foz-NB-fMh" firstAttribute="leading" relation="lessThanOrEqual" secondItem="CY0-b3-v9h" secondAttribute="trailing" priority="200" constant="375" id="Qrs-gj-cHL"/>
+                                                    <constraint firstItem="Foz-NB-fMh" firstAttribute="centerY" secondItem="IVh-G3-fJZ" secondAttribute="centerY" id="deZ-7A-I52"/>
+                                                </constraints>
+                                                <connections>
+                                                    <outletCollection property="gestureRecognizers" destination="BtG-XE-gv6" appends="YES" id="Yg6-sj-Xs7"/>
+                                                </connections>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C7i-Wp-xxQ" userLabel="Line">
+                                                <rect key="frame" x="0.0" y="399" width="375" height="1"/>
+                                                <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="1" id="o1h-Yf-cke"/>
+                                                </constraints>
+                                            </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JvM-eH-OvF" userLabel="Privacy Policy Cell">
-                                                <rect key="frame" x="0.0" y="310" width="375" height="44"/>
+                                                <rect key="frame" x="0.0" y="400" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Privacy Policy" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vpw-0b-Jwk">
                                                         <rect key="frame" x="15" y="14.5" width="90.5" height="16.5"/>
@@ -289,14 +323,14 @@
                                                 </connections>
                                             </view>
                                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="apo-oN-yc7" userLabel="Line">
-                                                <rect key="frame" x="0.0" y="354" width="375" height="1"/>
+                                                <rect key="frame" x="0.0" y="444" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="Utn-X6-SDH"/>
                                                 </constraints>
                                             </view>
                                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZQ3-BW-ehT" userLabel="Terms of Service Cell">
-                                                <rect key="frame" x="0.0" y="354" width="375" height="44"/>
+                                                <rect key="frame" x="0.0" y="444" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Terms of Service" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mxU-Ko-c9a">
                                                         <rect key="frame" x="15" y="14.5" width="109" height="16.5"/>
@@ -323,14 +357,14 @@
                                                 </connections>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QtI-Kf-2XB" userLabel="Line">
-                                                <rect key="frame" x="0.0" y="354" width="375" height="1"/>
+                                                <rect key="frame" x="0.0" y="444" width="375" height="1"/>
                                                 <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="bmd-Or-6pd"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CLl-Zo-OtN" userLabel="About Us Cell">
-                                                <rect key="frame" x="0.0" y="355" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CLl-Zo-OtN" userLabel="Feedback Cell">
+                                                <rect key="frame" x="0.0" y="445" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" text="Send Feedback" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="quX-wZ-R3O">
                                                         <rect key="frame" x="15" y="14.5" width="102.5" height="16.5"/>
@@ -353,11 +387,11 @@
                                                     <constraint firstItem="x3z-Hy-3B0" firstAttribute="leading" relation="lessThanOrEqual" secondItem="quX-wZ-R3O" secondAttribute="trailing" priority="200" constant="375" id="uCi-b6-5Ci"/>
                                                 </constraints>
                                                 <connections>
-                                                    <outletCollection property="gestureRecognizers" destination="ZEI-1h-Hpf" appends="YES" id="DCF-Al-rpp"/>
+                                                    <outletCollection property="gestureRecognizers" destination="ZEI-1h-Hpf" appends="YES" id="ecR-lN-xbt"/>
                                                 </connections>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bwi-kV-rqk" userLabel="Bottom Space Cell">
-                                                <rect key="frame" x="0.0" y="399" width="375" height="44"/>
+                                                <rect key="frame" x="0.0" y="489" width="375" height="44"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tastory Ver 0.0.0 B000" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k2e-jV-2bO">
                                                         <rect key="frame" x="15" y="17.5" width="125" height="14.5"/>
@@ -426,6 +460,11 @@
                         <action selector="linkFacebookTap:" destination="Fgo-n9-ZB2" id="488-uY-i1g"/>
                     </connections>
                 </tapGestureRecognizer>
+                <tapGestureRecognizer id="KMj-Ly-IwW" userLabel="FAQ Tap Recognizer">
+                    <connections>
+                        <action selector="faqTap:" destination="Fgo-n9-ZB2" id="LEt-Sg-7zS"/>
+                    </connections>
+                </tapGestureRecognizer>
                 <tapGestureRecognizer id="BtG-XE-gv6" userLabel="Libraries Tap Recognizer">
                     <connections>
                         <action selector="librariesTap:" destination="Fgo-n9-ZB2" id="QPs-LK-akU"/>
@@ -441,9 +480,9 @@
                         <action selector="serviceTermsTap:" destination="Fgo-n9-ZB2" id="RL2-Rq-yc9"/>
                     </connections>
                 </tapGestureRecognizer>
-                <tapGestureRecognizer id="ZEI-1h-Hpf" userLabel="About Us Tap Recognizer">
+                <tapGestureRecognizer id="ZEI-1h-Hpf" userLabel="Connect Tap Recognizer">
                     <connections>
-                        <action selector="aboutUsTap:" destination="Fgo-n9-ZB2" id="07P-M3-KAz"/>
+                        <action selector="connectTap:" destination="Fgo-n9-ZB2" id="Jzo-Hg-ZGK"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
@@ -972,10 +1011,10 @@
             </objects>
             <point key="canvasLocation" x="3172" y="-978"/>
         </scene>
-        <!--3rd Party Libraries @ APIs-->
+        <!--3rd Party Libraries & APIs-->
         <scene sceneID="uQh-Wx-tur">
             <objects>
-                <viewController storyboardIdentifier="LibrariesViewController" title="3rd Party Libraries @ APIs" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="tKH-44-OUI" customClass="LibrariesViewController" customModule="TastoryApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LibrariesViewController" title="3rd Party Libraries &amp; APIs" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="tKH-44-OUI" customClass="LibrariesViewController" customModule="TastoryApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dhQ-ey-PlF">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -984,13 +1023,514 @@
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="cnz-O7-pCn">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="811"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="21562"/>
                                         <subviews>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NKO-Kd-kC8" userLabel="Parse Header">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zif-b6-M1U" userLabel="AWS Header">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                                 <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Open Parse" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jtG-eZ-GzB">
-                                                        <rect key="frame" x="15" y="17.5" width="66.5" height="14.5"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Amazon Web Services iOS SDK" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b87-0p-Lo0">
+                                                        <rect key="frame" x="15" y="17.5" width="176.5" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="b87-0p-Lo0" secondAttribute="trailing" priority="200" constant="375" id="DRz-ON-bWj"/>
+                                                    <constraint firstAttribute="height" constant="44" id="hUl-Of-klR"/>
+                                                    <constraint firstItem="b87-0p-Lo0" firstAttribute="leading" secondItem="Zif-b6-M1U" secondAttribute="leading" constant="15" id="uML-Y1-OAf"/>
+                                                    <constraint firstAttribute="bottom" secondItem="b87-0p-Lo0" secondAttribute="bottom" constant="12" id="vT2-sC-f78"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="iDQ-of-vh4" userLabel="AWS Cell">
+                                                <rect key="frame" x="0.0" y="44" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BhB-1p-U7n">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+1. Definitions.
+
+"License" shall mean the terms and conditions for use, reproduction, and distribution as defined by Sections 1 through 9 of this document.
+
+"Licensor" shall mean the copyright owner or entity authorized by the copyright owner that is granting the License.
+
+"Legal Entity" shall mean the union of the acting entity and all other entities that control, are controlled by, or are under common control with that entity. For the purposes of this definition, "control" means (i) the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, or (iii) beneficial ownership of such entity.
+
+"You" (or "Your") shall mean an individual or Legal Entity exercising permissions granted by this License.
+
+"Source" form shall mean the preferred form for making modifications, including but not limited to software source code, documentation source, and configuration files.
+
+"Object" form shall mean any form resulting from mechanical transformation or translation of a Source form, including but not limited to compiled object code, generated documentation, and conversions to other media types.
+
+"Work" shall mean the work of authorship, whether in Source or Object form, made available under the License, as indicated by a copyright notice that is included in or attached to the work (an example is provided in the Appendix below).
+
+"Derivative Works" shall mean any work, whether in Source or Object form, that is based on (or derived from) the Work and for which the editorial revisions, annotations, elaborations, or other modifications represent, as a whole, an original work of authorship. For the purposes of this License, Derivative Works shall not include works that remain separable from, or merely link (or bind by name) to the interfaces of, the Work and Derivative Works thereof.
+
+"Contribution" shall mean any work of authorship, including the original version of the Work and any modifications or additions to that Work or Derivative Works thereof, that is intentionally submitted to Licensor for inclusion in the Work by the copyright owner or by an individual or Legal Entity authorized to submit on behalf of the copyright owner. For the purposes of this definition, "submitted" means any form of electronic, verbal, or written communication sent to the Licensor or its representatives, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Licensor for the purpose of discussing and improving the Work, but excluding communication that is conspicuously marked or otherwise designated in writing by the copyright owner as "Not a Contribution."
+
+"Contributor" shall mean Licensor and any individual or Legal Entity on behalf of whom a Contribution has been received by Licensor and subsequently incorporated within the Work.
+
+2. Grant of Copyright License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable copyright license to reproduce, prepare Derivative Works of, publicly display, publicly perform, sublicense, and distribute the Work and such Derivative Works in Source or Object form.
+
+3. Grant of Patent License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated in this section) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the Work, where such license applies only to those patent claims licensable by such Contributor that are necessarily infringed by their Contribution(s) alone or by combination of their Contribution(s) with the Work to which such Contribution(s) was submitted. If You institute patent litigation against any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the Work or a Contribution incorporated within the Work constitutes direct or contributory patent infringement, then any patent licenses granted to You under this License for that Work shall terminate as of the date such litigation is filed.
+
+4. Redistribution. You may reproduce and distribute copies of the Work or Derivative Works thereof in any medium, with or without modifications, and in Source or Object form, provided that You meet the following conditions:
+
+   1.   You must give any other recipients of the Work or Derivative Works a copy of this License; and
+   2.   You must cause any modified files to carry prominent notices stating that You changed the files; and
+   3.   You must retain, in the Source form of any Derivative Works that You distribute, all copyright, patent, trademark, and attribution notices from the Source form of the Work, excluding those notices that do not pertain to any part of the Derivative Works; and
+   4.   If the Work includes a "NOTICE" text file as part of its distribution, then any Derivative Works that You distribute must include a readable copy of the attribution notices contained within such NOTICE file, excluding those notices that do not pertain to any part of the Derivative Works, in at least one of the following places: within a NOTICE text file distributed as part of the Derivative Works; within the Source form or documentation, if provided along with the Derivative Works; or, within a display generated by the Derivative Works, if and wherever such third-party notices normally appear. The contents of the NOTICE file are for informational purposes only and do not modify the License. You may add Your own attribution notices within Derivative Works that You distribute, alongside or as an addendum to the NOTICE text from the Work, provided that such additional attribution notices cannot be construed as modifying the License.
+
+You may add Your own copyright statement to Your modifications and may provide additional or different license terms and conditions for use, reproduction, or distribution of Your modifications, or for any such Derivative Works as a whole, provided Your use, reproduction, and distribution of the Work otherwise complies with the conditions stated in this License.
+
+5. Submission of Contributions. Unless You explicitly state otherwise, any Contribution intentionally submitted for inclusion in the Work by You to the Licensor shall be under the terms and conditions of this License, without any additional terms or conditions. Notwithstanding the above, nothing herein shall supersede or modify the terms of any separate license agreement you may have executed with Licensor regarding such Contributions.
+
+6. Trademarks. This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the Work and reproducing the content of the NOTICE file.
+
+7. Disclaimer of Warranty. Unless required by applicable law or agreed to in writing, Licensor provides the Work (and each Contributor provides its Contributions) on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for determining the appropriateness of using or redistributing the Work and assume any risks associated with Your exercise of permissions under this License.
+
+8. Limitation of Liability. In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law (such as deliberate and grossly negligent acts) or agreed to in writing, shall any Contributor be liable to You for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising as a result of this License or out of the use or inability to use the Work (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses), even if such Contributor has been advised of the possibility of such damages.
+
+9. Accepting Warranty or Additional Liability. While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.
+
+END OF TERMS AND CONDITIONS</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstAttribute="trailing" secondItem="BhB-1p-U7n" secondAttribute="trailing" constant="20" id="Okn-Ay-0ne"/>
+                                                    <constraint firstItem="BhB-1p-U7n" firstAttribute="top" secondItem="iDQ-of-vh4" secondAttribute="top" constant="20" id="UgB-NZ-G9i"/>
+                                                    <constraint firstAttribute="bottom" secondItem="BhB-1p-U7n" secondAttribute="bottom" constant="20" id="pAx-eJ-hEL"/>
+                                                    <constraint firstItem="BhB-1p-U7n" firstAttribute="leading" secondItem="iDQ-of-vh4" secondAttribute="leading" constant="20" id="qj0-BZ-99a"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HbD-B2-3r8" userLabel="Branch Header">
+                                                <rect key="frame" x="0.0" y="1231" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Branch Metrics" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="74P-BC-fLS" userLabel="Branch Metrics">
+                                                        <rect key="frame" x="15" y="17.5" width="86.5" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="44" id="53m-eS-ihe"/>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="74P-BC-fLS" secondAttribute="trailing" priority="200" constant="375" id="Vs0-Ad-uBd"/>
+                                                    <constraint firstItem="74P-BC-fLS" firstAttribute="leading" secondItem="HbD-B2-3r8" secondAttribute="leading" constant="15" id="aWT-F8-Mte"/>
+                                                    <constraint firstAttribute="bottom" secondItem="74P-BC-fLS" secondAttribute="bottom" constant="12" id="fsW-Vh-eRx"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="4pn-Pg-TCn" userLabel="Branch Cell">
+                                                <rect key="frame" x="0.0" y="1275" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KXF-Si-hlY">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2015 Branch Metrics, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstItem="KXF-Si-hlY" firstAttribute="top" secondItem="4pn-Pg-TCn" secondAttribute="top" constant="20" id="GXD-SA-646"/>
+                                                    <constraint firstItem="KXF-Si-hlY" firstAttribute="leading" secondItem="4pn-Pg-TCn" secondAttribute="leading" constant="20" id="bTt-MP-wfE"/>
+                                                    <constraint firstAttribute="trailing" secondItem="KXF-Si-hlY" secondAttribute="trailing" constant="20" id="fmP-zt-0qn"/>
+                                                    <constraint firstAttribute="bottom" secondItem="KXF-Si-hlY" secondAttribute="bottom" constant="20" id="jDS-TQ-Slc"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9C2-bR-OpW" userLabel="ColorSlider Header">
+                                                <rect key="frame" x="0.0" y="2462" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ColorSlider" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IaG-D7-6wL">
+                                                        <rect key="frame" x="15" y="17.5" width="65.5" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="bottom" secondItem="IaG-D7-6wL" secondAttribute="bottom" constant="12" id="4oG-qL-ECR"/>
+                                                    <constraint firstItem="IaG-D7-6wL" firstAttribute="leading" secondItem="9C2-bR-OpW" secondAttribute="leading" constant="15" id="Wje-Hl-jdQ"/>
+                                                    <constraint firstAttribute="height" constant="44" id="j0k-WI-zXH"/>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="IaG-D7-6wL" secondAttribute="trailing" priority="200" constant="375" id="tnB-4L-9Zg"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="r9m-qL-zYR" userLabel="ColorSlider Cell">
+                                                <rect key="frame" x="0.0" y="2506" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lv5-lY-Dvt">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2016-Present Sachin Patel (http://gizmosachin.com/)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstItem="Lv5-lY-Dvt" firstAttribute="leading" secondItem="r9m-qL-zYR" secondAttribute="leading" constant="20" id="U9k-UW-JqO"/>
+                                                    <constraint firstAttribute="bottom" secondItem="Lv5-lY-Dvt" secondAttribute="bottom" constant="20" id="XY8-WK-WZz"/>
+                                                    <constraint firstItem="Lv5-lY-Dvt" firstAttribute="top" secondItem="r9m-qL-zYR" secondAttribute="top" constant="20" id="j6f-kb-1Be"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Lv5-lY-Dvt" secondAttribute="trailing" constant="20" id="keU-qf-x9i"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OYN-0R-ZWf" userLabel="CosTouchViz Header">
+                                                <rect key="frame" x="0.0" y="3693" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="COSTouchVisualizer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qvr-lo-KeV">
+                                                        <rect key="frame" x="15" y="17.5" width="115" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="44" id="MuD-TQ-nbE"/>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Qvr-lo-KeV" secondAttribute="trailing" priority="200" constant="375" id="RHL-eo-dxN"/>
+                                                    <constraint firstItem="Qvr-lo-KeV" firstAttribute="leading" secondItem="OYN-0R-ZWf" secondAttribute="leading" constant="15" id="Rt5-z5-Ck9"/>
+                                                    <constraint firstAttribute="bottom" secondItem="Qvr-lo-KeV" secondAttribute="bottom" constant="12" id="Ybo-cb-3Ks"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="1he-aO-74G" userLabel="CosTouchViz Cell">
+                                                <rect key="frame" x="0.0" y="3737" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="37F-qV-Qi3">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2014 Joe Blau &lt;josephblau@gmail.com&gt;
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstItem="37F-qV-Qi3" firstAttribute="top" secondItem="1he-aO-74G" secondAttribute="top" constant="20" id="DUl-uo-wEC"/>
+                                                    <constraint firstAttribute="trailing" secondItem="37F-qV-Qi3" secondAttribute="trailing" constant="20" id="F4L-gM-N1f"/>
+                                                    <constraint firstAttribute="bottom" secondItem="37F-qV-Qi3" secondAttribute="bottom" constant="20" id="QtZ-km-QDq"/>
+                                                    <constraint firstItem="37F-qV-Qi3" firstAttribute="leading" secondItem="1he-aO-74G" secondAttribute="leading" constant="20" id="S1x-i3-IBF"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vt1-uk-fxR" userLabel="Das-Quadrat Header">
+                                                <rect key="frame" x="0.0" y="4924" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Das-Quadrat" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a8w-7R-GN8">
+                                                        <rect key="frame" x="15" y="17.5" width="74" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="a8w-7R-GN8" secondAttribute="trailing" priority="200" constant="375" id="3ye-ao-6l6"/>
+                                                    <constraint firstItem="a8w-7R-GN8" firstAttribute="leading" secondItem="Vt1-uk-fxR" secondAttribute="leading" constant="15" id="8qz-i6-Wed"/>
+                                                    <constraint firstAttribute="bottom" secondItem="a8w-7R-GN8" secondAttribute="bottom" constant="12" id="Sav-yU-df8"/>
+                                                    <constraint firstAttribute="height" constant="44" id="jY5-Ly-033"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="1kY-4x-hRG" userLabel="Das-Quadrat Cell">
+                                                <rect key="frame" x="0.0" y="4968" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="juo-sw-2lg">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2014, Constantine Fry
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstAttribute="bottom" secondItem="juo-sw-2lg" secondAttribute="bottom" constant="20" id="Cjn-bQ-yI8"/>
+                                                    <constraint firstItem="juo-sw-2lg" firstAttribute="top" secondItem="1kY-4x-hRG" secondAttribute="top" constant="20" id="J0G-My-Qeb"/>
+                                                    <constraint firstItem="juo-sw-2lg" firstAttribute="leading" secondItem="1kY-4x-hRG" secondAttribute="leading" constant="20" id="Lar-Dg-07j"/>
+                                                    <constraint firstAttribute="trailing" secondItem="juo-sw-2lg" secondAttribute="trailing" constant="20" id="nUG-kI-YF5"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hAO-3e-wzk" userLabel="Facebook Header">
+                                                <rect key="frame" x="0.0" y="6155" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Facebook Swift SDK" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YJ2-58-Wbr">
+                                                        <rect key="frame" x="15" y="17.5" width="115" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstItem="YJ2-58-Wbr" firstAttribute="leading" secondItem="hAO-3e-wzk" secondAttribute="leading" constant="15" id="BTY-YN-faN"/>
+                                                    <constraint firstAttribute="bottom" secondItem="YJ2-58-Wbr" secondAttribute="bottom" constant="12" id="NJg-zC-n5Y"/>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="YJ2-58-Wbr" secondAttribute="trailing" priority="200" constant="375" id="eHq-XL-01h"/>
+                                                    <constraint firstAttribute="height" constant="44" id="ge4-MH-w2X"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="15p-L8-Gef" userLabel="Facebook Cell">
+                                                <rect key="frame" x="0.0" y="6199" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dVm-bD-W0i">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2016-present, Facebook, Inc. All rights reserved.
+
+For Facebook Swift SDK software
+
+You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
+copy, modify, and distribute this software in source code or binary form for use
+in connection with the web services and APIs provided by Facebook.
+
+As with any software that integrates with the Facebook platform, your use of
+this software is subject to the Facebook Developer Principles and Policies
+[http://developers.facebook.com/policy/]. This copyright notice shall be
+included in all copies or substantial portions of the software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                        <mutableString key="userLabel">Copyright (c) 2015-present, Parse, LLC. All rights reserved.  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:   * Redistributions of source code must retain the above copyright notice, this    list of conditions and the following disclaimer.   * Redistributions in binary form must reproduce the above copyright notice,    this list of conditions and the following disclaimer in the documentation    and/or other materials provided with the distribution.   * Neither the name Parse nor the names of its contributors may be used to    endorse or promote products derived from this software without specific    prior written permission.  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  -----  As of April 5, 2017, Parse, LLC has transferred this code to the parse-community organization, and will no longer be contributing to or distributing this code.</mutableString>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstAttribute="bottom" secondItem="dVm-bD-W0i" secondAttribute="bottom" constant="20" id="4W5-CS-c6e"/>
+                                                    <constraint firstAttribute="trailing" secondItem="dVm-bD-W0i" secondAttribute="trailing" constant="20" id="9KB-8S-Pc9"/>
+                                                    <constraint firstItem="dVm-bD-W0i" firstAttribute="leading" secondItem="15p-L8-Gef" secondAttribute="leading" constant="20" id="Owq-Y5-5ju"/>
+                                                    <constraint firstItem="dVm-bD-W0i" firstAttribute="top" secondItem="15p-L8-Gef" secondAttribute="top" constant="20" id="RiI-7N-4Z0"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FvP-p6-zZC" userLabel="Firebase Header">
+                                                <rect key="frame" x="0.0" y="7386" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Firebase iOS SDK" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e4R-gR-QvT">
+                                                        <rect key="frame" x="15" y="17.5" width="98.5" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstItem="e4R-gR-QvT" firstAttribute="leading" secondItem="FvP-p6-zZC" secondAttribute="leading" constant="15" id="0zm-fb-YR0"/>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="e4R-gR-QvT" secondAttribute="trailing" priority="200" constant="375" id="HFH-nI-dkY"/>
+                                                    <constraint firstAttribute="height" constant="44" id="saD-Nb-DPo"/>
+                                                    <constraint firstAttribute="bottom" secondItem="e4R-gR-QvT" secondAttribute="bottom" constant="12" id="xjv-JT-qEI"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="74z-Av-p94" userLabel="Firebase Cell">
+                                                <rect key="frame" x="0.0" y="7430" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nkO-Bu-9XL">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+1. Definitions.
+
+"License" shall mean the terms and conditions for use, reproduction, and distribution as defined by Sections 1 through 9 of this document.
+
+"Licensor" shall mean the copyright owner or entity authorized by the copyright owner that is granting the License.
+
+"Legal Entity" shall mean the union of the acting entity and all other entities that control, are controlled by, or are under common control with that entity. For the purposes of this definition, "control" means (i) the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, or (iii) beneficial ownership of such entity.
+
+"You" (or "Your") shall mean an individual or Legal Entity exercising permissions granted by this License.
+
+"Source" form shall mean the preferred form for making modifications, including but not limited to software source code, documentation source, and configuration files.
+
+"Object" form shall mean any form resulting from mechanical transformation or translation of a Source form, including but not limited to compiled object code, generated documentation, and conversions to other media types.
+
+"Work" shall mean the work of authorship, whether in Source or Object form, made available under the License, as indicated by a copyright notice that is included in or attached to the work (an example is provided in the Appendix below).
+
+"Derivative Works" shall mean any work, whether in Source or Object form, that is based on (or derived from) the Work and for which the editorial revisions, annotations, elaborations, or other modifications represent, as a whole, an original work of authorship. For the purposes of this License, Derivative Works shall not include works that remain separable from, or merely link (or bind by name) to the interfaces of, the Work and Derivative Works thereof.
+
+"Contribution" shall mean any work of authorship, including the original version of the Work and any modifications or additions to that Work or Derivative Works thereof, that is intentionally submitted to Licensor for inclusion in the Work by the copyright owner or by an individual or Legal Entity authorized to submit on behalf of the copyright owner. For the purposes of this definition, "submitted" means any form of electronic, verbal, or written communication sent to the Licensor or its representatives, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Licensor for the purpose of discussing and improving the Work, but excluding communication that is conspicuously marked or otherwise designated in writing by the copyright owner as "Not a Contribution."
+
+"Contributor" shall mean Licensor and any individual or Legal Entity on behalf of whom a Contribution has been received by Licensor and subsequently incorporated within the Work.
+
+2. Grant of Copyright License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable copyright license to reproduce, prepare Derivative Works of, publicly display, publicly perform, sublicense, and distribute the Work and such Derivative Works in Source or Object form.
+
+3. Grant of Patent License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated in this section) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the Work, where such license applies only to those patent claims licensable by such Contributor that are necessarily infringed by their Contribution(s) alone or by combination of their Contribution(s) with the Work to which such Contribution(s) was submitted. If You institute patent litigation against any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the Work or a Contribution incorporated within the Work constitutes direct or contributory patent infringement, then any patent licenses granted to You under this License for that Work shall terminate as of the date such litigation is filed.
+
+4. Redistribution. You may reproduce and distribute copies of the Work or Derivative Works thereof in any medium, with or without modifications, and in Source or Object form, provided that You meet the following conditions:
+
+(a) You must give any other recipients of the Work or Derivative Works a copy of this License; and
+
+(b) You must cause any modified files to carry prominent notices stating that You changed the files; and
+
+(c) You must retain, in the Source form of any Derivative Works that You distribute, all copyright, patent, trademark, and attribution notices from the Source form of the Work, excluding those notices that do not pertain to any part of the Derivative Works; and
+
+(d) If the Work includes a "NOTICE" text file as part of its distribution, then any Derivative Works that You distribute must include a readable copy of the attribution notices contained within such NOTICE file, excluding those notices that do not pertain to any part of the Derivative Works, in at least one of the following places: within a NOTICE text file distributed as part of the Derivative Works; within the Source form or documentation, if provided along with the Derivative Works; or, within a display generated by the Derivative Works, if and wherever such third-party notices normally appear. The contents of the NOTICE file are for informational purposes only and do not modify the License. You may add Your own attribution notices within Derivative Works that You distribute, alongside or as an addendum to the NOTICE text from the Work, provided that such additional attribution notices cannot be construed as modifying the License.
+
+You may add Your own copyright statement to Your modifications and may provide additional or different license terms and conditions for use, reproduction, or distribution of Your modifications, or for any such Derivative Works as a whole, provided Your use, reproduction, and distribution of the Work otherwise complies with the conditions stated in this License.
+
+5. Submission of Contributions. Unless You explicitly state otherwise, any Contribution intentionally submitted for inclusion in the Work by You to the Licensor shall be under the terms and conditions of this License, without any additional terms or conditions. Notwithstanding the above, nothing herein shall supersede or modify the terms of any separate license agreement you may have executed with Licensor regarding such Contributions.
+
+ 6. Trademarks. This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the Work and reproducing the content of the NOTICE file.
+
+7. Disclaimer of Warranty. Unless required by applicable law or agreed to in writing, Licensor provides the Work (and each Contributor provides its Contributions) on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for determining the appropriateness of using or redistributing the Work and assume any risks associated with Your exercise of permissions under this License.
+
+8. Limitation of Liability. In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law (such as deliberate and grossly negligent acts) or agreed to in writing, shall any Contributor be liable to You for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising as a result of this License or out of the use or inability to use the Work (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses), even if such Contributor has been advised of the possibility of such damages.
+
+9. Accepting Warranty or Additional Liability. While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.
+
+END OF TERMS AND CONDITIONS</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstItem="nkO-Bu-9XL" firstAttribute="top" secondItem="74z-Av-p94" secondAttribute="top" constant="20" id="5Op-N5-9B1"/>
+                                                    <constraint firstAttribute="bottom" secondItem="nkO-Bu-9XL" secondAttribute="bottom" constant="20" id="Bjm-B6-8rC"/>
+                                                    <constraint firstAttribute="trailing" secondItem="nkO-Bu-9XL" secondAttribute="trailing" constant="20" id="D8G-St-MPv"/>
+                                                    <constraint firstItem="nkO-Bu-9XL" firstAttribute="leading" secondItem="74z-Av-p94" secondAttribute="leading" constant="20" id="ub8-Eo-Gd0"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NTm-hI-eYv" userLabel="Jot Header">
+                                                <rect key="frame" x="0.0" y="8617" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Jot" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dJK-Lv-ncR">
+                                                        <rect key="frame" x="15" y="17.5" width="18" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="bottom" secondItem="dJK-Lv-ncR" secondAttribute="bottom" constant="12" id="FLE-RY-gwZ"/>
+                                                    <constraint firstItem="dJK-Lv-ncR" firstAttribute="leading" secondItem="NTm-hI-eYv" secondAttribute="leading" constant="15" id="mDH-4F-XvG"/>
+                                                    <constraint firstAttribute="height" constant="44" id="mlv-rZ-hpQ"/>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="dJK-Lv-ncR" secondAttribute="trailing" priority="200" constant="375" id="qrs-Cv-OQa"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="zsE-lv-qNi" userLabel="Jot Cell">
+                                                <rect key="frame" x="0.0" y="8661" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nih-zC-4Rx">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2015 IFTTT Inc
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstItem="Nih-zC-4Rx" firstAttribute="top" secondItem="zsE-lv-qNi" secondAttribute="top" constant="20" id="1T5-Zd-VWC"/>
+                                                    <constraint firstItem="Nih-zC-4Rx" firstAttribute="leading" secondItem="zsE-lv-qNi" secondAttribute="leading" constant="20" id="9Na-Zu-NJS"/>
+                                                    <constraint firstAttribute="bottom" secondItem="Nih-zC-4Rx" secondAttribute="bottom" constant="20" id="Lzb-N8-gph"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Nih-zC-4Rx" secondAttribute="trailing" constant="20" id="gf9-Lk-Lhu"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NKO-Kd-kC8" userLabel="Parse Header">
+                                                <rect key="frame" x="0.0" y="9848" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Parse iOS/OSX SDK" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jtG-eZ-GzB">
+                                                        <rect key="frame" x="15" y="17.5" width="113.5" height="14.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -1004,19 +1544,60 @@
                                                     <constraint firstAttribute="bottom" secondItem="jtG-eZ-GzB" secondAttribute="bottom" constant="12" id="wAf-Re-Ezj"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2vt-vY-T07" userLabel="Parse Cell">
-                                                <rect key="frame" x="0.0" y="44" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="2vt-vY-T07" userLabel="Parse Cell">
+                                                <rect key="frame" x="0.0" y="9892" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aqb-jC-mFq">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2015-present, Parse, LLC. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+ * Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+ * Neither the name Parse nor the names of its contributors may be used to
+   endorse or promote products derived from this software without specific
+   prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-----
+
+As of April 5, 2017, Parse, LLC has transferred this code to the parse-community organization, and will no longer be contributing to or distributing this code. </mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <gestureRecognizers/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="44" id="06X-3x-kVD"/>
+                                                    <constraint firstItem="aqb-jC-mFq" firstAttribute="leading" secondItem="2vt-vY-T07" secondAttribute="leading" constant="20" id="01s-Oa-rf5"/>
+                                                    <constraint firstAttribute="bottom" secondItem="aqb-jC-mFq" secondAttribute="bottom" constant="20" id="Ft2-Xu-7VQ"/>
+                                                    <constraint firstAttribute="trailing" secondItem="aqb-jC-mFq" secondAttribute="trailing" constant="20" id="qMI-b2-B1c"/>
+                                                    <constraint firstItem="aqb-jC-mFq" firstAttribute="top" secondItem="2vt-vY-T07" secondAttribute="top" constant="20" id="uDa-aE-tNu"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4aW-cD-S5W" userLabel="Parse Header">
-                                                <rect key="frame" x="0.0" y="88" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="egl-TV-1HH" userLabel="PryntTrimmer Header">
+                                                <rect key="frame" x="0.0" y="11079" width="375" height="44"/>
                                                 <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Das Quadrat" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jBq-Ef-8aA">
-                                                        <rect key="frame" x="15" y="18" width="71.5" height="14.5"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PryntTrimmerView" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jj2-Ie-OFG">
+                                                        <rect key="frame" x="15" y="17.5" width="106.5" height="14.5"/>
                                                         <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
                                                         <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -1024,22 +1605,471 @@
                                                 </subviews>
                                                 <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="44" id="D3x-gM-vO9"/>
-                                                    <constraint firstItem="jBq-Ef-8aA" firstAttribute="leading" secondItem="4aW-cD-S5W" secondAttribute="leading" constant="15" id="hUg-Wh-vWh"/>
-                                                    <constraint firstAttribute="bottom" secondItem="jBq-Ef-8aA" secondAttribute="bottom" constant="12" id="oNe-0M-Ag5"/>
-                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="jBq-Ef-8aA" secondAttribute="trailing" priority="200" constant="375" id="oje-NT-0xW"/>
+                                                    <constraint firstAttribute="bottom" secondItem="jj2-Ie-OFG" secondAttribute="bottom" constant="12" id="QkG-wG-paR"/>
+                                                    <constraint firstAttribute="height" constant="44" id="TYi-cW-5gH"/>
+                                                    <constraint firstItem="jj2-Ie-OFG" firstAttribute="leading" secondItem="egl-TV-1HH" secondAttribute="leading" constant="15" id="m7y-vA-dBB"/>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="jj2-Ie-OFG" secondAttribute="trailing" priority="200" constant="375" id="rb3-UZ-6Pf"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F9q-wJ-wy4" userLabel="Parse Cell">
-                                                <rect key="frame" x="0.0" y="132" width="375" height="44"/>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="Vka-bs-G6z" userLabel="PryntTrimmer Cell">
+                                                <rect key="frame" x="0.0" y="11123" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bjh-Fg-1gA">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2017 Prynt
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <gestureRecognizers/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="44" id="qGr-2J-joY"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Bjh-Fg-1gA" secondAttribute="trailing" constant="20" id="5dK-TR-pbo"/>
+                                                    <constraint firstItem="Bjh-Fg-1gA" firstAttribute="leading" secondItem="Vka-bs-G6z" secondAttribute="leading" constant="20" id="BSX-uO-gSr"/>
+                                                    <constraint firstItem="Bjh-Fg-1gA" firstAttribute="top" secondItem="Vka-bs-G6z" secondAttribute="top" constant="20" id="G9h-Np-laR"/>
+                                                    <constraint firstAttribute="bottom" secondItem="Bjh-Fg-1gA" secondAttribute="bottom" constant="20" id="Lyo-mG-svr"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1v1-rn-Miw" userLabel="RATreeView Header">
+                                                <rect key="frame" x="0.0" y="12310" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="RATreeView" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EYa-pj-emh">
+                                                        <rect key="frame" x="15" y="17.5" width="67.5" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="bottom" secondItem="EYa-pj-emh" secondAttribute="bottom" constant="12" id="4kS-IE-PTd"/>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="EYa-pj-emh" secondAttribute="trailing" priority="200" constant="375" id="FeT-n6-hYu"/>
+                                                    <constraint firstItem="EYa-pj-emh" firstAttribute="leading" secondItem="1v1-rn-Miw" secondAttribute="leading" constant="15" id="e0X-mR-Lci"/>
+                                                    <constraint firstAttribute="height" constant="44" id="hLS-8o-Wi9"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="2eA-Jh-FKO" userLabel="RATreeView Cell">
+                                                <rect key="frame" x="0.0" y="12354" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pmU-yH-WZe">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2013 Rafał Augustyniak
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                        <mutableString key="userLabel">Copyright (c) 2015-present, Parse, LLC. All rights reserved.  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:   * Redistributions of source code must retain the above copyright notice, this    list of conditions and the following disclaimer.   * Redistributions in binary form must reproduce the above copyright notice,    this list of conditions and the following disclaimer in the documentation    and/or other materials provided with the distribution.   * Neither the name Parse nor the names of its contributors may be used to    endorse or promote products derived from this software without specific    prior written permission.  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  -----  As of April 5, 2017, Parse, LLC has transferred this code to the parse-community organization, and will no longer be contributing to or distributing this code.</mutableString>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstAttribute="trailing" secondItem="pmU-yH-WZe" secondAttribute="trailing" constant="20" id="Nm9-Zw-1g2"/>
+                                                    <constraint firstItem="pmU-yH-WZe" firstAttribute="top" secondItem="2eA-Jh-FKO" secondAttribute="top" constant="20" id="eHG-td-xNc"/>
+                                                    <constraint firstAttribute="bottom" secondItem="pmU-yH-WZe" secondAttribute="bottom" constant="20" id="kdt-2i-LZT"/>
+                                                    <constraint firstItem="pmU-yH-WZe" firstAttribute="leading" secondItem="2eA-Jh-FKO" secondAttribute="leading" constant="20" id="n7l-0k-veX"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hSb-4i-1My" userLabel="SvpHud Header">
+                                                <rect key="frame" x="0.0" y="13541" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SVProgressHUD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4ee-eh-si4">
+                                                        <rect key="frame" x="15" y="17.5" width="92" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="4ee-eh-si4" secondAttribute="trailing" priority="200" constant="375" id="1li-Df-5xU"/>
+                                                    <constraint firstAttribute="bottom" secondItem="4ee-eh-si4" secondAttribute="bottom" constant="12" id="BZb-g8-srZ"/>
+                                                    <constraint firstAttribute="height" constant="44" id="kfZ-PV-PXb"/>
+                                                    <constraint firstItem="4ee-eh-si4" firstAttribute="leading" secondItem="hSb-4i-1My" secondAttribute="leading" constant="15" id="tNf-dh-rUB"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="Nrt-cT-RNw" userLabel="SvpHud Cell">
+                                                <rect key="frame" x="0.0" y="13585" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IPd-a8-LrG">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2011-2018 Sam Vermette, Tobias Tiemerding and contributors.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstAttribute="bottom" secondItem="IPd-a8-LrG" secondAttribute="bottom" constant="20" id="16G-yz-Efh"/>
+                                                    <constraint firstAttribute="trailing" secondItem="IPd-a8-LrG" secondAttribute="trailing" constant="20" id="T8w-9Z-jGk"/>
+                                                    <constraint firstItem="IPd-a8-LrG" firstAttribute="leading" secondItem="Nrt-cT-RNw" secondAttribute="leading" constant="20" id="X6n-Tq-ilb"/>
+                                                    <constraint firstItem="IPd-a8-LrG" firstAttribute="top" secondItem="Nrt-cT-RNw" secondAttribute="top" constant="20" id="hcz-pm-oIC"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IzZ-J2-tJV" userLabel="SwiftHttpStatus Header">
+                                                <rect key="frame" x="0.0" y="14772" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SwiftHTTPStatusCode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q67-J3-0uy">
+                                                        <rect key="frame" x="15" y="17.5" width="128" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="q67-J3-0uy" secondAttribute="trailing" priority="200" constant="375" id="IRM-L9-KWh"/>
+                                                    <constraint firstAttribute="height" constant="44" id="OWU-0z-hAd"/>
+                                                    <constraint firstItem="q67-J3-0uy" firstAttribute="leading" secondItem="IzZ-J2-tJV" secondAttribute="leading" constant="15" id="PRp-bW-yZ4"/>
+                                                    <constraint firstAttribute="bottom" secondItem="q67-J3-0uy" secondAttribute="bottom" constant="12" id="rbM-bw-h2a"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="26t-rI-6tp" userLabel="SwiftHttpStatus Cell">
+                                                <rect key="frame" x="0.0" y="14816" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yuy-ea-fO8">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2017 Rich Hodgkins
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstItem="yuy-ea-fO8" firstAttribute="leading" secondItem="26t-rI-6tp" secondAttribute="leading" constant="20" id="4J9-pC-qIJ"/>
+                                                    <constraint firstAttribute="trailing" secondItem="yuy-ea-fO8" secondAttribute="trailing" constant="20" id="eyW-yV-9Er"/>
+                                                    <constraint firstAttribute="bottom" secondItem="yuy-ea-fO8" secondAttribute="bottom" constant="20" id="o0Z-cI-WgI"/>
+                                                    <constraint firstItem="yuy-ea-fO8" firstAttribute="top" secondItem="26t-rI-6tp" secondAttribute="top" constant="20" id="zbt-62-37I"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9le-Mb-s4B" userLabel="SwiftRangeSlider Header">
+                                                <rect key="frame" x="0.0" y="16003" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SwiftRangeSlider" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z7d-z7-RTV">
+                                                        <rect key="frame" x="15" y="17.5" width="100" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Z7d-z7-RTV" secondAttribute="trailing" priority="200" constant="375" id="37T-Dp-VHW"/>
+                                                    <constraint firstAttribute="height" constant="44" id="FkZ-hm-ZAM"/>
+                                                    <constraint firstAttribute="bottom" secondItem="Z7d-z7-RTV" secondAttribute="bottom" constant="12" id="NyR-pV-sLM"/>
+                                                    <constraint firstItem="Z7d-z7-RTV" firstAttribute="leading" secondItem="9le-Mb-s4B" secondAttribute="leading" constant="15" id="xKv-Hr-SJA"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="MmA-gN-Lmn" userLabel="SwiftRangeSlider Cell">
+                                                <rect key="frame" x="0.0" y="16047" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qRS-hi-JZG">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2016 Brian Corbin &lt;brian.william.corbin@gmail.com&gt;
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstAttribute="trailing" secondItem="qRS-hi-JZG" secondAttribute="trailing" constant="20" id="UFp-R0-m3H"/>
+                                                    <constraint firstItem="qRS-hi-JZG" firstAttribute="leading" secondItem="MmA-gN-Lmn" secondAttribute="leading" constant="20" id="VNr-wk-wwP"/>
+                                                    <constraint firstAttribute="bottom" secondItem="qRS-hi-JZG" secondAttribute="bottom" constant="20" id="ewd-Vg-ha5"/>
+                                                    <constraint firstItem="qRS-hi-JZG" firstAttribute="top" secondItem="MmA-gN-Lmn" secondAttribute="top" constant="20" id="rXx-sK-TCy"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8yw-3B-8hw" userLabel="SwiftyCam Header">
+                                                <rect key="frame" x="0.0" y="17234" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SwiftyCam" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="heZ-Mx-aST">
+                                                        <rect key="frame" x="15" y="17.5" width="62.5" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstItem="heZ-Mx-aST" firstAttribute="leading" secondItem="8yw-3B-8hw" secondAttribute="leading" constant="15" id="2j5-QV-lOz"/>
+                                                    <constraint firstAttribute="height" constant="44" id="D07-PC-DSu"/>
+                                                    <constraint firstAttribute="bottom" secondItem="heZ-Mx-aST" secondAttribute="bottom" constant="12" id="ev3-C4-0QH"/>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="heZ-Mx-aST" secondAttribute="trailing" priority="200" constant="375" id="mpc-tR-1Cb"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="Qin-dl-rh5" userLabel="SwiftyCam Cell">
+                                                <rect key="frame" x="0.0" y="17278" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fNG-mq-mOd">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2016, Andrew Walz.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstItem="fNG-mq-mOd" firstAttribute="top" secondItem="Qin-dl-rh5" secondAttribute="top" constant="20" id="BDt-Dh-BLS"/>
+                                                    <constraint firstItem="fNG-mq-mOd" firstAttribute="leading" secondItem="Qin-dl-rh5" secondAttribute="leading" constant="20" id="Hir-kU-jGR"/>
+                                                    <constraint firstAttribute="trailing" secondItem="fNG-mq-mOd" secondAttribute="trailing" constant="20" id="NUN-DC-W5v"/>
+                                                    <constraint firstAttribute="bottom" secondItem="fNG-mq-mOd" secondAttribute="bottom" constant="20" id="mgh-KZ-uhJ"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vo1-ss-WSr" userLabel="Texture Header">
+                                                <rect key="frame" x="0.0" y="18465" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Texture (AsyncDisplayKit)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="08I-Lm-TKu">
+                                                        <rect key="frame" x="15" y="17.5" width="146" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstItem="08I-Lm-TKu" firstAttribute="leading" secondItem="Vo1-ss-WSr" secondAttribute="leading" constant="15" id="0Yp-yI-hvC"/>
+                                                    <constraint firstAttribute="bottom" secondItem="08I-Lm-TKu" secondAttribute="bottom" constant="12" id="FCS-fA-i8p"/>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="08I-Lm-TKu" secondAttribute="trailing" priority="200" constant="375" id="hVS-4L-wER"/>
+                                                    <constraint firstAttribute="height" constant="44" id="l1D-kB-9Oq"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="RM3-4g-V7H" userLabel="Texture Cell">
+                                                <rect key="frame" x="0.0" y="18509" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UVb-my-4nC">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+1. Definitions.
+
+"License" shall mean the terms and conditions for use, reproduction, and distribution as defined by Sections 1 through 9 of this document.
+
+"Licensor" shall mean the copyright owner or entity authorized by the copyright owner that is granting the License.
+
+"Legal Entity" shall mean the union of the acting entity and all other entities that control, are controlled by, or are under common control with that entity. For the purposes of this definition, "control" means (i) the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, or (iii) beneficial ownership of such entity.
+
+"You" (or "Your") shall mean an individual or Legal Entity exercising permissions granted by this License.
+
+"Source" form shall mean the preferred form for making modifications, including but not limited to software source code, documentation source, and configuration files.
+
+"Object" form shall mean any form resulting from mechanical transformation or translation of a Source form, including but not limited to compiled object code, generated documentation, and conversions to other media types.
+
+"Work" shall mean the work of authorship, whether in Source or Object form, made available under the License, as indicated by a copyright notice that is included in or attached to the work (an example is provided in the Appendix below).
+
+"Derivative Works" shall mean any work, whether in Source or Object form, that is based on (or derived from) the Work and for which the editorial revisions, annotations, elaborations, or other modifications represent, as a whole, an original work of authorship. For the purposes of this License, Derivative Works shall not include works that remain separable from, or merely link (or bind by name) to the interfaces of, the Work and Derivative Works thereof.
+
+"Contribution" shall mean any work of authorship, including the original version of the Work and any modifications or additions to that Work or Derivative Works thereof, that is intentionally submitted to Licensor for inclusion in the Work by the copyright owner or by an individual or Legal Entity authorized to submit on behalf of the copyright owner. For the purposes of this definition, "submitted" means any form of electronic, verbal, or written communication sent to the Licensor or its representatives, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Licensor for the purpose of discussing and improving the Work, but excluding communication that is conspicuously marked or otherwise designated in writing by the copyright owner as "Not a Contribution."
+
+"Contributor" shall mean Licensor and any individual or Legal Entity on behalf of whom a Contribution has been received by Licensor and subsequently incorporated within the Work.
+
+2. Grant of Copyright License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable copyright license to reproduce, prepare Derivative Works of, publicly display, publicly perform, sublicense, and distribute the Work and such Derivative Works in Source or Object form.
+
+3. Grant of Patent License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated in this section) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the Work, where such license applies only to those patent claims licensable by such Contributor that are necessarily infringed by their Contribution(s) alone or by combination of their Contribution(s) with the Work to which such Contribution(s) was submitted. If You institute patent litigation against any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the Work or a Contribution incorporated within the Work constitutes direct or contributory patent infringement, then any patent licenses granted to You under this License for that Work shall terminate as of the date such litigation is filed.
+
+4. Redistribution. You may reproduce and distribute copies of the Work or Derivative Works thereof in any medium, with or without modifications, and in Source or Object form, provided that You meet the following conditions:
+
+(a) You must give any other recipients of the Work or Derivative Works a copy of this License; and
+
+(b) You must cause any modified files to carry prominent notices stating that You changed the files; and
+
+(c) You must retain, in the Source form of any Derivative Works that You distribute, all copyright, patent, trademark, and attribution notices from the Source form of the Work, excluding those notices that do not pertain to any part of the Derivative Works; and
+
+(d) If the Work includes a "NOTICE" text file as part of its distribution, then any Derivative Works that You distribute must include a readable copy of the attribution notices contained within such NOTICE file, excluding those notices that do not pertain to any part of the Derivative Works, in at least one of the following places: within a NOTICE text file distributed as part of the Derivative Works; within the Source form or documentation, if provided along with the Derivative Works; or, within a display generated by the Derivative Works, if and wherever such third-party notices normally appear. The contents of the NOTICE file are for informational purposes only and do not modify the License. You may add Your own attribution notices within Derivative Works that You distribute, alongside or as an addendum to the NOTICE text from the Work, provided that such additional attribution notices cannot be construed as modifying the License.
+
+You may add Your own copyright statement to Your modifications and may provide additional or different license terms and conditions for use, reproduction, or distribution of Your modifications, or for any such Derivative Works as a whole, provided Your use, reproduction, and distribution of the Work otherwise complies with the conditions stated in this License.
+
+5. Submission of Contributions. Unless You explicitly state otherwise, any Contribution intentionally submitted for inclusion in the Work by You to the Licensor shall be under the terms and conditions of this License, without any additional terms or conditions. Notwithstanding the above, nothing herein shall supersede or modify the terms of any separate license agreement you may have executed with Licensor regarding such Contributions.
+
+6. Trademarks. This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the Work and reproducing the content of the NOTICE file.
+
+7. Disclaimer of Warranty. Unless required by applicable law or agreed to in writing, Licensor provides the Work (and each Contributor provides its Contributions) on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for determining the appropriateness of using or redistributing the Work and assume any risks associated with Your exercise of permissions under this License.
+
+8. Limitation of Liability. In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law (such as deliberate and grossly negligent acts) or agreed to in writing, shall any Contributor be liable to You for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising as a result of this License or out of the use or inability to use the Work (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses), even if such Contributor has been advised of the possibility of such damages.
+
+9. Accepting Warranty or Additional Liability. While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.
+
+END OF TERMS AND CONDITIONS</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstAttribute="bottom" secondItem="UVb-my-4nC" secondAttribute="bottom" constant="20" id="IM8-il-nYH"/>
+                                                    <constraint firstItem="UVb-my-4nC" firstAttribute="top" secondItem="RM3-4g-V7H" secondAttribute="top" constant="20" id="V4R-9s-OCY"/>
+                                                    <constraint firstItem="UVb-my-4nC" firstAttribute="leading" secondItem="RM3-4g-V7H" secondAttribute="leading" constant="20" id="eQD-CS-r0n"/>
+                                                    <constraint firstAttribute="trailing" secondItem="UVb-my-4nC" secondAttribute="trailing" constant="20" id="hhx-40-b67"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CCz-m8-cpb" userLabel="TLPhotoPicker Header">
+                                                <rect key="frame" x="0.0" y="19696" width="375" height="44"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TLPhotoPicker" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Baw-qj-7YB">
+                                                        <rect key="frame" x="15" y="17.5" width="83.5" height="14.5"/>
+                                                        <fontDescription key="fontDescription" name="Raleway-Bold" family="Raleway" pointSize="12"/>
+                                                        <color key="textColor" white="0.35999999999999999" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstItem="Baw-qj-7YB" firstAttribute="leading" secondItem="CCz-m8-cpb" secondAttribute="leading" constant="15" id="3iY-FY-rqn"/>
+                                                    <constraint firstAttribute="height" constant="44" id="OzU-Tx-iP5"/>
+                                                    <constraint firstAttribute="bottom" secondItem="Baw-qj-7YB" secondAttribute="bottom" constant="12" id="p71-2u-If7"/>
+                                                    <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Baw-qj-7YB" secondAttribute="trailing" priority="200" constant="375" id="w0y-XY-FnE"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" horizontalHuggingPriority="900" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="Cee-oF-wsL" userLabel="TLPhotoPicker Cell">
+                                                <rect key="frame" x="0.0" y="19740" width="375" height="1187"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="500" verticalHuggingPriority="500" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s7A-S6-Psv">
+                                                        <rect key="frame" x="20" y="20" width="335" height="1147"/>
+                                                        <mutableString key="text">Copyright (c) 2017 wade.hawk &lt;junhyi.park@gmail.com&gt;
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</mutableString>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                        <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                        <mutableString key="userLabel">Copyright (c) 2015-present, Parse, LLC. All rights reserved.  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:   * Redistributions of source code must retain the above copyright notice, this    list of conditions and the following disclaimer.   * Redistributions in binary form must reproduce the above copyright notice,    this list of conditions and the following disclaimer in the documentation    and/or other materials provided with the distribution.   * Neither the name Parse nor the names of its contributors may be used to    endorse or promote products derived from this software without specific    prior written permission.  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  -----  As of April 5, 2017, Parse, LLC has transferred this code to the parse-community organization, and will no longer be contributing to or distributing this code.</mutableString>
+                                                    </label>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstItem="s7A-S6-Psv" firstAttribute="top" secondItem="Cee-oF-wsL" secondAttribute="top" constant="20" id="E4m-S0-CRZ"/>
+                                                    <constraint firstItem="s7A-S6-Psv" firstAttribute="leading" secondItem="Cee-oF-wsL" secondAttribute="leading" constant="20" id="Mqp-1Z-hOm"/>
+                                                    <constraint firstAttribute="bottom" secondItem="s7A-S6-Psv" secondAttribute="bottom" constant="20" id="f1T-Uk-1ek"/>
+                                                    <constraint firstAttribute="trailing" secondItem="s7A-S6-Psv" secondAttribute="trailing" constant="20" id="zOS-jG-cJk"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="100" verticalHuggingPriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="khe-tF-YNU" userLabel="Spacer Footer">
-                                                <rect key="frame" x="0.0" y="176" width="375" height="635"/>
+                                                <rect key="frame" x="0.0" y="20927" width="375" height="635"/>
                                                 <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="44" id="vRE-hK-gwW"/>

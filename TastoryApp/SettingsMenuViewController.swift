@@ -17,7 +17,8 @@ class SettingsMenuViewController: OverlayViewController {
   
   struct Constants {
     static let DefaultLinkToFacebookCellText = "Link Account to Facebook"
-    static let AboutUsUrl = "https://www.tastory.co/connect/"
+    static let ConnectUrl = "https://www.tastory.co/connect/"
+    static let FaqUrl = "https://www.tastory.co/faq/"
   }
   
   // MARK: - Public Instance Variable
@@ -189,6 +190,15 @@ class SettingsMenuViewController: OverlayViewController {
   }
   
   
+  @IBAction func faqTap(_ sender: UITapGestureRecognizer) {
+    if let websiteUrl = URL(string: Constants.FaqUrl) {
+      CCLog.info("Opening Safari View for \(websiteUrl)")
+      let safariViewController = SFSafariViewController(url: websiteUrl)
+      safariViewController.modalPresentationStyle = .overFullScreen
+      self.present(safariViewController, animated: true, completion: nil)
+    }
+  }
+  
   
   @IBAction func librariesTap(_ sender: UITapGestureRecognizer) {
     let storyboard = UIStoryboard(name: "Settings", bundle: nil)
@@ -229,8 +239,8 @@ class SettingsMenuViewController: OverlayViewController {
   }
   
   
-  @IBAction func aboutUsTap(_ sender: UITapGestureRecognizer) {
-    if let websiteUrl = URL(string: Constants.AboutUsUrl) {
+  @IBAction func connectTap(_ sender: UITapGestureRecognizer) {
+    if let websiteUrl = URL(string: Constants.ConnectUrl) {
       CCLog.info("Opening Safari View for \(websiteUrl)")
       let safariViewController = SFSafariViewController(url: websiteUrl)
       safariViewController.modalPresentationStyle = .overFullScreen
