@@ -40,6 +40,7 @@ class FoodieQuery {
   struct Constants {
     static let QueryRetryCount = 5
     static let QueryRetryDelaySeconds: Double = 0.5
+    static let MaxStoriesLimitCount: Int = 200
     static let RadiusForMinStoriesFunctionName = "radiusForMinStories"
     static let RadiusForMinStoriesCloudParamLatitude = "latitude"
     static let RadiusForMinStoriesCloudParamLongitude = "longitude"
@@ -185,8 +186,16 @@ class FoodieQuery {
 //        query.setOwnStoriesAlso()
 //      }
 
+      var storiesLimit = lround(radius * 10)
+      if storiesLimit < FoodieGlobal.Constants.StoryFeedPaginationCount {
+        storiesLimit = FoodieGlobal.Constants.StoryFeedPaginationCount
+      }
+      if storiesLimit > FoodieQuery.Constants.MaxStoriesLimitCount {
+        storiesLimit = FoodieQuery.Constants.MaxStoriesLimitCount
+      }
+      
       query.setSkip(to: 0)
-      query.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)
+      query.setLimit(to: storiesLimit)
       _ = query.addArrangement(type: .discoverability, direction: .descending)
       _ = query.addArrangement(type: .creationTime, direction: .descending)
       

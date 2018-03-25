@@ -361,8 +361,10 @@ class DiscoverViewController: OverlayViewController {
     
     CCLog.verbose("Query Location Rectangle SouthWest - (\(southWestCoordinate.latitude), \(southWestCoordinate.longitude)), NorthEast - (\(northEastCoordinate.latitude), \(northEastCoordinate.longitude))")
     
+    let latDiff = northEastCoordinate.latitude - southWestCoordinate.latitude
+    
     // We are going to limit search to a maximum of 1 degree of of Latitude (approximately 111km)
-    guard (northEastCoordinate.latitude - southWestCoordinate.latitude) < Constants.QueryMaxLatDelta else {
+    guard latDiff < Constants.QueryMaxLatDelta else {
       callback?(nil, nil, ErrorCode.mapQueryExceededMaxLat)
       return
     }
@@ -388,8 +390,18 @@ class DiscoverViewController: OverlayViewController {
 //      }
     }
     
+    var storiesLimit: Int = lround(1000.0 * latDiff)
+    if storiesLimit < FoodieGlobal.Constants.StoryFeedPaginationCount {
+      storiesLimit = FoodieGlobal.Constants.StoryFeedPaginationCount
+    }
+    if storiesLimit > FoodieQuery.Constants.MaxStoriesLimitCount {
+      storiesLimit = FoodieQuery.Constants.MaxStoriesLimitCount
+    }
+    
+    CCLog.verbose("Stories Limit at \(storiesLimit) for latitude difference of \(latDiff) degree")
+    
     query.setSkip(to: 0)
-    query.setLimit(to: FoodieGlobal.Constants.StoryFeedPaginationCount)
+    query.setLimit(to: storiesLimit)
     _ = query.addArrangement(type: .discoverability, direction: .descending)
     _ = query.addArrangement(type: .creationTime, direction: .descending)
     
@@ -1080,7 +1092,7 @@ class DiscoverViewController: OverlayViewController {
             }
 
             mapNavController.showRegionExposed(region, animated: true)
-            FoodieQuery.queryInitStories(at: location.coordinate, minStories: 3, maxRadius: maxRadius){ (stories, query, error) in
+            FoodieQuery.queryInitStories(at: location.coordinate, minStories: 3, maxRadius: maxRadius) { (stories, query, error) in
 
               if (stories ?? []).count == 0 {
                 self.searchButtonsHidden(is: false)
