@@ -11,6 +11,7 @@ import AsyncDisplayKit
 import Parse
 import FBSDKCoreKit
 import Firebase
+import UserNotifications
 // import COSTouchVisualizer
 
 @UIApplicationMain
@@ -83,6 +84,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
     window?.rootViewController = viewController
     window?.makeKeyAndVisible()
 
+    // Register for Notification
+    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {
+      (granted, error) in
+
+      if let error = error {
+        CCLog.warning("An error occured when trying register push notification \(error.localizedDescription)")
+      } else {
+        guard granted else { return }
+        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+          print("Notification settings: \(settings)")
+          guard settings.authorizationStatus == .authorized else { return }
+          DispatchQueue.main.async {
+            UIApplication.shared.registerForRemoteNotifications()
+          }
+        }
+      }
+    }
+    updateAppLastUsed()
+   
     return true
   }
 
@@ -132,6 +152,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
       topMapNavController.topViewWillEnterForeground()
     }
     DeepLink.global.isAppResume = true
+    updateAppLastUsed()
   }
 
   func applicationDidBecomeActive(_ application: UIApplication) {
@@ -146,7 +167,72 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
   func applicationWillTerminate(_ application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
   }
-  
+
+  func application(_ application: UIApplication,
+                   didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    let tokenParts = deviceToken.map { data -> String in
+      return String(format: "%02.2hhx", data)
+    }
+
+    let token = tokenParts.joined()
+    CCLog.verbose("Device Token: \(token)")
+    guard let installation = PFInstallation.current() else  {
+      CCLog.fatal("Cannot get an instance of PFInstallation")
+    }
+    installation.setDeviceTokenFrom(deviceToken)
+
+    if let userID = FoodieUser.current()?.objectId {
+      installation.setObject(userID, forKey: "userID")
+    }
+
+    installation.saveInBackground()
+  }
+
+  func application(_ application: UIApplication,
+                   didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    CCLog.warning("Failed to register for Push Notification: \(error.localizedDescription)")
+  }
+
+  func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]){
+    if application.applicationState != .active {
+      DeepLink.global.handlePushNotification(userInfo)
+    }
+  }
+
+  // MARK: - Private Instance Functions
+  private func updateAppLastUsed() {
+    guard let installation = PFInstallation.current() else  {
+      CCLog.fatal("Cannot get an instance of PFInstallation")
+    }
+
+    if installation.objectId != nil {
+      //installation.fetchIfNeeded()
+
+      installation.fetchInBackground() { (_ , error) in
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(abbreviation: "GMT") //Set timezone that you want
+        dateFormatter.locale = NSLocale.current
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm" //Specify your format that you want
+        let strDate = dateFormatter.string(from: Date())
+
+        installation.setObject(strDate, forKey: "lastUsed")
+        if let userID = FoodieUser.current()?.objectId {
+          installation.setObject(userID, forKey: "userID")
+        }
+
+        installation.badge = 0
+        installation.saveInBackground(){ (success, error) -> Void in
+          if let error = error {
+             CCLog.assert("Failed to update PFInstallation object with error: \(error.localizedDescription)")
+          } else {
+            UIApplication.shared.applicationIconBadgeNumber = 0
+          }
+        }
+      }
+    }
+  }
+
+
   // MARK: - COSTouchVisualizerWindowDelegate
 //  func touchVisualizerWindowShouldShowFingertip(_ window: COSTouchVisualizerWindow!) -> Bool {
 //    return true

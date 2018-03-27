@@ -164,6 +164,14 @@ class DeepLink {
     currentInstance.continue(userActivity)
   }
 
+  func handlePushNotification(_ userInfo: [AnyHashable : Any]){
+    guard let currentInstance = instance else {
+      CCLog.warning("Failed to get an initialized instance of Branch")
+      return
+    }
+    currentInstance.handlePushNotification(userInfo)
+  }
+
   func createProfileDeepLink(user: FoodieUser, block callback: @escaping (String?, Error?)->Void ) {
     let buo = BranchUniversalObject(canonicalIdentifier: "content")
 
