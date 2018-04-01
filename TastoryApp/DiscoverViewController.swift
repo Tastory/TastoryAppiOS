@@ -8,6 +8,8 @@
 
 import AsyncDisplayKit
 import CoreLocation
+import UserNotifications
+import Parse
 
 class DiscoverViewController: OverlayViewController {
 
@@ -703,6 +705,8 @@ class DiscoverViewController: OverlayViewController {
     self.view.accessibilityIdentifier = "discoverView"
 
     NotificationCenter.default.addObserver(self, selector: #selector(self.updateFeed(_:)), name: NSNotification.Name(rawValue: FoodieGlobal.RefreshFeedNotification.NotificationId), object: nil)
+
+    UNUserNotificationCenter.current().delegate = self
 
     // Setup the Feed Node Controller first
     let nodeController = FeedCollectionNodeController(with: .carousel, allowLayoutChange: true, adjustScrollViewInset: false)
@@ -1548,3 +1552,46 @@ extension DiscoverViewController: SearchResultDisplayDelegate {
     self.searchField.setTitle(Constants.SearchBarTitle, for: .normal)
   }
 }
+
+extension DiscoverViewController: UNUserNotificationCenterDelegate {
+  // MARK: - UNUserNotificationCenterDelegate
+  // This is triggered when the user views the push notification
+  public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Swift.Void) {
+    guard let installation = PFInstallation.current() else  {
+      CCLog.fatal("Cannot get an instance of PFInstallation")
+    }
+
+    let userInfo = response.notification.request.content.userInfo
+
+    if let story = userInfo[DeepLink.Constants.StoryKey] {
+      DeepLink.global.deepLinkStoryId = story as? String
+    }
+
+    if let venue = userInfo[DeepLink.Constants.VenueKey] {
+      DeepLink.global.deepLinkVenueId  = venue as? String
+    }
+
+    if let user = userInfo[DeepLink.Constants.UserKey] {
+      DeepLink.global.deepLinkUserId = user as? String
+    }
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) { [weak self] in
+      self?.displayDeepLinkContent()
+    }
+
+    if installation.objectId != nil {
+      installation.fetchInBackground() { (_ , error) in
+
+        let lastUsed: Double = Date().timeIntervalSince1970
+        installation.setValue(lastUsed, forKey: "lastClickedNotify")
+
+        installation.saveInBackground(){ (success, error) -> Void in
+          if let error = error {
+            CCLog.assert("Failed to update PFInstallation object with error: \(error.localizedDescription)")
+          }
+        }
+      }
+    }
+  }
+}
+

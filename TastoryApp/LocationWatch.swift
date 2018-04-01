@@ -8,7 +8,7 @@
 
 import UIKit
 import CoreLocation
-
+import UserNotifications
 
 class LocationWatch: NSObject {
   
@@ -295,5 +295,37 @@ extension LocationWatch: CLLocationManagerDelegate {
   
   func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
     // TODO
+  }
+
+  func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+
+    switch status {
+    case .authorizedAlways:
+      fallthrough
+    case .authorizedWhenInUse:
+      // Request for push notification
+      // always show the request dialog right after requesting for location access 
+
+      UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {
+        (granted, error) in
+
+        if let error = error {
+          CCLog.warning("An error occured when trying register push notification \(error.localizedDescription)")
+        } else {
+          guard granted else { return }
+          UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+            print("Notification settings: \(settings)")
+            guard settings.authorizationStatus == .authorized else { return }
+            DispatchQueue.main.async {
+              UIApplication.shared.registerForRemoteNotifications()
+            }
+          }
+        }
+      }
+      break
+
+    default:
+      break
+    }
   }
 }

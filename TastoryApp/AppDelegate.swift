@@ -12,13 +12,14 @@ import Parse
 import FBSDKCoreKit
 import Firebase
 import UserNotifications
+
 // import COSTouchVisualizer
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWindowDelegate*/ {
 
   var window: UIWindow?
-  
+
   // MARK: - Private Instance Functions
   
   private func printFonts() {
@@ -83,26 +84,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
     window = UIWindow(frame: UIScreen.main.bounds)
     window?.rootViewController = viewController
     window?.makeKeyAndVisible()
+    updateAppLastUsed()
 
-    // Register for Notification
-    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {
-      (granted, error) in
-
-      if let error = error {
-        CCLog.warning("An error occured when trying register push notification \(error.localizedDescription)")
-      } else {
-        guard granted else { return }
-        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
-          print("Notification settings: \(settings)")
-          guard settings.authorizationStatus == .authorized else { return }
-          DispatchQueue.main.async {
-            UIApplication.shared.registerForRemoteNotifications()
-          }
+    UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+      if settings.authorizationStatus == .authorized {
+        DispatchQueue.main.async {
+          UIApplication.shared.registerForRemoteNotifications()
         }
       }
     }
-    updateAppLastUsed()
-   
     return true
   }
 
@@ -209,13 +199,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
       //installation.fetchIfNeeded()
 
       installation.fetchInBackground() { (_ , error) in
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(abbreviation: "GMT") //Set timezone that you want
-        dateFormatter.locale = NSLocale.current
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm" //Specify your format that you want
-        let strDate = dateFormatter.string(from: Date())
 
-        installation.setObject(strDate, forKey: "lastUsed")
+        let lastUsed: Double = Date().timeIntervalSince1970
+        installation.setValue(lastUsed, forKey: "lastUsedApp")
         if let userID = FoodieUser.current()?.objectId {
           installation.setObject(userID, forKey: "userID")
         }
@@ -231,7 +217,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
       }
     }
   }
-
+ 
 
   // MARK: - COSTouchVisualizerWindowDelegate
 //  func touchVisualizerWindowShouldShowFingertip(_ window: COSTouchVisualizerWindow!) -> Bool {
