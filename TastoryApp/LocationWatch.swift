@@ -140,6 +140,8 @@ class LocationWatch: NSObject {
     case .authorizedAlways:
       fallthrough
     case .authorizedWhenInUse:
+      // this is for people who have already allowed location services but not push notification
+      requestPushNotification()
       break
       
     }
@@ -161,9 +163,26 @@ class LocationWatch: NSObject {
       }
     }
   }
-  
-  
-  
+
+  private static func requestPushNotification() {
+    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {
+      (granted, error) in
+
+      if let error = error {
+        CCLog.warning("An error occured when trying register push notification \(error.localizedDescription)")
+      } else {
+        guard granted else { return }
+        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+          print("Notification settings: \(settings)")
+          guard settings.authorizationStatus == .authorized else { return }
+          DispatchQueue.main.async {
+            UIApplication.shared.registerForRemoteNotifications()
+          }
+        }
+      }
+    }
+  }
+
   // MARK: - Public Instance Functions
   
   override init() {
@@ -305,23 +324,8 @@ extension LocationWatch: CLLocationManagerDelegate {
     case .authorizedWhenInUse:
       // Request for push notification
       // always show the request dialog right after requesting for location access 
+      LocationWatch.requestPushNotification()
 
-      UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {
-        (granted, error) in
-
-        if let error = error {
-          CCLog.warning("An error occured when trying register push notification \(error.localizedDescription)")
-        } else {
-          guard granted else { return }
-          UNUserNotificationCenter.current().getNotificationSettings { (settings) in
-            print("Notification settings: \(settings)")
-            guard settings.authorizationStatus == .authorized else { return }
-            DispatchQueue.main.async {
-              UIApplication.shared.registerForRemoteNotifications()
-            }
-          }
-        }
-      }
       break
 
     default:

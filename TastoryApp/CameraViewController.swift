@@ -605,6 +605,22 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
 
           self.outstandingConvertQueue.sync {
 
+            // make sure the foodieMedia URL exits before passing on
+            guard let urlPath = foodieMedia.localVideoUrl else {
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                CCLog.fatal("Foodiemedia's local video url is nil")
+              }
+              return
+            }
+
+            if !FileManager.default.fileExists(atPath: urlPath.path) {
+              ActivitySpinner.globalRemove()
+              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                CCLog.warning("Media URL is missing cant processed")
+              }
+              return
+            }
+
             let moment = FoodieMoment(foodieMedia: foodieMedia)
             self.moments[(tlphAsset.selectedOrder - 1)] = moment
 
