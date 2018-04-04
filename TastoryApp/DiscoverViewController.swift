@@ -638,9 +638,7 @@ class DiscoverViewController: OverlayViewController {
 
     if user != nil {
       viewController.user = user
-    }
-
-    if venue != nil {
+    } else if venue != nil {
       viewController.venue = venue
     }
 
@@ -671,9 +669,7 @@ class DiscoverViewController: OverlayViewController {
           }
         }
       })
-    }
-
-    if let venueId = DeepLink.global.deepLinkVenueId {
+    } else if let venueId = DeepLink.global.deepLinkVenueId {
       FoodieVenue.getVenueFor(venueId: venueId, withBlock: { (venue, error) in
         if error != nil {
           CCLog.verbose("An error occured when looking up username: \(error!)")
