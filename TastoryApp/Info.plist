@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Tastory Dev</string>
+	<string>Tastory</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIcons</key>
@@ -33,7 +33,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb198099037410501</string>
+				<string>fb466204100440982</string>
 			</array>
 		</dict>
 		<dict>
@@ -62,9 +62,9 @@
 		</array>
 	</dict>
 	<key>FacebookAppID</key>
-	<string>198099037410501</string>
+	<string>466204100440982</string>
 	<key>FacebookDisplayName</key>
-	<string>TastoryDev</string>
+	<string>Tastory</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>
