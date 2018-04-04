@@ -594,6 +594,8 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
       ActivitySpinner.globalApply()
       self.moments = Array.init(repeatElement(nil, count: withTLPHAssets.count))
 
+      var hasError: Bool = false
+
       for tlphAsset in withTLPHAssets {
         self.outstandingConvertOperations += 1
         self.convertToMedia(from: tlphAsset, isLimitDuration: withTLPHAssets.count > 1) { (foodieMedia) in
@@ -606,18 +608,30 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
           self.outstandingConvertQueue.sync {
 
             // make sure the foodieMedia URL exits before passing on
-            guard let urlPath = foodieMedia.localVideoUrl else {
-              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                CCLog.fatal("Foodiemedia's local video url is nil")
+            if tlphAsset.type == .video {
+              guard let urlPath = foodieMedia.localVideoUrl else {
+                AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                  CCLog.fatal("Foodiemedia's local video url is nil")
+                }
+                hasError = true
+                self.outstandingConvertOperations = 0
+                return
               }
-              return
+
+              if !FileManager.default.fileExists(atPath: urlPath.path) {
+                ActivitySpinner.globalRemove()
+                AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+                  CCLog.warning("Media URL is missing cant processed")
+                }
+                hasError = true
+                self.outstandingConvertOperations = 0
+                return
+              }
             }
 
-            if !FileManager.default.fileExists(atPath: urlPath.path) {
-              ActivitySpinner.globalRemove()
-              AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-                CCLog.warning("Media URL is missing cant processed")
-              }
+            if hasError {
+              // one of the other media got an error just return and reset parameters
+              self.outstandingConvertOperations = 0
               return
             }
 
