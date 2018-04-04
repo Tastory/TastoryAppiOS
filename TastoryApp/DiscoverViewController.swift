@@ -664,7 +664,7 @@ class DiscoverViewController: OverlayViewController {
            UIApplication.shared.endIgnoringInteractionEvents()
           self.showProfileView(user: user)
 
-          if DeepLink.global.deepLinkStoryId == nil && DeepLink.global.deepLinkVenueId == nil{
+          if DeepLink.global.deepLinkStoryId == nil {
             DeepLink.clearDeepLinkInfo()
           }
         }
@@ -684,10 +684,7 @@ class DiscoverViewController: OverlayViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + displayDelay) {
           UIApplication.shared.endIgnoringInteractionEvents()
           self.showProfileView(venue: venue)
-
-          if DeepLink.global.deepLinkStoryId == nil && DeepLink.global.deepLinkVenueId == nil{
-            DeepLink.clearDeepLinkInfo()
-          }
+          DeepLink.clearDeepLinkInfo()
         }
       })
     }
