@@ -291,12 +291,12 @@ class FoodieVenue: FoodiePFObject  {
                 continue
               }
               
-              guard let latitude = location["lat"] as? Float else {
+              guard let latitude = location["lat"] as? Double else {
                 CCLog.debug("Invalid Foursquare Venue with no Latitude information. ID: \(id), Name: \(name)")
                 continue
               }
               
-              guard let longitude = location["lng"] as? Float else {
+              guard let longitude = location["lng"] as? Double else {
                 CCLog.debug("Invalid Foursquare Venue with no Longitude information. ID: \(id), Name: \(name)")
                 continue
               }
@@ -486,12 +486,12 @@ class FoodieVenue: FoodiePFObject  {
               return
             }
             
-            guard let latitude = location["lat"] as? Float else {
+            guard let latitude = location["lat"] as? Double else {
               CCLog.debug("Invalid Foursquare Venue with no Latitude information. ID: \(id), Name: \(name)")
               return
             }
             
-            guard let longitude = location["lng"] as? Float else {
+            guard let longitude = location["lng"] as? Double else {
               CCLog.debug("Invalid Foursquare Venue with no Longitude information. ID: \(id), Name: \(name)")
               return
             }
