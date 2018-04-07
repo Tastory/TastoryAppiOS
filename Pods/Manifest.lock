@@ -44,14 +44,14 @@ PODS:
   - FirebaseAnalytics (4.1.0):
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
-    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
     - nanopb (~> 0.3)
   - FirebaseCore (4.0.16):
-    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
   - FirebaseInstanceID (2.0.9):
     - FirebaseCore (~> 4.0)
   - GoogleToolboxForMac/Defines (2.1.3)
-  - GoogleToolboxForMac/NSData+zlib (2.1.3):
+  - "GoogleToolboxForMac/NSData+zlib (2.1.3)":
     - GoogleToolboxForMac/Defines (= 2.1.3)
   - HTTPStatusCodes (3.1.2)
   - Jot (0.2.0):
@@ -100,7 +100,7 @@ PODS:
     - PINRemoteImage/iOS (= 3.0.0-beta.13)
     - PINRemoteImage/PINCache
     - Texture/Core
-  - TLPhotoPicker (1.5.0)
+  - TLPhotoPicker (1.5.9)
 
 DEPENDENCIES:
   - AWSCognito
@@ -126,7 +126,42 @@ DEPENDENCIES:
   - SwiftRangeSlider
   - SwiftyCam
   - Texture
-  - TLPhotoPicker
+  - TLPhotoPicker (from `https://github.com/specc/TLPhotoPicker.git`)
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - AWSCognito
+    - AWSCore
+    - AWSS3
+    - Bolts
+    - Branch
+    - ColorSlider
+    - COSTouchVisualizer
+    - Crashlytics
+    - EarlGrey
+    - Fabric
+    - FacebookCore
+    - FacebookLogin
+    - FacebookShare
+    - FBSDKCoreKit
+    - FBSDKLoginKit
+    - FBSDKShareKit
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseCore
+    - FirebaseInstanceID
+    - GoogleToolboxForMac
+    - HTTPStatusCodes
+    - Masonry
+    - nanopb
+    - Parse
+    - PINCache
+    - PINOperation
+    - PINRemoteImage
+    - RATreeView
+    - SwiftRangeSlider
+    - SwiftyCam
+    - Texture
 
 EXTERNAL SOURCES:
   Jot:
@@ -138,6 +173,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/Constantine-Fry/das-quadrat.git
   SVProgressHUD:
     :git: https://github.com/Tastory/SVProgressHUD.git
+  TLPhotoPicker:
+    :git: https://github.com/specc/TLPhotoPicker.git
 
 CHECKOUT OPTIONS:
   Jot:
@@ -152,6 +189,9 @@ CHECKOUT OPTIONS:
   SVProgressHUD:
     :commit: d714813e2f9e4b49894a50e6fc6b789c6cab03b5
     :git: https://github.com/Tastory/SVProgressHUD.git
+  TLPhotoPicker:
+    :commit: 196379701668d37cfd9890e56aaf6f2aa4406b43
+    :git: https://github.com/specc/TLPhotoPicker.git
 
 SPEC CHECKSUMS:
   AWSCognito: c69d91501b460c8abe22e224a0d5c3277486a21b
@@ -190,8 +230,8 @@ SPEC CHECKSUMS:
   SwiftRangeSlider: f86e3b637c961120158fa1a89277c8343845cbe4
   SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
   Texture: 7249074582daf75e524e59df5428b66b8e8db0e4
-  TLPhotoPicker: 3fc7f1c48641cd2258041fe866b6db422f058187
+  TLPhotoPicker: ec5cd5b3380ed1b6bd176d34a429024ceb80ef01
 
-PODFILE CHECKSUM: 0a60b6af7eeb7ab2754ecd491a1bd4ad0acc9f31
+PODFILE CHECKSUM: 3a1e78f835eda1d3f85e63ae09f12b32681d8c00
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.5.0

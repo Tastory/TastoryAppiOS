@@ -26,7 +26,7 @@ target 'TastoryApp' do
   pod 'QuadratTouch', :git => 'https://github.com/Constantine-Fry/das-quadrat.git', :branch => 'develop', :inhibit_warnings => true
   pod 'HTTPStatusCodes', '~> 3.1.2'
   pod 'RATreeView'
-  pod 'TLPhotoPicker'
+  pod 'TLPhotoPicker', :git => 'https://github.com/specc/TLPhotoPicker.git'
   pod 'ColorSlider', '~> 4.0'
   pod 'PryntTrimmerView', :git => 'https://github.com/specc/PryntTrimmerView.git'  
   pod 'SwiftRangeSlider'
