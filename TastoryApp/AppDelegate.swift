@@ -202,8 +202,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
 
         let lastUsed: Double = Date().timeIntervalSince1970
         installation.setValue(lastUsed, forKey: "lastUsedApp")
-        if let userID = FoodieUser.current()?.objectId {
-          installation.setObject(userID, forKey: "userID")
+
+        if let currentUser = FoodieUser.current() {
+
+          if let userID = currentUser.objectId {
+            installation.setObject(userID, forKey: "userID")
+          }
+
+          if let userName = currentUser.username {
+            installation.setValue(userName, forKey: "userName")
+          }
         }
 
         installation.badge = 0

@@ -1567,6 +1567,10 @@ extension DiscoverViewController: UNUserNotificationCenterDelegate {
     if let user = userInfo[DeepLink.Constants.UserKey] {
       DeepLink.global.deepLinkUserId = user as? String
     }
+  
+    if let branchURL = userInfo[DeepLink.Constants.BranchURLKey] {
+      Analytics.logPushNotificationEvent(username: FoodieUser.current?.username ?? "nil", branchLink: String(describing: branchURL))
+    }
 
     DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) { [weak self] in
       self?.displayDeepLinkContent()

@@ -15,6 +15,7 @@ class DeepLink {
     static let StoryKey = "Story"
     static let VenueKey = "Venue"
     static let UserKey = "User"
+    static let BranchURLKey = "branch"
     static let URI = "URI"
   }
 

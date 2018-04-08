@@ -244,6 +244,14 @@ class Analytics {
                                                                            "Story Name" : storyName])
     
   }
+
+  static func logPushNotificationEvent(username: String,
+                                   branchLink: String) {
+
+    Answers.logCustomEvent(withName: "Push Notification Clicked", customAttributes: ["Username" : username,
+                                                                           "Branch URL" : branchLink])
+
+  }
   
   
   static func logBookmarkEvent(username: String,
