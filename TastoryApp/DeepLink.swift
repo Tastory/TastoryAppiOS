@@ -50,7 +50,7 @@ class DeepLink {
 
     if instance == nil {
       //Branch.io initialization
-      #if DEBUG
+      #if BRANCH_DEBUG
         //TODO remove this for production purporses  use the test mode first
         Branch.setUseTestBranchKey(true)
       #endif
