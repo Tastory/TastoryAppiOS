@@ -102,8 +102,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
     return true
   }
 
-  func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
-    return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
+  func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+    return FBSDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
   }
   
   func application(_ application: UIApplication, shouldSaveApplicationState coder: NSCoder) -> Bool {
