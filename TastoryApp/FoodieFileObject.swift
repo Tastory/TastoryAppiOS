@@ -158,7 +158,11 @@ class FoodieFileObject {
   static func newPhotoFileName() -> String {
     return "\(UUID().uuidString).jpg"
   }
-  
+
+  static func newPhotoPNGFileName() -> String {
+    return "\(UUID().uuidString).png"
+  }
+
   
   static func newVideoFileName() -> String {
     return "\(UUID().uuidString).mov"

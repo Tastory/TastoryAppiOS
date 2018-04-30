@@ -16,6 +16,7 @@ class FoodieMoment: FoodiePFObject, FoodieObjectDelegate {
   @NSManaged var mediaFileName: String?  // File name for the media photo or video. Needs to go with the media object
   @NSManaged var mediaType: String?  // Really an enum saying whether it's a Photo or Video
   @NSManaged var thumbnailFileName: String?  // Thumbnail for the moment
+  @NSManaged var markupFileName: String? 
   
   // Markups
   @NSManaged var markups: Array<FoodieMarkup>?  // Array of PFObjects as FoodieMarkup

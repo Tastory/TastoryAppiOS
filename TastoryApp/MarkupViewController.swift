@@ -303,6 +303,29 @@ class MarkupViewController: OverlayViewController {
     // Serialize the Jot Markup into Foodie Markups
     if let jotDictionary = jotViewController.serialize() {
 
+      // if moment already has markupfile remove it
+      if momentObj.markupFileName != nil {
+        let mediaObject = FoodieMedia(for: momentObj.markupFileName!, localType: .draft, mediaType: .photo)
+        mediaObject.deleteRecursive(from: .both, type: .draft) { (error) in
+          if error != nil {
+            CCLog.warning("An error has occurred when removing a markup thumbnail \(error!)")
+          }
+        }
+      }
+
+      // generate the markup image
+      let fileName = FoodieFileObject.newPhotoPNGFileName()
+      let mediaObject = FoodieMedia(for: fileName, localType: .draft, mediaType: .photo)
+      jotViewController.deSelectLabel()
+      UIGraphicsBeginImageContextWithOptions(jotViewController.view.layer.frame.size, false, 0.0)
+      jotViewController.view.layer.render(in: UIGraphicsGetCurrentContext()!)
+      let viewImage = UIGraphicsGetImageFromCurrentImageContext()!
+      UIGraphicsEndImageContext()
+      mediaObject.imageMemoryBuffer = UIImagePNGRepresentation(viewImage)
+      mediaObject.saveToLocalNServer(type: .cache, withBlock: nil)
+      momentObj.markupFileName = fileName
+
+
       if let jotLabels = jotDictionary[kLabels] as? [NSDictionary] {
         var index = 1
         for jotLabel in jotLabels {
