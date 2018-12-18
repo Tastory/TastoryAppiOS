@@ -59,7 +59,7 @@ class CarouselCollectionViewLayout: UICollectionViewFlowLayout {
     let carouselHeight = UIScreen.main.bounds.height*Constants.DefaultCarouselScreenHeightFraction
     let insetHeight = floor(collectionBounds.height - carouselHeight)
     let xInset = (collectionBounds.width - self.itemSize.width) / 2
-    return UIEdgeInsetsMake(insetHeight, xInset, Constants.DefaultFeedBottomOffset, xInset)
+    return UIEdgeInsets.init(top: insetHeight, left: xInset, bottom: Constants.DefaultFeedBottomOffset, right: xInset)
   }
   
   

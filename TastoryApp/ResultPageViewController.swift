@@ -35,7 +35,7 @@ class ResultPageViewController: UIPageViewController
     }
   }
 
-  public func display(category: UniversalSearchViewController.ResultsCategory, direction: UIPageViewControllerNavigationDirection, completion: @escaping ((Bool) -> Swift.Void)) {
+  public func display(category: UniversalSearchViewController.ResultsCategory, direction: UIPageViewController.NavigationDirection, completion: @escaping ((Bool) -> Swift.Void)) {
       setViewControllers([pages[category.rawValue]], direction: direction, animated: true, completion: completion)
   }
 

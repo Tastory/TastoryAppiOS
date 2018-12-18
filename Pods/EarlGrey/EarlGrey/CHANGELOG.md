@@ -2,6 +2,77 @@
 
 Details changes in each release of EarlGrey. EarlGrey follows [semantic versioning](http://semver.org/).
 
+## [1.15.0](https://github.com/google/EarlGrey/tree/1.15.0) (08/03/2018)
+```
+Baseline: [59ce3b6c]
++ [59ce3b6c]: Fix default Swift version in EarlGreyExampleSwiftTests xcode project
+```
+
+### Enhancements
+* Added support for accessibility in iOS 12.
+* Updated the visibility checker to support keyboards in iOS 12.
+* Updated Analytics Configurations.
+* Fixed Formatting Issues.
+* Updated invalid api and compatibility docs.
+
+### Compatibility
+* EarlGrey has now been tested for working till Xcode version 10.0 beta 2.
+* Some of the internal unit tests break on Xcode 9.3+ due to change in exception name thrown by XCTest. Those are still being investigated.
+
+## [1.14.0](https://github.com/google/EarlGrey/tree/1.14.0) (06/04/2018)
+```
+Baseline: [c201f58]
++ [c201f58]: Fix default Swift version in EarlGreyExampleSwiftTests xcode project
+```
+
+### Enhancements
+* Add Swift 4 support in the gem.
+* Update block declarations to support strict prototypes.
+* Add support for PDF display for `UIWebViewIdlingResource`.
+* Remove Swift 2 in the gem since Xcode 7.x is not supported anymore.
+
+### Bug Fixes
+* Fix `FTRLocalUIWebViewTest` by updating `testAJAXLoad` to detect proper web view elements.
+
+### Compatibility
+* EarlGrey has now been tested for working till Xcode version 9.4. Any small test breakages with Xcode 9.4 are being tested.
+
+### Contributors
+Thanks to [adam-b](https://github.com/adam-b) and [keefertaylor](https://github.com/keefertaylor)!
+
+## [1.13.0](https://github.com/google/EarlGrey/tree/1.13.0) (04/03/2018)
+```
+Baseline: [2b3939a]
++ [2b3939a]: Fix Swift file issues with the updated EarlGrey code for release 1.13.0.
+```
+
+### Enhancements
+* Add nullability to EarlGrey Headers. [Issue #449](https://github.com/google/EarlGrey/issues/449)
+* Remove `notNil` method and add explicit check in the matcher itself.
+* Update the Swift wrapper to use refined methods to prevent discardable result warnings.
+* Update EarlGrey assert(with:) calls to assert(_:).
+* Move the GREYRunLoopSpinner to spin on the thread passed to it instead of the main thread.
+* Add tests for disabled buttons, fix visibility test and add iOS 11 support to tests.
+* Move `EarlGreyImpl` interface out of EarlGrey.h.
+* Add shake motion support to EarlGrey.
+
+### Bug Fixes
+* Use `TIPreferencesController` to change the keyboard settings so it will not load `TIUserWordsManager`, which can cause occasional crashes on iOS 11.0+.
+* Tell the preferences not to show keyboard tutorial as it interferes with typing.
+* Close MVC unconditionally to prevent erroneous scenarios where it fails to execute the completion block, leaving it resident on the screen forever.
+
+### Compatibility
+* EarlGrey has now been tested for working till Xcode version 9.3. Any small test breakages with Xcode 9.3 are being tested.
+
+## [1.12.1](https://github.com/google/EarlGrey/tree/1.12.1) (09/01/2017)
+```
+Baseline: [405008e]
++ [405008e]: Release 1.12.1 to fix incorrect podspec release in 1.12.0.
+```
+
+### Bug Fixes
+* Correct podspec to point to the version 1.12.1
+
 ## [1.12.0](https://github.com/google/EarlGrey/tree/1.12.0) (08/22/2017)
 ```
 Baseline: [ae61a45]

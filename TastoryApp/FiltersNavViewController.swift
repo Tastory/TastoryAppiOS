@@ -38,13 +38,13 @@ class FiltersNavViewController: OverlayViewController {
     navController.navigationBar.barTintColor = UIColor.white
     navController.navigationBar.tintColor = FoodieGlobal.Constants.TextColor
     
-    let titleTextAttributes = [NSAttributedStringKey.font : UIFont(name: "Raleway-Medium", size: 16)!,
-                               NSAttributedStringKey.strokeColor : FoodieGlobal.Constants.TextColor]
+    let titleTextAttributes = [NSAttributedString.Key.font : UIFont(name: "Raleway-Medium", size: 16)!,
+                               NSAttributedString.Key.strokeColor : FoodieGlobal.Constants.TextColor]
     navController.navigationBar.titleTextAttributes = titleTextAttributes
     
-    addChildViewController(navController)
+    addChild(navController)
     view.addSubview(navController.view)
-    navController.didMove(toParentViewController: self)
+    navController.didMove(toParent: self)
     filtersNavController = navController
     
     // Drop Shadow at the back of the View

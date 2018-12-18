@@ -24,8 +24,8 @@ class PickerSquareLayer: CAShapeLayer {
     
     strokeColor = UIColor.white.withAlphaComponent(Constants.alphaValue).cgColor
     lineWidth = Constants.strokeWidth
-    lineCap = kCALineCapRound
-    lineJoin = kCALineJoinRound
+    lineCap = CAShapeLayerLineCap.round
+    lineJoin = CAShapeLayerLineJoin.round
     fillColor = UIColor.clear.cgColor
     path = normalCross.cgPath
   }

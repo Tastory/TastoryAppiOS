@@ -88,7 +88,7 @@ typedef NS_ENUM(NSInteger, AWSRegionType) {
      */
     AWSRegionCACentral1 NS_SWIFT_NAME(CACentral1),
     /**
-     *  AWS GovCloud (US)
+     *  AWS GovCloud (US West)
      */
     AWSRegionUSGovWest1 NS_SWIFT_NAME(USGovWest1),
     /**
@@ -99,6 +99,14 @@ typedef NS_ENUM(NSInteger, AWSRegionType) {
      *  EU (Paris)
      */
     AWSRegionEUWest3 NS_SWIFT_NAME(EUWest3),
+    /**
+     *  AWS GovCloud (US East)
+     */
+    AWSRegionUSGovEast1 NS_SWIFT_NAME(USGovEast1),
+    /**
+     *  EU (Stockholm)
+     */
+    AWSRegionEUNorth1 NS_SWIFT_NAME(EUNorth1),
 };
 
 /**
@@ -224,6 +232,27 @@ typedef NS_ENUM(NSInteger, AWSServiceType) {
      *  AWS Security Token Service (STS)
      */
     AWSServiceSTS NS_SWIFT_NAME(STS),
+    /**
+     *  Amazon Transcribe
+     */
+    AWSServiceTranscribe NS_SWIFT_NAME(Transcribe),
+    /**
+     *  Amazon Translate
+     */
+    AWSServiceTranslate NS_SWIFT_NAME(Translate),
+    /**
+     *  Amazon Comprehend
+     */
+    AWSServiceComprehend NS_SWIFT_NAME(Comprehend),
+    /**
+     *  Amazon Kinesis Video
+     */
+    AWSServiceKinesisVideo NS_SWIFT_NAME(KinesisVideo),
+    /**
+     *  Amazon Kinesis Video Archived Media
+     */
+    AWSServiceKinesisVideoArchivedMedia NS_SWIFT_NAME(KinesisVideoArchivedMedia),
+    
 };
 
 #endif

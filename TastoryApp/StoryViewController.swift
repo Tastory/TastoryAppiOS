@@ -700,7 +700,7 @@ class StoryViewController: OverlayViewController {
       avPlayerLayer.player = avPlayer
       mediaView.insertSubview(videoView, belowSubview: jotViewController.view)
       
-      avPlayer.seek(to: kCMTimeZero)
+      avPlayer.seek(to: CMTime.zero)
       avPlayer.play()
 
       // No image nor video to work on, Fatal
@@ -1099,10 +1099,10 @@ class StoryViewController: OverlayViewController {
     
     jotViewController.state = JotViewState.disabled
     jotViewController.fitOriginalFontSizeToViewWidth = true
-    addChildViewController(jotViewController)
+    addChild(jotViewController)
     
     mediaView.addSubview(jotViewController.view)
-    jotViewController.didMove(toParentViewController: self)
+    jotViewController.didMove(toParent: self)
     
     guard let story = viewingStory else {
       CCLog.fatal("No Story when loading StoryViewController")

@@ -11,7 +11,7 @@ import UIKit
 extension UIAlertAction {
   
   // Convenience initializer to support title localization
-  convenience init(title: String?, comment: String?, style: UIAlertActionStyle, handler: ((UIAlertAction) -> Swift.Void)? = nil) {
+  convenience init(title: String?, comment: String?, style: UIAlertAction.Style, handler: ((UIAlertAction) -> Swift.Void)? = nil) {
     
     let buttonTitle = NSLocalizedString(title == nil ? "" : title!, comment: comment == nil ? "" : comment!)
     

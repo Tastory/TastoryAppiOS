@@ -153,8 +153,8 @@ class FiltersViewController: OverlayViewController {
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
     navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Clear", style: .plain, target: self, action: #selector(clearAction(_:)))
     
-    let titleTextAttributes = [NSAttributedStringKey.font : UIFont(name: "Raleway-Semibold", size: 14)!,
-                               NSAttributedStringKey.strokeColor : FoodieGlobal.Constants.TextColor]
+    let titleTextAttributes = [NSAttributedString.Key.font : UIFont(name: "Raleway-Semibold", size: 14)!,
+                               NSAttributedString.Key.strokeColor : FoodieGlobal.Constants.TextColor]
     navigationItem.rightBarButtonItem!.setTitleTextAttributes(titleTextAttributes, for: .normal)
     navigationItem.rightBarButtonItem!.tintColor = FoodieGlobal.Constants.ThemeColor
     

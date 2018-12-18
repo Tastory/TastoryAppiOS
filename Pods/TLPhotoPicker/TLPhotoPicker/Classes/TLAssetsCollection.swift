@@ -194,7 +194,7 @@ public struct TLPHAsset {
                 do {
                     var data = data
                     if convertLivePhotosToPNG == true, let imgData = data, let rawImage = UIImage(data: imgData) {
-                        data = UIImagePNGRepresentation(rawImage)
+                        data = rawImage.pngData()
                     }
                     try data?.write(to: localURL)
                     DispatchQueue.main.async {

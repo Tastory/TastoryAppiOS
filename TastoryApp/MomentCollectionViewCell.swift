@@ -67,7 +67,7 @@ class MomentCollectionViewCell: UICollectionViewCell {
     super.init(frame: frame)
     
     contentView.addSubview(thumbImageNode.view)
-    contentView.sendSubview(toBack: thumbImageNode.view)
+    contentView.sendSubviewToBack(thumbImageNode.view)
     activitySpinner = ActivitySpinner(addTo: contentView, radius: 10.0, thickness: 2.0)
     
     thumbImageNode.view.translatesAutoresizingMaskIntoConstraints = false
@@ -87,7 +87,7 @@ class MomentCollectionViewCell: UICollectionViewCell {
     thumbImageNode.defaultImage = UIImage.init(named: "MediaPlaceholder")
     
     contentView.addSubview(thumbImageNode.view)
-    contentView.sendSubview(toBack: thumbImageNode.view)
+    contentView.sendSubviewToBack(thumbImageNode.view)
     activitySpinner = ActivitySpinner(addTo: contentView, radius: 10.0, thickness: 2.0)
     
     thumbImageNode.view.translatesAutoresizingMaskIntoConstraints = false

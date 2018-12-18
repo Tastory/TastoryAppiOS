@@ -88,7 +88,7 @@ class UniversalSearchViewController: OverlayViewController {
       return
     }
 
-    var direction: UIPageViewControllerNavigationDirection = .forward
+    var direction: UIPageViewController.NavigationDirection = .forward
       if(categoryButton.previousSelectedSegmentIndex > currentIdx) {
       direction = .reverse
     }
@@ -206,7 +206,7 @@ class UniversalSearchViewController: OverlayViewController {
         return
       }
       resultTableVC.view.frame = tablePlaceHolder.bounds
-      self.addChildViewController(resultTableVC)
+      self.addChild(resultTableVC)
       tablePlaceHolder.addSubview(resultTableVC.view)
       isInitialLayout = false
     }
@@ -250,9 +250,9 @@ class UniversalSearchViewController: OverlayViewController {
     }
 
     // setup fonts
-     UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 12)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor]
-    categoryButton.setTitleTextAttributes([NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Medium", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor,NSAttributedStringKey.foregroundColor: FoodieGlobal.Constants.TextColor], for: UIControlState.selected)
-    categoryButton.setTitleTextAttributes([NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColorHalfAlpha, NSAttributedStringKey.foregroundColor: FoodieGlobal.Constants.TextColorHalfAlpha], for: UIControlState.normal)
+     UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = convertToNSAttributedStringKeyDictionary([NSAttributedString.Key.font.rawValue : UIFont(name: "Raleway-Regular", size: 12)!, NSAttributedString.Key.strokeColor.rawValue : FoodieGlobal.Constants.TextColor])
+    categoryButton.setTitleTextAttributes([NSAttributedString.Key(rawValue: NSAttributedString.Key.font.rawValue) : UIFont(name: "Raleway-Medium", size: 14)!, NSAttributedString.Key(rawValue: NSAttributedString.Key.strokeColor.rawValue) : FoodieGlobal.Constants.TextColor,NSAttributedString.Key.foregroundColor: FoodieGlobal.Constants.TextColor], for: UIControl.State.selected)
+    categoryButton.setTitleTextAttributes([NSAttributedString.Key(rawValue: NSAttributedString.Key.font.rawValue) : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedString.Key(rawValue: NSAttributedString.Key.strokeColor.rawValue) : FoodieGlobal.Constants.TextColorHalfAlpha, NSAttributedString.Key.foregroundColor: FoodieGlobal.Constants.TextColorHalfAlpha], for: UIControl.State.normal)
 
     if !searchKeyWord.isEmpty {
       searchBar.text = searchKeyWord
@@ -742,3 +742,8 @@ extension UniversalSearchViewController: UniversalSearchDelegate {
   }
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSAttributedStringKeyDictionary(_ input: [String: Any]) -> [NSAttributedString.Key: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
+}

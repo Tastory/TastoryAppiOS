@@ -17,7 +17,7 @@ class SlideTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
   var vcGap: CGFloat
   var duration: TimeInterval
   var isPresenting: Bool = true
-  var timingCurve: UIViewAnimationOptions = .curveEaseInOut
+  var timingCurve: UIView.AnimationOptions = .curveEaseInOut
   
   
   // MARK: - Public Instance Functions
@@ -69,7 +69,7 @@ class SlideTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     containerView.addSubview(toVC.view)
     
     if isPresenting {
-      containerView.bringSubview(toFront: toVC.view)
+      containerView.bringSubviewToFront(toVC.view)
     } else {
       containerView.insertSubview(toVC.view, belowSubview: fromVC.view)
     }

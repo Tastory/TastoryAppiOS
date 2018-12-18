@@ -36,7 +36,7 @@ class ServiceTermsViewController: OverlayViewController {
     let leftArrowImage = UIImage(named: "Settings-LeftArrowDark")
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
     
-    serviceTermsTextView.textContainerInset = UIEdgeInsetsMake(15, 15, 15, 15)
+    serviceTermsTextView.textContainerInset = UIEdgeInsets.init(top: 15, left: 15, bottom: 15, right: 15)
   }
   
   

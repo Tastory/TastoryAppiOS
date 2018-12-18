@@ -103,7 +103,7 @@ class FeedCollectionCellNode: ASCellNode {
     
     if let coverEditButton = coverEditButton {
       let editInsetOffset: CGFloat = Constants.CoverEditButtonInsetFraction * constrainedSize.min.height
-      let editInsets = UIEdgeInsetsMake(editInsetOffset, 0.0, editInsetOffset, 0.0)
+      let editInsets = UIEdgeInsets.init(top: editInsetOffset, left: 0.0, bottom: editInsetOffset, right: 0.0)
       let editInsetSpec = ASInsetLayoutSpec(insets: editInsets, child: coverEditButton)
       editStackSpec = ASStackLayoutSpec(direction: .horizontal, spacing: 1.0, justifyContent: .start, alignItems: .center, children: [editInsetSpec])
     }
@@ -130,10 +130,10 @@ class FeedCollectionCellNode: ASCellNode {
       }
       
       // Inset the Title a little if needed
-      let titleInsets = UIEdgeInsetsMake(Constants.CoverTitleInsetHeightFraction * constrainedSize.min.height,
-                                         Constants.CoverTitleInsetWidthFraction * constrainedSize.min.width,
-                                         Constants.CoverTitleInsetHeightFraction * constrainedSize.min.height,
-                                         Constants.CoverTitleInsetWidthFraction * constrainedSize.min.width)
+      let titleInsets = UIEdgeInsets.init(top: Constants.CoverTitleInsetHeightFraction * constrainedSize.min.height,
+                                         left: Constants.CoverTitleInsetWidthFraction * constrainedSize.min.width,
+                                         bottom: Constants.CoverTitleInsetHeightFraction * constrainedSize.min.height,
+                                         right: Constants.CoverTitleInsetWidthFraction * constrainedSize.min.width)
       let titleInsetSpec = ASInsetLayoutSpec(insets: titleInsets, child: coverTitleNode)
       
       // Overlay the Cover Title Node on the Title Background

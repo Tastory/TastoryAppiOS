@@ -14,8 +14,11 @@
 // limitations under the License.
 //
 
-#import <EarlGrey/GREYConstants.h>
 #import <UIKit/UIKit.h>
+
+#import <EarlGrey/GREYConstants.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  A utility class for creating and injecting gestures that involve touch paths, for example:
@@ -67,7 +70,7 @@
                          withDirection:(GREYDirection)direction
                                 length:(CGFloat)length
                     startPointPercents:(CGPoint)startPointPercents
-                    outRemainingAmount:(CGFloat *)outRemainingAmountOrNull;
+                    outRemainingAmount:(CGFloat *_Nullable)outRemainingAmountOrNull;
 
 /**
  *  Generates a touch path in the @c window from the given @c startPoint and the given @c
@@ -84,3 +87,5 @@
                                      cancelInertia:(BOOL)cancelInertia;
 
 @end
+
+NS_ASSUME_NONNULL_END

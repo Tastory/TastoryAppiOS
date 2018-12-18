@@ -76,7 +76,7 @@ class DataCache {
     func dataForKey(_ key: String) -> Data? {
         var result: Data?
         privateQueue.addOperation {
-            result = self.cache.object(forKey: key as NSString) as? Data
+            result = self.cache.object(forKey: key as NSString) as Data?
             if result == nil {
                 let targetURL = self.directoryURL.appendingPathComponent(key)
                 result = try? Data(contentsOf: targetURL)
@@ -121,7 +121,7 @@ class DataCache {
         #if os(iOS)
             
             let center = NotificationCenter.default
-            let didEnterBackground = NSNotification.Name.UIApplicationDidEnterBackground
+            let didEnterBackground = UIApplication.didEnterBackgroundNotification
             let firstObserver = center.addObserver(forName: didEnterBackground, object: nil, queue: nil) {
                 [weak self] (notification) -> Void in
                 self?.cleanupCache()
@@ -129,7 +129,7 @@ class DataCache {
             }
             self.observers.append(firstObserver)
             
-            let didReceiveMemoryWaring = NSNotification.Name.UIApplicationDidReceiveMemoryWarning
+            let didReceiveMemoryWaring = UIApplication.didReceiveMemoryWarningNotification
             let secondObserver = center.addObserver(forName: didReceiveMemoryWaring, object: nil, queue: nil) {
                 [weak self] (notification) -> Void in
                 self?.cache.removeAllObjects()

@@ -132,7 +132,7 @@ class MomentCollectionViewController: UICollectionViewController {
 
     switch(gesture.state) {
 
-    case UIGestureRecognizerState.began:
+    case UIGestureRecognizer.State.began:
       guard let selectedIndexPath = collectionView.indexPathForItem(at: gesture.location(in: collectionView)) else {
         break
       }
@@ -145,9 +145,9 @@ class MomentCollectionViewController: UICollectionViewController {
       }
 
       selectedCell.wobble()
-    case UIGestureRecognizerState.changed:
+    case UIGestureRecognizer.State.changed:
       collectionView.updateInteractiveMovementTargetPosition(gesture.location(in: gesture.view!))
-    case UIGestureRecognizerState.ended:
+    case UIGestureRecognizer.State.ended:
       collectionView.endInteractiveMovement()
 
       if(selectedViewCell != nil) {
@@ -385,7 +385,7 @@ extension MomentCollectionViewController {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.MomentCellReuseId, for: indexPath) as! MomentCollectionViewCell
 
     cell.accessibilityLabel = "momentCollectionViewCell"
-    cell.accessibilityTraits = UIAccessibilityTraitButton
+    cell.accessibilityTraits = UIAccessibilityTraits.button
     cell.isAccessibilityElement = true
     cell.isUserInteractionEnabled = true
 
@@ -458,7 +458,7 @@ extension MomentCollectionViewController {
     var reusableView: UICollectionReusableView!
     
     switch kind {
-    case UICollectionElementKindSectionFooter:
+    case UICollectionView.elementKindSectionFooter:
         guard let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.FooterElementReuseId, for: indexPath) as? MomentAddFooterReusableView else {
           AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .inconsistencyFatal) { _ in
             CCLog.assert("UICollectionElementKindSectionFooter dequeued is not MomentAddFooterReusableView")
@@ -530,7 +530,7 @@ extension MomentCollectionViewController: UICollectionViewDelegateFlowLayout {
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-    return UIEdgeInsetsMake(Constants.SectionInsetSpacing, Constants.SectionInsetSpacing, Constants.SectionInsetSpacing, Constants.SectionInsetSpacing)
+    return UIEdgeInsets.init(top: Constants.SectionInsetSpacing, left: Constants.SectionInsetSpacing, bottom: Constants.SectionInsetSpacing, right: Constants.SectionInsetSpacing)
   }
 }
 

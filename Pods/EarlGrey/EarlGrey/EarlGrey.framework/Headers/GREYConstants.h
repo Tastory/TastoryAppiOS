@@ -14,8 +14,11 @@
 // limitations under the License.
 //
 
-#import <EarlGrey/GREYDefines.h>
 #import <UIKit/UIKit.h>
+
+#import <EarlGrey/GREYDefines.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  Any alpha less than this value is considered hidden by Apple.
@@ -189,7 +192,7 @@ typedef NS_ENUM(NSInteger, GREYLayoutAttribute) {
 };
 
 /**
- *  Layout relations for comparision of layout attributes (modelled after @c NSLayoutRelation).
+ *  Layout relations for comparison of layout attributes (modelled after @c NSLayoutRelation).
  */
 typedef NS_ENUM(NSInteger, GREYLayoutRelation) {
   /**
@@ -289,3 +292,5 @@ NSString *NSStringFromUIAccessibilityTraits(UIAccessibilityTraits traits);
 + (CGVector)normalizedVectorFromDirection:(GREYDirection)direction;
 
 @end
+
+NS_ASSUME_NONNULL_END

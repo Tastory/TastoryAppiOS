@@ -14,13 +14,16 @@
 // limitations under the License.
 //
 
-#import <EarlGrey/GREYDefines.h>
 #import <Foundation/Foundation.h>
+
+#import <EarlGrey/GREYDefines.h>
 
 /**
  * @file
  * @brief Methods for executing sync or async blocks with EarlGrey operations.
  */
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  Executes a block containing EarlGrey statements on the main thread and waits for it to
@@ -30,7 +33,7 @@
  *
  *  @param block Block that will be executed.
  */
-GREY_EXPORT void grey_execute_sync(void (^block)());
+GREY_EXPORT void grey_execute_sync(void (^block)(void));
 
 /**
  *  Executes a block containing EarlGrey statements on the main thread without waiting for it to
@@ -39,4 +42,6 @@ GREY_EXPORT void grey_execute_sync(void (^block)());
  *
  *  @param block Block that will be executed.
  */
-GREY_EXPORT void grey_execute_async(void (^block)());
+GREY_EXPORT void grey_execute_async(void (^block)(void));
+
+NS_ASSUME_NONNULL_END

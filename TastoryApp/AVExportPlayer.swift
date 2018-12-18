@@ -250,7 +250,7 @@ class AVExportPlayer: NSObject {
 
       avAssetExportSession.outputURL = tempURL
       avAssetExportSession.outputFileType = outputType
-      avAssetExportSession.timeRange = CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity)
+      avAssetExportSession.timeRange = CMTimeRangeMake(start: CMTime.zero, duration: CMTime.positiveInfinity)
       
       if(timeRange != nil) {
         avAssetExportSession.timeRange = timeRange!

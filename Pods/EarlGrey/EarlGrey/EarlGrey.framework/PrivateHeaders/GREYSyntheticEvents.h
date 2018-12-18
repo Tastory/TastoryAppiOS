@@ -14,8 +14,11 @@
 // limitations under the License.
 //
 
-#import <EarlGrey/GREYDefines.h>
 #import <UIKit/UIKit.h>
+
+#import <EarlGrey/GREYDefines.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Error domain and codes
 
@@ -52,6 +55,20 @@ typedef NS_ENUM(NSInteger, GREYSyntheticEventInjectionErrorCode) {
  */
 + (BOOL)rotateDeviceToOrientation:(UIDeviceOrientation)deviceOrientation
                        errorOrNil:(__strong NSError **)errorOrNil;
+
+/**
+ *  Shakes the device. If a non-nil @c errorOrNil is provided, it will
+ *  be populated with the failure reason if the orientation change fails, otherwise a test failure
+ *  will be registered.
+ *
+ *  @param[out] errorOrNil Error that will be populated on failure. If @c nil, the a test
+ *                         failure will be reported if the shake attempt fails.
+ *
+ *  @throws GREYFrameworkException if the action fails and @c errorOrNil is @c nil.
+ *  @return @c YES if the shake was successful, @c NO otherwise. If @c errorOrNil is @c nil and
+ *          the operation fails, it will throw an exception.
+ */
++ (BOOL)shakeDeviceWithError:(__strong NSError **)errorOrNil;
 
 /**
  *  Touch along a specified path in a @c CGPoint array.
@@ -134,9 +151,11 @@ typedef NS_ENUM(NSInteger, GREYSyntheticEventInjectionErrorCode) {
 
 /**
  *  Ends interaction started by GREYSyntheticEvents::beginTouchAtPoint:relativeToWindow.
- *  This method will block until all the touches since the begining of the interaction have been
+ *  This method will block until all the touches since the beginning of the interaction have been
  *  delivered.
  */
 - (void)endTouch;
 
 @end
+
+NS_ASSUME_NONNULL_END

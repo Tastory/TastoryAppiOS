@@ -18,8 +18,9 @@
 
 #import "FBSDKUtility.h"
 
+#import <CommonCrypto/CommonDigest.h>
+
 #import "FBSDKInternalUtility.h"
-#import "FBSDKMacros.h"
 
 @implementation FBSDKUtility
 
@@ -29,7 +30,7 @@
   NSArray *parts = [queryString componentsSeparatedByString:@"&"];
 
   for (NSString *part in parts) {
-    if ([part length] == 0) {
+    if (part.length == 0) {
       continue;
     }
 
@@ -61,30 +62,69 @@
 
 + (NSString *)URLDecode:(NSString *)value
 {
-  value = [value stringByReplacingOccurrencesOfString:@"+" withString:@" "];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  value = [value stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-#pragma clang diagnostic pop
-  return value;
+  return [value
+          stringByReplacingOccurrencesOfString:@"+"
+          withString:@" "].stringByRemovingPercentEncoding;
 }
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 + (NSString *)URLEncode:(NSString *)value
 {
-  return (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,
-                                                                               (CFStringRef)value,
-                                                                               NULL, // characters to leave unescaped
-                                                                               CFSTR(":!*();@/&?+$,='"),
-                                                                               kCFStringEncodingUTF8);
+  NSCharacterSet *urlAllowedSet = [NSCharacterSet
+                                   characterSetWithCharactersInString:@" !*();:'@&=+$,/?%#[]\""].invertedSet;
+  return [value stringByAddingPercentEncodingWithAllowedCharacters:urlAllowedSet];
 }
 #pragma clang diagnostic pop
 
-- (instancetype)init
++ (dispatch_source_t)startGCDTimerWithInterval:(double)interval block:(dispatch_block_t)block
 {
-  FBSDK_NO_DESIGNATED_INITIALIZER();
-  return nil;
+  dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, // source type
+                                                   0, // handle
+                                                   0, // mask
+                                                   dispatch_get_main_queue()); // queue
+
+  dispatch_source_set_timer(timer, // dispatch source
+                            dispatch_time(DISPATCH_TIME_NOW, interval * NSEC_PER_SEC), // start
+                            interval * NSEC_PER_SEC, // interval
+                            0 * NSEC_PER_SEC); // leeway
+
+  dispatch_source_set_event_handler(timer, block);
+
+  dispatch_resume(timer);
+
+  return timer;
+}
+
++ (void)stopGCDTimer:(dispatch_source_t)timer
+{
+  if (timer) {
+    dispatch_source_cancel(timer);
+  }
+}
+
++ (NSString *)SHA256Hash:(NSObject *)input
+{
+  NSData *data = nil;
+
+  if ([input isKindOfClass:[NSString class]]) {
+    data = [(NSString *)input dataUsingEncoding:NSUTF8StringEncoding];
+  } else if ([input isKindOfClass:[NSData class]]) {
+    data = (NSData *)input;
+  }
+
+  if (!data) {
+    return nil;
+  }
+
+  uint8_t digest[CC_SHA256_DIGEST_LENGTH];
+  CC_SHA256(data.bytes, (CC_LONG)data.length, digest);
+  NSMutableString *encryptedStuff = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
+  for (int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++) {
+    [encryptedStuff appendFormat:@"%02x", digest[i]];
+  }
+
+  return encryptedStuff;
 }
 
 @end

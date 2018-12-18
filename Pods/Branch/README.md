@@ -1,14 +1,6 @@
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/hyperium/hyper/master/LICENSE)
 
-## What's New
-### We are starting an SDK beta test program at Branch!
-
-Get priority updates and receive swag when you sign up and participate in the beta program.
-
-[Read about the Branch SDK Beta Program](https://github.com/BranchMetrics/ios-branch-deep-linking/wiki/The-Branch-SDK-Beta-Project)<br/>
-[Sign up for the Branch SDK Beta Program](https://docs.google.com/a/branch.io/forms/d/1fbXVFG11i-sQkd9pzHUu-U3B2qCBuwA64pVnsTQwQMo)
-
 # Branch Metrics iOS SDK Reference
 
 This is a repository of our open source iOS SDK, and the information presented here serves as a reference manual for our iOS SDK. See the table of contents below for a complete list of the content featured in this document.
@@ -28,8 +20,8 @@ ___
   + [Library installation](#installation)
   + [Register for Branch key](#register-your-app)
   + [Add your Branch key](#add-your-branch-key-to-your-project)
-  + [Register a URI scheme](#register-a-uri-scheme-direct-deep-linking-optional-but-recommended)
-  + [Support Universal Links](#support-universal-linking-ios-9)
+  + [Register a URI scheme](#register-a-uri-scheme)
+  + [Support Universal Links](#support-universal-linking-ios-9-and-above)
 
 3. Branch general methods
   + [Get a Branch singleton](#get-a-singleton-branch-instance)
@@ -41,6 +33,7 @@ ___
   + [Logging a user out](#logout)
   + [Tracking user actions and events](#tracking-user-actions-and-events)
   + [Apple Search Ad Attribution](#apple-search-ads)
+  + [Enable or Disable User Tracking](#enable-or-disable-user-tracking)
 
 4. Branch Universal Objects
   + [Instantiate a Branch Universal Object](#branch-universal-object)
@@ -154,15 +147,20 @@ Note: If you used Fabric to install Branch as a kit, your Branch keys will be in
 
 ![Branch Fabric Keys](docs/images/branch-fabric-key-plist.png)
 
-### Register a URI Scheme Direct Deep Linking (Optional but Recommended)
+### Register a URI Scheme
 
-You can register your app to respond to direct deep links (yourapp:// in a mobile browser) by adding a URI scheme in the YourProject-Info.plist file. Make sure to change **yourapp** to a unique string that represents your app name.
+Register your app to respond to direct deep links (yourapp:// in a mobile browser) by adding a URI scheme in the YourProject-Info.plist file. Make sure to change **yourapp** to a unique string that represents your app name.
 
 1. In Xcode, click on YourProject-Info.plist on the left.
 1. Find URL Types and click the right arrow. (If it doesn't exist, right click anywhere and choose Add Row. Scroll down and choose URL Types).
-1. Add "yourapp," where yourapp is a unique string for your app, as an item in URL Schemes as below:
+1. Add "yourapp," where yourapp is a unique string for your app, as an item in URL Schemes as below.
+
+   _Caution: Your apps URI scheme must be the first scheme defined (item 0) in the list._
+
+   If you have multiple schemes defined, such as a Facebook login URI, make your app's URI scheme the first one in the list so the Branch SDK knows the URI specific to your app.
 
 ![URL Scheme Demo](https://s3-us-west-1.amazonaws.com/branchhost/urlScheme.png)
+
 
 Alternatively, you can add the URI scheme in your project's Info page.
 
@@ -225,7 +223,23 @@ Branch *branch = [Branch getInstance];
 let branch: Branch = Branch.getInstance()
 ```
 
-##### Testing
+### Testing
+
+#### Test your Branch Integration
+
+Test your Branch Integration by calling `validateSDKIntegration` in your AppDelegate. Check your Xcode logs to make sure all the SDK Integration tests pass. Make sure to comment out or remove `validateSDKIntegration` in your production build.
+
+```swift
+Branch.getInstance().validateSDKIntegration()
+```
+
+```objc
+[[Branch getInstance] validateSDKIntegration];
+```
+
+##### Test Deeplink routing for your Branch links
+
+Append `?bnc_validate=true` to any of your app's Branch links and click it on your mobile device (not the Simulator!) to start the test. For instance, to validate a link like: `"https://<yourapp\>.app.link/NdJ6nFzRbK"` click on: `"https://<yourapp\>.app.link/NdJ6nFzRbK?bnc_validate=true"`
 
 ###### Objective-C
 
@@ -263,22 +277,21 @@ To deep link, Branch must initialize a session to check if the user originated f
     return YES;
 }
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
     BOOL branchHandled =
         [[Branch getInstance]
             application:application
                 openURL:url
-      sourceApplication:sourceApplication
-             annotation:annotation];
-
+                options:options];
     if (!branchHandled) {
         // do other deep link routing for the Facebook SDK, Pinterest SDK, etc
     }
     return YES;
 }
 
-- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *restorableObjects))restorationHandler {
     BOOL handledByBranch = [[Branch getInstance] continueUserActivity:userActivity];
 
     return handledByBranch;
@@ -302,13 +315,12 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
   return true
 }
 
-func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
-
+func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
     // Pass the url to the handle deep link call
-    let branchHandled = Branch.getInstance().application(application,
+    let branchHandled = Branch.getInstance().application(
+        application,
         open: url,
-        sourceApplication: sourceApplication,
-        annotation: annotation
+        options: options
     )
     if (!branchHandled) {
         // If not handled by Branch, do other deep link routing for the
@@ -318,10 +330,10 @@ func application(_ application: UIApplication, open url: URL, sourceApplication:
     return true
 }
 
-func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-    Branch.getInstance().continue(userActivity)
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+    let handledByBranch = Branch.getInstance().continue(userActivity)
 
-    return true
+    return handledByBranch
 }
 
 func application(_ application: UIApplication, didReceiveRemoteNotification launchOptions: [AnyHashable: Any]) -> Void {
@@ -582,7 +594,7 @@ The `BranchEvent` class can be simple to use. For example:
 ###### Objective-C
 
 ```objc
-[BranchEvent.standardEvent(BranchStandardEventAddToCart) logEvent];
+[[BranchEvent standardEvent:BranchStandardEventAddToCart] logEvent];
 ```
 
 ###### Swift
@@ -596,7 +608,7 @@ For best results use the Branch standard event names defined in `BranchEvent.h`.
 ###### Objective-C
 
 ```objc
-[BranchEvent.customEventWithName(@"User_Scanned_Item") logEvent];
+[[BranchEvent customEventWithName:@"User_Scanned_Item"] logEvent];
 ```
 
 ###### Swift
@@ -722,7 +734,7 @@ statistics, such as total installs, referrals, and app link statistics.
 Call this method to enable checking for Apple Search Ads before Branch initialization.  This method
 must be called before you initialize your Branch session.
 
-Note that this will add about 1 second from call to initSession to callback due to Apple's latency.
+Note that this can add up to 10 seconds from call to initSession to callback due to Apple's latency.
 
 ###### Objective-C
 ```objc
@@ -751,6 +763,20 @@ Warning: This should not be used in production.
 Branch.getInstance().setAppleSearchAdsDebugMode
 ```
 
+### Enable or Disable User Tracking
+In order to comply with tracking requirements, you can disable tracking at the SDK level. Simply call:
+
+```objc
+[Branch setTrackingDisabled:YES];
+```
+
+```swift
+Branch.setTrackingDisabled(true)
+```
+
+This will prevent any Branch network requests from being sent, except when deep linking. If someone clicks a Branch link, but does not want to be tracked, we will return the deep linking data back to the app but without capturing any tracking information.
+
+In do-not-track mode, you will still be able to create & share links. The links will not have identifiable information and will be long format links. Event tracking won’t pass data back to the server if a user has expressed to not be tracked. You can change this behavior at any time by calling the above function. The trackingDisabled state is saved and persisted across app runs.
 
 ## Branch Universal Object (for deep links, content analytics and indexing)
 
@@ -1464,4 +1490,3 @@ The response will return an array that has been parsed from the following JSON:
 1. _1_ - A reward that was added manually.
 2. _2_ - A redemption of credits that occurred through our API or SDKs.
 3. _3_ - This is a very unique case where we will subtract credits automatically when we detect fraud.
-

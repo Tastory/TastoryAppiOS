@@ -54,13 +54,13 @@ class ActivitySpinner {
     }
   }
   
-  init(addTo view: UIView, blurStyle: UIBlurEffectStyle = .regular, radius: CGFloat = 15.0, thickness: CGFloat = 3.0, color: UIColor = FoodieGlobal.Constants.ThemeColor) {
+  init(addTo view: UIView, blurStyle: UIBlurEffect.Style = .regular, radius: CGFloat = 15.0, thickness: CGFloat = 3.0, color: UIColor = FoodieGlobal.Constants.ThemeColor) {
     
     let blurEffect = UIBlurEffect(style: blurStyle)
     blurEffectView = UIVisualEffectView(effect: blurEffect)
     view.addSubview(self.blurEffectView!)
     blurEffectView!.isHidden = true
-    view.sendSubview(toBack: self.blurEffectView!)
+    view.sendSubviewToBack(self.blurEffectView!)
     
     svProgressHUD = SVProgressHUD(frame: view.bounds)
     
@@ -82,7 +82,7 @@ class ActivitySpinner {
     activityView!.addSubview(svProgressHUD!)
     view.addSubview(self.activityView!)
     activityView!.isHidden = true
-    view.sendSubview(toBack: self.activityView!)
+    view.sendSubviewToBack(self.activityView!)
     
     controllerView = view
   }
@@ -100,7 +100,7 @@ class ActivitySpinner {
         if let subview = subview {
           view.insertSubview(blurEffectView, belowSubview: subview)
         } else {
-          view.bringSubview(toFront: blurEffectView)
+          view.bringSubviewToFront(blurEffectView)
         }
         blurEffectView.isHidden = false
       }
@@ -112,7 +112,7 @@ class ActivitySpinner {
         if let subview = subview {
           view.insertSubview(activityView, belowSubview: subview)
         } else {
-          view.bringSubview(toFront: activityView)
+          view.bringSubviewToFront(activityView)
         }
         activityView.isHidden = false
         svProgressHUD.show()
@@ -128,12 +128,12 @@ class ActivitySpinner {
       }
 
       if let blurEffectView = self.blurEffectView {
-        view.sendSubview(toBack: blurEffectView)
+        view.sendSubviewToBack(blurEffectView)
         blurEffectView.isHidden = true
       }
       
       if let activityView = self.activityView {
-        view.sendSubview(toBack: activityView)
+        view.sendSubviewToBack(activityView)
         activityView.isHidden = true
       }
       

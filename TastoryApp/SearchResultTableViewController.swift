@@ -54,14 +54,14 @@ class SearchResultTableViewController: UIViewController {
     resultTableView.tableFooterView = UIView()
     resultTableView.rowHeight = Constants.resultTreeViewRowHeight
 
-    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
 
   }
 
   // MARL: - Private Instance Functions
   @objc private func keyboardWillShow(_ notification: NSNotification) {
-    if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+    if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
       resultTableView.contentInset.bottom = keyboardSize.height
     }
   }
@@ -219,7 +219,7 @@ extension SearchResultTableViewController: UITableViewDataSource {
 
     // used for earl grey testing
     cell.accessibilityLabel = "searchResultCell"
-    cell.accessibilityTraits = UIAccessibilityTraitButton
+    cell.accessibilityTraits = UIAccessibilityTraits.button
     cell.isAccessibilityElement = true
     cell.isUserInteractionEnabled = true
 

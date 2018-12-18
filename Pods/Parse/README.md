@@ -1,5 +1,6 @@
 # Parse SDK for iOS/OS X/watchOS/tvOS
 
+[![Maintenance help wanted](https://img.shields.io/badge/maintenance-help%20wanted-red.svg)](https://github.com/parse-community/Parse-SDK-iOS-OSX/issues/1356)
 ![Platforms][platforms-svg]
 [![License][license-svg]][license-link]
 
@@ -24,75 +25,78 @@ And you're off!. Take a look at the public [documentation][docs] & [API][api] an
 
 Notice the API docs aren't totally up to date when it comes to latest Swift signature of the methods and more importantly regarding [Push Notifications](http://blog.parse.com/learn/engineering/the-dangerous-world-of-client-push/) which are **no longer supported by Parse server**, keep an eye on [its repo](https://github.com/ParsePlatform/parse-server)
 
-**Other Installation Options**
+### Other Installation Options
 
- - **[CocoaPods](https://cocoapods.org)**
+#### [CocoaPods](https://cocoapods.org)
 
-  Add the following line to your Podfile:
-  ```ruby
-  pod 'Parse'
-  ```
-  Run `pod install`, and you should now have the latest parse release.
+Add the following line to your Podfile:
+```ruby
+pod 'Parse'
+```
 
-  If you wish to use the Facebook or Twitter utils or ParseUI,
-  you can now leverage Cocoapods 'subspecs'
+Run `pod install`, and you should now have the latest parse release.
 
-  ```ruby
-    pod 'Parse/FacebookUtils'
-    pod 'Parse/TwitterUtils'
-    pod 'Parse/UI
-  ```
+If you wish to use the Facebook or Twitter utils or ParseUI,
+you can now leverage Cocoapods 'subspecs'
 
-  Note that in this case, the Parse framework will contain all headers and classes, so you just have to use:
+```ruby
+pod 'Parse/FacebookUtils'
+pod 'Parse/TwitterUtils'
+pod 'Parse/UI'
+```
 
-  ```swift
-  import Parse
-  ```
+Note that in this case, the Parse framework will contain all headers and classes, so you just have to use:
 
-  ```objc
-  @import Parse;
-  ```
+```swift
+import Parse
+```
 
- - **[Carthage](https://github.com/carthage/carthage)**
+```objc
+@import Parse;
+```
 
-   Add the following line to your Cartfile:
-   ```
-   github "parse-community/Parse-SDK-iOS-OSX"
-   ```
-   Run `carthage update`, and you should now have the latest version of Parse SDK in your Carthage folder.
+#### [Carthage](https://github.com/carthage/carthage)
 
-   This will also compile the ParseTwitterUtils, ParseFacebookUtilsV4 as well as ParseUI frameworks.
+Add the following line to your Cartfile:
+```
+github "parse-community/Parse-SDK-iOS-OSX"
+```
+Run `carthage update`, and you should now have the latest version of Parse SDK in your Carthage folder.
 
- - **Compiling for yourself**
+This will also compile the ParseTwitterUtils, ParseFacebookUtilsV4 as well as ParseUI frameworks.
 
-    If you want to manually compile the SDK, clone it locally, and run the following commands in the root directory of the repository:
+#### Compiling for yourself
 
-        # To pull in extra dependencies (Bolts and OCMock)
-        git submodule update --init --recursive
+If you want to manually compile the SDK, clone it locally, and run the following commands in the root directory of the repository:
 
-        # To install bundler
-        gem install bundler
+```
+# To pull in extra dependencies (Bolts and OCMock)
+git submodule update --init --recursive
 
-        # To install all the gems via bundler
-        bundle install
+# To install bundler
+gem install bundler
 
-        # Build & Package the Frameworks
-        bundle exec rake package:frameworks
+# To install all the gems via bundler
+bundle install
 
-    Compiled frameworks will be in multiple archives inside the `build/release` folder: 
-    - `Parse-iOS.zip`
-    - `Parse-macOS.zip`
-    - `Parse-tvOS.zip`
-    - `Parse-watchOS.zip`
-    - `ParseFacebookUtils-iOS.zip`
-    - `ParseFacebookUtils-tvOS.zip`
-    - `ParseTwitterUtils-iOS.zip`
-    - `ParseUI.zip`
+# Build & Package the Frameworks
+bundle exec rake package:frameworks
+```
+
+Compiled frameworks will be in multiple archives inside the `build/release` folder: 
+- `Parse-iOS.zip`
+- `Parse-macOS.zip`
+- `Parse-tvOS.zip`
+- `Parse-watchOS.zip`
+- `ParseFacebookUtils-iOS.zip`
+- `ParseFacebookUtils-tvOS.zip`
+- `ParseTwitterUtils-iOS.zip`
+- `ParseUI.zip`
 
 
- - **Using Parse as a sub-project**
+#### Using Parse as a sub-project
 
-    You can also include parse as a subproject inside of your application if you'd prefer, although we do not recommend this, as it will increase your indexing time significantly. To do so, just drag and drop the Parse.xcodeproj file into your workspace. Note that unit tests will be unavailable if you use Parse like this, as OCMock will be unable to be found.
+You can also include parse as a subproject inside of your application if you'd prefer, although we do not recommend this, as it will increase your indexing time significantly. To do so, just drag and drop the Parse.xcodeproj file into your workspace. Note that unit tests will be unavailable if you use Parse like this, as OCMock will be unable to be found.
 
 ## How Do I Contribute?
 

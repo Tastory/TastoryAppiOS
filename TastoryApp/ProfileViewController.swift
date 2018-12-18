@@ -493,7 +493,7 @@ class ProfileViewController: OverlayViewController {
       
       DispatchQueue.main.async {
         let coordinate = CLLocationCoordinate2DMake(location.latitude, location.longitude)
-        let region = MKCoordinateRegionMakeWithDistance(coordinate, minMapWidth, minMapWidth)
+        let region = MKCoordinateRegion.init(center: coordinate, latitudinalMeters: minMapWidth, longitudinalMeters: minMapWidth)
         
         self.mapNavController?.removeAllAnnotations()
         self.mapNavController?.showRegionExposed(region, animated: true)
@@ -845,11 +845,11 @@ class ProfileViewController: OverlayViewController {
         nodeController.enableEdit = false
       }
 
-      addChildViewController(nodeController)
+      addChild(nodeController)
       feedContainerView.addSubnode(nodeController.node)
       nodeController.node.frame = feedContainerView.bounds
       nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-      nodeController.didMove(toParentViewController: self)
+      nodeController.didMove(toParent: self)
       feedCollectionNodeController = nodeController
       
       
@@ -876,7 +876,7 @@ class ProfileViewController: OverlayViewController {
       topGradientNode.frame = topGradientBackground.bounds
       topGradientBackground.alpha = 0.0
       topGradientBackground.addSubnode(topGradientNode)
-      topGradientBackground.sendSubview(toBack: topGradientNode.view)
+      topGradientBackground.sendSubviewToBack(topGradientNode.view)
       
       let bottomBackgroundBlackAlpha = UIColor.black.withAlphaComponent(Constants.BottomGradientBlackAlpha)
       bottomGradientNode = GradientNode(startingAt: CGPoint(x: 0.5, y: 1.0),
@@ -886,7 +886,7 @@ class ProfileViewController: OverlayViewController {
       bottomGradientNode!.isOpaque = false
       bottomGradientNode!.frame = feedContainerView.bounds
       feedContainerView.addSubnode(bottomGradientNode!)
-      feedContainerView.sendSubview(toBack: bottomGradientNode!.view)
+      feedContainerView.sendSubviewToBack(bottomGradientNode!.view)
     }
   }
   

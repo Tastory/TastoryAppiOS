@@ -192,7 +192,7 @@ class VideoTrimmerViewController: UIViewController, UINavigationControllerDelega
         trimmerView.seek(to: playBackTime)
 
         if playBackTime >= endTime {
-            player.seek(to: startTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+            player.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
             trimmerView.seek(to: startTime)
             pause()
         }
@@ -216,7 +216,7 @@ extension VideoTrimmerViewController: TrimmerViewDelegate {
         }
 
         startPlaybackTimeChecker()
-        player.seek(to: startTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        player.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         trimmerView.isPositionBar(hidden: false)
     }
 
@@ -229,7 +229,7 @@ extension VideoTrimmerViewController: TrimmerViewDelegate {
         }
 
         stopPlaybackTimeChecker()
-        player.seek(to: playerTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         trimmerView.isPositionBar(hidden: true)
     }
 }

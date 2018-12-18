@@ -16,7 +16,7 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
   // MARK: - Public Instance Variables
   
   var isPresenting: Bool = true
-  var timingCurve: UIViewAnimationOptions = .curveEaseInOut
+  var timingCurve: UIView.AnimationOptions = .curveEaseInOut
   var overridePopDismiss: Bool = false
   var popFromView: UIView
   var duration: TimeInterval
@@ -106,14 +106,14 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
       // Remove should always be the first mutating call, as it contains a ignore interaction inside
       let (popFromSuperview, popFromOriginalFrame) = remove(popFromView, thenAddTo: containerView)
       let presentingSubFrame = popFromView.frame
-      containerView.bringSubview(toFront: popFromView)
+      containerView.bringSubviewToFront(popFromView)
       
       // Put a black overlay over the entire container if optioned
       if let bgOverlayView = bgOverlayView {
         bgOverlayView.frame = containerView.bounds
         bgOverlayView.alpha = 0.0
         containerView.addSubview(bgOverlayView)
-        containerView.bringSubview(toFront: bgOverlayView)
+        containerView.bringSubviewToFront(bgOverlayView)
         
         if let overlayVC = toVC as? OverlayViewController {
           overlayVC.bgOverlayView = bgOverlayView
@@ -126,7 +126,7 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
       toVC.view.layer.transform = PopTransitionAnimator.calculateScaleMove3DTransform(from: presentedSubFrame, to: presentingSubFrame)
       toVC.view.alpha = 0.0
       containerView.addSubview(toVC.view)
-      containerView.bringSubview(toFront: toVC.view)
+      containerView.bringSubviewToFront(toVC.view)
       
       // Animate everything!
       UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0.0, options: timingCurve, animations: {

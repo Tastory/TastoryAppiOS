@@ -357,10 +357,10 @@ class DiscoverViewController: OverlayViewController {
       searchMapRect = mapRect!
     }
       
-    let northEastMapPoint = MKMapPointMake(searchMapRect.origin.x + searchMapRect.size.width, searchMapRect.origin.y)
-    let southWestMapPoint = MKMapPointMake(searchMapRect.origin.x, searchMapRect.origin.y + searchMapRect.size.height)
-    let northEastCoordinate = MKCoordinateForMapPoint(northEastMapPoint)
-    let southWestCoordinate = MKCoordinateForMapPoint(southWestMapPoint)
+    let northEastMapPoint = MKMapPoint.init(x: searchMapRect.origin.x + searchMapRect.size.width, y: searchMapRect.origin.y)
+    let southWestMapPoint = MKMapPoint.init(x: searchMapRect.origin.x, y: searchMapRect.origin.y + searchMapRect.size.height)
+    let northEastCoordinate = northEastMapPoint.coordinate
+    let southWestCoordinate = southWestMapPoint.coordinate
     
     CCLog.verbose("Query Location Rectangle SouthWest - (\(southWestCoordinate.latitude), \(southWestCoordinate.longitude)), NorthEast - (\(northEastCoordinate.latitude), \(northEastCoordinate.longitude))")
     
@@ -704,11 +704,11 @@ class DiscoverViewController: OverlayViewController {
     // Setup the Feed Node Controller first
     let nodeController = FeedCollectionNodeController(with: .carousel, allowLayoutChange: true, adjustScrollViewInset: false)
     nodeController.roundMosaicTop = true
-    addChildViewController(nodeController)
+    addChild(nodeController)
     feedContainerView.addSubview(nodeController.view)
     nodeController.view.frame = feedContainerView.bounds
     nodeController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    nodeController.didMove(toParentViewController: self)
+    nodeController.didMove(toParent: self)
     feedCollectionNodeController = nodeController
     feedContainerView.isHidden = true
 
@@ -1074,16 +1074,16 @@ class DiscoverViewController: OverlayViewController {
             // The coordinate in placemarks.region is highly inaccurate. So use the location coordinate when possible.
             if let coordinate = placemarks[0].location?.coordinate, let clRegion = placemarks[0].region as? CLCircularRegion {
               // Determine region via placemark.locaiton.coordinate if possible
-              region = MKCoordinateRegionMakeWithDistance(coordinate, 2*clRegion.radius, 2*clRegion.radius)
+              region = MKCoordinateRegion.init(center: coordinate, latitudinalMeters: 2*clRegion.radius, longitudinalMeters: 2*clRegion.radius)
               maxRadius = clRegion.radius / 1000 // convert meters to km
 
             } else if let coordinate = placemarks[0].location?.coordinate {
               // Determine region via placemark.location.coordinate and default max delta if clRegion is not available
-              region = MKCoordinateRegionMakeWithDistance(coordinate, mapNavController.defaultMapWidth, mapNavController.defaultMapWidth)
+              region = MKCoordinateRegion.init(center: coordinate, latitudinalMeters: mapNavController.defaultMapWidth, longitudinalMeters: mapNavController.defaultMapWidth)
 
             } else if let clRegion = placemarks[0].region as? CLCircularRegion {
               // Determine region via placemarks.region as fall back
-              region = MKCoordinateRegionMakeWithDistance(clRegion.center, 2*clRegion.radius, 2*clRegion.radius)
+              region = MKCoordinateRegion.init(center: clRegion.center, latitudinalMeters: 2*clRegion.radius, longitudinalMeters: 2*clRegion.radius)
               maxRadius = clRegion.radius / 1000 // convert meters to km
             } else {
               CCLog.assert("Placemark contained no location")
@@ -1365,7 +1365,7 @@ extension DiscoverViewController: FeedCollectionNodeDelegate {
             let mapWidth = MapNavController.Constants.DefaultMinMapWidth
             let mosaicMapAspectRatio = mosaicMapView.bounds.width/mosaicMapView.bounds.height
             let mapHeight = mapWidth/CLLocationDistance(mosaicMapAspectRatio)
-            let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, mapHeight/2, mapWidth/2)  // divided by 2 is hand tuned
+            let region = MKCoordinateRegion.init(center: annotation.coordinate, latitudinalMeters: mapHeight/2, longitudinalMeters: mapWidth/2)  // divided by 2 is hand tuned
             mapNavController?.showRegionExposed(region, animated: true)
             feedCollectionNodeController.showSelectionFrameAround(storyIndex: storyIndex)
             

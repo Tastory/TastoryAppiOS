@@ -30,6 +30,8 @@
 #define FBSDK_SHARE_OPEN_GRAPH_CONTENT_PLACE_ID_KEY @"placeID"
 #define FBSDK_SHARE_OPEN_GRAPH_CONTENT_PREVIEW_PROPERTY_NAME_KEY @"previewPropertyName"
 #define FBSDK_SHARE_OPEN_GRAPH_CONTENT_REF_KEY @"ref"
+#define FBSDK_SHARE_OPEN_GRAPH_CONTENT_PAGE_ID_KEY @"pageID"
+#define FBSDK_SHARE_OPEN_GRAPH_CONTENT_UUID_KEY @"uuid"
 
 @implementation FBSDKShareOpenGraphContent
 
@@ -40,6 +42,21 @@
 @synthesize peopleIDs = _peopleIDs;
 @synthesize placeID = _placeID;
 @synthesize ref = _ref;
+@synthesize pageID = _pageID;
+@synthesize shareUUID = _shareUUID;
+
+#pragma mark - Initializer
+
+- (instancetype)init
+{
+  self = [super init];
+  if (self) {
+    _shareUUID = [NSUUID UUID].UUIDString;
+  }
+  return self;
+}
+
+#pragma mark - Setters
 
 - (void)setPeopleIDs:(NSArray *)peopleIDs
 {
@@ -49,18 +66,54 @@
   }
 }
 
+#pragma mark - FBSDKSharingContent
+
+- (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
+          bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  [parameters addEntriesFromDictionary:[self addParameters:parameters bridgeOptions:bridgeOptions]];
+}
+
+- (NSDictionary<NSString *, id> *)addParameters:(NSDictionary<NSString *, id> *)existingParameters
+                                  bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  NSMutableDictionary<NSString *, id> *updatedParameters = [NSMutableDictionary dictionaryWithDictionary:existingParameters];
+
+  NSString *previewPropertyName = [FBSDKShareUtility getOpenGraphNameAndNamespaceFromFullName:_previewPropertyName namespace:nil];
+  [FBSDKInternalUtility dictionary:updatedParameters
+                         setObject:previewPropertyName
+                            forKey:@"previewPropertyName"];
+  [FBSDKInternalUtility dictionary:updatedParameters setObject:_action.actionType forKey:@"actionType"];
+  [FBSDKInternalUtility dictionary:updatedParameters
+                         setObject:[FBSDKShareUtility convertOpenGraphValueContainer:_action requireNamespace:NO]
+                            forKey:@"action"];
+
+  return updatedParameters;
+}
+
+#pragma mark - FBSDKSharingValidation
+
+- (BOOL)validateWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
+{
+  return ([FBSDKShareUtility validateRequiredValue:_action name:@"action" error:errorRef] &&
+          [FBSDKShareUtility validateRequiredValue:_previewPropertyName name:@"previewPropertyName" error:errorRef] &&
+          [FBSDKShareUtility validateRequiredValue:_action[_previewPropertyName] name:_previewPropertyName error:errorRef]);
+}
+
 #pragma mark - Equality
 
 - (NSUInteger)hash
 {
   NSUInteger subhashes[] = {
-    [_action hash],
-    [_contentURL hash],
-    [_hashtag hash],
-    [_peopleIDs hash],
-    [_placeID hash],
-    [_previewPropertyName hash],
-    [_ref hash],
+    _action.hash,
+    _contentURL.hash,
+    _hashtag.hash,
+    _peopleIDs.hash,
+    _placeID.hash,
+    _previewPropertyName.hash,
+    _ref.hash,
+    _pageID.hash,
+    _shareUUID.hash,
   };
   return [FBSDKMath hashWithIntegerArray:subhashes count:sizeof(subhashes) / sizeof(subhashes[0])];
 }
@@ -85,7 +138,9 @@
           [FBSDKInternalUtility object:_peopleIDs isEqualToObject:content.peopleIDs] &&
           [FBSDKInternalUtility object:_placeID isEqualToObject:content.placeID] &&
           [FBSDKInternalUtility object:_previewPropertyName isEqualToObject:content.previewPropertyName] &&
-          [FBSDKInternalUtility object:_ref isEqualToObject:content.ref]);
+          [FBSDKInternalUtility object:_ref isEqualToObject:content.ref] &&
+          [FBSDKInternalUtility object:_shareUUID isEqualToObject:content.shareUUID] &&
+          [FBSDKInternalUtility object:_pageID isEqualToObject:content.pageID]);
 }
 
 #pragma mark - NSCoding
@@ -95,7 +150,7 @@
   return YES;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (instancetype)initWithCoder:(NSCoder *)decoder
 {
   if ((self = [super init])) {
     _action = [decoder decodeObjectOfClass:[FBSDKShareOpenGraphAction class]
@@ -107,6 +162,8 @@
     _previewPropertyName = [decoder decodeObjectOfClass:[NSString class]
                                                  forKey:FBSDK_SHARE_OPEN_GRAPH_CONTENT_PREVIEW_PROPERTY_NAME_KEY];
     _ref = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDK_SHARE_OPEN_GRAPH_CONTENT_REF_KEY];
+    _pageID = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDK_SHARE_OPEN_GRAPH_CONTENT_PAGE_ID_KEY];
+    _shareUUID = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDK_SHARE_OPEN_GRAPH_CONTENT_UUID_KEY];
   }
   return self;
 }
@@ -120,6 +177,8 @@
   [encoder encodeObject:_placeID forKey:FBSDK_SHARE_OPEN_GRAPH_CONTENT_PLACE_ID_KEY];
   [encoder encodeObject:_previewPropertyName forKey:FBSDK_SHARE_OPEN_GRAPH_CONTENT_PREVIEW_PROPERTY_NAME_KEY];
   [encoder encodeObject:_ref forKey:FBSDK_SHARE_OPEN_GRAPH_CONTENT_REF_KEY];
+  [encoder encodeObject:_pageID forKey:FBSDK_SHARE_OPEN_GRAPH_CONTENT_PAGE_ID_KEY];
+  [encoder encodeObject:_shareUUID forKey:FBSDK_SHARE_OPEN_GRAPH_CONTENT_UUID_KEY];
 }
 
 #pragma mark - NSCopying
@@ -134,6 +193,8 @@
   copy->_placeID = [_placeID copy];
   copy->_previewPropertyName = [_previewPropertyName copy];
   copy->_ref = [_ref copy];
+  copy->_pageID = [_pageID copy];
+  copy->_shareUUID = [_shareUUID copy];
   return copy;
 }
 

@@ -32,8 +32,8 @@ class CameraButtonRingLayer: CAShapeLayer {
     self.init()
     self.frame = frame
     fillColor = UIColor.clear.cgColor
-    lineCap = kCALineCapRound
-    lineJoin = kCALineJoinRound
+    lineCap = CAShapeLayerLineCap.round
+    lineJoin = CAShapeLayerLineJoin.round
     path = smallCircle.cgPath
   }
   
@@ -119,7 +119,7 @@ class CameraButtonRingLayer: CAShapeLayer {
     unstrokeAnimation.fromValue = 0.0
     unstrokeAnimation.toValue = 1.0
     unstrokeAnimation.duration = largeUnstrokeDuration
-    unstrokeAnimation.fillMode = kCAFillModeForwards
+    unstrokeAnimation.fillMode = CAMediaTimingFillMode.forwards
     unstrokeAnimation.isRemovedOnCompletion = false
     add(unstrokeAnimation, forKey: "strokeStart")
   }

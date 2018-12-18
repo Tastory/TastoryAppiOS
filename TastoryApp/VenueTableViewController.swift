@@ -166,7 +166,7 @@ class VenueTableViewController: OverlayViewController {
     venueTableView.dataSource = self
     
     // Update the appearance
-    UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor]
+    UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = convertToNSAttributedStringKeyDictionary([NSAttributedString.Key.font.rawValue : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedString.Key.strokeColor.rawValue : FoodieGlobal.Constants.TextColor])
 
     // Drop Shadow at the back of the View
     view.layer.masksToBounds = false
@@ -227,7 +227,7 @@ class VenueTableViewController: OverlayViewController {
   
   
   override func viewDidLayoutSubviews() {
-    venueTableView.contentInset = UIEdgeInsetsMake(stackView.bounds.height - UIApplication.shared.statusBarFrame.height, 0.0, 0.0, 0.0)  // This is so the Table View can be translucent underneath the Stack View of Search Bars
+    venueTableView.contentInset = UIEdgeInsets.init(top: stackView.bounds.height - UIApplication.shared.statusBarFrame.height, left: 0.0, bottom: 0.0, right: 0.0)  // This is so the Table View can be translucent underneath the Stack View of Search Bars
   }
 
 }
@@ -297,7 +297,7 @@ extension VenueTableViewController: UITableViewDataSource {
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "venueTableCell", for: indexPath)
     cell.accessibilityLabel = "venueTableViewCell"
-    cell.accessibilityTraits = UIAccessibilityTraitButton
+    cell.accessibilityTraits = UIAccessibilityTraits.button
     cell.isAccessibilityElement = true
     cell.isUserInteractionEnabled = true
 
@@ -371,3 +371,8 @@ extension VenueTableViewController: UITableViewDelegate {
 }
 
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSAttributedStringKeyDictionary(_ input: [String: Any]) -> [NSAttributedString.Key: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
+}

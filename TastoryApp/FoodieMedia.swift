@@ -316,7 +316,7 @@ class FoodieMedia: FoodieFileObject {
       imgGenerator.appliesPreferredTrackTransform = true
       
       do {
-        thumbnailCgImage = try imgGenerator.copyCGImage(at: CMTimeMake(0, 1), actualTime: nil)
+        thumbnailCgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
       } catch {
         CCLog.assert("AVAssetImageGenerator.copyCGImage failed with error: \(error.localizedDescription)")
         return nil
@@ -339,7 +339,7 @@ class FoodieMedia: FoodieFileObject {
     }
     
     let thumbnailObj = FoodieMedia(for: FoodieFileObject.thumbnailFileName(originalFileName: foodieFileName), localType: .draft, mediaType: .photo)
-    thumbnailObj.imageMemoryBuffer = UIImageJPEGRepresentation(UIImage(cgImage: thumbnailCgImage), CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+    thumbnailObj.imageMemoryBuffer = UIImage(cgImage: thumbnailCgImage).jpegData(compressionQuality: CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
     return thumbnailObj
   }
 }

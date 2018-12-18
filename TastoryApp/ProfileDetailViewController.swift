@@ -256,7 +256,7 @@ class ProfileDetailViewController: OverlayViewController {
         if self.profileImageChanged, let profileImage = self.profileImage {
           oldMedia = self.user.media
           let mediaObject = FoodieMedia(for: FoodieFileObject.newPhotoFileName(), localType: .draft, mediaType: .photo)
-          mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(profileImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+          mediaObject.imageMemoryBuffer = profileImage.jpegData(compressionQuality: CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
           self.user.media = mediaObject
         }
         
@@ -287,7 +287,7 @@ class ProfileDetailViewController: OverlayViewController {
   
   
   @objc private func keyboardWillShow(_ notification: NSNotification) {
-    if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+    if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
       // 20 as arbitrary value so there's some space between the text field in focus and the top of the keyboard
       scrollView.contentInset.bottom = keyboardSize.height + 20
     }
@@ -345,8 +345,8 @@ class ProfileDetailViewController: OverlayViewController {
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
     navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveUser))
     
-    let titleTextAttributes = [NSAttributedStringKey.font : UIFont(name: "Raleway-Semibold", size: 14)!,
-                               NSAttributedStringKey.strokeColor : FoodieGlobal.Constants.TextColor]
+    let titleTextAttributes = [NSAttributedString.Key.font : UIFont(name: "Raleway-Semibold", size: 14)!,
+                               NSAttributedString.Key.strokeColor : FoodieGlobal.Constants.TextColor]
     navigationItem.rightBarButtonItem!.setTitleTextAttributes(titleTextAttributes, for: .normal)
     navigationItem.rightBarButtonItem!.tintColor = FoodieGlobal.Constants.TextColor  // Text Color by default
     navigationItem.rightBarButtonItem!.isEnabled = false
@@ -363,8 +363,8 @@ class ProfileDetailViewController: OverlayViewController {
     tapGestureRecognizer.numberOfTouchesRequired = 1
     view.addGestureRecognizer(tapGestureRecognizer)
     
-    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
     
     guard let currentUser = FoodieUser.current else {
       CCLog.fatal("We are only supporting User Detail View for Current User only")
@@ -561,9 +561,12 @@ extension ProfileDetailViewController: UITextFieldDelegate {
 
 
 extension ProfileDetailViewController: UIImagePickerControllerDelegate {
-  public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
+  public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]){
+// Local variable inserted by Swift 4.2 migrator.
+let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
     
-    guard let mediaType = info[UIImagePickerControllerMediaType] as? String else {
+    guard let mediaType = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.mediaType)] as? String else {
       CCLog.assert("Media type is expected after selection from image picker")
       return
     }
@@ -578,10 +581,10 @@ extension ProfileDetailViewController: UIImagePickerControllerDelegate {
       
     case String(kUTTypeImage):
       var image: UIImage!
-      if let editedImage = info[UIImagePickerControllerEditedImage] as? UIImage {
+      if let editedImage = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.editedImage)] as? UIImage {
         image = editedImage
       }
-      else if let originalImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
+      else if let originalImage = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage {
         image = originalImage
       }
       else {
@@ -601,4 +604,14 @@ extension ProfileDetailViewController: UIImagePickerControllerDelegate {
     
     self.updateAllUIDisplayed()
   }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
 }

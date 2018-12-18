@@ -49,8 +49,8 @@ class FoodiePermission : PFACL {
   // Set Default Global Permission when PFObjects are created
   static func setDefaultGlobalObjectPermission() {
     let defaultACL = PFACL()
-    defaultACL.getPublicReadAccess = true
-    defaultACL.getPublicWriteAccess = false
+    defaultACL.hasPublicReadAccess = true
+    defaultACL.hasPublicWriteAccess = false
     defaultACL.setWriteAccess(true, forRoleWithName: FoodieRole.Level.moderator.name)  // Users of Role with Moderator or above have Write Access by Default
     PFACL.setDefault(defaultACL, withAccessForCurrentUser: true)
   }
@@ -58,8 +58,8 @@ class FoodiePermission : PFACL {
 
   static func setDefaultObjectPermission(for user: FoodieUser) {
     let defaultACL = PFACL(user: user)
-    defaultACL.getPublicReadAccess = true
-    defaultACL.getPublicWriteAccess = false
+    defaultACL.hasPublicReadAccess = true
+    defaultACL.hasPublicWriteAccess = false
     
     if user.roleLevel < FoodieRole.Level.moderator.rawValue {
       defaultACL.setWriteAccess(true, forRoleWithName: FoodieRole.Level.moderator.name)
@@ -75,7 +75,7 @@ class FoodiePermission : PFACL {
   
   static func getLimitedUserWriteObjectPermission() -> FoodiePermission {
     let permission = FoodiePermission()
-    permission.getPublicReadAccess = true
+    permission.hasPublicReadAccess = true
     permission.setWriteAccess(true, forRoleWithName: FoodieRole.Level.limitedUser.name)
     return permission
   }
@@ -83,8 +83,8 @@ class FoodiePermission : PFACL {
   
   static func getDefaultUserPermission(for user: FoodieUser) -> FoodiePermission {
     let userPermission = FoodiePermission(user: user as PFUser) // For surely able to convert to PFUser object because FoodieUser is a sublcass of PFUser
-    userPermission.getPublicReadAccess = true
-    userPermission.getPublicWriteAccess = false
+    userPermission.hasPublicReadAccess = true
+    userPermission.hasPublicWriteAccess = false
     
     if user.roleLevel < FoodieRole.Level.moderator.rawValue {
       userPermission.setWriteAccess(true, forRoleWithName: FoodieRole.Level.moderator.name)

@@ -18,6 +18,6 @@ extension CGRect {
     if topInset < 0.0 || leftInset < 0.0 || bottomInset < 0.0 || rightInset < 0.0 {
       CCLog.warning("Negative Inset after Subtraction. Top: \(topInset), Left: \(leftInset), Bottom: \(bottomInset), Right: \(rightInset)")
     }
-    return UIEdgeInsetsMake(topInset, leftInset, bottomInset, rightInset)
+    return UIEdgeInsets.init(top: topInset, left: leftInset, bottom: bottomInset, right: rightInset)
   }
 }

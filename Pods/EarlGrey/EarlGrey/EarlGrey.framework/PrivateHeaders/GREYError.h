@@ -14,10 +14,13 @@
 // limitations under the License.
 //
 
-#import <EarlGrey/GREYDefines.h>
 #import <Foundation/Foundation.h>
 
+#import <EarlGrey/GREYDefines.h>
+
 @class GREYError;
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  Creates a @c GREYError object with given @c domain, @c code, @c description
@@ -157,11 +160,11 @@ I_GREYErrorMake((domain), \
  */
 GREY_EXTERN GREYError *I_GREYErrorMake(NSString *domain,
                                        NSInteger code,
-                                       NSDictionary *userInfo,
+                                       NSDictionary *_Nullable userInfo,
                                        NSString *filePath,
                                        NSUInteger line,
                                        NSString *functionName,
-                                       NSDictionary *errorInfo,
+                                       NSDictionary *_Nullable errorInfo,
                                        NSArray *stackTrace);
 
 /**
@@ -324,3 +327,5 @@ GREY_EXTERN NSString *const kScreenshotActualAfterImage;
 + (NSString *)grey_nestedDescriptionForError:(NSError *)error;
 
 @end
+
+NS_ASSUME_NONNULL_END

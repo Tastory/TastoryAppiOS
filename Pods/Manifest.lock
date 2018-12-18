@@ -1,76 +1,103 @@
 PODS:
-  - AWSCognito (2.6.12):
-    - AWSCore (= 2.6.12)
-  - AWSCore (2.6.12)
-  - AWSS3 (2.6.12):
-    - AWSCore (= 2.6.12)
+  - AWSCognito (2.8.1):
+    - AWSCore (= 2.8.1)
+  - AWSCore (2.8.1)
+  - AWSS3 (2.8.1):
+    - AWSCore (= 2.8.1)
   - Bolts (1.9.0):
     - Bolts/AppLinks (= 1.9.0)
     - Bolts/Tasks (= 1.9.0)
   - Bolts/AppLinks (1.9.0):
     - Bolts/Tasks
   - Bolts/Tasks (1.9.0)
-  - Branch (0.22.5):
-    - Branch/Core (= 0.22.5)
-  - Branch/Core (0.22.5)
-  - ColorSlider (4.1.2)
+  - Branch (0.25.10):
+    - Branch/Core (= 0.25.10)
+  - Branch/Core (0.25.10)
+  - ColorSlider (4.3)
   - COSTouchVisualizer (1.0.6)
-  - Crashlytics (3.10.1):
-    - Fabric (~> 1.7.5)
-  - EarlGrey (1.12.1)
-  - Fabric (1.7.5)
-  - FacebookCore (0.3.0):
-    - Bolts (~> 1.8)
-    - FBSDKCoreKit (~> 4.27)
-  - FacebookLogin (0.3.0):
-    - Bolts (~> 1.8)
-    - FacebookCore (~> 0.3)
-    - FBSDKCoreKit (~> 4.27)
-    - FBSDKLoginKit (~> 4.27)
-  - FacebookShare (0.3.0):
-    - Bolts (~> 1.8)
-    - FacebookCore (~> 0.3)
-    - FBSDKCoreKit (~> 4.27)
-    - FBSDKShareKit (~> 4.27)
-  - FBSDKCoreKit (4.28.0):
-    - Bolts (~> 1.7)
-  - FBSDKLoginKit (4.28.0):
+  - Crashlytics (3.12.0):
+    - Fabric (~> 1.9.0)
+  - EarlGrey (1.15.0)
+  - Fabric (1.9.0)
+  - FacebookCore (0.5.0):
+    - Bolts (~> 1.9)
+    - FBSDKCoreKit (~> 4.37)
+  - FacebookLogin (0.5.0):
+    - Bolts (~> 1.9)
+    - FacebookCore (~> 0.5)
+    - FBSDKCoreKit (~> 4.37)
+    - FBSDKLoginKit (~> 4.37)
+  - FacebookShare (0.5.0):
+    - Bolts (~> 1.9)
+    - FacebookCore (~> 0.5)
+    - FBSDKCoreKit (~> 4.37)
+    - FBSDKShareKit (~> 4.37)
+  - FBSDKCoreKit (4.39.0):
+    - Bolts (~> 1.9)
+  - FBSDKLoginKit (4.39.0):
     - FBSDKCoreKit
-  - FBSDKShareKit (4.28.0):
+  - FBSDKShareKit (4.39.0):
     - FBSDKCoreKit
-  - Firebase/Core (4.10.0):
-    - FirebaseAnalytics (= 4.1.0)
-    - FirebaseCore (= 4.0.16)
-  - FirebaseAnalytics (4.1.0):
-    - FirebaseCore (~> 4.0)
-    - FirebaseInstanceID (~> 2.0)
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+  - Firebase/Core (5.14.0):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (= 5.4.0)
+  - Firebase/CoreOnly (5.14.0):
+    - FirebaseCore (= 5.1.9)
+  - FirebaseAnalytics (5.4.0):
+    - FirebaseCore (~> 5.1)
+    - FirebaseInstanceID (~> 3.3)
+    - GoogleAppMeasurement (= 5.4.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
     - nanopb (~> 0.3)
-  - FirebaseCore (4.0.16):
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-  - FirebaseInstanceID (2.0.9):
-    - FirebaseCore (~> 4.0)
-  - GoogleToolboxForMac/Defines (2.1.3)
-  - "GoogleToolboxForMac/NSData+zlib (2.1.3)":
-    - GoogleToolboxForMac/Defines (= 2.1.3)
+  - FirebaseCore (5.1.9):
+    - GoogleUtilities/Logger (~> 5.2)
+  - FirebaseInstanceID (3.3.0):
+    - FirebaseCore (~> 5.1)
+    - GoogleUtilities/Environment (~> 5.3)
+    - GoogleUtilities/UserDefaults (~> 5.3)
+  - GoogleAppMeasurement (5.4.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - nanopb (~> 0.3)
+  - GoogleUtilities/AppDelegateSwizzler (5.3.6):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (5.3.6)
+  - GoogleUtilities/Logger (5.3.6):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/MethodSwizzler (5.3.6):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/Network (5.3.6):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (5.3.6)"
+  - GoogleUtilities/Reachability (5.3.6):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (5.3.6):
+    - GoogleUtilities/Logger
   - HTTPStatusCodes (3.1.2)
   - Jot (0.2.0):
     - Masonry (~> 1.0.2)
   - Masonry (1.0.2)
-  - nanopb (0.3.8):
-    - nanopb/decode (= 0.3.8)
-    - nanopb/encode (= 0.3.8)
-  - nanopb/decode (0.3.8)
-  - nanopb/encode (0.3.8)
-  - Parse (1.16.0):
-    - Parse/Core (= 1.16.0)
-  - Parse/Core (1.16.0):
+  - nanopb (0.3.901):
+    - nanopb/decode (= 0.3.901)
+    - nanopb/encode (= 0.3.901)
+  - nanopb/decode (0.3.901)
+  - nanopb/encode (0.3.901)
+  - Parse (1.17.2):
+    - Parse/Core (= 1.17.2)
+  - Parse/Core (1.17.2):
     - Bolts/Tasks (~> 1.9)
-  - Parse/FacebookUtils (1.16.0):
-    - FBSDKCoreKit (~> 4.28.0)
-    - FBSDKLoginKit (~> 4.28.0)
-    - FBSDKShareKit (~> 4.28.0)
-    - FBSDKTVOSKit (~> 4.28.0)
+  - Parse/FacebookUtils (1.17.2):
+    - Bolts (~> 1.9)
+    - FBSDKLoginKit (~> 4.33)
     - Parse/Core
   - PINCache (3.0.1-beta.6):
     - PINCache/Arc-exception-safe (= 3.0.1-beta.6)
@@ -92,11 +119,11 @@ PODS:
   - RATreeView (2.1.2)
   - SVProgressHUD (2.2.5)
   - SwiftRangeSlider (2.0.0)
-  - SwiftyCam (2.6.0)
-  - Texture (2.6):
-    - Texture/PINRemoteImage (= 2.6)
-  - Texture/Core (2.6)
-  - Texture/PINRemoteImage (2.6):
+  - SwiftyCam (3.0.0)
+  - Texture (2.7):
+    - Texture/PINRemoteImage (= 2.7)
+  - Texture/Core (2.7)
+  - Texture/PINRemoteImage (2.7):
     - PINRemoteImage/iOS (= 3.0.0-beta.13)
     - PINRemoteImage/PINCache
     - Texture/Core
@@ -129,7 +156,7 @@ DEPENDENCIES:
   - TLPhotoPicker (from `https://github.com/specc/TLPhotoPicker.git`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - AWSCognito
     - AWSCore
     - AWSS3
@@ -150,7 +177,8 @@ SPEC REPOS:
     - FirebaseAnalytics
     - FirebaseCore
     - FirebaseInstanceID
-    - GoogleToolboxForMac
+    - GoogleAppMeasurement
+    - GoogleUtilities
     - HTTPStatusCodes
     - Masonry
     - nanopb
@@ -184,7 +212,7 @@ CHECKOUT OPTIONS:
     :commit: ae2c2f531c545e260aa93415f46a1a5c4b812994
     :git: https://github.com/specc/PryntTrimmerView.git
   QuadratTouch:
-    :commit: 4f10166069b9482da15a9b118e81102c3fffd507
+    :commit: 0c5022404439e799fe0503aa9172a4bc8483fa2b
     :git: https://github.com/Constantine-Fry/das-quadrat.git
   SVProgressHUD:
     :commit: d714813e2f9e4b49894a50e6fc6b789c6cab03b5
@@ -194,32 +222,33 @@ CHECKOUT OPTIONS:
     :git: https://github.com/specc/TLPhotoPicker.git
 
 SPEC CHECKSUMS:
-  AWSCognito: c69d91501b460c8abe22e224a0d5c3277486a21b
-  AWSCore: d0d6e4f6831754aaf98058d2306a016ae71510fe
-  AWSS3: c35608e0cdd5172f9e1d943221fd5fde01c5f749
+  AWSCognito: 44c70d8900bdc845eefe040134b25666ef9e0056
+  AWSCore: f17db38a5f8bceb217a19d58d8755bbb6f5ddb3c
+  AWSS3: 7b92a900fa54ce386e562d81c9d51724e70178a0
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
-  Branch: 4f0482418d99e77d15b0e6065ef216c10e24797b
-  ColorSlider: 6ad9a2b1ff168ba2f8c3265e9d4fe5ea3575cb7c
+  Branch: 3365f2e17921c503ff8a626cd053a056dbb87c62
+  ColorSlider: 83fb6f174a13d7235ef100d8d5fee1f71adf2182
   COSTouchVisualizer: a398089327a6c02897823614d7447ccc97198997
-  Crashlytics: aee1a064cbbf99b32efa3f056a5f458d846bc8ff
-  EarlGrey: f7774b813c888ebdb9a21e612d67874d17d5a326
-  Fabric: ae7146a5f505ea370a1e44820b4b1dc8890e2890
-  FacebookCore: 3ffa190a3f1f96cec0e44d3fc221bc322c595ffa
-  FacebookLogin: 0af839ea858faef99550d16596b87b4a8e8906e6
-  FacebookShare: 0469964297ebd75f052be2c5083389a4208e82b7
-  FBSDKCoreKit: ca961e279113f691fd83dc634c0bbad9d4e3f370
-  FBSDKLoginKit: b077381c27d800f21661757e8140cf2c80a91e4a
-  FBSDKShareKit: 4f525556e0df4cf0f574cb3f01c675434f29d477
-  Firebase: c98c8b1fbcbdccd82539a36c2b17a9b1bb0ee798
-  FirebaseAnalytics: 3dfae28d4a5e06f86c4fae830efc2ad3fadb19bc
-  FirebaseCore: eb9e1a56733ff1094ecf3e28af9069c344b25239
-  FirebaseInstanceID: d2058a35e9bebda1b6dd42486b84917bde552a9d
-  GoogleToolboxForMac: 2501e2ad72a52eb3dfe7bd9aee7dad11b858bd20
+  Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
+  EarlGrey: 289a16cc7d08a54b962d72881b21e36d5103b549
+  Fabric: f988e33c97f08930a413e08123064d2e5f68d655
+  FacebookCore: 74288d0add931d361b1596beae787ab72c438249
+  FacebookLogin: ebcf34714a1cb9f0759d9f071cfb01ed500996cf
+  FacebookShare: 963b4bb1124a64a395b1e428163d70b5774116e8
+  FBSDKCoreKit: 1e3981faefab8c88edfaa9eecd94aab02d99a9bc
+  FBSDKLoginKit: 30ba5039a2c53d65a75103889bc2deebdacd5a1f
+  FBSDKShareKit: 5a0021c30abb64df9eeba87351dd8a627874543b
+  Firebase: 963d5685fae888a56d6d4d9cfce6b9c976958798
+  FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
+  FirebaseCore: 8f49b70f57ab5cbb032ef41d64992ded21606459
+  FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
+  GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
+  GoogleUtilities: 95996bea7c7d9b8fb811b7507669a4a8762f80c7
   HTTPStatusCodes: 88155ba36826366a898a7b4f34d311f49083d546
   Jot: 5716f80d0920b92888fa9a8003e68e83eea8c187
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
-  nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
-  Parse: 5b36dc2c2f0a2fd82a257ae018bc3d68cf2c24e7
+  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
+  Parse: 3b31a3dd1777b07ee7f0caee32fafbff544483a5
   PINCache: d195fdba255283f7e9900a55e3cced377f431f9b
   PINOperation: a6219e6fc9db9c269eb7a7b871ac193bcf400aac
   PINRemoteImage: d6d51c5d2adda55f1ce30c96e850b6c4ebd2856a
@@ -228,10 +257,10 @@ SPEC CHECKSUMS:
   RATreeView: 380cde0090cfde21dc6ac29137f49d3b768fdd28
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   SwiftRangeSlider: f86e3b637c961120158fa1a89277c8343845cbe4
-  SwiftyCam: 86c114177a1b1f5dc2c82384577d0c20b922a31b
-  Texture: 7249074582daf75e524e59df5428b66b8e8db0e4
+  SwiftyCam: 67338308e3a5a3545c2aeee17e2c964eba4cf49f
+  Texture: 9d7e38965cf22ccd7cd9c249dd78b3f14e70ab6c
   TLPhotoPicker: ec5cd5b3380ed1b6bd176d34a429024ceb80ef01
 
 PODFILE CHECKSUM: 3a1e78f835eda1d3f85e63ae09f12b32681d8c00
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.2

@@ -15,8 +15,8 @@ class ThumbnailFrameLayer: CAShapeLayer {
     self.frame = frame
     
     fillColor = UIColor.clear.cgColor
-    lineCap = kCALineCapRound
-    lineJoin = kCALineJoinRound
+    lineCap = CAShapeLayerLineCap.round
+    lineJoin = CAShapeLayerLineJoin.round
     path = UIBezierPath(roundedRect: frame, cornerRadius: cornerRadius).cgPath
   }
 }

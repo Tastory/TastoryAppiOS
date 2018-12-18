@@ -8,7 +8,7 @@
 
 import AVFoundation
 
-extension AVPlayerTimeControlStatus {
+extension AVPlayer.TimeControlStatus {
   var string: String {
     switch self {
     case .paused:

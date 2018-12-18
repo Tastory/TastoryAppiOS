@@ -53,7 +53,7 @@ typedef UInt32 IOOptionBits;
  *  collection case, the child event mask field referrence by
  *  kIOHIDEventFieldDigitizerChildEventMask will detail the cumulative event state of the child
  *  digitizer events. If you append a child digitizer event to a parent digitizer event, appropriate
- *  state will be transfered on to the parent.
+ *  state will be transferred on to the parent.
  */
 typedef enum {
   /**
@@ -120,6 +120,26 @@ IOHIDEventRef IOHIDEventCreateDigitizerFingerEvent(CFAllocatorRef allocator,
 - (void)_clearTouches;
 @end
 
+/**
+ *  A private class that represents backboard services accelerometer.
+ */
+@interface BKSAccelerometer : NSObject
+/**
+ *  Enable or disable accelerometer events.
+ */
+@property(nonatomic) BOOL accelerometerEventsEnabled;
+@end
+
+/**
+ *  A private class that represents motion related events. This is sent to UIApplication whenever a
+ *  motion occurs.
+ */
+@interface UIMotionEvent : NSObject {
+  // The motion accelerometer of the event.
+  BKSAccelerometer *_motionAccelerometer;
+}
+@end
+
 @interface UIApplication (GREYExposed)
 - (BOOL)_isSpringBoardShowingAnAlert;
 - (UIWindow *)statusBarWindow;
@@ -146,6 +166,21 @@ IOHIDEventRef IOHIDEventCreateDigitizerFingerEvent(CFAllocatorRef allocator,
  *          UITouch objects, and the relevant touch interaction state.
  */
 - (UITouchesEvent *)_touchesEvent;
+/**
+ *  @return The shared UIMotionEvent object of the application, used to force enable motion
+ *          accelerometer events.
+ */
+- (UIMotionEvent *)_motionEvent;
+
+/**
+ *  Sends a motion began event for the specified subtype.
+ */
+- (void)_sendMotionBegan:(UIEventSubtype)subtype;
+
+/**
+ *  Sends a motion ended event for the specified subtype.
+ */
+- (void)_sendMotionEnded:(UIEventSubtype)subtype;
 @end
 
 @interface UIScrollView (GREYExposed)
@@ -319,28 +354,24 @@ IOHIDEventRef IOHIDEventCreateDigitizerFingerEvent(CFAllocatorRef allocator,
 @end
 
 /**
- *  UI controller for the keyboard preferences pane that can be accessed from the Settings. This
- *  works only for iOS8+.
+ * Text Input preferences controller to modify the keyboard preferences for iOS 8+.
  */
-@interface KeyboardController
+@interface TIPreferencesController : NSObject
 
-/**
- *  Removes the autocorrect values from being accepted on a UIKeyboard. While the
- *  autocorrect options may be displayed, they do not affect typing.
- *
- *  @param enabled   A boolean that indicates if autocorrect is enabled or not.
- *  @param specifier Is unused can be @c nil.
- */
-- (void)setAutocorrectionPreferenceValue:(NSNumber *)enabled forSpecifier:(id)specifier;
+/** Whether the autocorrection is enabled. */
+@property BOOL autocorrectionEnabled;
 
-/**
- *  Removes the predictive text from being accepted on a UIKeyboard to stop
- *  displaying the autocorrect options when typing.
- *
- *  @param enabled   A boolean that indicates if predictive typing is enabled or not.
- *  @param specifier Is unused can be @c nil.
- */
-- (void)setPredictionPreferenceValue:(NSNumber *)enabled forSpecifier:(id)specifier;
+/** Whether the predication is enabled. */
+@property BOOL predictionEnabled;
+
+/** The shared singleton instance. */
++ (instancetype)sharedPreferencesController;
+
+/** Synchronize the change to save it on disk. */
+- (void)synchronizePreferences;
+
+/** Modify the preference @c value by @c key. */
+- (void)setValue:(NSValue *)value forPreferenceKey:(NSString *)key;
 @end
 
 /**
@@ -378,7 +409,7 @@ IOHIDEventRef IOHIDEventCreateDigitizerFingerEvent(CFAllocatorRef allocator,
  *
  *  @return ignored.
  */
-- (bool)loadAccessibility:(void **)unused;
+- (bool)_loadAccessibility:(void **)unused;
 
 @end
 

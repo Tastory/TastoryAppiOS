@@ -72,15 +72,15 @@ class UITextViewWithPlaceholder: UITextView {
     // Remove the padding top and left of the text view
     self.textContainer.lineFragmentPadding = 0
     self.textContainerInset = UIEdgeInsets.zero
-    self.contentInset = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+    self.contentInset = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
   }
   
   
   private func addPlaceholderObserver() {
     // Listen for text view did begin editing
-    NotificationCenter.default.addObserver(self, selector: #selector(removePlaceholder), name: NSNotification.Name.UITextViewTextDidBeginEditing, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(removePlaceholder), name: UITextView.textDidBeginEditingNotification, object: nil)
     // Listen for text view did end editing
-    NotificationCenter.default.addObserver(self, selector: #selector(addPlaceholder), name: NSNotification.Name.UITextViewTextDidEndEditing, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(addPlaceholder), name: UITextView.textDidEndEditingNotification, object: nil)
   }
   
   

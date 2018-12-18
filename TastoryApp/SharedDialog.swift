@@ -22,16 +22,16 @@ struct SharedDialog {
     }
 
     activityViewController.excludedActivityTypes = [
-      UIActivityType.postToWeibo,
-      UIActivityType.print,
-      UIActivityType.assignToContact,
-      UIActivityType.saveToCameraRoll,
-      UIActivityType.addToReadingList,
-      UIActivityType.postToFlickr,
-      UIActivityType.postToVimeo,
-      UIActivityType.postToTencentWeibo,
-      UIActivityType(rawValue: "com.apple.reminders.RemindersEditorExtension"),
-      UIActivityType(rawValue: "com.apple.mobilenotes.SharingExtension")
+      UIActivity.ActivityType.postToWeibo,
+      UIActivity.ActivityType.print,
+      UIActivity.ActivityType.assignToContact,
+      UIActivity.ActivityType.saveToCameraRoll,
+      UIActivity.ActivityType.addToReadingList,
+      UIActivity.ActivityType.postToFlickr,
+      UIActivity.ActivityType.postToVimeo,
+      UIActivity.ActivityType.postToTencentWeibo,
+      UIActivity.ActivityType(rawValue: "com.apple.reminders.RemindersEditorExtension"),
+      UIActivity.ActivityType(rawValue: "com.apple.mobilenotes.SharingExtension")
     ]
 
     fromVC.present(activityViewController, animated: true, completion: nil)

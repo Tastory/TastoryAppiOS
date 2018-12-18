@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
   
   // MARK: - Public Instance Functions
 
-  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     
     var error: Error?
     
@@ -97,12 +97,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate /*, COSTouchVisualizerWind
   }
 
   // Respond to Universal Links
-  func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
+  func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
     DeepLink.global.processUniversalLink(userActivity)
     return true
   }
 
-  func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+  func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
     return FBSDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
   }
   

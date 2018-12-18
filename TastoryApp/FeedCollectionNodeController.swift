@@ -373,9 +373,9 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       collectionNode.layoutInspector = mosaicLayoutInspector
       
       if contentInset > 0 {
-        collectionNode.contentInset = UIEdgeInsetsMake(contentInset + MosaicCollectionViewLayout.Constants.DefaultFeedNodeMargin, 0.0, 0.0, 0.0)
+        collectionNode.contentInset = UIEdgeInsets.init(top: contentInset + MosaicCollectionViewLayout.Constants.DefaultFeedNodeMargin, left: 0.0, bottom: 0.0, right: 0.0)
       } else {
-        collectionNode.contentInset = UIEdgeInsetsMake(contentInset, 0.0, 0.0, 0.0)
+        collectionNode.contentInset = UIEdgeInsets.init(top: contentInset, left: 0.0, bottom: 0.0, right: 0.0)
       }
       
       super.init(node: collectionNode)
@@ -383,7 +383,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       
     case .carousel:
       collectionNode = ASCollectionNode(collectionViewLayout: CarouselCollectionViewLayout())
-      collectionNode.contentInset = UIEdgeInsetsMake(0.0, contentInset, 0.0, 0.0)
+      collectionNode.contentInset = UIEdgeInsets.init(top: 0.0, left: contentInset, bottom: 0.0, right: 0.0)
       super.init(node: collectionNode)
     }
     
@@ -415,13 +415,13 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
     case .mosaic:
       collectionNode.view.alwaysBounceHorizontal = false
       collectionNode.view.alwaysBounceVertical = true
-      collectionNode.view.decelerationRate = UIScrollViewDecelerationRateNormal
+      collectionNode.view.decelerationRate = UIScrollView.DecelerationRate.normal
       collectionNode.leadingScreensForBatching = CGFloat(FoodieGlobal.Constants.StoryFeedPaginationCount)/10.0
 
     case .carousel:
       collectionNode.view.alwaysBounceVertical = false
       collectionNode.view.alwaysBounceHorizontal = true
-      collectionNode.view.decelerationRate = UIScrollViewDecelerationRateFast
+      collectionNode.view.decelerationRate = UIScrollView.DecelerationRate.fast
       collectionNode.leadingScreensForBatching = 0.0
     }
   }
@@ -563,7 +563,7 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
       collectionNode.leadingScreensForBatching = CGFloat(FoodieGlobal.Constants.StoryFeedPaginationCount)/10.0
       
       if let oldLayout = collectionNode.collectionViewLayout as? CarouselCollectionViewLayout {
-        oldLayout.sectionInset = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+        oldLayout.sectionInset = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
       }
       
     case .carousel:
@@ -583,14 +583,14 @@ final class FeedCollectionNodeController: ASViewController<ASCollectionNode> {
        self.collectionNode.layoutInspector = self.mosaicLayoutInspector
         self.collectionNode.view.alwaysBounceHorizontal = false
         self.collectionNode.view.alwaysBounceVertical = true
-        self.collectionNode.view.decelerationRate = UIScrollViewDecelerationRateNormal
+        self.collectionNode.view.decelerationRate = UIScrollView.DecelerationRate.normal
         
         
       case .carousel:
         self.collectionNode.layoutInspector = nil
         self.collectionNode.view.alwaysBounceVertical = false
         self.collectionNode.view.alwaysBounceHorizontal = true
-        self.collectionNode.view.decelerationRate = UIScrollViewDecelerationRateFast
+        self.collectionNode.view.decelerationRate = UIScrollView.DecelerationRate.fast
       }
       
       self.delegate = delegateBackup
@@ -868,7 +868,7 @@ extension FeedCollectionNodeController: ASCollectionDelegateFlowLayout {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
         CCLog.fatal("Did not recognize CollectionNode Layout Type")
       }
-      return UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+      return UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
     }
   }
 

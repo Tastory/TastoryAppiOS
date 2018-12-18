@@ -135,7 +135,7 @@ class LocationWatch: NSObject {
       let appName = Bundle.main.displayName ?? "Tastory"
       return AlertDialog.createUrlDialog(title: "Location Services Denied",
                                          message: "For best experience, please go to Settings > Privacy > Location Services and toggle to 'While Using' for \(appName)",
-                                         url: UIApplicationOpenSettingsURLString)
+                                         url: UIApplication.openSettingsURLString)
       
     case .authorizedAlways:
       fallthrough

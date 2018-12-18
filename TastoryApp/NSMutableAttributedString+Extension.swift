@@ -10,14 +10,14 @@ import UIKit
 
 extension NSMutableAttributedString {
   @discardableResult func bold14(_ text: String) -> NSMutableAttributedString {
-    let boldString = NSMutableAttributedString(string:text, attributes: [NSAttributedStringKey.font : UIFont(name: "Raleway-SemiBold", size: 14)!, NSAttributedStringKey.strokeColor : FoodieGlobal.Constants.TextColor,NSAttributedStringKey.foregroundColor: FoodieGlobal.Constants.TextColor])
+    let boldString = NSMutableAttributedString(string:text, attributes: [NSAttributedString.Key.font : UIFont(name: "Raleway-SemiBold", size: 14)!, NSAttributedString.Key.strokeColor : FoodieGlobal.Constants.TextColor,NSAttributedString.Key.foregroundColor: FoodieGlobal.Constants.TextColor])
     append(boldString)
 
     return self
   }
 
   @discardableResult func bold12(_ text: String) -> NSMutableAttributedString {
-    let boldString = NSMutableAttributedString(string:text, attributes: [NSAttributedStringKey.font : UIFont(name: "Raleway-SemiBold", size: 12)!, NSAttributedStringKey.strokeColor : FoodieGlobal.Constants.TextColor,NSAttributedStringKey.foregroundColor: FoodieGlobal.Constants.TextColor])
+    let boldString = NSMutableAttributedString(string:text, attributes: [NSAttributedString.Key.font : UIFont(name: "Raleway-SemiBold", size: 12)!, NSAttributedString.Key.strokeColor : FoodieGlobal.Constants.TextColor,NSAttributedString.Key.foregroundColor: FoodieGlobal.Constants.TextColor])
     append(boldString)
     return self
   }

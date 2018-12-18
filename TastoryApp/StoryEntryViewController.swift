@@ -534,7 +534,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
   
   
   @objc private func keyboardWillShow(_ notification: NSNotification) {
-    if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+    if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
       // 20 as arbitrary value so there's some space between the text field in focus and the top of the keyboard
       scrollView.contentInset.bottom = keyboardSize.height + 20
     }
@@ -558,9 +558,9 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     momentViewController.previewControlDelegate = self
     momentViewController.containerVC = self
 
-    addChildViewController(momentViewController)
+    addChild(momentViewController)
     momentCellView.addSubview(momentViewController.view)
-    momentViewController.didMove(toParentViewController: self)
+    momentViewController.didMove(toParent: self)
     momentViewController.view.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
@@ -579,8 +579,8 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
     keyboardDismissRecognizer.numberOfTouchesRequired = 1
     view.addGestureRecognizer(keyboardDismissRecognizer)
 
-    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
     
     // Drop Shadow at the back of the Stack View
     scrollView.layer.masksToBounds = false
@@ -737,7 +737,7 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       topGradientNode.isOpaque = false
       topGradientNode.frame = topGradientBackground.bounds
       topGradientBackground.addSubnode(topGradientNode)
-      topGradientBackground.sendSubview(toBack: topGradientNode.view)
+      topGradientBackground.sendSubviewToBack(topGradientNode.view)
     }
   }
   
@@ -765,16 +765,16 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
       if let latitude = workingStory.venue?.location?.latitude,
         let longitude = workingStory.venue?.location?.longitude {
         
-        let region = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
-                                                        Constants.VenueMapWidth, Constants.VenueMapWidth)
+        let region = MKCoordinateRegion.init(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+                                                        latitudinalMeters: Constants.VenueMapWidth, longitudinalMeters: Constants.VenueMapWidth)
         updateStoryEntryMap(with: region, venueName: workingStory.venue?.name)
       }
         
         // Otherwise use the average location of the Moments
       else if let momentsLocation = averageLocationOfMoments() {
-        let region = MKCoordinateRegionMakeWithDistance(momentsLocation.coordinate,
-                                                        mapController.minMapWidth,
-                                                        mapController.minMapWidth)
+        let region = MKCoordinateRegion.init(center: momentsLocation.coordinate,
+                                                        latitudinalMeters: mapController.minMapWidth,
+                                                        longitudinalMeters: mapController.minMapWidth)
         updateStoryEntryMap(with: region, venueName: workingStory.venue?.name)
       }
         
@@ -786,9 +786,9 @@ class StoryEntryViewController: OverlayViewController, UIGestureRecognizerDelega
             //self.updateStoryEntryMap(withCoordinate: Constants.DefaultCLCoordinate2D, span: Constants.DefaultDelta)  Just let it be a view of the entire North America I guess?
             return
           } else if let location = location {
-            let region = MKCoordinateRegionMakeWithDistance(location.coordinate,
-                                                            mapController.defaultMapWidth,
-                                                            mapController.defaultMapWidth)
+            let region = MKCoordinateRegion.init(center: location.coordinate,
+                                                            latitudinalMeters: mapController.defaultMapWidth,
+                                                            longitudinalMeters: mapController.defaultMapWidth)
             self.updateStoryEntryMap(with: region, venueName: workingStory.venue?.name)
           }
         }
@@ -949,8 +949,8 @@ extension StoryEntryViewController: VenueTableReturnDelegate {
           // Update the map again here
           if let latitude = venueToUpdate.location?.latitude, let longitude = venueToUpdate.location?.longitude {
             
-            let region = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
-                                                            Constants.VenueMapWidth, Constants.VenueMapWidth)
+            let region = MKCoordinateRegion.init(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+                                                            latitudinalMeters: Constants.VenueMapWidth, longitudinalMeters: Constants.VenueMapWidth)
             self.updateStoryEntryMap(with: region, venueName: venueToUpdate.name)
           }
           

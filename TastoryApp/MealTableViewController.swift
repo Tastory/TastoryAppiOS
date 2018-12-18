@@ -114,7 +114,7 @@ extension MealTableViewController: UITableViewDataSource {
 
     // used for earl grey testing
     cell.accessibilityLabel = "mealTableViewCell"
-    cell.accessibilityTraits = UIAccessibilityTraitButton
+    cell.accessibilityTraits = UIAccessibilityTraits.button
     cell.isAccessibilityElement = true
     cell.isUserInteractionEnabled = true
 

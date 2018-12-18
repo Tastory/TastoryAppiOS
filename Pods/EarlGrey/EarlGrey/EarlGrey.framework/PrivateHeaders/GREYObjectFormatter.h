@@ -23,6 +23,8 @@
  */
 GREY_EXTERN NSInteger const kGREYObjectFormatIndent;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface GREYObjectFormatter : NSObject
 
 /**
@@ -55,7 +57,7 @@ GREY_EXTERN NSInteger const kGREYObjectFormatIndent;
 + (NSString *)formatDictionary:(NSDictionary *)dictionary
                         indent:(NSInteger)indent
                      hideEmpty:(BOOL)hideEmpty
-                      keyOrder:(NSArray *)keyOrder;
+                      keyOrder:(NSArray *_Nullable)keyOrder;
 
 /**
  *  Serializes an array of objects into JSON-like string.
@@ -72,9 +74,9 @@ GREY_EXTERN NSInteger const kGREYObjectFormatIndent;
  *  @return Serialized JSON-like string of the provided @c array.
  */
 + (NSString *)formatArray:(NSArray *)array
-                   prefix:(NSString *)prefix
+                   prefix:(NSString *_Nullable)prefix
                    indent:(NSInteger)indent
-                 keyOrder:(NSArray *)keyOrder;
+                 keyOrder:(NSArray *_Nullable)keyOrder;
 
 /**
  *  Serializes a dictionary of objects into JSON-like string.
@@ -86,8 +88,8 @@ GREY_EXTERN NSInteger const kGREYObjectFormatIndent;
  *  @param dictionary The dictionary to serialize.
  *  @param prefix     A string that will be applied to each newline
  *                    of the serialized dictionary.
- *  @param indent     Number of spaces that will be applied to each element
- *                    of the serialized dictionary.
+ *  @param indent     Number of spaces that will be applied to each element (key and value)
+ *                    of the serialized dictionary
  *  @param hideEmpty  Hide the key-value pair if the value in the dictionary
  *                    when the key is empty.
  *  @param keyOrder   Output the key-value pair in the order of the keys specified
@@ -96,9 +98,11 @@ GREY_EXTERN NSInteger const kGREYObjectFormatIndent;
  *  @return Serialized string of the provided @c dictionary.
  */
 + (NSString *)formatDictionary:(NSDictionary *)dictionary
-                        prefix:(NSString *)prefix
+                        prefix:(NSString *_Nullable)prefix
                         indent:(NSInteger)indent
                      hideEmpty:(BOOL)hideEmpty
-                      keyOrder:(NSArray *)keyOrder;
+                      keyOrder:(NSArray *_Nullable)keyOrder;
 
 @end
+
+NS_ASSUME_NONNULL_END

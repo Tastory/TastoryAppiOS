@@ -18,7 +18,7 @@ extension UIAlertController {
                    titleComment: String?,
                    message: String?,
                    messageComment: String?,
-                   preferredStyle: UIAlertControllerStyle) {
+                   preferredStyle: UIAlertController.Style) {
     
     var titleLocalized: String? = nil
     var messageLocalized: String? = nil
@@ -37,7 +37,7 @@ extension UIAlertController {
   
   // FUNCTION addAlertAction
   // Consider this a convinience function for adding a UIAlertAction to the Alert Controller
-  func addAlertAction(title: String?, comment: String?, style: UIAlertActionStyle, handler: ((UIAlertAction) -> Swift.Void)? = nil) {
+  func addAlertAction(title: String?, comment: String?, style: UIAlertAction.Style, handler: ((UIAlertAction) -> Swift.Void)? = nil) {
     let alertAction = UIAlertAction(title: title, comment: comment, style: style, handler: handler)
 
     if title != nil {

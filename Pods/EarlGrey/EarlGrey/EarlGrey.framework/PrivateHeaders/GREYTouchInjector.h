@@ -14,8 +14,10 @@
 // limitations under the License.
 //
 
+#import <Foundation/Foundation.h>
+
 #import <EarlGrey/GREYDefines.h>
-#import "GREYTouchInfo.h"
+#import "Event/GREYTouchInfo.h"
 
 /**
  *  The frequency at which touches will be injected per second. Currently set to 60Hz.
@@ -40,6 +42,8 @@ typedef NS_ENUM(NSInteger, GREYTouchInjectorState) {
    */
   kGREYTouchInjectorStopped,
 };
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  A touch injector that delivers a complete touch sequence for single finger interactions.
@@ -88,3 +92,5 @@ typedef NS_ENUM(NSInteger, GREYTouchInjectorState) {
 - (void)waitUntilAllTouchesAreDeliveredUsingInjector;
 
 @end
+
+NS_ASSUME_NONNULL_END

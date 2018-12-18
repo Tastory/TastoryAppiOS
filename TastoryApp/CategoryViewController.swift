@@ -187,13 +187,13 @@ class CategoryViewController: OverlayViewController {
     navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftArrowImage, style: .plain, target: self, action: #selector(dismissAction(_:)))
     navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Clear", style: .plain, target: self, action: #selector(clearAction(_:)))
     
-    let titleTextAttributes = [NSAttributedStringKey.font : UIFont(name: "Raleway-Semibold", size: 14)!,
-                               NSAttributedStringKey.strokeColor : FoodieGlobal.Constants.TextColor]
+    let titleTextAttributes = [NSAttributedString.Key.font : UIFont(name: "Raleway-Semibold", size: 14)!,
+                               NSAttributedString.Key.strokeColor : FoodieGlobal.Constants.TextColor]
     navigationItem.rightBarButtonItem!.setTitleTextAttributes(titleTextAttributes, for: .normal)
     navigationItem.rightBarButtonItem!.tintColor = FoodieGlobal.Constants.ThemeColor
     
     // Update the Search bar appearance
-    UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.font.rawValue : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedStringKey.strokeColor.rawValue : FoodieGlobal.Constants.TextColor]
+    UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = convertToNSAttributedStringKeyDictionary([NSAttributedString.Key.font.rawValue : UIFont(name: "Raleway-Regular", size: 14)!, NSAttributedString.Key.strokeColor.rawValue : FoodieGlobal.Constants.TextColor])
     categorySearchBar.delegate = self
     
     // Create and configure the Tree View
@@ -256,7 +256,7 @@ class CategoryViewController: OverlayViewController {
   
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-    categoryTreeView.scrollView.contentInset = UIEdgeInsetsMake(stackView.bounds.height, 0.0, 0.0, 0.0)  // This is so the Table View can be translucent underneath the Stack View of Search Bars
+    categoryTreeView.scrollView.contentInset = UIEdgeInsets.init(top: stackView.bounds.height, left: 0.0, bottom: 0.0, right: 0.0)  // This is so the Table View can be translucent underneath the Stack View of Search Bars
   }
   
 }
@@ -487,3 +487,8 @@ extension CategoryViewController: UIScrollViewDelegate {
 }
 
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSAttributedStringKeyDictionary(_ input: [String: Any]) -> [NSAttributedString.Key: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
+}

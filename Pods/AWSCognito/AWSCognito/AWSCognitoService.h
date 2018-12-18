@@ -22,11 +22,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+FOUNDATION_EXPORT NSString *const AWSCognitoSDKVersion;
+
 @class AWSCognitoDataset;
 @class AWSCognitoDatasetMetadata;
 @class AWSCognitoCredentialsProvider;
 @class AWSTask;
 
+/**
+ AWSCognito
+ 
+ @warning The AWSCognito (Amazon Cognito Sync) SDK is deprecated. Please use AWSAppSync for data sync.
+ @deprecated Please use AWSAppSync for data sync.
+ */
+DEPRECATED_MSG_ATTRIBUTE("Use `AWSAppSync` for data synchronization.")
 @interface AWSCognito : AWSService
 
 /**

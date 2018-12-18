@@ -46,7 +46,7 @@ class DeepLink {
   var deepLinkStoryId: String?
   var deepLinkVenueId: String?
 
-  init(launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
+  init(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
 
     if instance == nil {
       //Branch.io initialization
@@ -138,12 +138,12 @@ class DeepLink {
           // displayedVC could be a loginViewController if user clicked on deeplink and not logged in
           if let mapNavVC = displayedVC as? MapNavController {
             // check to see if other VC is on top of the MapNavController
-            if mapNavVC.childViewControllers.count > 1 {
+            if mapNavVC.children.count > 1 {
               rootVC.dismiss(animated: false)
-            } else if mapNavVC.childViewControllers.count == 1 {
+            } else if mapNavVC.children.count == 1 {
               if self.isAppResume {
                 self.isAppResume = false
-                if let discoverVC = displayedVC.childViewControllers[0] as? DiscoverViewController {
+                if let discoverVC = displayedVC.children[0] as? DiscoverViewController {
                   discoverVC.displayDeepLinkContent()
                 }
               }

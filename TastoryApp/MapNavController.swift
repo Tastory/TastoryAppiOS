@@ -102,7 +102,7 @@ class MapNavController: ASNavigationController {
     let mapPointX = visibleMapRect.origin.x + mapScaleX * Double(mapViewPoint.x)
     let mapPointY = visibleMapRect.origin.y + mapScaleY * Double(mapViewPoint.y)
     
-    return MKMapPointMake(mapPointX, mapPointY)
+    return MKMapPoint.init(x: mapPointX, y: mapPointY)
   }
   
   
@@ -118,7 +118,7 @@ class MapNavController: ASNavigationController {
     let mapSizeWidth = mapScaleX * Double(mapViewRect.size.width)
     let mapSizeHeight = mapScaleY * Double(mapViewRect.size.height)
     
-    let mapPoint = MKMapPointMake(mapOriginX, mapOriginY)
+    let mapPoint = MKMapPoint.init(x: mapOriginX, y: mapOriginY)
     let mapSize = MKMapSize(width: mapSizeWidth, height: mapSizeHeight)
     return MKMapRect(origin: mapPoint, size: mapSize)
   }
@@ -180,7 +180,7 @@ class MapNavController: ASNavigationController {
   
   
   func showDefaultRegionExposed(animated: Bool) {
-    let region = MKCoordinateRegionMakeWithDistance(Constants.DefaultCLCoordinate2D, defaultMapWidth, defaultMapWidth)
+    let region = MKCoordinateRegion.init(center: Constants.DefaultCLCoordinate2D, latitudinalMeters: defaultMapWidth, longitudinalMeters: defaultMapWidth)
     showRegionExposed(region, animated: true)
   }
   
@@ -202,7 +202,7 @@ class MapNavController: ASNavigationController {
     if turnOffTracking { stopTracking() }
     if annotations.count <= 0 { return }
     
-    let initialMapPoint = MKMapPointForCoordinate(annotations[0].coordinate)
+    let initialMapPoint = MKMapPoint.init(annotations[0].coordinate)
     var mapMinX: Double = initialMapPoint.x
     var mapMaxX: Double = initialMapPoint.x
     var mapMinY: Double = initialMapPoint.y
@@ -210,7 +210,7 @@ class MapNavController: ASNavigationController {
     
     // Calculate of maximum extent of annotations
     for annotation in annotations {
-      let annotationMapPoint = MKMapPointForCoordinate(annotation.coordinate)
+      let annotationMapPoint = MKMapPoint.init(annotation.coordinate)
       
       if annotationMapPoint.x < mapMinX {
         mapMinX = annotationMapPoint.x
@@ -227,7 +227,7 @@ class MapNavController: ASNavigationController {
     
     // Include the current location in the bounding
     if let coordinate = coordinate {
-      let currentMapPoint = MKMapPointForCoordinate(coordinate)
+      let currentMapPoint = MKMapPoint.init(coordinate)
       
       if currentMapPoint.x < mapMinX {
         mapMinX = currentMapPoint.x
@@ -249,7 +249,7 @@ class MapNavController: ASNavigationController {
     mapMaxX = mapMinX + mapWidth
     mapMinY = mapMinY - mapHeight * Constants.MapAnnotationMarginFraction
     mapMaxY = mapMinY + mapHeight
-    let finalMapRect = MKMapRectMake(mapMinX, mapMinY, mapWidth, mapHeight)
+    let finalMapRect = MKMapRect.init(x: mapMinX, y: mapMinY, width: mapWidth, height: mapHeight)
     
     // Only if current Map View is too small?
     if tooBigOnly {
@@ -260,7 +260,7 @@ class MapNavController: ASNavigationController {
         currentMapRect = mapView.visibleMapRect
       }
       
-      if MKMapRectContainsRect(currentMapRect, finalMapRect) {
+      if currentMapRect.contains(finalMapRect) {
         showMapRectExposed(finalMapRect, animated: true)
       }
       else { /* Otherwise just don't do anything */ }
@@ -306,8 +306,8 @@ class MapNavController: ASNavigationController {
   }
   
   func isAnnotationExposed(_ annotation: MKAnnotation) -> Bool {
-    let mapPoint = MKMapPointForCoordinate(annotation.coordinate)
-    return MKMapRectContainsPoint(exposedMapRect, mapPoint)
+    let mapPoint = MKMapPoint.init(annotation.coordinate)
+    return exposedMapRect.contains(mapPoint)
   }
   
   
@@ -354,7 +354,7 @@ class MapNavController: ASNavigationController {
     mapView.setUserTrackingMode(.none, animated: false)
     
     view.addSubview(mapView)
-    view.sendSubview(toBack: mapView)
+    view.sendSubviewToBack(mapView)
     
     // Add a Pan Gesture Recognizer to the Map View to detect User initiated Map movement
     let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(mapWasDragged(_:)))
@@ -375,9 +375,9 @@ class MapNavController: ASNavigationController {
       }
       
       if let location = location, self.isTracking {
-        let region = MKCoordinateRegionMakeWithDistance(location.coordinate,
-                                                        self.currentMapWidth ?? self.defaultMapWidth,
-                                                        self.currentMapWidth ?? self.defaultMapWidth)
+        let region = MKCoordinateRegion.init(center: location.coordinate,
+                                                        latitudinalMeters: self.currentMapWidth ?? self.defaultMapWidth,
+                                                        longitudinalMeters: self.currentMapWidth ?? self.defaultMapWidth)
         DispatchQueue.main.async { self.showRegionExposed(region, animated: true, turnOffTracking: false) }
       }
     }

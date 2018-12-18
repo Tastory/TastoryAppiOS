@@ -146,17 +146,17 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     maximumVideoDuration = 15.0
     
     if let pickerButton = pickerButton {
-      view.bringSubview(toFront: pickerButton)
+      view.bringSubviewToFront(pickerButton)
     }
     
     if let captureButton = captureButton {
-      view.bringSubview(toFront: captureButton)
+      view.bringSubviewToFront(captureButton)
       captureButton.delegate = self
       captureButton.isEnabled = false  // Disable this button until SwiftyCam's AVCaptureSession isRunning == true
     }
     
     if let exitButton = exitButton {
-      view.bringSubview(toFront: exitButton)
+      view.bringSubviewToFront(exitButton)
     }
     
     if let tapRecognizer = tapRecognizer {
@@ -188,7 +188,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
         let appName = Bundle.main.displayName ?? "Tastory"
         let urlDialog = AlertDialog.createUrlDialog(title: "Photo Library Inaccessible",
                                                     message: "Please go to Settings > Privacy > Photos to allow \(appName) to access your Photo Library, then try again",
-          url: UIApplicationOpenSettingsURLString)
+          url: UIApplication.openSettingsURLString)
         
         self.present(urlDialog, animated: true, completion: nil)
         
@@ -248,7 +248,7 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
     
     // Always return to Solo Ambient just in case
     do {
-      try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategorySoloAmbient, with: [])
+      try AVAudioSession.sharedInstance().setCategory(.soloAmbient, mode: .default)
     }
     catch {
       CCLog.warning("Failed to clear background audio preference")
@@ -554,12 +554,12 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
                 }
                 return
               }
-              mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(uiImage, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+              mediaObject.imageMemoryBuffer = uiImage.jpegData(compressionQuality: CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
               callback(mediaObject)
             })
 
           } else {
-            mediaObject.imageMemoryBuffer = UIImageJPEGRepresentation(tlphAsset.fullResolutionImage!, CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
+            mediaObject.imageMemoryBuffer = tlphAsset.fullResolutionImage!.jpegData(compressionQuality: CGFloat(FoodieGlobal.Constants.JpegCompressionQuality))
             callback(mediaObject)
           }
 
@@ -844,9 +844,12 @@ extension CameraViewController: TLPhotosPickerViewControllerDelegate {
 }
 
 extension CameraViewController: UIImagePickerControllerDelegate {
-  public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
+  public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]){
+// Local variable inserted by Swift 4.2 migrator.
+let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
     
-    guard let mediaType = info[UIImagePickerControllerMediaType] as? String else {
+    guard let mediaType = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.mediaType)] as? String else {
       AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
          CCLog.assert("Media type is expected after selection from image picker")
       }
@@ -862,7 +865,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       
     case String(kUTTypeMovie):
       
-      guard let movieUrl = info[UIImagePickerControllerMediaURL] as? URL else {
+      guard let movieUrl = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.mediaURL)] as? URL else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("video URL is not returned from image picker")
         }
@@ -895,7 +898,7 @@ extension CameraViewController: UIImagePickerControllerDelegate {
       
       mediaName = FoodieFileObject.newPhotoFileName()
       
-      guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
+      guard let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage else {
         AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
           CCLog.assert("UIImage is not returned from image picker")
         }
@@ -1133,3 +1136,18 @@ extension CameraViewController: UIPopoverPresentationControllerDelegate {
   }
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
+	return input.rawValue
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
+}

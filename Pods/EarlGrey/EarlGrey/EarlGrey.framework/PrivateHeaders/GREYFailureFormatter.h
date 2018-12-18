@@ -14,11 +14,14 @@
 // limitations under the License.
 //
 
-#import <EarlGrey/GREYDefines.h>
 #import <Foundation/Foundation.h>
-#import <XCTest/XCTest.h>
+
+#import <EarlGrey/GREYDefines.h>
 
 @class GREYError;
+@class XCTestCase;
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  Class to help formatting error objects for logging purposes.
@@ -47,7 +50,7 @@
  *  @return Formatted error message string.
  */
 + (NSString *)formatFailureForError:(GREYError *)error
-                          excluding:(NSArray *)excluding
+                          excluding:(NSArray *_Nullable)excluding
                        failureLabel:(NSString *)failureLabel
                         failureName:(NSString *)failureName
                              format:(NSString *)format, ... NS_FORMAT_FUNCTION(5, 6);
@@ -82,9 +85,11 @@
                            failureName:(NSString *)failureName
                               filePath:(NSString *)filePath
                             lineNumber:(NSUInteger)lineNumber
-                          functionName:(NSString *)functionName
+                          functionName:(NSString *_Nullable)functionName
                             stackTrace:(NSArray *)stackTrace
                         appScreenshots:(NSDictionary *)appScreenshots
                                 format:(NSString *)format, ... NS_FORMAT_FUNCTION(9, 10);
 
 @end
+
+NS_ASSUME_NONNULL_END

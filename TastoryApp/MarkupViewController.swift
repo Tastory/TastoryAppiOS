@@ -321,7 +321,7 @@ class MarkupViewController: OverlayViewController {
       jotViewController.view.layer.render(in: UIGraphicsGetCurrentContext()!)
       let viewImage = UIGraphicsGetImageFromCurrentImageContext()!
       UIGraphicsEndImageContext()
-      mediaObject.imageMemoryBuffer = UIImagePNGRepresentation(viewImage)
+      mediaObject.imageMemoryBuffer = viewImage.pngData()
       mediaObject.saveToLocalNServer(type: .cache, withBlock: nil)
       momentObj.markupFileName = fileName
 
@@ -683,9 +683,9 @@ class MarkupViewController: OverlayViewController {
     jotViewController.drawingColor = UIColor.white
     jotViewController.backingColor = UIColor.white.withAlphaComponent(0.0)
     
-    addChildViewController(jotViewController)
+    addChild(jotViewController)
     mediaView.addSubview(jotViewController.view)
-    jotViewController.didMove(toParentViewController: self)
+    jotViewController.didMove(toParent: self)
     
     // Initialize Sliders
     colorSlider = ColorSlider(orientation: .vertical, previewSide: .left)
@@ -693,7 +693,7 @@ class MarkupViewController: OverlayViewController {
     colorSlider.color = .white
     
     view.addSubview(colorSlider)
-    view.bringSubview(toFront: colorSlider)
+    view.bringSubviewToFront(colorSlider)
     
     colorSlider.translatesAutoresizingMaskIntoConstraints = false
     
@@ -709,7 +709,7 @@ class MarkupViewController: OverlayViewController {
     sizeSlider.addTarget(self, action: #selector(sizeSliderChanged(_:)), for: .valueChanged)
     
     view.addSubview(sizeSlider)
-    view.bringSubview(toFront: sizeSlider)
+    view.bringSubviewToFront(sizeSlider)
     
     sizeSlider.translatesAutoresizingMaskIntoConstraints = false
     
@@ -738,8 +738,8 @@ class MarkupViewController: OverlayViewController {
       
       // Update Frame for JotVC based on Autolayout results
       jotViewController.view.frame = mediaView.bounds
-      jotViewController.textEditingInsets = UIEdgeInsetsMake(65, 28, 65, 62)
-      jotViewController.initialTextInsets = UIEdgeInsetsMake(65, 45, 65, 45)
+      jotViewController.textEditingInsets = UIEdgeInsets.init(top: 65, left: 28, bottom: 65, right: 62)
+      jotViewController.initialTextInsets = UIEdgeInsets.init(top: 65, left: 45, bottom: 65, right: 45)
       jotViewController.setupRatioForAspectFit(onWindowWidth: UIScreen.main.fixedCoordinateSpace.bounds.width,
                                                andHeight: UIScreen.main.fixedCoordinateSpace.bounds.height)
       jotViewController.view.layoutIfNeeded()
@@ -775,7 +775,7 @@ class MarkupViewController: OverlayViewController {
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(data: imageBuffer)
         mediaView.addSubview(imageView)
-        mediaView.sendSubview(toBack: imageView)
+        mediaView.sendSubviewToBack(imageView)
         
       // Loop the video
       } else if mediaType == .video {
@@ -788,7 +788,7 @@ class MarkupViewController: OverlayViewController {
         let videoView = UIView(frame: mediaView.bounds)
         videoView.layer.addSublayer(avPlayerLayer!)
         mediaView.addSubview(videoView)
-        mediaView.sendSubview(toBack: videoView)
+        mediaView.sendSubviewToBack(videoView)
         
         soundOn = true
         avPlayer!.volume = 1.0

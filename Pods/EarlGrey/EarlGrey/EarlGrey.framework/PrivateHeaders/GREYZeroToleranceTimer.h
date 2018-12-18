@@ -14,10 +14,11 @@
 // limitations under the License.
 //
 
-#import <EarlGrey/GREYDefines.h>
 #import <UIKit/UIKit.h>
 
 @class GREYZeroToleranceTimer;
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  Protocol expected to be implemented by @c GREYZeroToleranceTimer's targets, the timer fire
@@ -25,7 +26,6 @@
  */
 @protocol GREYZeroToleranceTimerTarget <NSObject>
 
-@required
 /**
  *  Invoked by @c GREYZeroToleranceTimer object when timeout fires.
  *
@@ -76,3 +76,5 @@
 - (void)invalidate;
 
 @end
+
+NS_ASSUME_NONNULL_END

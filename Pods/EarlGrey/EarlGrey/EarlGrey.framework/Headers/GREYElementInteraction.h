@@ -14,7 +14,11 @@
 // limitations under the License.
 //
 
+#import <Foundation/Foundation.h>
+
 #import <EarlGrey/GREYInteraction.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  Interface for creating an interaction with a UI element. If no datasource is set,
@@ -38,3 +42,5 @@
 - (instancetype)initWithElementMatcher:(id<GREYMatcher>)elementMatcher;
 
 @end
+
+NS_ASSUME_NONNULL_END

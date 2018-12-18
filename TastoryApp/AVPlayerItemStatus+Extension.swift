@@ -8,7 +8,7 @@
 
 import AVFoundation
 
-extension AVPlayerItemStatus {
+extension AVPlayerItem.Status {
   var string: String {
     switch self {
     case .unknown:

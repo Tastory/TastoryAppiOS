@@ -148,7 +148,7 @@ class SettingsMenuViewController: OverlayViewController {
         let appName = Bundle.main.displayName ?? "Tastory"
         let urlDialog = AlertDialog.createUrlDialog(title: "Photo Library Inaccessible",
                                                     message: "Please go to Settings > Privacy > Photos to allow \(appName) to access your Photo Library, then try again",
-                                                    url: UIApplicationOpenSettingsURLString)
+                                                    url: UIApplication.openSettingsURLString)
         
         self.present(urlDialog, animated: true, completion: nil)
         
@@ -313,8 +313,8 @@ class SettingsMenuViewController: OverlayViewController {
     navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutAction(_:)))
     navigationItem.rightBarButtonItem?.accessibilityIdentifier = "profileView_logoutButton"
     
-    let titleTextAttributes = [NSAttributedStringKey.font : UIFont(name: "Raleway-Semibold", size: 14)!,
-                               NSAttributedStringKey.strokeColor : FoodieGlobal.Constants.TextColor]
+    let titleTextAttributes = [NSAttributedString.Key.font : UIFont(name: "Raleway-Semibold", size: 14)!,
+                               NSAttributedString.Key.strokeColor : FoodieGlobal.Constants.TextColor]
     navigationItem.rightBarButtonItem!.setTitleTextAttributes(titleTextAttributes, for: .normal)
     navigationItem.rightBarButtonItem!.tintColor = FoodieGlobal.Constants.ThemeColor
     

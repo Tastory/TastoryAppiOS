@@ -22,8 +22,8 @@ class ArrowLayer: CAShapeLayer {
     
     strokeColor = UIColor.gray.withAlphaComponent(Constants.alphaValue).cgColor
     lineWidth = Constants.strokeWidth
-    lineCap = kCALineCapRound
-    lineJoin = kCALineJoinRound
+    lineCap = CAShapeLayerLineCap.round
+    lineJoin = CAShapeLayerLineJoin.round
     fillColor = UIColor.clear.cgColor
     path = upArrow.cgPath
   }
@@ -47,7 +47,7 @@ class ArrowLayer: CAShapeLayer {
     animation.toValue = CGFloat.pi
     animation.duration = Constants.animateDuration
     animation.isRemovedOnCompletion = false
-    animation.fillMode = kCAFillModeForwards
+    animation.fillMode = CAMediaTimingFillMode.forwards
     add(animation, forKey: "transform.rotation")
   }
   
@@ -57,7 +57,7 @@ class ArrowLayer: CAShapeLayer {
     animation.toValue = 0
     animation.duration = Constants.animateDuration
     animation.isRemovedOnCompletion = false
-    animation.fillMode = kCAFillModeForwards
+    animation.fillMode = CAMediaTimingFillMode.forwards
     add(animation, forKey: "transform.rotation")
   }
 }
