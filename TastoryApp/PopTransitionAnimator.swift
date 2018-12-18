@@ -133,7 +133,7 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         fromVC.view.alpha = 0.0
         
         if let bgOverlayView = self.bgOverlayView {
-          bgOverlayView.alpha = 1.0
+          bgOverlayView.alpha = 0.99
         }
         
         let popBiggerTransform = PopTransitionAnimator.calculateScaleMove3DTransform(from: presentingSubFrame, to: presentedSubFrame)
@@ -206,6 +206,10 @@ class PopTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         if !self.overridePopDismiss, !transitionWasCancelled {
           // Putback should always be the last call, as it contains a semaphore inside
           self.putBack(self.popFromView, to: popToSuperview!, at: popToOriginalFrame!)
+          
+          if let bgOverlayView = self.bgOverlayView {
+            bgOverlayView.removeFromSuperview()
+          }
         }
         
         self.overridePopDismiss = false

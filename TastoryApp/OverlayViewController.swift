@@ -179,6 +179,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
             // Putback should always be the last call, as it contains a end ignore interaction inside
             CCLog.verbose("Executing Put Back for \(self.restorationIdentifier != nil ? self.restorationIdentifier! : "")")
             animator.putBack(presentingView, to: popFromSuperview, at: popFromOriginalFrame)
+            animator.bgOverlayView?.removeFromSuperview()
           })
           
           return
@@ -304,7 +305,7 @@ class OverlayViewController: ASViewController<ASDisplayNode> {
     
     if let bgOverlayView = bgOverlayView, bgRestorationRequired {
       UIView.animate(withDuration: FoodieGlobal.Constants.DefaultTransitionAnimationDuration, animations: {
-        bgOverlayView.alpha = 1.0
+        bgOverlayView.alpha = 0.99
       })
     }
     CCLog.debug("\(self.restorationIdentifier != nil ? self.restorationIdentifier! : "") viewDidAppear")

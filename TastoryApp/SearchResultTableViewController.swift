@@ -248,17 +248,18 @@ extension SearchResultTableViewController: UITableViewDelegate {
     if indexPath.row < resultsData.count {
       let result = resultsData[indexPath.row]
 
-      guard let keyword = universalSearchDelegate?.getSearchKeyWord() else {
-        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
-          CCLog.assert("Failed to get keyword from search which is impossible since you already got result")
-        }
-        return
-      }
+//      guard let keyword = universalSearchDelegate?.getSearchKeyWord() else {
+//        AlertDialog.standardPresent(from: self, title: .genericInternalError, message: .internalTryAgain) { _ in
+//          CCLog.assert("Failed to get keyword from search which is impossible since you already got result")
+//        }
+//        return
+//      }
+      
       // add delay for showing content
       UIApplication.shared.beginIgnoringInteractionEvents()
       DispatchQueue.main.asyncAfter(deadline: .now() + FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
         UIApplication.shared.endIgnoringInteractionEvents()
-        self.displayDelegate?.showSearchResult(result: result, keyword: keyword)
+        self.displayDelegate?.showSearchResult(result: result, keyword: result.title.string)
         self.universalSearchDelegate?.dismissUniveralSearch()
       }
     } else {

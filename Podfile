@@ -11,6 +11,7 @@ target 'TastoryApp' do
   # Pods for TastoryApp
   pod 'Parse', :inhibit_warnings => true
   pod 'Parse/FacebookUtils', :inhibit_warnings => true
+  pod 'FBSDKCoreKit', :git => 'https://github.com/facebook/facebook-objc-sdk.git', :branch => 'master', :inhibit_warnings => true
   pod 'FacebookCore', :inhibit_warnings => true
   pod 'FacebookLogin', :inhibit_warnings => true
   pod 'FacebookShare', :inhibit_warnings => true

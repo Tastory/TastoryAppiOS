@@ -43,7 +43,7 @@ class UniversalSearchViewController: OverlayViewController {
     case People = 2
     case Stories = 3
     // make sure you update the count value if you add a new category
-    static var count: Int { return ResultsCategory.Stories.hashValue + 1}
+    static var count: Int { return ResultsCategory.Stories.rawValue + 1}
   }
 
   enum Direction {
@@ -258,9 +258,13 @@ class UniversalSearchViewController: OverlayViewController {
       searchBar.text = searchKeyWord
       search()
     }
-
-
-
+  }
+  
+  
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    
+    searchBar.becomeFirstResponder()
   }
 
   @objc private func search() {

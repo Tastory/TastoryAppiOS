@@ -1024,6 +1024,8 @@ class DiscoverViewController: OverlayViewController {
         return
       }
 
+      ActivitySpinner.globalApply()
+      
       switch type {
 
         case .location:
@@ -1096,6 +1098,8 @@ class DiscoverViewController: OverlayViewController {
             mapNavController.showRegionExposed(region, animated: true)
             FoodieQuery.queryInitStories(at: location.coordinate, minStories: 3, maxRadius: maxRadius) { (stories, query, error) in
 
+              ActivitySpinner.globalRemove()
+              
               if (stories ?? []).count == 0 {
                 self.searchButtonsHidden(is: false)
               } else {
@@ -1149,9 +1153,10 @@ class DiscoverViewController: OverlayViewController {
 
           Analytics.logUniversalSearchResult(username: currentUserName, keyword: keyword, categoryIDs: filter.selectedCategories.map( { $0.foursquareCategoryID ?? "" }))
 
+          ActivitySpinner.globalRemove()
           filterCompleteReturn(filter, true)
           searchWithFilter(searchButton)
-        break
+          break
 
         case .meal:
           guard let meal = result.meal else {
@@ -1173,9 +1178,10 @@ class DiscoverViewController: OverlayViewController {
 
           Analytics.logUniversalSearchResult(username: currentUserName, keyword: keyword, mealTypes: filter.selectedMealTypes.map( { $0.rawValue }))
 
+          ActivitySpinner.globalRemove()
           filterCompleteReturn(filter, true)
           searchWithFilter(searchButton)
-        break
+          break
 
        case .story:
          guard let story = result.story else {
@@ -1201,6 +1207,8 @@ class DiscoverViewController: OverlayViewController {
          UIApplication.shared.beginIgnoringInteractionEvents()
          DispatchQueue.main.asyncAfter(deadline: .now() +  FoodieGlobal.Constants.DefaultDeepLinkWaitDelay) {
           UIApplication.shared.endIgnoringInteractionEvents()
+          ActivitySpinner.globalRemove()
+          
           self.showProfileView(user: user)
 
           if DeepLink.global.deepLinkStoryId == nil && DeepLink.global.deepLinkVenueId == nil{
@@ -1218,6 +1226,7 @@ class DiscoverViewController: OverlayViewController {
          }
 
          Analytics.logUniversalSearchResult(username: currentUserName, keyword: keyword, authorID: user.objectId ?? "", authorUserName: user.username ?? "", authorFullName: user.fullName ?? "")
+         ActivitySpinner.globalRemove()
          self.showProfileView(user: user)
        break
 
@@ -1229,6 +1238,7 @@ class DiscoverViewController: OverlayViewController {
             return
          }
          Analytics.logUniversalSearchResult(username: currentUserName, keyword: keyword, venueID: venue.objectId ?? "", venueName: venue.name ?? "")
+         ActivitySpinner.globalRemove()
          self.showProfileView(venue: venue)
        break
        }

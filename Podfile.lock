@@ -141,6 +141,7 @@ DEPENDENCIES:
   - FacebookCore
   - FacebookLogin
   - FacebookShare
+  - FBSDKCoreKit (from `https://github.com/facebook/facebook-objc-sdk.git`, branch `master`)
   - Firebase/Core
   - HTTPStatusCodes (~> 3.1.2)
   - Jot (from `https://github.com/biscottigelato/Jot.git`)
@@ -170,7 +171,6 @@ SPEC REPOS:
     - FacebookCore
     - FacebookLogin
     - FacebookShare
-    - FBSDKCoreKit
     - FBSDKLoginKit
     - FBSDKShareKit
     - Firebase
@@ -192,6 +192,9 @@ SPEC REPOS:
     - Texture
 
 EXTERNAL SOURCES:
+  FBSDKCoreKit:
+    :branch: master
+    :git: https://github.com/facebook/facebook-objc-sdk.git
   Jot:
     :git: https://github.com/biscottigelato/Jot.git
   PryntTrimmerView:
@@ -205,6 +208,9 @@ EXTERNAL SOURCES:
     :git: https://github.com/specc/TLPhotoPicker.git
 
 CHECKOUT OPTIONS:
+  FBSDKCoreKit:
+    :commit: aaa76238dc15c4c297ee9fad1fdce1bcb2fcff7b
+    :git: https://github.com/facebook/facebook-objc-sdk.git
   Jot:
     :commit: 402d0a0c202d752a26c8fa9c3c86372b2c8f51f5
     :git: https://github.com/biscottigelato/Jot.git
@@ -261,6 +267,6 @@ SPEC CHECKSUMS:
   Texture: 9d7e38965cf22ccd7cd9c249dd78b3f14e70ab6c
   TLPhotoPicker: ec5cd5b3380ed1b6bd176d34a429024ceb80ef01
 
-PODFILE CHECKSUM: 3a1e78f835eda1d3f85e63ae09f12b32681d8c00
+PODFILE CHECKSUM: 2581d02394492225b89aa1023ed70b4ff04b06a4
 
 COCOAPODS: 1.5.2

@@ -130,8 +130,20 @@ class StoryOperation: FoodieOperation {  // We can later make an intermediary su
       
       // Retrieve all the Moments & Markups from Parse for the Story in 1 go
       let batchRetrieving = FoodieMoment.batchRetrieve(moments) { objects, error in
-        self.callback?(error)
-        self.finished()
+        
+        guard error == nil else {
+          self.callback?(error)
+          self.finished()
+          return
+        }
+        
+        // Let's try to fetch the first moment & media. Otherwise pre-fetching would suck.
+        let moment = moments[0]
+        CCLog.debug("#Prefetch - Fetch Story \(story.getUniqueIdentifier()) at Moment 0/\(moments.count) is \(moment.getUniqueIdentifier())")
+        self.prefetchOperation = moment.retrieveMedia(from: .both, type: .cache) { [unowned self] error in //withReady: nil
+          self.callback?(error)
+          self.finished()
+        }
       }
       
       // Just return if Batch Retrieving & swing back around next time
