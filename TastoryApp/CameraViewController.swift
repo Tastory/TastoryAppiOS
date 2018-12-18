@@ -163,12 +163,6 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
       tapRecognizer.delegate = self
     }
     
-    // Listen to notification of when SwiftyCam's AVCaptureSession isRunning == true
-    NotificationCenter.default.addObserver(forName: .AVCaptureSessionDidStartRunning, object: nil, queue: OperationQueue.main) { _ in
-      self.captureButton?.cameraSessionIsReady()
-      NotificationCenter.default.removeObserver(self, name: .AVCaptureSessionDidStartRunning, object: nil)
-    }
-    
     // If user opt'ed for Save Originals To Library. Double check for corresponding Permissions
     if let currentUser = FoodieUser.current, currentUser.saveOriginalsToLibrary {
       
@@ -272,6 +266,10 @@ class CameraViewController: SwiftyCamViewController, UINavigationControllerDeleg
 
 
 extension CameraViewController: SwiftyCamViewControllerDelegate {
+  
+  func swiftyCamSessionDidStartRunning(_ swiftyCam: SwiftyCamViewController) {
+    self.captureButton?.cameraSessionIsReady()
+  }
   
   func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake image: UIImage) {
     // Called when takePhoto() is called or if a SwiftyCamButton initiates a tap gesture
